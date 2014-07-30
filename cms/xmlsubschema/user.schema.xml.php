@@ -1,0 +1,16 @@
+<user>
+<login></login>
+<password></password>
+<hashcode></hashcode>
+<admin>0</admin>
+<userdate></userdate>
+<realname></realname>
+<email></email>
+<signature></signature>
+<language></language>
+<theme>standard</theme>
+<memberof>
+<publication></publication>
+<usergroup></usergroup>
+</memberof>
+</user>

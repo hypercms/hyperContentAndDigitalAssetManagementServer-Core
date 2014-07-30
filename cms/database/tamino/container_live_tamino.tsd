@@ -1,0 +1,588 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<xs:schema xmlns:tsd = "http://namespaces.softwareag.com/tamino/TaminoSchemaDefinition" xmlns:xs = "http://www.w3.org/2001/XMLSchema">
+  <xs:annotation>
+    <xs:appinfo>
+      <tsd:schemaInfo name = "container_live">
+        <tsd:collection name = "live"></tsd:collection>
+        <tsd:doctype name = "container">
+          <tsd:logical>
+            <tsd:content>closed</tsd:content>
+          </tsd:logical>
+        </tsd:doctype>
+      </tsd:schemaInfo>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:annotation>
+    <xs:documentation>Schema for XML Content Containers in Tamino, by hyperCMS Content Management Solutions</xs:documentation>
+  </xs:annotation>
+  <xs:element name = "article">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "article_id"></xs:element>
+        <xs:element ref = "articletitle"></xs:element>
+        <xs:element ref = "articledatefrom"></xs:element>
+        <xs:element ref = "articledateto"></xs:element>
+        <xs:element ref = "articlestatus"></xs:element>
+        <xs:element ref = "articleuser"></xs:element>
+        <xs:element ref = "articletextcollection"></xs:element>
+        <xs:element ref = "articlemediacollection"></xs:element>
+        <xs:element ref = "articlelinkcollection"></xs:element>
+        <xs:element ref = "articlecomponentcollection"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "article_id" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "articlecollection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "article" minOccurs = "0" maxOccurs = "unbounded"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "articlecomponentcollection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "component" minOccurs = "0" maxOccurs = "unbounded"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "articledatefrom" type = "xs:string"></xs:element>
+  <xs:element name = "articledateto" type = "xs:string"></xs:element>
+  <xs:element name = "articlelinkcollection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "link" minOccurs = "0" maxOccurs = "unbounded"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "articlemediacollection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "media" minOccurs = "0" maxOccurs = "unbounded"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "articlestatus" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "articletextcollection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "text" minOccurs = "0" maxOccurs = "unbounded"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "articletitle" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "articleuser" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "component">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "component_id"></xs:element>
+        <xs:element ref = "componentuser"></xs:element>
+        <xs:element ref = "componentcond"></xs:element>
+        <xs:element ref = "componentfiles"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "component_id" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "componentcollection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "component" minOccurs = "0" maxOccurs = "unbounded"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "componentcond" type = "xs:string"></xs:element>
+  <xs:element name = "componentfiles" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "componentuser" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "container">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "hyperCMS"></xs:element>
+        <xs:element ref = "head"></xs:element>
+        <xs:element ref = "textcollection"></xs:element>
+        <xs:element ref = "mediacollection"></xs:element>
+        <xs:element ref = "linkcollection"></xs:element>
+        <xs:element ref = "componentcollection"></xs:element>
+        <xs:element ref = "articlecollection"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "contentcontainer" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "contentdate" type = "xs:string"></xs:element>
+  <xs:element name = "contentobjects" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "contentorigin" type = "xs:string"></xs:element>
+  <xs:element name = "contentpublished" type = "xs:string"></xs:element>
+  <xs:element name = "contentstatus" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "contentuser" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "contentworkflow" type = "xs:string"></xs:element>
+  <xs:element name = "contentxmlschema" type = "xs:string"></xs:element>
+  <xs:element name = "head">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "pagetitle"></xs:element>
+        <xs:element ref = "pageauthor"></xs:element>
+        <xs:element ref = "pagedescription"></xs:element>
+        <xs:element ref = "pagekeywords"></xs:element>
+        <xs:element ref = "pagecontenttype"></xs:element>
+        <xs:element ref = "pagelanguage"></xs:element>
+        <xs:element ref = "pagerevisit"></xs:element>
+        <xs:element ref = "pagetracking"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "hyperCMS">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "contentcontainer"></xs:element>
+        <xs:element ref = "contentxmlschema"></xs:element>
+        <xs:element ref = "contentorigin"></xs:element>
+        <xs:element ref = "contentobjects"></xs:element>
+        <xs:element ref = "contentuser"></xs:element>
+        <xs:element ref = "contentdate"></xs:element>
+        <xs:element ref = "contentpublished"></xs:element>
+        <xs:element ref = "contentstatus"></xs:element>
+        <xs:element ref = "contentworkflow"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "link">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "link_id"></xs:element>
+        <xs:element ref = "linkuser"></xs:element>
+        <xs:element ref = "linkhref"></xs:element>
+        <xs:element ref = "linktarget"></xs:element>
+        <xs:element ref = "linktext"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "link_id" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "linkcollection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "link" minOccurs = "0" maxOccurs = "unbounded"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "linkhref" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "linktarget" type = "xs:string"></xs:element>
+  <xs:element name = "linktext" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "linkuser" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "media">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "media_id"></xs:element>
+        <xs:element ref = "mediauser"></xs:element>
+        <xs:element ref = "mediafile"></xs:element>
+        <xs:element ref = "mediaalttext"></xs:element>
+        <xs:element ref = "mediaalign"></xs:element>
+        <xs:element ref = "mediawidth"></xs:element>
+        <xs:element ref = "mediaheight"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "media_id" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "mediaalign" type = "xs:string"></xs:element>
+  <xs:element name = "mediaalttext" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "mediacollection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "media" minOccurs = "0" maxOccurs = "unbounded"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "mediafile" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "mediaheight" type = "xs:string"></xs:element>
+  <xs:element name = "mediauser" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "mediawidth" type = "xs:string"></xs:element>
+  <xs:element name = "pageauthor" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "pagecontenttype" type = "xs:string"></xs:element>
+  <xs:element name = "pagedescription" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "pagekeywords" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "pagelanguage" type = "xs:string"></xs:element>
+  <xs:element name = "pagerevisit" type = "xs:string"></xs:element>
+  <xs:element name = "pagetitle" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "pagetracking" type = "xs:string"></xs:element>
+  <xs:element name = "text">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "text_id"></xs:element>
+        <xs:element ref = "textuser"></xs:element>
+        <xs:element ref = "textcontent"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "text_id" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "textcollection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "text" minOccurs = "0" maxOccurs = "unbounded"></xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name = "textcontent" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name = "textuser" type = "xs:string">
+    <xs:annotation>
+      <xs:appinfo>
+        <tsd:elementInfo>
+          <tsd:physical>
+            <tsd:native>
+              <tsd:index>
+                <tsd:text></tsd:text>
+              </tsd:index>
+            </tsd:native>
+          </tsd:physical>
+        </tsd:elementInfo>
+      </xs:appinfo>
+    </xs:annotation>
+  </xs:element>
+</xs:schema>

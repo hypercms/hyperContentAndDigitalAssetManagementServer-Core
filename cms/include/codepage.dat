@@ -1,0 +1,27 @@
+ISO-8859-1|(Latin-1) Central Europe/Mitteleuropa|Danish/D&auml;nisch, German/Deutsch, English/Englisch, Finnish/Finnisch, French/Franz&ouml;sisch, Erse/Irisch, Icelandic/Isl&auml;ndisch, Italian/Italienisch, Dutch/Niederl&auml;ndisch, Norwegian/Norwegisch, Portuguese/Portugiesisch, Swedish/Schwedisch, Spanish/Spanisch
+windows-1250|Central Europe/Mitteleuropa|Danish/D&auml;nisch, German/Deutsch, English/Englisch, Finnish/Finnisch, French/Franz&ouml;sisch, Erse/Irisch, Icelandic/Isl&auml;ndisch, Italian/Italienisch, Dutch/Niederl&auml;ndisch, Norwegian/Norwegisch, Portuguese/Portugiesisch, Swedish/Schwedisch, Spanish/Spanisch
+windows-1252|(Latin-1) Central Europe/Mitteleuropa|Danish/D&auml;nisch, German/Deutsch, English/Englisch, Finnish/Finnisch, French/Franz&ouml;sisch, Erse/Irisch, Icelandic/Isl&auml;ndisch, Italian/Italienisch, Dutch/Niederl&auml;ndisch, Norwegian/Norwegisch, Portuguese/Portugiesisch, Swedish/Schwedisch, Spanish/Spanisch
+ISO-8859-2|(Latin-2) East Europe/Osteuropa|Croatian/Kroatisch, Polish/Polnisch, Romanian/Rum&auml;nisch, Slowak/Slowakisch, Slovenian/Slowenisch, Czech/Tschechisch, Hungarian/Ungarisch
+ISO-8859-3|(Latin-3) South Europe/S&uuml;deuropa|Esperanto, Turkish/T&uuml;rkisch
+ISO-8859-4|(Latin-4) North Europe/Nordeuropa|Baltic/baltische Sprachen e.g. Estonian/Estnisch, Latvian/Lettisch, Lithuanian/Litauisch
+windows-1257|Baltic/baltische Sprachen|Estonian/Estnisch, Latvian/Lettisch, Lithuanian/Litauisch
+ISO-8859-5|Cyrillic/Kyrillisch|Russian/Russisch, Serbian/Serbisch
+windows-1251|Cyrillic/Kyrillisch|Russian/Russisch, Serbian/Serbisch
+ISO-8859-6||Arabic/Arabisch
+windows-1256||Arabic/Arabisch
+ISO-8859-7||Greek/Griechisch
+windows-1253||Greek/Griechisch
+ISO-8859-8||Hebrew/Hebr&auml;isch
+windows-1255||Hebrew/H&auml;br&auml;isch
+ISO-8859-9|(Latin-5)|Turkish/T&uuml;rkisch
+windows-1254||Turkish/T&uuml;rkisch
+ISO-8859-10|(Latin-6) Nordic|Greenlandic/Gr&ouml;nl&auml;ndisch (inuit), Lappisch (Sami)
+Shift_JIS||Japanese/Japanisch
+iso-2022-jp||Japanese/Japanisch
+EUC-JP||Japanese/Japanisch
+big5||traditional Chinese/traditionelles Chinesisch
+gb2312||simplified Chinese/vereinfachtes Chinesisch
+euc-kr||Korean/Koreanisch
+windows-1258||Vietnamese/Vietnamesisch
+windows-874||Thai/Thail&auml;ndisch
+UTF-8|Unicode|all languages/alle Sprachen

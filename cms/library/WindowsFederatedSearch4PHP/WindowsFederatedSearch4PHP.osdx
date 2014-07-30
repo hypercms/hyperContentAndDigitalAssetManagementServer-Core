@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" >
+  <ShortName>WindowsFederatedSearch4PHP</ShortName>
+  <Description>Windows Federated Search For PHP Developers</Description> 
+  <!-- BEGIN: templates for Search Provider Endpoints and Image. -->
+  <!-- TODO: Replace http://localhost/WindowsFederatedSearch4PHP/ with Search Providers URL. -->
+    <Url type="application/rss+xml" template="http://localhost/WindowsFederatedSearch4PHP/search.php?query={searchTerms}&amp;format=rss&amp;src=ms-ose&amp;start={startIndex}&amp;cnt={count}"/>
+    <Url type="text/html" template="http://localhost/WindowsFederatedSearch4PHP/search.php?query={searchTerms}"/>
+    <Image height="16" width="16" type="image/x-icon">http://localhost/WindowsFederatedSearch4PHP/favicon.ico</Image>
+  <!-- END: templates for Search Provider Endpoints and Image. -->
+</OpenSearchDescription>

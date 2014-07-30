@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin>
+  <definition>
+    <name>test plugin</name>
+    <author>hyperCMS</author>
+    <version>0.1</version>
+    <description>Plugin to test the plugin functionality</description>
+  </definition>
+  <menus>
+    <main>
+      <group>
+        <name>Plugin Group 1</name>
+        <icon>img/group.gif</icon>
+        <subpoints>
+          <point>
+            <name>Plugin Point 1.1</name>
+            <icon>img/menupoint.gif</icon>
+            <page>pages/page.php</page>
+            <control>pages/control.php</control>
+          </point>
+          <point>
+            <name>Plugin Point 1.2</name>
+            <icon>img/menupoint.gif</icon>
+            <page>pages/page.php</page>
+          </point>
+        <subpoints>
+      </group>
+      <group>
+        <name>Plugin Group 2</name>
+        <icon>img/group.gif</icon>
+        <subpoints>
+          <point>
+            <name>Plugin Point 2.1</name>
+            <icon>img/menupoint.gif</icon>
+            <page>pages/page.php</page>
+          </point>
+          <point>
+            <name>Plugin Point 2.2</name>
+            <icon>img/menupoint.gif</icon>
+            <page>pages/page.php</page>
+            <control>pages/control.php</control>
+          </point>
+        <subpoints>
+      </group>
+      <point>
+        <name>Plugin Point 3</name>
+        <icon>img/menupoint.gif</icon>
+        <page>pages/page.php</page>
+      </point>
+    </main>
+    <publication>
+      <point>
+        <name>Plugin for Publication</name>
+        <icon>img/menupoint.gif</icon>
+        <page>pages/page.php</page>
+      </point>
+    </publication>
+  <menus>
+</plugin>

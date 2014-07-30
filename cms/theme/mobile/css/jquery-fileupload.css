@@ -1,0 +1,89 @@
+#selectedFiles {
+  width: 570px;
+}
+
+#btnSelectFile {  
+  overflow: hidden;
+  position: relative; 
+}
+
+#btnSelectFile #inputSelectFile {
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  transform: translate(-300px, 0px) scale(4);
+}
+
+.file {
+  margin-bottom: 2px;
+}
+
+.file_normal {
+  background-color: #9FC4FB;
+}
+
+.file_success {
+  background-color: #71C77D;
+}
+
+.file_error {
+  background-color: #FCA535;
+}
+
+.file > div {
+  margin-left: 10px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  vertical-align: middle;
+  min-height: 20px;
+}
+
+.file_name {
+  width: 300px;
+}
+
+.file_size {
+  width: 55px;
+}
+
+.file_buttons {
+  width: 30px;
+}
+
+.file_message {
+  width: 207px;
+  height: auto;
+}
+
+.progress {
+  width: 140px;
+  background-color: #FFF;
+  
+  border-color: #000;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 4px;
+  
+  margin-bottom: 2px;
+  margin-top: 2px;
+}
+
+.progress .meter {
+  background-color: #93C868;
+  
+  height: 20px;
+  
+  border-radius: 4px;
+}
+
+.inline {
+  display: inline-block;
+}
+
+div.button {
+  margin-top: 10px;
+  margin-left: 4px;
+  float: left;
+}

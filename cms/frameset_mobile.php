@@ -1,0 +1,123 @@
+<?php
+/*
+ * This file is part of
+ * hyper Content Management Server - http://www.hypercms.com
+ * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ *
+ * You should have received a copy of the License along with hyperCMS.
+ */
+
+// session parameters
+require ("include/session.inc.php");
+// management configuration
+require ("config.inc.php");
+// hyperCMS API
+require ("function/hypercms_api.inc.php");
+// hyperCMS UI
+require ("function/hypercms_ui.inc.php");
+// language file
+require_once ("language/top.inc.php");
+
+
+// input parameters
+$view = getrequest ("view");
+
+// ------------------------------ permission section --------------------------------
+
+// check session of user
+checkusersession ($user, false);
+
+// --------------------------------- logic section ----------------------------------
+
+toggleview ($view);
+?>
+<!DOCTYPE html> 
+<html> 
+<head> 
+<title>hyperCMS</title>
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=0;"></meta>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery.mobile-1.3.1.min.css" />
+<!-- 57 x 57 Android and iPhone 3 icon -->
+<link rel="apple-touch-icon" media="screen and (resolution: 163dpi)" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
+<!-- 114 x 114 iPhone 4 icon -->
+<link rel="apple-touch-icon" media="screen and (resolution: 326dpi)" href="<?php echo getthemelocation(); ?>img/mobile_icon114.png" />
+<!-- 57 x 57 Nokia icon -->
+<link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
+<script src="javascript/jquery/jquery-1.9.1.min.js"></script>
+<script src="javascript/jquery/jquery.mobile-1.3.1.min.js"></script>
+</head> 
+
+<script type='text/javascript'>
+<!--
+var center;
+var window_height = $(window).height() + "px";
+
+
+$(document).ready(function()
+{
+  $("#workplFrame").height($(window).height() - $("#topbar").height());
+  $("#navContainer").height($(window).height());
+  $("#navFrame").height($(window).height());
+  
+  window.onresize = function()
+  {
+    // repetition
+    $("#workplFrame").height($(window).height() - $("#topbar").height());
+    $("#navContainer").height($(window).height());
+    $("#navFrame").height($(window).height());
+  };
+});
+
+-->
+</script>
+
+<body>
+
+<div data-role="page" id="mainframe" data-fullscreen="true">
+
+  <!-- header -->
+  <div id="topbar" class="ui-header ui-bar-b" data-role="header">
+    <a href="#navigator">Navigator</a>
+    <h1>hyperCMS <?php echo ucfirst ($hcms_themename); ?></h1>
+  </div> 
+
+  <!-- panel -->
+  <div id="navigator" data-role="panel" data-display="overlay" style="padding:0; margin:0; width:260px;">
+    <?php if ($mgmt_config['db_connect_rdbms'] != "") { ?>
+    <div class="ui-bar-b" style="position:absolute; top:0; left:0; width:258px;">
+      <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
+        <input type="hidden" name="action" value="base_search" />
+        <input type="hidden" name="search_dir" value="" />
+        <input type="hidden" name="maxhits" value="100" />
+        <table style="padding:0; margin:0; width:100%;">
+          <tr>
+            <td>
+              <input type="text" name="search_expression" data-mini="true" maxlength="60" value="" placeholder="<?php echo $text3[$lang]; ?>" />
+            </td>
+            <td>
+              <button id="SearchButton" data-mini="true" style="width:40px;" onclick="document.forms['searchform_general'].submit();">OK</button>
+            </td>
+          </tr>
+        </table>
+      </form>
+    </div>
+    <?php } ?>
+    <div id="navContainer" style="position:absolute; top:0; left:0; padding:0; margin:48px 0; border:0; width:260px; overflow:auto; -webkit-overflow-scrolling:touch;">
+      <iframe id="navFrame" src="explorer.php" style="border:0; width:260px;"></iframe>
+    </div>
+  </div>
+  
+  <!-- content -->
+  <div id="content" data-role="content" style="padding:0; margin:0;">
+    <?php if (is_array ($hcms_linking)) { ?>
+    <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
+    <?php } else { ?>
+    <iframe id="workplFrame" name="workplFrame" src="welcome.php" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
+    <?php } ?>
+  </div>
+
+</div>
+
+</body>
+</html>
