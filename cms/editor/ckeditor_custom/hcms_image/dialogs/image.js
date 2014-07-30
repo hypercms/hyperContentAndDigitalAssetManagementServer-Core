@@ -66,8 +66,9 @@
                 if ("true" == b.getCustomData("isReady")) {
                     var d = a.getContentElement("info", "txtWidth"),
                         e = a.getContentElement("info", "txtHeight");
-                    d && d.setValue(b.$.width);
-                    e && e.setValue(b.$.height)
+                    // to avoid overwritting of scaled values
+                    //d && d.setValue(b.$.width);
+                    //e && e.setValue(b.$.height)
                 }
                 g(a)
             }, y = function (a, b) {
@@ -244,13 +245,11 @@
 																var width = data[0];
 																var height = data[1];
 																var dialog = this.getDialog();
-
+																
 																dialog.getContentElement( 'info', 'txtUrl' ).setValue( fileURL );
-																dialog.getContentElement( 'info', 'txtWidth' ).setValue( Math.round(width) );
-                                dialog.getContentElement( 'info', 'txtWidth' ).onKeyUp();
+															  dialog.getContentElement( 'info', 'txtWidth' ).setValue( Math.round(width) );
 																dialog.getContentElement( 'info', 'txtHeight' ).setValue( Math.round(height) );
-                                dialog.getContentElement( 'info', 'txtHeight' ).onKeyUp();
-
+																
 																return false;
 															}
 														}

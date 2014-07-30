@@ -504,6 +504,7 @@ changelog:
 - changes in job for licensenotification, monthly: next month will be checked each 1st of the month, weekly: next week will be checked each sunday
 - support for DPI, colorspace, ICC profiles in formatted texts (textf-tag) and images (mediafile-tag)
 - bug fix: error in call to js-function hcms_validateform in function showinlineeditor_head
+- bug fix: remove reseting of image size if scaling is used in CKEditor image-plugin
 
 preview:
 - definition of target formats when using send mail-link
