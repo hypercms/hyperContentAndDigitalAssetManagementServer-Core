@@ -1611,8 +1611,8 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
     // define format if not set
     if ($format == "") $format = "pdf";
     
-    // if media conversion software is given and destination format is not the source format
-    if (is_array ($mgmt_docpreview) && sizeof ($mgmt_docpreview) > 0 && $format != str_replace (".", "", $file_ext) && in_array(".".$format, $mgmt_docconvert[$file_ext]) && @is_file ($location_source.$file))
+    // if media conversion software is given, conversion supported and destination format is not the source format
+    if (is_array ($mgmt_docpreview) && is_array ($mgmt_docconvert[$file_ext]) && sizeof ($mgmt_docpreview) > 0 && $format != str_replace (".", "", $file_ext) && in_array (".".$format, $mgmt_docconvert[$file_ext]) && @is_file ($location_source.$file))
     {
       // convert the media file with UNOCONV
       // unoconv is a command line utility that can convert any file format that OpenOffice can import, to any file format that OpenOffice is capable of exporting.

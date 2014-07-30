@@ -10069,6 +10069,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
 						{
 							$imagewidth = round ($media_size[0] * $imagepercentage / 100, 0);
 							$imageheight = round ($media_size[1] * $imagepercentage / 100, 0);
+              
 							if ($imagewidth != "" && $imageheight != "")
 							{
 								$formats = "";
@@ -10234,7 +10235,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
             }
 
 						// get new rendering settings and set image options (if given)
-						if ($imagewidth != "" && $imageheight != "" && $imageformat != "")
+						if (!empty ($imagewidth) && !empty ($imageheight) && !empty ($imageformat))
 						{
 							$formats = "";
 
