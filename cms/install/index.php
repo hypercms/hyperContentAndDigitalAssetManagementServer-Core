@@ -179,12 +179,12 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
       if ($show == "")
       {
         // select and create database
-        if (!$mysqli->select_db ($settings['db_name']))
+        if (!$mysqli->select_db ($db_name))
         {
           $sql = "CREATE DATABASE ".$db_name;
         
           if (!$mysqli->query ($sql)) $show .= "<li>DB error (".$mysqli->errno."): ".$mysqli->error."</li>\n";
-          elseif (!$mysqli->select_db ($settings['db_name'])) $show .= "<li>DB error (".$mysqli->errno."): ".$mysqli->error."</li>\n";
+          elseif (!$mysqli->select_db ($db_name)) $show .= "<li>DB error (".$mysqli->errno."): ".$mysqli->error."</li>\n";
         }
         
         // create tables
@@ -382,10 +382,10 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
   {
     if ($setup_publication == "cms")
     {
-      $result = copyrecursive ($mgmt_config['abs_path_cms']."install/templates/cms/media/", $mgmt_config['abs_path_rep']."media_tpl/".$site."/");
+      $result = copyrecursive ($mgmt_config['abs_path_cms']."install/templates/attitude/media/", $mgmt_config['abs_path_rep']."media_tpl/".$site."/");
       if ($result == false) $show .= "<li>Template media could not be created!</li>\n";
     
-      $result = copyrecursive ($mgmt_config['abs_path_cms']."install/templates/cms/tpl/", $mgmt_config['abs_path_data']."template/".$site."/");
+      $result = copyrecursive ($mgmt_config['abs_path_cms']."install/templates/attitude/tpl/", $mgmt_config['abs_path_data']."template/".$site."/");
       if ($result == false) $show .= "<li>Templates could not be created!</li>\n";
     }
   }
