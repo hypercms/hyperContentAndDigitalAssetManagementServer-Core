@@ -505,6 +505,9 @@ changelog:
 - support for DPI, colorspace, ICC profiles in formatted texts (textf-tag) and images (mediafile-tag)
 - bug fix: error in call to js-function hcms_validateform in function showinlineeditor_head
 - bug fix: remove reseting of image size if scaling is used in CKEditor image-plugin
+- bug fix: inline editing mode issue when onedit and onpublish attributes are used for the same hypercms tag
+- improvements in plugin management
+- new individual button in UI function showtopbar
 
 preview:
 - definition of target formats when using send mail-link

@@ -188,13 +188,13 @@ function showshorttext ($text, $length=0, $linebreak=false)
 
 // --------------------------------------- showtopbar -------------------------------------------
 // function: showtopbar ()
-// input: message, language code (optional), close button link (optional), link target (optional), ID of div-layer (optional)
+// input: message, language code (optional), close button link (optional), link target (optional), individual button (optional), ID of div-layer (optional)
 // output: top bar box / false on error
 
 // description:
 // shows the standard top bar with or without close button
 
-function showtopbar ($show, $lang="en", $close_link="", $close_target="", $id="bar")
+function showtopbar ($show, $lang="en", $close_link="", $close_target="", $individual_button="", $id="bar")
 {
   global $mgmt_config;
   
@@ -208,13 +208,17 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $id="b
       $close_id = uniqid();
       $close_button = "<td style=\"width:26px; text-align:right; vertical-align:middle;\"><a href=\"".$close_link."\" target=\"".$close_target."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.gif',1);\"><img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text33[$lang]."\" title=\"".$text33[$lang]."\" /></a></td>\n";
     }
-    else $close_button = "";
+    elseif ($individual_button != "")
+    {
+      $individual_button = "<td style=\"width:26px; text-align:right; vertical-align:middle;\">".$individual_button."</td>";
+    }
+    else $individual_button = "";
     
     return "  <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
     <table style=\"width:100%; height:28px; padding:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
         <td class=\"hcmsHeadline\" style=\"text-align:left; vertical-align:middle; padding:2px 6px 2px 6px; white-space:nowrap;\">".$show."</td>".
-        $close_button.
+        $individual_button.$close_button.
       "</tr>
     </table>
   </div>

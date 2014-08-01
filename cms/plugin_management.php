@@ -48,6 +48,12 @@ if ($action)
     case "reparse":
       $mgmt_plugin = plugin_parse ($mgmt_plugin);
       plugin_saveconfig ($mgmt_plugin);
+      
+      // reload plugin config
+      if (file_exists ($mgmt_config['abs_path_data'].'config/plugin.conf.php'))
+      {
+        require ($mgmt_config['abs_path_data'].'config/plugin.conf.php');
+      }
       break;
       
     case "change":
@@ -59,6 +65,12 @@ if ($action)
       }
       
       plugin_saveconfig ($mgmt_plugin);
+      
+      // reload plugin config
+      if (file_exists ($mgmt_config['abs_path_data'].'config/plugin.conf.php'))
+      {
+        require ($mgmt_config['abs_path_data'].'config/plugin.conf.php');
+      }
       break;
       
     default:
@@ -72,7 +84,7 @@ if ($action)
   <head>
     <title>hyperCMS</title>
     <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
-    <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+    <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
     <script src="javascript/main.js" type="text/javascript"></script>
     <script src="javascript/click.js" type="text/javascript"></script>
   </head>
@@ -80,11 +92,18 @@ if ($action)
   <body class="hcmsWorkplaceGeneric">
 
     <!-- top bar -->
-    <?php 
-    echo showtopbar ($text0[$lang], $lang);
+    <?php
+    if (!$is_mobile && file_exists ("help/pluginguide_".$lang_shortcut[$lang].".pdf"))
+    {
+      $help = "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openBrWindowItem('help/pluginguide_".$lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text50[$lang]."\" title=\"".$text50[$lang]."\" /></a>";
+    }
+    else $help = "";
+      
+    echo showtopbar ($text0[$lang], $lang, "", "", $help);
     if ($show != false) echo showmessage ($show, 500, 40, $lang, "position:absolute; left:15px; top:40px;");
     ?>
     
+    <!-- content -->    
     <form action="?action=change" method="POST" name="editplugins" class="hcmsWorkplaceFrame">
       <table cellspacing="2" cellpadding="3" border="0" width="98%">
         <tbody>
@@ -120,11 +139,11 @@ if ($action)
       </table>
       
       <div style="margin-top:10px;">
-        <div style="width:360px; float:left;"><?php echo $text9[$lang] ?>:</div>
-        <img align="absmiddle" alt="save" title="save" onmouseover="hcms_swapImage('Button1','', '<?php echo getthemelocation(); ?>/img/button_OK_over.gif',1)" onmouseout="hcms_swapImgRestore()" onclick="document.forms['editplugins'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" name="Button1">
+        <div style="width:260px; float:left;"><?php echo $text9[$lang] ?>:</div>
+        <img align="absmiddle" alt="OK" title="OK" onmouseover="hcms_swapImage('Button1','', '<?php echo getthemelocation(); ?>/img/button_OK_over.gif',1)" onmouseout="hcms_swapImgRestore()" onclick="document.forms['editplugins'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" name="Button1">
         <div style="clear:both;"></div>
-        <div style="width:360px; float:left;"><?php echo $text8[$lang] ?>:</div>
-        <img align="absmiddle" alt="save" title="save" onmouseover="hcms_swapImage('Button2','', '<?php echo getthemelocation(); ?>/img/button_OK_over.gif',1)" onmouseout="hcms_swapImgRestore()" onclick="window.location='?action=reparse'" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" name="Button2">
+        <div style="width:260px; float:left;"><?php echo $text8[$lang] ?>:</div>
+        <img align="absmiddle" alt="OK" title="OK" onmouseover="hcms_swapImage('Button2','', '<?php echo getthemelocation(); ?>/img/button_OK_over.gif',1)" onmouseout="hcms_swapImgRestore()" onclick="window.location='?action=reparse'" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" name="Button2">
       </div>
         
     </form>

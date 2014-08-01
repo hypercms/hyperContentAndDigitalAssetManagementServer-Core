@@ -31,10 +31,9 @@ checkusersession ($user, false);
 <head>
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
-<script src="javascript/timeout.js" type="text/javascript"></script>
-<script src="javascript/click.js" type="text/javascript"></script>
-<script src="javascript/main.js" type="text/javascript"></script>
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<script src="../../../javascript/click.js" type="text/javascript"></script>
+<script src="../../../javascript/main.js" type="text/javascript"></script>
 
 </head>
 

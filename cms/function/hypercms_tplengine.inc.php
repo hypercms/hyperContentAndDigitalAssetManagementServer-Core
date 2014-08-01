@@ -2920,7 +2920,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link for editor
                       if ($buildview == "cmsview")
                       {                   
-                        $taglink = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."editor/editoru.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&constraint=".url_encode($constraint)."&contenttype=".url_encode($contenttype)."&width=".url_encode($sizewidth)."&height=".url_encode($sizeheight)."&default=".url_encode($defaultvalue)."\"&token=".$token."><img src=\"".getthemelocation()."img/button_textu.gif\" alt=\"".$labelname.": ".$text0[$lang]."\" title=\"".$labelname.": ".$text0[$lang]."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a>\n";
+                        $taglink = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."editor/editoru.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&constraint=".url_encode($constraint)."&contenttype=".url_encode($contenttype)."&width=".url_encode($sizewidth)."&height=".url_encode($sizeheight)."&default=".url_encode($defaultvalue)."&token=".$token."\"><img src=\"".getthemelocation()."img/button_textu.gif\" alt=\"".$labelname.": ".$text0[$lang]."\" title=\"".$labelname.": ".$text0[$lang]."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a>\n";
                       }
                       elseif (($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") && isset ($foundtxt[$id]) && $foundtxt[$id] == true)
                       {
@@ -3422,18 +3422,24 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 }
               }       
               
-              // inline editing
+              // only for inline editing mode
               if ($buildview == "inlineview" && $onedit != "hidden" && $infotype != "meta" && $groupaccess == true)
               {
                 // escape links to prevent transformlink to transform links used in the inline content
                 $contentbot = str_replace (array (" href="," href =",".href=",".href ="), array(" hypercms_href="," hypercms_href =",".hypercms_href=",".hypercms_href ="), $contentbot);
                  
                 $contentbot = showinlineeditor ($site, $hypertag, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $contenttype, $cat, $location_esc, $page, $contentfile, $db_connect, $token);
+                
+                // insert content
+                $viewstore = str_replace ($hypertag, $contentbot, $viewstore);
               }
-
-              // insert content
-              if ($onpublish != "hidden") $viewstore = str_replace ($hypertag, $contentbot, $viewstore);
-              elseif ($onpublish == "hidden") $viewstore = str_replace ($hypertag, "", $viewstore);
+              // for all other modes
+              else
+              {
+                // insert content
+                if ($onpublish != "hidden") $viewstore = str_replace ($hypertag, $contentbot, $viewstore);
+                elseif ($onpublish == "hidden") $viewstore = str_replace ($hypertag, "", $viewstore);
+              }
             }
             elseif ($buildview == "template")
             {
@@ -5493,7 +5499,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         // ========================================== replace template variables ============================================= 
         // replace the template view variables in the template with the view mode (equals $buildview)
         // since cmsview and inlineview should be treated equally in templates, the $view% template variabel will be set to cmsview to support older templates
-        if ($buildview == "inlineview") $buildview_tplvar = "cmsview";
+        if ($buildview == "inlineview" && substr_count ($viewstore, "\"inlineview\"") == 0 && substr_count ($viewstore, "'inlineview'") == 0) $buildview_tplvar = "cmsview";
         else $buildview_tplvar = $buildview;
         
         $viewstore = str_replace ("%view%", $buildview_tplvar, $viewstore);
