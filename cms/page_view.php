@@ -42,6 +42,17 @@ if ($follow != "")
   if ($site_follow != "") $site = $site_follow;
   if ($cat_follow != "") $cat = $cat_follow;
   else $cat = "page";
+  
+  $follow_info = getfileinfo ($site, $follow, $cat);
+  $dont_follow = array (".css", ".js");
+  
+  // get file extension of follow and redirect if necessary
+  if (!empty ($follow_info['ext']) && in_array ($follow_info['ext'], $dont_follow))
+  {
+    $follow = deconvertpath ($follow, "url");    
+    if ($follow != "") header ("Location: ".$follow);
+    exit;
+  }
 }
 else
 {

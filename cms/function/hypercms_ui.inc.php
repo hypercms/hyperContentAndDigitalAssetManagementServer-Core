@@ -1832,7 +1832,6 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         
         $return .= "
           <script type=\"text/javascript\">
-          <!--
           jq_inline().ready(function() 
           {
             var oldcheck_".$hypertagname."_".$id." = \"\";
@@ -1887,7 +1886,6 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               elem.show();
             });
           });
-        -->
         </script>
         ";
         $element = "<input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"\"/><input title=\"".$labelname.": ".$text76[$lang]."\" type=\"checkbox\" id=\"hcms_checkbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".($value == $contentbot ? ' checked ' : '').">".$labelname;
@@ -1897,7 +1895,6 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
       case 'textd':
         $return .= "
           <script type=\"text/javascript\">
-          <!--
           var cal_obj_".$hypertagname."_".$id." = null;
           var format_".$hypertagname."_".$id." = '".$format."';
           // Variable where we check if the user is in the datepicker and therefor do not save/close everything on blur
@@ -2013,7 +2010,6 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               event.stopPropagation();
             }).blur(date_save_".$hypertagname."_".$id.");
           });
-          -->
           </script>
         ";
         $element = "<input title=\"".$labelname.": ".$text97[$lang]."\"type=\"text\" id=\"hcms_datefield_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" /><br>";
@@ -2023,7 +2019,6 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
       case 'textu':
         $return .= "
           <script type=\"text/javascript\">
-          <!--
           jq_inline().ready(function() 
           {
             var oldtext_".$hypertagname."_".$id." = \"\";
@@ -2085,7 +2080,6 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               elem.show();
             });
           });
-          -->
           </script>
         ";
         $element = "<textarea title=\"".$labelname.": ".$text0[$lang]."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" onfocus=\"hcms_adjustTextarea(this);\" name=\"".$hypertagname."[".$id."]\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\" class=\"hcms_editable_textarea\">".$contentbot."</textarea>";
@@ -2095,7 +2089,6 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
       case 'textl':      
         $return .= "
           <script type=\"text/javascript\">
-          <!--
           jq_inline().ready(function() 
           {
             var oldselect_".$hypertagname."_".$id." = \"\";
@@ -2146,19 +2139,18 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               elem.show();
             });
           });
-        -->
         </script>
         ";
         // Building the select box
         $list = explode ("|", getattribute ($hypertag, "list"));
-        $element = "<select title=\"".$labelname.": ".$text2[$lang]."\" id=\"hcms_selectbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\">";
+        $element = "<select title=\"".$labelname.": ".$text2[$lang]."\" id=\"hcms_selectbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\">\n";
         
         foreach ($list as $elem)
         {
-          $element .= "<option value=\"".$elem."\"".($elem == $contentbot ? ' selected ' : '').">".$elem."</option>";
+          $element .= "  <option value=\"".$elem."\"".($elem == $contentbot ? ' selected ' : '').">".$elem."</option>\n";
         }
         
-        $element .= "</select>";
+        $element .= "</select>\n";
         break;
       // formatted text
       case 'arttextf':
@@ -2177,7 +2169,6 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         
         $return .= "
           <script type=\"text/javascript\">
-          <!--
             jq_inline().ready(function() 
             {
               var oldtext_".$hypertagname."_".$id." = \"\";
@@ -2243,7 +2234,6 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 }
               });
             });
-          //-->
           </script>
         ";
         $element = "<textarea title=\"".$labelname.": ".$text1[$lang]."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\">".$contentbot."</textarea>";

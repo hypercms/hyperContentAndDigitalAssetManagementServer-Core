@@ -2014,8 +2014,7 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
         $start = intval($tmp[0]);
         $end = intval($tmp[1]);
       }  
-      
-           
+
       if ($start > $end || $start > $fstat['size'] || $end > $fstat['size']) 
       {
         // bad request - start is greater than end
@@ -2024,13 +2023,10 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
         $errors[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile() -> Range not satisfiable: '.$start.' - '.$end.' ('.$fstat['size'].')';
         exit;
       }
+
       $range = true; 
       unset ($tmp);
     }
-    
-    // write stats
-    $container_id = getmediacontainerid (getobject ($medialocation));    
-    if (is_numeric ($container_id) && $container_id > 0 && !is_thumbnail ($medialocation)) rdbms_insertdailystat ("download", $container_id, $user);    
     
     // partial file download
     if ($allowrange && $range)
@@ -2093,7 +2089,17 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
       readfile ($medialocation);
     }
     
+    // write stats
+    if (!is_thumbnail ($medialocation) && (($range && $start == 0) || !$range))
+    {
+      $container_id = getmediacontainerid (getobject ($medialocation));
+      if (is_numeric ($container_id) && $container_id > 0) rdbms_insertdailystat ("download", $container_id, $user);
+    }
+
+    // write log
     savelog (@$errors);
+
+    return true;
   }
   else return false;
 }
@@ -10069,7 +10075,6 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
 						{
 							$imagewidth = round ($media_size[0] * $imagepercentage / 100, 0);
 							$imageheight = round ($media_size[1] * $imagepercentage / 100, 0);
-              
 							if ($imagewidth != "" && $imageheight != "")
 							{
 								$formats = "";
@@ -10235,7 +10240,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
             }
 
 						// get new rendering settings and set image options (if given)
-						if (!empty ($imagewidth) && !empty ($imageheight) && !empty ($imageformat))
+						if ($imagewidth != "" && $imageheight != "" && $imageformat != "")
 						{
 							$formats = "";
 

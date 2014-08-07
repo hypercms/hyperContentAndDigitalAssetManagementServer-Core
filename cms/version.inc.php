@@ -508,6 +508,9 @@ changelog:
 - bug fix: inline editing mode issue when onedit and onpublish attributes are used for the same hypercms tag
 - improvements in plugin management
 - new individual button in UI function showtopbar
+- bug fix: function downloadfile called dailystat for each partial file download (only first partial download triggers dailystat)
+- new Simple Statistics plugin (not part of standard software package)
+- bug fix: exception for CSS and JS files in follow link (page_view) 
 
 preview:
 - definition of target formats when using send mail-link
@@ -516,7 +519,7 @@ preview:
 - WebDAV ressource seperation (original files, reduced files/images) vs. MS Plugins for Outlook, Word, Powerpoint
 - structured lists (one list element leads to a second list with sub-elements) 
 - video comments/keywords for video frames
-- keyword fiels 'textk' to edit keywords with recommender function ala youtube. Define keyword lists under meta data templates that can or must be used.
+- keyword fields 'textk' to edit keywords with recommender function ala youtube. Define keyword lists under meta data templates that can or must be used.
 - keyword plugin: show most common keywords used in navigator tree
 - watermark for images and videos
 - video transcoding (e.g. video with different audio layers)
