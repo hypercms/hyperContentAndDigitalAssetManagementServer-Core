@@ -48,37 +48,37 @@ function plugin_readmenu ($xml, $pluginFolder)
     {
       $returnvalue = array();
       
-      // Reading the name of the menugroup
+      // reading the name of the menugroup
       $tmp = getcontent ($group, '<name>');
       
-      // We stop parsing if there is no name
-      if (!is_array($tmp) || !array_key_exists (0, $tmp) || !($tmp[0] = trim($tmp[0])) || empty ($tmp[0]))
-        continue;
+      // stop parsing if there is no name
+      if (!is_array ($tmp) || empty ($tmp[0])) continue;
       
-      $returnvalue['name'] = $tmp[0];
+      $returnvalue['name'] = trim ($tmp[0]);
       
-      // Reading the icon of the menugroup
+      // reading the icon of the menugroup
       $tmp = getcontent ($group, '<icon>');
       
-      // We stop parsing if there is no icon
-      if (!is_array($tmp) || !array_key_exists (0, $tmp) || !($tmp[0] = trim($tmp[0])) || empty ($tmp[0]))
-        continue;
+      // stop parsing if there is no icon
+      if (!is_array ($tmp) || empty ($tmp[0])) continue;
         
-      $returnvalue['icon'] = $mgmt_config['url_path_plugin'].$pluginFolder.'/'.$tmp[0];
+      $returnvalue['icon'] = $mgmt_config['url_path_plugin'].$pluginFolder.'/'.trim ($tmp[0]);
       
-      // Reading points in this menugroup
-      $tmp = getcontent($group, "<subpoints>");
-      // Reading subpoints if there are no subpoints
-      if (is_array ($tmp) && array_key_exists (0, $tmp) && ($tmp1[0] = trim ($tmp[0])) && !empty ($tmp1[0]))
-        $returnvalue['subpoints'] = plugin_readmenu ($tmp[0], $pluginFolder);
-      else
-        continue;
+      // reading points in this menugroup
+      $tmp = getcontent ($group, "<subpoints>");
       
-      // Adding it to the global data
+      // reading subpoints if there are no subpoints
+      if (is_array ($tmp) && !empty ($tmp[0]))
+      {
+        $returnvalue['subpoints'] = plugin_readmenu (trim ($tmp[0]), $pluginFolder);
+      }
+      else continue;
+      
+      // adding it to the global data
       $return[] = $returnvalue;
     }
     
-    // Delete the group tags so their point tags don't interfere with the rest of the code
+    // delete the group tags so their point tags don't interfere with the rest of the code
     $xml = deletecontent ($xml, "<group>", "", "");
   }
   
@@ -91,35 +91,37 @@ function plugin_readmenu ($xml, $pluginFolder)
     {
       $returnvalue = array();
       
-      // Reading the name of the menupoint
+      // reading the name of the menupoint
       $tmp = getcontent ($point, '<name>');
       
-      // We stop parsing if there is no name
-      if (!is_array ($tmp) || !array_key_exists (0, $tmp) || !($tmp[0] = trim ($tmp[0])) || empty ($tmp[0]))
-        continue;
+      // stop parsing if there is no name
+      if (!is_array ($tmp) || empty ($tmp[0])) continue;
       
-      $returnvalue['name'] = $tmp[0];
+      $returnvalue['name'] = trim ($tmp[0]);
       
-      // Reading the icon of the menupoint
+      // reading the icon of the menupoint
       $tmp = getcontent ($point, '<icon>');
-      // We stop parsing if there is no icon
-      if (!is_array($tmp) || !array_key_exists (0, $tmp) || !($tmp[0] = trim ($tmp[0])) || empty ($tmp[0]))
-        continue;
-      $returnvalue['icon'] = $mgmt_config['url_path_plugin'].$pluginFolder.'/'.$tmp[0];
+      
+      // stop parsing if there is no icon
+      if (!is_array ($tmp) || empty ($tmp[0])) continue;
+      
+      $returnvalue['icon'] = $mgmt_config['url_path_plugin'].$pluginFolder.'/'.trim ($tmp[0]);
         
       // Reading the page of the menupoint
       $tmp = getcontent ($point, '<page>');
-      // We stop parsing if there is no page
-      if (!is_array ($tmp) || !array_key_exists (0, $tmp) || !($tmp[0] = trim ($tmp[0])) || empty ($tmp[0]))
-        continue;  
       
-      $returnvalue['page'] = $tmp[0];
+      // stop parsing if there is no page
+      if (!is_array ($tmp) || empty ($tmp[0])) continue;  
       
-      // Reading the control of the menupoint
+      $returnvalue['page'] = trim ($tmp[0]);
+      
+      // reading the control of the menupoint
       $tmp = getcontent ($point, '<control>');
       
-      if (is_array ($tmp) && array_key_exists (0, $tmp) && ($tmp[0] = trim ($tmp[0])) && !empty ($tmp[0]))
-        $returnvalue['control'] = $tmp[0];
+      if (is_array ($tmp) && !empty ($tmp[0]))
+      {
+        $returnvalue['control'] = trim ($tmp[0]);
+      }
       
       $return[] = $returnvalue;
     }
@@ -164,76 +166,74 @@ function plugin_parse ($oldData=array())
         // All basic informations are required so that the plugin is loaded
         $tmp = getcontent ($pluginData, '<definition>');
         
-        // We stop parsing if there is no definition
-        if (!is_array($tmp) || !array_key_exists (0, $tmp) || !($tmp[0] = trim ($tmp[0])) || empty ($tmp[0]))
-          continue;
+        // stop parsing if there is no definition
+        if (!is_array($tmp) || empty ($tmp[0])) continue;
           
-        $definition = $tmp[0];
+        $definition = trim ($tmp[0]);
         
-        // Reading the name of the plugin
+        // reading the name of the plugin
         $tmp = getcontent ($definition, '<name>');
         
-        // We stop parsing if there is no name
-        if (!is_array($tmp) || !array_key_exists (0, $tmp) || !($tmp[0] = trim ($tmp[0])) || empty ($tmp[0]))
-          continue;
+        // stop parsing if there is no name
+        if (!is_array($tmp) || empty ($tmp[0])) continue;
             
-        $name = trim($tmp[0]);
+        $name = trim ($tmp[0]);
         
-        // Reading the author of the plugin
+        // reading the author of the plugin
         $tmp = getcontent ($definition, '<author>');
         
-        // We stop parsing if there is no name
-        if (!is_array ($tmp) || !array_key_exists (0, $tmp) || !($tmp[0] = trim ($tmp[0])) || empty ($tmp[0]))
-          continue;
+        // stop parsing if there is no name
+        if (!is_array ($tmp) || empty ($tmp[0]))  continue;
         
-        $author = trim($tmp[0]);
+        $author = trim ($tmp[0]);
         
-        // Reading the version of the plugin
-        $tmp = getcontent($definition, '<version>');
+        // reading the version of the plugin
+        $tmp = getcontent ($definition, '<version>');
         
-        // We stop parsing if there is no name
-        if (!is_array ($tmp) || !array_key_exists (0, $tmp) || !($tmp[0] = trim ($tmp[0])) || empty ($tmp[0]))
-          continue;
+        // stop parsing if there is no name
+        if (!is_array ($tmp) || empty ($tmp[0])) continue;
           
-        $version = trim($tmp[0]);
+        $version = trim ($tmp[0]);
         
-        // Reading the description of the plugin
+        // reading the description of the plugin
         $tmp = getcontent ($definition, '<description>');
         
-        // We stop parsing if there is no name
-        if (!is_array ($tmp) || !array_key_exists (0, $tmp) || !($tmp[0] = trim ($tmp[0])) || empty ($tmp[0]))
-          continue;
+        // stop parsing if there is no name
+        if (!is_array ($tmp) || empty ($tmp[0])) continue;
         
-        $description = trim($tmp[0]);
+        $description = trim ($tmp[0]);
         
-        // Cleanup
+        // clean
         unset ($definition);
         
         // ---------------------------------------------------
-        // Reading the menus for this plugin
+        // reading the menus for this plugin
         $tmp = getcontent ($pluginData, "<menus>");
         
         $mainmenu = array();
         $publicationmenu = array();
         
-        if (is_array ($tmp) && array_key_exists (0, $tmp) && ($tmp[0] = trim ($tmp[0])) && !empty ($tmp[0]))
+        if (is_array ($tmp) && !empty ($tmp[0]))
         {
-          $menu = $tmp[0];
+          $menu = trim ($tmp[0]);
 
           // -------------------------------------------------
-          // Reading the main menu for this plugin
-          $tmp = getcontent($menu, "<main>");
+          // reading the main menu for this plugin
+          $tmp = getcontent ($menu, "<main>");
           
-          if (is_array ($tmp) && array_key_exists (0, $tmp) && ($tmp1[0] = trim ($tmp[0])) && !empty ($tmp1[0]))
-            $mainmenu = plugin_readmenu ($tmp[0], $file);
+          if (is_array ($tmp) && !empty ($tmp[0]))
+          {
+            $mainmenu = plugin_readmenu (trim ($tmp[0]), $file);
+          }
             
           // -------------------------------------------------
-          // Reading the publication menu for this plugin
-          $tmp = getcontent($menu, "<publication>");
+          // reading the publication menu for this plugin
+          $tmp = getcontent ($menu, "<publication>");
           
-          if (is_array($tmp) && array_key_exists (0, $tmp) && ($tmp1[0] = trim ($tmp[0])) && !empty ($tmp1[0]))
-            $publicationmenu = plugin_readmenu ($tmp[0], $file);
-
+          if (is_array ($tmp) && !empty ($tmp[0]))
+          {
+            $publicationmenu = plugin_readmenu (trim ($tmp[0]), $file);
+          }
         }
         
         // Default plugin configuration when no old data is present
@@ -261,7 +261,7 @@ function plugin_parse ($oldData=array())
 // --------------------------------------- plugin_generatedefinition -------------------------------------------
 // function: plugin_generatedefinition()
 // input: name of array holding the plugin definitions, configuration array
-// output: plugin array
+// output: plugin array / false on error
 
 // description:
 // Generates the Array definition used in php for $array with the name of $arrayName
@@ -270,30 +270,36 @@ function plugin_parse ($oldData=array())
 
 function plugin_generatedefinition ($arrayName, $array) 
 {
-  $return = '$'.$arrayName." = array();\n";
+  global $mgmt_config;
   
-  foreach ($array as $key => $value) 
+  if (!empty ($arrayName) && is_array ($array))
   {
-    if (is_string ($key)) $key = "'".$key."'";
-    // We ignore each key that is not a string, number or boolean
-    elseif (!is_numeric ($key) && !is_bool ($key)) continue; 
-       
-    if (is_array ($value))
+    $return = '$'.$arrayName." = array();\n";
+    
+    foreach ($array as $key => $value) 
     {
-      $return .= plugin_generatedefinition ($arrayName.'['.$key.']', $value);
+      if (is_string ($key)) $key = "'".$key."'";
+      // We ignore each key that is not a string, number or boolean
+      elseif (!is_numeric ($key) && !is_bool ($key)) continue; 
+         
+      if (is_array ($value))
+      {
+        $return .= plugin_generatedefinition ($arrayName.'['.$key.']', $value);
+      }
+      else
+      {
+        if (is_string ($value)) $value = "'".$value."'";
+        elseif (is_bool ($value)) $value = ($value ? 'true' : 'false');
+        // We ignore each value that is not a string, number or boolean
+        elseif (!is_numeric ($value)) continue;
+         
+        $return .= '$'.$arrayName.'['.$key.'] = '.$value.";\n";
+      }
     }
-    else
-    {
-      if (is_string ($value)) $value = "'".$value."'";
-      elseif (is_bool ($value)) $value = ($value ? 'true' : 'false');
-      // We ignore each value that is not a string, number or boolean
-      elseif (!is_numeric ($value)) continue;
-       
-      $return .= '$'.$arrayName.'['.$key.'] = '.$value.";\n";
-    }
+    
+    return $return;
   }
-  
-  return $return;
+  else return false;
 }
 
 // --------------------------------------- plugin_saveconfig -------------------------------------------

@@ -1412,7 +1412,7 @@ function html_encode ($variable, $charset="", $js_protection=false)
         if ($js_protection == true) $variable = str_replace (array ("{", "}", "(", ")", ";", "\\n"), array ("", "", "", "", "", ""), html_decode ($variable));
         return $variable; 
       }
-      else return htmlentities ($variable, ENT_QUOTES, html_decode ($charset, $charset));
+      else return htmlentities (html_decode ($variable, $charset), ENT_QUOTES, $charset);
     }
     elseif (is_array ($variable))
     {

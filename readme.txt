@@ -11,7 +11,7 @@ On server-side:
 
 For full Digital Asset Management (DAM) support:
 - FFMPEG (for converting video and audio files)
-- YAMDI (for mete data injection into FLV files)
+- YAMDI (for meta data injection into FLV files)
 - ImageMagick (for converting images)
 - XPDF (for reading in indexing PDF-documents)
 - ANTIWORD (for reading and indexing Word-documents)

@@ -1867,10 +1867,132 @@ function injectmetadata ($site, $location, $object="", $mediafile="", $mapping="
       if (is_array ($charset_array)) $charset_dest = $charset_array['charset'];
       else $charset_dest = "UTF-8";
 
+      // read metadata based on EXIF, XMP, IPTC in this order (so IPTC will overwrite EXIF and XMP if not empty)
+      // XMP should be UTF-8 encoded but Adobe does not provide proper encoding of special characters 
       if ($mediadata != false && $containerdata != false)
       {        
         // load text XML-schema
-        $text_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "text.schema.xml.php"));
+        $text_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "text.schema.xml.php"));     
+    
+        // ------------------- EXIF -------------------
+
+        // set encoding for EXIF to UTF-8
+        ini_set ('exif.encode_unicode', 'UTF-8');
+        // read EXIF data
+        error_reporting(0);
+        $exif_data = exif_read_data ($medialocation.$mediafile, 0, true);
+
+        if (is_array ($exif_data))
+        {
+          $exif_info = array();
+          
+          foreach ($exif_data as $key => $section)
+          {
+            foreach ($section as $name => $value)
+            {
+              $exif_info['iptc:'.$key.'.'.$name] = $value;
+            }
+          }
+        }            
+        
+        // inject meta data based on mapping
+        reset ($mapping);
+        
+        foreach ($mapping as $key => $text_id)
+        {
+          // only for EXIF tags
+          if (substr_count ($key, "exif:") > 0 && $text_id != "")
+          {           
+            if ($exif_info[$key] != "")
+            {
+              // remove tags
+              $exif_info[$key] = strip_tags ($exif_info[$key]);           
+              
+              // we set encoding for EXIF to UTF-8
+              $charset_source = "UTF-8";              
+              
+              // convert string for container
+              if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
+              {
+                $exif_info[$key] = convertchars ($exif_info[$key], $charset_source, $charset_dest);
+              }
+
+              // html encode string
+              $exif_info[$key] = html_encode ($exif_info[$key], $charset_source);
+
+              // textnodes search index in database
+              $text_array[$text_id] = $exif_info[$key];
+                                              
+              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
+        
+              if ($containerdata_new == false)
+              {
+                $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+              }
+        
+              if ($containerdata_new != false) $containerdata = $containerdata_new;
+              else return false;
+            }
+          }
+        }
+    
+        // ------------------- XMP-based -------------------
+        
+        // inject meta data based on mapping
+        reset ($mapping);
+        
+        foreach ($mapping as $key => $text_id)
+        {
+          // only for XMP (XML-based) tags (DC, PhotoShop ...)
+          if (substr_count ($key, "iptc:") == 0 && substr_count ($key, "hcms:") == 0 && substr_count ($key, "exif:") == 0 && $text_id != "")
+          {          
+            $dcstr = "";
+            
+            $dc = getcontent ($mediadata, "<".$key.">");
+            if ($dc != false) $dc = getcontent ($dc[0], "<rdf:li *>");
+            if ($dc != false) $dcstr = implode (", ", $dc);
+        
+            if ($dcstr != "")
+            {
+              // remove tags
+              $dcstr = strip_tags ($dcstr);           
+              
+              // XMP always using UTF-8 so should any other XML-based format
+              $charset_source = "UTF-8";              
+              
+              // convert string for container
+              if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
+              {
+                $dcstr = convertchars ($dcstr, $charset_source, $charset_dest);
+              }
+              elseif ($charset_dest == "UTF-8")
+              {
+                // encode to UTF-8
+                if (!is_utf8 ($dcstr)) $dcstr = utf8_encode ($dcstr);
+              }
+
+              // html encode string
+              $dcstr = html_encode ($dcstr, $charset_dest);
+
+              // textnodes search index in database
+              $text_array[$text_id] = $dcstr;
+                                              
+              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id);
+        
+              if ($containerdata_new == false)
+              {
+                $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+              }
+        
+              if ($containerdata_new != false) $containerdata = $containerdata_new;
+              else return false;
+            }
+          }
+        }
         
         // ------------------- binary IPTC block -------------------
         
@@ -1971,7 +2093,7 @@ function injectmetadata ($site, $location, $object="", $mediafile="", $mapping="
                   // this prints as a captial O with a tilde above it in a web browser or on Windows. 
                   $iptc_info[$key] = str_replace (chr(213), "'",  $iptc_info[$key]);      
                   
-                  // convert string since IPTC support different charsets      
+                  // convert string since IPTC supports different charsets      
                   if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
                   {
                     $iptc_info[$key] = convertchars ($iptc_info[$key], $charset_source, $charset_dest);
@@ -1981,16 +2103,13 @@ function injectmetadata ($site, $location, $object="", $mediafile="", $mapping="
                     // encode to UTF-8
                     if (!is_utf8 ($iptc_info[$key])) $iptc_info[$key] = utf8_encode ($iptc_info[$key]);              
                   }
-                  
+
                   // html encode string
                   $iptc_info[$key] = html_encode ($iptc_info[$key], $charset_dest);                      
-             
-                  // for textnodes search index in database, must be UTF-8
-                  if ($charset_source != "" && $charset_dest != "UTF-8")
-                  {
-                    $text_array[$text_id] = convertchars ($iptc_info[$key], $charset_source, "UTF-8");
-                  }
-              
+
+                  // textnodes for search index in database
+                  $text_array[$text_id] = $iptc_info[$key];
+
                   $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$iptc_info[$key]."]]>", "<text_id>", $text_id);
             
                   if ($containerdata_new == false)
@@ -2006,127 +2125,7 @@ function injectmetadata ($site, $location, $object="", $mediafile="", $mapping="
               }
             }
           }     
-        }        
-    
-        // ------------------- XMP-based -------------------
-        
-        // inject meta data based on mapping
-        reset ($mapping);
-        
-        foreach ($mapping as $key => $text_id)
-        {
-          // only for XMP (XML-based) tags (DC, PhotoShop ...)
-          if (substr_count ($key, "iptc:") == 0 && substr_count ($key, "hcms:") == 0 && substr_count ($key, "exif:") == 0 && $text_id != "")
-          {          
-            $dcstr = "";
-            
-            $dc = getcontent ($mediadata, "<".$key.">");
-            if ($dc != false) $dc = getcontent ($dc[0], "<rdf:li *>");
-            if ($dc != false) $dcstr = implode (", ", $dc);
-        
-            if ($dcstr != "")
-            {
-              // remove tags
-              $dcstr = strip_tags ($dcstr);           
-              
-              // XMP always using UTF-8 so should any other XML-based format
-              $charset_source = "UTF-8";
-              
-              // html encode string
-              $dcstr = html_encode ($dcstr, $charset_source);
-              
-              // for textnodes search index in database, must be UTF-8
-              $text_array[$text_id] = $dcstr;                 
-              
-              // convert string for container
-              if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
-              {
-                $dcstr = convertchars ($dcstr, $charset_source, $charset_dest);
-              }
-              elseif ($charset_dest == "UTF-8")
-              {
-                // encode to UTF-8
-                if (!is_utf8 ($dcstr)) $dcstr = utf8_encode ($dcstr);
-              }
-                                              
-              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id);
-        
-              if ($containerdata_new == false)
-              {
-                $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
-              }
-        
-              if ($containerdata_new != false) $containerdata = $containerdata_new;
-              else return false;
-            }
-          }
         }
-        
-        // ------------------- EXIF -------------------
-
-        // set encoding for EXIF to UTF-8
-        ini_set ('exif.encode_unicode', 'UTF-8');
-        // read EXIF data
-        error_reporting(0);
-        $exif_data = exif_read_data ($medialocation.$mediafile, 0, true);
-
-        if (is_array ($exif_data))
-        {
-          $exif_info = array();
-          
-          foreach ($exif_data as $key => $section)
-          {
-            foreach ($section as $name => $value)
-            {
-              $exif_info['iptc:'.$key.'.'.$name] = $value;
-            }
-          }
-        }            
-        
-        // inject meta data based on mapping
-        reset ($mapping);
-        
-        foreach ($mapping as $key => $text_id)
-        {
-          // only for EXIF tags
-          if (substr_count ($key, "exif:") > 0 && $text_id != "")
-          {           
-            if ($exif_info[$key] != "")
-            {
-              // remove tags
-              $exif_info[$key] = strip_tags ($exif_info[$key]);           
-              
-              // we set encoding for EXIF to UTF-8
-              $charset_source = "UTF-8";
-              
-              // html encode string
-              $exif_info[$key] = html_encode ($exif_info[$key], $charset_source);
-              
-              // for textnodes search index in database, must be UTF-8
-              $text_array[$text_id] = $exif_info[$key];                 
-              
-              // convert string for container
-              if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
-              {
-                $exif_info[$key] = convertchars ($exif_info[$key], $charset_source, $charset_dest);
-              }
-                                              
-              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
-        
-              if ($containerdata_new == false)
-              {
-                $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
-              }
-        
-              if ($containerdata_new != false) $containerdata = $containerdata_new;
-              else return false;
-            }
-          }
-        }        
         
         // ------------------- define and set image quality -------------------
         if ($mapping['hcms:quality'] != "")

@@ -449,7 +449,7 @@ function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false,$site=
           $link .= '&control='.urlencode($point['control']);
         }
         
-        if ($site)
+        if ($site != "")
         {
           $link .= '&site='.urlencode($site);
         }

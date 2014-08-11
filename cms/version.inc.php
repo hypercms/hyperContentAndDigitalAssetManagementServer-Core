@@ -510,7 +510,9 @@ changelog:
 - new individual button in UI function showtopbar
 - bug fix: function downloadfile called dailystat for each partial file download (only first partial download triggers dailystat)
 - new Simple Statistics plugin (not part of standard software package)
-- bug fix: exception for CSS and JS files in follow link (page_view) 
+- bug fix: exception for CSS and JS files in follow link (page_view)
+- new Keyword Statistics plugin (not part of standard software package)
+- changed order of meta data extraction of files due to issue with Adobe XMP special characters, new order: EXIF, XMP, IPTC
 
 preview:
 - definition of target formats when using send mail-link
@@ -520,7 +522,6 @@ preview:
 - structured lists (one list element leads to a second list with sub-elements) 
 - video comments/keywords for video frames
 - keyword fields 'textk' to edit keywords with recommender function ala youtube. Define keyword lists under meta data templates that can or must be used.
-- keyword plugin: show most common keywords used in navigator tree
 - watermark for images and videos
 - video transcoding (e.g. video with different audio layers)
 - users online und live chat

@@ -192,7 +192,7 @@ function splitstring ($string)
   {
     $string = str_replace ("\n", "", $string);
     $result_array = array();
-  	$array1 = explode (',', $string);
+  	$array1 = explode (",", $string);
         
   	foreach ($array1 as $entry1)
     {
@@ -200,7 +200,7 @@ function splitstring ($string)
       
       if ($entry1 != "")
       {
-    		$array2 = explode (';', $entry1);
+    		$array2 = explode (";", $entry1);
             
     		foreach ($array2 as $entry2)
         {
@@ -2850,7 +2850,7 @@ function setlocalpermission ($site, $group_array, $cat)
 // ------------------------------------- convertchars ------------------------------------------
 
 // function: convertchars ()
-// input: expression (mixed), input character set. output character set
+// input: expression (mixed), input character set, output character set
 // output: converted expression / false on error
 
 function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")

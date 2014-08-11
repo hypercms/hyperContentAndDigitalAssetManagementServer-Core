@@ -563,6 +563,17 @@
   white-space: nowrap;
 }
 
+.hcmsLoadScreen
+{
+	z-index: 9000;
+	display: none;
+	width: 100%;
+	height: 100%;
+	background: url("../img/loading.gif") no-repeat center center #e3e4ec;
+	position: fixed;
+	opacity: 0.7;
+}
+
 .hcmsTextGreen
 {
   color: #5AAD5A; 

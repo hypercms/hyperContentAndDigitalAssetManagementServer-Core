@@ -19,9 +19,9 @@ require ("function/hypercms_ui.inc.php");
 require_once ("language/plugin_management.inc.php");
 
 // plugin file
-if (file_exists ($mgmt_config['abs_path_data'].'config/plugin.conf.php'))
+if (file_exists ($mgmt_config['abs_path_data']."config/plugin.conf.php"))
 {
-  require ($mgmt_config['abs_path_data'].'config/plugin.conf.php');
+  require ($mgmt_config['abs_path_data']."config/plugin.conf.php");
 }
 else $mgmt_plugin = array();
   
@@ -118,9 +118,11 @@ if ($action)
         <?php
         $cnt = 0;
         
-        foreach ($mgmt_plugin as $key => $data)
+        if (is_array ($mgmt_plugin) && sizeof ($mgmt_plugin) > 0)
         {
-          $cnt++;
+          foreach ($mgmt_plugin as $key => $data)
+          {
+            $cnt++;
           ?>
           <tr class="hcmsRowData<?php echo ($cnt%2)+1; ?>">
             <td nowrap="nowrap"><?php echo $cnt; ?></td>
@@ -133,6 +135,7 @@ if ($action)
             </td>
           </tr>
         <?php
+          }
         }
         ?>
         </tbody>

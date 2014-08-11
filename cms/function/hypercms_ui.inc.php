@@ -202,6 +202,9 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $indiv
          
   if ($show != "" && strlen ($show) < 600 && $lang != "")
   {
+    $close_button = "";
+    $individual_button = "";
+    
     // define close button
     if ($close_link != "")
     {
@@ -212,7 +215,6 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $indiv
     {
       $individual_button = "<td style=\"width:26px; text-align:right; vertical-align:middle;\">".$individual_button."</td>";
     }
-    else $individual_button = "";
     
     return "  <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
     <table style=\"width:100%; height:28px; padding:0; border-spacing:0; border-collapse:collapse;\">

@@ -760,8 +760,8 @@ function transformlink ($viewstore)
 
 // --------------------------------------- followlink -----------------------------------------------
 // function: followlink()
-// input: link to follow
-// output: prepared input (location, page) for easyedit mode (buildview) / false on error
+// input: publication name, link to follow
+// output: prepared input (location plus page) for easyedit mode (buildview) / false on error
 
 function followlink ($site, $follow)
 {
