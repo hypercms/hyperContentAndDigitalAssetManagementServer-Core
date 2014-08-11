@@ -513,6 +513,7 @@ changelog:
 - bug fix: exception for CSS and JS files in follow link (page_view)
 - new Keyword Statistics plugin (not part of standard software package)
 - changed order of meta data extraction of files due to issue with Adobe XMP special characters, new order: EXIF, XMP, IPTC
+- bug fix: function showtopbar did not show individual button
 
 preview:
 - definition of target formats when using send mail-link

@@ -94,13 +94,13 @@ if ($action)
     <!-- top bar -->
     <?php
     if (!$is_mobile && file_exists ("help/pluginguide_".$lang_shortcut[$lang].".pdf"))
-    {
+    {echo "<br>AAAAA";
       $help = "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openBrWindowItem('help/pluginguide_".$lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text50[$lang]."\" title=\"".$text50[$lang]."\" /></a>";
     }
     else $help = "";
       
     echo showtopbar ($text0[$lang], $lang, "", "", $help);
-    if ($show != false) echo showmessage ($show, 500, 40, $lang, "position:absolute; left:15px; top:40px;");
+    echo showmessage ($show, 500, 40, $lang, "position:absolute; left:15px; top:40px;");
     ?>
     
     <!-- content -->    

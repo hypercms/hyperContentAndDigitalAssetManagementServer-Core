@@ -202,25 +202,26 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $indiv
          
   if ($show != "" && strlen ($show) < 600 && $lang != "")
   {
-    $close_button = "";
-    $individual_button = "";
+    $close_button_code = "";
+    $individual_button_code = "";
     
     // define close button
-    if ($close_link != "")
+    if (trim ($close_link) != "")
     {
       $close_id = uniqid();
-      $close_button = "<td style=\"width:26px; text-align:right; vertical-align:middle;\"><a href=\"".$close_link."\" target=\"".$close_target."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.gif',1);\"><img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text33[$lang]."\" title=\"".$text33[$lang]."\" /></a></td>\n";
+      $close_button_code = "<td style=\"width:26px; text-align:right; vertical-align:middle;\"><a href=\"".$close_link."\" target=\"".$close_target."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.gif',1);\"><img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text33[$lang]."\" title=\"".$text33[$lang]."\" /></a></td>\n";
     }
-    elseif ($individual_button != "")
+    
+    if (trim ($individual_button) != "")
     {
-      $individual_button = "<td style=\"width:26px; text-align:right; vertical-align:middle;\">".$individual_button."</td>";
+      $individual_button_code = "<td style=\"width:26px; text-align:right; vertical-align:middle;\">".$individual_button."</td>";
     }
     
     return "  <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
     <table style=\"width:100%; height:28px; padding:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
         <td class=\"hcmsHeadline\" style=\"text-align:left; vertical-align:middle; padding:2px 6px 2px 6px; white-space:nowrap;\">".$show."</td>".
-        $individual_button.$close_button.
+        $individual_button_code.$close_button_code.
       "</tr>
     </table>
   </div>
