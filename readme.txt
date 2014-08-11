@@ -9,6 +9,7 @@ The following technical prerequisites must be fullfilled before installing hyper
 On server-side:
 - Operating System: Linux, UNIX-Derivates, MS Windows NT/2000/XP
 - WebServer: Apache, Iplanet or MS IIS with PHP-Modul Version 5.3+
+- RDBMS (Database): MySQL 5+ (required for installation script), any database with ODBC support (not supported by installation script)
 
 Optionally required for full Digital Asset Management (DAM) support on server-side:
 - FFMPEG (for converting video and audio files)
