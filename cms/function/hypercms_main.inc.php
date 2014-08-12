@@ -1938,6 +1938,7 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
     header ("Server: Apache");
     header ("Content-Description: File Transfer");
     
+    // force download of file
     if ($force == "download")
     {
       // iOS Safari does not support file downloads, so the file need to be opened instead
@@ -1962,6 +1963,7 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
           
       header ("Expires: 0");      
     }
+    // provide content of file inline
     else
     {
       header ("Content-Disposition: inline; filename=\"".$name."\"");
@@ -1985,7 +1987,7 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
     if ($allowrange && isset ($_SERVER['HTTP_RANGE'])) 
     {
       list ($type, $tmp) = explode ('=', $_SERVER['HTTP_RANGE']);
-      
+
       if (strtolower (trim ($type)) != 'bytes')
       {
         // bad request - range unit is not 'bytes'
@@ -2021,13 +2023,15 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
         header ("HTTP/1.1 416 Requested range not satisfiable", true, 416);
         $errcode = 60000;
         $errors[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile() -> Range not satisfiable: '.$start.' - '.$end.' ('.$fstat['size'].')';
+        // write log
+        savelog (@$errors);
         exit;
       }
 
       $range = true; 
       unset ($tmp);
     }
-    
+
     // partial file download
     if ($allowrange && $range)
     {
@@ -2036,16 +2040,18 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
       header ('HTTP/1.1 206 Partial Content', true, 206);      
       header ("Content-Length: ".$length);
       header ("Content-Range: bytes ".$start."-".$end."/".$fstat['size']);
-      
+
       // read partial if not the whole file has been requested
       if ($length != $fstat['size'])
       {
         if (!($fh = fopen ($medialocation, 'r')))
         {
-          // error out if we can't read the file
+          // if we can't read the file
           header ("HTTP/1.1 500 Internal Server Error", true, 500);
           $errcode = 60001;
           $errors[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$medialocation.')';
+          // write log
+          savelog (@$errors);
           exit;
         }
 
@@ -2058,6 +2064,8 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
             header ("HTTP/1.1 500 Internal Server Error", true, 500);
             $errcode = 60002;
             $errors[] = $mgmt_config['today'].'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not seek '.$medialocation.')';
+            // write log
+            savelog (@$errors);
             exit;
           }
         }
@@ -2069,6 +2077,8 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
           $length -= $read;
           print (fread ($fh, $read));
         }
+        
+        fclose ($fh);
       }
       else
       {
@@ -2088,9 +2098,9 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
       // read file
       readfile ($medialocation);
     }
-    
-    // write stats
-    if (!is_thumbnail ($medialocation) && (($range && $start == 0) || !$range))
+
+    // write stats for partial file download (range has been provided) only if start of file or end of file has been requested 
+    if (!is_thumbnail ($medialocation) && (($range && ($start == 0 || $end == ($fstat['size']-1))) || !$range))
     {
       $container_id = getmediacontainerid (getobject ($medialocation));
       if (is_numeric ($container_id) && $container_id > 0) rdbms_insertdailystat ("download", $container_id, $user);
@@ -2099,7 +2109,8 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
     // write log
     savelog (@$errors);
 
-    return true;
+    if (!empty ($errors)) return false;
+    else return true;
   }
   else return false;
 }
