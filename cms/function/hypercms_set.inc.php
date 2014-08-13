@@ -154,9 +154,6 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
           $elemid = $id;
         }
         
-        // replace all characters that invoke the php parser with "<" and ">" (MS Word produces XML declarations in html-Code,
-        // php tries to parse this declarations. this will cause a parse error)
-        $textcontent = scriptcode_encode ($textcontent);
         // formatted text
         // formatted text by CKEditor is already escaped!
         if ($type[$id] == "f")
@@ -169,12 +166,8 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
             // cut off </p> at the end of the content
             $textcontent =  substr ($textcontent, 0, strlen ($textcontent) - 4);   
           }  
-          // correct \ of richtext editor
+          // correct \" of richtext editor
           $textcontent = str_replace ("\\\"", "\"", $textcontent);
-          
-          // correct hypercms script video tags
-          $textcontent = str_replace ("<hcms_script", "<script", $textcontent);
-          $textcontent = str_replace ("</hcms_script", "</script", $textcontent);
         }
         // if date
         elseif ($type[$id] == "d")
@@ -182,39 +175,44 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
           // convert to international time format for database (deprecated since version 5.6.7)
           // $timestamp = strtotime ($textcontent);
           // if ($timestamp != "") $textcontent = date ("Y-m-d", $timestamp);
+          
+          // escape special characters (transform all special chararcters into their html/xml equivalents)
+          $textcontent  = html_encode ($textcontent, $charset);          
         }
-        // unformatted text, checkbox value, text options, date
+        // unformatted text, checkbox value, text options
         else
         {
-          // if html tags are not allowed
+          // html tags are not allowed
           if ($mgmt_config['editoru_html'] == false) 
           {
             // remove all html tags
             $textcontent = strip_tags ($textcontent);
 
+            // correct quotes
+            $textcontent = str_replace (array ("\\'", "\\\""), array ("'", "\""), $textcontent);
+            
             // escape special characters (transform all special chararcters into their html/xml equivalents)
-            if ($charset != "")
-            {
-              $textcontent  = html_encode ($textcontent, $charset);
-            }
-            else
-            {
-              // escape special characters (transform all special chararcters into their html/xml equivalents)
-              $textcontent = str_replace ("<", "&lt;", $textcontent);
-              $textcontent = str_replace (">", "&gt;", $textcontent);
-              $textcontent = str_replace ("\\\"", "\"", $textcontent);
-              $textcontent = str_replace ("\"", "&quot;", $textcontent);
-              $textcontent = str_replace ("\\'", "'", $textcontent);
-            }             
+            $textcontent  = html_encode ($textcontent, $charset);
           }
-
-          // escape scriptcode
-          $textcontent = scriptcode_encode ($textcontent);
-          
-          // unescape special characters
-          $textcontent  = html_decode ($textcontent);
+          // html tags are allowed
+          else
+          {
+            // escape special characters (transform ALL special chararcters into their html/xml equivalents)
+            $textcontent  = html_encode ($textcontent, $charset);
+            
+            // unescape special characters (only: ", ', &, <, >) and leave letters escaped
+            $textcontent  = html_decode ($textcontent);
+          }
         }
 
+        // replace all characters that invoke a server-side script parser with "<" and ">"
+        // (MS Word also produces XML declarations in html-Code, php tries to parse this declarations. this will cause a parse error)
+        $textcontent = scriptcode_encode ($textcontent);
+        
+        // correct hypercms script video tags (to support older versions of video player)
+        $textcontent = str_replace ("<hcms_script", "<script", $textcontent);
+        $textcontent = str_replace ("</hcms_script", "</script", $textcontent);
+        
         // convertpath to template variables for all page and image links
         if (!empty ($mgmt_config['url_path_media']) && $mgmt_config['url_path_media'] != "/") $textcontent = str_replace ($mgmt_config['url_path_media'], "%media%/", $textcontent);
         if (!empty ($mgmt_config[$site]['url_path_page']) && $mgmt_config[$site]['url_path_page'] != "/") $textcontent = str_replace ($mgmt_config[$site]['url_path_page'], "%page%/".$site."/", $textcontent);

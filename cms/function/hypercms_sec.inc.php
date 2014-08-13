@@ -1471,14 +1471,10 @@ function scriptcode_encode ($content)
   
   if ($content != "" && !is_array ($content))
   {
-    $content = str_replace ("<?", "", $content);
-    $content = str_replace ("&lt;?", "", $content);
-    $content = str_replace ("?>", "", $content);
-    $content = str_replace ("?&gt;", "", $content);
-    $content = str_replace ("<%", "", $content);
-    $content = str_replace ("&lt;%", "", $content);
-    $content = str_replace ("%>", "", $content); 
-    $content = str_replace ("%&gt;", "", $content);
+    $content = str_replace ("<?", "&lt;?", $content);
+    $content = str_replace ("?>", "?&gt;", $content);
+    $content = str_replace ("<%", "&lt;%", $content);
+    $content = str_replace ("%>", "%&gt;", $content);
     $content = str_replace ("<script>", "&lt;script&gt;", $content);
     $content = str_replace ("</script>", "&lt;/script&gt;", $content); 
     $content = str_replace ("<script", "&lt;script", $content); 
