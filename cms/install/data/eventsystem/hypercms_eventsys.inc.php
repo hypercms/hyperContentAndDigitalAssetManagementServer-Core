@@ -751,7 +751,10 @@ function onpublishobject_pre ($site, $cat, $location, $object, $container_name, 
 
     if ($mediafile_ext == ".pdf")
     {
-      if (!is_array ($eventsystem['searchlanguage'][$site])) $eventsystem['searchlanguage'][$site][0] = "";
+      if (empty ($eventsystem['searchlanguage'][$site]) || !is_array ($eventsystem['searchlanguage'][$site]))
+      {
+        $eventsystem['searchlanguage'][$site][0] = "";
+      }
 
       foreach ($eventsystem['searchlanguage'][$site] as $language_suffix)
       {
@@ -793,7 +796,10 @@ function onpublishobject_post ($site, $cat, $location, $object, $container_name,
   // insert your program code here
   if ($cat == "page" && (empty ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false))
   {
-    if (!is_array ($eventsystem['searchlanguage'][$site])) $eventsystem['searchlanguage'][$site][0] = "";
+    if (empty ($eventsystem['searchlanguage'][$site]) || !is_array ($eventsystem['searchlanguage'][$site]))
+    {
+      $eventsystem['searchlanguage'][$site][0] = "";
+    }
 
     foreach ($eventsystem['searchlanguage'][$site] as $language_suffix)
     {

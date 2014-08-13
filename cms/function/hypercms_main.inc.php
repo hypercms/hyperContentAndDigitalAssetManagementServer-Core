@@ -5934,13 +5934,7 @@ allow_ip = ".$allow_ip_new;
       }
     
       if ($test == true)
-      {
-        // set user permission for new publication and register them in session
-        // $mgmt_config[$site_name]['abs_path_page'] = $abs_path_page_new;
-        // $mgmt_config['abs_path_comp'] = $abs_path_comp_new;
-        $_SESSION['hcms_pageaccess'][$site_name]['Administrator'] = deconvertpath ("%page%/".$site_name."/|", "file");
-        $_SESSION['hcms_compaccess'][$site_name]['Administrator'] = deconvertpath ("%comp%/".$site_name."/|", "file");
-        
+      {        
         // eventsystem
         if ($eventsystem['onsavepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
           onsavepublication_post ($site_name, $site_mgmt_config, $site_publ_config_ini, $site_publ_config_prop, $user);
@@ -6565,6 +6559,8 @@ function gettemplates ($site, $cat)
 
       if ($dir_template != false)
       {
+        $template_array = array();
+        
         while ($entry = $dir_template->read())
         {
           if ($entry != "." && $entry != ".." && !is_dir ($entry) && !preg_match ("/.inc.tpl/", $entry) && !preg_match ("/.tpl.v_/", $entry))
