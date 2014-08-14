@@ -6553,14 +6553,14 @@ function gettemplates ($site, $cat)
     }
     else $site_array[] = $site;
     
+    $template_array = array();
+
     foreach ($site_array as $site_source)
     {
       $dir_template = dir ($mgmt_config['abs_path_template'].$site_source."/");
 
       if ($dir_template != false)
       {
-        $template_array = array();
-        
         while ($entry = $dir_template->read())
         {
           if ($entry != "." && $entry != ".." && !is_dir ($entry) && !preg_match ("/.inc.tpl/", $entry) && !preg_match ("/.tpl.v_/", $entry))
@@ -6588,7 +6588,7 @@ function gettemplates ($site, $cat)
     {
       // remove double entries (double entries due to parent publications won't be listed)
       $template_array = array_unique ($template_array);
-      sort ($template_array);
+      natcasesort ($template_array);
       reset ($template_array);
       
       return $template_array;

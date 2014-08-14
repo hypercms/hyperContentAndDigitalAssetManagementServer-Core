@@ -102,8 +102,8 @@ function createquerypattern ($query)
     $hquery = htmlspecialchars_decode ($hquery, ENT_QUOTES | ENT_HTML401);
     $hquery = preg_quote ($hquery, '#');
     $hquery = trim ($hquery);
-	
-    //reducing spaces to OR => "|" , except in literal search
+  
+    // reducing spaces to OR => "|" , except in literal search
     $exploded = explode ('"', $hquery);
 
     for ($i=0; $i<count($exploded); $i+=2)
@@ -119,7 +119,7 @@ function createquerypattern ($query)
           continue;
         }
 
-        //replacing escaped wildcard \* (on enter *), with '\S+' => then setting wordboundaries according the location of the wildcard
+        // replacing escaped wildcard \* (on enter *), with '\S+' => then setting wordboundaries according the location of the wildcard
         if (substr_count ($value,"\*") > 0)
         {
           if (substr ($value,0,2) == "\*")
@@ -145,7 +145,7 @@ function createquerypattern ($query)
     $replace = array('(\b${1}\b)');
     
     $hquery = '#'.preg_replace($search, $replace, $hquery).'#i';
-	
+  
     return $hquery;
   }
   else return false;
@@ -159,7 +159,7 @@ function searchindex ($query, $start, $exclude_url, $lang, $charset="UTF-8", $qu
 {
   global $config, $text, $start, $end, $max, $query;
   
-  if ($query != "")
+  if ($query != "" && strlen ($query) < 800)
   {
     $data = loadindex ();
   
@@ -170,8 +170,8 @@ function searchindex ($query, $start, $exclude_url, $lang, $charset="UTF-8", $qu
     {
       $hquery = createquerypattern ($query);
       $query = htmlspecialchars ($query, ENT_QUOTES | ENT_HTML401, $charset);
-	  $start = intval($start, 10);
-	  
+      $start = intval ($start, 10);
+    
       $i = 0;
           
       foreach ($data as $page)
@@ -214,13 +214,13 @@ function searchindex ($query, $start, $exclude_url, $lang, $charset="UTF-8", $qu
 
           if ($query_check && ($exclude_url == "" || substr_count ($url, $exclude_url) == 0))
           {
-            if (strlen ($content) > 0) $hits = preg_match_all ($hquery , $content, $matches, PREG_OFFSET_CAPTURE);
+            if (strlen ($content) > 0) $hits = preg_match_all ($hquery, $content, $matches, PREG_OFFSET_CAPTURE);
             else $hits = 0;
   
             if ($hits > 0)
             {
               $hitpos = $matches[0][0][1];
-		          //var_dump($matches);
+              //var_dump($matches);
               if ($hitpos-100 < 0) $offset = 0;
               else $offset = $hitpos - 100; 
               $startpos = strpos (" ".$content." ", " ", $offset);
@@ -304,7 +304,7 @@ function searchindex ($query, $start, $exclude_url, $lang, $charset="UTF-8", $qu
           next ($result['hits']);
         }
         
-        echo "<br />";
+        echo "<br />\n";
     
         if ($resultpages > 1)
         {
@@ -323,27 +323,27 @@ function searchindex ($query, $start, $exclude_url, $lang, $charset="UTF-8", $qu
           }
         } 
 
-        echo "</div>";   
+        echo "</div>\n";   
     
         return true;
       }
       else
       {
-        echo "<span class='".$config['css_headline']."'>".insertvars ($text[3][$lang])."</span><br />";
+        echo "<span class='".$config['css_headline']."'>".insertvars ($text[3][$lang])."</span><br />\n";
 
         return true;      
       } 
     }
     else
     {
-      echo "<span class='".$config['css_headline']."'>".$text[4][$lang]."</span><br />";
+      echo "<span class='".$config['css_headline']."'>".$text[4][$lang]."</span><br />\n";
   
       return false;
     }
   }
   else
   {
-    echo "<span class='".$config['css_headline']."'>".$text[5][$lang]."</span><br />";
+    echo "<span class='".$config['css_headline']."'>".$text[5][$lang]."</span><br />\n";
 
     return false;
   }
@@ -357,7 +357,6 @@ function cleancontent ($content, $charset="UTF-8")
 {
   if ($content != "" && $charset != "")
   {
-    $content = trim ($content);
     $content = strip_tags ($content);
     $content = str_replace ("\r\n", " ", $content);
     $content = str_replace ("\n\r", " ", $content);
@@ -365,6 +364,7 @@ function cleancontent ($content, $charset="UTF-8")
     $content = preg_replace ('/\s+/', " ", $content);
     $content = preg_replace ('<!--(.*?)-->', "", $content);	
     $content = html_entity_decode ($content, ENT_NOQUOTES | ENT_HTML401, $charset);
+    $content = trim ($content);
 
     return $content;
   }
@@ -439,7 +439,7 @@ function createindex ($newurl, $newtitle, $newdescription, $newcontent, $charset
               }
             }
             else $query_check = true;
-	
+  
             if ($query_check && $newurl == $url)
             {
               if ($newtitle != false || $newdescription != false || $newcontent != false) $newdata .= date ("Y-m-d", time())."|$url|$newtitle|$newdescription|$newcontent".$add_attributes."\r\n";        
@@ -482,7 +482,7 @@ function renameindex ($oldurl, $newurl)
   
   if ($oldurl!="" && $newurl!="")
   {
-	$data = loadindex ();
+  $data = loadindex ();
     $newdata = "";
     $update = false;
     if (is_array ($data))
@@ -493,31 +493,31 @@ function renameindex ($oldurl, $newurl)
         {
           list ($date, $url, $title, $description, $content) = explode ("|", trim ($page));
         
-		  if ($oldurl == $url)
+      if ($oldurl == $url)
           {
-			// delete from index if contains exclude path
-			if ($config['exclude_path'] != "" && substr_count ($newurl, $config['exclude_path']) > 0)
-			{
-		      $update = true;
-			  continue;
-			}
-			$newdata .= date ("Y-m-d", time())."|$newurl|$title|$description|$content\r\n";
+      // delete from index if contains exclude path
+      if ($config['exclude_path'] != "" && substr_count ($newurl, $config['exclude_path']) > 0)
+      {
+          $update = true;
+        continue;
+      }
+      $newdata .= date ("Y-m-d", time())."|$newurl|$title|$description|$content\r\n";
             $update = true;
           }
           elseif (substr_count ($url, $oldurl) == 1)
           {
-		    // delete from index if contains exclude path
+        // delete from index if contains exclude path
             if ($config['exclude_path'] != "" && substr_count ($newurl, $config['exclude_path']) > 0)
             {
               $update = true;
-			  continue;
+        continue;
             }
             $insertUrl = str_replace ($oldurl, $newurl, $url);
             $newdata .= date ("Y-m-d", time())."|$insertUrl|$title|$description|$content\r\n";
             $update = true;
           }
           else $newdata .= $page;
-		  
+      
         }
       }
   
@@ -554,12 +554,12 @@ function removeindex ($removeurl)
         {
           list ($date, $url, $title, $description, $content) = explode ("|", trim ($page));
           if ($removeurl!=$url)
-		  {
-			$newdata .= $page;
-		  }
+      {
+      $newdata .= $page;
+      }
           else {
-			$update = true;
-		  }
+      $update = true;
+      }
         }
       }
   
