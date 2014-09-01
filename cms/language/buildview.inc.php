@@ -333,14 +333,14 @@ $text109['de'] = "Die Dateien m&uuml;ssen die gleiche Vorlage verwenden.";
 $text110['en'] = "The files must be from the same publication.";
 $text110['de'] = "Die Dateien m&uuml;ssen aus derselben Publikation sein.";
 
-$text111['en'] = "Fields";
-$text111['de'] = "Felder";
+$text111['en'] = "";
+$text111['de'] = "";
 
-$text112['en'] = "Only fields with * may be changed";
-$text112['de'] = "Nur Felder die mit * gekennzeichnet sind k&ouml;nnen ver&auml;ndert werden.";
+$text112['en'] = "Only fields marked with * hold the same content may be changed.";
+$text112['de'] = "Nur Felder die mit * gekennzeichnet sind besitzen den gleichen Inhalt und k&ouml;nnen ver&auml;ndert werden.";
 
-$text113['en'] = "Could not find the value for one of the fields. Please contact the Publication Administrator.";
-$text113['de'] = "Konnte den Wert zu einem Feld nicht feststellen bitte wenden sie sich an den Administrator der Publikation.";
+$text113['en'] = "Could not find the value for one of the fields.";
+$text113['de'] = "Der Wert eines Feldes konnte nicht festgestellt werden.";
 
 $text114['en'] = "Saving in progress";
 $text114['de'] = "Speichervorgang l&auml;uft";

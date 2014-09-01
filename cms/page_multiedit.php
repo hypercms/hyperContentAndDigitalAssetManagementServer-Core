@@ -27,10 +27,9 @@ $multiobject = getrequest ("multiobject");
 // function to collect tag data
 function gettagdata ($tag_array) 
 {
-  global $mgmt_config, $add_constraint;
+  global $mgmt_config;
   
   $return = array();
-  $add_constraint = "";
 
   foreach ($tag_array as $tagDefinition)
   {
@@ -93,15 +92,10 @@ function gettagdata ($tag_array)
 
     // get constraint
     $constraint = getattribute ($tagDefinition, "constraint");
+    
+    if ($constraint != "") $constraint = "'".$hypertagname."[".$id."]','".$labelname."','".$constraint."'";
+
     $return[$id]->constraint = $constraint;
-    
-    if ($constraint != "")
-    {
-      $constraint = "'".$hypertagname."[".$id."]','".$labelname."','".$constraint."'";
-    
-      if ($add_constraint == "") $add_constraint = $constraint;
-      else $add_constraint .= ", ".$constraint;
-    }
 
     // extract text value of checkbox
     $return[$id]->value = getattribute ($tagDefinition, "value");  
@@ -161,7 +155,7 @@ foreach ($multiobject_array as $object)
 {
   // ignore empty entries
   $object = trim($object);
-  if (empty($object)) continue;
+  if (empty ($object)) continue;
   
   $count++;
   $osite = getpublication($object);
@@ -180,8 +174,7 @@ foreach ($multiobject_array as $object)
   }
   
   // load publication configuration
-  if (valid_publicationname ($site) && empty($mgmt_config[$site])) 
-    require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+  if (valid_publicationname ($site) && empty ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
   
   $clocation = deconvertpath ($olocation, "file");
   
@@ -254,41 +247,40 @@ $templatedata = $tcontent['content'];
 
 // fetch all texts
 $text_array = gethypertag ($templatedata, "text", 0);
-if (!is_array($text_array)) $text_array = array();
+if (!is_array ($text_array)) $text_array = array();
 
 // fetch all articles
-$art_array = gethypertag( $templatedata, "arttext", 0);
-if (!is_array($art_array)) $art_array = array();
+$art_array = gethypertag ($templatedata, "arttext", 0);
+if (!is_array ($art_array)) $art_array = array();
 
-$all_array = array_merge($text_array, $art_array);
-$tagdata_array = gettagdata($all_array);
+$all_array = array_merge ($text_array, $art_array);
+$tagdata_array = gettagdata ($all_array);
 
 // we don't want to use the default character set here, so we don't provide the site
 $result = getcharset ("", $templatedata);
 
-if (is_array($result)) $contenttype = $result['contenttype'];
+if (is_array ($result)) $contenttype = $result['contenttype'];
 else $contenttype = "text/html; charset=utf-8";
 
+// loop through each tagdata array
 foreach ($tagdata_array as $id => $tagdata) 
 {
-  
   // We kick the fields out if there should be groups checked and the user isn't allowed to view/edit it
   if ($tagdata->groupaccess) 
   {
     // If we don't have access through groups we will remove the field completely
-    foreach($groups as $group)
+    foreach ($groups as $group)
     {
       
       if (!checkgroupaccess ($tagdata->groupaccess, $group))
       {
-        unset($tagdata_array[$id]);
+        unset ($tagdata_array[$id]);
         continue 2;
       }
     }
   }
   
-  
-  foreach($allTexts as $object) 
+  foreach ($allTexts as $object) 
   {
     // If the current element isn't ignored we continue
     if (isset($tagdata->ignore) && $tagdata->ignore == true) continue;
@@ -303,17 +295,32 @@ foreach ($tagdata_array as $id => $tagdata)
     }
     else
     {
-      if ($tagdata->fieldvalue != $value) $tagdata->ignore = true;
-      else $tagdata->ignore = false;
+      if ($tagdata->fieldvalue != $value)
+      {
+        $tagdata->ignore = true;
+        $tagdata->constraint = "";
+      }
+      else
+      {
+        $tagdata->ignore = false;
+      }
     }
   }
 }
 
-// form function call for unformated text constraints
-if ($add_constraint != "")
+// define form function call for unformated text constraints
+$add_constraint = "";
+
+foreach ($tagdata_array as $key => $tagdata)
 {
-  $add_constraint = "checkcontent = validateForm(".$add_constraint.");";
+  if (trim ($tagdata->constraint) != "")
+  {
+    if ($add_constraint == "") $add_constraint = $tagdata->constraint;
+    else $add_constraint = $add_constraint.",".$tagdata->constraint;
+  }
 }
+
+if ($add_constraint != "") $add_constraint = "checkcontent = validateForm(".$add_constraint.");";
 
 // check session of user
 checkusersession ($user);
@@ -509,6 +516,7 @@ $token = createtoken ($user);
   </head>
   
   <body class="hcmsWorkplaceFrame hcmsWorkplaceGeneric" style="overflow:auto">
+  
     <!-- Save Layer --> 
     <div id="savelayer" class="hcmsWorkplaceGeneric" style="position:fixed; width:100%; height: 100%; margin:0; padding:0; left:0px; top:0px; display: none; z-index:100;">
       <span style="position:absolute; top:50%; height:150px; margin-top:-75px; width:200px; left:50%; margin-left:-100px;">
@@ -518,6 +526,7 @@ $token = createtoken ($user);
         <img src="<?php echo getthemelocation(); ?>img/loading.gif" />
       </span>
     </div>
+    
     <!-- top bar -->
     <div id="bar" class="hcmsWorkplaceBar">
       <table style="width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;">
@@ -532,11 +541,12 @@ $token = createtoken ($user);
         </tr>
       </table>
     </div>
+    
     <div style="width:100%; height:32px;">&nbsp;</div>
     <?php
     if ($error !== false)
     {
-      echo showmessage($error);
+      echo showmessage ($error);
     }
     else
     {
@@ -553,9 +563,6 @@ $token = createtoken ($user);
     </form>
     <form id="sendform">
       <div>
-        <span class="hcmsHeadline">
-          <?php echo $text111[$lang];?>:
-        </span>
         <span class="hcmsHeadlineTiny">
           <?php echo $text112[$lang];?>
         </span>
@@ -566,16 +573,17 @@ $token = createtoken ($user);
         {
           $disabled = ($tagdata->ignore == true ? ' DISABLED="DISABLED" READONLY="READONLY"' : "");
           $id = $tagdata->hypertagname.'_'.$key;
+          $label = $tagdata->labelname;
           
           if ($tagdata->ignore == false) $ids[] = $id;
           ?>
           <div style="margin-top: 10px;" class="fieldrow">
-            <label for="<?php echo $id ?>" style="display: inline-block; width: 130px; vertical-align: top;" class=""><?php echo $key; ?>:<?php if($tagdata->ignore == false) echo " *"; ?></label>
+            <label for="<?php echo $id ?>" style="display:inline-block; width:130px; vertical-align:top;"><b><?php if (trim ($label) != "") { echo $label.":"; if ($tagdata->ignore == false) echo " *"; } ?></b></label>
           <?php 
           if ($tagdata->type == "u") 
           {
           ?>
-            <textarea id="<?php echo $id ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" style="width: <?php echo $tagdata->width; ?>px; height: <?php echo $tagdata->height; ?>px;"<?php echo $disabled; ?>><?php if($tagdata->ignore == false) echo $tagdata->fieldvalue; ?></textarea>
+            <textarea id="<?php echo $id ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" style="width: <?php echo $tagdata->width; ?>px; height: <?php echo $tagdata->height; ?>px;"<?php echo $disabled; ?>><?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?></textarea>
           <?php 
           } 
           elseif ($tagdata->type == "f")
@@ -587,7 +595,7 @@ $token = createtoken ($user);
           {
             $onclick = "show_cal_{$id}(this);";
             ?>
-            <input type="text" id="<?php echo $id ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" value="<?php if($tagdata->ignore == false) echo $tagdata->fieldvalue; ?>"<?php echo $disabled; ?>/>
+            <input type="text" id="<?php echo $id ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" value="<?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?>"<?php echo $disabled; ?>/>
             <?php
             if ($tagdata->ignore == false) 
             {

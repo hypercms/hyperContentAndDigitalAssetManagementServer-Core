@@ -485,8 +485,6 @@ changelog:
 - new checksum in user session file to verify permissions set in session
 - bug fix: getfileinfo did not set filename_only and published state for files without file extensions
 - bug fix: wrong variable names led to undefined variables in createpublication
-- implementation of multiple hyperCMS instances using different databases, internal and external repositories
-- implementation of instance manager GUI to manage multiple hyperCMS instances (as part of connector)
 - bug fix: several undefined variables 
 - font of unformatted text remains unchanged when using inline editing (CSS optimization in showinlineeditor_head)
 - deletepublication removes files in external repository, page and component root folders
@@ -515,6 +513,9 @@ changelog:
 - changed order of meta data extraction of files due to issue with Adobe XMP special characters, new order: EXIF, XMP, IPTC
 - bug fix: function showtopbar did not show individual button
 - bug fix: function downloadfile did not provide proper dailystat, if requested start bytes were not zero
+- bug fix: page_multiedit didn't show label names defined in template and applied constraints on unformatted text fields even if they were disabled
+- implementation of multiple hyperCMS instances using different databases, internal and external repositories
+- implementation of instance manager GUI to manage multiple hyperCMS instances (as part of connector)
 
 preview:
 - definition of target formats when using send mail-link
