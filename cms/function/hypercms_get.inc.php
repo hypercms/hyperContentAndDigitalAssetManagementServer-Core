@@ -1744,7 +1744,7 @@ function getattribute ($string, $attribute)
 // requires: config.inc.php
 
 // description:
-// extract the content-type definition and the character set from the template (1st priority) or content container (2nd priority)
+// extract the content-type definition and the character set from the template (1st priority), content container (2nd priority) or publication settings (3rd priority)
 
 function getcharset ($site, $data)
 {
@@ -1893,7 +1893,7 @@ function getcharset ($site, $data)
     $result['contenttype'] = "text/html; charset=".$mgmt_config[$site]['default_codepage'];
     $result['charset'] = $mgmt_config[$site]['default_codepage'];
     
-    if (is_array ($result)) return $result;
+    if (!empty ($result) && is_array ($result)) return $result;
     else return false;    
   }
   else return false;

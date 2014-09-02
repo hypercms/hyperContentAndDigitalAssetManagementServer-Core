@@ -6609,7 +6609,7 @@ function gettemplates ($site, $cat)
 // based on the inheritance settings of the publication the template will be loaded
 // with highest priority from the own publication and if not available from a parent
 // publication. if the parent publications have double entries the sort mechanism will
-// define the priority. first priority have numbers, second came upper case letters and
+// define the priority. first priority have numbers, second are upper case letters and
 // last priority have lower case letters.
 
 function loadtemplate ($site, $template)

@@ -22,12 +22,13 @@ require_once ("language/buildview.inc.php");
 
 // input parameters
 $site = getrequest ("site", "publicationname");
+$db_connect = getrequest ("db_connect");
 $multiobject = getrequest ("multiobject");
 
 // function to collect tag data
 function gettagdata ($tag_array) 
 {
-  global $mgmt_config;
+  global $mgmt_config, $site;
   
   $return = array();
 
@@ -44,11 +45,11 @@ function gettagdata ($tag_array)
       // combine group access when needed
       $groups = getattribute ($tagDefinition, "groups");
 
-      $return[$id]->groupaccess = trim($return[$id]->groupaccess."|".$groups, "|"); 
+      $return[$id]->groupaccess = trim ($return[$id]->groupaccess."|".$groups, "|"); 
       continue;
     }
     // We completely ignore values which are onEdit hidden
-    elseif ($onedit == 'hidden') continue;
+    elseif ($onedit == "hidden") continue;
     
     $return[$id] = new stdClass();
     $return[$id]->onedit = $onedit;
@@ -57,13 +58,13 @@ function gettagdata ($tag_array)
     $hypertagname = gethypertagname ($tagDefinition);
     $return[$id]->hypertagname = $hypertagname;
     
-    $return[$id]->type = substr($hypertagname, strlen($hypertagname)-1);
+    $return[$id]->type = substr ($hypertagname, strlen($hypertagname)-1);
         
     $label = getattribute ($tagDefinition, "label");
     
-    if (substr($return[$id]->hypertagname, 0, strlen("arttext")) == "arttext")
+    if (substr ($return[$id]->hypertagname, 0, strlen ("arttext")) == "arttext")
     {
-      $return[$id]->article == true;
+      $return[$id]->article = true;
       // get article id
       $artid = getartid ($id);
 
@@ -78,7 +79,7 @@ function gettagdata ($tag_array)
     }
     else
     {
-      $return[$id]->article == false;
+      $return[$id]->article = false;
       
       // define label
       if ($label == "") $labelname = $id;
@@ -141,9 +142,11 @@ function gettagdata ($tag_array)
   return $return;
 }
 
+// get multiple objects
 $multiobject_array = explode ("|", $multiobject);
 
 $template = "";
+$templatedata = "";
 $error = false;
 $groups = array();
 $site = "";
@@ -154,16 +157,16 @@ $allTexts = array();
 foreach ($multiobject_array as $object) 
 {
   // ignore empty entries
-  $object = trim($object);
+  $object = trim ($object);
   if (empty ($object)) continue;
   
   $count++;
-  $osite = getpublication($object);
-  $olocation = getlocation($object);
-  $ocat = getcategory($osite, $object);
-  $ofile = getobject($object);
+  $osite = getpublication ($object);
+  $olocation = getlocation ($object);
+  $ocat = getcategory ($osite, $object);
+  $ofile = getobject ($object);
   
-  if (empty($site))
+  if (empty ($site))
   {
     $site = $osite;
   }
@@ -202,10 +205,10 @@ foreach ($multiobject_array as $object)
 
   $groups[] = $ownergroup;
   
-  $oinfo = getobjectinfo($osite, $olocation, $ofile);
-  $content = loadcontainer($oinfo['container_id'], "work", $user);
+  $oinfo = getobjectinfo ($osite, $olocation, $ofile);
+  $content = loadcontainer ($oinfo['container_id'], "work", $user);
   
-  if (empty($template))
+  if (empty ($template))
   {
     $template = $oinfo['template'];
   }
@@ -213,37 +216,77 @@ foreach ($multiobject_array as $object)
   {
     $error = $text109[$lang];
     break;
-  }  
+  }
   
-  $texts = getcontent($content, "<text>");
+  if (empty ($templatedata))
+  {
+    // load template
+    $tcontent = loadtemplate ($osite, $template);
+    $templatedata = $tcontent['content'];
+    
+    // try to get DB connectivity
+    $db_connect = "";
+    $dbconnect_array = gethypertag ($templatedata, "dbconnect", 0);
+    
+    if ($dbconnect_array != false)
+    {
+      foreach ($dbconnect_array as $hypertag)
+      {
+        $db_connect = getattribute ($hypertag, "file");
+        
+        if (!empty ($db_connect) && is_file ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
+        { 
+          // include db_connect function
+          @include_once ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
+          break;
+        }
+      }
+    }
+  }
+  
+  $texts = getcontent ($content, "<text>");
   
   // Means that there where no entries found so we make an empty array
-  if (!is_array($texts)) $texts = array();
+  if (!is_array ($texts)) $texts = array();
   
   $newtext = array();
   
   foreach ($texts as $text)
   {
-    $id = getcontent($text, "<text_id>");
-    $textcontent = getcontent($text, "<textcontent>");
+    $id = getcontent ($text, "<text_id>");
+    
+    // read content using db_connect
+    $db_connect_data = false; 
+    
+    if (isset ($db_connect) && $db_connect != "") 
+    {
+      $db_connect_data = db_read_text ($site, $oinfo['container_id'], $content, $id, "", $user);
+      
+      if ($db_connect_data != false) 
+      {
+        $textcontent = $db_connect_data['text'];      
+        // set true
+        $db_connect_data = true;                    
+      }
+    }
+    
+    // read content from content container         
+    if ($db_connect_data == false) $textcontent = getcontent ($text, "<textcontent>");
     
     // If we didn't find anything we stop
-    if (!is_array( $id) || !is_array( $textcontent )) continue;
+    if (!is_array ($id) || !is_array ($textcontent)) continue;
     
     $id = $id[0];
-    $textcontent = trim($textcontent[0]);
+    $textcontent = trim ($textcontent[0]);
     
     // We ignore comments
-    if (substr($id, 0, strlen('comment')) == "comment") continue;
+    if (substr ($id, 0, strlen ('comment')) == "comment") continue;
     
     $newtext[$id] = $textcontent;
   }
   
   $allTexts[] = $newtext;
 }
-
-$tcontent = loadtemplate ($osite, $template);
-$templatedata = $tcontent['content'];
 
 // fetch all texts
 $text_array = gethypertag ($templatedata, "text", 0);
@@ -257,7 +300,7 @@ $all_array = array_merge ($text_array, $art_array);
 $tagdata_array = gettagdata ($all_array);
 
 // we don't want to use the default character set here, so we don't provide the site
-$result = getcharset ("", $templatedata);
+$result = getcharset ($site, $templatedata);
 
 if (is_array ($result)) $contenttype = $result['contenttype'];
 else $contenttype = "text/html; charset=utf-8";

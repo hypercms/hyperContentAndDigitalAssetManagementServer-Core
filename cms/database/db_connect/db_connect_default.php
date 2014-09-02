@@ -16,7 +16,7 @@
   function db_read_article ($site, $container_id, $container_content, $art_id, $user)
   {
     //-------------------------------------------------------------------------------------------------------------------
-    // input variables: $art_id [string], $user [string]
+    // input variables: publication name [string], container-ID [string], container content [string], art_id [string], user name [string]
     // return value: $article [array]
     //               the array must exactly look like this:
     //               $article[arttitle], $article[artstatus], $article[artdatefrom], $article[artdateto]
@@ -46,7 +46,7 @@
   function db_read_text ($site, $container_id, $container_content, $id, $art_id, $user)
   {
     //---------------------------------------------------------------------------------------------------------
-    // input variables: $id [string], optional: $art_id [string], $user [string]
+    // input variables: publication name [string], container-ID [string], container content [string], id [string], optional: art_id [string], user name [string]
     // return value: $text [array]
     //               the array must exactly look like this:
     //               $text[text], optional: $text[type]
@@ -72,7 +72,7 @@
   function db_read_media ($site, $container_id, $container_content, $id, $art_id, $user)
   {
     //------------------------------------------------------------------------------------------------------------
-    // input variables: $id [string], optional: $art_id [string], $user [string]
+    // input variables: publication name [string], container-ID [string], container content [string], id [string], optional: art_id [string], user name [string]
     // return value: $media [array]
     //               the array must exactly look like this: 
     //               $media[file],$media[alttext], $media[align], $media[height], $media[width]  
@@ -103,8 +103,7 @@
   function db_read_link ($site, $container_id, $container_content, $id, $art_id, $user)
   {
     //--------------------------------------------------------------------------------------------------------
-    // input variables: $id [string], optional: $art_id [string], $user [string], $linkhref [string], 
-    //                  $linktarget [string], $linktext [string]
+    // input variables: publication name [string], container-ID [string], container content [string], id [string], optional: art_id [string], user name [string]
     // return value: $link [array]
     //               the array must exactly look like this:  
     //               $link[href], $link[target], $link[text] 
@@ -128,7 +127,7 @@
   function db_read_component ($site, $container_id, $container_content, $id, $art_id, $user)    
   {
     //--------------------------------------------------------------------------------------------------------
-    // input variables: $id [string], optional: $art_id [string], $user [string], 
+    // input variables: publication name [string], container-ID [string], container content [string], id [string], optional: art_id [string], user name [string], 
     // return value: $component [array]
     //               the array must exactly look like this:  
     //               $component[file], $component[condition], optional: $component[type]      
@@ -153,7 +152,7 @@
   function db_read_metadata ($site, $container_id, $container_content, $id, $user)   
   {
     //---------------------------------------------------------------------------------------------------------
-    // input variables: $id [string], $user [string]
+    // input variables: publication name [string], container-ID [string], container content [string], id [string], user name [string]
     // return value: $metadata [array]
     //               the array must exactly look like this: 
     //               $metadata[content]
@@ -171,7 +170,7 @@
   
 // =========================================== write into database ============================================
 // the following parameter values are passed as important input for all entries:
-// name of the site: $site [string]
+// name of the site: publication name [string], container-ID [string], container content [string], user name [string]
 // name of the content container: $container_id [string] (is unique inside hyperCMS over all sites)
 // content container: $container_content [XML-string]
 // name of the user who is editing the container [string]

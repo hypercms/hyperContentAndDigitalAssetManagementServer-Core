@@ -444,7 +444,7 @@ changelog:
 - bug fix: name of variable was not correct in WebDAV function deleteGlobal
 
 version 5.6.8
-release 06/2014
+release 07/2014
 changelog:
 - bug fix: the content of date fields was always converted to the international date format, this led to a wrong format after loading the container
 - bug fix: %comp% was not converted to the component URL in the template engine for single component when onEdit attribute was set to "hidden"
@@ -478,7 +478,7 @@ changelog:
 - bug fix: delete of media reference in media_edit_page did not work for IE
 
 version 5.6.9
-release 07/2014
+release 08/2014
 changelog:
 - new template variables for the external repository in template engine
 - tranformation of special characters in deconvertpath
@@ -504,6 +504,10 @@ changelog:
 - bug fix: error in call to js-function hcms_validateform in function showinlineeditor_head
 - bug fix: remove reseting of image size if scaling is used in CKEditor image-plugin
 - bug fix: inline editing mode issue when onedit and onpublish attributes are used for the same hypercms tag
+
+version 5.6.10
+release 09/2014
+changelog:
 - improvements in plugin management
 - new individual button in UI function showtopbar
 - bug fix: function downloadfile called dailystat for each partial file download (only first partial download triggers dailystat)
@@ -516,6 +520,7 @@ changelog:
 - bug fix: page_multiedit didn't show label names defined in template and applied constraints on unformatted text fields even if they were disabled
 - implementation of multiple hyperCMS instances using different databases, internal and external repositories
 - implementation of instance manager GUI to manage multiple hyperCMS instances (as part of connector)
+- implementation of DB connect in multiedit
 
 preview:
 - definition of target formats when using send mail-link

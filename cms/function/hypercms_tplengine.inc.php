@@ -1542,7 +1542,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         $db_connect = getattribute ($hypertag, "file");
         $viewstore = str_replace ($hypertag, "", $viewstore);
         
-        if ($db_connect != false && $db_connect != "" && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
+        if (!empty ($db_connect) && is_file ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
         { 
           // include db_connect function
           @include_once ($mgmt_config['abs_path_data']."db_connect/".$db_connect);  
@@ -1550,7 +1550,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           // set flag   
           $db_connect_incl = true;  
             
-          // break loop after entry found
+          // break after entry found
           break;
         }
         else $db_connect = null;  

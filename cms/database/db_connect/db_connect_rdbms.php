@@ -928,7 +928,7 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
     }
     
     // add file name search if expression array is of size 1
-    if ($expression_filename == "" && is_array ($expression_array) && sizeof ($expression_array) == 1 && $expression_array[0] != "") 
+    if ($expression_filename == "" && is_array ($expression_array) && sizeof ($expression_array) == 1 && !empty($expression_array[0])) 
     {
       $expression_filename = $expression_array[0];
     }
@@ -1072,15 +1072,12 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
           }
           
           $expression = str_replace ("%", '\%', $expression);
-          $expression = str_replace ("_", '\_', $expression);
-          
+          $expression = str_replace ("_", '\_', $expression);          
           $expression = str_replace ("*", "%", $expression);
           $expression = str_replace ("?", "_", $expression);
-          
+          $expression_esc = htmlentities ($expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
           $expression = $db->escape_string ($expression);
-          
-          $expression_esc = htmlentities ($expression, ENT_COMPAT, convert_dbcharset ($mgmt_config['dbcharset']));
-          
+
           if ($expression != $expression_esc) $sql_expr_advanced[$i] = '(tn'.$i.'.text_id="'.$key.'" AND (tn'.$i.'.textcontent LIKE _utf8"%'.$expression.'%" OR tn'.$i.'.textcontent LIKE _utf8"%'.$expression_esc.'%"))';
           else $sql_expr_advanced[$i] = '(tn'.$i.'.text_id="'.$key.'" AND tn'.$i.'.textcontent LIKE _utf8"%'.$expression.'%")';
           
@@ -1090,15 +1087,12 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
         elseif ($expression != "")
         {
           $expression = str_replace ("%", '\%', $expression);
-          $expression = str_replace ("_", '\_', $expression);
-        
+          $expression = str_replace ("_", '\_', $expression);        
           $expression = str_replace ("*", "%", $expression);
           $expression = str_replace ("?", "_", $expression);
-          
+          $expression_esc = htmlentities ($expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
           $expression = $db->escape_string ($expression);
-          
-          $expression_esc = htmlentities ($expression, ENT_COMPAT, convert_dbcharset ($mgmt_config['dbcharset']));
-                       
+           
           if ($expression != $expression_esc) $sql_expr_general = '(tn1.textcontent LIKE _utf8"%'.$expression.'%" OR tn1.textcontent LIKE _utf8"%'.$expression_esc.'%")';
           else $sql_expr_general = 'tn1.textcontent LIKE _utf8"%'.$expression.'%"';
           
@@ -1330,11 +1324,9 @@ function rdbms_replacecontent ($folderpath, $object_type, $date_from, $date_to, 
       $expression = str_replace ("*", "%", $expression);
       $expression = str_replace ("?", "_", $expression);
       //if (substr_count ($expression, "%") == 0) $expression = "%".$expression."%";
-      
+      $expression_esc = htmlentities ($expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
       $expression = $db->escape_string ($expression);
 
-      $expression_esc = htmlentities ($expression, ENT_COMPAT, convert_dbcharset ($mgmt_config['dbcharset']));
-         
       if ($expression != $expression_esc) $sql_where['expression'] = '(tn1.textcontent LIKE _utf8"%'.$expression.'%" COLLATE utf8_bin OR tn1.textcontent LIKE _utf8"%'.$expression_esc.'%" COLLATE utf8_bin)';
       else $sql_where['textnodes'] = 'tn1.textcontent LIKE _utf8"%'.$expression.'%" COLLATE utf8_bin';
     }    
@@ -1356,11 +1348,11 @@ function rdbms_replacecontent ($folderpath, $object_type, $date_from, $date_to, 
       // transform search expression
       $search_expression = str_replace ("*", "", $search_expression);
       $search_expression = str_replace ("?", "", $search_expression);
+      $search_expression_esc = htmlentities ($search_expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
       $search_expression = $db->escape_string ($search_expression);
-      $search_expression_esc = htmlentities ($search_expression, ENT_COMPAT, convert_dbcharset ($mgmt_config['dbcharset']));
       
+      $replace_expression_esc = htmlentities ($replace_expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
       $replace_expression = $db->escape_string ($replace_expression);
-      $replace_expression_esc = htmlentities ($replace_expression, ENT_COMPAT, convert_dbcharset ($mgmt_config['dbcharset']));
         
       $num_rows = $db->getNumRows ("select");
  

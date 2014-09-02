@@ -327,8 +327,8 @@ $text107['de'] = "Audiodatei einbetten";
 $text108['en'] = "YouTube";
 $text108['de'] = "YouTube";
 
-$text109['en'] = "The files must use the same template.";
-$text109['de'] = "Die Dateien m&uuml;ssen die gleiche Vorlage verwenden.";
+$text109['en'] = "The objects must use the same template.";
+$text109['de'] = "Die Objekte m&uuml;ssen die gleiche Vorlage verwenden.";
 
 $text110['en'] = "The files must be from the same publication.";
 $text110['de'] = "Die Dateien m&uuml;ssen aus derselben Publikation sein.";
