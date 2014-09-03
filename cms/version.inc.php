@@ -504,37 +504,6 @@ changelog:
 - bug fix: error in call to js-function hcms_validateform in function showinlineeditor_head
 - bug fix: remove reseting of image size if scaling is used in CKEditor image-plugin
 - bug fix: inline editing mode issue when onedit and onpublish attributes are used for the same hypercms tag
-
-version 5.6.10 PREVIEW
-planed release 09/2014
-changelog:
-- improvements in plugin management
-- new individual button in UI function showtopbar
-- bug fix: function downloadfile called dailystat for each partial file download (only first partial download triggers dailystat)
-- new Simple Statistics plugin (not part of standard software package)
-- bug fix: exception for CSS and JS files in follow link (page_view)
-- new Keyword Statistics plugin (not part of standard software package)
-- changed order of meta data extraction of files due to issue with Adobe XMP special characters, new order: EXIF, XMP, IPTC
-- bug fix: function showtopbar did not show individual button
-- bug fix: function downloadfile did not provide proper dailystat, if requested start bytes were not zero
-- bug fix: page_multiedit didn't show label names defined in template and applied constraints on unformatted text fields even if they were disabled
-- implementation of multiple hyperCMS instances using different databases, internal and external repositories
-- implementation of instance manager GUI to manage multiple hyperCMS instances (as part of connector)
-- implementation of DB connect in multiedit
-
-preview:
-- definition of target formats when using send mail-link
-- add meta data to files based on metadata template on upload on checkbox to change metadata after upload
-- save color code (hex) and percentage for images in table media to present 5 main colors for the image
-- WebDAV ressource seperation (original files, reduced files/images) vs. MS Plugins for Outlook, Word, Powerpoint
-- structured lists (one list element leads to a second list with sub-elements) 
-- video comments/keywords for video frames
-- keyword fields 'textk' to edit keywords with recommender function ala youtube. Define keyword lists under meta data templates that can or must be used.
-- watermark for images and videos
-- video transcoding (e.g. video with different audio layers)
-- users online und live chat
-- speech2text for video text indexing
-- Windows Federated Search for WebDAV / Windows Explorer (complicated)
 */
 
 // current version
