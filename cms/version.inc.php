@@ -489,7 +489,7 @@ changelog:
 - font of unformatted text remains unchanged when using inline editing (CSS optimization in showinlineeditor_head)
 - deletepublication removes files in external repository, page and component root folders
 - new cleaning level management config setting to check and clean template code
-- bug fix in thumbnail generation using the GD library since aspect ratio has not been preserved, different behaviour compared to resize parameter in ImageMagick
+- bug fix: in thumbnail generation using the GD library since aspect ratio has not been preserved, different behaviour compared to resize parameter in ImageMagick
 - automatic resize of textarea in inline editing mode 
 - bug fix: setmedia replaced publication media path first, which led to wrong media reference since the ediot passes the full path incl. the domain
 - bug fix: installation prozedure added two / instead of one if a subdirectory is used for the installation root
@@ -505,8 +505,8 @@ changelog:
 - bug fix: remove reseting of image size if scaling is used in CKEditor image-plugin
 - bug fix: inline editing mode issue when onedit and onpublish attributes are used for the same hypercms tag
 
-version 5.6.10
-release 09/2014
+version 5.6.10 PREVIEW
+planed release 09/2014
 changelog:
 - improvements in plugin management
 - new individual button in UI function showtopbar
