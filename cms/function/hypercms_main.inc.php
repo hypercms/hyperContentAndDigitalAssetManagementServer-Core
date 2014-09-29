@@ -12725,15 +12725,15 @@ function deleteobject ($site, $location, $page, $user)
     // eventsystem
     if ($eventsystem['ondeleteobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
       ondeleteobject_pre ($site, $cat, $location, $page, $user);
+      
+    // notification before object will be deleted since the object data is required by the function notifyusers
+    notifyusers ($site, $location, $page, "ondelete", $user);  
            
     $result = manipulateobject ($site, $location, $page, "", $user, "page_delete");
 
     // eventsystem
     if ($eventsystem['ondeleteobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $result['result'] == true) 
       ondeleteobject_post ($site, $cat, $location, $page, $user);
-      
-    // notification
-    notifyusers ($site, $location, $page, "ondelete", $user);  
 
     // return results 
     return $result;
@@ -15571,11 +15571,23 @@ function notifyusers ($site, $location, $object, $event, $user_from)
       if ($userdata != "")
       {
         $user_memory = array();
+        
+        // get owner of object
+        $owner = "";
+        
+        $containerdata = getobjectcontainer ($site, $location, $object, $user_from);
+        
+        if ($containerdata != "")
+        {
+          $ownernode = getcontent ($containerdata, "<contentuser>");          
+          if (!empty ($ownernode[0])) $owner = $ownernode[0];
+        }
       
         // collect e-mail addresses
         foreach ($notify_array as $notify)
         {
-          if (!in_array ($notify['user'], $user_memory))
+          // dont notify the same user multiple times and don't inform the user if he took the action
+          if (!in_array ($notify['user'], $user_memory) && $notify['user'] != $owner)
           {        
             // get user node and extract required information    
             $usernode = selectcontent ($userdata, "<user>", "<login>", $notify['user']);
