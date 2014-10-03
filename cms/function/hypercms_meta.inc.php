@@ -717,7 +717,7 @@ function xmp_getdata ($image)
 
 // ------------------------- xmp_writefile -----------------------------
 // function: xmp_writefile()
-// input: abs. path to image file, IPTC tag array, keep existing XMP data of file [0,1]
+// input: abs. path to image file, XMP tag array, keep existing XMP data of file [0,1]
 // output: XMP tag / false on error
 
 // description:
@@ -1293,14 +1293,14 @@ function iptc_maketag ($record=2, $tag, $value)
 // ------------------------- iptc_writefile -----------------------------
 // function: iptc_writefile()
 // input: abs. path to image file, IPTC tag array, keep existing IPTC data of file [0,1]
-// output: binary IPTC tag / false on error
+// output: true / false on error
 
 // description:
 // writes IPTC tags into image file and keeps the existing IPTC tags
 
 function iptc_writefile ($file, $iptc, $keep_data=1)
 {
-  global $mgmt_config;
+  global $mgmt_config, $mgmt_mediametadata;
   
   // write IPTC data only to following file extensions
   $allowed_ext = array('.jpg', '.jpeg', '.pjpeg');
@@ -1344,14 +1344,38 @@ function iptc_writefile ($file, $iptc, $keep_data=1)
     foreach ($iptc as $tag => $value)
     {
       $record = substr ($tag, 0, 1);
-      $tag = substr ($tag, 2);
-      
-      $data .= iptc_maketag ($record, $tag, $value);
+      $tag = substr ($tag, 2);  
+      $data .= iptc_maketag ($record, $tag, $value); 
+    }
+
+    // remove IPTC data from file before embedding IPTC
+    if (is_array ($mgmt_mediametadata))
+    {
+      // get file info
+      $file_info = getfileinfo ("", $file, "comp");
+    
+      // define executable
+      foreach ($mgmt_mediametadata as $extensions => $executable)
+      {
+        if (substr_count ($extensions.".", $file_info['ext'].".") > 0)
+        {
+          // remove all IPTC tags from file
+          $cmd = $executable." -overwrite_original -r -IPTC:all= \"".$file."\"";          
+          @exec ($cmd, $buffer, $errorCode);
+          
+          // on error
+          if ($errorCode)
+          {
+            $errcode = "20242";
+            $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed for file: ".getobject($file);
+          }
+        }
+      }
     }
 
     // embed the IPTC data
     $content = iptcembed ($data, $file);
-    
+     
     // write the new image data to the file
     $fp = fopen ($file, "wb");
     

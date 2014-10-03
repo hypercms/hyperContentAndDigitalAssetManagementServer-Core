@@ -191,8 +191,9 @@ $mgmt_config['autosave'] = 0;
 // Save Metadata to Files
 // save IPTC tags to image files (true) or not (false).
 $mgmt_config['iptc_save'] = true;
+
 // save XMP tags to image files (true) or not (false).
-$mgmt_config['xmp_save'] = false;
+$mgmt_config['xmp_save'] = true;
 
 // Versioning of Containers
 // save versions of published containers and media files (true) or disable versioning (false).

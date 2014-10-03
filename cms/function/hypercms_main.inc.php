@@ -2483,7 +2483,7 @@ function globalpermission ($site_name, $permission_str)
         else
         {
           if ($globalpermission[$site_name]['tpldelete'] == 0 && $template[3] == 1) $globalpermission[$site_name]['tpldelete'] = 1;
-          if ($globalpermission[$site_name]['tpledit'] == 0 && $template[4] == 1) $globalpermission[$site_name]['tpledit'] = 1;
+          if ($globalpermission[$site_name]['tpledit'] == 0 && isset ($template[4]) && $template[4] == 1) $globalpermission[$site_name]['tpledit'] = 1;
         }
         // template media permissions
         if ($globalpermission[$site_name]['tplmedia'] == 0 && $media[0] == 1) $globalpermission[$site_name]['tplmedia'] = 1;
@@ -12725,11 +12725,11 @@ function deleteobject ($site, $location, $page, $user)
     // eventsystem
     if ($eventsystem['ondeleteobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
       ondeleteobject_pre ($site, $cat, $location, $page, $user);
-      
-    // notification before object will be deleted since the object data is required by the function notifyusers
-    notifyusers ($site, $location, $page, "ondelete", $user);  
            
     $result = manipulateobject ($site, $location, $page, "", $user, "page_delete");
+    
+    // notification
+    notifyusers ($site, $location, $page, "ondelete", $user);  
 
     // eventsystem
     if ($eventsystem['ondeleteobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $result['result'] == true) 
@@ -15571,23 +15571,12 @@ function notifyusers ($site, $location, $object, $event, $user_from)
       if ($userdata != "")
       {
         $user_memory = array();
-        
-        // get owner of object
-        $owner = "";
-        
-        $containerdata = getobjectcontainer ($site, $location, $object, $user_from);
-        
-        if ($containerdata != "")
-        {
-          $ownernode = getcontent ($containerdata, "<contentuser>");          
-          if (!empty ($ownernode[0])) $owner = $ownernode[0];
-        }
       
         // collect e-mail addresses
         foreach ($notify_array as $notify)
         {
           // dont notify the same user multiple times and don't inform the user if he took the action
-          if (!in_array ($notify['user'], $user_memory) && $notify['user'] != $owner)
+          if (!in_array ($notify['user'], $user_memory) && $notify['user'] != $user_from)
           {        
             // get user node and extract required information    
             $usernode = selectcontent ($userdata, "<user>", "<login>", $notify['user']);
