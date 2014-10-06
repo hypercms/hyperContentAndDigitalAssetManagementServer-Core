@@ -299,7 +299,7 @@ if (!is_array ($art_array)) $art_array = array();
 $all_array = array_merge ($text_array, $art_array);
 $tagdata_array = gettagdata ($all_array);
 
-// we don't want to use the default character set here, so we don't provide the site
+// get character set
 $result = getcharset ($site, $templatedata);
 
 if (is_array ($result)) $contenttype = $result['contenttype'];

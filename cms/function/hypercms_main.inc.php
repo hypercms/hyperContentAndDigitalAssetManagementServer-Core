@@ -11837,7 +11837,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                     }
                     
                     // video individual file
-                    $mediafile_video = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".video".$mediaoptions_ext;
+                    $mediafile_video = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".media".$mediaoptions_ext;
                     
                     if (@is_file ($medialocation.$site."/".$mediafile_video))
                     {

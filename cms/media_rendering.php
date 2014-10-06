@@ -229,14 +229,14 @@ else $videosize = "s";
   // -ab ... audio bitrate (default = 64k)
   // -ar ... audio sampling frequency (default = 44100 Hz)
   // Video Options:
-  // -b ... video bitrate in bit/s (default = 200 kb/s)
+  // -b:v ... video bitrate in bit/s (default = 200 kb/s)
   // -r ... frame rate in Hz (default = 25)
   // -s ... frame size in pixel (w x h) 
-$ffmpeg_options['flv'] = "-b %bitrate% -s %width%x%height% -f flv -acodec libmp3lame -ab %audiobitrate% -ac 2 -ar 40100";
-$ffmpeg_options['mp4'] = "-b %bitrate% -s %width%x%height% -f mp4 -acodec libfaac -ab %audiobitrate% -ac 2 -vcodec libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
-$ffmpeg_options['ogv'] = "-b %bitrate% -s %width%x%height% -f ogg -acodec libvorbis -ab %audiobitrate% -ac 2";
-$ffmpeg_options['webm'] = "-b %bitrate% -s %width%x%height% -f webm -acodec libvorbis -ab %audiobitrate% -ac 2";
-$ffmpeg_options['mp3'] = "-f mp3 -acodec libmp3lame -ab %audiobitrate% -ar 40100";
+$ffmpeg_options['flv'] = "-b:v %bitrate% -s:v %width%x%height% -f flv -c:a libmp3lame -ab %audiobitrate% -ac 2 -ar 22050";
+$ffmpeg_options['mp4'] = "-b:v %bitrate% -s:v %width%x%height% -f mp4 -c:a libfaac -b:a %audiobitrate% -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
+$ffmpeg_options['ogv'] = "-b:v %bitrate% -s:v %width%x%height% -f ogg -c:a libvorbis -b:a %audiobitrate% -ac 2";
+$ffmpeg_options['webm'] = "-b:v %bitrate% -s:v %width%x%height% -f webm -c:a libvorbis -b:a %audiobitrate% -ac 2";
+$ffmpeg_options['mp3'] = "-f mp3 -c:a libmp3lame -b:a %audiobitrate% -ar 44100";
 
 // get publication and file info
 $media_root = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";

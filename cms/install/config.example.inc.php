@@ -350,11 +350,11 @@ $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -f jpg';
 // If a video or audio file is uploaded hyperCMS will try to generate a smaler streaming video file
 // for preview
 $mgmt_mediapreview['.asf.avi.flv.mpg.mpeg.mp4.m4v.mp4v.m4a.m4b.m4p.m4r.mov.wmv.mp3.ogv.wav.vob'] = "/usr/bin/ffmpeg";
-$mgmt_mediaoptions['.flv'] = "-b 768k -s 480x320 -f flv -acodec libmp3lame -ab 64k -ac 2 -ar 40100";
-$mgmt_mediaoptions['.mp4'] = "-b 768k -s 480x320 -f mp4 -acodec libfaac -ab 64k -ac 2 -vcodec libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
-$mgmt_mediaoptions['.ogv'] = "-b 768k -s 480x320 -f ogv -acodec libvorbis -ab 64k -ac 2";
-$mgmt_mediaoptions['.webm'] = "-b 768k -s 480x320 -f webm -acodec libvorbis -ab 64k -ac 2";
-$mgmt_mediaoptions['.mp3'] = "-f mp3 -acodec libmp3lame -ab 64k -ar 40100";
+$mgmt_mediaoptions['.flv'] = "-b:v 768k -s:v 480x320 -f flv -c:a libmp3lame -b:a 64k -ac 2 -ar 22050";
+$mgmt_mediaoptions['.mp4'] = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
+$mgmt_mediaoptions['.ogv'] = "-b:v 768k -s:v 480x320 -f ogv -c:a libvorbis -b:a 64k -ac 2";
+$mgmt_mediaoptions['.webm'] = "-b:v 768k -s:v 480x320 -f webm -c:a libvorbis -b:a 64k -ac 2";
+$mgmt_mediaoptions['.mp3'] = "-f mp3 -c:a libmp3lame -b:a 64k -ar 44100";
 
 // define Metadata Injection
 // YAMDI to inject metadata (play length) into the generated flash video file (FFMPEG discards metadata)

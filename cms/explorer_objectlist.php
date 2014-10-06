@@ -37,7 +37,7 @@ $objects_total = 0;
 $folder_array = array();
 $object_array = array();
 
-if (($location == "" || deconvertpath ($location, "file") == deconvertpath ($hcms_linking['location'], "file")) && is_array ($hcms_linking)) 
+if (is_array ($hcms_linking) && ($location == "" || deconvertpath ($location, "file") == deconvertpath ($hcms_linking['location'], "file"))) 
 {
   $site = $hcms_linking['publication'];
   $cat = $hcms_linking['cat'];

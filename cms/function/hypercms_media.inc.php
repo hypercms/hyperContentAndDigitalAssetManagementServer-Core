@@ -880,12 +880,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         // -ab ... audio bitrate (default = 64k)
         // -ar ... audio sampling frequency (default = 44100 Hz)
         // Video Options:
-        // -b ... video bitrate in bit/s (default = 200 kb/s)
+        // -b:v ... video bitrate in bit/s (default = 200 kb/s)
         // -r ... frame rate in Hz (default = 25)
         // -s ... frame size in pixel (w x h) 
         // define default option for support of versions before 5.3.4
         // note: -acodec could be "mp3" or in newer ffmpeg versions "libmp3lame"!
-        if ($mgmt_mediaoptions['.flv'] == "") $mgmt_mediaoptions['.flv'] = "-b 768k -s 320x240 -f flv -acodec libmp3lame -ab 64k -ac 2 -ar 40100 -title \"".$file_name."\"";
+        if ($mgmt_mediaoptions['.flv'] == "") $mgmt_mediaoptions['.flv'] = "-b:v 768k -s 320x240 -f flv -c:a libmp3lame -b:a 64k -ac 2 -ar 22050 -title \"".$file_name."\"";
         
         // reset type to input value
         $type = $type_memory;
@@ -928,16 +928,16 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 if ($mediaformat == "" || $mediaformat == false) $mediaformat = "flv"; 
                 
                 // keep video ratio for original thumbnail video
-                if ($type == "origthumb" && $videoinfo['ratio'] != "" && strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s ") > 0)
+                if ($type == "origthumb" && $videoinfo['ratio'] != "" && strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0)
                 {
-                  $mediasize = substr ($mgmt_mediaoptions[$mediaoptions_ext], strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s ") + 3);
+                  $mediasize = substr ($mgmt_mediaoptions[$mediaoptions_ext], strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") + 3);
                   $mediasize = substr ($mediasize, 0, strpos ($mediasize, " "));
                   list ($mediawidth, $mediaheight) = explode ("x", $mediasize);
                   
                   if ($videoinfo['ratio'] > 1) $mediasize_new = intval($mediawidth)."x".round((intval($mediawidth)/$videoinfo['ratio']), 0);
                   else $mediasize_new = round((intval($mediaheight)*$videoinfo['ratio']), 0)."x".intval($mediaheight);
                   
-                  $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-s ".$mediasize, "-s ".$mediasize_new, $mgmt_mediaoptions[$mediaoptions_ext]);
+                  $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-s:v ".$mediasize, "-s:v ".$mediasize_new, $mgmt_mediaoptions[$mediaoptions_ext]);
                 }
                 
                 // new file name
@@ -954,6 +954,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // on error or new file is smaller than 500 bytes
                 if ($errorCode || filesize ($location_dest.$tmpfile) < 500)
                 {
+                  @unlink ($location_dest.$tmpfile);
+                
                   $errcode = "20236";
                   $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode) failed in createmedia for file: ".$location_source.$file;
                   
@@ -1001,9 +1003,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
                     
                     // video width and height
-                    if (strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s ") > 0)
+                    if (strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0)
                     {
-                      $mediasize = substr ($mgmt_mediaoptions[$mediaoptions_ext], strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s ") + 3);
+                      $mediasize = substr ($mgmt_mediaoptions[$mediaoptions_ext], strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") + 3);
                       $mediasize = substr ($mediasize, 0, strpos ($mediasize, " "));
                       list ($mediawidth, $mediaheight) = explode ("x", $mediasize);
                     }
