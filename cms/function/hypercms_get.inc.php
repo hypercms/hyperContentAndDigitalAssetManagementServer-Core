@@ -7,6 +7,78 @@
  * You should have received a copy of the License along with hyperCMS.
  */
  
+ // ========================================= LOAD CONTENT ============================================
+
+// ---------------------------------------------- getobjectcontainer ----------------------------------------------
+// function: getobjectcontainer()
+// input: publication [string], location [string], object [string], user [string]
+// output: Content Container [XML]/false
+// requires: config.inc.php
+
+// description:
+// loads the content container of a given object (page, component, folder)
+
+function getobjectcontainer ($site, $location, $object, $user)
+{
+  global $mgmt_config;
+  
+  if (valid_publicationname ($site) && valid_locationname ($location) && $object != "" && valid_objectname ($user))
+  {
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
+    // deconvert location
+    if (@substr_count ($path, "%page%") > 0 || @substr_count ($path, "%comp%") > 0)
+    {
+      $cat = getcategory ($site, $location);
+      $location = deconvertpath ($location, $cat);
+    }
+    
+    // evaluate if object is a file or a folder
+    if (@is_file ($location.$object))
+    {   
+      $object = correctfile ($location, $object, $user);   
+    }
+    elseif (@is_dir ($location.$object))
+    {
+      $location = $location.$object."/";
+      $object = ".folder";
+    }
+    
+    // load object file
+    $data = loadfile ($location, $object);
+    
+    if ($data != "") $container = getfilename ($data, "content");
+    else $container = false;
+    
+    // load container
+    if ($container != false)
+    {
+      $container_id = substr ($container, 0, strpos ($container, ".xml"));
+      $data = loadcontainer ($container, "work", $user);
+      if ($data != false && $data != "") return $data;
+      else return false;
+    }    
+  }
+  else return false;
+}
+
+// ---------------------------------------------- getcontainer ----------------------------------------------
+// function: getcontainer()
+// input: container name or container ID, container type [published, work]
+// output: Contant Container [XML]/false
+// requires: config.inc.php
+
+// description:
+// obsolete function used as shell for loadcontainer function without loading locked containers 
+
+function getcontainer ($containerid, $type)
+{
+  global $mgmt_config;
+  
+  return loadcontainer ($containerid, $type, "");
+}
+ 
 // ========================================= GET FUNCTIONS ============================================
 
 // --------------------------------------- getcontainername -------------------------------------------
@@ -1737,6 +1809,37 @@ function getattribute ($string, $attribute)
   else return false;
 }
 
+// ----------------------------- getoption --------------------------------
+// function: getoption()
+// input: string including options, option name
+// output: option value/false on error
+
+// description:
+// get the value of a certain option out of a string (-c:v value -ar 44100)
+
+function getoption ($string, $option)
+{
+  if ($string != "" && $option != "")
+  {
+    $option = trim ($option)." ";
+    
+    if (strpos ("_".$string, $option) > 0)
+    {
+      // extract value of option
+      $temp = substr ($string, strpos ($string, $option) + strlen ($option));
+      $value = substr ($temp, 0, strpos ($temp, " "));      
+      if ($value == "" || $value == false) $value = substr ($temp, 0);
+      
+      // remove " and '
+      $value = str_replace (array ("\"", "'"), array ("", ""), $value);
+      
+      return $value;
+    }
+    else return false;                  
+  }
+  else return false;
+}
+                      
 // ------------------------------ getcharset ----------------------------------
 // function: getcharset()
 // input: publication, data from template or content container [string]

@@ -2076,7 +2076,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               else if (!check)
               {
                 txtarea.focus();
-                // We jump out without changing anything
+                // jump out without changing anything
                 return false;
               }
               form.hide();
@@ -2343,16 +2343,35 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
     // logo from video thumb image
     $logo_file = getobject ($media);
     $media_dir = getmedialocation ($site, $media, "abs_path_media");
+    $media_url = getmedialocation ($site, $logo_file, "url_path_media");
 
-    if (strpos ($logo_file, ".thumb.") > 0) $logo_name = substr ($logo_file, 0, strrpos ($logo_file, ".thumb."));
-    elseif (strpos ($logo_file, ".orig.") > 0) $logo_name = substr ($logo_file, 0, strrpos ($logo_file, ".orig."));
-      
-    if ($logo_url == NULL && $media_dir != "" && is_file ($media_dir.$site."/".$logo_name.".thumb.jpg")) 
+    // define logo if undefined
+    if ($logo_url == NULL && $media_dir != "")
     {
-      $media_url = getmedialocation ($site, $logo_file, "url_path_media");
-      $logo_url = $media_url.$site."/".$logo_name.".thumb.jpg";
+      // preview video of original file
+      if (strpos ($logo_file, ".orig.") > 0)
+      {
+        $logo_name = substr ($logo_file, 0, strrpos ($logo_file, ".orig."));
+        
+        if (is_file ($media_dir.$site."/".$logo_name.".thumb.jpg")) $logo_url = $media_url.$site."/".$logo_name.".thumb.jpg";
+      }
+      // individual video file
+      elseif (strpos ($logo_file, ".media.") > 0)
+      {
+        $logo_name = substr ($logo_file, 0, strrpos ($logo_file, ".media."));
+        
+        if (is_file ($media_dir.$site."/".$logo_name.".thumb.jpg")) $logo_url = $media_url.$site."/".$logo_name.".thumb.jpg";
+      }
+      // thumbnail video file for video player
+      elseif (strpos ($logo_file, ".thumb.") > 0)
+      {
+        $logo_name = substr ($logo_file, 0, strrpos ($logo_file, ".thumb."));
+        
+        if (is_file ($media_dir.$site."/".$logo_name.".thumb.jpg")) $logo_url = $media_url.$site."/".$logo_name.".thumb.jpg";
+      }
     }
 
+    // if logo is in media repository
     if (substr_count ($logo_url, $mgmt_config['url_path_media'])) 
     {
       $logo_new = str_replace ($mgmt_config['url_path_media'], "", $logo_url);
@@ -2360,9 +2379,11 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
     }
 
     $flashplayer = $mgmt_config['url_path_cms']."javascript/video/jarisplayer.swf";
+    
+    // if no logo is defined set default logo
     if (is_null ($logo_url)) $logo_url = getthemelocation()."img/logo_player.jpg";
     
-    if (empty($id)) $id = uniqid();    
+    if (empty ($id)) $id = uniqid();    
   
     // PROJEKKTOR Player
     if (isset ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor")

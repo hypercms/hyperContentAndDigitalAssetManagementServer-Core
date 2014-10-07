@@ -150,7 +150,11 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 {
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file) && $frame != "")
   {
-    $fileinfo = getfileinfo ($site, $location_source.$file, "comp");
+    // remove .orig sub-file-extension
+    if (strpos ($file, ".orig.") > 0) $newfile = str_replace (".orig.", ".", $file);
+    else $newfile = $file;
+    
+    $fileinfo = getfileinfo ($site, $location_source.$newfile, "comp");
     $newfile = $fileinfo['filename'].".thumb.jpg";
     
     $cmd = 'ffmpeg -i '.$location_source.$file.' -ss '.$frame.' -f image2 -vframes 1 '.$location_dest.$newfile;
@@ -323,25 +327,22 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // Image size (in pixel) definition
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-s ") > 0)
                 {
-                  $buffer = substr ($mgmt_imageoptions[$imageoptions_ext][$type], strpos ($mgmt_imageoptions[$imageoptions_ext][$type], "-s ") + 3);
-                  $imagesize = substr ($buffer, 0, strpos ($buffer, " "));
-                  if (empty ($imagesize) || $imagesize == false) $imagesize = substr ($buffer, 0);
+                  $imagesize = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-s");
                   list ($imagewidth, $imageheight) = explode ("x", $imagesize);
                   
                   // ImageMagick resize parameter (resize will fit the image into the requested size, aspect ratio is preserved)
                   $imageresize = "-resize ".$imagewidth."x".$imageheight;
                 }
                 else $imageresize = "";
-                
+             
                 // Image crop
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-c ") > 0) $crop_mode = true;
                 else $crop_mode = false;
                 
                 if ($crop_mode)
                 {
-                  $buffer = substr ($mgmt_imageoptions[$imageoptions_ext][$type], strpos ($mgmt_imageoptions[$imageoptions_ext][$type], "-c ") + 3);
-                  $buffer = substr ($buffer, 0, strpos ($buffer, " "));
-                  list ($offsetX, $offsetY) = explode ("x", $buffer);
+                  $cropoffset = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-c");
+                  list ($offsetX, $offsetY) = explode ("x", $cropoffset);
                 }
                 else
                 {
@@ -352,9 +353,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // image format (image file extension) definition
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-f ") > 0)
                 {
-                  $buffer = substr ($mgmt_imageoptions[$imageoptions_ext][$type], strpos ($mgmt_imageoptions[$imageoptions_ext][$type], "-f ") + 3);
-                  $imageformat = strtolower (substr ($buffer, 0, strpos ($buffer, " ")));
-                  if (empty ($imageformat) || $imageformat == false) $imageformat = strtolower ($buffer);
+                  $imageformat = strtolower (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-f"));
                   if (empty ($imageformat) || $imageformat == false) $imageformat = "jpg";
                 }
                 else $imageformat = "jpg";
@@ -362,11 +361,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // image rotation
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-r ") > 0) 
                 {
-                  $buffer = substr ($mgmt_imageoptions[$imageoptions_ext][$type], strpos ($mgmt_imageoptions[$imageoptions_ext][$type], "-r ") + 3);
-
-                  $imagerotation = intval (substr ($buffer, 0, strpos ($buffer, " ")));
-                  if ($imagerotation == "" || $imagerotation == false) $imagerotation = intval ($buffer);
-                  
+                  $imagerotation = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-r"));
                   // ImageMagick rotate parameter
                   $imagerotate = "-rotate ".$imagerotation;
                   
@@ -382,10 +377,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // image brightness
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-b ") > 0) 
                 {
-                  $buffer = substr ($mgmt_imageoptions[$imageoptions_ext][$type], strpos ($mgmt_imageoptions[$imageoptions_ext][$type], "-b ") + 3);
-
-                  $imagebrightness = intval (substr ($buffer, 0, strpos ($buffer, " ")));
-                  if ($imagebrightness == "" || $imagebrightness == false) $imagebrightness = intval ($buffer);
+                  $imagerotation = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-b"));
                   
                   if ($imagebrightness > 100) $imagebrightness = 100;
                   elseif ($imagebrightness < -100) $imagebrightness = -100;
@@ -395,10 +387,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // image contrast
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-k ") > 0) 
                 {
-                  $buffer = substr ($mgmt_imageoptions[$imageoptions_ext][$type], strpos ($mgmt_imageoptions[$imageoptions_ext][$type], "-k ") + 3);
-
-                  $imagecontrast = intval (substr ($buffer, 0, strpos ($buffer, " ")));
-                  if ($imagecontrast == "" || $imagecontrast == false) $imagecontrast = intval ($buffer);
+                  $imagecontrast = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-k"));
                   
                   if ($imagecontrast > 100) $imagecontrast = 100;
                   elseif ($imagecontrast < -100) $imagecontrast = -100;
@@ -422,8 +411,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // set image color space
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-cs ") > 0) 
                 {
-                  $buffer = substr ($mgmt_imageoptions[$imageoptions_ext][$type], strpos ($mgmt_imageoptions[$imageoptions_ext][$type], "-cs ") + strlen ("-cs "));
-                  $imagecolorspace = substr ($buffer, 0, strpos ($buffer, " "));
+                  $imagecolorspace = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-cs");
+                  
                   if ($imagecolorspace == "" || $imagecolorspace == false) $imagecolorspace = "";
                   else $imagecolorspace = "-colorspace ".$imagecolorspace;
                 }
@@ -432,8 +421,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 								// set image icc profile 
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-p ") > 0) 
                 {
-                  $buffer = substr ($mgmt_imageoptions[$imageoptions_ext][$type], strpos ($mgmt_imageoptions[$imageoptions_ext][$type], "-p ") + strlen ("-p "));
-                  $iccprofile = substr ($buffer, 0, strpos ($buffer, " "));
+                  $iccprofile = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-p");
+                  
                   if ($iccprofile == "" || $iccprofile == false) $iccprofile = "";
                   else $iccprofile = "-profile ".$iccprofile;
                 }
@@ -459,9 +448,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // set sepia
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sep ") > 0) 
                 {
-                  $buffer = substr ($mgmt_imageoptions[$imageoptions_ext][$type], strpos ($mgmt_imageoptions[$imageoptions_ext][$type], "-sep ") + strlen ("-sep "));
-                  $sepia = substr ($buffer, 0, strpos ($buffer, " "));
-									
+									$sepia = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sep");
+                  
                   if ($sepia == "" || $sepia == false) $sepia = "";
                   else $sepia = "-sepia-tone ".$sepia;
                 }
@@ -470,9 +458,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // set sharpen
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sh ") > 0) 
                 {
-                  $buffer = substr ($mgmt_imageoptions[$imageoptions_ext][$type], strpos ($mgmt_imageoptions[$imageoptions_ext][$type], "-sh ") + strlen ("-sh "));
-                  $sharpen = substr ($buffer, 0, strpos ($buffer, " "));
-									
+									$sharpen = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sh");
+                  
                   if ($sharpen == "" || $sharpen == false) $sharpen = "";
                   else $sharpen = "-sharpen ".$sharpen;
                 }
@@ -481,9 +468,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // set blur
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-bl ") > 0) 
                 {
-                  $buffer = substr ($mgmt_imageoptions[$imageoptions_ext][$type], strpos ($mgmt_imageoptions[$imageoptions_ext][$type], "-bl ") + strlen ("-bl "));
-                  $blur = substr ($buffer, 0, strpos ($buffer, " "));
-									
+									$blur = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-bl");
+                  
                   if ($blur == "" || $blur == false) $blur = "";
                   else $blur = "-blur ".$blur;
                 }
@@ -492,9 +478,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // set sketch
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sk ") > 0) 
                 {
-                  $buffer = substr ($mgmt_imageoptions[$imageoptions_ext][$type], strpos ($mgmt_imageoptions[$imageoptions_ext][$type], "-sk ") + strlen ("-sk "));
-                  $sketch = substr ($buffer, 0, strpos ($buffer, " "));
-									
+									$sketch = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sk");
+                  
                   if ($sketch == "" || $sketch == false) $sketch = "";
                   else $sketch = "-sketch ".$sketch;
                 }
@@ -503,9 +488,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // set paint
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-pa ") > 0) 
                 {
-                  $buffer = substr ($mgmt_imageoptions[$imageoptions_ext][$type], strpos ($mgmt_imageoptions[$imageoptions_ext][$type], "-pa ") + strlen ("-pa "));
-                  $paint = substr ($buffer, 0, strpos ($buffer, " "));
-									
+									$paint = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-pa");
+                  
                   if ($paint == "" || $paint == false) $paint = "";
                   else $paint = "-paint ".$paint;
                 }
@@ -528,7 +512,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // delete the old file if we use original
                     if ($type == "original") @unlink ($location_source.$file);
                   }
-                  
+               
                   // DOCUMENT: document-based formats
                   if ($file_ext == ".pdf" || $file_ext == ".eps")
                   {
@@ -654,7 +638,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
                     @exec ($cmd, $buffer, $errorCode);
                     
-      
                     // on error
                     if ($errorCode)
                     {
@@ -782,7 +765,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       @ImageCopyResized ($imgresized, $imgsource, 0, 0, 0, 0, $resizedwidth, $resizedheight, $imgwidth, $imgheight);
                     }        
         
-                    if ($imageformat == "jpg" && function_exists("imagejpeg"))
+                    if ($imageformat == "jpg" && function_exists ("imagejpeg"))
                     {
                       if ($type == "thumbnail")
                       {
@@ -875,14 +858,21 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       {
         // convert the media file with FFMPEG
         // Audio Options:
-        // -ac ... channels
-        // -acodec ... audio codec
-        // -ab ... audio bitrate (default = 64k)
+        // -ac ... number of audio channels
+        // -an ... disable audio
         // -ar ... audio sampling frequency (default = 44100 Hz)
+        // -b:a ... audio bitrate (default = 64k)
+        // -c:a ... audio codec (e.g. libmp3lame, libfaac, libvorbis)
         // Video Options:
         // -b:v ... video bitrate in bit/s (default = 200 kb/s)
+        // -c:v ... video codec (e.g. libx264)
+        // -cmp ... full pel motion estimation compare function (used for mp4)
+        // -f ... force file format (like flv, mp4, ogv, webm, mp3)
+        // -flags ... specific options for video encoding
+        // -mbd ... macroblock decision algorithm (high quality mode)
         // -r ... frame rate in Hz (default = 25)
-        // -s ... frame size in pixel (w x h) 
+        // -s:v ... frame size in pixel (w x h) 
+        
         // define default option for support of versions before 5.3.4
         // note: -acodec could be "mp3" or in newer ffmpeg versions "libmp3lame"!
         if ($mgmt_mediaoptions['.flv'] == "") $mgmt_mediaoptions['.flv'] = "-b:v 768k -s 320x240 -f flv -c:a libmp3lame -b:a 64k -ac 2 -ar 22050 -title \"".$file_name."\"";
@@ -920,9 +910,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // media format (media file extension) definition
                 if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-f ") > 0)
                 {
-                  $buffer = substr ($mgmt_mediaoptions[$mediaoptions_ext], strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-f ") + 3);
-                  $mediaformat = strtolower (substr ($buffer, 0, strpos ($buffer, " ")));
-                  if ($mediaformat == "" || $mediaformat == false) $mediaformat = strtolower (substr ($buffer, 0));
+                  $mediaformat = strtolower (getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-f"));
                 }
                 
                 if ($mediaformat == "" || $mediaformat == false) $mediaformat = "flv"; 
@@ -930,8 +918,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // keep video ratio for original thumbnail video
                 if ($type == "origthumb" && $videoinfo['ratio'] != "" && strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0)
                 {
-                  $mediasize = substr ($mgmt_mediaoptions[$mediaoptions_ext], strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") + 3);
-                  $mediasize = substr ($mediasize, 0, strpos ($mediasize, " "));
+                  $mediasize = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v");
                   list ($mediawidth, $mediaheight) = explode ("x", $mediasize);
                   
                   if ($videoinfo['ratio'] > 1) $mediasize_new = intval($mediawidth)."x".round((intval($mediawidth)/$videoinfo['ratio']), 0);
@@ -1005,8 +992,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // video width and height
                     if (strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0)
                     {
-                      $mediasize = substr ($mgmt_mediaoptions[$mediaoptions_ext], strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") + 3);
-                      $mediasize = substr ($mediasize, 0, strpos ($mediasize, " "));
+                      $mediasize = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v");
                       list ($mediawidth, $mediaheight) = explode ("x", $mediasize);
                     }
                     else
@@ -1014,7 +1000,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       $mediawidth = "";
                       $mediaheight = "";
                     }
-                    
+
                     // generate video player config code for all video formates (thumbnails)
                     if ($type == "thumbnail")
                     {
@@ -1051,6 +1037,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       else $config_extension = ".config.".$format_set;
                     }
                     
+                    // capture screen from video to use as thumbnail image
+                    if ($type == "origthumb") createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");  
+                                    
                     // save config
                     savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $mediawidth, $mediaheight);
                     // save log
@@ -1588,6 +1577,172 @@ function rgb2hex ($red, $green, $blue)
   else return false;
 }
 
+// ====================================== VIDEO PLAYER =========================================
+
+// ------------------------- readvideoplayer_config -----------------------------
+// function: readvideoplayer_config()
+// input: path to media config file, config file name 
+// output: config array / false on error
+
+function readmediaplayer_config ($location, $configfile)
+{ 
+  global $mgmt_config;
+  
+  if (valid_locationname ($location) && valid_objectname ($configfile) && is_file ($location.$configfile))
+  {
+    // load config
+    $configstring = loadfile ($location, $configfile);
+    
+    // Check which configuration is used
+    $config = array();
+    $media_array = array();
+    $update = false;
+    
+    $test = explode ("\n", $configstring);
+    
+    // V2.0+ video player parameters in config
+    if (substr ($test[0], 0, 1) == "V" && intval (substr ($test[0], 1, 1)) >= 2)
+    {
+      // new since version 5.5.13
+      foreach ($test as $key => $value)
+      {
+        // version
+        if ($key == 0) $config['version'] = substr ($value, 1);
+        // width
+        elseif ($key == 1) $config['width'] = $value;
+        // height
+        elseif ($key == 2) $config['height'] = $value;
+        // video sources (V2.1: video-file;mime-type)
+        elseif (strpos ($value, ";") > 0) $media_array[] = $value;
+        // video sources (V2.0: video-file in wrapper-URL)
+        elseif ($value != "" && strpos ($value, "?media=") > 0)
+        {
+          $media = getattribute ($value, "media");
+          
+          if ($media != "")
+          {
+            $type = ";".getmimetype ($media);
+            $media_array[] = $media.$type;
+            $update = true;
+          }
+        }
+        // video sources (with missing mime-type)
+        elseif ($value != "")
+        {
+          $type = ";".getmimetype ($value);
+          $media_array[] = $value.$type;
+          $update = true;
+        }
+      }
+      
+      $config['mediafiles'] = $media_array;
+    }
+    // V0.0/V1.0 older versions with video player code in config
+    elseif (substr_count ($configstring, '<') > 0)
+    {
+      // V1.0 projekktor video player code in config
+      if (substr_count ($configstring, '<span id="hcms_div_projekktor_') > 0) $config['version'] = '1.0';
+      // old video player code in config
+      else $config['version'] = '0.0';
+      
+      $config['width'] = getattribute ($configstring, "width");
+      $config['height'] = getattribute ($configstring, "height"); 
+      $config['data'] = $configstring;
+      $media_array = array();
+
+      if ($config['data'] != "")
+      {
+        $offset = 0;
+        
+        while (strpos ($config['data'], "?media=", $offset) > 0)
+        {
+          $start = strpos ($config['data'], "?media=", $offset);
+          $stop = strpos ($config['data'], "\"", $start);
+          $length = $stop - $start;
+          $offset = $stop;
+          
+          if ($length > 0)
+          {
+            $uri = ".php".substr ($config['data'], $start, $length);                  
+            $media = getattribute ($uri, "media");
+            
+            if ($media != "") $type = ";".getmimetype ($media);
+            else $type = "";
+            
+            $media_array[] = $media.$type;
+          }
+        }
+        
+        $config['mediafiles'] = $media_array;
+        $update = true;
+      }
+    }
+    
+    // update video config file
+    if ($update && sizeof ($media_array) > 0) savemediaplayer_config ($location, $configfile, $media_array, $config['width'], $config['height']); 
+    
+    return $config;
+  }
+  else return false;
+}
+
+// ------------------------- savevideoplayer_config -----------------------------
+// function: savevideoplayer_config()
+// input: path to media config file, media config file name, media file name array or string, width in px (optional), height in px (optional)
+// output: true / false on error
+
+function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320, $height=240)
+{ 
+  global $mgmt_config;
+  
+  if (valid_locationname ($location) && valid_objectname ($configfile) && (is_array ($mediafiles) || $mediafiles != ""))
+  {
+    $config = array();
+    $config[0] = "V2.1";
+    $config[1] = $width;
+    $config[2] = $height;
+    
+    // array
+    if (is_array ($mediafiles)) 
+    {
+      $i = 3;
+      
+      foreach ($mediafiles as $media)
+      {
+        if ($media != "")
+        {
+          // if mime-type is not supplied (standard case) 
+          if (strpos ($media, ";") < 1)
+          {
+            $mimetype = ";".getmimetype ($media);
+            $config[$i] = $media.$mimetype;
+          }
+          // dont add mime-type
+          else $config[$i] = $media;
+
+          
+          $i++;
+        }
+      }
+    }
+    // string
+    else
+    {
+      // if mime-type is not supplied (standard case) 
+      if (strpos ($mediafiles, ";") < 1)
+      {
+        $mimetype = ";".getmimetype ($mediafiles);
+        $config[3] = $mediafiles.$mimetype;
+      }
+      // dont add mime-type
+      else $config[3] = $mediafiles;
+    }
+    
+    return savefile ($location, $configfile, implode ("\n", $config));
+  }
+  else return false;  
+}
+
 // ========================================== DOCUMENT CREATION =======================================
 
 // ---------------------- createdocument -----------------------------
@@ -1625,7 +1780,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
       
       reset ($mgmt_docpreview);
       
-      // supported extensions for media rendering
+      // supported extensions for document rendering
       foreach ($mgmt_docpreview as $docpreview_ext => $docpreview)
       {        
         // check file extension
@@ -1633,15 +1788,15 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
         {
           reset ($mgmt_docoptions);  
           
-          // extensions for certain media rendering options
+          // extensions for certain document rendering options
           foreach ($mgmt_docoptions as $docoptions_ext => $docoptions)
           {
             // get media rendering options based on given destination format
             if (substr_count ($docoptions_ext.".", ".".$format.".") > 0)
             {
-              // media format (media file extension) definition
-              $buffer = substr ($mgmt_docoptions[$docoptions_ext], strpos ($mgmt_docoptions[$docoptions_ext], "-f ") + 3);
-              $docformat = strtolower (substr ($buffer, 0, strpos ($buffer, " ")));
+              // document format (document file extension) definition
+              $docformat = strtolower (getoption ($mgmt_docoptions[$docoptions_ext], "-f"));
+              
               if ($docformat == "" || $docformat == false) $docformat = strtolower (substr ($buffer, 0));
               if ($docformat == "" || $docformat == false) $docformat = "pdf";   
               

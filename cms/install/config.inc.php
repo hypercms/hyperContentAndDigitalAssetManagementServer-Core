@@ -352,6 +352,23 @@ $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -f jpg';
 // define Media Preview using FFMPEG (Audio/Video formats)
 // If a video or audio file is uploaded hyperCMS will try to generate a smaler streaming video file
 // for preview
+
+// Audio Options:
+// -ac ... number of audio channels
+// -an ... disable audio
+// -ar ... audio sampling frequency (default = 44100 Hz)
+// -b:a ... audio bitrate (default = 64k)
+// -c:a ... audio codec (e.g. libmp3lame, libfaac, libvorbis)
+// Video Options:
+// -b:v ... video bitrate in bit/s (default = 200 kb/s)
+// -c:v ... video codec (e.g. libx264)
+// -cmp ... full pel motion estimation compare function (used for mp4)
+// -f ... force file format (like flv, mp4, ogv, webm, mp3)
+// -flags ... specific options for video encoding
+// -mbd ... macroblock decision algorithm (high quality mode)
+// -r ... frame rate in Hz (default = 25)
+// -s:v ... frame size in pixel (w x h) 
+
 $mgmt_mediapreview['.asf.avi.flv.mpg.mpeg.mp4.m4v.mp4v.m4a.m4b.m4p.m4r.mov.wmv.mp3.ogv.wav.vob'] = "%ffmpeg%";
 $mgmt_mediaoptions['.flv'] = "-b:v 768k -s:v 480x320 -f flv -c:a libmp3lame -b:a 64k -ac 2 -ar 22050";
 $mgmt_mediaoptions['.mp4'] = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";

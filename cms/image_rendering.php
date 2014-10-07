@@ -184,7 +184,7 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
           ($use_contrast == 1 && $imageformat != "" && $contrast != 0) ||
           ($colorspace == 1 && is_array($available_colorspaces) && array_key_exists( $imagecolorspace, $available_colorspaces )) ||
           ($rotate == "flip" && array_key_exists($flip, $available_flip)) ||
-          ($effect == "sepia" && $sepia_treshold > 0 && $sepia_treshold <= 99.9 ) ||
+          ($effect == "sepia" && $sepia_treshold > 0 && $sepia_treshold <= 99.9) ||
           ($effect == "blur" && $blur_sigma > 0.1 && $blur_sigma <= 3 && $blur_radius !== NULL ) ||
           ($effect == "sharpen" && $sharpen_sigma > 0.1 && $sharpen_sigma <= 3 && $sharpen_radius !== NULL) ||
           ($effect == "sketch" && $sketch_sigma !== NULL && $sketch_radius !== NULL && $sketch_angle !== NULL) ||
@@ -228,7 +228,7 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
         {
           $mgmt_imageoptions[$formats]['original'] .= " -r ".$angle;
         }
-        elseif($rotate == "flip")
+        elseif ($rotate == "flip")
         {
            $mgmt_imageoptions[$formats]['original'] .= " ".$flip;
         }
@@ -238,37 +238,39 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
           $mgmt_imageoptions[$formats]['original'] .= " -b ".$brightness;
         } 
         
-        if($use_contrast == 1)
+        if ($use_contrast == 1)
         {
           $mgmt_imageoptions[$formats]['original'] .= " -k ".$contrast;
         }
         
         
-        if( $colorspace == 1) 
+        if ($colorspace == 1) 
         {
           $mgmt_imageoptions[$formats]['original'] .= " -cs ".$imagecolorspace;
         }
         
-        if( $effect == "sepia") 
+        if ($effect == "sepia") 
         {
           $mgmt_imageoptions[$formats]['original'] .= " -sep ".$sepia_treshold."%";
         }
-        elseif( $effect == "blur") 
+        elseif ($effect == "blur") 
         {
           $mgmt_imageoptions[$formats]['original'] .= " -bl ".$blur_radius."x".$blur_sigma;
         }
-        elseif( $effect == "sharpen") 
+        elseif ($effect == "sharpen") 
         {
           $mgmt_imageoptions[$formats]['original'] .= " -sh ".$sharpen_radius."x".$sharpen_sigma;
         }
-        elseif( $effect == "sketch") 
+        elseif ($effect == "sketch") 
         {
-          if($sketch_angle > -1) {
+          if ($sketch_angle > -1)
+          {
             $sketch_angle = "+".$sketch_angle;
           }
+          
           $mgmt_imageoptions[$formats]['original'] .= " -sk ".$sketch_radius."x".$sketch_sigma.$sketch_angle;
         }
-        elseif( $effect == "paint") 
+        elseif ($effect == "paint") 
         {
           $mgmt_imageoptions[$formats]['original'] .= " -pa ".$paintvalue;
         }
@@ -1474,7 +1476,8 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
       <div style="margin-left:20px">
         <select name="flip" id="flip">
           <?php 
-            foreach($available_flip as $value => $name) {
+            foreach ($available_flip as $value => $name)
+            {
             ?>
             <option value="<?php echo $value; ?>"><?php echo $name ?></option>
             <?php
@@ -1508,7 +1511,8 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
       <div style="margin-left:20px">
         <select name="imagecolorspace" id="colorspace">
           <?php 
-            foreach($available_colorspaces as $value => $name) {
+            foreach ($available_colorspaces as $value => $name)
+            {
             ?>
             <option value="<?php echo $value; ?>"><?php echo $name ?></option>
             <?php
@@ -1525,7 +1529,9 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
         <select name="imageformat" id="imageformat">
           <?php 
             $file_ext_old = strtolower (strrchr ($mediafile, ".")); 
-            foreach($convert_formats as $format) {
+            
+            foreach ($convert_formats as $format)
+            {
             ?>
             <option value="<?php echo strtolower($format); ?>" <?php if ($file_ext_old == ".".strtolower($format)) echo "selected=\"selected\""; ?>><?php echo strtoupper($format); ?></option>
             <?php

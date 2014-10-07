@@ -2897,78 +2897,6 @@ function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
   else return false;
 }
 
-// ========================================= LOAD CONTENT ============================================
-
-// ---------------------------------------------- getobjectcontainer ----------------------------------------------
-// function: getobjectcontainer()
-// input: publication [string], location [string], object [string], user [string]
-// output: Content Container [XML]/false
-// requires: config.inc.php
-
-// description:
-// loads the content container of a given object (page, component, folder)
-
-function getobjectcontainer ($site, $location, $object, $user)
-{
-  global $mgmt_config;
-  
-  if (valid_publicationname ($site) && valid_locationname ($location) && $object != "" && valid_objectname ($user))
-  {
-    // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
-    
-    // deconvert location
-    if (@substr_count ($path, "%page%") > 0 || @substr_count ($path, "%comp%") > 0)
-    {
-      $cat = getcategory ($site, $location);
-      $location = deconvertpath ($location, $cat);
-    }
-    
-    // evaluate if object is a file or a folder
-    if (@is_file ($location.$object))
-    {   
-      $object = correctfile ($location, $object, $user);   
-    }
-    elseif (@is_dir ($location.$object))
-    {
-      $location = $location.$object."/";
-      $object = ".folder";
-    }
-    
-    // load object file
-    $data = loadfile ($location, $object);
-    
-    if ($data != "") $container = getfilename ($data, "content");
-    else $container = false;
-    
-    // load container
-    if ($container != false)
-    {
-      $container_id = substr ($container, 0, strpos ($container, ".xml"));
-      $data = loadcontainer ($container, "work", $user);
-      if ($data != false && $data != "") return $data;
-      else return false;
-    }    
-  }
-  else return false;
-}
-
-// ---------------------------------------------- getcontainer ----------------------------------------------
-// function: getcontainer()
-// input: container name or container ID, container type [published, work]
-// output: Contant Container [XML]/false
-// requires: config.inc.php
-
-// description:
-// obsolete function used as shell for loadcontainer function without loading locked containers 
-
-function getcontainer ($containerid, $type)
-{
-  global $mgmt_config;
-  
-  return loadcontainer ($containerid, $type, "");
-}
-
 // ========================================= TASKMANAGEMENT ============================================
 
 // ---------------------------------------------- createtask ----------------------------------------------
@@ -11815,8 +11743,8 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                 foreach ($mgmt_mediaoptions as $mediaoptions_ext => $mediaoptions)
                 {
                   if ($mediaoptions_ext != "")
-                  {
-                    // original thumbnail file
+                  {                    
+                    // original thumbnail video file
                     $mediafile_orig = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".orig".$mediaoptions_ext;
                     
                     if (@is_file ($medialocation.$site."/".$mediafile_orig))
@@ -11826,7 +11754,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                       remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_orig, "");
                     }
                     
-                    // video thumbnail file
+                    // video thumbnail files
                     $mediafile_thumb = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".thumb".$mediaoptions_ext;
                     
                     if (@is_file ($medialocation.$site."/".$mediafile_thumb))
@@ -11836,7 +11764,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                       remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
                     }
                     
-                    // video individual file
+                    // video individual files
                     $mediafile_video = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".media".$mediaoptions_ext;
                     
                     if (@is_file ($medialocation.$site."/".$mediafile_video))
@@ -11857,6 +11785,16 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                     }
                   }
                 }       
+              }
+              
+              // delete thumbnail video image file
+              $mediafile_orig = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".thumb.jpg";
+              
+              if (@is_file ($medialocation.$site."/".$mediafile_orig))
+              {
+                deletefile ($medialocation.$site."/", $mediafile_orig, 0);           
+                // remote client
+                remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_orig, "");
               }
               
               // delete original media player config
@@ -15367,172 +15305,6 @@ function debuglog ($code)
     else return savefile ($mgmt_config['abs_path_data']."log/", "debug.log", $code);  
   }
   else return false;
-}
-
-// ====================================== VIDEO PLAYER =========================================
-
-// ------------------------- readvideoplayer_config -----------------------------
-// function: readvideoplayer_config()
-// input: path to media config file, config file name 
-// output: config array / false on error
-
-function readmediaplayer_config ($location, $configfile)
-{ 
-  global $mgmt_config;
-  
-  if (valid_locationname ($location) && valid_objectname ($configfile) && is_file ($location.$configfile))
-  {
-    // load config
-    $configstring = loadfile ($location, $configfile);
-    
-    // Check which configuration is used
-    $config = array();
-    $media_array = array();
-    $update = false;
-    
-    $test = explode ("\n", $configstring);
-    
-    // V2.0+ video player parameters in config
-    if (substr ($test[0], 0, 1) == "V" && intval (substr ($test[0], 1, 1)) >= 2)
-    {
-      // new since version 5.5.13
-      foreach ($test as $key => $value)
-      {
-        // version
-        if ($key == 0) $config['version'] = substr ($value, 1);
-        // width
-        elseif ($key == 1) $config['width'] = $value;
-        // height
-        elseif ($key == 2) $config['height'] = $value;
-        // video sources (V2.1: video-file;mime-type)
-        elseif (strpos ($value, ";") > 0) $media_array[] = $value;
-        // video sources (V2.0: video-file in wrapper-URL)
-        elseif ($value != "" && strpos ($value, "?media=") > 0)
-        {
-          $media = getattribute ($value, "media");
-          
-          if ($media != "")
-          {
-            $type = ";".getmimetype ($media);
-            $media_array[] = $media.$type;
-            $update = true;
-          }
-        }
-        // video sources (with missing mime-type)
-        elseif ($value != "")
-        {
-          $type = ";".getmimetype ($value);
-          $media_array[] = $value.$type;
-          $update = true;
-        }
-      }
-      
-      $config['mediafiles'] = $media_array;
-    }
-    // V0.0/V1.0 older versions with video player code in config
-    elseif (substr_count ($configstring, '<') > 0)
-    {
-      // V1.0 projekktor video player code in config
-      if (substr_count ($configstring, '<span id="hcms_div_projekktor_') > 0) $config['version'] = '1.0';
-      // old video player code in config
-      else $config['version'] = '0.0';
-      
-      $config['width'] = getattribute ($configstring, "width");
-      $config['height'] = getattribute ($configstring, "height"); 
-      $config['data'] = $configstring;
-      $media_array = array();
-
-      if ($config['data'] != "")
-      {
-        $offset = 0;
-        
-        while (strpos ($config['data'], "?media=", $offset) > 0)
-        {
-          $start = strpos ($config['data'], "?media=", $offset);
-          $stop = strpos ($config['data'], "\"", $start);
-          $length = $stop - $start;
-          $offset = $stop;
-          
-          if ($length > 0)
-          {
-            $uri = ".php".substr ($config['data'], $start, $length);                  
-            $media = getattribute ($uri, "media");
-            
-            if ($media != "") $type = ";".getmimetype ($media);
-            else $type = "";
-            
-            $media_array[] = $media.$type;
-          }
-        }
-        
-        $config['mediafiles'] = $media_array;
-        $update = true;
-      }
-    }
-    
-    // update video config file
-    if ($update && sizeof ($media_array) > 0) savemediaplayer_config ($location, $configfile, $media_array, $config['width'], $config['height']); 
-    
-    return $config;
-  }
-  else return false;
-}
-
-// ------------------------- savevideoplayer_config -----------------------------
-// function: savevideoplayer_config()
-// input: path to media config file, media config file name, media file name array or string, width in px (optional), height in px (optional)
-// output: true / false on error
-
-function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320, $height=240)
-{ 
-  global $mgmt_config;
-  
-  if (valid_locationname ($location) && valid_objectname ($configfile) && (is_array ($mediafiles) || $mediafiles != ""))
-  {
-    $config = array();
-    $config[0] = "V2.1";
-    $config[1] = $width;
-    $config[2] = $height;
-    
-    // array
-    if (is_array ($mediafiles)) 
-    {
-      $i = 4;
-      
-      foreach ($mediafiles as $media)
-      {
-        if ($media != "")
-        {
-          // if mime-type is not supplied (standard case) 
-          if (strpos ($media, ";") < 1)
-          {
-            $mimetype = ";".getmimetype ($media);
-            $config[$i] = $media.$mimetype;
-          }
-          // dont add mime-type
-          else $config[$i] = $media;
-
-          
-          $i++;
-        }
-      }
-    }
-    // string
-    else
-    {
-      // if mime-type is not supplied (standard case) 
-      if (strpos ($mediafiles, ";") < 1)
-      {
-        $mimetype = ";".getmimetype ($mediafiles);
-        $config[4] = $mediafiles.$mimetype;
-      }
-      // dont add mime-type
-      else $config[4] = $mediafiles;
-    }
-    
-    return savefile ($location, $configfile, implode ("\n", $config));
-  }
-  else return false;  
 }
 
 // ====================================== SPECIAL NOTIFICATIONS =========================================
