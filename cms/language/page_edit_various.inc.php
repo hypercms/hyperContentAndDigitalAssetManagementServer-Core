@@ -13,10 +13,10 @@ $subtext3['en'] = "Special chararcters in expressions are not allowed";
 $subtext3['de'] = "Sonderzeichen in Begriffen sind nicht erlaubt";
 
 $subtext4['en'] = "New task due to broken link";
-$subtext4['de'] = "Neue Aufgabe aufgrund eines gebrochenen Links";
+$subtext4['de'] = "Neue Aufgabe aufgrund eines toten Links";
 
-$subtext5['en'] = "Please correct the broken link!";
-$subtext5['de'] = "Bitte korrigieren Sie den toten Link!";
+$subtext5['en'] = "There is a new task due to broken link";
+$subtext5['de'] = "Es gibt eine neue Aufgabe aufgrund eines toten Links";
 
 $subtext6['en'] = "Name";
 $subtext6['de'] = "Name";

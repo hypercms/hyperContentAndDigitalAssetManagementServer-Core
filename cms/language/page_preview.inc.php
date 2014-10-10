@@ -24,10 +24,10 @@ $text6['de'] = "Sie k&ouml;nnen den Inhalt des Objektes nicht &auml;ndern";
 $text7['en'] = "... you will view the item in a second";
 $text7['de'] = "... das Objekt wird in K&uuml;rze angezeigt";
 
-$text8['en'] = "The associated template holds no informations";
+$text8['en'] = "The associated template holds no information";
 $text8['de'] = "Die eingesetzte Vorlage beinhaltet keine Information";
 
-$text9['en'] = "The content container holds no informations";
+$text9['en'] = "The content container holds no information";
 $text9['de'] = "Der Content Container beinhaltet keine Information";
 
 $text10['en'] = "expand";

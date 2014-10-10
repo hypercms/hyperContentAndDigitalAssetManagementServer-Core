@@ -803,7 +803,7 @@ function xmp_create ($site, $text)
     $result = array();
     
     // look in mapping definition (name => id)
-    if (is_array ($mapping))
+    if (isset ($mapping) && is_array ($mapping))
     {
       foreach ($mapping as $tag => $id)
       {
@@ -816,7 +816,14 @@ function xmp_create ($site, $text)
       
       return $result;
     }
-    else return false;
+    else
+    {
+      $errcode = "10101";
+      $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|media mapping of publication '".$site."' could not be loaded";
+      savelog ($error);
+          
+      return false;
+    }
   }
   else return false;
 }

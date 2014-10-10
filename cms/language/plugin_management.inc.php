@@ -33,4 +33,6 @@ $text9['de'] = "&Auml;nderungen anwenden";
 $text10['en'] = "Could not determine which AddOns to activate";
 $text10['de'] = "Konnte die zu aktivierenden AddOns nicht festlegen";
 
+$text50['en'] = "Help";
+$text50['de'] = "Hilfe";
 ?>

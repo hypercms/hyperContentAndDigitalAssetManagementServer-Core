@@ -279,7 +279,7 @@ $text91['de'] = "Sprache";
 $text92['en'] = "Embed video";
 $text92['de'] = "Video einbetten";
 
-$text93['en'] = "the template holds no information";
+$text93['en'] = "The template holds no information";
 $text93['de'] = "Die Vorlage beinhaltet keine Informationen";
 
 $text94['en'] = "Do you want to save the changes?";

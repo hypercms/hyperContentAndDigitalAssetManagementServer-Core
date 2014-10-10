@@ -783,7 +783,7 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
       $errcode = "40911";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createaccesslink failed due to missing object id for: $objectpath";
       
-      savelog ($error);  
+      savelog (@$error);  
       
       return false;
     }
@@ -833,7 +833,7 @@ function createwrapperlink ($site, $location, $object, $cat, $object_id="")
       $errcode = "40912";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createwrapperlink failed due to missing object id for: $objectpath";
       
-      savelog ($error);  
+      savelog (@$error);  
       
       return false;
     }
@@ -883,7 +883,7 @@ function createdownloadlink ($site="", $location, $object, $cat, $object_id="")
       $errcode = "40912";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createdownloadlink failed due to missing object id for: $objectpath";
       
-      savelog ($error);  
+      savelog (@$error);  
       
       return false;
     }
@@ -1922,7 +1922,7 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
   global $mgmt_config, $is_iphone;
 
   $allowrange = true;
-  $errors = array();
+  $error = array();
   
   if (valid_locationname ($medialocation) && is_file ($medialocation) && $name != "")
   {
@@ -2022,9 +2022,9 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
         // bad request - start is greater than end
         header ("HTTP/1.1 416 Requested range not satisfiable", true, 416);
         $errcode = 60000;
-        $errors[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile() -> Range not satisfiable: '.$start.' - '.$end.' ('.$fstat['size'].')';
+        $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile() -> Range not satisfiable: '.$start.' - '.$end.' ('.$fstat['size'].')';
         // write log
-        savelog (@$errors);
+        savelog (@$error);
         exit;
       }
 
@@ -2049,9 +2049,9 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
           // if we can't read the file
           header ("HTTP/1.1 500 Internal Server Error", true, 500);
           $errcode = 60001;
-          $errors[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$medialocation.')';
+          $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$medialocation.')';
           // write log
-          savelog (@$errors);
+          savelog (@$error);
           exit;
         }
 
@@ -2063,9 +2063,9 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
           {
             header ("HTTP/1.1 500 Internal Server Error", true, 500);
             $errcode = 60002;
-            $errors[] = $mgmt_config['today'].'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not seek '.$medialocation.')';
+            $error[] = $mgmt_config['today'].'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not seek '.$medialocation.')';
             // write log
-            savelog (@$errors);
+            savelog (@$error);
             exit;
           }
         }
@@ -2107,9 +2107,9 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
     }
 
     // write log
-    savelog (@$errors);
+    savelog (@$error);
 
-    if (!empty ($errors)) return false;
+    if (!empty ($error)) return false;
     else return true;
   }
   else return false;
@@ -2158,12 +2158,12 @@ function loadcontainer ($container, $type="work", $user)
       $location = getcontentlocation ($container_id, 'abs_path_content');
   
       // try to load container if it is locked by another user and current user is superadmin
-      if (!empty ($_SESSION['hcms_superadmin']) && $_SESSION['hcms_superadmin'] == 1)
+      if ($type == "work" && !empty ($_SESSION['hcms_superadmin']) && $_SESSION['hcms_superadmin'] == 1)
       {
         $result = getcontainername ($container);
         
         // container was found
-        if ($result['container'] != "") return loadfile ($location, $result['container']);
+        if (!empty ($result['container'])) return loadfile ($location, $result['container']);
         else return false;
       }
       // load unlocked container
@@ -2186,6 +2186,8 @@ function loadcontainer ($container, $type="work", $user)
         {
           $errcode = "10198";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|working container ".$container." could not be restored";
+          
+          savelog (@$error);
         }
         else
         {
@@ -2206,6 +2208,8 @@ function loadcontainer ($container, $type="work", $user)
         {
           $errcode = "10199";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|live container ".$container." could not be restored";
+          
+          savelog (@$error);
         }
         else
         {
@@ -11475,7 +11479,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                       }
       
                       // set message
-                      $message = $subtext5[$lang].".";
+                      $message = $subtext5[$lang];
                        
                       // get objects
                       $page_path_array = link_db_getobject ($link_db_record['object']);
@@ -11849,7 +11853,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             
             $test_temp = deletefile ($contentlocation, $contentfile_self, 0);    
             
-            if ($test_temp != false) rename ($contentlocation.$contentfile_self_wrk, $contentlocation.$contentfile_self);  
+            if ($test_temp != false) @rename ($contentlocation.$contentfile_self_wrk, $contentlocation.$contentfile_self);  
             
             if ($test_temp == false)
             {
