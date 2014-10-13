@@ -6,14 +6,20 @@ var scrollY = 0;
 var allow_tr_submit = true;
 
 // sidebar
-function hcms_loadSidebar (location, object)
+function hcms_loadSidebar()
 {
-  if (location != '' && object != '')
+  document.forms['contextmenu_object'].attributes['action'].value = 'explorer_preview.php';
+  document.forms['contextmenu_object'].attributes['target'].value = 'sidebarFrame';
+  document.forms['contextmenu_object'].elements['action'].value = '';
+  
+	if (allow_tr_submit)
   {
-    parent.frames['sidebarFrame'].location.href='explorer_preview.php?location=' + location + '&page=' + object;
-    return true;
-  }
-  else return false;
+		document.forms['contextmenu_object'].submit();
+	}
+  else
+  {
+		allow_tr_submit = true;
+	}
 }
 
 // reset context menu  

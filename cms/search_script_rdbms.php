@@ -281,7 +281,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             else $class_image = "class=\"hcmsIconList\"";            
             
             // refresh sidebar
-            if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar('".url_encode($location_esc.$folder)."', '.folder');";
+            if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
             else $sidebarclick = "";
             // onclick for marking objects
             $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
@@ -311,8 +311,8 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                             <td id=h".$items_row."_3 nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$item_site."</span></td>\n";
             $listview .= "</tr>\n";
         
-            $galleryview .= "<td id=t".$items_row." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
-                              <div ".$selectclick." ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer;\">".
+            $galleryview .= "<td id=t".$items_row." ".$selectclick." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
+                              <div ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer;\">".
                                 $dlink_start."
                                   <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$item_info['icon_large']."\" style=\"border:0;\" /></div><br />
                                   ".showshorttext($folder_name, 20, true)."
@@ -471,7 +471,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             // open on double click
             $openObject = "onDblClick=\"window.open('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."','".$container_id."','status=yes,scrollbars=no,resizable=yes,width=800,height=600');\"";
             // refresh sidebar
-            if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar('".url_encode($location_esc)."', '".url_encode($object)."');";
+            if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
             else $sidebarclick = "";
             // onclick for marking objects
             $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
@@ -573,8 +573,8 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             }
             else $linking_buttons = "";            
   
-            $galleryview .= "<td id=t".$items_row." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
-                              <div ".$selectclick." ".$openObject." ".$hcms_setObjectcontext." title=\"".$metadata."\" style=\"cursor:pointer;\">".
+            $galleryview .= "<td id=t".$items_row." ".$selectclick." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
+                              <div ".$openObject." ".$hcms_setObjectcontext." title=\"".$metadata."\" style=\"cursor:pointer;\">".
                                 $dlink_start."
                                  ".$thumbnail."</br />
                                  ".showshorttext($object_name, 20, true)."

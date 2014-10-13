@@ -23,7 +23,10 @@ require_once ("language/page_preview.inc.php");
 
 // input parameters
 $location = getrequest_esc ("location", "locationname");
+$folder = getrequest_esc ("folder", "objectname");
 $page = getrequest_esc ("page", "objectname");
+
+if ($folder != "") $location = $location.$folder."/";
 
 // get publication and category
 $site = getpublication ($location);

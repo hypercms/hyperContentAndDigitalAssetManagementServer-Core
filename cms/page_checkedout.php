@@ -103,10 +103,12 @@ if ($checkedout_data != false)
 if ($checkedout_data != false) $checkedout_array = explode ("\n", trim ($checkedout_data));
 else $checkedout_array = false;
 
+$object_array = array();
+$objects_total = 0; 
+
 if ($checkedout_array != false && sizeof ($checkedout_array) > 0)
 {      
   $color = false;
-  $objects_total = 0; 
   
   reset ($checkedout_array);
  
@@ -156,7 +158,7 @@ $galleryview = "";
 $listview = "";
 $items_row = 0;
 
-if ($object_array != false && @sizeof ($object_array) > 0)
+if (!empty ($object_array) && @sizeof ($object_array) > 0)
 {
   natcasesort ($object_array);
   reset ($object_array);
@@ -222,7 +224,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
         }
         
         // refresh sidebar
-        if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar('".url_encode($location_esc.$folder."/")."', '.folder');";
+        if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
         else $sidebarclick = "";
         // onclick for marking objects
         $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";        
@@ -252,8 +254,8 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                         <td id=h".$items_row."_3 nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$site."</span></td>\n";
         $listview .= "</tr>\n";
         
-        $galleryview .= "<td id=t".$items_row." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
-                          <div ".$selectclick." ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer;\">".
+        $galleryview .= "<td id=t".$items_row." ".$selectclick." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
+                          <div ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer;\">".
                             $dlink_start."
                             <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" style=\"border:0;\" /></div><br />
                             ".showshorttext($folder_name, 40)."
@@ -401,7 +403,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
           // open on double click
           $openObject = "onDblClick=\"window.open('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."','".$container_id."','status=yes,scrollbars=no,resizable=yes,width=800,height=600');\"";
           // refresh sidebar
-          if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar('".url_encode($location_esc."/")."', '".$object."');";
+          if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
           else $sidebarclick = ""; 
           // onclick for marking objects
           $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
@@ -502,8 +504,8 @@ if ($object_array != false && @sizeof ($object_array) > 0)
           }
           else $linking_buttons = "";               
           
-          $galleryview .= "<td id=t".$items_row." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
-                            <div ".$selectclick." ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"cursor:pointer;\">".
+          $galleryview .= "<td id=t".$items_row." ".$selectclick." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
+                            <div ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"cursor:pointer;\">".
                               $dlink_start."
                                 ".$thumbnail."<br />
                                 ".showshorttext($object_name, 20, true)."

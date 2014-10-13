@@ -55,7 +55,7 @@ $filewrapperdownload = "";
 <head>
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 </head>
@@ -112,7 +112,7 @@ if ($pagestore != false)
   
     // ---------------------------- page info ---------------------------
     
-    if ($contentfile != "")
+    if (!empty ($contentfile))
     {
       // get file time
       if ($media != "") $last_updated[0] = date ("Y-m-d H:i", @filemtime (getmedialocation ($site, $media, "abs_path_media").$site."/".$media));   
@@ -123,7 +123,7 @@ if ($pagestore != false)
       echo "<tr><td valign=top>".$text3[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$contentfile."</td></tr>\n";    
     }
   
-    if ($template != "")
+    if (!empty ($template))
     {
       // define template name
       if (strpos ($template, ".inc.tpl") > 0)
@@ -158,7 +158,7 @@ if ($pagestore != false)
       
       // get file size in kB for:
       // multimedia objects/components
-      if ($media != false && $media != "")
+      if ($media != false && !empty ($media))
       {
         $mediadir = getmedialocation ($site, $media, "abs_path_media");
         
@@ -171,7 +171,7 @@ if ($pagestore != false)
       // folders objects
       elseif ($page == ".folder")
       {
-        if ($mgmt_config['db_connect_rdbms'] != "")
+        if (!empty ($mgmt_config['db_connect_rdbms']))
         {
           $filesize_array = rdbms_getfilesize ("", $location_esc.$page);
         
@@ -225,7 +225,7 @@ if ($pagestore != false)
     if ($filewrapperdownload != "") echo "<tr><td valign=\"top\">".$text26[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filewrapperdownload."</td></tr>\n";
     
     // MD5 Checksum of media file
-    if ($fileMD5 != "") echo "<tr><td valign=\"top\">".$text28[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$fileMD5."</td></tr>\n";
+    if (!empty ($fileMD5)) echo "<tr><td valign=\"top\">".$text28[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$fileMD5."</td></tr>\n";
     
     // show connected objects button
     if ($cat == "comp" && $mgmt_config[$site]['linkengine'] == true)
@@ -234,25 +234,25 @@ if ($pagestore != false)
     }
     
     // show container usage button
-    if ($contentfile != "")
+    if (!empty ($contentfile))
     {
       echo "<tr><td nowrap=\"nowrap\">".$text8[$lang].": </td><td><img name=\"Button2\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location.href='page_info_container.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button2','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
     
     // show statistics button
-    if ($cat == "comp" && $mgmt_config['db_connect_rdbms'] != "" && $container_id != "")
+    if ($cat == "comp" && $mgmt_config['db_connect_rdbms'] != "" && !empty ($container_id))
     {
       echo "<tr><td nowrap=\"nowrap\">".$text27[$lang].": </td><td><img name=\"Button3\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location.href='page_info_stats.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button3','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
     
     // show meta information button
-    if ($cat == "comp" && $media != "")
+    if ($cat == "comp" && !empty ($media))
     {
       echo "<tr><td nowrap=\"nowrap\">".$text30[$lang].": </td><td><img name=\"Button4\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location.href='page_info_metadata.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button4','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
     
     // show recipients button
-    if ($cat == "comp" && $mgmt_config['db_connect_rdbms'] != "")
+    if ($cat == "comp" && !empty ($mgmt_config['db_connect_rdbms']))
     {
       echo "<tr><td nowrap=\"nowrap\">".$text23[$lang].": </td><td><img name=\"Button5\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location.href='page_info_recipients.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button5','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }

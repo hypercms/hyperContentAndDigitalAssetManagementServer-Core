@@ -288,22 +288,22 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
     // if media is given
     if ($media != "")
     {
-      // if no name is given
+      // if no name has been provided
       if ($name == "")
       {
         if ($objectpath_esc != "") $media_info = getfileinfo ($site, $objectpath_esc, "comp");
         else $media_info = getfileinfo ($site, getobject ($media), "comp");
         
         $name = $media_info['name'];
-        
-        // replace file extension if file was converted
-        if (!empty ($media_info_new['ext']))
-        {
-          $name_info = getfileinfo ($site, getobject ($name), "comp");
-          $name = $name_info['filename'].$media_info_new['ext'];
-        }
       }
-   
+
+      // replace file extension if file was converted
+      if (!empty ($media_info_new['ext']))
+      {
+        $name_info = getfileinfo ($site, getobject ($name), "comp");
+        $name = $name_info['filename'].$media_info_new['ext'];
+      }
+
       // stream file content
       downloadfile ($media_root.$media, $name, "download", $user);
     }

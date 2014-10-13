@@ -1824,6 +1824,8 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
     $return = "<".$tag." id=\"".$hypertagname."_".$id."\" title=\"".$title."\" class=\"hcms_editable\" ".($contenteditable ? 'contenteditable="true" ' : '').">".(empty($contentbot) ? $defaultText : $contentbot)."</".$tag.">";
 	  
     // Building of the specific editor
+    $element = "";
+    
     switch ($hypertagname)
     {
       // checkbox
@@ -2348,21 +2350,12 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
     // define logo if undefined
     if ($logo_url == NULL && $media_dir != "")
     {
-      // preview video of original file
       if (strpos ($logo_file, ".orig.") > 0)
       {
         $logo_name = substr ($logo_file, 0, strrpos ($logo_file, ".orig."));
         
         if (is_file ($media_dir.$site."/".$logo_name.".thumb.jpg")) $logo_url = $media_url.$site."/".$logo_name.".thumb.jpg";
       }
-      // individual video file
-      elseif (strpos ($logo_file, ".media.") > 0)
-      {
-        $logo_name = substr ($logo_file, 0, strrpos ($logo_file, ".media."));
-        
-        if (is_file ($media_dir.$site."/".$logo_name.".thumb.jpg")) $logo_url = $media_url.$site."/".$logo_name.".thumb.jpg";
-      }
-      // thumbnail video file for video player
       elseif (strpos ($logo_file, ".thumb.") > 0)
       {
         $logo_name = substr ($logo_file, 0, strrpos ($logo_file, ".thumb."));
