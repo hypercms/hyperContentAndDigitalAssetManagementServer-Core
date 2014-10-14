@@ -964,7 +964,7 @@ function getmimetype ($file)
     }
     
     // check if mime-type for the given extension exists
-    if ($mimetype[$file_ext] != "") return $mimetype[$file_ext];
+    if (!empty ($mimetype[$file_ext])) return $mimetype[$file_ext];
     else return "application/octetstream";
   }
   else return "";

@@ -1430,14 +1430,14 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
         <label style="width:60px; display:inline-block;" for="blur"><?php echo $text41[$lang]; ?></label>
         <input name="blur_radius" type="text" id="blur_radius" size="2" maxlength="2" value="0"  title="<?php echo $text44[$lang]; ?>" />
         <label style="width:6px; display:inline-block;"for="blur_sigma">x</label>
-        <input name="blur_sigma" type="text" id="blur_sigma" size="1" maxlength="1" value="0.1"  title="<?php echo $text45[$lang]; ?>" />
+        <input name="blur_sigma" type="text" id="blur_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo $text45[$lang]; ?>" />
       </div>
       <div class="row">
         <input type="checkbox" id="sharpen" name="effect" value="sharpen" onclick="toggle_sharpen();" />
         <label style="width:60px; display:inline-block;" for="sharpen"><?php echo $text42[$lang]; ?></label>
         <input name="sharpen_radius" type="text" id="sharpen_radius" size="2" maxlength="2" value="0"  title="<?php echo $text44[$lang]; ?>" />
         <label style="width:6px; display:inline-block;"for="sharpen_sigma">x</label>
-        <input name="sharpen_sigma" type="text" id="sharpen_sigma" size="1" maxlength="1" value="0.1"  title="<?php echo $text45[$lang]; ?>" />
+        <input name="sharpen_sigma" type="text" id="sharpen_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo $text45[$lang]; ?>" />
       </div>
       <div class="row">
         <input type="checkbox" id="sketch" name="effect" value="sketch" onclick="toggle_sketch();" />
@@ -1450,7 +1450,7 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
       <div class="row">
         <input type="checkbox" id="paint" name="effect" value="paint" onclick="toggle_paint();" />
         <label style="width:60px; display:inline-block;" for="paint"><?php echo $text47[$lang]; ?></label>
-        <input name="paint_value" type="text" id="paint_value" size="3" maxlength="3" value="0" />
+        <input name="paint_value" type="text" id="paint_value" size="2" maxlength="3" value="0" />
       </div>
     </div>
     

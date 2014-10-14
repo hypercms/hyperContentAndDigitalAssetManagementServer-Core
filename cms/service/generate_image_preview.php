@@ -168,7 +168,6 @@ if ($media_size != false && $site != "")
       {
         $thumbformat = $formatstring;
       }
-      
     }
     
     if ($thumbformat == "") $thumbformat = ".png";
@@ -188,7 +187,7 @@ if ($media_size != false && $site != "")
       {
         $mgmt_imageoptions[$formats]['preview'] .= " -s ".$imagecropwidth."x".$imagecropheight." -c ".$imagex."x".$imagey;
       } 
-      elseif( in_array($imageresize, array("percentage", "imagewidth", "imageheight")))
+      elseif (in_array($imageresize, array("percentage", "imagewidth", "imageheight")))
       {
         $mgmt_imageoptions[$formats]['preview'] .= " -s ".$imagewidth."x".$imageheight;
       }
@@ -200,7 +199,7 @@ if ($media_size != false && $site != "")
         $mgmt_imageoptions[$formats]['preview'] .= " -r ".$angle;
         $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -r ".$angle;
       }
-      elseif($rotate == "flip")
+      elseif ($rotate == "flip")
       {
          $mgmt_imageoptions[$formats]['preview'] .= " ".$flip;
          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -r ".$angle;
@@ -212,43 +211,44 @@ if ($media_size != false && $site != "")
         $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -b ".$brightness;
       } 
 
-      if($use_contrast == 1)
+      if ($use_contrast == 1)
       {
         $mgmt_imageoptions[$formats]['preview'] .= " -k ".$contrast;
         $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -k ".$contrast;
       }
 
 
-      if( $colorspace == 1) 
+      if ($colorspace == 1) 
       {
         $mgmt_imageoptions[$formats]['preview'] .= " -cs ".$imagecolorspace;
         $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -cs ".$imagecolorspace;
       }
 
-      if( $effect == "sepia") 
+      if ($effect == "sepia") 
       {
         $mgmt_imageoptions[$formats]['preview'] .= " -sep ".$sepia_treshold."%";
         $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -sep ".$sepia_treshold."%";
       }
-      elseif( $effect == "blur") 
+      elseif ($effect == "blur") 
       {
         $mgmt_imageoptions[$formats]['preview'] .= " -bl ".$blur_radius."x".$blur_sigma;
         $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -bl ".$blur_radius."x".$blur_sigma;
       }
-      elseif( $effect == "sharpen") 
+      elseif ( $effect == "sharpen") 
       {
         $mgmt_imageoptions[$formats]['preview'] .= " -sh ".$sharpen_radius."x".$sharpen_sigma;
         $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -bl ".$blur_radius."x".$blur_sigma;
       }
-      elseif( $effect == "sketch") 
+      elseif ($effect == "sketch") 
       {
-        if($sketch_angle > -1) {
+        if ($sketch_angle > -1)
+        {
           $sketch_angle = "+".$sketch_angle;
         }
         $mgmt_imageoptions[$formats]['preview'] .= " -sk ".$sketch_radius."x".$sketch_sigma.$sketch_angle;
         $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -sk ".$sketch_radius."x".$sketch_sigma.$sketch_angle;
       }
-      elseif( $effect == "paint") 
+      elseif ($effect == "paint") 
       {
         $mgmt_imageoptions[$formats]['preview'] .= " -pa ".$paintvalue;
         $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -pa ".$paintvalue;
@@ -260,12 +260,14 @@ if ($media_size != false && $site != "")
       
       $output->options = $mgmt_imageoptions[$formats]['preview'];
       $output->thumboptions = $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight];
-      
+    
       $result = createmedia ($site, $media_root_src, $media_root_target, $mediafile_info['file'], $imageformat, 'preview');
-      if($result)
+      
+      if ($result)
       {
-        list($output->imagewidth, $output->imageheight) = getimagesize($media_root_target.$result);
-        if(($imageresize == "crop" || $output->imagewidth > $thumbwidth || $output->imageheight > $thumbheight))
+        list ($output->imagewidth, $output->imageheight) = getimagesize ($media_root_target.$result);
+        
+        if (($imageresize == "crop" || $output->imagewidth > $thumbwidth || $output->imageheight > $thumbheight))
           $resultthumb = createmedia ($site, $media_root_src, $media_root_target, $mediafile_info['file'], "png", 'render.'.$thumbwidth.'x'.$thumbheight);
         else
           $resultthumb = false;

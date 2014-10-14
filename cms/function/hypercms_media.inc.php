@@ -331,7 +331,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   list ($imagewidth, $imageheight) = explode ("x", $imagesize);
                   
                   // ImageMagick resize parameter (resize will fit the image into the requested size, aspect ratio is preserved)
-                  $imageresize = "-resize ".$imagewidth."x".$imageheight;
+                  $imageresize = "-resize ".round ($imagewidth, 0)."x".round ($imageheight, 0);
                 }
                 else $imageresize = "";
              
@@ -377,7 +377,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // image brightness
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-b ") > 0) 
                 {
-                  $imagerotation = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-b"));
+                  $imagebrightness = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-b"));
                   
                   if ($imagebrightness > 100) $imagebrightness = 100;
                   elseif ($imagebrightness < -100) $imagebrightness = -100;
@@ -388,13 +388,13 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-k ") > 0) 
                 {
                   $imagecontrast = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-k"));
-                  
+
                   if ($imagecontrast > 100) $imagecontrast = 100;
                   elseif ($imagecontrast < -100) $imagecontrast = -100;
                 }
                 else $imagecontrast = 0;
                 
-                // set image and brightness parameters for ImageMagick
+                // set image brightness parameters for ImageMagick
                 $imageBrightnessContrast = "";
                 
                 if ($imagebrightness != 0 || $imagecontrast != 0)
@@ -494,7 +494,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   else $paint = "-paint ".$paint;
                 }
                 else $paint = "";
-                                
+
                 // -------------------- convert image using ImageMagick ----------------------
                 if (!empty ($mgmt_imagepreview[$imagepreview_ext]) && $mgmt_imagepreview[$imagepreview_ext] != "GD")
                 {
@@ -593,7 +593,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         }
                         
                         @exec ($cmd, $buffer, $errorCode);
-                        
+
                         // delete buffer file
                         @unlink ($location_dest.$file_name.".buffer.jpg");   
                         
@@ -637,7 +637,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
 
                     @exec ($cmd, $buffer, $errorCode);
-                    
+
                     // on error
                     if ($errorCode)
                     {
@@ -1782,7 +1782,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
       
       // supported extensions for document rendering
       foreach ($mgmt_docpreview as $docpreview_ext => $docpreview)
-      {        
+      { 
         // check file extension
         if ($file_ext != "" && substr_count ($docpreview_ext.".", $file_ext.".") > 0)
         {
@@ -1790,7 +1790,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
           
           // extensions for certain document rendering options
           foreach ($mgmt_docoptions as $docoptions_ext => $docoptions)
-          {
+          { 
             // get media rendering options based on given destination format
             if (substr_count ($docoptions_ext.".", ".".$format.".") > 0)
             {
@@ -1801,12 +1801,13 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
               if ($docformat == "" || $docformat == false) $docformat = "pdf";   
               
               // create new file
-              $newfile = $file_name.".thumb.".$docformat;                   
-            
+              $newfile = $file_name.".thumb.".$docformat;  
+              
+              // if thumbnail file exists in destination (temp) folder
               if (@is_file ($location_dest.$newfile))
               {
                 // delete existing destination file if it is older than the source file
-                if(@filemtime ($location_dest.$newfile < @filemtime ($location_source.$file))) 
+                if (@filemtime ($location_dest.$newfile) < @filemtime ($location_source.$file)) 
                 {
                   @unlink ($location_dest.$newfile);
                 }
@@ -1816,10 +1817,22 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                   return $newfile;
                 }
               }
-              
+
+              // if thumbnail file exits in source folder 
+              if (@is_file ($location_source.$newfile))
+              {
+                // if existing thumbnail file is newer than the source file
+                if (@filemtime ($location_source.$newfile) >= @filemtime ($location_source.$file)) 
+                {
+                  // copy to destination directory
+                  $result_rename = @copy ($location_source.$newfile, $location_dest.$newfile);
+                  if ($result_rename == true) return $newfile;
+                }
+              }
+                
               $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".$location_source.$file."\"";              
               @exec ($cmd." 2>&1", $buffer, $errorCode);
-              
+          
               // on error of new file is smalle than 500 bytes
               if ($errorCode || !is_file ($location_source.$file_name.".".$docformat))
               {

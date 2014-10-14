@@ -3311,6 +3311,11 @@ function buildworkflow ($workflow_data)
     $scriptmax = $scriptmax_array[0];
     
     $activeitem_user_array = selectxmlcontent ($workflow_data, "<item>", "<type>", "user*");
+
+    $activeid_user_array = array();
+    $passiveid_user_array = array();
+    $activeid_script_array = array();
+    $passiveid_script_array = array();
   
     if ($activeitem_user_array != false)
     {
@@ -11466,7 +11471,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                     $container_data = loadfile (getcontentlocation ($container_id, 'abs_path_content'), $contentcontainer);
                     $contentuser_array = getcontent ($container_data, "<contentuser>");
                     $contentuser = $contentuser_array[0];
-                     
+                    
                     if ($contentuser != false)
                     {
                       // send mail to user

@@ -565,6 +565,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     else $id = "";
     
     $mediaview = "";
+    $style = "";
 
     // only show details if user has permissions to edit the file or the configuration of the system is not a DAM
     if ($viewtype == "template" || ($setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1))

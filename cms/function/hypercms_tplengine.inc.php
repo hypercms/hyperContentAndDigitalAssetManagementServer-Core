@@ -1202,7 +1202,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       
       // get container id
       $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
-      
+
       // load given content container
       if ($container != "" && substr_count ($container, $container_id) == 1)
       {
@@ -1354,7 +1354,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // =================================================== load template =================================================  
     // load associated template xml file and read information
     $result = loadtemplate ($site, $templatefile);
-    
+   
     if (is_array ($result))
     {
       $templatedata = $result['content'];
@@ -1633,7 +1633,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         $contentfile_load = $contentfile;
         $contentdata = loadcontainer ($contentfile_load, "version", $user);
         $usedby = "";
-        $db_read_container = true;        
+        $db_read_container = true;   
       }
     }
     
