@@ -312,10 +312,10 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             $listview .= "</tr>\n";
         
             $galleryview .= "<td id=t".$items_row." ".$selectclick." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
-                              <div ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer;\">".
+                              <div ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer; display:block;\">".
                                 $dlink_start."
-                                  <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$item_info['icon_large']."\" style=\"border:0;\" /></div><br />
-                                  ".showshorttext($folder_name, 20, true)."
+                                  <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$item_info['icon_large']."\" style=\"border:0;\" /></div>
+                                  ".showshorttext($folder_name, 18, true)."
                                 ".$dlink_end."
                               </div>
                             </td>\n";
@@ -574,10 +574,10 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             else $linking_buttons = "";            
   
             $galleryview .= "<td id=t".$items_row." ".$selectclick." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
-                              <div ".$openObject." ".$hcms_setObjectcontext." title=\"".$metadata."\" style=\"cursor:pointer;\">".
+                              <div ".$openObject." ".$hcms_setObjectcontext." title=\"".$metadata."\" style=\"cursor:pointer; display:block;\">".
                                 $dlink_start."
-                                 ".$thumbnail."</br />
-                                 ".showshorttext($object_name, 20, true)."
+                                 ".$thumbnail."
+                                 ".showshorttext($object_name, 18, true)."
                                 ".$dlink_end."
                               </div>
                               ".$linking_buttons."

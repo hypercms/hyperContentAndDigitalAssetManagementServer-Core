@@ -172,10 +172,12 @@ function showshorttext ($text, $length=0, $linebreak=false)
     else
     {
       // max. 3 lines
-      if (strlen ($text) > ($length * 3)) return substr ($text, 0, $length)."<br />\n".substr ($text, $length, $length)."<br />\n".substr ($text, ($length*2), ($length-2))."...";
-      elseif (strlen ($text) > ($length * 2)) return substr ($text, 0, $length)."<br />\n".substr ($text, $length, $length)."<br />\n".substr ($text, ($length*2));
-      elseif (strlen ($text) > $length) return substr ($text, 0, $length)."<br />\n".substr ($text, $length);
-      else return $text;
+      if (strlen ($text) > ($length * 3)) $text = substr ($text, 0, $length)."<br />\n".substr ($text, $length, $length)."<br />\n".substr ($text, ($length*2), ($length-2))."...";
+      elseif (strlen ($text) > ($length * 2)) $text = substr ($text, 0, $length)."<br />\n".substr ($text, $length, $length)."<br />\n".substr ($text, ($length*2));
+      elseif (strlen ($text) > $length) $text = substr ($text, 0, $length)."<br />\n".substr ($text, $length);
+      
+      // keep 
+      return "<div style=\"vertical-align:top; height:50px; display:block;\">".$text."</div>";
     }
   }
   elseif ($text != "" && $length < 0)

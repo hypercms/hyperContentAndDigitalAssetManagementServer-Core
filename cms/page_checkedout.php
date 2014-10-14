@@ -505,10 +505,10 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
           else $linking_buttons = "";               
           
           $galleryview .= "<td id=t".$items_row." ".$selectclick." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
-                            <div ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"cursor:pointer;\">".
+                            <div ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"cursor:pointer; display:block;\">".
                               $dlink_start."
-                                ".$thumbnail."<br />
-                                ".showshorttext($object_name, 20, true)."
+                                ".$thumbnail."
+                                ".showshorttext($object_name, 18, true)."
                               ".$dlink_end."
                             </div>
                             ".$linking_buttons."
