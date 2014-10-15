@@ -64,11 +64,7 @@ if ($mediaobject != "")
   
   // convert location
   $location = deconvertpath ($location, "file");
-  $location_esc = convertpath ($site, $location, $cat);
-  
-  // get access permissions for function showmedia
-  $ownergroup = accesspermission ($site, $location, "comp");
-  $setlocalpermission = setlocalpermission ($site, $ownergroup, "comp");
+  $location_esc = convertpath ($site, $location, "comp");
   
   // load object file
   if (valid_locationname ($location) && valid_objectname ($object))

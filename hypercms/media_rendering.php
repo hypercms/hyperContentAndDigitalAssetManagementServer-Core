@@ -44,7 +44,7 @@ function startConversion ($videotype)
   // create video
   if ($videotype == "videoplayer") $videotype = "thumbnail";
   else $videotype = "video";
-  
+
   $result = createmedia ($site, $media_root, $media_root, $file_info['file'], $filetype, $videotype);
 
   if ($result == false)
@@ -283,16 +283,17 @@ if ($action == "rendermedia" && checktoken ($token, $user) && valid_publicationn
   }
   
   // Video montage
-  $cut_add = '';
+  $cut_add = "";
   
-  if ($cut == 1)
+  if ($cut == 1 && $cut_begin != "" && $cut_end != "")
   {
-    $starttime = DateTime::createFromFormat('H:i:s.u', $cut_begin);
-    $endtime = DateTime::createFromFormat('H:i:s.u', $cut_end);
+    $starttime = DateTime::createFromFormat ('H:i:s.u', $cut_begin);
+    $endtime = DateTime::createFromFormat ('H:i:s.u', $cut_end);
     $duration = $starttime->diff($endtime);
     
-    list ($duh, $startmsec) = explode (".", $cut_begin);
-    list ($duh, $endmsec) = explode (".", $cut_end);
+    // get msec
+    list ($rest, $startmsec) = explode (".", $cut_begin);
+    list ($rest, $endmsec) = explode (".", $cut_end);
     
     $durationmsec = $endmsec - $startmsec;
     
@@ -311,6 +312,9 @@ if ($action == "rendermedia" && checktoken ($token, $user) && valid_publicationn
         }
       }
     }
+    
+    if ($startmsec < 100) $startmsec = "0".$startmsec;
+    if ($durationmsec < 100) $durationmsec = "0".$durationmsec;
         
     $cut_add = '-ss '.$starttime->format('H:i:s').'.'.$startmsec.' -t '.$duration->format('%H:%I:%S').'.'.$durationmsec.' '; 
   }
@@ -448,6 +452,10 @@ function updateField (field)
   var miliseconds= Math.floor((time % seconds)*1000);
   var minutes = Math.floor(time/60)%60;
   var hours = Math.floor(time/3600)%24;
+  
+  if (hours   < 10) {hours   = "0"+hours;}
+  if (minutes < 10) {minutes = "0"+minutes;}
+  if (seconds < 10) {seconds = "0"+seconds;}
 
   field.value = hours+':'+minutes+':'+seconds+'.'+miliseconds;
 }
@@ -547,6 +555,7 @@ $().ready(function() {
 </div>
 
 <?php
+echo showinfobox ($text36[$lang], $lang, 10);
 echo showmessage ($show, 600 , 80, $lang, "position:absolute; left:50px; top:150px;");
 ?> 
 
@@ -610,7 +619,7 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
         </div>
       </div>
     </div>
-    <?php if(!$audio) { ?>
+    <?php if (!$audio) { ?>
     <div class="cell">
       <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1"><strong><label for="thumb_yes" onclick="checkThumb();" /><?php echo $text28[$lang]; ?></label></strong>
       <div id="thumb_area" style="display:none;">

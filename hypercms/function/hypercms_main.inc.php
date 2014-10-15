@@ -9806,7 +9806,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
   $show = "";
   $show_command = "";
   
-  if (valid_publicationname ($site) && valid_locationname ($location) && accessgeneral ($site, $location, $cat) && $cat != "" && is_array ($global_files) && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_locationname ($location) && $cat != "" && accessgeneral ($site, $location, $cat) && is_array ($global_files) && valid_objectname ($user))
   {
     // publication management config
     if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
@@ -10019,6 +10019,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
             {
               $imagewidth = round ($media_size[0] * $imagepercentage / 100, 0);
               $imageheight = round ($media_size[1] * $imagepercentage / 100, 0);
+              
               if ($imagewidth != "" && $imageheight != "")
               {
                 $formats = "";
@@ -10164,16 +10165,22 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
           $page_nameonly = specialchr_decode (strrev (substr (strstr (strrev ($page), "."), 1)));
           // get converted location
           $location_conv = convertpath ($site, $location, $cat);
+          // get media root directory
+          $media_root = getmedialocation ($site, $media_update, "abs_path_media");
           
           // save new multimedia file
-          if ($is_url)
+          if (!empty ($media_root))
           {
-            $test = @rename($global_files['Filedata']['tmp_name'], getmedialocation ($site, $media_update, "abs_path_media").$site."/".$media_update) or $show = $text5[$lang];
+            if ($is_url)
+            {
+              $test = @rename ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update) or $show = $text5[$lang];
+            }
+            else
+            {
+              $test = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update) or $show = $text5[$lang];
+            }
           }
-          else
-          {
-            $test = @move_uploaded_file ($global_files['Filedata']['tmp_name'], getmedialocation ($site, $media_update, "abs_path_media").$site."/".$media_update) or $show = $text5[$lang];
-          }
+          else $test = false;
 
           if ($test == true)
           {
@@ -10183,8 +10190,22 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
               rdbms_insertdailystat ("upload", $container_id, $user);
             }
 
+            // get media size
+            $media_size = @getimagesize ($media_root.$site."/".$media_update);
+            
+            if (!empty ($media_size[0]) && !empty ($media_size[1]))
+            {
+              $imagewidth = round ($media_size[0], 0);
+              $imageheight = round ($media_size[1], 0);
+            }
+            else
+            {
+              $imagewidth = 0;
+              $imageheight = 0;
+            }
+
             // get new rendering settings and set image options (if given)
-            if ($imagewidth != "" && $imageheight != "" && $imageformat != "")
+            if ($imagewidth > 0 && $imageheight > 0 && $imageformat != "")
             {
               $formats = "";
 

@@ -88,7 +88,7 @@ $text30['en'] = "Could not determine the frame for the preview image when .";
 $text30['de'] = "Frame des Vorschaubildes konnte nicht ermittelt werden.";
 
 $text31['en'] = "Could not extract the preview image.";
-$text31['de'] = "Konnte das Vorschaubild nicht extrahieren.";
+$text31['de'] = "Das Vorschaubild konnte nicht extrahiert werden.";
 
 $text32['en'] = "for Videoplayer";
 $text32['de'] = "f&uuml;r Videoplayer";
@@ -101,4 +101,7 @@ $text34['de'] = "Audioschnitt";
 
 $text35['en'] = "Audio Quality";
 $text35['de'] = "Audioqualit&auml;t";
+
+$text36['en'] = "Use 'Options' to edit the video. Individual video formats can be downloaded after closing the Video Editing mode. Use the 'Embed video' button to play the video for the 'Videoplayer'.";
+$text36['de'] = "Verwenden Sie 'Optionen' for die Video-Bearbeitung. Individuelle Videoformate lassen sich nach Schliessen der Videbearbeitung herunterladen. Verwenden Sie die 'Video einbetten' Schaltfl&auml;che, um das  Video f&uuml;r den 'Videploayer' abzupsielen.";
 ?>
