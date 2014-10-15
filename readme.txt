@@ -30,12 +30,12 @@ On client-side:
 
 Installation:
 1. Copy all files from the compressed ZIP file to the webservers root directory, so you can access them via browser. 
-2. Access http(s)://www.your-domain.com/cms/install and follow the installation process
+2. Access http(s)://www.your-domain.com/hypercms/install and follow the installation process
 3. After the successful installation you will be forwarded to the logon of the system. Use username "admin" and your password to access the system.
 
 
 Manuals:
-All hyperCMS manuals can be found in cms/help.
+All hyperCMS manuals can be found in hypercms/help.
 
 
 Screencasts:
