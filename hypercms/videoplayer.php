@@ -87,8 +87,21 @@ if (is_file (getmedialocation ($site, $media, "abs_path_media").$media))
 $file_info = getfileinfo ($site, $media, "comp");
 $audio = false;
 
-// versions from 5.6.3 (only preview of original file)
-if ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename'].".config.orig"))
+
+// IMPORTANT: do not change the priority order!
+
+// 1st Priority: versions before 5.6.3 (for HTML5 video/audio player)
+if ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename'].".config.video"))
+{
+  $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.video");
+}
+elseif ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename'].".config.audio"))
+{
+  $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.audio");
+  $audio = true;
+}
+// 2nd Priority: versions from 5.6.3 (preview of original file if no HTML5 video files have been generated)
+elseif ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename'].".config.orig"))
 {
   $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.orig");
   // We try to detect if we should use audio player
@@ -103,22 +116,12 @@ if ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename'].".c
     }
   }
 }
-// versions before 5.6.3 (for video player)
-elseif ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename'].".config.video"))
-{
-  $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.video");
-}
-elseif ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename'].".config.audio"))
-{
-  $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.audio");
-  $audio = true;
-}
-// older versions before 5.5.13
+// 3rd Priority: older versions before 5.5.13
 elseif ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename'].".config.flv"))
 {
   $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.flv");
 }
-// no media config file is available, try to create video thumbnail file
+// 4th Priority: no media config file is available, try to create video thumbnail file
 elseif (is_file ($media_dir.$site."/".$file_info['file']))
 {
   // create thumbnail video of original file
