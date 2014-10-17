@@ -60,9 +60,6 @@
 .hcmsInfoBox
 {
   z-index: 100;
-  position: fixed;
-  top: 30px;
-  right: 30px;
   padding: 5px;
   filter: alpha(opacity=90); -moz-opacity: 0.9; opacity: 0.9;
   vertical-align: middle;
@@ -273,7 +270,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 32px;
+  height: 30px;
   z-index:900;
 }
 
@@ -286,7 +283,7 @@
 .hcmsHeadline
 {  
   font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 18px; 
+  font-size: 16px; 
   font-weight: bold; 
   color: #000000; 
   text-decoration: none
@@ -295,7 +292,7 @@
 .hcmsHeadlineTiny 
 {  
   font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 18px; 
+  font-size: 16px; 
   font-weight: normal; 
   color: #000000; 
   text-decoration: none
@@ -327,7 +324,7 @@
   background-size: 22px 22px !important;
   height: 22px !important;
   width: 22px !important;
-  line-height: 22px !important;
+  line-height: 28px !important;
 }
 
 .hcmsIconList

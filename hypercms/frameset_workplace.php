@@ -29,7 +29,7 @@ checkusersession ($user, false);
 </head>
 <frameset rows="0,*" frameborder="NO" border="0" framespacing="0">
   <frame name="controlFrame" scrolling="NO" src="empty.php?site=<?php echo $site; ?>" noresize />
-  <frame name="mainFrame" scrolling="NO" src="welcome.php?site=<?php echo $site; ?>" />
+  <frame name="mainFrame" scrolling="NO" src="home.php?site=<?php echo $site; ?>" />
 </frameset>
 <noframes></noframes>
 </html>

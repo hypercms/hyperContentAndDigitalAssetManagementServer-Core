@@ -449,7 +449,7 @@ function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false,$site=
           $link .= '&control='.urlencode($point['control']);
         }
         
-        if ($site != "")
+        if ($site)
         {
           $link .= '&site='.urlencode($site);
         }
@@ -495,6 +495,13 @@ else
   $point->setOnMouseOver('hcms_resetContext();');
   $maintree .= $point->generateHTML();
 
+  // ----------------------------------------- home ---------------------------------------------- 
+  $point = new hcms_menupoint ($text42[$lang], 'home.php', 'home.gif');
+  $point->setOnClick('changeSelection(this)');
+  $point->setTarget('workplFrame');
+  $point->setOnMouseOver('hcms_resetContext();');
+  $maintree .= $point->generateHTML();
+
   // ----------------------------------------- desktop ---------------------------------------------- 
   if (!isset ($hcms_linking['location']) && $rootpermission['desktop'] == 1)
   {
@@ -504,7 +511,7 @@ else
     
     if ($rootpermission['desktopsetting'] == 1) 
     {
-      $subpoint = new hcms_menupoint($text1[$lang], "frameset_home.php?site=*Null*&login=".$user."&login_cat=home", 'userhome.gif');
+      $subpoint = new hcms_menupoint($text1[$lang], "user_edit.php?site=*Null*&login=".$user."&login_cat=home", 'userhome.gif');
       $subpoint->setOnClick('changeSelection(this)');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');

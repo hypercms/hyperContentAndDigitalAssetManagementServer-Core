@@ -671,7 +671,7 @@ parent.frames['controlFrame'].location.href='control_objectlist_menu.php?virtual
 
 <body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist"">
 
-<?php if (!$is_mobile) echo showinfobox ($text27[$lang]."<br/>".$text28[$lang]."<br/>".$text29[$lang], $lang); ?>
+<?php if (!$is_mobile) echo showinfobox ($text27[$lang]."<br/>".$text28[$lang]."<br/>".$text29[$lang], $lang, 3, "position:fixed; top:30px; right:30px;"); ?>
 
 <div id="contextLayer" style="position:absolute; width:150px; height:260px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_object" action="" method="post" target="_blank">

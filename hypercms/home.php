@@ -60,14 +60,14 @@ function hcms_geoposition (position)
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onload="<?php echo "hcms_geolocation();"; ?>">
+<body class="hcmsWorkplaceGeneric" onload="<?php if (empty ($_SESSION['hcms_temp_latitude']) || empty ($_SESSION['hcms_temp_longitude'])) echo "hcms_geolocation();"; ?>">
 
-<div style="width:90%; margin:auto; padding:10px;">
-  <img src="<?php echo getthemelocation(); ?>img/logo_welcome.gif" style="width:<?php if ($is_mobile) echo "260px"; else echo "320px"; ?>" /> <?php echo $version; ?><br /><br />
+<div class="hcmsWorkplaceFrame">
+  <div id="logo" style="display:block;"><img src="<?php echo getthemelocation(); ?>img/logo_welcome.gif" style="width:<?php if ($is_mobile) echo "260px"; else echo "320px"; ?>" /> <?php echo $version; ?></div>
   <?php
   if ($mgmt_config['welcome'] != "") 
   {
-    echo "<iframe width=\"100%\" height=\"600\" src=\"".$mgmt_config['welcome']."\" scrolling=\"no\" frameborder=\"0\" seamless=\"seamless\"></iframe>\n";
+    echo "<iframe width=\"92%\" height=\"600\" src=\"".$mgmt_config['welcome']."\" scrolling=\"yes\" class=\"hcmsInfoBox\" style=\"margin:10px 5px 5px 5px;\" seamless=\"seamless\"></iframe>\n";
   }
   ?>
 </div>

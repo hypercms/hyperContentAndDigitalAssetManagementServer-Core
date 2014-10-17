@@ -107,7 +107,7 @@ $mgmt_config['objectview'] = "inlineview";
 $mgmt_config['explorerview'] = "detail";
 
 // define if sidebar for object preview should be enabled (true) or disabled (false)
-$mgmt_config['sidebar'] = false;
+$mgmt_config['sidebar'] = true;
 
 // define standard mail link type ("access" = access-link; "download" = download-link)
 $mgmt_config['maillink'] = "download";

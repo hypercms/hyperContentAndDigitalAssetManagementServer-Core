@@ -351,13 +351,13 @@ function showinfopage ($show, $lang="en")
 
 // --------------------------------------- showinfobox -------------------------------------------
 // function: showinfobox ()
-// input: message, language code (optional), display for seconds (optional), ID of div-layer (optional)
+// input: message, language code (optional), display for seconds (optional), additional style definitions  of div-layer (optional), ID of div-layer (optional)
 // output: message in div layer / false on error
 
 // description:
 // shows infobox for a few seconds
 
-function showinfobox ($show, $lang="en", $sec=4, $id="hcms_infoLayer")
+function showinfobox ($show, $lang="en", $sec=4, $style="", $id="hcms_infoLayer")
 {
   global $mgmt_config, $lang_codepage;
   
@@ -366,7 +366,7 @@ function showinfobox ($show, $lang="en", $sec=4, $id="hcms_infoLayer")
   if ($mgmt_config['showinfobox'] && $show != "" && strlen ($show) < 2400 && $lang != "")
   {
     return "  <script language=\"JavaScript\">window.onload = function(){ hcms_showInfo('".$id."', ".($sec*1000).") };</script>
-  <div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"display:none;\">".
+  <div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"display:none; ".$style."\">".
     $show."
   </div>";
   }

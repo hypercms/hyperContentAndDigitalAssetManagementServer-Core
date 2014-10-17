@@ -33,17 +33,13 @@ $site = getpublication ($location);
 $cat = getcategory ($site, $location); 
 
 // initalize object linking
-$objects_total = 0;
-$folder_array = array();
-$object_array = array();
-
 if (($location == "" || deconvertpath ($location, "file") == deconvertpath ($hcms_linking['location'], "file")) && is_array ($hcms_linking)) 
 {
   $site = $hcms_linking['publication'];
   $cat = $hcms_linking['cat'];
   $location = $hcms_linking['location'];
-  if (!empty ($hcms_linking['object'])) $object_array[] = $hcms_linking['object'];
-
+  if ($hcms_linking['object'] != "") $object_array[] = $hcms_linking['object'];
+  
   $objects_total = sizeof ($object_array);
 }
 
@@ -56,13 +52,13 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 // we check for general root element access since localpermissions are checked later
-if (!valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($cat) || ($cat == "comp" && (!isset ($globalpermission[$site]['component']) || $globalpermission[$site]['component'] != 1)) || ($cat == "page" && (!isset($globalpermission[$site]['page']) || $globalpermission[$site]['page'] != 1))) killsession ($user);
+if ($cat == "" || ($cat == "comp" && $globalpermission[$site]['component'] != 1) || ($cat == "page" && $globalpermission[$site]['page'] != 1) || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($cat)) killsession ($user);
 
 // check session of user
 checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
-  
+
 // set filter
 setfilter ($filter);
 
@@ -103,10 +99,14 @@ if (
      (valid_locationname ($location) && $hcms_linking['location'] == "") || 
      ($hcms_linking['location'] != "" && $hcms_linking['object'] == "" && substr_count ($location, $hcms_linking['location']) > 0)
    )
-{  
+{
+  $objects_total = 0;
+
   // generate page or component list using access permission data
   if (accesspermission ($site, $location, $cat) == false)
   {
+    $folder_array = array ();
+    
     if (@is_array ($access) && @sizeof ($access) > 0 && is_array ($access[$site]))
     {
       reset ($access);
@@ -247,7 +247,7 @@ if (!$is_mobile && is_array ($folder_array) && @sizeof ($folder_array) > 0)
         $file_time = date ("Y-m-d H:i", @filemtime ($location.$folder));
         
         // refresh sidebar
-        if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
+        if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar('".url_encode($location_esc.$folder."/")."', '.folder');";
         else $sidebarclick = "";
         // onclick for marking objects  
         $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
@@ -277,11 +277,11 @@ if (!$is_mobile && is_array ($folder_array) && @sizeof ($folder_array) > 0)
                        <td id=h".$items_row."_3 nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$text3[$lang]."</span></td>\n";
         $listview .= "</tr>\n";                       
     
-        $galleryview .= "<td id=t".$items_row." ".$selectclick." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
-                          <div ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer; display:block;\">".
+        $galleryview .= "<td id=t".$items_row." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
+                          <div ".$selectclick." ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer;\">".
                             $dlink_start."
-                              <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" style=\"border:0;\" /></div>
-                              ".showshorttext($folder_name, 18, true)."
+                              <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" style=\"border:0;\" /></div><br />
+                              ".showshorttext($folder_name, 20, true)."
                             ".$dlink_end."
                           </div>
                        </td>\n";
@@ -302,14 +302,12 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
 {
   natcasesort ($object_array);
   reset ($object_array);
-
+  
   foreach ($object_array as $objectpath)
   {
     // check for location path inside object variable
     if ($objectpath != "" && $items_row < $next_max)
     {
-      $ratio = "";
-      
       // check for location path inside folder variable
       if (substr_count ($objectpath, "/") > 0)
       {
@@ -436,7 +434,7 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
         // open on double click
         $openObject = "onDblClick=\"hcms_openBrWindowItem('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', '800', '600');\"";
         // refresh sidebar
-        if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
+        if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar('".url_encode($location_esc)."', '".url_encode($object)."');";
         else $sidebarclick = "";
         // onclick for marking objects      
         $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
@@ -502,10 +500,10 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
             }
                       
             // galleryview - view option for locked multimedia objects
-            if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
-            else $class_image  = "class=\"hcmsImageItem\"";               
+            if ($file_info['published'] == false) $class_image = "class=\"lazy hcmsIconOff\"";
+            else $class_image  = "class=\"lazy hcmsImageItem\"";               
         		
-            $thumbnail = "<div id=\"".strtolower(substr($ratio, 0, 1)).$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$media_info['filename'].".thumb.jpg")."&token=".hcms_crypt($site."/".$media_info['filename'].".thumb.jpg")."\" ".$class_image." /></div>";
+            $thumbnail = "<div id=\"".strtolower(substr($ratio, 0, 1)).$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img data-src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$media_info['filename'].".thumb.jpg")."&token=".hcms_crypt($site."/".$media_info['filename'].".thumb.jpg")."\" src=\"\" ".$class_image." /></div>";
           }
           // display file icon if thumbnail fails 
           else
@@ -537,11 +535,11 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
         }
         else $linking_buttons = "";            
   
-    		$galleryview .= "<td id=\"t".$items_row."\" ".$selectclick." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
-                          <div ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"cursor:pointer; display:block;\">".
+    		$galleryview .= "<td id=\"t".$items_row."\" width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
+                          <div ".$selectclick." ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"cursor:pointer;\">".
                             $dlink_start."
-                              ".$thumbnail."
-                              ".showshorttext($object_name, 18, true).
+                              ".$thumbnail."<br />
+                              ".showshorttext($object_name, 20, true).
                             $dlink_end."
                           </div>
                           ".$linking_buttons."
@@ -571,6 +569,8 @@ else $objects_counted = 0;
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" language="JavaScript" type="text/javascript"></script>
+<script src="javascript/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="javascript/jquery/plugins/jquery.lazy.min.js" type="text/javascript"></script>
 <script language="JavaScript">
 <!--
 // context menu
@@ -636,13 +636,20 @@ function toggleview (viewoption)
 
   return true;
 }
+
+jQuery(document).ready(function()
+{
+  jQuery("img.lazy").lazy({
+    delay:200
+  });
+});
 //-->
 </script>
 </head>
 
 <body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist">
 
-<?php if (!$is_mobile) echo showinfobox ($text27[$lang]."<br/>".$text28[$lang]."<br/>".$text29[$lang], $lang, 3, "position:fixed; top:30px; right:30px;"); ?>
+<?php if (!$is_mobile) echo showinfobox ($text27[$lang]."<br/>".$text28[$lang]."<br/>".$text29[$lang], $lang); ?>
 
 <div id="contextLayer" style="position:absolute; width:150px; height:300px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_object" action="" method="post" target="_blank">

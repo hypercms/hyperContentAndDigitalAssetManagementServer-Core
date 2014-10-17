@@ -113,7 +113,7 @@ $(document).ready(function()
     <?php if (is_array ($hcms_linking)) { ?>
     <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
     <?php } else { ?>
-    <iframe id="workplFrame" name="workplFrame" src="welcome.php" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
+    <iframe id="workplFrame" name="workplFrame" src="home.php" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
     <?php } ?>
   </div>
 

@@ -107,7 +107,7 @@ $mgmt_config['objectview'] = "inlineview";
 $mgmt_config['explorerview'] = "detail";
 
 // define if sidebar for object preview should be enabled (true) or disabled (false)
-$mgmt_config['sidebar'] = false;
+$mgmt_config['sidebar'] = true;
 
 // define standard mail link type ("access" = access-link; "download" = download-link)
 $mgmt_config['maillink'] = "download";
@@ -228,7 +228,7 @@ $mgmt_config['logon_timeout'] = 10;
 
 // CSRF Protection
 // define allowed requests per minute
-$mgmt_config['requests_per_minute'] = 1000;
+$mgmt_config['requests_per_minute'] = 500;
 
 // Security Token
 // define lifetime of security token in seconds (min. 60 sec.)

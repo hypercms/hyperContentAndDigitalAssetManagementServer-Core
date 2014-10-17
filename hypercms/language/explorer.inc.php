@@ -125,4 +125,7 @@ $text40['de'] = "Vorlagen Includes";
 
 $text41['en'] = "Instance management";
 $text41['de'] = "Instanzenverwaltung";
+
+$text42['en'] = "Home";
+$text42['de'] = "Home";
 ?>
