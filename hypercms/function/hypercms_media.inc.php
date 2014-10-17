@@ -157,7 +157,7 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
     $fileinfo = getfileinfo ($site, $location_source.$newfile, "comp");
     $newfile = $fileinfo['filename'].".thumb.jpg";
     
-    $cmd = 'ffmpeg -i "'.escapeshellcmd ($location_source.$file).'" -ss '.escapeshellcmd ($frame).' -f image2 -vframes 1 "'.escapeshellcmd ($location_dest.$newfile).'"';
+    $cmd = 'ffmpeg -i "'.shellcmd_encode ($location_source.$file).'" -ss '.shellcmd_encode ($frame).' -f image2 -vframes 1 "'.shellcmd_encode ($location_dest.$newfile).'"';
     $output = array();
     $errcode = 1;
     
@@ -519,14 +519,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($type == "thumbnail")
                     {
                       $newfile = $file_name.".thumb.jpg";
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".escapeshellcmd ($location_source.$file)."[0]\" ".escapeshellcmd ($imageresize)." ".escapeshellcmd ($imagecolorspace)." ".escapeshellcmd ($iccprofile)." \"".escapeshellcmd ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_source.$file)."[0]\" ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     else 
                     {
                       if ($type == "original") $newfile = $file_name.".".$imageformat;
                       else $newfile = $file_name.".".$type.".".$imageformat;
                         
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".escapeshellcmd ($buffer_file)."[0]\" ".escapeshellcmd ($imagerotate)." ".escapeshellcmd ($imageBrightnessContrast)." ".escapeshellcmd ($imageresize)." ".escapeshellcmd ($imagecolorspace)." ".escapeshellcmd ($iccprofile)." ".escapeshellcmd ($imageflip)." ".escapeshellcmd ($sepia)." ".escapeshellcmd ($sharpen)." ".escapeshellcmd ($blur)." ".escapeshellcmd ($sketch)." ".escapeshellcmd ($paint)." \"".escapeshellcmd ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($buffer_file)."[0]\" ".shellcmd_encode ($imagerotate)." ".shellcmd_encode ($imageBrightnessContrast)." ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." ".shellcmd_encode ($imageflip)." ".shellcmd_encode ($sepia)." ".shellcmd_encode ($sharpen)." ".shellcmd_encode ($blur)." ".shellcmd_encode ($sketch)." ".shellcmd_encode ($paint)." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     
                     @exec ($cmd, $buffer, $errorCode);
@@ -552,9 +552,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // PHOTOSHOP: layered PSD-file
                   elseif ($file_ext == ".psd")
                   {
-                    if ($type == "thumbnail") $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".escapeshellcmd ($location_source.$file)."\" -flatten \"".escapeshellcmd ($location_dest.$file_name).".buffer.jpg\"";
-                    elseif ($type == "original") $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".escapeshellcmd ($buffer_file)."\" -flatten \"".escapeshellcmd ($location_dest.$file_name).".buffer.jpg\"";
-                    else $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".escapeshellcmd ($buffer_file)."\" -flatten \"".escapeshellcmd ($location_dest.$file_name).".buffer.jpg\"";
+                    if ($type == "thumbnail") $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_source.$file)."\" -flatten \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\"";
+                    elseif ($type == "original") $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($buffer_file)."\" -flatten \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\"";
+                    else $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($buffer_file)."\" -flatten \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\"";
       
                     @exec ($cmd, $buffer, $errorCode);
       
@@ -575,7 +575,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         if ($type == "thumbnail")
                         { 
                           $newfile = $file_name.".thumb.jpg";
-                          $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".escapeshellcmd ($location_dest.$file_name).".buffer.jpg\" ".escapeshellcmd ($imageresize)." ".escapeshellcmd ($imagecolorspace)." ".escapeshellcmd ($iccprofile)." \"".escapeshellcmd ($location_dest.$newfile)."\"";
+                          $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                         }
                         else
                         {
@@ -584,11 +584,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                             
                           if ($crop_mode)
                           {
-                            $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".escapeshellcmd ($location_dest.$file_name).".buffer.jpg\" -crop ".escapeshellcmd ($imagewidth)."x".escapeshellcmd ($imageheight)."+".escapeshellcmd ($offsetX)."+".escapeshellcmd ($offsetY)." ".escapeshellcmd ($imageBrightnessContrast)." ".escapeshellcmd ($imagecolorspace)." ".escapeshellcmd ($iccprofile)." \"".escapeshellcmd ($location_dest.$newfile)."\"";
+                            $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" -crop ".shellcmd_encode ($imagewidth)."x".shellcmd_encode ($imageheight)."+".shellcmd_encode ($offsetX)."+".shellcmd_encode ($offsetY)." ".shellcmd_encode ($imageBrightnessContrast)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                           }
                           else
                           {
-           		              $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".escapeshellcmd ($location_dest.$file_name).".buffer.jpg\" ".escapeshellcmd ($imageresize)." ".escapeshellcmd ($imagerotate)." ".escapeshellcmd ($imageBrightnessContrast)." ".escapeshellcmd ($imagecolorspace)." ".escapeshellcmd ($iccprofile)." ".escapeshellcmd ($imageflip)." ".escapeshellcmd ($sepia)." ".escapeshellcmd ($sharpen)." ".escapeshellcmd ($blur)." ".escapeshellcmd ($sketch)." ".escapeshellcmd ($paint)." \"".escapeshellcmd ($location_dest.$newfile)."\"";
+           		              $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagerotate)." ".shellcmd_encode ($imageBrightnessContrast)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." ".shellcmd_encode ($imageflip)." ".shellcmd_encode ($sepia)." ".shellcmd_encode ($sharpen)." ".shellcmd_encode ($blur)." ".shellcmd_encode ($sketch)." ".shellcmd_encode ($paint)." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                           }
                         }
                         
@@ -622,17 +622,17 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   {
                     if ($type == "thumbnail")
                     {
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".escapeshellcmd ($imagewidth)."x".escapeshellcmd ($imageheight)." \"".escapeshellcmd ($location_source.$file)."[0]\" ".escapeshellcmd ($imageresize)." ".escapeshellcmd ($imagecolorspace)." ".escapeshellcmd ($iccprofile)." \"".escapeshellcmd ($location_dest.$file_name).".buffer.bmp\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".shellcmd_encode ($imagewidth)."x".shellcmd_encode ($imageheight)." \"".shellcmd_encode ($location_source.$file)."[0]\" ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." \"".shellcmd_encode ($location_dest.$file_name).".buffer.bmp\"";
                     }
                     else
                     {
                       if ($crop_mode)
                       {
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." -crop ".escapeshellcmd ($imagewidth)."x".escapeshellcmd ($imageheight)."+".escapeshellcmd ($offsetX)."+".escapeshellcmd ($offsetY)." ".escapeshellcmd ($imageBrightnessContrast)." \"".escapeshellcmd ($buffer_file)."[0]\" ".escapeshellcmd ($imagerotate)." ".escapeshellcmd ($imagecolorspace)." ".escapeshellcmd ($iccprofile)." \"".escapeshellcmd ($location_dest.$file_name).".buffer.bmp\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." -crop ".shellcmd_encode ($imagewidth)."x".shellcmd_encode ($imageheight)."+".shellcmd_encode ($offsetX)."+".shellcmd_encode ($offsetY)." ".shellcmd_encode ($imageBrightnessContrast)." \"".shellcmd_encode ($buffer_file)."[0]\" ".shellcmd_encode ($imagerotate)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." \"".shellcmd_encode ($location_dest.$file_name).".buffer.bmp\"";
                       }
                       else
                       {
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".escapeshellcmd ($imagewidth)."x".escapeshellcmd ($imageheight)." \"".escapeshellcmd ($buffer_file)."[0]\" ".escapeshellcmd ($imageresize)." ".escapeshellcmd ($imagerotate)." ".escapeshellcmd ($imageBrightnessContrast)." ".escapeshellcmd ($imagecolorspace)." ".escapeshellcmd ($iccprofile)." ".escapeshellcmd ($imageflip)." ".escapeshellcmd ($sepia)." ".escapeshellcmd ($sharpen)." ".escapeshellcmd ($blur)." ".escapeshellcmd ($sketch)." ".escapeshellcmd ($paint)." \"".escapeshellcmd ($location_dest.$file_name).".buffer.bmp\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".shellcmd_encode ($imagewidth)."x".shellcmd_encode ($imageheight)." \"".shellcmd_encode ($buffer_file)."[0]\" ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagerotate)." ".shellcmd_encode ($imageBrightnessContrast)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." ".shellcmd_encode ($imageflip)." ".shellcmd_encode ($sepia)." ".shellcmd_encode ($sharpen)." ".shellcmd_encode ($blur)." ".shellcmd_encode ($sketch)." ".shellcmd_encode ($paint)." \"".shellcmd_encode ($location_dest.$file_name).".buffer.bmp\"";
                       }
                     }
 
@@ -655,14 +655,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         if ($type == "thumbnail")
                         {
                           $newfile = $file_name.".thumb.jpg";
-                          $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".escapeshellcmd ($location_dest.$file_name).".buffer.bmp\" ".escapeshellcmd ($imagecolorspace)." ".escapeshellcmd ($iccprofile)." \"".escapeshellcmd ($location_dest.$newfile)."\"";
+                          $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_dest.$file_name).".buffer.bmp\" ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                         }
                         else
                         {
                           if ($type == "original") $newfile = $file_name.".".$imageformat;
                           else $newfile = $file_name.".".$type.".".$imageformat;
                             
-                          $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".escapeshellcmd ($location_dest.$file_name).".buffer.bmp\" ".escapeshellcmd ($imagecolorspace)." ".escapeshellcmd ($iccprofile)." \"".escapeshellcmd ($location_dest.$newfile)."\"";
+                          $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_dest.$file_name).".buffer.bmp\" ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                         }
                         
                         @exec ($cmd, $buffer, $errorCode);
@@ -874,7 +874,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         // -s:v ... frame size in pixel (w x h) 
         
         // define default option for support of versions before 5.3.4
-        // note: -acodec could be "mp3" or in newer ffmpeg versions "libmp3lame"!
+        // note: audio codec could be "mp3" or in newer ffmpeg versions "libmp3lame"!
         if ($mgmt_mediaoptions['.flv'] == "") $mgmt_mediaoptions['.flv'] = "-b:v 768k -s 320x240 -f flv -c:a libmp3lame -b:a 64k -ac 2 -ar 22050 -title \"".$file_name."\"";
         
         // reset type to input value
@@ -934,8 +934,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               
                 $tmpfile = $file_name.".thumb.tmp";
               
-                $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".escapeshellcmd ($location_source.$file)."\" ".$mgmt_mediaoptions[$mediaoptions_ext]." \"".escapeshellcmd ($location_dest.$tmpfile)."\"";
-                
+                $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" ".$mgmt_mediaoptions[$mediaoptions_ext]." \"".shellcmd_encode ($location_dest.$tmpfile)."\"";
+
                 @exec ($cmd, $buffer, $errorCode);
                 
                 // on error or new file is smaller than 500 bytes
@@ -959,7 +959,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($mgmt_mediametadata['.flv'] != "" && $format_set == "flv")
                     {
                       $tmpfile2 = $file_name.".thumb.tmp2";
-                      $cmd = $mgmt_mediametadata['.flv']." -i \"".escapeshellcmd ($location_dest.$tmpfile)."\" -o \"".escapeshellcmd ($location_dest.$tmpfile2)."\"";
+                      $cmd = $mgmt_mediametadata['.flv']." -i \"".shellcmd_encode ($location_dest.$tmpfile)."\" -o \"".shellcmd_encode ($location_dest.$tmpfile2)."\"";
                 	    
                       @exec ($cmd, $buffer, $errorCode);
                       
@@ -1830,7 +1830,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                 }
               }
                 
-              $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".escapeshellcmd ($location_source.$file)."\"";              
+              $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".shellcmd_encode ($location_source.$file)."\"";              
               @exec ($cmd." 2>&1", $buffer, $errorCode);
           
               // on error of new file is smalle than 500 bytes
@@ -1913,7 +1913,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $user)
         // supported extension
         $extension = key ($mgmt_uncompress);
         
-        if (substr_count ($extension, $file_ext) > 0)
+        if (substr_count ($extension.".", $file_ext.".") > 0)
         {
           // create temporary directory for extraction
           $result = @mkdir ($temp_dir, $mgmt_config['fspermission']);
@@ -1929,7 +1929,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $user)
 
           if ($result['result'] == true)
           {            
-            $cmd = $mgmt_uncompress[$extension]." \"".escapeshellcmd ($zipfilepath)."\" -d \"".escapeshellcmd ($temp_dir)."\"";         
+            $cmd = $mgmt_uncompress[$extension]." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($temp_dir)."\"";         
             
             @exec ($cmd, $error_array);
 
@@ -2149,11 +2149,11 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
     // Windows
     if ($mgmt_config['os_cms'] == "WIN")
     { 
-      $cmd = "cd \"".escapeshellcmd ($location)."\" & ".$mgmt_compress['.zip']." -r \"".escapeshellcmd ($destination.$zipfilename).".zip\" ".escapeshellcmd ($filesToZip);  
+      $cmd = "cd \"".shellcmd_encode ($location)."\" & ".$mgmt_compress['.zip']." -r \"".shellcmd_encode ($destination.$zipfilename).".zip\" ".shellcmd_encode ($filesToZip);  
       $cmd = str_replace ("/", "\\", $cmd);
     }
     // UNIX
-    else $cmd = "cd \"".escapeshellcmd ($tempFolder)."\" ; ".$mgmt_compress['.zip']." -r \"".escapeshellcmd ($destination.$zipfilename).".zip\" *";
+    else $cmd = "cd \"".shellcmd_encode ($tempFolder)."\" ; ".$mgmt_compress['.zip']." -r \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";
     
     // compress files to ZIP format
     @exec ($cmd, $error_array);
@@ -2185,5 +2185,4 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
   }
   return false;
 }
-
 ?>

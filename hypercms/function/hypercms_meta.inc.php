@@ -408,7 +408,7 @@ function copymetadata ($file_source, $file_dest)
     {
       if ($executable != "" && substr_count ($extensions.".", $file_source_ext.".") > 0)
       {
-        $cmd = $executable." -overwrite_original -TagsFromFile \"".escapeshellcmd ($file_source)."\" \"-all:all>all:all\" \"".escapeshellcmd ($file_dest)."\"";    
+        $cmd = $executable." -overwrite_original -TagsFromFile \"".shellcmd_encode ($file_source)."\" \"-all:all>all:all\" \"".shellcmd_encode ($file_dest)."\"";    
         @exec ($cmd, $buffer, $errorCode);
         
         // on error
@@ -453,7 +453,7 @@ function image_getdata ($image)
       if (substr_count ($extensions.".", $file_info['ext'].".") > 0)
       {
         // get image information using EXIFTOOL
-        $cmd = $executable." -G \"".escapeshellcmd ($image)."\"";          
+        $cmd = $executable." -G \"".shellcmd_encode ($image)."\"";          
         @exec ($cmd, $output, $errorCode);
         
         // on error
@@ -740,7 +740,7 @@ function xmp_writefile ($file, $xmp, $keep_data=1)
         // remove all XMP tags from file
         if ($keep_data == 0)
         {
-          $cmd = $executable." -overwrite_original -r -XMP-crss:all= \"".escapeshellcmd ($file)."\"";          
+          $cmd = $executable." -overwrite_original -r -XMP-crss:all= \"".shellcmd_encode ($file)."\"";          
           @exec ($cmd, $buffer, $errorCode);
           
           // on error
@@ -756,7 +756,7 @@ function xmp_writefile ($file, $xmp, $keep_data=1)
         {
           if (strpos ($tag, ":") > 0) list ($namespace, $tag) = explode (":", $tag);
           
-          $cmd = $executable." -xmp:".$tag."=\"".escapeshellcmd ($value)."\" \"".escapeshellcmd ($file)."\"";
+          $cmd = $executable." -xmp:".$tag."=\"".shellcmd_encode ($value)."\" \"".shellcmd_encode ($file)."\"";
           @exec ($cmd, $buffer, $errorCode);
 
           // on error
@@ -1367,7 +1367,7 @@ function iptc_writefile ($file, $iptc, $keep_data=1)
         if (substr_count ($extensions.".", $file_info['ext'].".") > 0)
         {
           // remove all IPTC tags from file
-          $cmd = $executable." -overwrite_original -r -IPTC:all= \"".escapeshellcmd ($file)."\"";          
+          $cmd = $executable." -overwrite_original -r -IPTC:all= \"".shellcmd_encode ($file)."\"";          
           @exec ($cmd, $buffer, $errorCode);
           
           // on error

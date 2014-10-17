@@ -586,7 +586,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         </td></tr>\n";
       }
       // ----------- if Document -----------
-      elseif ($file_info['orig_ext'] != "" && substr_count ($doc_ext, $file_info['orig_ext']) > 0 && $mgmt_config['docviewer'] == true)
+      elseif ($file_info['orig_ext'] != "" && substr_count ($doc_ext.".", $file_info['orig_ext'].".") > 0 && $mgmt_config['docviewer'] == true)
       {
         // media size
         if (is_numeric ($width) && $width > 0 && is_numeric ($height) && $height > 0)
@@ -668,7 +668,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   	    $mediaview .= "<div style=\"padding:5px 0px 8px 0px; width:".$width."px; text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, true)."</div>";
       }
       // ----------- if Image ----------- 
-      elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['image'], $file_info['ext']) > 0)
+      elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['image'].".", $file_info['ext'].".") > 0)
       {
         // media size
         $style = "";
@@ -767,7 +767,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "</table>\n";
       }
       // ----------- if Flash ----------- 
-      elseif ($file_info['ext'] != "" && substr_count ($swf_ext, $file_info['ext']) > 0)
+      elseif ($file_info['ext'] != "" && substr_count ($swf_ext.".", $file_info['ext'].".") > 0)
       {
         // media size
         $style = "";
@@ -791,39 +791,30 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         </table>\n";
       }
       // ----------- if Audio ----------- 
-      elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['audio'], $file_info['ext']) > 0)
+      elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['audio'].".", $file_info['ext'].".") > 0)
       {
-        $is_audio = false;
-  
         // media player config file is given
         if (strpos ($mediafile_pure, ".config.") > 0 && is_file ($media_root.$site."/".$mediafile_pure))
         {
           $config = readmediaplayer_config ($media_root.$site."/", $mediafile_pure);
-          // identify audio player
-          if (strpos ($mediafile_pure, ".config.audio") > 0) $is_audio = true;
         }
-        // get media player config file
         // new since version 5.6.3 (config of original-preview file)
         elseif (file_exists ($media_root.$site."/".$file_info['filename'].".config.orig"))
         {
           $config = readmediaplayer_config ($media_root.$site."/", $file_info['filename'].".config.orig");
-          $is_audio = true;
         }
         // new since version 5.6.3 (config of audioplayer)
         elseif (file_exists ($media_root.$site."/".$file_info['filename'].".config.audio"))
         {
           $config = readmediaplayer_config ($media_root.$site."/", $file_info['filename'].".config.audio");
-          $is_audio = true;
         }
-        // new since version 5.5.7 (config of videoplayer)
-        elseif (file_exists ($media_root.$site."/".$file_info['filename'].".config.video"))
+        // no media config file is available, try to create video thumbnail file
+        elseif (is_file ($media_root.$site."/".$mediafile_pure))
         {
-          $config = readmediaplayer_config ($media_root.$site."/", $file_info['filename'].".config.video");
-        }
-        // old version (only FLV support)
-        elseif (file_exists ($media_root.$site."/".$file_info['filename'].".config.flv"))
-        {
-          $config = readmediaplayer_config ($media_root.$site."/", $file_info['filename'].".config.flv");
+          // create thumbnail video of original file
+          $create_media = createmedia ($site, $media_root.$site."/", $media_root.$site."/", $mediafile_pure, "", "origthumb");
+          
+          if ($create_media) $config = readmediaplayer_config ($media_root.$site."/", $file_info['filename'].".config.orig");
         }
 
         // use default values
@@ -836,8 +827,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         <!-- hyperCMS:height file=\"".$mediaheight."\" -->";
         
         // generate player code
-        if ($is_audio) $playercode = showaudioplayer ($site, $config['mediafiles'], "preview", "cut_audio"); 
-        else $playercode = showvideoplayer ($site, $config['mediafiles'], $mediawidth, $mediaheight, "preview", Null, "cut_video", "", false);
+        if (empty ($config['mediafiles'])) $config['mediafiles'] = array ($site."/".$mediafile_pure);
+        
+        $playercode = showaudioplayer ($site, $config['mediafiles'], "preview", "cut_audio");
       
         $mediaview .= "<table>
         <tr><td align=left>".$playercode."</td></tr>
@@ -855,7 +847,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "</table>\n";
       }
       // ----------- if Video ----------- 
-      elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['video'], $file_info['ext']) > 0)
+      elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['video'].".", $file_info['ext'].".") > 0)
       {
         // media player config file is given
         if (strpos ($mediafile_pure, ".config.") > 0 && is_file ($media_root.$site."/".$mediafile_pure))
@@ -882,7 +874,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         elseif (is_file ($media_root.$site."/".$mediafile_pure))
         {
           // create thumbnail video of original file
-          $create_media = createmedia ($site, $media_root.$site."/", $media_root.$site."/", $mediafile_pure, "flv", "origthumb");
+          $create_media = createmedia ($site, $media_root.$site."/", $media_root.$site."/", $mediafile_pure, "", "origthumb");
           
           if ($create_media) $config = readmediaplayer_config ($media_root.$site."/", $file_info['filename'].".config.orig");
         }
@@ -951,7 +943,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "</table>\n";
       }
       // ----------- show clear text based doc ----------- 
-      elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['cleartxt'].$hcms_ext['cms'], $file_info['ext']) > 0)
+      elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['cleartxt'].$hcms_ext['cms'].".", $file_info['ext'].".") > 0)
       {
         if (file_exists ($media_root.$mediafile))
         {

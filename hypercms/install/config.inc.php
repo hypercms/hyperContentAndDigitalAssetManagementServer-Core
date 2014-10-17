@@ -374,7 +374,7 @@ $mgmt_mediaoptions['.flv'] = "-b:v 768k -s:v 480x320 -f flv -c:a libmp3lame -b:a
 $mgmt_mediaoptions['.mp4'] = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
 $mgmt_mediaoptions['.ogv'] = "-b:v 768k -s:v 480x320 -f ogv -c:a libvorbis -b:a 64k -ac 2";
 $mgmt_mediaoptions['.webm'] = "-b:v 768k -s:v 480x320 -f webm -c:a libvorbis -b:a 64k -ac 2";
-$mgmt_mediaoptions['.mp3'] = "-f mp3 -c:a libmp3lame -b:a 64k -ar 44100";
+$mgmt_mediaoptions['.mp3'] = "-f mp3 -c:a libmp3lame -b:a 64k -ar 22050";
 
 // define Metadata Injection
 // YAMDI to inject metadata (play length) into the generated flash video file (FFMPEG discards metadata)

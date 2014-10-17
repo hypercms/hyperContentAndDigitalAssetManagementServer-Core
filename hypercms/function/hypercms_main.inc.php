@@ -10366,7 +10366,7 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
         // known problems: MS IIS causes troubles executing XPDF (unable to fork...), set permissions for cmd.exe  
         // the second argument "-" tells XPDF to output the text to stdout.
         // content should be provided using UTF-8 as charset.
-        @exec ($mgmt_parser['.pdf']." -enc UTF-8 \"".escapeshellcmd ($location.$file)."\" -", $file_content, $errorCode); 
+        @exec ($mgmt_parser['.pdf']." -enc UTF-8 \"".shellcmd_encode ($location.$file)."\" -", $file_content, $errorCode); 
 
         if ($errorCode)
         {
@@ -10391,7 +10391,7 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
         // create temporary directory for extraction
         @mkdir ($temp_dir, $mgmt_config['fspermission']);    
         // odt is a ZIP-file with the content placed in the file content.xml
-        $cmd = $mgmt_uncompress['.zip']." \"".escapeshellcmd ($location.$file)."\" content.xml -d \"".escapeshellcmd ($temp_dir)."\"";
+        $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" content.xml -d \"".shellcmd_encode ($temp_dir)."\"";
         
         @exec ($cmd, $error_array);
 
@@ -10424,7 +10424,7 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
       // get file content from MS Word before 2007 (doc) in UTF-8
       elseif (($file_ext == ".doc") && $mgmt_parser['.doc'] != "")
       {
-        @exec ($mgmt_parser['.doc']." -t -i 1 -m UTF-8.txt \"".escapeshellcmd ($location.$file)."\"", $file_content, $errorCode); 
+        @exec ($mgmt_parser['.doc']." -t -i 1 -m UTF-8.txt \"".shellcmd_encode ($location.$file)."\"", $file_content, $errorCode); 
 
         if ($errorCode)
         {
@@ -10448,7 +10448,7 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
         // create temporary directory for extraction
         @mkdir ($temp_dir, $mgmt_config['fspermission']);    
         // docx is a ZIP-file with the content placed in the file word/document.xml
-        $cmd = $mgmt_uncompress['.zip']." \"".escapeshellcmd ($location.$file)."\" word/document.xml -d \"".escapeshellcmd ($temp_dir)."\"";
+        $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" word/document.xml -d \"".shellcmd_encode ($temp_dir)."\"";
         
         @exec ($cmd, $error_array);
 
@@ -10487,7 +10487,7 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
         // create temporary directory for extraction
         @mkdir ($temp_dir, $mgmt_config['fspermission']);    
         // xlsx is a ZIP-file with the content placed in the file xl/sharedStrings.xml
-        $cmd = $mgmt_uncompress['.zip']." \"".escapeshellcmd ($location.$file)."\" xl/sharedStrings.xml -d \"".escapeshellcmd ($temp_dir)."\"";
+        $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" xl/sharedStrings.xml -d \"".shellcmd_encode ($temp_dir)."\"";
         
         @exec ($cmd, $error_array);
 
@@ -10567,7 +10567,7 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
         // create temporary directory for extraction
         @mkdir ($temp_dir, $mgmt_config['fspermission']);          
         // pptx is a ZIP-file with the content placed in the file ppt/slides/slide#.xml (# ... number of the slide)
-        $cmd = $mgmt_uncompress['.zip']." \"".escapeshellcmd ($location.$file)."\" ppt/slides/slide* -d \"".escapeshellcmd ($temp_dir)."\"";
+        $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" ppt/slides/slide* -d \"".shellcmd_encode ($temp_dir)."\"";
         @exec ($cmd, $error_array);
 
         if (substr_count ($error_message, "error") > 0)

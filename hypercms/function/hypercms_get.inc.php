@@ -972,8 +972,8 @@ function getmimetype ($file)
 
 // ---------------------- getfiletype -----------------------------
 // function: getfiletype()
-// input: file extension
-// output: file type to be saved in database
+// input: file extension or file name
+// output: file type to be saved in database based on file extension
 
 function getfiletype ($file_ext)
 {
@@ -983,16 +983,19 @@ function getfiletype ($file_ext)
   
   if ($file_ext != "" && is_array ($hcms_ext))
   {
+    if (substr_count ($file_ext, ".") > 0) $file_ext = strrchr ($file_ext, ".");
+    else $file_ext = ".".$file_ext;
+    
     $file_ext = strtolower ($file_ext);
     
-    if (substr_count ($hcms_ext['audio'], $file_ext) > 0) $filetype = "audio";
-    elseif (substr_count ($hcms_ext['bintxt'].$hcms_ext['cleartxt'], $file_ext) > 0) $filetype = "document";
-    elseif (substr_count ($hcms_ext['cms'].$hcms_ext['cleartxt'], $file_ext) > 0) $filetype = "text";
-    elseif (substr_count ($hcms_ext['image'], $file_ext) > 0) $filetype = "image";
-    elseif (substr_count ($hcms_ext['video'], $file_ext) > 0) $filetype = "video";
-    elseif (substr_count ($hcms_ext['flash'], $file_ext) > 0) $filetype = "flash";
-    elseif (substr_count ($hcms_ext['compressed'], $file_ext) > 0) $filetype = "compressed";
-    elseif (substr_count ($hcms_ext['binary'], $file_ext) > 0) $filetype = "binary";
+    if (substr_count ($hcms_ext['audio'].".", $file_ext.".") > 0) $filetype = "audio";
+    elseif (substr_count ($hcms_ext['bintxt'].$hcms_ext['cleartxt'].".", $file_ext.".") > 0) $filetype = "document";
+    elseif (substr_count ($hcms_ext['cms'].$hcms_ext['cleartxt'], $file_ext.".") > 0) $filetype = "text";
+    elseif (substr_count ($hcms_ext['image'].".", $file_ext.".") > 0) $filetype = "image";
+    elseif (substr_count ($hcms_ext['video'].".", $file_ext.".") > 0) $filetype = "video";
+    elseif (substr_count ($hcms_ext['flash'].".", $file_ext.".") > 0) $filetype = "flash";
+    elseif (substr_count ($hcms_ext['compressed'].".", $file_ext.".") > 0) $filetype = "compressed";
+    elseif (substr_count ($hcms_ext['binary'].".", $file_ext.".") > 0) $filetype = "binary";
     else $filetype = "unknown";
     
     return $filetype;
@@ -1041,7 +1044,7 @@ function getvideoinfo ($mediafile)
         $metadata = array();
           
         // get info from video file using FFMPEG
-      	$cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".escapeshellcmd ($mediafile)."\" -y -f rawvideo -vframes 1 /dev/null 2>&1";
+      	$cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($mediafile)."\" -y -f rawvideo -vframes 1 /dev/null 2>&1";
         exec ($cmd, $metadata, $return); 
         
         // parsing the values

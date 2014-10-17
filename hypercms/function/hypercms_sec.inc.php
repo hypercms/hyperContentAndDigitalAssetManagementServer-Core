@@ -1556,7 +1556,7 @@ function scriptcode_clean_functions ($content, $type=3, $application="PHP")
   {
     if ($application == "PHP")
     {
-      if ($type > 0) $disabled_functions = array("apache_child_terminate", "apache_setenv", "define_syslog_variables", "escapeshellarg", "escapeshellcmd", "eval", "exec", "fp", "fput", "ftp_connect", "ftp_exec", "ftp_get", "ftp_login", "ftp_nb_fput", "ftp_put", "ftp_raw", "ftp_rawlist", "highlight_file", "ini_alter", "ini_get_all", "ini_restore", "inject_code", "mysql_pconnect", "openlog", "passthru", "php_uname", "phpinfo", "phpAds_remoteInfo", "phpAds_XmlRpc", "phpAds_xmlrpcDecode", "phpAds_xmlrpcEncode", "popen", "posix_getpwuid", "posix_kill", "posix_mkfifo", "posix_setpgid", "posix_setsid", "posix_setuid", "posix_setuid", "posix_uname", "proc_close", "proc_get_status", "proc_nice", "proc_open", "proc_terminate", "shell_exec", "syslog", "system", "xmlrpc_entity_decode");
+      if ($type > 0) $disabled_functions = array("apache_child_terminate", "apache_setenv", "define_syslog_variables", "eval", "exec", "fp", "fput", "ftp_connect", "ftp_exec", "ftp_get", "ftp_login", "ftp_nb_fput", "ftp_put", "ftp_raw", "ftp_rawlist", "highlight_file", "ini_alter", "ini_get_all", "ini_restore", "inject_code", "mysql_pconnect", "openlog", "passthru", "php_uname", "phpinfo", "phpAds_remoteInfo", "phpAds_XmlRpc", "phpAds_xmlrpcDecode", "phpAds_xmlrpcEncode", "popen", "posix_getpwuid", "posix_kill", "posix_mkfifo", "posix_setpgid", "posix_setsid", "posix_setuid", "posix_setuid", "posix_uname", "proc_close", "proc_get_status", "proc_nice", "proc_open", "proc_terminate", "shell_exec", "syslog", "system", "xmlrpc_entity_decode");
       else $disabled_functions = array();
       
       if ($type > 1) $file_functions = array("basename", "chgrp", "chmod", "chown ", "clearstatcache", "copy", "delete", "dir", "dirname", "disk_free_space", "disk_total_space", "diskfreespace", "fclose", "feof", "fflush", "fgetc", "fgetcsv", "fgets", "fgetss", "file_exists", "file_get_contents", "file_put_contents ", "file", "fileatime", "filectime", "filegroup", "fileinode", "filemtime", "fileowner", "fileperms", "filesize", "filetype", "flock", "fnmatch", "fopen", "fpassthru", "fputcsv", "fputs", "fread", "fscanf", "fseek", "fstat", "ftell", "ftruncate", "fwrite", "glob", "is_dir", "is_executable ", "is_file", "is_link", "is_readable", "is_uploaded_file ", "is_writable", "is_writeable ", "lchgrp", "lchown", "link", "linkinfo", "lstat", "mkdir", "move_uploaded_file", "opendir", "parse_ini_file", "parse_ini_string", "pathinfo ", "pclose", "popen", "readfile", "readlink", "realpath_cache_get", "realpath_cache_size", "realpath", "rename", "rewind", "rmdir", "set_file_buffer", "stat", "symlink ", "tempnam", "tmpfile ", "touch ", "umask", "unlink");
@@ -1666,6 +1666,32 @@ function url_decode ($variable)
     foreach ($variable as &$value)
     {
       $value = urldecode ($value);
+    }
+    
+    return $variable;
+  }
+  else return false;
+}
+
+// ------------------------- shellcmd_encode -----------------------------
+// function: shellcmd_encode()
+// input: variable as string or array
+// output: encoded value as array or string / false on error
+
+// description:
+// this function encodes/escapes characters to secure the shell comand.
+
+function shellcmd_encode ($variable)
+{
+  if (!is_array ($variable))
+  {
+    return str_replace ("\~", "~", escapeshellcmd ($variable));
+  }
+  elseif (is_array ($variable))
+  {
+    foreach ($variable as &$value)
+    {
+      $value = str_replace ("\~", "~", escapeshellcmd ($value));
     }
     
     return $variable;
