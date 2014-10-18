@@ -27,7 +27,7 @@ $templatedate = getrequest_esc ("templatedate");
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($rootpermission['desktop'] != 1 || $rootpermission['desktoptimetravel'] != 1)  killsession ($user);
+if (!checkrootpermission ('desktop') || !checkrootpermission ('desktoptimetravel'))  killsession ($user);
 
 // check session of user
 checkusersession ($user);

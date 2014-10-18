@@ -41,7 +41,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($globalpermission[$site]['workflow'] != 1 || $globalpermission[$site]['workflowproc'] != 1 || $globalpermission[$site]['workflowprocedit'] != 1 || !valid_publicationname ($site)) killsession ($user);
+if (!checkglobalpermission ($site, 'workflow') || !checkglobalpermission ($site, 'workflowproc') || !checkglobalpermission ($site, 'workflowprocedit') || !valid_publicationname ($site)) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -63,7 +63,7 @@ if (valid_publicationname ($site) && valid_objectname ($wf_name) && @is_file ($m
   {
     foreach ($item as $id)
     {
-      if (isset ($active[$id]) && $active[$id] == 1)
+      if (isset ($active[$id]) && $active[$id] == 1 && !empty ($item[$id]) && !empty ($type[$id]))
       {
         if ($type[$id] == "user") $user_count++;
         elseif ($type[$id] == "script") $script_count++;
@@ -74,7 +74,7 @@ if (valid_publicationname ($site) && valid_objectname ($wf_name) && @is_file ($m
         {    
           foreach ($predecessor[$id] as $pre)
           {  
-            $pre_xml .= "<pre>".$pre."</pre>\n";
+            $pre_xml .= "  <pre>".$pre."</pre>\n";
           }
         }
         
@@ -84,21 +84,33 @@ if (valid_publicationname ($site) && valid_objectname ($wf_name) && @is_file ($m
         {
           foreach ($successor[$id] as $suc)
           {  
-            $suc_xml .= "<suc>".$suc."</suc>\n";
+            $suc_xml .= "  <suc>".$suc."</suc>\n";
           }      
         }
+        
+        if (isset ($wfuser[$id])) $temp_wfuser = $wfuser[$id];
+        else $temp_wfuser = "";
+        
+        if (isset ($wfgroup[$id])) $temp_wfgroup = $wfgroup[$id];
+        else $temp_wfgroup = "";
+        
+        if (isset ($role[$id])) $temp_role = $role[$id];
+        else $temp_role = "";
+        
+        if (isset ($file[$id])) $temp_file = $file[$id];
+        else $temp_file = "";
         
         $items .= "<item>
   <id>".$item[$id]."</id>\n".
   $pre_xml.$suc_xml.
-  "<type>".$type[$id]."</type>
-  <user>".$wfuser[$id]."</user>
-  <group>".$wfgroup[$id]."</group>
-  <role>".$role[$id]."</role>
-  <script>".$file[$id]."</script>
+  "  <type>".$type[$id]."</type>
+  <user>".$temp_wfuser."</user>
+  <group>".$temp_wfgroup."</group>
+  <role>".$temp_role."</role>
+  <script>".$temp_file."</script>
   <passed></passed>
   <date>-</date>
-  </item>\n";      
+</item>\n";      
       }
     }
   }
@@ -109,14 +121,14 @@ if (valid_publicationname ($site) && valid_objectname ($wf_name) && @is_file ($m
   
   // create workflow and insert items
   $workflow_data = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
-  <workflow>
-  <name>".$wf_name."</name>
-  <usermax>".$usermax."</usermax>
-  <scriptmax>".$scriptmax."</scriptmax>
-  <items>\n".
-  $items.
-  "</items>
-  </workflow>";
+<workflow>
+<name>".$wf_name."</name>
+<usermax>".$usermax."</usermax>
+<scriptmax>".$scriptmax."</scriptmax>
+<items>\n".
+$items.
+"</items>
+</workflow>";
 
   $savefile = savefile ($mgmt_config['abs_path_data']."workflow_master/", $site.".".$wf_name.".xml", $workflow_data);
 }

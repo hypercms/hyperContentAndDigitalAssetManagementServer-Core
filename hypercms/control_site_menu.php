@@ -31,7 +31,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($rootpermission['site'] != 1) killsession ($user);
+if (!checkrootpermission ('site')) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -42,14 +42,14 @@ $show = "";
 $add_onload = "";
 
 // include scripts
-if ($rootpermission['site'] == 1 && $rootpermission['sitecreate'] == 1 && $action == "site_create" && checktoken ($token, $user))
+if (checkrootpermission ('site') && checkrootpermission ('sitecreate') && $action == "site_create" && checktoken ($token, $user))
 {
   $result = createpublication ($site_name, $user);
     
   $add_onload =  $result['add_onload'];
   $show = $result['message'];  
 }
-elseif ($rootpermission['site'] == 1 && $rootpermission['sitedelete'] == 1 && $action == "site_delete" && checktoken ($token, $user))
+elseif (checkrootpermission ('site') && checkrootpermission ('sitedelete') && $action == "site_delete" && checktoken ($token, $user))
 {
   $result = deletepublication ($site_name, $user);
   
@@ -156,19 +156,19 @@ function checkForm()
 <div class="hcmsToolbar">
   <div class="hcmsToolbarBlock">
     <?php
-    if ($rootpermission['site'] == 1  && $rootpermission['sitecreate'] == 1)
+    if (checkrootpermission ('site')  && checkrootpermission ('sitecreate'))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','show','deletesiteLayer','','hide','editsiteLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_new\" src=\"".getthemelocation()."img/button_site_new.gif\" alt=\"".$text9[$lang]."\" title=\"".$text9[$lang]."\" />";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_site_new.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
     ?>
     <?php
-    if ($rootpermission['site'] == 1  && $rootpermission['sitedelete'] == 1)
+    if (checkrootpermission ('site')  && checkrootpermission ('sitedelete'))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','hide','deletesiteLayer','','show','editsiteLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_delete\" src=\"".getthemelocation()."img/button_site_delete.gif\" alt=\"".$text11[$lang]."\" title=\"".$text11[$lang]."\" />";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_site_delete.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
     ?>
     <?php
-    if ($rootpermission['site'] == 1  && $rootpermission['siteedit'] == 1)
+    if (checkrootpermission ('site')  && checkrootpermission ('siteedit'))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','hide','deletesiteLayer','','hide','editsiteLayer','','show','hcms_messageLayer','','hide')\" name=\"media_edit\" src=\"".getthemelocation()."img/button_site_edit.gif\" alt=\"".$text12[$lang]."\" title=\"".$text12[$lang]."\" />";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_site_edit.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
@@ -177,7 +177,7 @@ function checkForm()
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    if (!$is_mobile && file_exists ("help/adminguide_".$lang_shortcut[$lang].".pdf") && $rootpermission['site'] == 1)
+    if (!$is_mobile && file_exists ("help/adminguide_".$lang_shortcut[$lang].".pdf") && checkrootpermission ('site'))
     {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openBrWindowItem('help/adminguide_".$lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text50[$lang]."\" title=\"".$text50[$lang]."\" /></a>\n";}
     ?>
   </div>

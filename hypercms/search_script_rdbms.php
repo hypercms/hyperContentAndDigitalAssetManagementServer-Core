@@ -98,7 +98,7 @@ $search_filename = "";
 $token = createtoken ($user);
 
 // collect all objects of given user 
-if ($action == "user_files" && $login != "" && $site != "" && (($site == "*Null*" && $rootpermission['user'] == 1) || $globalpermission[$site]['user'] == 1))
+if ($action == "user_files" && $login != "" && $site != "" && (($site == "*Null*" && checkrootpermission ('user')) || checkglobalpermission ($site, 'user')))
 {
   $object_array = rdbms_searchuser ($site, $login); 
 }
@@ -140,7 +140,7 @@ elseif ($action == "base_search" || $search_dir != "")
   if (!is_array ($search_format)) $search_format = "";
   
   // check permissions
-  if ($action == "base_search" || ($cat == "comp" && $globalpermission[$site]['component'] == 1) || ($cat == "page" && $globalpermission[$site]['page'] == 1))
+  if ($action == "base_search" || ($cat == "comp" && checkglobalpermission ($site, 'component')) || ($cat == "page" && checkglobalpermission ($site, 'page')))
   {
     if ($action == "base_search") 
     {      

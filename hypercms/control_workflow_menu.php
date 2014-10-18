@@ -35,7 +35,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($globalpermission[$site]['workflow'] != 1 || !valid_publicationname ($site)) killsession ($user);
+if (!checkglobalpermission ($site, 'workflow') || !valid_publicationname ($site)) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -67,14 +67,26 @@ if (strpos ($wf_file, ".php?") > 0)
 // execute actions
 if (checktoken ($token, $user))
 {
-  if ((($cat == "script" && $globalpermission[$site]['workflowscript'] == 1  && $globalpermission[$site]['workflowscriptcreate'] == 1) || ($cat == "man" && $globalpermission[$site]['workflowproc'] == 1  && $globalpermission[$site]['workflowproccreate'] == 1)) && $action == "item_create")
+  if (
+       (
+         ($cat == "script" && checkglobalpermission ($site, 'workflowscript') && checkglobalpermission ($site, 'workflowscriptcreate')) || 
+         ($cat == "man" && checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowproccreate'))
+       ) && 
+       $action == "item_create"
+     )
   {
     $result = createworkflow ($site, $wf_name, $cat, $usermax, $scriptmax);
     
     $add_onload = $result['add_onload'];
     $show = $result['message'];  
   }
-  elseif ((($cat == "script" && $globalpermission[$site]['workflowscript'] == 1  && $globalpermission[$site]['workflowscriptdelete'] == 1) || ($cat == "man" && $globalpermission[$site]['workflowproc'] == 1  && $globalpermission[$site]['workflowprocdelete'] == 1)) && $action == "item_delete")
+  elseif (
+           (
+             ($cat == "script" && checkglobalpermission ($site, 'workflowscript') && checkglobalpermission ($site, 'workflowscriptdelete')) || 
+             ($cat == "man" && checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowprocdelete'))
+           ) && 
+           $action == "item_delete"
+         )
   {
     $result = deleteworkflow ($site, $wf_file, $cat);
     
@@ -204,19 +216,19 @@ function checkForm_item_create()
 <div class="hcmsToolbar">
   <div class="hcmsToolbarBlock">
     <?php
-    if (($cat == "script" && $globalpermission[$site]['workflowscript'] == 1 && $globalpermission[$site]['workflowscriptcreate'] == 1) || ($cat == "man" && $globalpermission[$site]['workflowproc'] == 1  && $globalpermission[$site]['workflowproccreate'] == 1))
+    if (($cat == "script" && checkglobalpermission ($site, 'workflowscript') && checkglobalpermission ($site, 'workflowscriptcreate')) || ($cat == "man" && checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowproccreate')))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createworkflowLayer','','show','deleteworkflowLayer','','hide','editworkflowLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_new\" src=\"".getthemelocation()."img/button_workflow_new.gif\" alt=\"".$text9[$lang]."\" title=\"".$text9[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_workflow_new.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
-    if (($cat == "script" && $globalpermission[$site]['workflowscript'] == 1 && $globalpermission[$site]['workflowscriptdelete'] == 1) || ($cat == "man" && $globalpermission[$site]['workflowproc'] == 1  && $globalpermission[$site]['workflowprocdelete'] == 1))
+    if (($cat == "script" && checkglobalpermission ($site, 'workflowscript') && checkglobalpermission ($site, 'workflowscriptdelete')) || ($cat == "man" && checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowprocdelete')))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createworkflowLayer','','hide','deleteworkflowLayer','','show','editworkflowLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_delete\" src=\"".getthemelocation()."img/button_workflow_reject.gif\" alt=\"".$text11[$lang]."\" title=\"".$text11[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_workflow_reject.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
-    if (($cat == "script" && $globalpermission[$site]['workflowscript'] == 1 && $globalpermission[$site]['workflowscriptedit'] == 1) || ($cat == "man" && $globalpermission[$site]['workflowproc'] == 1  && $globalpermission[$site]['workflowprocedit'] == 1))
+    if (($cat == "script" && checkglobalpermission ($site, 'workflowscript') && checkglobalpermission ($site, 'workflowscriptedit')) || ($cat == "man" && checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowprocedit')))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createworkflowLayer','','hide','deleteworkflowLayer','','hide','editworkflowLayer','','show','hcms_messageLayer','','hide')\" name=\"media_edit\" src=\"".getthemelocation()."img/button_workflow_edit.gif\" alt=\"".$text12[$lang]."\" title=\"".$text12[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_workflow_edit.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
@@ -227,12 +239,12 @@ function checkForm_item_create()
       echo "  </div>
       <div class=\"hcmsToolbarBlock\">\n";
       
-      if ($globalpermission[$site]['workflowproc'] == 1 && $globalpermission[$site]['workflowprocfolder'] == 1)
+      if (checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowprocfolder'))
       {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='frameset_workflow_folder.php?site=".url_encode($site)."&cat=comp'; hcms_showHideLayers('createworkflowLayer','','hide','deleteworkflowLayer','','hide','editworkflowLayer','','hide','hcms_messageLayer','','hide');\" name=\"media_foldercomp\" src=\"".getthemelocation()."img/button_workflow_foldercomp.gif\" salt=\"".$text23[$lang]."\" title=\"".$text23[$lang]."\" />\n";}
       else
       {echo "<img src=\"".getthemelocation()."img/button_workflow_foldercomp.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
 
-      if ($globalpermission[$site]['workflowproc'] == 1 && $globalpermission[$site]['workflowprocfolder'] == 1)
+      if (checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowprocfolder'))
       {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='frameset_workflow_folder.php?site=".url_encode($site)."&cat=page'; hcms_showHideLayers('createworkflowLayer','','hide','deleteworkflowLayer','','hide','editworkflowLayer','','hide','hcms_messageLayer','','hide');\" name=\"media_folder\" src=\"".getthemelocation()."img/button_workflow_folder.gif\" alt=\"".$text24[$lang]."\" title=\"".$text24[$lang]."\" />\n";}
       else
       {echo "<img src=\"".getthemelocation()."img/button_workflow_folder.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}

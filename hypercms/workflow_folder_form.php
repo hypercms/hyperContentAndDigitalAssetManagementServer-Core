@@ -33,7 +33,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($globalpermission[$site]['workflow'] != 1 || $globalpermission[$site]['workflowproc'] != 1 || $globalpermission[$site]['workflowprocfolder'] != 1 || !valid_publicationname ($site)) killsession ($user);
+if (!checkglobalpermission ($site, 'workflow') || !checkglobalpermission ($site, 'workflowproc') || !checkglobalpermission ($site, 'workflowprocfolder') || !valid_publicationname ($site)) killsession ($user);
 // check session of user
 checkusersession ($user);
 

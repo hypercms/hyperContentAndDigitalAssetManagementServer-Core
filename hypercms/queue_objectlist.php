@@ -30,7 +30,11 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($rootpermission['desktop'] != 1 || ($site != "" && $mgmt_config[$site]['dam'] == true)) killsession ($user);
+if (
+     ($queueuser != "" && !checkrootpermission ('desktop')) || 
+     ($queueuser == "" && !checkrootpermission ('site')) || 
+     (valid_publicationname ($site) && $mgmt_config[$site]['dam'] == true)
+   ) killsession ($user);
 
 // check session of user
 checkusersession ($user);

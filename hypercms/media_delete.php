@@ -30,7 +30,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($globalpermission[$site]['tplmedia'] != 1 || $globalpermission[$site]['tplmediadelete'] != 1 || !valid_publicationname ($site)) killsession ($user);
+if (!checkglobalpermission ($site, 'tplmedia') || !checkglobalpermission ($site, 'tplmediadelete') || !valid_publicationname ($site)) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -73,7 +73,7 @@ function goToURL ()
 </script>
 </head>
 <?php
-if ($globalpermission[$site]['tplmedia'] == 1 && $globalpermission[$site]['tplmediadelete'] == 1 && $action == "delete")
+if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediadelete') && $action == "delete")
 {
   $result = deletefrommediacat ($site, $mediafile);
   $add_onload = $result['add_onload'];

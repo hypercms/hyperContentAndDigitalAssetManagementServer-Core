@@ -1491,7 +1491,7 @@ function rdbms_replacecontent ($folderpath, $object_type, $date_from, $date_to, 
 }
 
 // ----------------------------------------------- search user ------------------------------------------------- 
-function rdbms_searchuser ($site, $user, $maxhits=10000)
+function rdbms_searchuser ($site, $user, $maxhits=1000)
 {
   global $mgmt_config;
 
@@ -1503,9 +1503,10 @@ function rdbms_searchuser ($site, $user, $maxhits=10000)
     $user = $db->escape_string ($user);
     if ($maxhits != "") $maxhits = $db->escape_string ($maxhits);
     
-    $sql = 'SELECT obj.objectpath FROM object AS obj, container AS cnt WHERE obj.id=cnt.id AND cnt.user="'.$user.'"';
+    $sql = 'SELECT obj.objectpath, obj.hash FROM object AS obj, container AS cnt WHERE obj.id=cnt.id AND cnt.user="'.$user.'"';
     if ($site != "" && $site != "*Null*") $sql .= ' AND (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
-    if ($maxhits != "" && $maxhits > 0) $sql .= " LIMIT 0,".intval($maxhits);
+    $sql .= ' ORDER BY cnt.date DESC';
+    if ($maxhits != "" && $maxhits > 0) $sql .= ' LIMIT 0,'.intval($maxhits);
 
     $errcode = "50025";
     $done = $db->query($sql, $errcode, $mgmt_config['today']);
@@ -1516,7 +1517,7 @@ function rdbms_searchuser ($site, $user, $maxhits=10000)
       
       while ($row = $db->getResultRow ())
       {
-        $objectpath[] = str_replace ("*", "%", $row['objectpath']);   
+        if ($row['objectpath'] != "") $objectpath[$row['hash']] = str_replace ("*", "%", $row['objectpath']);   
       }
     }
     else $objectpath = Null;
@@ -1682,7 +1683,7 @@ function rdbms_getobject ($object_identifier)
       
       if ($done && $row = $db->getResultRow ())
       {
-        $objectpath = str_replace ("*", "%", $row['objectpath']);  
+        if ($row['objectpath'] != "") $objectpath = str_replace ("*", "%", $row['objectpath']);  
       }
     }
 
@@ -1709,9 +1710,9 @@ function rdbms_getobject ($object_identifier)
             $errcode = "50029";
             $db->query ($sql, $errcode, $mgmt_config['today'], "delete");
           }
-          else $objectpath = str_replace ("*", "%", $row['objectpath']);
+          elseif ($row['objectpath'] != "") $objectpath = str_replace ("*", "%", $row['objectpath']);
         }
-        else $objectpath = str_replace ("*", "%", $row['objectpath']);  
+        elseif ($row['objectpath'] != "") $objectpath = str_replace ("*", "%", $row['objectpath']);  
       }
     }
     
@@ -1740,7 +1741,7 @@ function rdbms_getobjects ($container_id, $template="")
     
     $container_id = intval ($container_id);
     
-    $sql = 'SELECT objectpath FROM object WHERE id="'.intval($container_id).'"';
+    $sql = 'SELECT objectpath, hash FROM object WHERE id="'.intval($container_id).'"';
     if ($template != "") $sql .= ' AND template="'.$template.'"';
     
     $errcode = "50030";
@@ -1750,7 +1751,7 @@ function rdbms_getobjects ($container_id, $template="")
     {
       while ($row = $db->getResultRow ())
       {
-        $objectpath[] = str_replace ("*", "%", $row['objectpath']);  
+        if ($row['objectpath'] != "") $objectpath[$row['hash']] = str_replace ("*", "%", $row['objectpath']);  
       }
     }
 

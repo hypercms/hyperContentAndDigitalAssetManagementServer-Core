@@ -30,7 +30,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($site == "*Null*" && ($rootpermission['user'] != 1) || ($site != "*Null*" && $globalpermission[$site]['user'] != 1)) killsession ($user);
+if ($site == "*Null*" && (!checkrootpermission ('user')) || ($site != "*Null*" && !checkglobalpermission ($site, 'user'))) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -192,7 +192,7 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
     if ($object_array['login'][$key] != "admin" && $object_array['login'][$key] != "sys" && $object_array['login'][$key] != "hcms_download" && $items_row < $next_max)
     {
       // open on double click
-      if ($rootpermission['user'] == 1 && $rootpermission['useredit'] == 1 || ($site != "*Null*" && $globalpermission[$site]['user'] == 1 && $globalpermission[$site]['useredit'] == 1)) 
+      if (checkrootpermission ('user') && checkrootpermission ('useredit') || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) 
       {
         $openUser = "onDblClick=\"window.open('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."','','status=yes,scrollbars=no,resizable=yes,width=500,height=540');\"";
       }
@@ -306,12 +306,12 @@ var session_id = '<?php session_id(); ?>';
       <tr>
         <td>
           <?php $tblrow = 1;  
-          if (($site == "*Null*" && $rootpermission['user'] == 1  && $rootpermission['useredit'] == 1) || ($site != "*Null*" && $globalpermission[$site]['user'] == 1  && $globalpermission[$site]['useredit'] == 1)) { 
+          if (($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('useredit')) || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) { 
           ?>
           <a href=# id="href_edit" onClick="if (buttonaction('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_user_edit.gif" id="img_edit" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $text3[$lang]; ?></a><br />     
           <hr />
           <?php }
-          if (($site == "*Null*" && $rootpermission['user'] == 1  && $rootpermission['userdelete'] == 1) || ($site != "*Null*" && $globalpermission[$site]['user'] == 1  && $globalpermission[$site]['userdelete'] == 1)) {
+          if (($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('userdelete')) || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'userdelete'))) {
           ?>
           <a href=# id="href_delete" onClick="if (buttonaction('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_user_delete.gif" id="img_delete" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $text4[$lang]; ?></a><br />
           <hr />        

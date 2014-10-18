@@ -30,7 +30,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check group permissions
-if ($globalpermission[$site]['group'] != 1 || !valid_publicationname ($site)) killsession ($user);
+if (!checkglobalpermission ($site, 'group') || !valid_publicationname ($site)) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -48,14 +48,14 @@ if (strpos ($group_name, ".php?") > 0)
 }
 
 // include scripts
-if ($globalpermission[$site]['group'] == 1 && $globalpermission[$site]['groupcreate'] == 1 && $action == "group_create")
+if (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 'groupcreate') && $action == "group_create")
 {
   $result = creategroup ($site, $group_name, $user);
   
   $add_onload = $result['add_onload'];
   $show = $result['message'];
 }
-elseif ($globalpermission[$site]['group'] == 1 && $globalpermission[$site]['groupdelete'] == 1 && $action == "group_delete")
+elseif (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 'groupdelete') && $action == "group_delete")
 {
   $result = deletegroup ($site, $group_name, $user);
   
@@ -163,19 +163,19 @@ function goToURL()
 <div class="hcmsToolbar">
   <div class="hcmsToolbarBlock">
     <?php
-    if ($globalpermission[$site]['group'] == 1 && $globalpermission[$site]['groupcreate'] == 1)
+    if (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 'groupcreate'))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('creategroupLayer','','show','deletegroupLayer','','hide','editgroupLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_new\" src=\"".getthemelocation()."img/button_usergroup_new.gif\" alt=\"".$text9[$lang]."\" title=\"".$text9[$lang]."\">";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_usergroup_new.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
     ?>
     <?php
-    if ($globalpermission[$site]['group'] == 1 && $globalpermission[$site]['groupdelete'] == 1)
+    if (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 'groupdelete'))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('creategroupLayer','','hide','deletegroupLayer','','show','editgroupLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_delete\" src=\"".getthemelocation()."img/button_usergroup_delete.gif\" alt=\"".$text11[$lang]."\" title=\"".$text11[$lang]."\">";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_usergroup_delete.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
     ?>
     <?php
-    if ($globalpermission[$site]['group'] == 1  && $globalpermission[$site]['groupedit'] == 1)
+    if (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 'groupedit'))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('creategroupLayer','','hide','deletegroupLayer','','hide','editgroupLayer','','show','hcms_messageLayer','','hide')\" name=\"media_edit\" src=\"".getthemelocation()."img/button_usergroup_edit.gif\" alt=\"".$text12[$lang]."\" title=\"".$text12[$lang]."\">";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_usergroup_edit.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
@@ -183,7 +183,7 @@ function goToURL()
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    if (!$is_mobile && file_exists ("help/adminguide_".$lang_shortcut[$lang].".pdf") && $globalpermission[$site]['group'] == 1)
+    if (!$is_mobile && file_exists ("help/adminguide_".$lang_shortcut[$lang].".pdf") && checkglobalpermission ($site, 'group'))
     {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openBrWindowItem('help/adminguide_".$lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text50[$lang]."\" title=\"".$text50[$lang]."\"></a>\n";}
     ?>
   </div>

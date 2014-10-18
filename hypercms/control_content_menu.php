@@ -142,7 +142,7 @@ if ($action != "" && checktoken ($token, $user))
     {
       $result = unlockobject ($site, $location, $page, $user);
     }
-    elseif ($usedby != $user && $rootpermission['user'] == 1)
+    elseif ($usedby != $user && checkrootpermission ('user'))
     {
       $result = unlockobject ($site, $location, $page, $usedby);
     }

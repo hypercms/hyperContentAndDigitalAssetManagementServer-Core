@@ -33,7 +33,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check group permissions
-if ($globalpermission[$site]['tplmedia'] != 1 || !valid_publicationname ($site)) killsession ($user);
+if (!checkglobalpermission ($site, 'tplmedia') || !valid_publicationname ($site)) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -50,25 +50,25 @@ else $datafile = "";
 // execute actions
 if (checktoken ($token, $user))
 {
-  if ($globalpermission[$site]['tplmedia'] == 1 && $globalpermission[$site]['tplmediacatcreate'] == 1 && $action == "mediacat_create")
+  if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediacatcreate') && $action == "mediacat_create")
   {
     $result = createmediacat ($site, $mediacat_name);
     $add_onload = $result['add_onload'];
     $show = $result['message'];
   }
-  elseif ($globalpermission[$site]['tplmedia'] == 1 && $globalpermission[$site]['tplmediacatdelete'] == 1 && $action == "mediacat_delete")
+  elseif (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediacatdelete') && $action == "mediacat_delete")
   {
     $result = deletemediacat ($site, $mediacat_name);
     $add_onload = $result['add_onload'];
     $show = $result['message'];
   }
-  elseif ($globalpermission[$site]['tplmedia'] == 1 && $globalpermission[$site]['tplmediacatrename'] == 1 && $action == "mediacat_rename")
+  elseif (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediacatrename') && $action == "mediacat_rename")
   {
     $result = renamemediacat ($site, $mediacat_name_curr, $mediacat_name);
     $add_onload = $result['add_onload'];
     $show = $result['message'];
   }
-  elseif ($globalpermission[$site]['tplmedia'] == 1 && $globalpermission[$site]['tplmediaupload'] == 1 && $action == "mediafile_upload")
+  elseif (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediaupload') && $action == "mediafile_upload")
   {
     $result = uploadtomediacat ($site, $mediacat_name, $_FILES);
     $add_onload = $result['add_onload'];
@@ -263,19 +263,19 @@ function goToURL()
 <div class="hcmsToolbar">
   <div class="hcmsToolbarBlock">
     <?php
-    if ($globalpermission[$site]['tplmedia'] == 1  && $globalpermission[$site]['tplmediacatcreate'] == 1)
+    if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediacatcreate'))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createmediacatLayer','','show','deletemediacatLayer','','hide','renamemediacatLayer','','hide','uploadmediaLayer','','hide','Layer5','','hide','hcms_messageLayer','','hide')\" name=\"media1\" src=\"".getthemelocation()."img/button_folder_new.gif\" alt=\"".$text11[$lang]."\" title=\"".$text11[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_folder_new.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
-    if ($globalpermission[$site]['tplmedia'] == 1  && $globalpermission[$site]['tplmediacatdelete'] == 1)
+    if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediacatdelete'))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','show','renamemediacatLayer','','hide','uploadmediaLayer','','hide','hcms_messageLayer','','hide')\" name=\"media2\" src=\"".getthemelocation()."img/button_folder_delete.gif\" alt=\"".$text12[$lang]."\" title=\"".$text12[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_folder_delete.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
-    if ($globalpermission[$site]['tplmedia'] == 1  && $globalpermission[$site]['tplmediacatrename'] == 1)
+    if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediacatrename'))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','hide','renamemediacatLayer','','show','uploadmediaLayer','','hide','hcms_messageLayer','','hide')\" name=\"media3\" src=\"".getthemelocation()."img/button_folder_rename.gif\" alt=\"".$text13[$lang]."\" title=\"".$text13[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_folder_rename.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
@@ -284,13 +284,13 @@ function goToURL()
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    if ($globalpermission[$site]['tplmedia'] == 1  && $globalpermission[$site]['tplmediaupload'] == 1)
+    if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediaupload'))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','hide','renamemediacatLayer','','hide','uploadmediaLayer','','show','hcms_messageLayer','','hide')\" name=\"media_upload\" src=\"".getthemelocation()."img/button_media_new.gif\" alt=\"".$text14[$lang]."\" title=\"".$text14[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_media_new.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
-    if ($globalpermission[$site]['tplmedia'] == 1  && $globalpermission[$site]['tplmediadelete'] == 1)
+    if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediadelete'))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='media_edit_frameset.php?site=".url_encode($site)."&action=mediafile_delete&mediacat=".url_encode($mediacat)."'; hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','hide','renamemediacatLayer','','hide','uploadmediaLayer','','hide','hcms_messageLayer','','hide');\" name=\"media_delete\" src=\"".getthemelocation()."img/button_media_delete.gif\" alt=\"".$text15[$lang]."\" title=\"".$text15[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_media_delete.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
@@ -299,7 +299,7 @@ function goToURL()
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    if ($globalpermission[$site]['tplmedia'] == 1)
+    if (checkglobalpermission ($site, 'tplmedia'))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='media_edit_frameset.php?site=".url_encode($site)."&action=mediafile_preview&mediacat=".url_encode($mediacat)."'; hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','hide','renamemediacatLayer','','hide','uploadmediaLayer','','hide','hcms_messageLayer','','hide');\" name=\"media_view\" src=\"".getthemelocation()."img/button_media_view.gif\" alt=\"".$text16[$lang]."\" title=\"".$text16[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_media_view.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}

@@ -42,7 +42,7 @@ $location_esc = convertpath ($site, $location, $cat);
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($rootpermission['desktop'] != 1) killsession ($user);
+if (!checkrootpermission ('desktop')) killsession ($user);
 
 // check session of user
 checkusersession ($user, false);
@@ -72,22 +72,25 @@ if ($checkedout_data != false)
   if (is_array ($checkedout_array))
   {
     foreach ($checkedout_array as $checkedout_rec)
-    {    
-      list ($site, $cat, $container) = explode ("|", $checkedout_rec); 
-   
-      // if no corresponding siteaccess for this user
-      if (!in_array ($site, $siteaccess))
+    {
+      if ($checkedout_rec != "")
       {
-        // get container id
-        $container_id = substr ($container, 0, strpos ($container, ".xml"));
-
-        // check-in content container
-        $test = unlockfile ($user, getcontentlocation ($container_id, 'abs_path_content'), $container.".wrk");
-      
-        // remove entry from list
-        if ($test == true) $checkedout_data = str_replace ($checkedout_rec."\n", "", $checkedout_data);
+        list ($site, $cat, $container) = explode ("|", $checkedout_rec); 
+     
+        // if no corresponding siteaccess for this user
+        if (!in_array ($site, $siteaccess))
+        {
+          // get container id
+          $container_id = substr ($container, 0, strpos ($container, ".xml"));
+  
+          // check-in content container
+          $test = unlockfile ($user, getcontentlocation ($container_id, 'abs_path_content'), $container.".wrk");
         
-        $savecheckedout = true;
+          // remove entry from list
+          if ($test == true) $checkedout_data = str_replace ($checkedout_rec."\n", "", $checkedout_data);
+          
+          $savecheckedout = true;
+        }
       }
     }
     

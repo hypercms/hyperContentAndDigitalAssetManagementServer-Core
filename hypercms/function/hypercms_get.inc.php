@@ -193,7 +193,7 @@ function getlocationname ($site, $location, $cat, $source="path")
     if (getobject ($location) == ".folder") $location = getlocation ($location);
 
     // input is converted location
-    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1 && is_array ($mgmt_config[$site]))
+    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1 && isset ($mgmt_config[$site]) && is_array ($mgmt_config[$site]))
     {
       if ($site == "") $site = getpublication ($location);      
       if ($cat == "") $cat = getcategory ($site, $location);
@@ -202,7 +202,7 @@ function getlocationname ($site, $location, $cat, $source="path")
       $location_abs = deconvertpath ($location, "file");
     }
     // input is not a converted location and publication name is valid
-    elseif (valid_publicationname ($site) && is_array($mgmt_config[$site]))
+    elseif (valid_publicationname ($site) && isset ($mgmt_config[$site]) && is_array ($mgmt_config[$site]))
     {
       if ($cat == "") $cat = getcategory ($site, $location);
       

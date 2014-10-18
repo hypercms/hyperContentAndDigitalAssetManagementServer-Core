@@ -55,7 +55,7 @@ DROP TABLE IF EXISTS `textnodes`;
 
 CREATE TABLE `textnodes` (
   `id` int(11) NOT NULL default '0',
-  `text_id` varchar(60) NOT NULL default '',
+  `text_id` varchar(120) NOT NULL default '',
   `textcontent` text,
   KEY `textnodes_id` (`id`),
   KEY `textnodes_text_id` (`text_id`),

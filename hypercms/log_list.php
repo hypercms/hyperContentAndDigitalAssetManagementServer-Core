@@ -22,7 +22,7 @@ require_once ("language/log_list.inc.php");
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($rootpermission['site'] != 1) killsession ($user);
+if (!checkrootpermission ('site')) killsession ($user);
 
 // check session of user
 checkusersession ($user);

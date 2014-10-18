@@ -35,7 +35,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($rootpermission['site'] != 1) killsession ($user);
+if (!checkrootpermission ('site')) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -46,13 +46,13 @@ $show = "";
 $add_onload = "";
 
 // check group permissions
-if ($rootpermission['site'] != 1 || $rootpermission['siteedit'] != 1)
+if (!checkrootpermission ('site') || !checkrootpermission ('siteedit'))
 {
   $show = "<p class=hcmsHeadline>".$text25[$lang]."</p>\n";
 }
 
 // check site permissions and save settings
-if ($rootpermission['site'] == 1 && $rootpermission['siteedit'] == 1 && $action == "site_edit" && checktoken ($token, $user))
+if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $action == "site_edit" && checktoken ($token, $user))
 {
   $result = editpublication ($site_name, $setting, $user);
   
@@ -100,7 +100,7 @@ echo showmessage ($show, 500, 70, $lang, "position:absolute; left:15px; top:15px
 ?>
 
 <?php
-if ($rootpermission['site'] == 1 && $rootpermission['siteedit'] == 1)
+if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
 {
   // check if site name is an attribute of a sent string
   if (strpos ($site_name, ".php") > 0)

@@ -31,7 +31,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($globalpermission[$site]['group'] != 1 || ($globalpermission[$site]['groupcreate'] != 1 && $globalpermission[$site]['groupedit'] != 1) || !valid_publicationname ($site))  killsession ($user);
+if (!checkglobalpermission ($site, 'group') || (!checkglobalpermission ($site, 'groupcreate') && !checkglobalpermission ($site, 'groupedit')) || !valid_publicationname ($site))  killsession ($user);
 
 // check session of user
 checkusersession ($user);

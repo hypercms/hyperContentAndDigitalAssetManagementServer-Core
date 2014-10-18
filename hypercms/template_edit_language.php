@@ -25,7 +25,7 @@ $site = getrequest ("site", "publicationname");
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($globalpermission[$site]['template'] != 1 || $globalpermission[$site]['tpl'] != 1 || !valid_publicationname ($site)) killsession ($user);
+if (!checkglobalpermission ($site, 'template') || !checkglobalpermission ($site, 'tpl') || !valid_publicationname ($site)) killsession ($user);
 
 // check session of user
 checkusersession ($user);

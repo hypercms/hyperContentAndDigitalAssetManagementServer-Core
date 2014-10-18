@@ -30,7 +30,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($site == "*Null*" && ($rootpermission['user'] != 1) || ($site != "*Null*" && $globalpermission[$site]['user'] != 1)) killsession ($user);
+if ($site == "*Null*" && (!checkrootpermission ('user')) || ($site != "*Null*" && !checkglobalpermission ($site, 'user'))) killsession ($user);
 // check session of user
 checkusersession ($user, false);
 

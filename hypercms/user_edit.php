@@ -44,9 +44,9 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 
 // check permissions
 if (
-     ($site == "*Null*" && $login_cat == "home" && $login == $user && $rootpermission['desktopsetting'] != 1) || 
-     ($site == "*Null*" && $login_cat != "home" && ($rootpermission['user'] != 1 || $rootpermission['useredit'] != 1)) || 
-     ($site != "*Null*" && $login_cat != "home" && ($globalpermission[$site]['user'] != 1 || $globalpermission[$site]['useredit'] != 1))
+     ($site == "*Null*" && $login_cat == "home" && $login == $user && !checkrootpermission ('desktopsetting')) || 
+     ($site == "*Null*" && $login_cat != "home" && (!checkrootpermission ('user') || !checkrootpermission ('useredit'))) || 
+     ($site != "*Null*" && $login_cat != "home" && (!checkglobalpermission ($site, 'user') || checkglobalpermission ($site, 'useredit')))
    ) killsession ($user);
 
 // check session of user
@@ -61,9 +61,9 @@ if ($action == "user_save" && ($site == "*Null*" || in_array ($site, $siteaccess
 {
   // check permissions
   if (
-       ($login_cat == "home" && $login == $user && $rootpermission['desktopsetting'] == 1) || 
-       ($site == "*Null*" && $rootpermission['user'] == 1 && $rootpermission['useredit'] == 1) || 
-       ($site != "*Null*" && $globalpermission[$site]['user'] == 1 && $globalpermission[$site]['useredit'] == 1)
+       ($login_cat == "home" && $login == $user && checkrootpermission ('desktopsetting')) || 
+       ($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('useredit')) || 
+       ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))
      )
   {
     // set super admin (only in main user administration)

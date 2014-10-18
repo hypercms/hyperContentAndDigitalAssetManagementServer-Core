@@ -31,7 +31,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($rootpermission['desktop'] != 1 || $rootpermission['desktoptaskmgmt'] != 1 || !valid_objectname ($user)) killsession ($user);
+if (!checkrootpermission ('desktop') || !checkrootpermission ('desktoptaskmgmt') || !valid_objectname ($user)) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -41,7 +41,7 @@ checkusersession ($user);
 $show = "";
 
 // delete tasks
-if ($rootpermission['desktoptaskmgmt'] == 1 && is_array ($delete_id) && $action == "task_delete" && checktoken ($token, $user)) 
+if (checkrootpermission ('desktoptaskmgmt') && is_array ($delete_id) && $action == "task_delete" && checktoken ($token, $user)) 
 {
   $result = deletetask ($user, $delete_id);
   
@@ -89,7 +89,7 @@ echo showmessage ($show, 500, 70, $lang, "position:absolute; left:50px; top:100p
     $savetasklist = false;
     $j = 1;
 
-    if (is_array ($task_array) && sizeof ($task_array) > 0)
+    if (isset ($task_array) && is_array ($task_array) && sizeof ($task_array) > 0)
     {
       echo "<tr>
         <td valign=\"top\" class=\"hcmsHeadline\" width=\"10\" nowrap=\"nowrap\">".$text0[$lang]."</td>

@@ -37,7 +37,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if (!valid_publicationname ($site) || $globalpermission[$site]['template'] != 1 || $globalpermission[$site]['tpl'] != 1) killsession ($user);
+if (!valid_publicationname ($site) || !checkglobalpermission ($site, 'template') || !checkglobalpermission ($site, 'tpl')) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -74,7 +74,7 @@ elseif (strpos ($template, ".meta.tpl") > 0)
 }
 
 // save template file if save button was pressed
-if ($globalpermission[$site]['template'] == 1 && $globalpermission[$site]['tpledit'] == 1 && $save == "yes" && checktoken ($token, $user))
+if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, 'tpledit') && $save == "yes" && checktoken ($token, $user))
 {
   // set highest cleaning level is not provided
   if (!isset ($mgmt_config['template_clean_level'])) $mgmt_config['template_clean_level'] = 3;

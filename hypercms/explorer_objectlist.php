@@ -56,7 +56,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 // we check for general root element access since localpermissions are checked later
-if (!valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($cat) || ($cat == "comp" && (!isset ($globalpermission[$site]['component']) || $globalpermission[$site]['component'] != 1)) || ($cat == "page" && (!isset($globalpermission[$site]['page']) || $globalpermission[$site]['page'] != 1))) killsession ($user);
+if (!valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($cat) || ($cat == "comp" && !checkglobalpermission ($site, 'component')) || ($cat == "page" && !checkglobalpermission ($site, 'page'))) killsession ($user);
 
 // check session of user
 checkusersession ($user, false);

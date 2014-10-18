@@ -39,7 +39,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($globalpermission[$site]['component'] != 1 && $globalpermission[$site]['tplmedia'] != 1 || !valid_publicationname ($site)) killsession ($user);
+if (!checkglobalpermission ($site, 'component') && !checkglobalpermission ($site, 'tplmedia') || !valid_publicationname ($site)) killsession ($user);
 
 // check session of user
 checkusersession ($user, false);
@@ -49,7 +49,7 @@ checkusersession ($user, false);
 $show = "";
 
 // save content to file
-if ($save == "yes" && valid_objectname ($mediafile) && checktoken ($token, $user) && $globalpermission[$site]['tpledit'] == 1)
+if ($save == "yes" && valid_objectname ($mediafile) && checktoken ($token, $user) && checkglobalpermission ($site, 'tpledit'))
 {
   // decode characters
   $content = html_decode ($content, $lang_codepage[$lang]);
@@ -107,7 +107,7 @@ if (substr_count ($mediafile, "Null_media.gif") == 1)
 }
 elseif ($mediafile != "")
 {
-  if ($mediacat == "tpl" && $globalpermission[$site]['tpledit'] == 1) $view = "template";
+  if ($mediacat == "tpl" && checkglobalpermission ($site, 'tpledit')) $view = "template";
   else $view = "preview_no_rendering";
   
   if (!isset ($object_info['name'])) $object_info['name'] = getobject ($mediafile);

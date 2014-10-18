@@ -47,7 +47,7 @@ if ($wf_token != "")
 // ------------------------------ permission section --------------------------------
 
 // check permissions, user must have general root access to pages and components
-if ($wf_id == "" || $wf_role < 1 || ($cat == "comp" && $globalpermission[$site]['component'] != 1) || ($cat == "page" && $globalpermission[$site]['page'] != 1) || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
+if ($wf_id == "" || $wf_role < 1 || ($cat == "comp" && !checkglobalpermission ($site, 'component')) || ($cat == "page" && !checkglobalpermission ($site, 'page')) || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
 
 // check session of user
 checkusersession ($user);

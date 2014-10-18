@@ -35,7 +35,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if (($site == "*Null*" && $rootpermission['user'] != 1) || ($site != "*Null*" && $globalpermission[$site]['user'] != 1)) killsession ($user);
+if (($site == "*Null*" && !checkrootpermission ('user')) || ($site != "*Null*" && !checkglobalpermission ($site, 'user'))) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -50,8 +50,8 @@ if ($action != "" && checktoken ($token, $user))
   // create new user
   if ($action == "create" &&
        (
-         ($site == "*Null*" && $rootpermission['user'] == 1 && $rootpermission['usercreate'] == 1) || 
-         ($site != "*Null*" && $globalpermission[$site]['user'] == 1 && $globalpermission[$site]['usercreate'] == 1)
+         ($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('usercreate')) || 
+         ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'usercreate'))
         )
       )
   {
@@ -63,8 +63,8 @@ if ($action != "" && checktoken ($token, $user))
   // delete user
   elseif ($action == "delete" && $login != "admin" && $login != "sys" && $login != "hcms_download" && 
            (
-             ($site == "*Null*" && $rootpermission['user'] == 1 && $rootpermission['userdelete'] == 1) || 
-             ($site != "*Null*" && $globalpermission[$site]['user'] == 1 && $globalpermission[$site]['userdelete'] == 1)
+             ($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('userdelete')) || 
+             ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'userdelete'))
            )
          )
   {
@@ -284,7 +284,7 @@ function goToURL()
 <div class="hcmsToolbar">
   <div class="hcmsToolbarBlock">
     <?php
-    if (($site == "*Null*" && $rootpermission['user'] == 1  && $rootpermission['usercreate'] == 1) || ($site != "*Null*" && $globalpermission[$site]['user'] == 1  && $globalpermission[$site]['usercreate'] == 1))
+    if (($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('usercreate')) || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'usercreate')))
     {
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
@@ -298,7 +298,7 @@ function goToURL()
     ?>
     <?php
     // DELETE BUTTON
-    if ($login != "" && (($site == "*Null*" && $rootpermission['user'] == 1  && $rootpermission['userdelete'] == 1) || ($site != "*Null*" && $globalpermission[$site]['user'] == 1  && $globalpermission[$site]['userdelete'] == 1)))
+    if ($login != "" && (($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('userdelete')) || ($site != "*Null*" && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'userdelete'))))
     {
       echo 
       "<img ".
@@ -314,7 +314,7 @@ function goToURL()
     ?>
     <?php
     // USER EDIT
-    if ($login != "" && (!$multiobject || $multiobject_count <= 1) && (($site == "*Null*" && $rootpermission['user'] == 1  && $rootpermission['useredit'] == 1) || ($site != "*Null*" && $globalpermission[$site]['user'] == 1  && $globalpermission[$site]['useredit'] == 1)))
+    if ($login != "" && (!$multiobject || $multiobject_count <= 1) && (($site == "*Null*" && checkrootpermission ('user')  && checkrootpermission ('useredit')) || ($site != "*Null*" && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'useredit'))))
     {
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
@@ -331,7 +331,7 @@ function goToURL()
   <div class="hcmsToolbarBlock">
     <?php
     // USER FILES
-    if ((!$multiobject || $multiobject_count <= 1) && $mgmt_config['db_connect_rdbms'] != "" && $login != "" && (($site == "*Null*" && $rootpermission['user'] == 1) || ($site != "*Null*" && $globalpermission[$site]['user'] == 1)))
+    if ((!$multiobject || $multiobject_count <= 1) && $mgmt_config['db_connect_rdbms'] != "" && $login != "" && (($site == "*Null*" && checkrootpermission ('user')) || ($site != "*Null*" && checkglobalpermission ($site, 'user'))))
     {
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".

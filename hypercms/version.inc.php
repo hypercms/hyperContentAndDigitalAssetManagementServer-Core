@@ -504,6 +504,70 @@ changelog:
 - bug fix: error in call to js-function hcms_validateform in function showinlineeditor_head
 - bug fix: remove reseting of image size if scaling is used in CKEditor image-plugin
 - bug fix: inline editing mode issue when onedit and onpublish attributes are used for the same hypercms tag
+
+version 5.6.10 PREVIEW
+planed release 10/2014
+changelog:
+- improvements in plugin management
+- new individual button in UI function showtopbar
+- bug fix: function downloadfile called dailystat for each partial file download (only first partial download triggers dailystat)
+- new Simple Statistics plugin (not part of standard software package)
+- bug fix: exception for CSS and JS files in follow link (page_view)
+- new Keyword Statistics plugin (not part of standard software package)
+- changed order of meta data extraction of files due to issue with Adobe XMP special characters, new order: EXIF, XMP, IPTC
+- bug fix: function showtopbar did not show individual button
+- bug fix: function downloadfile did not provide proper dailystat, if requested start bytes were not zero
+- bug fix: page_multiedit didn't show label names defined in template and applied constraints on unformatted text fields even if they were disabled
+- implementation of multiple hyperCMS instances using different databases, internal and external repositories
+- implementation of instance manager GUI to manage multiple hyperCMS instances (as part of connector)
+- implementation of DB connect in multiedit
+- improvement in notification of user, if user is owner of an object no notification will be sent
+- bug fix: missing check of globalpermission in explorer_objectlist
+- bug fix: added removing of IPTC meta data using EXIFTOOL in function iptc_writefile before writing new IPTC data to file
+- bug fix: function notifyusers used file owner and not current user to cmpare with the notified user
+- bug fix: new version of FFMPEG requires new option names (e.g. -b:v for the video bit rate instead of -b), options for FFMPEG have been changed in config.inc.php, media_rendering.php and function creatmedia
+- bug fix: new version of FFMPEG does not support an audio sample rate of 44100 Hz for FLV files, changed default to 22050 Hz, options for FFMPEG have been changed in config.inc.php, media_rendering.php and function creatmedia
+- bug fix: deleteobjects did not remove individual video files with sub-file-extension .media
+- implementation of new function getoption for extracting values of a string holding options (used for image/audio/video options)
+- creating a thumbnail image on inital upload of a video file
+- bug fix: function loadcontainer did not return the container information for versions of a content container
+- improvements in task management for broken links
+- new theme namend colorful
+- bug fix: download of other file formats than original did not work
+- bug fix: undefined variables in several scripts
+- bug fix: click on object shows wrong object in sidebar if sort has been applied
+- bug fix: clicking on an object in gallery-view highlights wrong object if sort has been applied
+- Improvements in all object list views
+- Improvements in preview of object / sidebar
+- bug fix: image brightness was set to -100 for image editing due to a wrong variable name
+- Improvements in object lists regarding alignemnts of list/gallery items
+- creating new components when adding components to a page by the component explorer
+- securing parameters for shell
+- support for video files with no configuration file in repository
+- bug fix: video cutting was not able to process hours, minutes and seconds of one digit
+- several improvments in video editing including an infobox
+- new home screen and home navigation item in navigator
+- new boxes on home screen for recent tasks and recent objects of logged in user
+- improvements in mobile style sheets+
+- bug fix: function getfiletype searched for a substring in file extension definitions without a delimiter, this lead to wrong file-type in media table
+- bug fix: new function shellcmd_encode to solve tilde issue with function escapeshellcmd in various files
+- reorganisation of functions in the hyperCMS API
+- implementation of new check permissions functions
+- bug fix: DB connect RDBMS did not provide hash keys for all search operations
+- bug fix: permission issues in explorer for publishing queue, log-list and plugins
+
+preview:
+- definition of target formats when using send mail-link
+- add meta data to files based on metadata template on upload on checkbox to change metadata after upload
+- save color code (hex) and percentage for images in table media to present 5 main colors for the image
+- structured lists (one list element leads to a second list with sub-elements) 
+- video comments/keywords for video frames
+- keyword fields 'textk' to edit keywords with recommender function ala youtube. Define keyword lists under meta data templates that can or must be used.
+- watermark for images and videos
+- video transcoding (e.g. video with different audio layers)
+- users online und live chat
+- speech2text for video text indexing
+- Windows Federated Search for WebDAV / Windows Explorer (complicated)
 */
 
 // current version

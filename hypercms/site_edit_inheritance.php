@@ -36,7 +36,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($rootpermission['site'] != 1) killsession ($user);
+if (!checkrootpermission ('site')) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -46,7 +46,7 @@ checkusersession ($user);
 $show = "";
 
 // save inheritance settings
-if ($rootpermission['site'] == 1 && $rootpermission['siteedit'] == 1 && $save == "yes" && checktoken ($token, $user))
+if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save == "yes" && checktoken ($token, $user))
 {
   if ($site != "" && $site_name != "")
   {
@@ -242,7 +242,7 @@ function move (fbox, tbox)
 // show message
 if ($show != "") echo showmessage ($show, 600, 70, $lang, "position:absolute; left:15px; top:15px;");
 
-if ($rootpermission['site'] == 1 && $rootpermission['siteedit'] == 1)
+if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
 {
   // define php script for form action
   if ($preview == "no")
@@ -269,7 +269,7 @@ if ($rootpermission['site'] == 1 && $rootpermission['siteedit'] == 1)
   
   <table border="0" cellspacing="0" cellpadding="3">
     <?php
-    if ($site == "*Null*" && $rootpermission['site'] == 1 && $rootpermission['siteedit'] == 1)
+    if ($site == "*Null*" && checkrootpermission ('site') && checkrootpermission ('siteedit'))
     {    
       echo "<tr>
       <td colspan=2>

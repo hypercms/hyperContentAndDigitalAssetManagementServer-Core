@@ -25,7 +25,7 @@ $cat = getrequest ("cat", "objectname");
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
 // check permissions
-if ($globalpermission[$site]['pers'] != 1 || ($globalpermission[$site]['perstrack'] != 1 && $globalpermission[$site]['persprof'] != 1) || $mgmt_config[$site]['dam'] == true || !valid_publicationname ($site)) killsession ($user);
+if (!checkglobalpermission ($site, 'pers') || (!checkglobalpermission ($site, 'perstrack') && !checkglobalpermission ($site, 'persprof')) || $mgmt_config[$site]['dam'] == true || !valid_publicationname ($site)) killsession ($user);
 // check session of user
 checkusersession ($user, false);
 // language file

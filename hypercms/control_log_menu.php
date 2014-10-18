@@ -26,7 +26,7 @@ $token = getrequest ("token");
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($rootpermission['site'] != 1) killsession ($user);
+if (!checkrootpermission ('site')) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -37,7 +37,7 @@ $show = "";
 $add_onload = "";
 
 // clear event log
-if (($rootpermission['site'] == 1 || $rootpermission['user'] == 1) && $action == "clear" && checktoken ($token, $user))
+if ((checkrootpermission ('site') || checkrootpermission ('user')) && $action == "clear" && checktoken ($token, $user))
 {
   $result = deletelog ();
   

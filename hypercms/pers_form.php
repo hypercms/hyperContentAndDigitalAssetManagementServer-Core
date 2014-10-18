@@ -35,9 +35,9 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 
 // check permissions
 if (
-     !valid_objectname ($cat) || $globalpermission[$site]['pers'] != 1 || 
-     ($cat == "tracking" && $globalpermission[$site]['perstrack'] != 1) || 
-     ($cat == "profile" && $globalpermission[$site]['persprof'] != 1) || 
+     !valid_objectname ($cat) || !checkglobalpermission ($site, 'pers') || 
+     ($cat == "tracking" && !checkglobalpermission ($site, 'perstrack')) || 
+     ($cat == "profile" && !checkglobalpermission ($site, 'persprof')) || 
      $mgmt_config[$site]['dam'] == true || !valid_publicationname ($site)
    ) killsession ($user);
 

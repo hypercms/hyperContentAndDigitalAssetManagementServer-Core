@@ -53,7 +53,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   // check permissions
   else
   {
-    if (($cat != "page" && $cat != "comp") || ($cat == "comp" && $globalpermission[$site]['component'] != 1) || ($cat == "page" && $globalpermission[$site]['page'] != 1) || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
+    if (($cat != "page" && $cat != "comp") || ($cat == "comp" && !checkglobalpermission ($site, 'component')) || ($cat == "page" && !checkglobalpermission ($site, 'page')) || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
   }
 
   // check session of user

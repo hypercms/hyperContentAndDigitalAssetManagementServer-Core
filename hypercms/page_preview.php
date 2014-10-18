@@ -47,7 +47,7 @@ if ($mgmt_config[$site]['dam'] == true)
 // check permissions
 else
 {
-  if (($cat != "page" && $cat != "comp") || ($cat == "comp" && (!isset ($globalpermission[$site]['component']) || $globalpermission[$site]['component'] != 1)) || ($cat == "page" && (!isset ($globalpermission[$site]['page']) || $globalpermission[$site]['page'] != 1)) || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
+  if (($cat != "page" && $cat != "comp") || ($cat == "comp" && !checkglobalpermission ($site, 'component')) || ($cat == "page" && !checkglobalpermission ($site, 'page')) || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
 }
 
 // check session of user

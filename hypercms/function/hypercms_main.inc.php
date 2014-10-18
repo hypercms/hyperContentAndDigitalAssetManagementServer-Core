@@ -11,6 +11,45 @@
 
 // ========================================== SPECIALCHARACTERS =======================================
 
+// ------------------------------------- convertchars ------------------------------------------
+
+// function: convertchars ()
+// input: expression (mixed), input character set, output character set
+// output: converted expression / false on error
+
+function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
+{
+  global $mgmt_config;
+  
+  if ($expression != "" && $charset_from != "" && $charset_to != "")
+  {
+    if ($charset_from == $charset_to)
+    {
+      return $expression;
+    }
+    else
+    {
+      if (!is_array ($expression))
+      {
+        // convert
+        $expression = iconv ($charset_from, $charset_to, $expression);
+      }
+      elseif (is_array ($expression))
+      {
+        foreach ($expression as &$value)
+        {
+          // convert
+          $value = convertchars ($value, $charset_from, $charset_to);
+        }
+      }
+      
+      if ($expression != "") return $expression;
+      else return false;      
+    }
+  }
+  else return false;
+}
+
 // ------------------------- specialchr -----------------------------
 // function: specialchr()
 // input: expression, list of characters to be excluded from search  
@@ -611,7 +650,7 @@ function deconvertpath ($path, $type="file", $specialchr_transform=false)
       if ($type == "file") 
       {   
         // deconvert page locations
-        if (@substr_count ($path, "%page%") > 0 && valid_publicationname ($site) && $mgmt_config[$site]['abs_path_page'] != "")
+        if (@substr_count ($path, "%page%") > 0 && valid_publicationname ($site) && !empty ($mgmt_config[$site]['abs_path_page']))
         {
           if ($mgmt_config[$site]['abs_path_page'][strlen ($mgmt_config[$site]['abs_path_page'])-1] == "/") $root_var = "%page%/".$site."/";
           else $root_var = "%page%/".$site;
@@ -620,7 +659,7 @@ function deconvertpath ($path, $type="file", $specialchr_transform=false)
         }
               
         // deconvert component locations 
-        if (@substr_count ($path, "%comp%") > 0 && $mgmt_config['abs_path_comp'] != "")
+        if (@substr_count ($path, "%comp%") > 0 && !empty ($mgmt_config['abs_path_comp']))
         {
           if ($mgmt_config['abs_path_comp'][strlen ($mgmt_config['abs_path_comp'])-1] == "/") $root_var = "%comp%/";
           else $root_var = "%comp%";
@@ -632,7 +671,7 @@ function deconvertpath ($path, $type="file", $specialchr_transform=false)
       elseif ($type == "url") 
       {
         // deconvert page locations
-        if (@substr_count ($path, "%page%") > 0 && valid_publicationname ($site) && $mgmt_config[$site]['url_path_page'] != "")
+        if (@substr_count ($path, "%page%") > 0 && valid_publicationname ($site) && !empty ($mgmt_config[$site]['url_path_page']))
         {
           if ($mgmt_config[$site]['url_path_page'][strlen ($mgmt_config[$site]['url_path_page'])-1] == "/") $root_var = "%page%/".$site."/";
           else $root_var = "%page%/".$site;
@@ -641,7 +680,7 @@ function deconvertpath ($path, $type="file", $specialchr_transform=false)
         }
            
         // deconvert component locations
-        if (@substr_count ($path, "%comp%") > 0 && $mgmt_config['url_path_comp'] != "")
+        if (@substr_count ($path, "%comp%") > 0 && !empty ($mgmt_config['url_path_comp']))
         {
           if ($mgmt_config['url_path_comp'][strlen ($mgmt_config['url_path_comp'])-1] == "/") $root_var = "%comp%/";
           else $root_var = "%comp%";
@@ -2294,609 +2333,6 @@ function is_mobilebrowser ()
       return true;
     }
     else return false;
-  }
-  else return false;
-}
-
-// ===================================== PERMISSIONS =========================================
-
-// ---------------------- rootpermission -----------------------------
-// function: rootpermission()
-// input: publication name, publication admin, permission string from group 
-// output: global permission array/false
-
-// description:
-// deseralizes the permission string and and returns the root permission array.
-
-function rootpermission ($site_name, $site_admin, $permission_str)
-{
-  global $rootpermission, $mgmt_config;
-
-  // load config if site_admin is not set
-  if (valid_publicationname ($site_name) && $site_admin != true)
-  {
-    require ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
-  }
-  
-  if (is_array ($permission_str) && valid_publicationname ($site_name))
-  {
-    if (!isset ($rootpermission['desktop'])) $rootpermission['desktop'] = 0;
-    if (!isset ($rootpermission['desktopsetting'])) $rootpermission['desktopsetting'] = 0;
-    if (!isset ($rootpermission['desktoptaskmgmt'])) $rootpermission['desktoptaskmgmt'] = 0;
-    if (!isset ($rootpermission['desktopcheckedout'])) $rootpermission['desktopcheckedout'] = 0; 
-    if (!isset ($rootpermission['desktoptimetravel'])) $rootpermission['desktoptimetravel'] = 0;      
-      
-    if (!isset ($rootpermission['site'])) $rootpermission['site'] = 0;
-    if (!isset ($rootpermission['sitecreate'])) $rootpermission['sitecreate'] = 0;
-    if (!isset ($rootpermission['sitedelete'])) $rootpermission['sitedelete'] = 0;
-    if (!isset ($rootpermission['siteedit'])) $rootpermission['siteedit'] = 0;
-    
-    if (!isset ($rootpermission['user'])) $rootpermission['user'] = 0;
-    if (!isset ($rootpermission['usercreate'])) $rootpermission['usercreate'] = 0;
-    if (!isset ($rootpermission['userdelete'])) $rootpermission['userdelete'] = 0;
-    if (!isset ($rootpermission['useredit'])) $rootpermission['useredit'] = 0;    
-
-    reset ($permission_str);
-    
-    while (list ($group_name, $value) = each ($permission_str[$site_name]))
-    {
-      if ($group_name != "" && $value != "")
-      {
-        // get permissions from string
-        parse_str ($value);
-    
-        // desktop permissions
-        if ($rootpermission['desktop'] == 0 && $desktop[0] == 1) $rootpermission['desktop'] = 1;
-        if ($rootpermission['desktopsetting'] == 0 && $desktop[1] == 1) $rootpermission['desktopsetting'] = 1;
-        if ($rootpermission['desktoptaskmgmt'] == 0 && $desktop[2] == 1) $rootpermission['desktoptaskmgmt'] = 1;
-        if ($rootpermission['desktopcheckedout'] == 0 && $desktop[3] == 1) $rootpermission['desktopcheckedout'] = 1;       
-        if ($rootpermission['desktoptimetravel'] == 0 && $desktop[4] == 1) $rootpermission['desktoptimetravel'] = 1;     
-
-        if ($site_admin == true)
-        {
-          // site permissions
-          if ($rootpermission['site'] == 0 && $site[0] == 1) $rootpermission['site'] = 1;
-          if ($rootpermission['sitecreate'] == 0 && $site[1] == 1) $rootpermission['sitecreate'] = 1;
-          if ($rootpermission['sitedelete'] == 0 && $site[2] == 1) $rootpermission['sitedelete'] = 1;
-          if ($rootpermission['siteedit'] == 0 && $site[3] == 1) $rootpermission['siteedit'] = 1;   
-          // user permissions
-          if ($rootpermission['user'] == 0 && $user[0] == 1) $rootpermission['user'] = 1;
-          if ($rootpermission['usercreate'] == 0 && $user[1] == 1) $rootpermission['usercreate'] = 1;
-          if ($rootpermission['userdelete'] == 0 && $user[2] == 1) $rootpermission['userdelete'] = 1;
-          if ($rootpermission['useredit'] == 0 && $user[3] == 1) $rootpermission['useredit'] = 1;         
-        }  
-      }
-    }
-    
-    if (is_array ($rootpermission)) 
-    {
-      return $rootpermission;
-    }
-    else return false;
-  }
-  else return false;
-}
-    
-// ---------------------- globalpermission -----------------------------
-// function: globalpermission()
-// input: publication, permission string from group 
-// output: global permission array/false
-
-// description:
-// deseralizes the permission string and returns the global permission array.
-
-function globalpermission ($site_name, $permission_str)
-{
-  if (is_array ($permission_str) && valid_publicationname ($site_name))
-  {  
-    $globalpermission[$site_name]['user'] = 0;
-    $globalpermission[$site_name]['usercreate'] = 0;
-    $globalpermission[$site_name]['userdelete'] = 0;
-    $globalpermission[$site_name]['useredit'] = 0;
-    
-    $globalpermission[$site_name]['group'] = 0;
-    $globalpermission[$site_name]['groupcreate'] = 0;
-    $globalpermission[$site_name]['groupdelete'] = 0;
-    $globalpermission[$site_name]['groupedit'] = 0;
-    
-    $globalpermission[$site_name]['pers'] = 0;
-    $globalpermission[$site_name]['perstrack'] = 0;
-    $globalpermission[$site_name]['perstrackcreate'] = 0;
-    $globalpermission[$site_name]['perstrackdelete'] = 0;
-    $globalpermission[$site_name]['perstrackedit'] = 0;
-    $globalpermission[$site_name]['persprof'] = 0;
-    $globalpermission[$site_name]['persprofcreate'] = 0;
-    $globalpermission[$site_name]['persprofdelete'] = 0;
-    $globalpermission[$site_name]['persprofedit'] = 0;
-    
-    $globalpermission[$site_name]['workflow'] = 0;
-    $globalpermission[$site_name]['workflowproc'] = 0;
-    $globalpermission[$site_name]['workflowproccreate'] = 0;
-    $globalpermission[$site_name]['workflowprocdelete'] = 0;
-    $globalpermission[$site_name]['workflowprocedit'] = 0;
-    $globalpermission[$site_name]['workflowprocfolder'] = 0;
-    $globalpermission[$site_name]['workflowscript'] = 0;
-    $globalpermission[$site_name]['workflowscriptcreate'] = 0;
-    $globalpermission[$site_name]['workflowscriptdelete'] = 0;
-    $globalpermission[$site_name]['workflowscriptedit'] = 0;      
-    
-    $globalpermission[$site_name]['template'] = 0;
-    $globalpermission[$site_name]['tpl'] = 0;
-    $globalpermission[$site_name]['tplcreate'] = 0;
-    $globalpermission[$site_name]['tpldelete'] = 0;
-    $globalpermission[$site_name]['tpledit'] = 0;   
-    $globalpermission[$site_name]['tplmedia'] = 0;
-    $globalpermission[$site_name]['tplmediacatcreate'] = 0;
-    $globalpermission[$site_name]['tplmediacatdelete'] = 0;
-    $globalpermission[$site_name]['tplmediacatrename'] = 0;
-    $globalpermission[$site_name]['tplmediaupload'] = 0;
-    $globalpermission[$site_name]['tplmediadelete'] = 0;
-    
-    $globalpermission[$site_name]['component'] = 0;
-    $globalpermission[$site_name]['page'] = 0;
-    
-    reset ($permission_str);
-   
-    while (list ($group_name, $value) = each ($permission_str[$site_name]))
-    {
-      if ($group_name != "" && $value != "")
-      {
-        // get permissions from string
-        parse_str ($value);
-
-        // user permissions
-        if ($globalpermission[$site_name]['user'] == 0 && $user[0] == 1) $globalpermission[$site_name]['user'] = 1;
-        if ($globalpermission[$site_name]['usercreate'] == 0 && $user[1] == 1) $globalpermission[$site_name]['usercreate'] = 1;
-        if ($globalpermission[$site_name]['userdelete'] == 0 && $user[2] == 1) $globalpermission[$site_name]['userdelete'] = 1;
-        if ($globalpermission[$site_name]['useredit'] == 0 && $user[3] == 1) $globalpermission[$site_name]['useredit'] = 1;
-        // group permissions
-        if ($globalpermission[$site_name]['group'] == 0 && $group[0] == 1) $globalpermission[$site_name]['group'] = 1;
-        if ($globalpermission[$site_name]['groupcreate'] == 0 && $group[1] == 1) $globalpermission[$site_name]['groupcreate'] = 1;
-        if ($globalpermission[$site_name]['groupdelete'] == 0 && $group[2] == 1) $globalpermission[$site_name]['groupdelete'] = 1;
-        if ($globalpermission[$site_name]['groupedit'] == 0 && $group[3] == 1) $globalpermission[$site_name]['groupedit'] = 1;
-        // personalization permissions
-        if ($globalpermission[$site_name]['pers'] == 0 && $pers[0] == 1) $globalpermission[$site_name]['pers'] = 1;
-        if ($globalpermission[$site_name]['perstrack'] == 0 && $pers[1] == 1) $globalpermission[$site_name]['perstrack'] = 1;
-        if ($globalpermission[$site_name]['perstrackcreate'] == 0 && $pers[2] == 1) $globalpermission[$site_name]['perstrackcreate'] = 1;
-        if ($globalpermission[$site_name]['perstrackdelete'] == 0 && $pers[3] == 1) $globalpermission[$site_name]['perstrackdelete'] = 1;
-        if ($globalpermission[$site_name]['perstrackedit'] == 0 && $pers[4] == 1) $globalpermission[$site_name]['perstrackedit'] = 1;
-        if ($globalpermission[$site_name]['persprof'] == 0 && $pers[5] == 1) $globalpermission[$site_name]['persprof'] = 1;
-        if ($globalpermission[$site_name]['persprofcreate'] == 0 && $pers[6] == 1) $globalpermission[$site_name]['persprofcreate'] = 1;
-        if ($globalpermission[$site_name]['persprofdelete'] == 0 && $pers[7] == 1) $globalpermission[$site_name]['persprofdelete'] = 1;
-        if ($globalpermission[$site_name]['persprofedit'] == 0 && $pers[8] == 1) $globalpermission[$site_name]['persprofedit'] = 1;
-        // workflow permissions
-        if ($globalpermission[$site_name]['workflow'] == 0 && $workflow[0] == 1) $globalpermission[$site_name]['workflow'] = 1;
-        if ($globalpermission[$site_name]['workflowproc'] == 0 && $workflow[1] == 1) $globalpermission[$site_name]['workflowproc'] = 1;
-        if ($globalpermission[$site_name]['workflowproccreate'] == 0 && $workflow[2] == 1) $globalpermission[$site_name]['workflowproccreate'] = 1;
-        if ($globalpermission[$site_name]['workflowprocdelete'] == 0 && $workflow[3] == 1) $globalpermission[$site_name]['workflowprocdelete'] = 1;
-        if ($globalpermission[$site_name]['workflowprocedit'] == 0 && $workflow[4] == 1) $globalpermission[$site_name]['workflowprocedit'] = 1;
-        if ($globalpermission[$site_name]['workflowprocfolder'] == 0 && $workflow[5] == 1) $globalpermission[$site_name]['workflowprocfolder'] = 1;
-        if ($globalpermission[$site_name]['workflowscript'] == 0 && $workflow[6] == 1) $globalpermission[$site_name]['workflowscript'] = 1;
-        if ($globalpermission[$site_name]['workflowscriptcreate'] == 0 && $workflow[7] == 1) $globalpermission[$site_name]['workflowscriptcreate'] = 1;
-        if ($globalpermission[$site_name]['workflowscriptdelete'] == 0 && $workflow[8] == 1) $globalpermission[$site_name]['workflowscriptdelete'] = 1;
-        if ($globalpermission[$site_name]['workflowscriptedit'] == 0 && $workflow[9] == 1) $globalpermission[$site_name]['workflowscriptedit'] = 1;      
-        // template permissions
-        if ($globalpermission[$site_name]['template'] == 0 && $template[0] == 1) $globalpermission[$site_name]['template'] = 1;
-        if ($globalpermission[$site_name]['tpl'] == 0 && $template[1] == 1) $globalpermission[$site_name]['tpl'] = 1;
-        if ($globalpermission[$site_name]['tplcreate'] == 0 && $template[2] == 1) $globalpermission[$site_name]['tplcreate'] = 1;
-        if (isset ($template[5]) && $template[5] != "") // older versions before 5.5.11 (template upload still exists)
-        {
-          if ($globalpermission[$site_name]['tpldelete'] == 0 && $template[4] == 1) $globalpermission[$site_name]['tpldelete'] = 1;
-          if ($globalpermission[$site_name]['tpledit'] == 0 && $template[5] == 1) $globalpermission[$site_name]['tpledit'] = 1;
-        }
-        else
-        {
-          if ($globalpermission[$site_name]['tpldelete'] == 0 && $template[3] == 1) $globalpermission[$site_name]['tpldelete'] = 1;
-          if ($globalpermission[$site_name]['tpledit'] == 0 && isset ($template[4]) && $template[4] == 1) $globalpermission[$site_name]['tpledit'] = 1;
-        }
-        // template media permissions
-        if ($globalpermission[$site_name]['tplmedia'] == 0 && $media[0] == 1) $globalpermission[$site_name]['tplmedia'] = 1;
-        if ($globalpermission[$site_name]['tplmediacatcreate'] == 0 && $media[1] == 1) $globalpermission[$site_name]['tplmediacatcreate'] = 1;
-        if ($globalpermission[$site_name]['tplmediacatdelete'] == 0 && $media[2] == 1) $globalpermission[$site_name]['tplmediacatdelete'] = 1;
-        if ($globalpermission[$site_name]['tplmediacatrename'] == 0 && $media[3] == 1) $globalpermission[$site_name]['tplmediacatrename'] = 1;
-        if ($globalpermission[$site_name]['tplmediaupload'] == 0 && $media[4] == 1) $globalpermission[$site_name]['tplmediaupload'] = 1;
-        if ($globalpermission[$site_name]['tplmediadelete'] == 0 && $media[5] == 1) $globalpermission[$site_name]['tplmediadelete'] = 1;
-        // component permissions
-        if ($globalpermission[$site_name]['component'] == 0 && $component[0] == 1) $globalpermission[$site_name]['component'] = 1;
-        // content permissions
-        if ($globalpermission[$site_name]['page'] == 0 && $page[0] == 1) $globalpermission[$site_name]['page'] = 1;     
-      }  
-    }
-    
-    if (is_array ($globalpermission)) 
-    {
-      return $globalpermission;
-    }
-    else return false;
-  }
-  else return false;
-}
-
-// ---------------------- localpermission -----------------------------
-// function: localpermission()
-// input: publication, permission string from group 
-// output: local permission array/false
-
-// description:
-// deseralizes the permission string and returns the local permission array.
-
-function localpermission ($site_name, $permission_str)
-{
-  if (is_array ($permission_str) && valid_publicationname ($site_name))
-  {  
-    reset ($permission_str);
-  
-    while (list ($group_name, $value) = each ($permission_str[$site_name]))
-    {
-      if ($group_name != "" && $value != "")
-      {
-        // get permissions from string
-        parse_str ($value);
-  
-        // component permissions
-        $localpermission[$site_name][$group_name]['component'] = $component[0];
-        $localpermission[$site_name][$group_name]['compupload'] = $component[1];
-        $localpermission[$site_name][$group_name]['compdownload'] = $component[2];
-        $localpermission[$site_name][$group_name]['compsendlink'] = $component[3]; 
-        $localpermission[$site_name][$group_name]['compfoldercreate'] = $component[4];
-        $localpermission[$site_name][$group_name]['compfolderdelete'] = $component[5];
-        $localpermission[$site_name][$group_name]['compfolderrename'] = $component[6];
-        $localpermission[$site_name][$group_name]['compcreate'] = $component[7];
-        $localpermission[$site_name][$group_name]['compdelete'] = $component[8];
-        $localpermission[$site_name][$group_name]['comprename'] = $component[8];
-        $localpermission[$site_name][$group_name]['comppublish'] = $component[10];
-        // content permissions
-        $localpermission[$site_name][$group_name]['page'] = $page[0];
-        $localpermission[$site_name][$group_name]['pagesendlink'] = $page[1]; 
-        $localpermission[$site_name][$group_name]['pagefoldercreate'] = $page[2];
-        $localpermission[$site_name][$group_name]['pagefolderdelete'] = $page[3];
-        $localpermission[$site_name][$group_name]['pagefolderrename'] = $page[4];
-        $localpermission[$site_name][$group_name]['pagecreate'] = $page[5];
-        $localpermission[$site_name][$group_name]['pagedelete'] = $page[6];
-        $localpermission[$site_name][$group_name]['pagerename'] = $page[7];
-        $localpermission[$site_name][$group_name]['pagepublish'] = $page[8];
-      }  
-    }
-    
-    if (is_array ($localpermission)) 
-    {
-      return $localpermission;
-    }
-    else return false;
-  }
-  else return false;
-}
-
-// ---------------------------------- accesspermission -------------------------------------------
-// function: accesspermission()
-// input: location (path to folder), object category ['page, comp']
-// output: group with access permissions as array / false on error
-// requires: accessgeneral
-
-// description:
-// evaluates page and component access permissions and returns group(s).
-
-function accesspermission ($site, $location, $cat)
-{
-  global $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $mgmt_config;   
-
-  if (valid_publicationname ($site) && valid_locationname ($location) && is_array ($mgmt_config))
-  { 
-    // load config if not available
-    if ((!isset ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
-    {
-      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-    } 
-
-    // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location);     
-    
-    // deconvert path to absolute file path
-    if (@substr_count ($location, "://") > 0)
-    {
-      if ($cat == "page") $location = str_replace ($mgmt_config[$site]['url_path_page'], $mgmt_config[$site]['abs_path_page'], $location);
-      elseif ($cat == "comp") $location = str_replace ($mgmt_config['url_path_comp'], $mgmt_config['abs_path_comp'], $location);
-    }        
-    elseif (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
-    {
-      $location = deconvertpath ($location, "file");
-    }
-    
-    // cut off file name 
-    if (@is_file ($location)) $location = getlocation ($location);
-    
-    // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";     
-    
-    // check general access permissions
-    $access_passed = accessgeneral ($site, $location, $cat);
-
-    // check if hcms linking is available and current location is inside linking location
-    if ($access_passed == true && isset ($_SESSION['hcms_linking']) && is_array ($_SESSION['hcms_linking']))
-    {
-      // reset from session to be sure it is correct 
-      $hcms_linking = $_SESSION['hcms_linking'];
-      
-      // check if inside linking location
-      if (valid_locationname ($hcms_linking['location']) && substr_count ($location, $hcms_linking['location']) > 0) $access_passed = true;
-      else $access_passed = false;
-    }    
-
-    // check access
-    if ($access_passed == true)
-    {
-      // check page access (must hold absolute path values)
-      if ($cat == "page" && isset ($pageaccess[$site]) && is_array ($pageaccess[$site]) && @substr_count ($location, $mgmt_config['abs_path_rep']) == 0) 
-      {
-        reset ($pageaccess);          
-        $thisaccess = $pageaccess[$site];          
-        $i = 0;
-      
-        // groups
-        while (list ($group, $value) = each ($thisaccess))
-        {
-          // split access-string into an array
-          $value = substr ($value, 0, strlen ($value)-1);
-          $value_array = explode ("|", $value);
-          
-          // access locations
-          foreach ($value_array as $value)
-          {
-            if (@substr_count ($location, $value) >= 1)
-            {
-              $points[$i] = strlen ($value);
-              $groups[$i] = $group;
-              $i++;
-            }              
-          }
-        }
-      }
-      // check component access (must hold absolute path values)
-      elseif ($cat == "comp" && isset ($compaccess[$site]) && is_array ($compaccess[$site]))
-      {
-        reset ($compaccess);          
-        $thisaccess = $compaccess[$site];        
-        $i = 0;
-        
-        // groups
-        while (list ($group, $value) = each ($thisaccess))
-        {
-          // split access-string into an array
-          $value = substr ($value, 0, strlen ($value)-1);
-          $value_array = explode ("|", $value);
-          
-          // access locations
-          foreach ($value_array as $value)
-          {
-            if (@substr_count ($location, $value) >= 1)
-            {
-              $points[$i] = strlen ($value);
-              $groups[$i] = $group;
-              $i++;
-            }
-          }                            
-        }
-      }  
-      else return false;
-      
-      // return result if group was located
-      if (isset ($groups) && is_array ($groups) && sizeof ($groups) > 0 && isset ($points) && is_array ($points) && sizeof ($points) > 0)
-      {
-        // get longest location (this is the closest to the current location and will therefore apply)
-        $max = max ($points);
-        
-        while (list ($id, $point) = each ($points))
-        {
-          if ($point == $max) $result[] = $groups[$id];
-        }
-
-        if (is_array ($result) && sizeof ($result) > 0) return $result;
-      }
-      // return deafult group as result if no group was located and hcms linking exists
-      elseif (isset ($_SESSION['hcms_linking']) && is_array ($_SESSION['hcms_linking']))
-      {
-        $result[] = "default";
-        return $result;
-      }
-      else return false;
-    }
-    else return false;
-  }
-  else return false;
-}
-
-// ---------------------------------- accessgeneral -------------------------------------------
-// function: accessgeneral()
-// input: publication, location (path to folder), object category ['page, comp']
-// output: true/false
-
-// description: checks general access to certain system folders, publications and returns true if access is granted
-
-function accessgeneral ($site, $location, $cat)
-{
-  global $mgmt_config, $hiddenfolder, $siteaccess;   
-
-  if (valid_publicationname ($site) && valid_locationname ($location) && is_array ($mgmt_config))
-  {
-    // load config if not available
-    if (!is_array ($mgmt_config[$site]) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
-    {
-      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-    }     
-   
-    // define category if undefined
-    if ($cat == "") $cat = getcategory ($site, $location);     
-    
-    if (@substr_count ($location, "://") > 0)
-    {
-      if ($cat == "page") $location = str_replace ($mgmt_config[$site]['url_path_page'], $mgmt_config[$site]['abs_path_page'], $location);
-      elseif ($cat == "comp") $location = str_replace ($mgmt_config['url_path_comp'], $mgmt_config['abs_path_comp'], $location);
-    }
-    elseif (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
-    {
-      $location = deconvertpath ($location, "file");
-    }
-    
-    // cut off file name 
-    if (@is_file ($location) && $location[strlen ($location)-1] != "/")
-    {
-      $location = substr ($location, 0, strrpos ($location, "/") + 1);
-    }
-    elseif (@is_dir ($location) && $location[strlen ($location)-1] != "/")
-    {
-      $location = $location."/";
-    }
-    
-    // convert location
-    $location_esc = convertpath ($site, $location, $cat);
-
-    // check publication and location
-    if ($location_esc != "")
-    {
-      $site_location = getpublication ($location_esc);
-      if ($site_location != $site) return false;
-    }
-    else return false;    
-    
-    // check publication access
-    if (is_array ($siteaccess))
-    {
-      if (!in_array ($site, $siteaccess)) return false;
-    }
-
-    // check excluded folders
-    if (isset ($hiddenfolder[$site]) && is_array ($hiddenfolder[$site]))  
-    {   
-      foreach ($hiddenfolder[$site] as $exclude_folder)
-      {
-        if (@substr_count ($location_esc, $exclude_folder) > 0) return false;
-      }
-    }
-
-    // check data root and cms root
-    if (@substr_count ($location, $mgmt_config['abs_path_cms']) == 0 && @substr_count ($location, $mgmt_config['abs_path_data']) == 0)
-    {
-      // check page access
-      if ($cat == "page" && @substr_count ($location, $mgmt_config[$site]['abs_path_page']) > 0 && @substr_count ($location, $mgmt_config['abs_path_rep']) == 0) 
-      {   
-        return true;
-      }
-      // check component access
-      elseif ($cat == "comp" && @substr_count ($location, $mgmt_config['abs_path_comp']) > 0)
-      { 
-        return true;     
-      }  
-      else return false;
-    }
-    else return false;
-  }
-  else return false;
-}
-
-// ---------------------- setlocalpermission -----------------------------
-// function: setlocalpermission()
-// input: publication, group name array, object category [page,comp]
-// output: local permission array
-
-// description:
-// checks local permissions of a group
-
-function setlocalpermission ($site, $group_array, $cat)
-{
-  global $localpermission;
-
-  if ((!isset ($localpermission) || !is_array ($localpermission)) && isset ($_SESSION['hcms_localpermission'])) $localpermission = $_SESSION['hcms_localpermission'];
-  
-  $setlocalpermission['root'] = 0;
-  $setlocalpermission['upload'] = 0;
-  $setlocalpermission['download'] = 0;
-  $setlocalpermission['sendlink'] = 0;
-  $setlocalpermission['foldercreate'] = 0;
-  $setlocalpermission['folderdelete'] = 0;
-  $setlocalpermission['folderrename'] = 0;
-  $setlocalpermission['create'] = 0;
-  $setlocalpermission['delete'] = 0;
-  $setlocalpermission['rename'] = 0;
-  $setlocalpermission['publish'] = 0;
-  
-  if (valid_publicationname ($site) && is_array ($group_array) && $cat != "")
-  {
-    $cat = strtolower ($cat);  
-  
-    reset ($group_array);
-    
-    foreach ($group_array as $group)
-    {
-      // component permissions
-      if ($cat == "comp")
-      {
-        if ($setlocalpermission['root'] == 0 && $localpermission[$site][$group]['component'] == 1) $setlocalpermission['root'] = 1;
-        if ($setlocalpermission['upload'] == 0 && $localpermission[$site][$group]['compupload'] == 1) $setlocalpermission['upload'] = 1;
-        if ($setlocalpermission['download'] == 0 && $localpermission[$site][$group]['compdownload'] == 1) $setlocalpermission['download'] = 1;
-        if ($setlocalpermission['sendlink'] == 0 && $localpermission[$site][$group]['compsendlink'] == 1) $setlocalpermission['sendlink'] = 1;  
-        if ($setlocalpermission['foldercreate'] == 0 && $localpermission[$site][$group]['compfoldercreate'] == 1) $setlocalpermission['foldercreate'] = 1;
-        if ($setlocalpermission['folderdelete'] == 0 && $localpermission[$site][$group]['compfolderdelete'] == 1) $setlocalpermission['folderdelete'] = 1;
-        if ($setlocalpermission['folderrename'] == 0 && $localpermission[$site][$group]['compfolderrename'] == 1) $setlocalpermission['folderrename'] = 1;
-        if ($setlocalpermission['create'] == 0 && $localpermission[$site][$group]['compcreate'] == 1) $setlocalpermission['create'] = 1; 
-        if ($setlocalpermission['delete'] == 0 && $localpermission[$site][$group]['compdelete'] == 1) $setlocalpermission['delete'] = 1;
-        if ($setlocalpermission['rename'] == 0 && $localpermission[$site][$group]['comprename'] == 1) $setlocalpermission['rename'] = 1;
-        if ($setlocalpermission['publish'] == 0 && $localpermission[$site][$group]['comppublish'] == 1) $setlocalpermission['publish'] = 1;
-      }      
-      // content permissions
-      elseif ($cat == "page")
-      {      
-        if ($setlocalpermission['root'] == 0 && $localpermission[$site][$group]['page'] == 1) $setlocalpermission['root'] = 1;
-        if ($setlocalpermission['sendlink'] == 0 && $localpermission[$site][$group]['pagesendlink'] == 1) $setlocalpermission['sendlink'] = 1;
-        if ($setlocalpermission['foldercreate'] == 0 && $localpermission[$site][$group]['pagefoldercreate'] == 1) $setlocalpermission['foldercreate'] = 1;
-        if ($setlocalpermission['folderdelete'] == 0 && $localpermission[$site][$group]['pagefolderdelete'] == 1) $setlocalpermission['folderdelete'] = 1;
-        if ($setlocalpermission['folderrename'] == 0 && $localpermission[$site][$group]['pagefolderrename'] == 1) $setlocalpermission['folderrename'] = 1;
-        if ($setlocalpermission['create'] == 0 && $localpermission[$site][$group]['pagecreate'] == 1) $setlocalpermission['create'] = 1;
-        if ($setlocalpermission['delete'] == 0 && $localpermission[$site][$group]['pagedelete'] == 1) $setlocalpermission['delete'] = 1;
-        if ($setlocalpermission['rename'] == 0 && $localpermission[$site][$group]['pagerename'] == 1) $setlocalpermission['rename'] = 1;
-        if ($setlocalpermission['publish'] == 0 && $localpermission[$site][$group]['pagepublish'] == 1) $setlocalpermission['publish'] = 1;
-      }   
-    }
-  }
-  
-  return $setlocalpermission;
-}
-
-
-// ------------------------------------- convertchars ------------------------------------------
-
-// function: convertchars ()
-// input: expression (mixed), input character set, output character set
-// output: converted expression / false on error
-
-function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
-{
-  global $mgmt_config;
-  
-  if ($expression != "" && $charset_from != "" && $charset_to != "")
-  {
-    if ($charset_from == $charset_to)
-    {
-      return $expression;
-    }
-    else
-    {
-      if (!is_array ($expression))
-      {
-        // convert
-        $expression = iconv ($charset_from, $charset_to, $expression);
-      }
-      elseif (is_array ($expression))
-      {
-        foreach ($expression as &$value)
-        {
-          // convert
-          $value = convertchars ($value, $charset_from, $charset_to);
-        }
-      }
-      
-      if ($expression != "") return $expression;
-      else return false;      
-    }
   }
   else return false;
 }

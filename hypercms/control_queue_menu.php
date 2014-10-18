@@ -39,7 +39,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if (($queueuser != "" && $rootpermission['desktop'] != 1) || ($queueuser == "" && $rootpermission['site'] != 1)) killsession ($user);
+if (($queueuser != "" && !checkrootpermission ('desktop')) || ($queueuser == "" && !checkrootpermission ('site'))) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -65,8 +65,8 @@ $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 // delete entries from queue
 if ($action == "delete" && checktoken ($token, $user) && 
      $queue_id != "" && 
-     (($queueuser != "" && $rootpermission['desktop'] == 1) || 
-     ($rootpermission['site'] == 1 || $rootpermission['user'] == 1))
+     (($queueuser != "" && checkrootpermission ('desktop')) || 
+     (checkrootpermission ('site') || checkrootpermission ('user')))
    )
 {
   if ($multiobject != "" || $queue_id != "")
@@ -235,7 +235,7 @@ if ($show != "") echo showmessage ($show, 650, 60, $lang, "position:absolute; le
   <div class="hcmsToolbarBlock">
     <?php
     // QUEUE DELETE BUTTON
-    if ($queue_id != "" && (($queueuser != "" && $rootpermission['desktop'] == 1) || ($queueuser == "" && ($rootpermission['site'] == 1 || $rootpermission['user'] == 1))))
+    if ($queue_id != "" && (($queueuser != "" && checkrootpermission ('desktop')) || ($queueuser == "" && (checkrootpermission ('site') || checkrootpermission ('user')))))
     {
       echo 
       "<img ".
@@ -309,7 +309,7 @@ if ($show != "") echo showmessage ($show, 650, 60, $lang, "position:absolute; le
         ?>        
       </select>
     </div>
-    <?php if ($_SESSION['hcms_temp_user'] == "" && ($rootpermission['site'] == 1 || $rootpermission['user'] == 1)) { ?>
+    <?php if ($_SESSION['hcms_temp_user'] == "" && (checkrootpermission ('site') || checkrootpermission ('user'))) { ?>
     
   </div>
   <div class="hcmsToolbarBlock">    
@@ -347,7 +347,7 @@ if ($show != "") echo showmessage ($show, 650, 60, $lang, "position:absolute; le
   </div>
   <div class="hcmsToolbarBlock">  
     <?php
-    if (!$is_mobile && file_exists ("help/adminguide_".$lang_shortcut[$lang].".pdf") && ($rootpermission['user'] == 1 || $globalpermission[$site]['user'] == 1))
+    if (!$is_mobile && file_exists ("help/adminguide_".$lang_shortcut[$lang].".pdf") && (checkrootpermission ('user') || checkglobalpermission ($site, 'user')))
     {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openBrWindowItem('help/adminguide_".$lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text50[$lang]."\" title=\"".$text50[$lang]."\" /></a>\n";}
     ?>      
   </div>

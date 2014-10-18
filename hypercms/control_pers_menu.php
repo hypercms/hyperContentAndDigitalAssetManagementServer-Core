@@ -32,7 +32,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if ($globalpermission[$site]['persprof'] != 1 || !valid_publicationname ($site)) killsession ($user);
+if (!checkglobalpermission ($site, 'persprof') || !valid_publicationname ($site)) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -57,8 +57,8 @@ if ($action == "item_create")
 {
   if (
        valid_objectname ($persname) &&
-       ($cat == "profile" && $globalpermission[$site]['persprof'] == 1 && $globalpermission[$site]['persprofcreate'] == 1) || 
-       ($cat == "tracking" && $globalpermission[$site]['perstrack'] == 1 && $globalpermission[$site]['perstrackcreate'] == 1)
+       ($cat == "profile" && checkglobalpermission ($site, 'persprof') && checkglobalpermission ($site, 'persprofcreate')) || 
+       ($cat == "tracking" && checkglobalpermission ($site, 'perstrack') && checkglobalpermission ($site, 'perstrackcreate'))
      )
   {
     $result = createpersonalization ($site, $persname, $cat);
@@ -71,8 +71,8 @@ elseif ($action == "item_delete")
 {
   if (
        valid_objectname ($persfile) &&
-       ($cat == "profile" && $globalpermission[$site]['persprof'] == 1 && $globalpermission[$site]['persprofdelete'] == 1) || 
-       ($cat == "tracking" && $globalpermission[$site]['perstrack'] == 1  && $globalpermission[$site]['perstrackdelete'] == 1)
+       ($cat == "profile" && checkglobalpermission ($site, 'persprof') && checkglobalpermission ($site, 'persprofdelete')) || 
+       ($cat == "tracking" && checkglobalpermission ($site, 'perstrack')  && checkglobalpermission ($site, 'perstrackdelete'))
      )
   {
     $result = deletepersonalization ($site, $persfile, $cat);
@@ -168,19 +168,19 @@ function checkForm_item_create()
 <div class="hcmsToolbar">
   <div class="hcmsToolbarBlock">
     <?php
-    if (($cat == "profile" && $globalpermission[$site]['persprof'] == 1  && $globalpermission[$site]['persprofcreate'] == 1) || ($cat == "tracking" && $globalpermission[$site]['perstrack'] == 1  && $globalpermission[$site]['perstrackcreate'] == 1))
+    if (($cat == "profile" && checkglobalpermission ($site, 'persprof') && checkglobalpermission ($site, 'persprofcreate')) || ($cat == "tracking" && checkglobalpermission ($site, 'perstrack') && checkglobalpermission ($site, 'perstrackcreate')))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createpersLayer','','show','deletepersLayer','','hide','editpersLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_new\" src=\"".getthemelocation()."img/button_tpl_new.gif\" alt=\"".$text9[$lang]."\" title=\"".$text9[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_tpl_new.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
-    if (($cat == "profile" && $globalpermission[$site]['persprof'] == 1  && $globalpermission[$site]['persprofdelete'] == 1) || ($cat == "tracking" && $globalpermission[$site]['perstrack'] == 1  && $globalpermission[$site]['perstrackdelete'] == 1))
+    if (($cat == "profile" && checkglobalpermission ($site, 'persprof') && checkglobalpermission ($site, 'persprofdelete')) || ($cat == "tracking" && checkglobalpermission ($site, 'perstrack') && checkglobalpermission ($site, 'perstrackdelete')))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createpersLayer','','hide','deletepersLayer','','show','editpersLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_delete\" src=\"".getthemelocation()."img/button_tpl_delete.gif\" alt=\"".$text11[$lang]."\" title=\"".$text11[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_tpl_delete.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
-    if (($cat == "profile" && $globalpermission[$site]['persprof'] == 1  && $globalpermission[$site]['persprofedit'] == 1) || ($cat == "tracking" && $globalpermission[$site]['perstrack'] == 1  && $globalpermission[$site]['perstrackedit'] == 1))
+    if (($cat == "profile" && checkglobalpermission ($site, 'persprof') && checkglobalpermission ($site, 'persprofedit')) || ($cat == "tracking" && checkglobalpermission ($site, 'perstrack') && checkglobalpermission ($site, 'perstrackedit')))
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createpersLayer','','hide','deletepersLayer','','hide','editpersLayer','','show','hcms_messageLayer','','hide')\" name=\"media_edit\" src=\"".getthemelocation()."img/button_tpl_edit.gif\" alt=\"".$text12[$lang]."\" title=\"".$text12[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_tpl_edit.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
