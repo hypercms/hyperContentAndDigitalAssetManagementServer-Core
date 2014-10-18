@@ -597,8 +597,11 @@ function collectcontent ($container_content, $text_id="", $component_id="")
     }
     else $contentslices = getcontent ($container_content, "<textcontent>");  
       
-    if (is_array ($contentslices) && sizeof ($contentslices) > 0) $content = implode (" ", $contentslices);
-
+    if (isset ($contentslices) && is_array ($contentslices) && sizeof ($contentslices) > 0)
+    {
+      $content = implode (" ", $contentslices);
+    }
+    
     // content from componentnodes
     if (is_array ($component_id))
     {
@@ -610,7 +613,7 @@ function collectcontent ($container_content, $text_id="", $component_id="")
     }
     else $compfiles = getcontent ($container_content, "<componentfiles>");
     
-    if (is_array ($compfiles) && sizeof ($compfiles) > 0)
+    if (isset ($compfiles) && is_array ($compfiles) && sizeof ($compfiles) > 0)
     {
       $compstr = "";
       

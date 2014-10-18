@@ -83,8 +83,6 @@ function hcms_geoposition (position)
   {
     if ($is_mobile) $width = "92%";
     else $width = "320px";
-    
-    echo "<div id=\"task\" onclick=\"document.location.href='task_list.php';\" class=\"hcmsInfoBox\" style=\"overflow:auto; margin:5px; width:".$width."; height:400px; float:left; cursor:pointer;\">\n";
  
     //load task file and get all task entries
     $task_data = loadfile ($mgmt_config['abs_path_data']."task/", $user.".xml.php");
@@ -96,6 +94,8 @@ function hcms_geoposition (position)
     
       if (is_array ($task_array) && sizeof ($task_array) > 0)
       {
+        echo "<div id=\"task\" onclick=\"document.location.href='task_list.php';\" class=\"hcmsInfoBox\" style=\"overflow:auto; margin:5px; width:".$width."; height:400px; float:left; cursor:pointer;\">\n";
+
         echo "<div class=\"hcmsHeadline\" style=\"margin:2px;\">".$text0[$lang]."</div>
         <table width=\"100%\" border=\"0\" cellspacing=\"2\" cellpadding=\"2\">";
 
