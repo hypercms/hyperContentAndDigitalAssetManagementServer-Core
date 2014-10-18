@@ -476,6 +476,7 @@ changelog:
 - bug fix: settext did not check the link index properbly which led to wrong entries in error logs
 - bug fix: undefined varibale hypercms_livelink_set in template engine
 - bug fix: delete of media reference in media_edit_page did not work for IE
+- implementation of download/upload statistics of all DAM publications on home screen
 
 version 5.6.9
 release 08/2014
@@ -555,6 +556,7 @@ changelog:
 - implementation of new check permissions functions
 - bug fix: DB connect RDBMS did not provide hash keys for all search operations
 - bug fix: permission issues in explorer for publishing queue, log-list and plugins
+- bug fix: implementation of updated function getbrowserinfo (old function was outdated and did not detect the browsers correctly)
 
 preview:
 - definition of target formats when using send mail-link

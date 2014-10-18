@@ -1968,7 +1968,7 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
      // get browser information/version
     $user_client = getbrowserinfo ();
     
-    // if Browser is IE then we need to encode it
+    // if Browser is IE then we need to encode it (does not detect IE 11)
     if (isset ($user_client['msie']) && $user_client['msie'] > 0) $name = rawurlencode ($name);     
       
     // define header

@@ -613,9 +613,20 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   	  
         // get browser information/version
         $user_client = getbrowserinfo ();
-        
+
   			// check user browser for compatibility with pdf render javascript - pdfjs and if orig. file is a pdf or is convertable to a pdf
-  	    if (($user_client['firefox'] >= 6 || $user_client['msie'] >= 9 || $user_client['chrome'] >= 24)  && (substr_count (".pdf", $file_info['orig_ext']) == 1 || (is_array($mgmt_docconvert[$file_info['orig_ext']]) && in_array ( ".pdf", $mgmt_docconvert[$file_info['orig_ext']]))))
+  	    if (
+             (
+               (isset ($user_client['firefox']) && $user_client['firefox'] >= 6) || 
+               (isset ($user_client['msie']) && $user_client['msie'] >= 9) || 
+               (isset ($user_client['chrome']) && $user_client['chrome'] >= 24) || 
+               (isset ($user_client['unknown']))
+             ) && 
+             (
+               substr_count (".pdf", $file_info['orig_ext']) == 1 || 
+               (is_array ($mgmt_docconvert[$file_info['orig_ext']]) && in_array (".pdf", $mgmt_docconvert[$file_info['orig_ext']]))
+             )
+           )
   	    {    			
   				// check if original file is a pdf
   				if (substr_count (".pdf", $file_info['orig_ext']) == 1) 

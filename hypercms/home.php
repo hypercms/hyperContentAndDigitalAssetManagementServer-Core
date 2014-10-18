@@ -15,6 +15,8 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
+// template engine
+require ("function/hypercms_tplengine.inc.php");
 // version info
 require ("version.inc.php");
 // language file
@@ -66,9 +68,12 @@ function hcms_geoposition (position)
 
 <div class="hcmsWorkplaceFrame">
 
-  <div id="logo" style="margin:10px; display:block;"><img src="<?php echo getthemelocation(); ?>img/logo_welcome.gif" style="width:<?php if ($is_mobile) echo "260px"; else echo "320px"; ?>" /> <?php echo $version; ?></div>
-
+  <div id="logo" style="position:fixed; top:10px; left:10px; display:block;"><img src="<?php echo getthemelocation(); ?>img/logo_welcome.gif" style="width:<?php if ($is_mobile) echo "260px"; else echo "320px"; ?>" /> <?php echo $version; ?></div>
+  
+  <div id="spacer" style="width:94%; height:70px; display:block;"></div>
+   
   <?php
+  // ---------------------- NEWS / WELCOME BOX ---------------------
   if ($mgmt_config['welcome'] != "") 
   {
     if ($is_mobile) $width = "92%";
@@ -79,6 +84,7 @@ function hcms_geoposition (position)
   ?>
   
   <?php
+  // ---------------------- RECENT TASKS ---------------------
   if (checkrootpermission ('desktoptaskmgmt'))
   {
     if ($is_mobile) $width = "92%";
@@ -148,6 +154,7 @@ function hcms_geoposition (position)
   ?>
   
   <?php
+  // ---------------------- RECENT OBJECTS ---------------------
   $object_array = rdbms_searchuser ("", $user);
   
   if (is_array ($object_array) && sizeof ($object_array) > 0)
@@ -206,6 +213,130 @@ function hcms_geoposition (position)
     
     echo "
     </div>\n";
+  }
+  ?>
+  
+  <?php
+  // ---------------------- STATS ---------------------
+  if (isset ($mgmt_config['home_stats']) && $mgmt_config['home_stats'] == true && isset ($siteaccess) && is_array ($siteaccess))
+  {
+    $title = $text2[$lang];
+    
+    // language file
+    require_once ("language/page_info_stats.inc.php");
+
+    foreach ($siteaccess as $item_site)
+    {
+      // publication management config
+      if (valid_publicationname ($item_site)) require ($mgmt_config['abs_path_data']."config/".$item_site.".conf.php");
+
+      if (isset ($mgmt_config[$item_site]['dam']) && $mgmt_config[$item_site]['dam'] == true)
+      {
+        if ($is_mobile) $width = "92%";
+        else $width = "660px";
+        
+        echo "
+        <div id=\"recent\" class=\"hcmsInfoBox\" style=\"overflow:auto; margin:5px; width:".$width."; height:400px; float:left;\">
+          <div class=\"hcmsHeadline\" style=\"margin:2px;\">".$title." ".$item_site."</div>";
+          
+        $rootlocation_esc = "%comp%/".$item_site."/.folder";
+          
+        if (!empty ($rootlocation_esc))
+        {
+          $date_from = date ("Y-m-01", time());
+          $date_to = date ("Y-m-t", time());
+          $date_year = date ("Y", time());
+          $date_month = date ("m", time());
+                
+          $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $rootlocation_esc, "");
+          $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", "", $rootlocation_esc, "");
+          
+          $date_axis = array();
+          $download_axis = array();
+          $upload_axis = array();
+          $download_total_filesize = 0;
+          $download_total_count = 0;
+          $upload_total_filesize = 0;
+          $upload_total_count = 0;
+        
+          // loop through days of month
+          for ($i=1; $i<=date("t", strtotime($date_from)); $i++)
+          {
+            $date_axis[$i] = $i;
+            
+            if (strlen ($i) == 1) $day = "0".$i;
+            else $day = $i;
+        
+            // downloads
+            $download_axis[$i]['value'] = 0;
+            $download_axis[$i]['text'] = "";
+        
+            if (is_array ($result_download)) 
+            { 
+              foreach ($result_download as $row)
+              {
+                if ($row['date'] == $date_year."-".$date_month."-".$day)
+                {
+                  if ($download_axis[$i]['text'] != "") $seperator = ", ";
+                  else $seperator = "";
+           
+                  $download_axis[$i]['value'] = $download_axis[$i]['value'] + $row['count'];
+                  $download_axis[$i]['text'] = $download_axis[$i]['text'].$seperator.$row['user'];
+                  
+                  // total
+                  $download_total_count = $download_total_count + $row['count'];
+                  $download_total_filesize = $download_total_filesize + ($row['count'] * $row['filesize']);
+                }
+              }
+              
+              // bar text
+              $download_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$download_axis[$i]['value']." ".$text4[$lang]."   \n".$text6[$lang].": ".$download_axis[$i]['text'];
+            }
+            
+            // uploads
+            $upload_axis[$i]['value'] = 0;
+            $upload_axis[$i]['text'] = "";
+              
+            if (is_array ($result_upload)) 
+            {
+              foreach ($result_upload as $row)
+              {
+                if ($row['date'] == $date_year."-".$date_month."-".$day)
+                {
+                  if ($upload_axis[$i]['text'] != "") $seperator = ", ";
+                  else $seperator = "";
+                          
+                  $upload_axis[$i]['value'] = $upload_axis[$i]['value'] + $row['count'];
+                  $upload_axis[$i]['text'] = $upload_axis[$i]['text'].$seperator.$row['user'];
+             
+                  // total
+                  $upload_total_count = $upload_total_count + $row['count'];
+                  $upload_total_filesize = $upload_total_filesize + ($row['count'] * $row['filesize']);
+                }
+              }
+              
+              // bar text
+              $upload_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$upload_axis[$i]['value']." ".$text5[$lang]."   \n".$text6[$lang].": ".$upload_axis[$i]['text'];   
+            }
+          }
+            
+          if (is_array ($download_axis) || is_array ($upload_axis))
+          {
+            $chart = buildbarchart ("chart", 600, 300, 8, 40, $date_axis, $download_axis, $upload_axis, "", "border:1px solid #666666; background:white;", "background:#3577ce; font-size:8px; cursor:pointer;", "background:#ff8219; font-size:8px; cursor:pointer;", "background:#73bd73; font-size:8px; cursor:pointer;");
+            echo $chart;
+          }
+        }
+
+        echo '
+        <div style="margin:35px 0px 0px 40px;">
+          <div style="height:16px;"><div style="width:16px; height:16px; background:#3577ce; float:left;"></div>&nbsp;'.$text4[$lang].' ('.number_format ($download_total_count, 0, "", ".").' Hits / '.number_format (($download_total_filesize / 1024), 0, "", ".").' MB)</div>
+          <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;'.$text5[$lang]." (".number_format ($upload_total_count, 0, "", ".").' Hits / '.number_format (($upload_total_filesize / 1024), 0, "", ".").' MB)</div>
+        </div>';
+    
+        echo "
+        </div>\n";
+      }
+    }
   }
   ?>
   </div>

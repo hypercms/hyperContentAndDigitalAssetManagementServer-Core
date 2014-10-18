@@ -1103,28 +1103,86 @@ function getvideoinfo ($mediafile)
 
 // --------------------------------------- getbrowserinfo -----------------------------------------------
 // function: getbrowserinfo ()
-// input: browser agent string (optional)
+// input: %
 // output: client browser + version as array
 
-function getbrowserinfo ($agent=null) 
+function getbrowserinfo () 
 {
-  // declare known browsers to look for
-  $known = array('msie', 'firefox', 'safari', 'webkit', 'opera', 'netscape', 'konqueror', 'gecko');
-
-  // clean up agent and build regex that matches phrases for known browsers
-  // (e.g. "Firefox/2.0" or "MSIE 6.0" (This only matches the major and minor
-  // version numbers.  E.g. "2.0.0.6" is parsed as simply "2.0"
-  $agent = strtolower ($agent ? $agent : $_SERVER['HTTP_USER_AGENT']);
-  $pattern = '#(?<browser>' . join('|', $known) . ')[/ ]+(?<version>[0-9]+(?:\.[0-9]+)?)#';
-
-  // find all phrases (or return empty array if none found)
-  if (!preg_match_all ($pattern, $agent, $matches)) return array();
-
-  // since some UAs have more than one phrase (e.g Firefox has a Gecko phrase,
-  // Opera 7,8 have a MSIE phrase), use the last one found (the right-most one
-  // in the UA).  That's usually the most correct.
-  $i = count ($matches['browser'])-1;
-  return array($matches['browser'][$i] => $matches['version'][$i]);
+  $u_agent = $_SERVER['HTTP_USER_AGENT'];
+  $bname = 'unknown';
+  $version = "";
+ 
+  // get the browser name
+  // works only for IE < 11
+  if (preg_match ('/MSIE/i', $u_agent) && !preg_match ('/Opera/i', $u_agent))
+  {
+    $bname = 'msie';
+    $ub = "MSIE";
+  }
+  elseif (preg_match ('/Firefox/i', $u_agent))
+  {
+    $bname = 'firefox';
+    $ub = "Firefox";
+  }
+  elseif (preg_match ('/Chrome/i', $u_agent))
+  {
+    $bname = 'chrome';
+    $ub = "Chrome";
+  }
+  elseif (preg_match ('/Safari/i', $u_agent))
+  {
+      $bname = 'safari';
+      $ub = "Safari";
+  }
+  elseif (preg_match ('/Opera/i', $u_agent))
+  {
+    $bname = 'opera';
+    $ub = "Opera";
+  }
+  elseif (preg_match ('/Netscape/i', $u_agent))
+  {
+    $bname = 'Netscape';
+    $ub = "Netscape";
+  }
+ 
+  // get the version number
+  $known = array ('Version', $ub, 'other');
+  
+  $pattern = '#(?<browser>'.join('|', $known).')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
+  
+  if (!preg_match_all ($pattern, $u_agent, $matches))
+  {
+    // we have no matching number just continue
+  }
+ 
+  // see how many we have
+  $i = count ($matches['browser']);
+  
+  if ($i != 1)
+  {
+    // we will have two since we are not using 'other' argument yet
+    // see if version is before or after the name
+    if (strripos ($u_agent, "Version") < strripos ($u_agent, $ub))
+    {
+      $version = $matches['version'][0];
+    }
+    else
+    {
+      $version = $matches['version'][1];
+    }
+  }
+  else
+  {
+    $version = $matches['version'][0];
+  }
+  
+  if (substr_count ($version, ".") > 0) $version = intval (substr ($version, 0, strpos ($version, ".")));
+ 
+  // check if we have a number
+  if ($version == null || $version == "") $version = "?";
+  
+  // result  
+  return array ($bname => $version);
 }
 
 // ---------------------- getcontentlocation -----------------------------

@@ -158,7 +158,7 @@ function collecturlnodes ($dir, $url, $getpara, $chfreq, $prio, $ignore, $filety
         // check whether the file has one of the extensions allowed for this XML sitemap
         $fileinfo = pathinfo ($dir.$file);
         
-        if (in_array ($fileinfo['extension'], $filetypes))
+        if (isset ($fileinfo['extension']) && in_array ($fileinfo['extension'], $filetypes))
         {
           // create a W3C valid date for use in the XML sitemap based on the file modification time
           $modified = date ('c', filemtime ($dir.$file));

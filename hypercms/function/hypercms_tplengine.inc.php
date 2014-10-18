@@ -7130,15 +7130,15 @@ function buildbarchart ($paper_name, $paper_width=600, $paper_height=300, $paper
     $bar_width = floor ($bar_width);
     
     // paper div-layer 
-    $result = "<div id=\"".$paper_name."\" style=\"position:absolute; width:".$paper_width."px; height:".$paper_height."px; top:".$paper_top."px; left:".$paper_left."px; margin:0; padding:0; z-index:100; ".$paper_style."\">\n";
+    $result = "<div id=\"".$paper_name."\" style=\"position:relative; width:".$paper_width."px; height:".$paper_height."px; top:".$paper_top."px; left:".$paper_left."px; margin:0; padding:0; z-index:100; ".$paper_style."\">\n";
 
     // y-axis values/rulers
     $result .= "  <div id=\"yval4\" style=\"position:absolute; width:40px; top:-8px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:1;\">".$bar_maxheight."</div>\n";
-    $result .= "  <div id=\"yval3\" style=\"position:absolute; width:40px; top:".(($paper_height / 4) - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">".round ($bar_maxheight / 4 * 3, 1)."</div>\n";
+    $result .= "  <div id=\"yval3\" style=\"position:absolute; width:40px; top:".(($paper_height / 4) - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">".round ($bar_maxheight / 4 * 3, 0)."</div>\n";
     $result .= "  <div id=\"yval3_rule\" style=\"position:absolute; width:".$paper_width."px; height:1px; top:".($paper_height / 4)."px; left:0; margin:0; padding:0; border-top:1px solid #666666; text-align:right; vertical-align:top; z-index:100;\"></div>\n";
-    $result .= "  <div id=\"yval2\" style=\"position:absolute; width:40px; top:".(($paper_height / 2) - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">".round ($bar_maxheight / 2, 1)."</div>\n";
+    $result .= "  <div id=\"yval2\" style=\"position:absolute; width:40px; top:".(($paper_height / 2) - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">".round ($bar_maxheight / 2, 0)."</div>\n";
     $result .= "  <div id=\"yval2_rule\" style=\"position:absolute; width:".$paper_width."px; height:1px; top:".($paper_height / 2)."px; left:0; margin:0; padding:0; border-top:1px solid #666666; text-align:right; vertical-align:top; z-index:100;\"></div>\n";
-    $result .= "  <div id=\"yval1\" style=\"position:absolute; width:40px; top:".(($paper_height / 4 * 3) - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">".round ($bar_maxheight / 4, 1)."</div>\n";
+    $result .= "  <div id=\"yval1\" style=\"position:absolute; width:40px; top:".(($paper_height / 4 * 3) - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">".round ($bar_maxheight / 4, 0)."</div>\n";
     $result .= "  <div id=\"yval1_rule\" style=\"position:absolute; width:".$paper_width."px; height:1px; top:".($paper_height / 4 * 3)."px; left:0; margin:0; padding:0; border-top:1px solid #666666; text-align:right; vertical-align:top; z-index:100;\"></div>\n";
     $result .= "  <div id=\"yval0\" style=\"position:absolute; width:40px; top:".($paper_height - 8)."px; left:-44px; margin:0; padding:0; border:0; text-align:right; vertical-align:top; z-index:100;\">0</div>\n";
 

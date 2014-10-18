@@ -133,7 +133,7 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 <?php 
 // show results
 // -------------------------- daily statistics --------------------------
-if ($container_id != "")
+if (!empty ($container_id))
 {  
   if ($page == ".folder")
   {
@@ -221,12 +221,12 @@ if ($container_id != "")
     
   if (is_array ($download_axis) || is_array ($upload_axis))
   {
-    $chart = buildbarchart ("chart", 700, 400, 80, 40, $date_axis, $download_axis, $upload_axis, "", "border:1px solid #666666; background:white;", "background:#3577ce; font-size:10px; cursor:pointer;", "background:#ff8219; font-size:10px; cursor:pointer;", "background:#73bd73; font-size:10px; cursor:pointer;");
+    $chart = buildbarchart ("chart", 700, 400, 10, 40, $date_axis, $download_axis, $upload_axis, "", "border:1px solid #666666; background:white;", "background:#3577ce; font-size:10px; cursor:pointer;", "background:#ff8219; font-size:10px; cursor:pointer;", "background:#73bd73; font-size:10px; cursor:pointer;");
     echo $chart;
   }
 }
 ?>
-  <div style="margin:440px 0px 0px 40px;">
+  <div style="margin:30px 0px 0px 40px;">
     <div style="height:16px;"><div style="width:16px; height:16px; background:#3577ce; float:left;"></div>&nbsp;<?php echo $text4[$lang]." (".number_format ($download_total_count, 0, "", ".")." Hits / ".number_format (($download_total_filesize / 1024), 0, "", ".")." MB)"; ?></div>
     <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;<?php echo $text5[$lang]." (".number_format ($upload_total_count, 0, "", ".")." Hits / ".number_format (($upload_total_filesize / 1024), 0, "", ".")." MB)"; ?></div>
   </div>

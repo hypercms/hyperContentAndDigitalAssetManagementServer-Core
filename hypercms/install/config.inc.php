@@ -118,11 +118,14 @@ $mgmt_config['theme'] = "standard";
 // define alternative logo (image file name) for top frame. the file must be in cms/images.
 $mgmt_config['logo_top'] = "";
 
-// show (true) or hide (false) information boxes to provide usage information to th user.
+// show (true) or hide (false) information boxes
 $mgmt_config['showinfobox'] = true;
 
-// define URL to show in welcome page
+// define URL to show in home page
 $mgmt_config['welcome'] = "https://cms.hypercms.net/home/update_info_en.xhtml";
+
+// show (true) or hide (false) statistics on the home page
+$mgmt_config['home_stats'] = true;
 
 // ------------------------------------------------------------------------
 // define operating system (OS) on content management server ("UNIX" for all UNIX and Linux OS or "WIN" for MS Windows)
