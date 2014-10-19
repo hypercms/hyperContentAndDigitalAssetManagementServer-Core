@@ -558,6 +558,8 @@ changelog:
 - bug fix: permission issues in explorer for publishing queue, log-list and plugins
 - bug fix: implementation of updated function getbrowserinfo (old function was outdated and did not detect the browsers correctly)
 - implementation of sort order for workflow folder form
+- bug fix: removed double sort from search
+- bug fix: search for user files in user management did not use proper frameset and resulted in an error on click of an object
 */
 
 // current version

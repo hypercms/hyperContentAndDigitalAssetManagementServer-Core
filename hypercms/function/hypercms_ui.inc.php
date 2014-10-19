@@ -581,7 +581,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">
           <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$id." /> ".$text78[$lang].": 
           <a href=\"".$mgmt_config['url_path_cms']."explorer_download.php?site=".url_encode($site)."&name=".$medianame."&media=".url_encode($mediafile)."&token=".hcms_crypt($mediafile)."\">
-            ".showshorttext($medianame, 40, true)."
+            ".showshorttext($medianame, 40, false)."
           </a>
         </td></tr>\n";
       }
@@ -676,7 +676,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   				$mediaview = "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
   	    }
   	 
-  	    $mediaview .= "<div style=\"padding:5px 0px 8px 0px; width:".$width."px; text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, true)."</div>";
+  	    $mediaview .= "<div style=\"padding:5px 0px 8px 0px; width:".$width."px; text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</div>";
       }
       // ----------- if Image ----------- 
       elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['image'].".", $file_info['ext'].".") > 0)
@@ -750,14 +750,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
             $mediaview .= "<table>
             <tr><td align=left><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($mediafile)."&token=".hcms_crypt($mediafile)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style."/></td></tr>
-            <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, true)."</td></tr>\n";           
+            <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";           
           }
           // if no thumbnail/preview exists
           else
           {
             $mediaview = "<table>
             <tr><td align=\"left\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /></td></tr>
-            <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, true)."</td></tr>\n";
+            <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";
           }
         }      
         // if template media view
@@ -765,7 +765,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           $mediaview = "<table>
           <tr><td align=\"left\"><img src=\"".$mgmt_config['url_path_tplmedia'].$mediafile."\" ".$id." alt=\"".$mediafile."\" title=\"".$mediafile."\" class=\"".$class."\" ".$style."/></td></tr>
-          <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($mediafile, 40, true)."</td></tr>\n";
+          <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($mediafile, 40, false)."</td></tr>\n";
         }      
   
         // image rendering (only if image conversion software and permissions are given)
@@ -798,7 +798,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         <param name=quality value=high />
         <embed src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($mediafile)."&token=".hcms_crypt($mediafile)."\" ".$id." quality=high pluginspage=\"http://www.macromedia.com/go/getflashplayer\" type=\"application/x-shockwave-flash\" ".$style." />
         </object></td></tr>
-        <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, true)."</td></tr>
+        <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>
         </table>\n";
       }
       // ----------- if Audio ----------- 
@@ -844,7 +844,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       
         $mediaview .= "<table>
         <tr><td align=left>".$playercode."</td></tr>
-        <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, true)."</td></tr>\n";
+        <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";
         
         // video rendering and embedding
         if ($viewtype != "preview_no_rendering" && $viewtype != "template" && is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
@@ -940,7 +940,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "
         <table>
         <tr><td align=left>".$playercode."</td></tr>
-        <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, true)."</td></tr>\n";
+        <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";
         
         // video rendering and embedding
         if ($viewtype != "preview_no_rendering" && $viewtype != "template" && is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
@@ -1007,7 +1007,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           else $disabled = "disabled=\"disabled\"";
           
           $mediaview .= "<tr><td align=\"left\"><textarea name=\"content\" ".$id." ".$style." ".$disabled.">".$content."</textarea></td></tr>
-          <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, true)."</td></tr>
+          <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>
           </table>\n";
           
           if ($viewtype == "template") $mediaview .= "</form>\n";  
@@ -1028,14 +1028,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         
         $mediaview = "<table>
         <tr><td align=left><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($mediafile)."&token=".hcms_crypt($mediafile)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" /></td></tr>
-        <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, true)."</td></tr>\n";           
+        <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";           
       }
       // if no thumbnail/preview exists
       else
       {
         $mediaview = "<table>
         <tr><td align=\"left\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /></td></tr>
-        <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, true)."</td></tr>\n";
+        <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";
       }
     }
 
@@ -1184,7 +1184,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   		}
 
 	    // Generation of output	    
-	    if (is_array ($videos)) $mediaview .= '<table style="cellspacing:8px; padding-top:10px;"><tr><th>&nbsp;</th>'.implode("", $videos).'</tr>';		
+	    if (is_array ($videos)) $mediaview .= '<table style="cellspacing:2px;"><tr><th>&nbsp;</th>'.implode("", $videos).'</tr>';		
 	    // Filesize
 	    if (is_array ($filesizes)) $mediaview .= '<tr><td>'.$text80[$lang].'&nbsp;</td>'.implode ("", $filesizes).'</tr>';	    
 	    // Dimension
@@ -1194,13 +1194,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 		  // Bitrate
 	    if ($is_video && is_array ($bitrates)) $mediaview .= '<tr><td>'.$text87[$lang].'&nbsp;</td>'.implode ("", $bitrates).'</tr>';
 		  // Bitrate
-	    if (is_array ($downloads)) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $downloads).'</tr>';
+	    if (is_array ($downloads) && sizeof ($downloads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $downloads).'</tr>';
 		  // Youtube
-      if ($mgmt_config[$site]['youtube'] == true && is_file($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
+      if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
 		  {
-	      if (is_array($youtube_uploads)) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $youtube_uploads).'</tr>';
+	      if (is_array ($youtube_uploads) && sizeof ($youtube_uploads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $youtube_uploads).'</tr>';
 		  }
-	    if (is_array ($videos)) $mediaview .='</table>';
+	    if (is_array ($videos)) $mediaview .= '</table>';
     }
     // width and height of other media files
     else
@@ -1253,7 +1253,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     	<td class=\"hcmsHeadlineTiny\">".round(($media_size[0] / 300 * 2.54), 1)." x ".round(($media_size[1] / 300 * 2.54), 1)." cm, ".round(($media_size[0] / 300), 1)." x ".round(($media_size[1] / 300), 1)." inch</td>
     	</tr>\n";
     	
-    	$mediaview .= "</table><br />";
+    	$mediaview .= "</table>";
     }
     
     return $mediaview;

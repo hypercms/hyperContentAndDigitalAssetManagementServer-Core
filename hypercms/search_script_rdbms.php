@@ -100,7 +100,7 @@ $token = createtoken ($user);
 // collect all objects of given user 
 if ($action == "user_files" && $login != "" && $site != "" && (($site == "*Null*" && checkrootpermission ('user')) || checkglobalpermission ($site, 'user')))
 {
-  $object_array = rdbms_searchuser ($site, $login); 
+  $object_array = rdbms_searchuser ($site, $login, 500); 
 }
 // search for object ID or link ID
 elseif ($object_id != "")
@@ -181,6 +181,10 @@ elseif ($action == "base_search" || $search_dir != "")
       }
     }
     else $search_dir_esc = convertpath ($site, $search_dir, $cat);
+    
+    // max. hits
+    if ($maxhits > 1000) $maxhits = 1000;
+    elseif (empty ($maxhits)) $maxhits = 100;
 
     // start search
     if ($replace_expression == "") $object_array = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search_format, $date_from, $date_to, $template, $search_textnode, $search_filename, "", $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $maxhits);
@@ -206,10 +210,7 @@ $listview = Null;
 $items_row = 0;
 
 if ($object_array != false && @sizeof ($object_array) > 0)
-{
-  natcasesort ($object_array);
-  reset ($object_array);
-  
+{  
   foreach ($object_array as $hash => $objectpath)
   {
     // folder items
