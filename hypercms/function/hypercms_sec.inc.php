@@ -585,17 +585,13 @@ function checkadminpermission ()
 {
   global $adminpermission;
   
-  if (valid_objectname ($name))
+  // try to get localpermission from session
+  if ((!isset ($adminpermission) || !is_array ($adminpermission)) && isset ($_SESSION['hcms_superadmin'])) $adminpermission = $_SESSION['hcms_superadmin'];
+  
+  // root permission
+  if (isset ($adminpermission))
   {
-    // try to get localpermission from session
-    if ((!isset ($adminpermission) || !is_array ($adminpermission)) && isset ($_SESSION['hcms_superadmin'])) $adminpermission = $_SESSION['hcms_superadmin'];
-    
-    // root permission
-    if (isset ($adminpermission))
-    {
-      if ($adminpermission == 1) return true;
-      else return false;
-    }
+    if ($adminpermission == 1) return true;
     else return false;
   }
   else return false;

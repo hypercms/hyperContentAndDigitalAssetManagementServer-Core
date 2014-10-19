@@ -36,7 +36,7 @@ $instance = getsession ("hcms_instance");
 // user parameter
 $user = getsession ("hcms_user");
 $passwd = getsession ("hcms_passwd");
-$lang = getsession ("hcms_lang");
+$lang = getsession ("hcms_lang", "en");
 // access parameter (array)
 $siteaccess = getsession ("hcms_siteaccess");
 $pageaccess = getsession ("hcms_pageaccess");

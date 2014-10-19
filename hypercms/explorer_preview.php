@@ -95,7 +95,8 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     
     foreach ($metadata_array as $key => $value)
     {
-      if ($key != "") $rows .= "<tr><td>".$key.":&nbsp;&nbsp;</td><td class=\"hcmsHeadlineTiny\">".$value."</td></tr>\n";
+      if (trim ($key) != "") $key = $key.":";
+      $rows .= "<tr><td>".$key."&nbsp;&nbsp;</td><td class=\"hcmsHeadlineTiny\">".$value."</td></tr>\n";
     }
     
     if ($rows != "") $metadata = "<hr /><table>\n".str_replace ("<td>", "<td style=\"width:140px; vertical-align:top;\">", $rows)."</table>\n";

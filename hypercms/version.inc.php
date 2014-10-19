@@ -560,6 +560,9 @@ changelog:
 - implementation of sort order for workflow folder form
 - bug fix: removed double sort from search
 - bug fix: search for user files in user management did not use proper frameset and resulted in an error on click of an object
+- bug fix: removed : from meta data listing if label is empty
+- bug fix: checkadminpermission expected input parameter
+- set variable lang to "en" if no value is given
 */
 
 // current version

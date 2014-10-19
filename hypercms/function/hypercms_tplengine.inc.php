@@ -6958,7 +6958,8 @@ function buildsearchform ($site, $template, $ownergroup="")
           $groupaccess = getattribute ($hypertag, "groups");
           $groupaccess = checkgroupaccess ($groupaccess, $ownergroup);
           
-          if ($label == "") $label = $id;                    
+          if ($label == "") $label = $id;
+          if (trim ($label) != "") $label = $label.":";                
 
           // id must be unique
           if (!in_array ($id, $id_array) && $groupaccess == true)
@@ -6970,11 +6971,11 @@ function buildsearchform ($site, $template, $ownergroup="")
               {    
                 if ($searchtag == "text")
                 {
-                  $formitem[$key] = "<tr><td align=left valign=top width=200 nowrap>".$label.": </td><td align=left valign=top><input name=\"search_textnode[".$id."]\" size=30 /></td></tr>\n";
+                  $formitem[$key] = "<tr><td align=left valign=top width=200 nowrap>".$label." </td><td align=left valign=top><input name=\"search_textnode[".$id."]\" size=30 /></td></tr>\n";
                 }
                 elseif ($searchtag == "arttext")
                 {                        
-                  $formitem[$key] = "<tr><td align=left valign=top width=200 nowrap>".$label.": </td><td align=left valign=top><input name=\"search_textnode[".$id."]\" size=30 /></td></tr>\n";
+                  $formitem[$key] = "<tr><td align=left valign=top width=200 nowrap>".$label." </td><td align=left valign=top><input name=\"search_textnode[".$id."]\" size=30 /></td></tr>\n";
                 }           
               }
             }
@@ -6993,7 +6994,7 @@ function buildsearchform ($site, $template, $ownergroup="")
                   $list_array = null;
                   $list_array = explode ("|", $list);
   
-                  $formitem[$key] = "<tr><td align=left valign=top width=200 nowrap>".$label.": </td><td align=left valign=top><select name=\"search_textnode[".$id."]\">\n";
+                  $formitem[$key] = "<tr><td align=left valign=top width=200 nowrap>".$label." </td><td align=left valign=top><select name=\"search_textnode[".$id."]\">\n";
                   
                   foreach ($list_array as $list_entry)
                   {
@@ -7007,7 +7008,7 @@ function buildsearchform ($site, $template, $ownergroup="")
                   // get list entries
                   $list_array = explode ("|", $list);
   
-                  $formitem[$key] = "<tr><td align=left valign=top width=200 nowrap>".$label.": </td><td align=left valign=top><select name=\"search_textnode[".$id."]\">\n";
+                  $formitem[$key] = "<tr><td align=left valign=top width=200 nowrap>".$label." </td><td align=left valign=top><select name=\"search_textnode[".$id."]\">\n";
                   
                   foreach ($list_array as $list_entry)
                   {
@@ -7025,11 +7026,11 @@ function buildsearchform ($site, $template, $ownergroup="")
               {                    
                 if ($searchtag == "text")
                 {                  
-                  $formitem[$key] = "<tr><td align=left valign=top width=200 nowrap>".$label.": </td><td align=left valign=top><input type=\"checkbox\" name=\"search_textnode[".$id."]\" value=\"".$value."\"> ".$value."</td></tr>\n";
+                  $formitem[$key] = "<tr><td align=left valign=top width=200 nowrap>".$label." </td><td align=left valign=top><input type=\"checkbox\" name=\"search_textnode[".$id."]\" value=\"".$value."\"> ".$value."</td></tr>\n";
                 }
                 elseif ($searchtag == "arttext")
                 {
-                  $formitem[$key] = "<tr><td align=left valign=top width=200 nowrap>".$label.": </td><td align=left valign=top><input type=\"checkbox\" name=\"search_textnode[".$id."]\" value=\"".$value."\"> ".$value."</td></tr>\n";
+                  $formitem[$key] = "<tr><td align=left valign=top width=200 nowrap>".$label." </td><td align=left valign=top><input type=\"checkbox\" name=\"search_textnode[".$id."]\" value=\"".$value."\"> ".$value."</td></tr>\n";
                 }               
               }
             } 
