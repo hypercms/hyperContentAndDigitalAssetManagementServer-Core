@@ -64,22 +64,22 @@ function hcms_geoposition (position)
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onload="<?php if (empty ($_SESSION['hcms_temp_latitude']) || empty ($_SESSION['hcms_temp_longitude'])) echo "hcms_geolocation();"; ?>">
+<body class="hcmsWorkplaceGeneric" style="width:100%; height:100%;" onload="<?php if (empty ($_SESSION['hcms_temp_latitude']) || empty ($_SESSION['hcms_temp_longitude'])) echo "hcms_geolocation();"; ?>">
 
-<div class="hcmsWorkplaceFrame">
+<div style="width:100%; height:100%; overflow:auto; display:block;">
 
   <div id="logo" style="position:fixed; top:10px; left:10px; display:block;"><img src="<?php echo getthemelocation(); ?>img/logo_welcome.gif" style="width:<?php if ($is_mobile) echo "260px"; else echo "320px"; ?>" /> <?php echo $version; ?></div>
   
   <div id="spacer" style="width:94%; height:70px; display:block;"></div>
-   
+
   <?php
   // ---------------------- NEWS / WELCOME BOX ---------------------
   if ($mgmt_config['welcome'] != "") 
   {
     if ($is_mobile) $width = "92%";
-    else $width = "660";
+    else $width = "670";
     
-    echo "<iframe width=\"".$width."\" height=\"400\" src=\"".$mgmt_config['welcome']."\" scrolling=\"yes\" class=\"hcmsInfoBox\" style=\"margin:5px; float:left;\" seamless=\"seamless\"></iframe>\n";
+    echo "<iframe width=\"".$width."\" height=\"400\" src=\"".$mgmt_config['welcome']."\" scrolling=\"yes\" class=\"hcmsInfoBox\" style=\"margin:10px; float:left;\" seamless=\"seamless\"></iframe>\n";
   }
   ?>
   
@@ -100,7 +100,7 @@ function hcms_geoposition (position)
     
       if (is_array ($task_array) && sizeof ($task_array) > 0)
       {
-        echo "<div id=\"task\" onclick=\"document.location.href='task_list.php';\" class=\"hcmsInfoBox\" style=\"overflow:auto; margin:5px; width:".$width."; height:400px; float:left; cursor:pointer;\">\n";
+        echo "<div id=\"task\" onclick=\"document.location.href='task_list.php';\" class=\"hcmsInfoBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left; cursor:pointer;\">\n";
 
         echo "<div class=\"hcmsHeadline\" style=\"margin:2px;\">".$text0[$lang]."</div>
         <table width=\"100%\" border=\"0\" cellspacing=\"2\" cellpadding=\"2\">";
@@ -163,7 +163,7 @@ function hcms_geoposition (position)
     else $width = "320px";
     
     echo "
-    <div id=\"recent\" class=\"hcmsInfoBox\" style=\"margin:5px; width:".$width."; height:400px; float:left;\">
+    <div id=\"recent\" class=\"hcmsInfoBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
       <div class=\"hcmsHeadline\" style=\"margin:2px;\">".$text1[$lang]."</div>";
     
     array_reverse ($object_array);
@@ -233,10 +233,10 @@ function hcms_geoposition (position)
       if (isset ($mgmt_config[$item_site]['dam']) && $mgmt_config[$item_site]['dam'] == true)
       {
         if ($is_mobile) $width = "92%";
-        else $width = "660px";
+        else $width = "670px";
         
         echo "
-        <div id=\"recent\" class=\"hcmsInfoBox\" style=\"overflow:auto; margin:5px; width:".$width."; height:400px; float:left;\">
+        <div id=\"stats_".$item_site."\" class=\"hcmsInfoBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
           <div class=\"hcmsHeadline\" style=\"margin:2px;\">".$title." ".$item_site."</div>";
           
         $rootlocation_esc = "%comp%/".$item_site."/.folder";
@@ -339,7 +339,7 @@ function hcms_geoposition (position)
     }
   }
   ?>
-  </div>
+
 </div>
 
 </body>

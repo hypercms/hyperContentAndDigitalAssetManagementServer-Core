@@ -217,6 +217,7 @@ echo showmessage ($show, 500, 70, $lang, "position:absolute; left:20px; top:100p
         <select name="workflow" style="width:350px;">
         <?php
         $wf_files = dir ($mgmt_config['abs_path_data']."workflow_master");
+        $wf_names = array();
         
         while ($entry = $wf_files->read())
         {
@@ -226,9 +227,14 @@ echo showmessage ($show, 500, 70, $lang, "position:absolute; left:20px; top:100p
             $end = strrpos ($entry, ".xml");
             $workflow = substr ($entry, $start, $end - $start);
 
-            echo "<option value=\"".$workflow."\">".$workflow."</option>\n";
+            $wf_names[] = "<option value=\"".$workflow."\">".$workflow."</option>\n";
           }
         }
+        
+        natcasesort ($wf_names);
+        reset ($wf_names);
+        
+        foreach ($wf_names as $option) echo $option;
         
         $wf_files->close();
         ?>
@@ -253,7 +259,8 @@ echo showmessage ($show, 500, 70, $lang, "position:absolute; left:20px; top:100p
                 
                   if (is_array ($wf_array) && sizeof ($wf_array) >= 1)
                   {
-                    sort ($wf_array);
+                    natcasesort ($wf_array);
+                    reset ($wf_array);
                   
                     foreach ($wf_array as $wf_folder)
                     {

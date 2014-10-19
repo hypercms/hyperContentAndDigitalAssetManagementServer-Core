@@ -506,8 +506,8 @@ changelog:
 - bug fix: remove reseting of image size if scaling is used in CKEditor image-plugin
 - bug fix: inline editing mode issue when onedit and onpublish attributes are used for the same hypercms tag
 
-version 5.6.10 PREVIEW
-planed release 10/2014
+version 5.6.10
+release 10/2014
 changelog:
 - improvements in plugin management
 - new individual button in UI function showtopbar
@@ -538,8 +538,8 @@ changelog:
 - bug fix: undefined variables in several scripts
 - bug fix: click on object shows wrong object in sidebar if sort has been applied
 - bug fix: clicking on an object in gallery-view highlights wrong object if sort has been applied
-- Improvements in all object list views
-- Improvements in preview of object / sidebar
+- improvements in all object list views
+- improvements in preview of object / sidebar
 - bug fix: image brightness was set to -100 for image editing due to a wrong variable name
 - Improvements in object lists regarding alignemnts of list/gallery items
 - creating new components when adding components to a page by the component explorer
@@ -557,21 +557,9 @@ changelog:
 - bug fix: DB connect RDBMS did not provide hash keys for all search operations
 - bug fix: permission issues in explorer for publishing queue, log-list and plugins
 - bug fix: implementation of updated function getbrowserinfo (old function was outdated and did not detect the browsers correctly)
-
-preview:
-- definition of target formats when using send mail-link
-- add meta data to files based on metadata template on upload on checkbox to change metadata after upload
-- save color code (hex) and percentage for images in table media to present 5 main colors for the image
-- structured lists (one list element leads to a second list with sub-elements) 
-- video comments/keywords for video frames
-- keyword fields 'textk' to edit keywords with recommender function ala youtube. Define keyword lists under meta data templates that can or must be used.
-- watermark for images and videos
-- video transcoding (e.g. video with different audio layers)
-- users online und live chat
-- speech2text for video text indexing
-- Windows Federated Search for WebDAV / Windows Explorer (complicated)
+- implementation of sort order for workflow folder form
 */
 
 // current version
-$version = "Version 5.6.9";
+$version = "Version 5.6.10";
 ?>

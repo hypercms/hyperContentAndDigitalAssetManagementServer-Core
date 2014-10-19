@@ -109,7 +109,7 @@ if ($userdata != false && isset ($site))
   {
     if ($site == "*Null*")
     {
-      if ($adminpermission == "1" || $user == "admin")
+      if (checkadminpermission () || $user == "admin")
       {
         $object_array['login'] = getcontent ($userdata, "<login>");
         $object_array['date'] = getcontent ($userdata, "<userdate>");

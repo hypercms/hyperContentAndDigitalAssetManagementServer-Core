@@ -26,7 +26,7 @@ if (empty ($lang)) $lang = "en";
   <frame name="topFrame" scrolling="NO" noresize src="top.php" />
   <frameset id="mainFrame" cols="260,*" frameborder="YES" border="1" framespacing="1">
     <frame name="navFrame" src="explorer.php?refresh=1" />
-    <frame name="workplFrame" scrolling="YES" src="home.php" />
+    <frame name="workplFrame" scrolling="NO" src="home.php" />
   </frameset>
 </frameset>
 <noframes></noframes>

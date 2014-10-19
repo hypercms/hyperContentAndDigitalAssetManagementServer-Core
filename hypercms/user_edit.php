@@ -67,7 +67,7 @@ if ($action == "user_save" && ($site == "*Null*" || in_array ($site, $siteaccess
      )
   {
     // set super admin (only in main user administration)
-    if ($site == "*Null*" && ($adminpermission == "1" || $user == "admin"))
+    if ($site == "*Null*" && (checkadminpermission () || $user == "admin"))
     {
       if ($superadmin != "1") $superadmin = "0";
     }
@@ -564,7 +564,7 @@ if ($login != "" && $login != false)
     </tr>\n";
     }    
     ?>
-    <?php if ($site == "*Null*" && $adminpermission == "1") { ?>
+    <?php if ($site == "*Null*" && checkadminpermission ()) { ?>
     <tr>
       <td nowrap="nowrap"><?php echo $text18[$lang]; ?>: </td>
       <td align="left">
