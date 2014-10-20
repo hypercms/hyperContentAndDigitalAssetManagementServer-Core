@@ -29,7 +29,7 @@ checkusersession ($user, false);
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
 </head>
-  <frameset cols="240,*" framespacing="2" frameborder="no" border="0" class="hcmsNavigator">
+  <frameset cols="240,*" frameborder="no" framespacing="0" border="0" class="hcmsNavigator">
     <?php echo "<frame name=\"navFrame2\" src=\"group_access_explorer.php?site=".$site."&group_name=".$group_name."&cat=".$cat."\" />\n"; ?>
     <?php echo "<frame name=\"mainFrame2\" src=\"group_access_form.php?site=".$site."&group_name=".$group_name."&cat=".$cat."\" />\n"; ?>
   </frameset>

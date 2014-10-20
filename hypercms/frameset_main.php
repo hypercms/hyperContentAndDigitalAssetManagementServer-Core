@@ -22,9 +22,9 @@ if (empty ($lang)) $lang = "en";
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
 </head>
-<frameset id="topFrame" rows="32,*" cols="*" frameborder="NO" border="0" framespacing="0">
+<frameset id="topFrame" rows="32,*" cols="*" frameborder="NO" framespacing="0" border="0">
   <frame name="topFrame" scrolling="NO" noresize src="top.php" />
-  <frameset id="mainFrame" cols="260,*" frameborder="YES" border="1" framespacing="1">
+  <frameset id="mainFrame" cols="260,*" frameborder="NO" framespacing="0" border="0">
     <frame name="navFrame" src="explorer.php?refresh=1" />
     <frame name="workplFrame" scrolling="NO" src="home.php" />
   </frameset>

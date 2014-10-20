@@ -36,7 +36,7 @@ function toggleview (view)
 //-->
 </script>
 </head>
-<frameset id="searchFrame" cols="240,*" framespacing="2" frameborder="no" border="1" class="hcmsNavigator">
+<frameset id="searchFrame" cols="240,*" frameborder="no" framespacing="0" border="0" class="hcmsNavigator">
   <?php
   echo "<frame name=\"navFrame2\" src=\"search_explorer.php?dir=".$location."\">\n";
   echo "<frame name=\"mainFrame2\" src=\"search_form_rdbms.php?location=".$location."\">\n";

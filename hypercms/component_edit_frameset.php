@@ -38,7 +38,7 @@ checkusersession ($user);
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
 </head>
 
-<frameset id="assetFrame" cols="250,*" framespacing="2" frameborder="no" border="1" class="hcmsNavigator">
+<frameset id="assetFrame" cols="250,*" frameborder="no" framespacing="0" border="0" class="hcmsNavigator">
   <?php
   echo "<frame name=\"navFrame2\" src=\"component_edit_explorer.php?site=".$site."&cat=".$cat."&compcat=".$compcat."&location=".$location."&page=".$page."&mediatype=comp\">";
 

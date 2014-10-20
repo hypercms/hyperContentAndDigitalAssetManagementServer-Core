@@ -392,11 +392,10 @@ if ($login != "" && $login != false)
         <?php
         foreach ($lang_shortcut as $lang_opt)
         {
-          if ($userlanguage == $lang_opt)
-          {
-            echo "<option value=\"".$lang_opt."\" selected=\"selected\">".$lang_name[$lang_opt]."</option>\n";
-          }
-          else echo "<option value=\"".$lang_opt."\">".$lang_name[$lang_opt]."</option>\n";
+          if ($userlanguage == $lang_opt) $selected = "selected=\"selected\"";
+          else $selected = "";
+          
+          echo "<option value=\"".$lang_opt."\" ".$selected.">".$lang_name[$lang_opt]."</option>\n";
         }
         ?>
         </select>
@@ -413,15 +412,30 @@ if ($login != "" && $login != false)
         
         if ($dir_handler != false)
         {
+          $theme_array = array();
+          
           while ($theme_opt = @readdir ($dir_handler))
           {
-            if ($theme_opt != "." && $theme_opt != ".." && is_dir ($theme_dir.$theme_opt))
+            if ($theme_opt != "." && $theme_opt != ".." && is_dir ($theme_dir.$theme_opt) && is_dir ($theme_dir.$theme_opt."/img") && is_dir ($theme_dir.$theme_opt."/css"))
             {
-              if ($usertheme == $theme_opt)
-              {
-                echo "<option value=\"".$theme_opt."\" selected=\"selected\">".ucfirst ($theme_opt)."</option>\n";
-              }
-              else echo "<option value=\"".$theme_opt."\">".ucfirst ($theme_opt)."</option>\n";
+              if ($usertheme == $theme_opt) $selected = "selected=\"selected\"";
+              else $selected = "";
+              
+              $theme_array[] = $theme_opt;
+            }
+          }
+          
+          if (sizeof ($theme_array) > 0)
+          {
+            natcasesort ($theme_array);
+            reset ($theme_array);
+            
+            foreach ($theme_array as $theme)
+            {
+              if ($usertheme == $theme) $selected = "selected=\"selected\"";
+              else $selected = "";
+              
+              echo "<option value=\"".$theme."\" ".$selected.">".ucfirst ($theme)."</option>\n";
             }
           }
         }

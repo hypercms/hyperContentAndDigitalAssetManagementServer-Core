@@ -32,7 +32,7 @@ checkusersession ($user);
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
 </head>
 
-<frameset id="assetFrame" cols="250,*" framespacing="2" frameborder="no" border="0" class="hcmsNavigator">
+<frameset id="assetFrame" cols="250,*" frameborder="no" framespacing="0" border="0" class="hcmsNavigator">
   <frame name="navFrame2" src="<?php echo "media_explorer.php?site=".$site."&cat=comp&compcat=media&mediatype=".$mediatype."&lang=".$langCode."&callback=".$CKEditorFuncNum."&scaling=".$scaling; ?>">
   <frame name="mainFrame2" scrolling="YES" src="<?php echo "media_select.php?site=".$site."&lang=".$langCode."&mediatype=".$mediatype."&callback=".$CKEditorFuncNum."&scaling=".$scaling; ?>">
 </frameset>

@@ -55,7 +55,7 @@ function sendOption(folder_name, folder_location)
 </script>
 </head>
 
-<body class="hcmsWorkplaceExplorer">
+<body class="hcmsWorkplaceObjectlist">
 
 <table width="98%" border="0" cellspacing="2" cellpadding="0">
   <tr>

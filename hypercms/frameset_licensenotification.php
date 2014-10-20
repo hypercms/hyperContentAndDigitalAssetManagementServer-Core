@@ -28,7 +28,7 @@ checkusersession ($user, false);
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
 </head>
-  <frameset id="mainFrame" cols="250,*" framespacing="2" frameborder="no" border="0" class="hcmsNavigator">
+  <frameset id="mainFrame" cols="250,*" frameborder="no" framespacing="0" border="0" class="hcmsNavigator">
     <frame name="navFrame2" src="<?php echo "folder_explorer.php?site=".$site."&cat=".$cat; ?>" />
     <frame name="mainFrame2" src="<?php echo "licensenotification_form.php?site=".$site."&cat=".$cat; ?>" />
   </frameset>

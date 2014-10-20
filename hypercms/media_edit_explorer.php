@@ -90,7 +90,7 @@ function goToURL()
 </script>
 </head>
 
-<body class="hcmsWorkplaceExplorer">
+<body class="hcmsWorkplaceObjectlist">
 
 <div style="position:fixed; right:0; top:45%; margin:0; padding:0;">
   <img onclick="parent.document.getElementById('assetFrame').cols='42,*';" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />

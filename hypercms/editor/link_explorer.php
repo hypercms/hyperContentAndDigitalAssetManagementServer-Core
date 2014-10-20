@@ -81,7 +81,7 @@ function submitLink (url)
 </script>
 </head>
 
-<body class="hcmsWorkplaceExplorer">
+<body class="hcmsWorkplaceObjectlist">
   
   <!-- top bar -->
   <?php echo showtopbar ($text0[$lang], $lang); ?>
