@@ -565,6 +565,8 @@ changelog:
 - set variable lang to "en" if no value is given
 - bug fix: link_explorer of editor passed wrong input to function rdbms_searchcontent
 - improvements in DB connect RDBMS
+- bug fix: scolling in link and media explorer did not work due to chang of CSS class
+- implementation of new function checkpublicationpermission
 */
 
 // current version

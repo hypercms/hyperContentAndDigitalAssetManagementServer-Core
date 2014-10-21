@@ -54,7 +54,7 @@ if ($mgmt_config[$site]['dam'] == true && $setlocalpermission['root'] != 1) kill
 // check for general root element access since local permissions are checked later
 // Attention! variable page can be empty when a new object will be created
 elseif (
-         !valid_publicationaccess ($site) || 
+         !checkpublicationpermission ($site) || 
          (!valid_objectname ($page) && ($setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1)) || 
          !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($cat)
        ) killsession ($user);

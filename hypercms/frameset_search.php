@@ -38,8 +38,8 @@ function toggleview (view)
 </head>
 <frameset id="searchFrame" cols="240,*" frameborder="no" framespacing="0" border="0" class="hcmsNavigator">
   <?php
-  echo "<frame name=\"navFrame2\" src=\"search_explorer.php?dir=".$location."\">\n";
-  echo "<frame name=\"mainFrame2\" src=\"search_form_rdbms.php?location=".$location."\">\n";
+  echo "<frame name=\"navFrame2\" scrolling=\"auto\" src=\"search_explorer.php?dir=".$location."\">\n";
+  echo "<frame name=\"mainFrame2\" scrolling=\"auto\" src=\"search_form_rdbms.php?location=".$location."\">\n";
   ?>
 </frameset>
 <noframes></noframes>

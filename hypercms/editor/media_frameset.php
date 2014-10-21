@@ -33,8 +33,8 @@ checkusersession ($user);
 </head>
 
 <frameset id="assetFrame" cols="250,*" frameborder="no" framespacing="0" border="0" class="hcmsNavigator">
-  <frame name="navFrame2" src="<?php echo "media_explorer.php?site=".$site."&cat=comp&compcat=media&mediatype=".$mediatype."&lang=".$langCode."&callback=".$CKEditorFuncNum."&scaling=".$scaling; ?>">
-  <frame name="mainFrame2" scrolling="YES" src="<?php echo "media_select.php?site=".$site."&lang=".$langCode."&mediatype=".$mediatype."&callback=".$CKEditorFuncNum."&scaling=".$scaling; ?>">
+  <frame name="navFrame2" scrolling="auto" src="<?php echo "media_explorer.php?site=".$site."&cat=comp&compcat=media&mediatype=".$mediatype."&lang=".$langCode."&callback=".$CKEditorFuncNum."&scaling=".$scaling; ?>">
+  <frame name="mainFrame2" scrolling="auto" src="<?php echo "media_select.php?site=".$site."&lang=".$langCode."&mediatype=".$mediatype."&callback=".$CKEditorFuncNum."&scaling=".$scaling; ?>">
 </frameset>
 <noframes></noframes>
 

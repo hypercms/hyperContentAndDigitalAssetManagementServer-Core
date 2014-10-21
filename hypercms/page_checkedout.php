@@ -78,7 +78,7 @@ if ($checkedout_data != false)
         list ($site, $cat, $container) = explode ("|", $checkedout_rec); 
      
         // if no corresponding siteaccess for this user
-        if (!in_array ($site, $siteaccess))
+        if (!checkpublicationpermission ($site))
         {
           // get container id
           $container_id = substr ($container, 0, strpos ($container, ".xml"));
@@ -610,7 +610,7 @@ function toggleview (viewoption)
 </script>
 </head>
 
-<body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist">
+<body id="hcmsWorkplaceObjectlist" style="overflow:hidden;" class="hcmsWorkplaceObjectlist">
 
 <?php if (!$is_mobile) echo showinfobox ($text27[$lang]."<br/>".$text28[$lang]."<br/>".$text29[$lang], $lang, 3, "position:fixed; top:30px; right:30px;"); ?>
 

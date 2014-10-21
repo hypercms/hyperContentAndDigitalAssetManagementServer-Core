@@ -194,7 +194,7 @@ foreach ($multiobject_array as $object)
   // check for general root element access since localpermissions are checked later
   // Attention! variable page can be empty when a new object will be created
   elseif (
-           !valid_publicationaccess ($site) || 
+           !checkpublicationpermission ($site) || 
            (!valid_objectname ($ofile) && ($setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1)) || 
            !valid_publicationname ($site) || !valid_locationname ($olocation) || !valid_objectname ($ocat)
          ) 

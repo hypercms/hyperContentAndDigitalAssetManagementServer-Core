@@ -39,7 +39,7 @@ if ($mgmt_config[$site]['dam'] == true)
 
 // check permissions
 // Attention! template_view is also used for creating and changing templates in objects
-if (!valid_publicationname ($site) || !valid_objectname ($template) || !in_array ($site, $siteaccess)) killsession ($user);
+if (!valid_publicationname ($site) || !valid_objectname ($template) || !checkpublicationpermission ($site)) killsession ($user);
 
 // check session of user
 checkusersession ($user, false);

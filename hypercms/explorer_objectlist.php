@@ -640,7 +640,7 @@ function toggleview (viewoption)
 </script>
 </head>
 
-<body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist">
+<body id="hcmsWorkplaceObjectlist" style="overflow:hidden;" class="hcmsWorkplaceObjectlist">
 
 <?php if (!$is_mobile) echo showinfobox ($text27[$lang]."<br/>".$text28[$lang]."<br/>".$text29[$lang], $lang, 3, "position:fixed; top:30px; right:30px;"); ?>
 

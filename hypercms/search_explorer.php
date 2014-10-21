@@ -44,7 +44,7 @@ $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
 // check localpermissions
 if (
-     ($dir != "" && $dir_esc != "%page%/" && $dir_esc != "%comp%/" && valid_publicationname ($site) && !valid_publicationaccess ($site)) || 
+     ($dir != "" && $dir_esc != "%page%/" && $dir_esc != "%comp%/" && valid_publicationname ($site) && !checkpublicationpermission ($site)) || 
      !valid_locationname ($dir)
    ) killsession ($user);
        

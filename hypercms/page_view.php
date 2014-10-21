@@ -76,11 +76,11 @@ $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
 // check localpermissions for DAM usage only
-if (!valid_publicationaccess ($site) || ($mgmt_config[$site]['dam'] == true && $setlocalpermission['root'] != 1)) killsession ($user);
+if (!checkpublicationpermission ($site) || ($mgmt_config[$site]['dam'] == true && $setlocalpermission['root'] != 1)) killsession ($user);
 // check for general root element access since localpermissions are checked later
 // Attention! variable page can be empty when a new object will be created
 elseif (
-         !valid_publicationaccess ($site) || 
+         !checkpublicationpermission ($site) || 
          (!valid_objectname ($page) && ($setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1)) || 
          !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($cat)
        ) killsession ($user);

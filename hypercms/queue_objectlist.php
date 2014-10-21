@@ -197,7 +197,7 @@ function buttonaction (action)
 </script>
 </head>
 
-<body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist">
+<body id="hcmsWorkplaceObjectlist" style="overflow:hidden;" class="hcmsWorkplaceObjectlist">
 
 <div id="contextLayer" style="position:absolute; width:150px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_queue" method="post" action="" target="">

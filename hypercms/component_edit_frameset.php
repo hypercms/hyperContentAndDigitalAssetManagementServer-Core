@@ -40,15 +40,15 @@ checkusersession ($user);
 
 <frameset id="assetFrame" cols="250,*" frameborder="no" framespacing="0" border="0" class="hcmsNavigator">
   <?php
-  echo "<frame name=\"navFrame2\" src=\"component_edit_explorer.php?site=".$site."&cat=".$cat."&compcat=".$compcat."&location=".$location."&page=".$page."&mediatype=comp\">";
+  echo "<frame name=\"navFrame2\" scrolling=\"auto\" src=\"component_edit_explorer.php?site=".$site."&cat=".$cat."&compcat=".$compcat."&location=".$location."&page=".$page."&mediatype=comp\">";
 
   if ($compcat == "single")
   {
-    echo "<frame name=\"mainFrame2\" src=\"component_edit_page_single.php?view=".$view."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&id=".$id."&tagname=".$tagname."&compcat=".$compcat."&component_curr=".$component_curr."&component=".$component."&condition=".$condition."\">";
+    echo "<frame name=\"mainFrame2\" scrolling=\"auto\" src=\"component_edit_page_single.php?view=".$view."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&id=".$id."&tagname=".$tagname."&compcat=".$compcat."&component_curr=".$component_curr."&component=".$component."&condition=".$condition."\">";
   }
   elseif ($compcat == "multi")
   {
-    echo "<frame name=\"mainFrame2\" src=\"component_edit_page_multi.php?view=".$view."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&id=".$id."&tagname=".$tagname."&compcat=".$compcat."&condition=".$condition."\">";
+    echo "<frame name=\"mainFrame2\" scrolling=\"auto\" src=\"component_edit_page_multi.php?view=".$view."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&id=".$id."&tagname=".$tagname."&compcat=".$compcat."&condition=".$condition."\">";
   }
   ?>
 </frameset>

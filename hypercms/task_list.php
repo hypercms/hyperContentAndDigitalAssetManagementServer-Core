@@ -120,7 +120,7 @@ echo showmessage ($show, 500, 70, $lang, "position:absolute; left:50px; top:100p
         $site = $task_site_array[0];
      
         // remove tasks from sites without siteaccess of the current user
-        if (!in_array ($site, $siteaccess) && $task_id_array[0] != "") 
+        if (!checkpublicationpermission ($site) && $task_id_array[0] != "") 
         {
           $task_data = deletecontent ($task_data, "<task>", "<task_id>", $task_id_array[0]);
           $savetasklist = true;

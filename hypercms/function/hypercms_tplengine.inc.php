@@ -1090,7 +1090,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   if ($buildview != "publish")
   {
     // validate inheritance if site is outside of users publication access scope
-    $valid_publicationaccess = valid_publicationaccess ($site);
+    $valid_publicationaccess = checkpublicationpermission ($site, false);
 
     // no access allowed
     if ($valid_publicationaccess == false)

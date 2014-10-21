@@ -29,8 +29,8 @@ checkusersession ($user, false);
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
 </head>
   <frameset rows="100,*" frameborder="NO" border="0" framespacing="0">
-    <frame name="controlFrame" scrolling="NO" src="<?php echo "control_media_menu.php?site=".$site."&mediacat=".$mediacat; ?>" noresize />
-    <frame name="mainFrame" src="empty.php?site=<?php echo $site; ?>" />
+    <frame name="controlFrame" scrolling="no" src="<?php echo "control_media_menu.php?site=".$site."&mediacat=".$mediacat; ?>" noresize />
+    <frame name="mainFrame" scrolling="auto" src="empty.php?site=<?php echo $site; ?>" />
   </frameset>
 <noframes></noframes>
 </html>

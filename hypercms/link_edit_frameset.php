@@ -44,8 +44,8 @@ checkusersession ($user, false);
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
 </head>
 <frameset id="mainFrame" cols="250,*" frameborder="no" framespacing="0" border="0" class="hcmsNavigator">
-  <?php echo "<frame name=\"navFrame2\" src=\"link_edit_explorer.php?site=".$site."&cat=".$cat."\" />"; ?>
-  <?php echo "<frame name=\"mainFrame2\" src=\"link_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&db_connect=".$db_connect."&tagname=".$tagname."&id=".$id."&label=".$label."&linkhref_curr=".$linkhref_curr."&linkhref=".$linkhref."&linktarget=".$linktarget."&targetlist=".$targetlist."&linktext=".$linktext."&contenttype=".$contenttype."\" />"; ?>
+  <?php echo "<frame name=\"navFrame2\" scrolling=\"auto\" src=\"link_edit_explorer.php?site=".$site."&cat=".$cat."\" />"; ?>
+  <?php echo "<frame name=\"mainFrame2\" scrolling=\"auto\" src=\"link_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&db_connect=".$db_connect."&tagname=".$tagname."&id=".$id."&label=".$label."&linkhref_curr=".$linkhref_curr."&linkhref=".$linkhref."&linktarget=".$linktarget."&targetlist=".$targetlist."&linktext=".$linktext."&contenttype=".$contenttype."\" />"; ?>
 </frameset>
 <noframes></noframes>
 </html>

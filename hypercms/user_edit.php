@@ -57,7 +57,7 @@ checkusersession ($user);
 $show = "";
 
 // save user
-if ($action == "user_save" && ($site == "*Null*" || in_array ($site, $siteaccess)) && checktoken ($token, $user))
+if ($action == "user_save" && ($site == "*Null*" || checkpublicationpermission ($site)) && checktoken ($token, $user))
 {
   // check permissions
   if (

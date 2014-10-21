@@ -332,7 +332,7 @@ function accessgeneral ($site, $location, $cat)
     // check publication access
     if (is_array ($siteaccess))
     {
-      if (!in_array ($site, $siteaccess)) return false;
+      if (!checkpublicationpermission ($site)) return false;
     }
 
     // check excluded folders
@@ -571,6 +571,48 @@ function setlocalpermission ($site, $group_array, $cat)
   }
   
   return $setlocalpermission;
+}
+
+// ------------------------- checkpublicationpermission -----------------------------
+// function: checkpublicationpermission()
+// input: publication name, strictly limited to siteaccess only without inheritance [true/false] (optional)
+// output: "direct" for direct access via group permission / "inherited" for access through inheritance / false
+
+// description:
+// checks access to a publication based on the site access and inheritance settings
+
+function checkpublicationpermission ($site, $strict=true)
+{
+  global $mgmt_config, $siteaccess;
+  
+  if (!is_array ($siteaccess) && isset ($_SESSION['hcms_siteaccess'])) $siteaccess = $_SESSION['hcms_siteaccess'];
+  
+  if (valid_publicationname ($site) && is_array ($siteaccess))
+  {
+    // publication is in scope of user
+    if (in_array ($site, $siteaccess)) return "direct";
+    elseif ($strict == true) return false;
+    
+    // load publication inheritance setting
+    $inherit_db = inherit_db_read ();
+    $child_array = inherit_db_getchild ($inherit_db, $site);
+
+    // check access to publication by inheritance
+    if (is_array ($child_array))
+    {
+      foreach ($siteaccess as $child)
+      {
+        // load child publication settings
+        if (valid_publicationname ($child)) @require ($mgmt_config['abs_path_data']."config/".$child.".conf.php");
+        // check component access
+        if (in_array ($child, $child_array) && $mgmt_config[$child]['inherit_comp'] == true) return "inherited";
+      }
+      
+      return false;
+    }
+    else return false;
+  }
+  else return false;
 }
 
 // ---------------------- checkadminpermission -----------------------------
@@ -1999,47 +2041,6 @@ function valid_publicationname ($variable)
       if ($result == true) return $variable;
       else return false;
     }    
-  }
-  else return false;
-}
-
-// ------------------------- valid_publicationaccess -----------------------------
-// function: valid_publicationaccess()
-// input: publication name
-// output: "direct" for direct access via group permission / "inherited" for access through inheritance / false
-
-// description:
-// checks access to a publication based on the site access and inheritance settings (is site a child of 
-
-function valid_publicationaccess ($site)
-{
-  global $mgmt_config, $siteaccess;
-  
-  if (!is_array ($siteaccess) && isset ($_SESSION['hcms_siteaccess'])) $siteaccess = $_SESSION['hcms_siteaccess'];
-  
-  if (valid_publicationname ($site) && is_array ($siteaccess))
-  {
-    // publication is in scope of user
-    if (in_array ($site, $siteaccess)) return "direct";
-    
-    // load publication inheritance setting
-    $inherit_db = inherit_db_read ();
-    $child_array = inherit_db_getchild ($inherit_db, $site);
-
-    // check access to publication by inheritance
-    if (is_array ($child_array))
-    {
-      foreach ($siteaccess as $child)
-      {
-        // load child publication settings
-        if (valid_publicationname ($child)) @require ($mgmt_config['abs_path_data']."config/".$child.".conf.php");
-        // check component access
-        if (in_array ($child, $child_array) && $mgmt_config[$child]['inherit_comp'] == true) return "inherited";
-      }
-      
-      return false;
-    }
-    else return false;
   }
   else return false;
 }
