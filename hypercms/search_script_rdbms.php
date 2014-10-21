@@ -693,6 +693,8 @@ parent.frames['controlFrame'].location.href='control_objectlist_menu.php?virtual
     <input type="hidden" name="multiobject" value="" />
     <input type="hidden" name="from_page" value="search" />
     <input type="hidden" name="token" value="" />
+    <input type="hidden" name="convert_type" value="" />
+    <input type="hidden" name="convert_cfg" value="" />
     
     <table width="150px" cellspacing="0" cellpadding="3" class="hcmsContextMenu">
       <tr>
