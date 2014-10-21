@@ -1517,7 +1517,11 @@ function rdbms_searchuser ($site, $user, $maxhits=1000)
       
       while ($row = $db->getResultRow ())
       {
-        if ($row['objectpath'] != "") $objectpath[$row['hash']] = str_replace ("*", "%", $row['objectpath']);   
+        if ($row['objectpath'] != "")
+        {
+          $hash = $row['hash'];
+          $objectpath[$hash] = str_replace ("*", "%", $row['objectpath']);
+        }   
       }
     }
     else $objectpath = Null;
@@ -1655,7 +1659,7 @@ function rdbms_getobject_hash ($object)
   else return false;
 } 
 
-// ----------------------------------------------- get object by id or hash ------------------------------------------------- 
+// -------------------------------------------- get object by unique id or hash ----------------------------------------------- 
 function rdbms_getobject ($object_identifier)
 {
   global $mgmt_config;
@@ -1741,17 +1745,22 @@ function rdbms_getobjects ($container_id, $template="")
     
     $container_id = intval ($container_id);
     
-    $sql = 'SELECT objectpath, hash FROM object WHERE id="'.intval($container_id).'"';
+    $sql = 'SELECT objectpath, hash FROM object WHERE id='.$container_id;
     if ($template != "") $sql .= ' AND template="'.$template.'"';
     
     $errcode = "50030";
     $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+    $objectpath = array();
     
     if ($done)  
     {
       while ($row = $db->getResultRow ())
       {
-        if ($row['objectpath'] != "") $objectpath[$row['hash']] = str_replace ("*", "%", $row['objectpath']);  
+        if (trim ($row['objectpath']) != "")
+        {
+          $hash = $row['hash'];
+          $objectpath[$hash] = str_replace ("*", "%", $row['objectpath']);
+        }
       }
     }
 
@@ -1759,7 +1768,7 @@ function rdbms_getobjects ($container_id, $template="")
     savelog ($db->getError ());    
     $db->close();    
       
-    if ($objectpath != "") return $objectpath;
+    if (sizeof ($objectpath) > 0) return $objectpath;
     else return false;
   }
   else return false;
