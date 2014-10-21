@@ -416,7 +416,7 @@ if ($login != "" && $login != false)
           
           while ($theme_opt = @readdir ($dir_handler))
           {
-            if ($theme_opt != "." && $theme_opt != ".." && is_dir ($theme_dir.$theme_opt) && is_dir ($theme_dir.$theme_opt."/img") && is_dir ($theme_dir.$theme_opt."/css"))
+            if (strtolower($theme_opt) != "mobile" && $theme_opt != "." && $theme_opt != ".." && is_dir ($theme_dir.$theme_opt) && is_dir ($theme_dir.$theme_opt."/img") && is_dir ($theme_dir.$theme_opt."/css"))
             {
               if ($usertheme == $theme_opt) $selected = "selected=\"selected\"";
               else $selected = "";

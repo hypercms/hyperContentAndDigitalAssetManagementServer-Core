@@ -1110,6 +1110,7 @@ function getbrowserinfo ()
 {
   $u_agent = $_SERVER['HTTP_USER_AGENT'];
   $bname = 'unknown';
+  $ub = "";
   $version = "";
  
   // get the browser name
