@@ -563,6 +563,8 @@ changelog:
 - bug fix: removed : from meta data listing if label is empty
 - bug fix: checkadminpermission expected input parameter
 - set variable lang to "en" if no value is given
+- bug fix: link_explorer of editor passed wrong input to function rdbms_searchcontent
+- improvements in DB connect RDBMS
 */
 
 // current version

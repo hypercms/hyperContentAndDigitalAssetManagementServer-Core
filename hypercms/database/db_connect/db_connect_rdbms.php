@@ -848,7 +848,7 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
 		array_push ($object_type, "image", "video");
 	}
 	
-	if ($folderpath != "" || is_array ($object_type) || $date_from != "" || $date_to != "" || $template != "" || is_array ($expression_array) || $expression_filename != "" || $filesize != "" || $imagewidth != "" || $imageheight != "" || $imagecolor != "" || $imagetype != "")
+	if (!empty ($folderpath) || is_array ($object_type) || !empty ($date_from) || !empty ($date_to) || !empty ($template) || is_array ($expression_array) || !empty ($expression_filename) || !empty ($filesize) || !empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype))
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
@@ -928,7 +928,7 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
     }
     
     // add file name search if expression array is of size 1
-    if ($expression_filename == "" && is_array ($expression_array) && sizeof ($expression_array) == 1 && !empty($expression_array[0])) 
+    if (empty ($expression_filename) && is_array ($expression_array) && sizeof ($expression_array) == 1 && !empty ($expression_array[0])) 
     {
       $expression_filename = $expression_array[0];
     }
@@ -975,7 +975,7 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
     }     
     
     // file name
-    if ($expression_filename != "")
+    if (!empty ($expression_filename))
     {
       $expression_filename = str_replace ("*", "-hcms_A-", $expression_filename); 
       $expression_filename = str_replace ("?", "-hcms_Q-", $expression_filename); 
@@ -1015,7 +1015,7 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
     }   
     
     // dates and geo locatiojn (add table container)
-    if (($date_from != "" || $date_to != "") || ($geo_border_sw != "" && $geo_border_ne != ""))
+    if ((!empty ($date_from) || !empty ($date_to)) || (!empty ($geo_border_sw) && !empty ($geo_border_ne)))
     {
       $sql_table['container'] = "LEFT JOIN container AS cnt ON obj.id=cnt.id";
       
@@ -1024,9 +1024,9 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
       if ($date_to != "") $sql_where['dateto'] = 'cnt.date<="'.$date_to.'"';
       
       // geo location
-      if ($geo_border_sw != "" && $geo_border_ne != "")
+      if (!empty ($geo_border_sw) && !empty ($geo_border_ne))
       {
-        if ($geo_border_sw != "")
+        if (!empty ($geo_border_sw))
         {
           $geo_border_sw = str_replace (array("(",")"), "", $geo_border_sw);
           list ($latitude, $longitude) = explode (",", $geo_border_sw);
@@ -1034,7 +1034,7 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
           if (is_numeric ($latitude) && is_numeric ($longitude)) $sql_where['geo_border_sw'] = 'cnt.latitude>='.trim($latitude).' AND cnt.longitude>='.trim($longitude);
         }
         
-        if ($geo_border_ne != "")
+        if (!empty ($geo_border_ne))
         {
           $geo_border_ne = str_replace (array("(",")"), "", $geo_border_ne);
           list ($latitude, $longitude) = explode (",", $geo_border_ne);
@@ -1045,7 +1045,7 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
     }
 
     // template
-    if ($template != "")
+    if (!empty ($template))
     {
       $sql_where['template'] = 'obj.template="'.$template.'"';
     }
