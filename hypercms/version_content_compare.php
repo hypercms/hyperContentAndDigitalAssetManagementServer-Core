@@ -95,7 +95,8 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
     if ($contentdata != "")
     {
       // get charset
-      $charset = getcharset ($site, $contentdata);
+      $charset_result = getcharset ($site, $contentdata);
+      if (!empty ($charset_result['charset'])) $charset = $charset_result['charset'];
       
       // extract multimedia content if available
       $multimedianodes = getcontent ($contentdata, "<multimedia>");
@@ -186,9 +187,12 @@ if (is_array ($content_array))
   // compare old version to new version
   foreach ($content_array as $id => $content)
   {
+    if (empty ($content[0])) $content[0] = "";
+    if (empty ($content[1])) $content[1] = "";
+
     $result_diff = html_diff ($content[0], $content[1]);
     
-    $result[$id] = "<p><span class=\"hcmsHeadline\">".$id."</span><br /><div style=\"margin:2px; padding:2px; width:760px; border:1px solid #000000; background:#FFFFFF;\">".$result_diff."</div></p>";
+    $result[$id] = "<p><span class=\"hcmsHeadline\">".$id."</span><br /><div style=\"margin:2px; padding:2px; width:760px; border:1px solid #000000; background:#FFFFFF; min-height:18px;\">".$result_diff."</div></p>";
   }
   
   // output results

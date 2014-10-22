@@ -6726,7 +6726,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         else
         {
           $viewstore .= "<img name=\"Button_so\" src=\"".getthemelocation()."img/button_save.gif\" class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"setSaveType('form_so', '');\" alt=\"".$text31[$lang]."\" title=\"".$text31[$lang]."\" align=\"absmiddle\" />\n";
-          if (($mediafile == false || $mediafile == "") && $page != ".folder" && $objectview != "formedit" && $objectview != "formmeta" && $objectview != "formlock") $viewstore .= "<img name=\"Button_sc\" src=\"".getthemelocation()."img/button_saveclose.gif\" class=\"hcmsButton\" onClick=\"setSaveType('form_sc', '');\" alt=\"".$text32[$lang]."\" title=\"".$text32[$lang]."\" align=\"absmiddle\" />\n"; 
+          if (($mediafile == false || $mediafile == "") && $page != ".folder" && $objectview != "formedit" && $objectview != "formmeta" && $objectview != "formlock") $viewstore .= "<img name=\"Button_sc\" src=\"".getthemelocation()."img/button_saveclose.gif\" class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"setSaveType('form_sc', '');\" alt=\"".$text32[$lang]."\" title=\"".$text32[$lang]."\" align=\"absmiddle\" />\n"; 
         }
         
         // print button
