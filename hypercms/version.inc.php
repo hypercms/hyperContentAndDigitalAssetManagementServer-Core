@@ -567,7 +567,9 @@ changelog:
 - improvements in DB connect RDBMS
 - bug fix: scolling in link and media explorer did not work due to chang of CSS class
 - implementation of new function checkpublicationpermission
-- bug fix: Convert of formats did not work due to missing convert-type and convert-config inputs in context menu for checkout, queue and search object list
+- bug fix: convert of formats did not work due to missing convert-type and convert-config inputs in context menu for checkout, queue and search object list
+- bug fix: set min-height of fields to avoid collapsing of empty fields
+- bug fix: the user edit permission for a specific publication was not checked properly and led to killsession
 */
 
 // current version
