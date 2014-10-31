@@ -501,7 +501,16 @@ else
   $point->setTarget('workplFrame');
   $point->setOnMouseOver('hcms_resetContext();');
   $maintree .= $point->generateHTML();
-
+  
+  // ----------------------------------------- chat ---------------------------------------------- 
+  if (!$is_mobile && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true)
+  {
+    $point = new hcms_menupoint ($text43[$lang], '#', 'chat.gif');
+    $point->setOnClick('changeSelection(this); hcms_openChat();');
+    $point->setOnMouseOver('hcms_resetContext();');
+    $maintree .= $point->generateHTML();
+  }
+  
   // ----------------------------------------- desktop ---------------------------------------------- 
   if (!isset ($hcms_linking['location']) && checkrootpermission ('desktop'))
   {
@@ -556,7 +565,7 @@ else
     
     $maintree .= $point->generateHTML();
   }
-  
+
   // ----------------------------------------- plugins ----------------------------------------------
   if (!empty ($mgmt_plugin))
   { 
@@ -929,11 +938,13 @@ else
 <html>
   <head>
     <title>hyperCMS</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
     <meta name="viewport" content="width=260; initial-scale=1.0; user-scalable=0;">
     <script type="text/javascript" src="javascript/jquery/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.cookie.js"></script>
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.hotkeys.js"></script>
     <script type="text/javascript" src="javascript/jstree/jquery.jstree.js"></script>
+    <script type="text/javascript" src="javascript/main.js"></script>
     <script type="text/javascript" src="javascript/contextmenu.js"></script>
     <script type="text/javascript">
     <!--
@@ -1047,8 +1058,8 @@ else
   
   <?php if (!$is_mobile) { ?>
   <div style="position:fixed; right:0; top:45%; margin:0; padding:0;">
-    <img onclick="parent.document.getElementById('mainFrame').cols='42,*';" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $text34[$lang]; ?>" title="<?php echo $text34[$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
-    <img onclick="parent.document.getElementById('mainFrame').cols='260,*';" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $text35[$lang]; ?>" title="<?php echo $text35[$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
+    <img onclick="parent.minNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $text34[$lang]; ?>" title="<?php echo $text34[$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
+    <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $text35[$lang]; ?>" title="<?php echo $text35[$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
   </div>
   <?php } ?>
   
@@ -1077,7 +1088,7 @@ else
       <table width="150px" cellspacing="0" cellpadding="3" class="hcmsContextMenu">
         <tr>
           <td>
-            <a href=# onClick="javascript:parent.location.href='userlogout.php';"><img src="<?php echo getthemelocation(); ?>img/button_logout.gif" align="absmiddle" border=0 />&nbsp;<?php echo $text0[$lang]; ?></a>
+            <a href=# onClick="parent.location.href='userlogout.php';"><img src="<?php echo getthemelocation(); ?>img/button_logout.gif" align="absmiddle" border=0 />&nbsp;<?php echo $text0[$lang]; ?></a>
             <hr/>
             <a href=# id="href_cmsview" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" id="img_cmsview" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $text37[$lang]; ?></a><br />
             <a href=# id="_href_notify" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="_img_notify" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo $text38[$lang]; ?></a><br />   

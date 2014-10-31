@@ -86,6 +86,15 @@
   filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
 }
 
+.hcmsChatBar
+{
+  border-left: 1px solid #000000;
+  box-shadow: 3px 3px 12px #000000;
+  -webkit-box-shadow: 3px 3px 12px #000000;
+  -moz-box-shadow: 3px 3px 12px #000000;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+}
+
 .hcmsImageItem
 {
   border: 1px solid #808080;

@@ -129,11 +129,39 @@ function hcms_resizeFrameWidth (leftframe, leftwidth, rightframe, rightwidth, un
   }
 }
 
-function hcms_openBrWindowItem (theURL,winName,features,width,height)
+function hcms_openWindow (theURL,winName,features,width,height)
 {
   popup = window.open(theURL,winName,features + ',width=' + width + ',height=' + height);    
   popup.moveTo(screen.width/2-width/2, screen.height/2-height/2);
   popup.focus();
+}
+
+function hcms_openChat ()
+{
+  // standard browser (open/close chat)
+  if (document.getElementById('chatLayer'))
+  {
+    var chatsidebar = document.getElementById('chatLayer');
+            
+    if (chatsidebar.style.display == "none") chatsidebar.style.display = "block";
+    else chatsidebar.style.display = "none";
+  }
+  else if (parent.document.getElementById('chatLayer'))
+  {
+    var chatsidebar = parent.document.getElementById('chatLayer');
+            
+    if (chatsidebar.style.display == "none") chatsidebar.style.display = "block";
+    else chatsidebar.style.display = "none";
+  }
+  // mobile browser (only open chat)
+  else if (document.getElementById('chat'))
+  {
+    $("#chat").panel("open");
+  }
+  else if (parent.document.getElementById('chat'))
+  {
+    parent.$("#chat").panel("open");
+  }
 }
 
 function hcms_findObj (n, d) 

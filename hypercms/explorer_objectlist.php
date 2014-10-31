@@ -434,7 +434,7 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
           onobjectlist_post ($site, $cat, $location, $object, $contentfile, $contentdata, $usedby, $user);     
 
         // open on double click
-        $openObject = "onDblClick=\"hcms_openBrWindowItem('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', '800', '600');\"";
+        $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', '800', '600');\"";
         // refresh sidebar
         if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
         else $sidebarclick = "";
@@ -571,6 +571,8 @@ else $objects_counted = 0;
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" language="JavaScript" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="javascript/chat.js"></script>
 <script language="JavaScript">
 <!--
 // context menu
@@ -636,6 +638,20 @@ function toggleview (viewoption)
 
   return true;
 }
+	
+// start chat
+var chat =  new Chat();
+
+function sendtochat (text)
+{
+  if (text != "")
+  {
+    var username = '<?php echo $user; ?>';
+    // strip tags
+    username = username.replace(/(<([^>]+)>)/ig,"");
+    chat.send(text, username);
+  }
+}
 //-->
 </script>
 </head>
@@ -676,7 +692,10 @@ function toggleview (viewoption)
           <a href=# id="_href_cmsview" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" id="_img_cmsview" align="absmiddle" border=0 class="hcmsIconOff">&nbsp;<?php echo $text9[$lang]; ?></a><br /> 
           <?php } ?>
           <?php if ($setlocalpermission['root'] == 1) { ?>
-          <a href=# id="_href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="_img_notify" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo $text30[$lang]; ?></a><br /> 
+          <a href=# id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="img_notify" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo $text30[$lang]; ?></a><br /> 
+          <?php } ?>
+          <?php if ($setlocalpermission['root'] == 1 && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
+          <a href=# id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.gif" id="img_chat" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo $text38[$lang]; ?></a><br /> 
           <?php } ?>
           <hr />
           <?php if ($setlocalpermission['root'] == 1 && $setlocalpermission['delete'] == 1 && $setlocalpermission['folderdelete'] == 1) { ?>

@@ -342,7 +342,7 @@ echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.p
       ?>
       <div style="height: 20px;">
         <input style="vertical-align: top;" type="text" onchange="updateCodeSegment();" id="logo" />
-        <img class="hcmsButtonTiny hcmsButtonSizeSquare" title="<?php echo $text14[$lang]; ?>" style="cursor: pointer;" src="<?php echo getthemelocation(); ?>img/button_media.gif" onclick="hcms_openBrWindowItem('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 600, 400);" />
+        <img class="hcmsButtonTiny hcmsButtonSizeSquare" title="<?php echo $text14[$lang]; ?>" style="cursor: pointer;" src="<?php echo getthemelocation(); ?>img/button_media.gif" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 600, 400);" />
       </div>
       <?php } ?>
     </div>

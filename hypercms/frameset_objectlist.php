@@ -33,25 +33,24 @@ checkusersession ($user, false);
 <head>
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta name="viewport" content="width=1024; initial-scale=1.0; user-scalable=1;">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
-<meta name="viewport" content="width=1024; initial-scale=1.0; user-scalable=1;">
 <script language="JavaScript">
 <!--
 function adjust_height ()
 {
-  height = hcms_getDocHeight();  
+  var height = hcms_getDocHeight();  
   
   setheight = height - 100;
-  document.getElementById('mainFrame').style.height = setheight + "px";
-  document.getElementById('sidebarFrame').style.height = setheight + "px";
+  if (document.getElementById('mainFrame')) document.getElementById('mainFrame').style.height = setheight + "px";
+  if (document.getElementById('sidebarFrame')) document.getElementById('sidebarFrame').style.height = setheight + "px";
 }
-
-window.onresize = adjust_height;
 -->
 </script>
 </head>
-<body style="width:100%; height:100%; margin:0; padding:0;" onload="adjust_height();">
+
+<body style="width:100%; height:100%; margin:0; padding:0;" onload="adjust_height();" onresize="adjust_height();">
 <?php
 // scrolling for control frame
 if ($is_mobile) $scrolling = "YES";
@@ -71,7 +70,7 @@ if (($location != "" || is_array ($hcms_linking)))
   // object list
   echo "<iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"NO\" src=\"explorer_objectlist.php?location=".$location."&virtual=".$virtual."\" border=\"0\" style=\"width:".$objectlist_width."%; height:100%; border:0; margin:0; padding:0; float:left;\"></iframe>\n";
   // sidebar
-  if (!$is_mobile) echo "<iframe id=\"sidebarFrame\" scrolling=\"auto\" name=\"sidebarFrame\" src=\"explorer_preview.php\" border=\"0\" style=\"width:".(100 - $objectlist_width)."%; height:100%; border:0; margin:0; padding:0; float:left;\"></iframe>\n";
+  if (!$is_mobile) echo "<iframe id=\"sidebarFrame\" name=\"sidebarFrame\" scrolling=\"auto\" src=\"explorer_preview.php\" border=\"0\" style=\"width:".(100 - $objectlist_width)."%; height:100%; border:0; margin:0; padding:0; float:left;\"></iframe>\n";
 }
 // search from top frame
 elseif ($action == "base_search")
@@ -81,7 +80,7 @@ elseif ($action == "base_search")
   // object list
   echo "<iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"NO\" src=\"search_script_rdbms.php?action=".$action."&search_dir=".$search_dir."&search_expression=".$search_expression."&maxhits=".$maxhits."\" border=\"0\" style=\"width:".$objectlist_width."%; height:100%; border:0; margin:0; padding:0; float:left;\"></iframe>\n";
   // sidebar
-  if (!$is_mobile) echo "<iframe id=\"sidebarFrame\" scrolling=\"auto\" name=\"sidebarFrame\" src=\"explorer_preview.php\" border=\"0\" style=\"width:".(100 - $objectlist_width)."%; height:100%; border:0; margin:0; padding:0; float:left;\"></iframe>\n";
+  if (!$is_mobile) echo "<iframe id=\"sidebarFrame\" name=\"sidebarFrame\" scrolling=\"auto\" src=\"explorer_preview.php\" border=\"0\" style=\"width:".(100 - $objectlist_width)."%; height:100%; border:0; margin:0; padding:0; float:left;\"></iframe>\n";
 }
 // search for files of a user
 elseif ($action == "user_files")

@@ -1,0 +1,11 @@
+To achieve better OCR results it is strongly suggested to 
+create custom template file for each font phpOCR is used.
+
+1) Create image with numbers 0 to 9 like in file 0-9.phg
+2) Open phpOCR index.php in web browser
+3) Chose file and select output type- "template"
+4) Click "Parse"
+5) Save result in file and replace char_inc_6.php
+6) DONE. Ready to try the new template :)
+
+

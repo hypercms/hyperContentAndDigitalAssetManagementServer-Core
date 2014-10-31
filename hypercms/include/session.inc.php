@@ -65,6 +65,7 @@ $temp_pagelocation = getsession ("hcms_temp_pagelocation");
 $temp_complocation = getsession ("hcms_temp_complocation");
 $temp_latitude = getsession ("hcms_temp_latitude");
 $temp_longitude = getsession ("hcms_temp_longitude");
+$temp_chatstate = getsession ("hcms_temp_chatstate");
 // security token
 $temp_token = getsession ("hcms_temp_token");
 // hyperCMS theme

@@ -275,4 +275,7 @@ $text91['de'] = "Dropbox";
 
 $text92['en'] = "Click here to view/download file";
 $text92['de'] = "Hier f&uuml;r Dateiansicht/-download klicken";
+
+$text92['en'] = "Send to chat";
+$text92['de'] = "An Chat senden";
 ?>

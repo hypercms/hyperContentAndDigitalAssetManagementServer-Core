@@ -1,0 +1,55 @@
+phpOCR v0.03 - the php Optical Character Recognizer
+                       http://sourceforge.net/projects/phpocr/
+
+
+phpOCR is a simple optical character recognizer. It is very alpha so 
+consider that when you use it.
+
+INSTALLATION:
+
+1) for phpOCR-0.0.3.tar.bz2 do: bzcat phpOCR-0.0.3.tar.bz2 |tar xv
+   for phpOCR-0.0.3.tar.gz do: zcat phpOCR-0.0.3.tar.gz |tar xv
+2) copy char_inc_6.php, index.php and tmp1.png to folder where webserver can find them
+
+For simple tryout that should be all.
+Have fun.
+
+
+NOTES:
+
+*)If you want to use gif images you need to have programm gif2png under /usr/local/bin.
+Some file permission shanges should also be necessary. Check index.php for more info.
+
+*)It is possible to use phpOCR in automated scripts.
+	a)One way is to use curl or wget or similar utility and do something like:
+	curl -s -o out1.txt http://YOUR_URL/index.php?out=plain&filename=http://REMOTE_URL/image.png
+
+	b)The better way would be to edit index.php and change it to suit your needs. The index.php 
+	should be pretty much self explanatory.
+
+*)To get the best quality and speed recognition out of particular font is to create a font file. 
+	a)create image that has all digits from 0 to 9 in that order in one line. 
+	b)In "output type" chose "template" and upload.
+	c)Copy output code and create a new char_inc_*.php.
+	d)In index.php find line that contains
+		$conf['font_file'] = 'char_inc_6.php';
+	  and replace 'char_inc_6.php' with your newly generated font file.
+
+CHANGES:
+
+	v0.0.3
+	* phpOCR now works with register_globals=Off in php.ini
+	* added Docs folder with example template image and docss
+
+	v0.0.2
+	* Code cleanup
+	* Added output formats: plain, xml
+	* Added feature to specify URL as image source
+	* Interface changes
+	* Speed optimization
+
+
+Janis Putrams
+janis@camp.lv
+2004.07.29.
+

@@ -11,4 +11,10 @@ $text2['de'] = "Server Zeit synchronisieren";
 
 $text3['en'] = "Search expression";
 $text3['de'] = "Suchbegriff";
+
+$text4['en'] = "Do you want to logout?";
+$text4['de'] = "Wollen Sie sich abmelden?";
+
+$text5['en'] = "Chat";
+$text5['de'] = "Chat";
 ?>

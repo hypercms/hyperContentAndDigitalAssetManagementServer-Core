@@ -219,6 +219,7 @@ if (checkuserip (getuserip ()) == true)
       $login_result['themename'] = "mobile";
     }
     
+    // iphone setting
     if ($is_iphone == "1")
     {
       $login_result['iphone'] = true;
@@ -232,6 +233,8 @@ if (checkuserip (getuserip ()) == true)
     // register permanent view settings
     $_SESSION['hcms_mobile'] = $login_result['mobile'];
     $_SESSION['hcms_iphone'] = $login_result['iphone'];
+    // register chat state after logon
+    $_SESSION['hcms_temp_chatstate'] = $login_result['chatstate'];
     // register theme settings
     $_SESSION['hcms_themename'] = $login_result['themename'];
     $_SESSION['hcms_themelocation'] = getthemelocation ($login_result['themename']);    

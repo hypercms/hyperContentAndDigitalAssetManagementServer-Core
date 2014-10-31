@@ -525,12 +525,12 @@ changelog:
 - improvement in notification of user, if user is owner of an object no notification will be sent
 - bug fix: missing check of globalpermission in explorer_objectlist
 - bug fix: added removing of IPTC meta data using EXIFTOOL in function iptc_writefile before writing new IPTC data to file
-- bug fix: function notifyusers used file owner and not current user to cmpare with the notified user
+- bug fix: function notifyusers used file owner and not current user to compare with the notified user
 - bug fix: new version of FFMPEG requires new option names (e.g. -b:v for the video bit rate instead of -b), options for FFMPEG have been changed in config.inc.php, media_rendering.php and function creatmedia
 - bug fix: new version of FFMPEG does not support an audio sample rate of 44100 Hz for FLV files, changed default to 22050 Hz, options for FFMPEG have been changed in config.inc.php, media_rendering.php and function creatmedia
 - bug fix: deleteobjects did not remove individual video files with sub-file-extension .media
 - implementation of new function getoption for extracting values of a string holding options (used for image/audio/video options)
-- creating a thumbnail image on inital upload of a video file
+- creating a thumbnail image on initial upload of a video file
 - bug fix: function loadcontainer did not return the container information for versions of a content container
 - improvements in task management for broken links
 - new theme namend colorful
@@ -546,13 +546,13 @@ changelog:
 - securing parameters for shell
 - support for video files with no configuration file in repository
 - bug fix: video cutting was not able to process hours, minutes and seconds of one digit
-- several improvments in video editing including an infobox
+- several improvements in video editing including an infobox
 - new home screen and home navigation item in navigator
 - new boxes on home screen for recent tasks and recent objects of logged in user
-- improvements in mobile style sheets+
+- improvements in mobile style sheets
 - bug fix: function getfiletype searched for a substring in file extension definitions without a delimiter, this lead to wrong file-type in media table
 - bug fix: new function shellcmd_encode to solve tilde issue with function escapeshellcmd in various files
-- reorganisation of functions in the hyperCMS API
+- reorganization of functions in the hyperCMS API
 - implementation of new check permissions functions
 - bug fix: DB connect RDBMS did not provide hash keys for all search operations
 - bug fix: permission issues in explorer for publishing queue, log-list and plugins
@@ -570,6 +570,18 @@ changelog:
 - bug fix: convert of formats did not work due to missing convert-type and convert-config inputs in context menu for checkout, queue and search object list
 - bug fix: set min-height of fields to avoid collapsing of empty fields
 - bug fix: the user edit permission for a specific publication was not checked properly and led to killsession
+
+version 5.7.0
+release 11/2014
+changelog:
+- implementation of user chat with object-link exchange
+- new configuration setting for chat
+- integration of top in frameset_amin and replacement of frames by iframes
+- implementation of logout on window close (not supported by all browsers)
+- bug fix: charset declaration was missing in explorer
+- removed timeout.js from all controls and js-library
+- integration of chat in mobile edition
+- optimizations in main and contextmenu JS library
 */
 
 // current version

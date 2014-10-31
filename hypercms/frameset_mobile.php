@@ -44,31 +44,38 @@ toggleview ($view);
 <link rel="apple-touch-icon" media="screen and (resolution: 326dpi)" href="<?php echo getthemelocation(); ?>img/mobile_icon114.png" />
 <!-- 57 x 57 Nokia icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
-<script src="javascript/jquery/jquery-1.9.1.min.js"></script>
-<script src="javascript/jquery/jquery.mobile-1.3.1.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery.mobile-1.3.1.min.js"></script>
 </head> 
 
 <script type='text/javascript'>
 <!--
-var center;
-var window_height = $(window).height() + "px";
-
-
 $(document).ready(function()
 {
   $("#workplFrame").height($(window).height() - $("#topbar").height());
-  $("#navContainer").height($(window).height());
-  $("#navFrame").height($(window).height());
+  $("#navContainer").height($(window).height() - 48);
+  $("#navFrame").height($(window).height() - 48);
+  if ($("#chatContainer")) $("#chatContainer").height($(window).height());
+  if ($("#chatFrame")) $("#chatFrame").height($(window).height());
   
   window.onresize = function()
   {
     // repetition
     $("#workplFrame").height($(window).height() - $("#topbar").height());
-    $("#navContainer").height($(window).height());
-    $("#navFrame").height($(window).height());
+    $("#navContainer").height($(window).height() - 48);
+    $("#navFrame").height($(window).height() - 48);
+    if ($("#chatContainer")) $("#chatContainer").height($(window).height());
+    if ($("#chatFrame")) $("#chatFrame").height($(window).height());
   };
 });
 
+function logoutUser()
+{
+  top.location.href = "userlogout.php";
+  return null;
+}
+
+window.onunload = window.onbeforeunload = logoutUser;
 -->
 </script>
 
@@ -80,10 +87,11 @@ $(document).ready(function()
   <div id="topbar" class="ui-header ui-bar-b" data-role="header">
     <a href="#navigator">Navigator</a>
     <h1>hyperCMS <?php echo ucfirst ($hcms_themename); ?></h1>
+    <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?><a href="#chat"><?php echo $text5[$lang]; ?></a><?php } ?>
   </div> 
 
-  <!-- panel -->
-  <div id="navigator" data-role="panel" data-display="overlay" style="padding:0; margin:0; width:260px;">
+  <!-- navigator panel -->
+  <div id="navigator" data-role="panel" data-position="left" data-display="overlay" style="padding:0; margin:0; width:260px;">
     <?php if ($mgmt_config['db_connect_rdbms'] != "") { ?>
     <div class="ui-bar-b" style="position:absolute; top:0; left:0; width:258px;">
       <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
@@ -103,7 +111,7 @@ $(document).ready(function()
       </form>
     </div>
     <?php } ?>
-    <div id="navContainer" style="position:absolute; top:0; left:0; padding:0; margin:48px 0; border:0; width:260px; overflow:auto; -webkit-overflow-scrolling:touch;">
+    <div id="navContainer" style="position:absolute; top:0; left:0; padding:0; margin:48px 0px 0px 0px; border:0; width:260px; overflow:auto; -webkit-overflow-scrolling:touch;">
       <iframe id="navFrame" src="explorer.php" style="border:0; width:260px;"></iframe>
     </div>
   </div>
@@ -116,6 +124,15 @@ $(document).ready(function()
     <iframe id="workplFrame" name="workplFrame" src="home.php" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
     <?php } ?>
   </div>
+  
+  <!-- chat panel -->
+  <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
+  <div id="chat" data-role="panel" data-display="overlay" data-position="right" style="padding:0; margin:0; width:300px;">    
+    <div id="chatContainer" style="position:absolute; top:0; right:0; padding:0; margin:0; border:0; width:300px; overflow:auto; -webkit-overflow-scrolling:touch;">
+      <iframe id="chatFrame" scrolling="yes" src="chat.php" style="border:0; width:300px;"></iframe>
+    </div>
+  </div>  
+  <?php } ?>
 
 </div>
 

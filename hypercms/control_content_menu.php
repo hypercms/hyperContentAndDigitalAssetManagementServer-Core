@@ -199,11 +199,10 @@ $token_new = createtoken ($user);
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <style>
 a {behavior: url(#default#AnchorClick);}
 </style>
-<script src="javascript/timeout.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -217,7 +216,7 @@ function submitToWindow (url, action, windowname, features, width, height)
   if (height == undefined) height = 120;
   if (windowname == '') windowname = Math.floor(Math.random()*9999999);
   
-  hcms_openBrWindowItem('', windowname, features, width, height);
+  hcms_openWindow('', windowname, features, width, height);
   
   var form = /*parent.frames['objframe'].*/document.forms['pagemenu_object'];
   
@@ -449,7 +448,7 @@ else
     <?php
     // Preview Button
     if ($page != "" && $page != ".folder" && $cat != "" && $setlocalpermission['root'] == 1)
-    {echo "<img onClick=\"hcms_openBrWindowItem('page_preview.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."','preview','scrollbars=yes,resizable=yes','800','600');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" src=\"".getthemelocation()."img/button_file_preview.gif\" alt=\"".$text24[$lang]."\" title=\"".$text24[$lang]."\" />\n";}
+    {echo "<img onClick=\"hcms_openWindow('page_preview.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."','preview','scrollbars=yes,resizable=yes','800','600');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" src=\"".getthemelocation()."img/button_file_preview.gif\" alt=\"".$text24[$lang]."\" title=\"".$text24[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_file_preview.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
 
@@ -463,7 +462,7 @@ else
     
     // LiveView Button
     if ($file_info['published'] == true && $page != "" && $page != ".folder" && ($setlocalpermission['root'] == 1 && (($cat != "comp" && empty ($media)) || (!empty ($media) && $setlocalpermission['download'] == 1))))
-    {echo "<img onClick=\"hcms_openBrWindowItem('".$url_location."','preview','location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes','800','600');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_liveview.gif\" alt=\"".$text25[$lang]."\" title=\"".$text25[$lang]."\" />\n";}
+    {echo "<img onClick=\"hcms_openWindow('".$url_location."','preview','location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes','800','600');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_liveview.gif\" alt=\"".$text25[$lang]."\" title=\"".$text25[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_file_liveview.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     
@@ -602,7 +601,7 @@ else
     else $popup_upload = "popup_upload_swf.php";
     
     if (($usedby == "" || $usedby == $user) && $cat != "page" && !empty ($media) && $application != "generator" && $page != ".folder" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_openBrWindowItem('".$popup_upload."?uploadmode=single&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."','','status=yes,scrollbars=no,resizable=yes','600','400');\" name=\"pic_obj_upload\" src=\"".getthemelocation()."img/button_file_upload.gif\" alt=\"".$text17[$lang]."\" title=\"".$text17[$lang]."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_openWindow('".$popup_upload."?uploadmode=single&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."','','status=yes,scrollbars=no,resizable=yes','600','400');\" name=\"pic_obj_upload\" src=\"".getthemelocation()."img/button_file_upload.gif\" alt=\"".$text17[$lang]."\" title=\"".$text17[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_file_upload.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>    
@@ -622,12 +621,12 @@ else
   <div class="hcmsToolbarBlock">
     <?php
     if ($usedby == "" && ($wf_role >= 1 && $wf_role <= 4) && $page != "" && $setlocalpermission['root'] == 1)
-    {echo "<img onClick=\"if (locklayer == false) hcms_openBrWindowItem('popup_message.php?action=accept&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."','popup_workflow','scrollbars=no,resizable=no','400','200');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_accept\" src=\"".getthemelocation()."img/button_workflow_accept.gif\" alt=\"".$text37[$lang]."\" title=\"".$text37[$lang]."\" />\n";}
+    {echo "<img onClick=\"if (locklayer == false) hcms_openWindow('popup_message.php?action=accept&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."','popup_workflow','scrollbars=no,resizable=no','400','200');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_accept\" src=\"".getthemelocation()."img/button_workflow_accept.gif\" alt=\"".$text37[$lang]."\" title=\"".$text37[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_workflow_accept.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
 
     if ($usedby == "" && ($wf_role >= 1 && $wf_role <= 4 && $wf_id != "u.1") && $page != "" && $setlocalpermission['root'] == 1)
-    {echo "<img onClick=\"if (locklayer == false) hcms_openBrWindowItem('popup_message.php?action=reject&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."','popup_workflow','scrollbars=no,resizable=no','400','200');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_reject\" src=\"".getthemelocation()."img/button_workflow_reject.gif\" alt=\"".$text38[$lang]."\" title=\"".$text38[$lang]."\" />\n";}
+    {echo "<img onClick=\"if (locklayer == false) hcms_openWindow('popup_message.php?action=reject&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."','popup_workflow','scrollbars=no,resizable=no','400','200');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_reject\" src=\"".getthemelocation()."img/button_workflow_reject.gif\" alt=\"".$text38[$lang]."\" title=\"".$text38[$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_workflow_reject.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>    
@@ -640,7 +639,7 @@ else
     {
       if (($usedby == "" || $usedby == $user) && $filetype != "" && $wf_role >= 3 && $setlocalpermission['root'] == 1 && $setlocalpermission['publish'] == 1)
       {
-        echo "<img onClick=\"if (locklayer == false) hcms_openBrWindowItem('";
+        echo "<img onClick=\"if (locklayer == false) hcms_openWindow('";
         if ($mgmt_config['db_connect_rdbms'] != "") echo "popup_publish.php";
         else echo "popup_action.php";
         echo "?action=publish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."','','scrollbars=no,resizable=no','400','320');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_publish\" src=\"".getthemelocation()."img/button_file_publish.gif\" alt=\"".$text22[$lang]."\" title=\"".$text22[$lang]."\" />\n";
@@ -652,7 +651,7 @@ else
   
       if (($usedby == "" || $usedby == $user) && $filetype != "" && $wf_role >= 3 && $setlocalpermission['root'] == 1 && $setlocalpermission['publish'] == 1)
       {
-        echo "<img onClick=\"if (locklayer == false) hcms_openBrWindowItem('";
+        echo "<img onClick=\"if (locklayer == false) hcms_openWindow('";
         if ($mgmt_config['db_connect_rdbms'] != "") echo "popup_publish.php";
         else echo "popup_action.php";        
         echo "?action=unpublish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."','','scrollbars=no,resizable=no','400','320');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_unpublish\" src=\"".getthemelocation()."img/button_file_unpublish.gif\" alt=\"".$text23[$lang]."\" title=\"".$text23[$lang]."\" />\n";
@@ -678,7 +677,7 @@ else
   <div class="hcmsToolbarBlock">    
     <?php
     if (!$is_mobile && file_exists ("help/usersguide_".$lang_shortcut[$lang].".pdf") && $setlocalpermission['root'] == 1)
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openBrWindowItem('help/usersguide_".$lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text50[$lang]."\" title=\"".$text50[$lang]."\" /></a>\n";}
+    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/usersguide_".$lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text50[$lang]."\" title=\"".$text50[$lang]."\" /></a>\n";}
     ?>
   </div>
 </div>

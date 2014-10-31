@@ -1,0 +1,59 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>HelpGenerator Menu</title>
+<link rel="stylesheet" type="text/css" href="styles/interface.css"/>
+<link rel="stylesheet" type="text/css" href="tools/xtree.css"/>
+<script src="tools/classTree.js"></script>
+</head>
+<body bgcolor="#FFFFFF" topmargin="1" leftmargin="1" rightmargin="1" bottommargin="1">
+<a href="FileTree.html">Files</a> - Classes: <a href="ClassTree.html">Tree</a> - <a href="ClassList.html">List</a> - <a href="FunctionList.html">Functions</a>
+<div class="separator"></div>
+<script language="Javascript">
+
+if (document.getElementById) {
+
+  var tree = new WebFXTree('PHPEdit Help Index', 'tools/Legend.html');
+  tree.setBehavior('classic');
+  tree.openIcon = 'images/help-book.gif';
+  tree.icon = 'images/help-book.gif';
+
+	var fileIDA3CM2 = new WebFXTreeItem('ConvertCharset.class', 'file.ConvertCharset.class.html');
+	fileIDA3CM2.openIcon = 'images/file.png';
+	fileIDA3CM2.icon = 'images/file.png';
+
+    
+    	var class_fileIDA4DM2_ConvertCharset = new WebFXTreeItem('ConvertCharset', 'class.ConvertCharset.html');
+    	class_fileIDA4DM2_ConvertCharset.openIcon = 'images/class.gif';
+    	class_fileIDA4DM2_ConvertCharset.icon = 'images/class.gif';
+    	fileIDA3CM2.add(class_fileIDA4DM2_ConvertCharset);
+    
+			tree.add(fileIDA3CM2);
+		
+	var fileIDAKSL2 = new WebFXTreeItem('Demo - About', 'file.Demo - About.html');
+	fileIDAKSL2.openIcon = 'images/file.png';
+	fileIDAKSL2.icon = 'images/file.png';
+
+    
+			tree.add(fileIDAKSL2);
+		
+	var fileIDAZSL2 = new WebFXTreeItem('License', 'file.License.html');
+	fileIDAZSL2.openIcon = 'images/file.png';
+	fileIDAZSL2.icon = 'images/file.png';
+
+    
+			tree.add(fileIDAZSL2);
+		
+	var fileIDAPTL2 = new WebFXTreeItem('Thans To', 'file.Thans To.html');
+	fileIDAPTL2.openIcon = 'images/file.png';
+	fileIDAPTL2.icon = 'images/file.png';
+
+    
+			tree.add(fileIDAPTL2);
+		
+  document.write(tree);
+}
+</script>
+<div class="separator"></div>
+</body>
+</html>

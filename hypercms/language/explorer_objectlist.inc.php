@@ -117,4 +117,8 @@ $text36['de'] = "Dies ist kein g&uuml;ltiger Publikationsname";
 
 $text37['en'] = "The file must have a content";
 $text37['de'] = "Die Datei hat keinen Inhalt";
+
+// chat
+$text38['en'] = "Send to chat";
+$text38['de'] = "An Chat senden";
 ?>

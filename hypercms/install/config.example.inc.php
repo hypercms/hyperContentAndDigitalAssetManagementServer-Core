@@ -127,6 +127,9 @@ $mgmt_config['welcome'] = "";
 // show (true) or hide (false) statistics on the home page
 $mgmt_config['home_stats'] = true;
 
+// enable (true) or disable (false) chat
+$mgmt_config['chat'] = true;
+
 // ------------------------------------------------------------------------
 // define operating system (OS) on content management server ("UNIX" for all UNIX and Linux OS or "WIN" for MS Windows)
 // please note: MS PWS cannot handle multiple HTTP-requests at the same time! since version 3.0 PWS will not be supplied anymore.

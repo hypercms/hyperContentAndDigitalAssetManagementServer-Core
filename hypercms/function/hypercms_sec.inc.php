@@ -731,6 +731,7 @@ function checklocalpermission ($site, $group, $name)
 //        ignore passwordcheck needed for WebDAV or access link [true/false], lock IP after 10 failed attempts to login [true/false]
 // output: result array
 // requires: config.inc.php to be loaded before
+
 // description:
 // login of user by sending user and password using the variables: $sentuser, $sentpasswd
 // this procedure will register the user in the hypercms session and in the php session.
@@ -763,7 +764,9 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       'superadmin'			=> '',
       'instance'			=> false,
       'checksum'			=> '',
-      'message'			=> ''
+      'message'			=> '',
+      'mobile'			=> '',
+      'chatstae'			=> ''
       );
   
   $linking_auth = true;
@@ -1342,7 +1345,10 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
   
   // detect mobile browsers
   $result['mobile'] = is_mobilebrowser (); 
-  
+
+  // state of chat
+  $result['chatstate'] = getchatstate (false);
+
   // message
   if (!$result['message'])
   {

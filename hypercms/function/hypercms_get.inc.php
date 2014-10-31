@@ -1345,6 +1345,46 @@ function getlockedfileinfo ($location, $file)
   else return false; 
 }
 
+// ---------------------- getusersonline -----------------------------
+// function: getusersonline()
+// input: %
+// output: Array of online user names / false
+
+function getusersonline ()
+{
+  global $mgmt_config;
+  
+  $session_dir = $mgmt_config['abs_path_data']."session/";
+  
+  if (is_dir ($session_dir) && $dir = opendir ($session_dir))
+  {
+    // add slash if not present at the end
+    if (substr ($session_dir, -1) != "/") $session_dir = $session_dir."/";           
+
+    $result = array();
+    
+    while (($user = readdir ($dir)) !== false)
+    {
+      if (is_file ($session_dir.$user) && $user != "." && $user != ".." && strpos ($user, ".dat") > 0)
+      {
+        // only users that have been logged in the past 8 hours are online users
+        $now = time();
+        $last_logon_time = filemtime ($session_dir.$user);
+        $max = 8 * 60 * 60;
+        
+        if ($now - $last_logon_time < $max)
+        {
+          $result[] = substr ($user, 0, -4);
+        }
+      }
+    }
+    
+    if (sizeof ($result) > 0) return $result;
+    else return false;
+  }
+  else return false;
+}
+
 // ======================================== GET FILEPOINTER =====================================
 
 // ------------------------------------------ getfilename ---------------------------------------
@@ -2112,6 +2152,32 @@ function getelementid ($id)
     else $elementid = false;
   
     return $elementid;
+  }
+  else return false;
+}
+
+// ------------------------------ getchatstate ----------------------------------
+// function: getchatstate ()
+// input: register stat in session [true/false] (optional)
+// output: state of chat / false on error
+
+function getchatstate ($register=true)
+{
+  global $mgmt_config;
+
+  // chat log file
+  $chat_log = $mgmt_config['abs_path_data']."log/chat.log";
+
+  if (file_exists ($chat_log))
+  {
+    $lines = file ($chat_log);
+    $state = count ($lines);
+
+    // register chat state in session
+    if ($register == true && $chat >= 0) $_SESSION['hcms_temp_chatstate'] = $state;
+
+    if ($chat >= 0) return $state;
+    else return false;
   }
   else return false;
 }

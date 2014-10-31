@@ -1234,7 +1234,7 @@ function showPreview()
    .success(function(data) {
      hcms_showHideLayers('savelayer','','hide');
      if(data.success) {
-       hcms_openBrWindowItem(data.imagelink, 'preview', '', data.imagewidth, data.imageheight);
+       hcms_openWindow(data.imagelink, 'preview', '', data.imagewidth, data.imageheight);
      } else {
        alert(data.message);
      }

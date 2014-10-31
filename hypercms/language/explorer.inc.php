@@ -128,4 +128,7 @@ $text41['de'] = "Instanzenverwaltung";
 
 $text42['en'] = "Home";
 $text42['de'] = "Home";
+
+$text43['en'] = "Chat";
+$text43['de'] = "Chat";
 ?>

@@ -97,7 +97,7 @@ if (is_array ($queue_array) && @sizeof ($queue_array) >= 1)
         else $object_name = $file_info['name'];
 
         // open on double click
-        $openObject = "onDblClick=\"hcms_openBrWindowItem('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', '800', '600');\"";
+        $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', '800', '600');\"";
         // onclick for marking objects
         $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlQueueMenu();\"";
         // set context

@@ -114,11 +114,11 @@ if (@file_exists ($mgmt_config['abs_path_data']."log/".$logfile))
       }
 
       echo "<tr id=g".$items_row." align=\"left\" valign=\"top\">
-  <td id=h".$items_row."_0 width=\"120\" nowrap=\"nowrap\">&nbsp; <a href=# onClick=\"hcms_openBrWindowItem('popup_log.php?description=".urlencode ($description)."','alert','scrollbars=yes','600','200');\"><img src=\"".getthemelocation()."img/".$icon."\" width=16 height=16 border=0 align=\"absmiddle\">&nbsp; ".$type_name."</a></td>
+  <td id=h".$items_row."_0 width=\"120\" nowrap=\"nowrap\">&nbsp; <a href=# onClick=\"hcms_openWindow('popup_log.php?description=".urlencode ($description)."','alert','scrollbars=yes','600','200');\"><img src=\"".getthemelocation()."img/".$icon."\" width=16 height=16 border=0 align=\"absmiddle\">&nbsp; ".$type_name."</a></td>
   <td id=h".$items_row."_1 width=\"120\" nowrap=\"nowrap\">&nbsp; ".$date."</td>\n";
   if (!$is_mobile) echo "<td id=h".$items_row."_2 width=\"140\" nowrap=\"nowrap\">&nbsp; ".$source."</td>
   <td id=h".$items_row."_3 width=\"80\" nowrap=\"nowrap\">&nbsp; ".$errorcode."</td>
-  <td id=h".$items_row."_4>&nbsp; <a href=# onClick=\"hcms_openBrWindowItem('popup_log.php?description=".urlencode ($description)."','alert','scrollbars=yes','600','200');\">".$description_short."</a></td>\n";
+  <td id=h".$items_row."_4>&nbsp; <a href=# onClick=\"hcms_openWindow('popup_log.php?description=".urlencode ($description)."','alert','scrollbars=yes','600','200');\">".$description_short."</a></td>\n";
   echo "</tr>\n"; 
 
       $items_row++;      

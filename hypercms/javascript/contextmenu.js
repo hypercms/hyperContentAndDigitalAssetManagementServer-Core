@@ -308,18 +308,11 @@ function hcms_hideContextmenu ()
   return true;
 }
 
-function hcms_openBrWindow(theURL, winName, features, width, height)
-{
-  popup = window.open(theURL,winName,features + ',width=' + width + ',height=' + height);    
-  popup.moveTo(screen.width/2-width/2, screen.height/2-height/2);
-  popup.focus();
-}
-
-function hcms_submitBrWindow(formName, features, width, height)
+function hcms_submitWindow(formName, features, width, height)
 {
   winName = 'popup' + Math.floor(Math.random()*1000);
   document.forms[formName].target = winName;
-  hcms_openBrWindow('', winName, features, width, height);
+  hcms_openWindow('', winName, features, width, height);
   document.forms[formName].submit();
 }
 
@@ -341,7 +334,7 @@ function hcms_createContextmenuItem (action)
     
     if (contexttype == "object" || contexttype == "media" || contexttype == "folder" || contexttype == "none")
     {	
-      if (action == "preview" || action == "cmsview")
+      if (action == "preview" || action == "cmsview" || action == "chat")
       {
         if (contexttype == "object" || contexttype == "media")
         {
@@ -355,7 +348,7 @@ function hcms_createContextmenuItem (action)
       
       if (action == "preview")
       {
-        hcms_openBrWindow('page_preview.php?' + URLparaView,'preview','scrollbars=yes,resizable=yes','800','600');
+        hcms_openWindow('page_preview.php?' + URLparaView,'preview','scrollbars=yes,resizable=yes','800','600');
       }
       else if (action == "cmsview" && multiobject.split("|").length > 2 && parent && parent.frames && parent.frames['controlFrame'] && parent.frames['controlFrame'].submitToWindow)
       {
@@ -363,14 +356,20 @@ function hcms_createContextmenuItem (action)
       }
       else if (action == "cmsview")
       {
-        hcms_openBrWindow('frameset_content.php?ctrlreload=yes&' + URLparaView,'','status=yes,scrollbars=no,resizable=yes','800','600');
+        hcms_openWindow('frameset_content.php?ctrlreload=yes&' + URLparaView,'','status=yes,scrollbars=no,resizable=yes','800','600');
       }
       else if (action == "notify")
       {
         URLfile = "popup_notify.php";
           
         document.forms['contextmenu_object'].attributes['action'].value = URLfile;
-        hcms_submitBrWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no','560','420');  
+        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no','560','420');  
+      }
+      else if (action == "chat")
+      {
+        var chatcontent = "hcms_openWindow('frameset_content.php?ctrlreload=yes&" + URLparaView + "','','status=yes,scrollbars=no,resizable=yes','800','600');";
+        
+        sendtochat (chatcontent);
       }
       else if (action == "delete")
       {
@@ -384,18 +383,18 @@ function hcms_createContextmenuItem (action)
           document.forms['contextmenu_object'].attributes['action'].value = URLfile;
           document.forms['contextmenu_object'].elements['action'].value = action;
           document.forms['contextmenu_object'].elements['force'].value = 'start';
-          hcms_submitBrWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no,width=400,height=120','400','120');
+          hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no,width=400,height=120','400','120');
         } 
       }  
       else if (action == "cut" || action == "copy" || action == "linkcopy")
       {
         document.forms['contextmenu_object'].attributes['action'].value = 'popup_action.php';
         document.forms['contextmenu_object'].elements['action'].value = action;
-        hcms_submitBrWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no,width=400,height=120','400','120'); 
+        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no,width=400,height=120','400','120'); 
       }  
       else if (action == "paste")
       {
-        if (site != "" && location != "") hcms_openBrWindow('popup_status.php?force=start&action=paste&site=' + site + '&cat=' + cat + '&location=' + location + '&token=' + token,'','status=no,scrollbars=no,resizable=no','400','120');    
+        if (site != "" && location != "") hcms_openWindow('popup_status.php?force=start&action=paste&site=' + site + '&cat=' + cat + '&location=' + location + '&token=' + token,'','status=no,scrollbars=no,resizable=no','400','120');    
       }  
       else if (action == "publish" || action == "unpublish")
       {
@@ -404,13 +403,13 @@ function hcms_createContextmenuItem (action)
         document.forms['contextmenu_object'].attributes['action'].value = URLfile;
         document.forms['contextmenu_object'].elements['action'].value = action;
         document.forms['contextmenu_object'].elements['force'].value = 'start';
-        hcms_submitBrWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no','400','320');   
+        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no','400','320');   
       } 
       else if (action == "checkin")
       {
         document.forms['contextmenu_object'].attributes['action'].value = "popup_action.php";
         document.forms['contextmenu_object'].elements['action'].value = "page_unlock";
-        hcms_submitBrWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no,width=400,height=120','400','120');
+        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no,width=400,height=120','400','120');
         allow_tr_submit = false;
       }
     }  
@@ -425,7 +424,7 @@ function hcms_createContextmenuItem (action)
     
     if (action == "edit")
     {
-      hcms_openBrWindow('user_edit.php?site=' + site + '&group=' + group + '&login=' + login + '&token=' + token,'edit','status=yes,scrollbars=no,resizable=yes','500','540');
+      hcms_openWindow('user_edit.php?site=' + site + '&group=' + group + '&login=' + login + '&token=' + token,'edit','status=yes,scrollbars=no,resizable=yes','500','540');
     }
     else if (action == "delete")
     {
@@ -456,7 +455,7 @@ function hcms_createContextmenuItem (action)
     
     if (action == "edit")
     {
-      hcms_openBrWindow('frameset_content.php?site=' + site + '&ctrlreload=yes&cat=' + cat + '&location=' + location + '&page=' + page + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', '800', '600');
+      hcms_openWindow('frameset_content.php?site=' + site + '&ctrlreload=yes&cat=' + cat + '&location=' + location + '&page=' + page + '&queueuser=' + queueuser + '&queue_id=' + queue_id + '&token=' + token, '', 'status=yes,scrollbars=no,resizable=yes', '800', '600');
     }
     else if (action == "delete")
     {
