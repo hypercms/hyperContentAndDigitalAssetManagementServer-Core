@@ -585,5 +585,5 @@ changelog:
 */
 
 // current version
-$version = "Version 5.6.10";
+$version = "Version 5.7.0";
 ?>

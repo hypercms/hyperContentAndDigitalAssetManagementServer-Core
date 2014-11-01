@@ -2174,9 +2174,9 @@ function getchatstate ($register=true)
     $state = count ($lines);
 
     // register chat state in session
-    if ($register == true && $chat >= 0) $_SESSION['hcms_temp_chatstate'] = $state;
+    if ($register == true && $state >= 0) $_SESSION['hcms_temp_chatstate'] = $state;
 
-    if ($chat >= 0) return $state;
+    if ($state >= 0) return $state;
     else return false;
   }
   else return false;

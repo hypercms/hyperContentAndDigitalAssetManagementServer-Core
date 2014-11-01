@@ -72,7 +72,8 @@ function logoutUser()
   return null;
 }
 
-window.onunload = window.onbeforeunload = logoutUser;
+// disabled
+// window.onunload = window.onbeforeunload = logoutUser;
 -->
 </script>
 </head>

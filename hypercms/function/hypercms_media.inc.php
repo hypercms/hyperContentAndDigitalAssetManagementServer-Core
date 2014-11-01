@@ -519,14 +519,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($type == "thumbnail")
                     {
                       $newfile = $file_name.".thumb.jpg";
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_source.$file)."[0]\" ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_source.$file)."[0]\" ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." -background white -alpha remove \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     else 
                     {
                       if ($type == "original") $newfile = $file_name.".".$imageformat;
                       else $newfile = $file_name.".".$type.".".$imageformat;
                         
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($buffer_file)."[0]\" ".shellcmd_encode ($imagerotate)." ".shellcmd_encode ($imageBrightnessContrast)." ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." ".shellcmd_encode ($imageflip)." ".shellcmd_encode ($sepia)." ".shellcmd_encode ($sharpen)." ".shellcmd_encode ($blur)." ".shellcmd_encode ($sketch)." ".shellcmd_encode ($paint)." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($buffer_file)."[0]\" ".shellcmd_encode ($imagerotate)." ".shellcmd_encode ($imageBrightnessContrast)." ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." -background white -alpha remove ".shellcmd_encode ($imageflip)." ".shellcmd_encode ($sepia)." ".shellcmd_encode ($sharpen)." ".shellcmd_encode ($blur)." ".shellcmd_encode ($sketch)." ".shellcmd_encode ($paint)." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     
                     @exec ($cmd, $buffer, $errorCode);
@@ -622,7 +622,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   {
                     if ($type == "thumbnail")
                     {
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".shellcmd_encode ($imagewidth)."x".shellcmd_encode ($imageheight)." \"".shellcmd_encode ($location_source.$file)."[0]\" ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." \"".shellcmd_encode ($location_dest.$file_name).".buffer.bmp\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".shellcmd_encode ($imagewidth)."x".shellcmd_encode ($imageheight)." \"".shellcmd_encode ($location_source.$file)."[0]\" ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." -background white -alpha remove \"".shellcmd_encode ($location_dest.$file_name).".buffer.bmp\"";
                     }
                     else
                     {
