@@ -5522,7 +5522,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           $abs_media = $mgmt_config['abs_path_media'];
         } 
         
-        // deprecated: if (isset ($url_media)) $viewstore = str_replace ("%media%", substr ($url_media, 0, strlen ($url_media)-1), $viewstore);
+        // %media% is deprecated and should not be used in templates anymore: 
+        if (isset ($url_media)) $viewstore = str_replace ("%media%", substr ($url_media, 0, strlen ($url_media)-1), $viewstore);
         if (isset ($url_media)) $viewstore = str_replace ("%url_media%", substr ($url_media, 0, strlen ($url_media)-1), $viewstore);     
         if (isset ($abs_media)) $viewstore = str_replace ("%abs_media%", substr ($abs_media, 0, strlen ($abs_media)-1), $viewstore);     
         

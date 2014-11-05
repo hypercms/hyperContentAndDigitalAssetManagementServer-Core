@@ -68,15 +68,6 @@ $(document).ready(function()
     if ($("#chatFrame")) $("#chatFrame").height($(window).height());
   };
 });
-
-function logoutUser()
-{
-  top.location.href = "userlogout.php";
-  return null;
-}
-
-// disabled
-// window.onunload = window.onbeforeunload = logoutUser;
 -->
 </script>
 

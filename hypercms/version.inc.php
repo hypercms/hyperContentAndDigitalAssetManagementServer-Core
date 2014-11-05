@@ -526,8 +526,8 @@ changelog:
 - bug fix: missing check of globalpermission in explorer_objectlist
 - bug fix: added removing of IPTC meta data using EXIFTOOL in function iptc_writefile before writing new IPTC data to file
 - bug fix: function notifyusers used file owner and not current user to compare with the notified user
-- bug fix: new version of FFMPEG requires new option names (e.g. -b:v for the video bit rate instead of -b), options for FFMPEG have been changed in config.inc.php, media_rendering.php and function creatmedia
-- bug fix: new version of FFMPEG does not support an audio sample rate of 44100 Hz for FLV files, changed default to 22050 Hz, options for FFMPEG have been changed in config.inc.php, media_rendering.php and function creatmedia
+- bug fix: new version of FFMPEG requires new option names (e.g. -b:v for the video bit rate instead of -b), options for FFMPEG have been changed in config.inc.php, media_rendering.php and function createmedia
+- bug fix: new version of FFMPEG does not support an audio sample rate of 44100 Hz for FLV files, changed default to 22050 Hz, options for FFMPEG have been changed in config.inc.php, media_rendering.php and function createmedia
 - bug fix: deleteobjects did not remove individual video files with sub-file-extension .media
 - implementation of new function getoption for extracting values of a string holding options (used for image/audio/video options)
 - creating a thumbnail image on initial upload of a video file
@@ -541,11 +541,11 @@ changelog:
 - improvements in all object list views
 - improvements in preview of object / sidebar
 - bug fix: image brightness was set to -100 for image editing due to a wrong variable name
-- Improvements in object lists regarding alignemnts of list/gallery items
+- Improvements in object lists regarding alignments of list/gallery items
 - creating new components when adding components to a page by the component explorer
-- securing parameters for shell
+- securing all shell input parameters
 - support for video files with no configuration file in repository
-- bug fix: video cutting was not able to process hours, minutes and seconds of one digit
+- bug fix: video cut was not able to process hours, minutes and seconds of one digit
 - several improvements in video editing including an infobox
 - new home screen and home navigation item in navigator
 - new boxes on home screen for recent tasks and recent objects of logged in user
@@ -558,17 +558,17 @@ changelog:
 - bug fix: permission issues in explorer for publishing queue, log-list and plugins
 - bug fix: implementation of updated function getbrowserinfo (old function was outdated and did not detect the browsers correctly)
 - implementation of sort order for workflow folder form
-- bug fix: removed double sort from search
-- bug fix: search for user files in user management did not use proper frameset and resulted in an error on click of an object
+- bug fix: removed double sort from search result
+- bug fix: search for user files in user management did not use proper frameset and resulted in an error on click on an object
 - bug fix: removed : from meta data listing if label is empty
 - bug fix: checkadminpermission expected input parameter
 - set variable lang to "en" if no value is given
 - bug fix: link_explorer of editor passed wrong input to function rdbms_searchcontent
 - improvements in DB connect RDBMS
-- bug fix: scolling in link and media explorer did not work due to chang of CSS class
+- bug fix: scrolling in link and media explorer did not work due to changes in the CSS class
 - implementation of new function checkpublicationpermission
 - bug fix: convert of formats did not work due to missing convert-type and convert-config inputs in context menu for checkout, queue and search object list
-- bug fix: set min-height of fields to avoid collapsing of empty fields
+- bug fix: set min-height of fields to avoid collapsing of empty fields in version comparison
 - bug fix: the user edit permission for a specific publication was not checked properly and led to killsession
 
 version 5.7.0
@@ -582,6 +582,11 @@ changelog:
 - removed timeout.js from all controls and js-library
 - integration of chat in mobile edition
 - optimizations in main and contextmenu JS library
+- implementation of new settings for background and alpha when converting PDF to image (due to black background issue)
+- replacement of all framesets by iframes
+- bug fix: error messages on group_access_form, worklfow_folder_form were not shown since object IDs and object paths were mixed up
+- implementation of resize function for group_access_explorer
+- bug fix: search_explorer used wrong inital_dir for the component root
 */
 
 // current version

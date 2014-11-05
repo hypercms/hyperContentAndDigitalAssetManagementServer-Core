@@ -127,20 +127,20 @@ function insertOption (sent_name, sent_file)
   {
     for (var i = 0; i < document.forms['group_access'].elements['folder'].options.length; i++)
     {
-      folder_file = document.forms['group_access'].elements['folder'].options[i].value
-      folder_name = document.forms['group_access'].elements['folder'].options[i].text
+      var folder_id = document.forms['group_access'].elements['folder'].options[i].value;
+      var folder_name = document.forms['group_access'].elements['folder'].options[i].text;
 
-      if (sent_file == folder_file)
+      if (sent_name == folder_name)
       {
         message = message + "<?php echo $text1[$lang]; ?> " + "\r";
         insert = false;
       }
-      else if (sent_file.indexOf (folder_file) != -1)
+      else if (sent_name.indexOf (folder_name) != -1)
       {
         message = message + "<?php echo $text2[$lang]; ?> " + folder_name + "\r";
         insert = false;
       }
-      else if (folder_file.indexOf (sent_file) != -1)
+      else if (folder_name.indexOf (sent_name) != -1)
       {
         message = message + "<?php echo $text3[$lang]; ?> " + folder_name + "\r";
         insert = false;

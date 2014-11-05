@@ -27,11 +27,11 @@ if ($dir != "" && $dir != "%page%/" && $dir != "%comp%/")
 {
   $site = getpublication ($dir);
   $cat = getcategory ($site, $dir);
-}
 
-// convert location
-$dir = deconvertpath ($dir, "file");
-$dir_esc = convertpath ($site, $dir, $cat);
+  // convert location
+  $dir = deconvertpath ($dir, "file");
+  $dir_esc = convertpath ($site, $dir, $cat);
+}
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -44,7 +44,7 @@ $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
 // check localpermissions
 if (
-     ($dir != "" && $dir_esc != "%page%/" && $dir_esc != "%comp%/" && valid_publicationname ($site) && !checkpublicationpermission ($site)) || 
+     (!empty ($dir) && $dir_esc != "%page%/" && $dir_esc != "%comp%/" && valid_publicationname ($site) && !checkpublicationpermission ($site)) || 
      !valid_locationname ($dir)
    ) killsession ($user);
        
@@ -62,9 +62,9 @@ if (substr_count ($dir_esc, "%page%/") > 0)
 {
   $initial_dir = $mgmt_config[$site]['abs_path_page'];
 }
-elseif (substr_count ($dir_esc, "%comp%/") > 0)
+else
 {
-  $initial_dir = $mgmt_config['abs_path_comp'];
+  $initial_dir = $mgmt_config['abs_path_comp'].$site."/";
 }
 ?>
 <!DOCTYPE html>
@@ -109,8 +109,8 @@ function sendInput (search_dir, folder)
 <body class="hcmsWorkplaceObjectlist">
 
 <div style="position:fixed; right:0; top:45%; margin:0; padding:0;">
-  <img onclick="parent.document.getElementById('searchFrame').cols='42,*';" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
-  <img onclick="parent.document.getElementById('searchFrame').cols='250,*';" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
+  <img onclick="parent.minNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
+  <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
 </div>
 
 <div class="hcmsWorkplaceFrame">

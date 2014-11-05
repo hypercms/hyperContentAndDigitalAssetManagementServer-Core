@@ -77,7 +77,7 @@ $location_name = getlocationname ($site, $dir_esc, "page", "path");
 <head>
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <script language="JavaScript">
@@ -95,14 +95,14 @@ function sendInput(text, value)
 <body class="hcmsWorkplaceObjectlist">
 
 <div style="position:fixed; right:0; top:45%; margin:0; padding:0;">
-  <img onclick="parent.document.getElementById('mainFrame').cols='42,*';" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
-  <img onclick="parent.document.getElementById('mainFrame').cols='250,*';" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
+  <img onclick="parent.minNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
+  <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
 </div>
 
 <div class="hcmsWorkplaceFrame">
 <table width="98%" border="0" cellspacing="2" cellpadding="0">
   <tr>
-    <td class="hcmsHeadline" style="padding: 3px 0px 3px 0px;" align="left" colspan="2"><?php echo $text0[$lang]; ?><td>
+    <td class="hcmsHeadline" style="padding:3px 0px 3px 0px;" align="left" colspan="2"><?php echo $text0[$lang]; ?><td>
   </tr>
   <tr>
     <td class="hcmsHeadlineTiny" align="left" colspan="2" nowrap="nowrap"><?php echo $location_name; ?></td>

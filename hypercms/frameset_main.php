@@ -50,21 +50,21 @@ function openInfo()
 function adjust_height (topFrameHeight)
 {
   var height = hcms_getDocHeight();  
-  
   if (!topFrameHeight) topFrameHeight = 32;  
   setheight = height - topFrameHeight;
+  
   document.getElementById('navFrame').style.height = setheight + "px";
-  document.getElementById('workplFrame').style.height = setheight + "px";
-  document.getElementById('chatLayer').style.height = setheight + "px";
-  document.getElementById('chatFrame').style.height = setheight + "px";
+  document.getElementById('workplFrame').style.height = setheight + "px";´
+  if (document.getElementById('chatLayer')) document.getElementById('chatLayer').style.height = setheight + "px";
+  if (document.getElementById('chatFrame')) document.getElementById('chatFrame').style.height = setheight + "px";
 }
 
 function adjust_width (navFrameWidth)
 {
   var width = hcms_getDocWidth();  
-  
-  if (!navFrameWidth) navFrameWidth = 260;
+  if (!navFrameWidth) navFrameWidth = 260;  
   setwidth = width - navFrameWidth;
+  
   document.getElementById('workplFrame').style.width = setwidth + "px";
 }
 
@@ -91,15 +91,6 @@ function maxNavFrame ()
     adjust_width (width);
   }
 }
-
-function logoutUser()
-{
-  top.location.href = "userlogout.php";
-  return null;
-}
-
-// disabled
-// window.onunload = window.onbeforeunload = logoutUser;
 -->
 </script>
 </head>
@@ -142,11 +133,17 @@ $servertime->InstallClockBody();
 ?>
 
 <!-- explorer -->
-<iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php?refresh=1" border="0" style="position:fixed; top:32px; left:0px; width:260px; height:100%; border:0; margin:0; padding:0;"></iframe>
+<iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php?refresh=1" style="position:fixed; top:32px; left:0px; width:260px; height:100%; border:0; margin:0; padding:0;"></iframe>
+
 <!-- workplace -->
-<iframe id="workplFrame" name="workplFrame" scrolling="no" src="home.php" border="0" style="position:fixed; top:32px; left:260px; width:70%; height:100%; border:0; margin:0; padding:0;"></iframe>
+<iframe id="workplFrame" name="workplFrame" scrolling="no" src="home.php" style="position:fixed; top:32px; left:260px; width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+
 <!-- chat sidebar -->
-<div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:32px; right:0px; width:300px; z-index:10; display:none;"><iframe id="chatFrame" scrolling="auto" src="chat.php" border="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe></div>
+<?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
+<div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:32px; right:0px; width:300px; z-index:10; display:none;">
+  <iframe id="chatFrame" scrolling="auto" src="chat.php" border="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</div>
+<?php } ?>
 
 </body>
 </html>

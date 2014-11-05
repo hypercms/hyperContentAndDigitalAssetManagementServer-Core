@@ -23,28 +23,41 @@ $ctrlreload = url_encode (getrequest ("ctrlreload", "url"));
 // check session of user
 checkusersession ($user, false);
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
-<meta name="viewport" content="width=600; initial-scale=0.9; maximum-scale=1; user-scalable=1;">
+<meta name="viewport" content="width=800; initial-scale=1.0; user-scalable=1;">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
+<script language="JavaScript">
+<!--
+function adjust_height ()
+{
+  var height = hcms_getDocHeight();  
+  
+  setheight = height - 100;
+  if (document.getElementById('objFrame')) document.getElementById('objFrame').style.height = setheight + "px";
+}
+-->
+</script>
 </head>
-<frameset id="contentFrame" rows="100,*" frameborder="NO" border="0" framespacing="0">
-  <?php
-  // open an object 
-  if (isset ($page) && $page != "")
-  {
-    echo "<frame name=\"controlFrame\" scrolling=\"NO\" src=\"loading.php\" noresize />\n";
-    echo "<frame name=\"objFrame\" src=\"page_view.php?ctrlreload=".$ctrlreload."&location=".$location."&page=".$page."\" />\n";
-  }
-  // explorer/navigator  
-  elseif (isset ($location) && $location != "")
-  {
-    echo "<frame name=\"controlFrame\" scrolling=\"NO\" src=\"control_content_menu.php?location=".$location."\" noresize />\n";
-    echo "<frame name=\"objFrame\" src=\"empty.php\" />\n";
-  }
-  ?>
-</frameset>
-<noframes></noframes>
+
+<body style="width:100%; height:100%; margin:0; padding:0;" onload="adjust_height();" onresize="adjust_height();">
+<?php
+// open an object 
+if (isset ($page) && $page != "")
+{
+  echo "<iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" scrolling=\"no\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe>\n";
+  echo "<iframe id=\"objFrame\" name=\"objFrame\" src=\"page_view.php?ctrlreload=".$ctrlreload."&location=".$location."&page=".$page."\" scrolling=\"auto\" style=\"position:fixed; top:100px; left:0; width:100%; height:80%; border:0; margin:0; padding:0;\"></iframe>\n";
+}
+// explorer/navigator  
+elseif (isset ($location) && $location != "")
+{
+  echo "<iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_content_menu.php?location=".$location."\" scrolling=\"no\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe>\n";
+  echo "<iframe id=\"objFrame\" name=\"objFrame\" src=\"empty.php\" scrolling=\"auto\" style=\"position:fixed; top:100px; left:0; width:100%; height:90%; border:0; margin:0; padding:0;\"></iframe>\n";
+}
+?>
+</body>
 </html>

@@ -121,12 +121,12 @@ function insertOption (sent_name, sent_file)
     {
       for (var i=0; i<document.forms['workflow_area'].elements['folder'].options.length; i++)
       {
-        folder_file = document.forms['workflow_area'].elements['folder'].options[i].value;
-        folder_file = folder_file.substring (folder_file.indexOf('|')+1, folder_file.length);
+        folder_id = document.forms['workflow_area'].elements['folder'].options[i].value;
+        folder_id = folder_id.substring (folder_id.indexOf('|')+1, folder_id.length);
         folder_name = document.forms['workflow_area'].elements['folder'].options[i].text;
         folder_name = folder_name.substring (folder_name.indexOf(' : ')+1, folder_name.length);
 
-        if (sent_file == folder_file)
+        if (sent_name == folder_name)
         {
           message = message + "<?php echo $text1[$lang]; ?> " + "\n";
           insert = false;
@@ -194,7 +194,7 @@ function selectAll (form_name, select_name, input_name)
 <body class="hcmsWorkplaceGeneric" onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif')">
 
 <?php
-echo showmessage ($show, 500, 70, $lang, "position:absolute; left:20px; top:100px;");
+echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;");
 ?> 
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">

@@ -170,7 +170,7 @@ if (!empty ($container_id))
     $download_axis[$i]['value'] = 0;
     $download_axis[$i]['text'] = "";
 
-    if (is_array ($result_download)) 
+    if (isset ($result_download) && is_array ($result_download)) 
     { 
       foreach ($result_download as $row)
       {
@@ -196,7 +196,7 @@ if (!empty ($container_id))
     $upload_axis[$i]['value'] = 0;
     $upload_axis[$i]['text'] = "";
       
-    if (is_array ($result_upload)) 
+    if (isset ($result_upload) && is_array ($result_upload)) 
     {
       foreach ($result_upload as $row)
       {

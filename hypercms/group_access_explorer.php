@@ -57,6 +57,12 @@ function sendOption(folder_name, folder_location)
 
 <body class="hcmsWorkplaceObjectlist">
 
+<div style="position:fixed; right:0; top:45%; margin:0; padding:0;">
+  <img onclick="parent.minNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
+  <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
+</div>
+
+<div class="hcmsWorkplaceFrame">
 <table width="98%" border="0" cellspacing="2" cellpadding="0">
   <tr>
     <td class="hcmsHeadline" align="left" colspan="2" style="padding: 0px 0px 8px 0px;"><?php echo $text0[$lang]; ?></td>
@@ -162,6 +168,7 @@ if (($cat == "page" && $mgmt_config[$site]['abs_path_page'] != "") || $cat == "c
 }
 ?>
 </table>
+</div>
 
 </body>
 </html>

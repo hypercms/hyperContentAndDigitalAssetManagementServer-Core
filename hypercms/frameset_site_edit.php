@@ -23,15 +23,29 @@ $preview = url_encode (getrequest ("preview", "url"));
 // check session of user
 checkusersession ($user, false);
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>" />
+<meta name="viewport" content="width=800; initial-scale=1.0; user-scalable=1;" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
+<script language="JavaScript">
+<!--
+function adjust_height ()
+{
+  var height = hcms_getDocHeight();  
+  
+  var setheight = height - 24;
+  if (document.getElementById('mainFrame2')) document.getElementById('mainFrame2').style.height = setheight + "px";
+}
+-->
+</script>
 </head>
-<frameset rows="24,*" frameborder="NO" border="0" framespacing="0">
-  <frame name="menuFrame" scrolling="NO" noresize src="<?php echo "site_edit_menu.php?site=".$site."&preview=".$preview."&site_name=".$site_name; ?>" />
-  <frame name="mainFrame2" src="<?php echo "site_edit_form.php?site=".$site."&preview=".$preview."&site_name=".$site_name; ?>" />
-</frameset>
-<noframes></noframes>
+
+<body style="width:100%; height:100%; margin:0; padding:0;" onload="adjust_height();" onresize="adjust_height();">
+  <iframe id="controlFrame2" name="controlFrame2" scrolling="no" src="<?php echo "site_edit_menu.php?site=".$site."&preview=".$preview."&site_name=".$site_name; ?>" style="position:fixed; top:0; left:0; width:100%; height:24px; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="mainFrame2" name="mainFrame2" scrolling="auto" src="<?php echo "site_edit_form.php?site=".$site."&preview=".$preview."&site_name=".$site_name; ?>" style="position:fixed; top:24px; left:0; width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</body>
 </html>

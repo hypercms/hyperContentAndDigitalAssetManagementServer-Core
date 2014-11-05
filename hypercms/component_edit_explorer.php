@@ -64,8 +64,8 @@ checkusersession ($user);
 <body class="hcmsWorkplaceObjectlist">
 
 <div style="position:fixed; right:0; top:45%; margin:0; padding:0;">
-  <img onclick="parent.document.getElementById('assetFrame').cols='42,*';" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
-  <img onclick="parent.document.getElementById('assetFrame').cols='250,*';" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
+  <img onclick="parent.minNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
+  <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
 </div>
 
 <div class="hcmsWorkplaceFrame">

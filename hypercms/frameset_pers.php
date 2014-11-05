@@ -22,15 +22,29 @@ $cat = url_encode (getrequest ("cat", "url"));
 // check session of user
 checkusersession ($user, false);
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta name="viewport" content="width=800; initial-scale=1.0; user-scalable=1;">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
+<script language="JavaScript">
+<!--
+function adjust_height ()
+{
+  var height = hcms_getDocHeight();  
+  
+  setheight = height - 100;
+  if (document.getElementById('mainFrame')) document.getElementById('mainFrame').style.height = setheight + "px";
+}
+-->
+</script>
 </head>
-  <frameset rows="100,*" frameborder="NO" border="0" framespacing="0">
-    <frame name="controlFrame" scrolling="NO" src="<?php echo "control_pers_menu.php?site=".$site."&cat=".$cat; ?>" noresize />
-    <frame name="mainFrame" src="<?php echo "empty.php?site=".$site; ?>" />
-  </frameset>
-<noframes></noframes>
+
+<body style="width:100%; height:100%; margin:0; padding:0;" onload="adjust_height();" onresize="adjust_height();">
+  <iframe name="controlFrame" scrolling="no" src="<?php echo "control_pers_menu.php?site=".$site."&cat=".$cat; ?>" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;"></iframe>
+  <iframe name="mainFrame" scrolling="auto" src="<?php echo "empty.php?site=".$site; ?>" style="position:fixed; top:100px; left:0; width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</body>
 </html>

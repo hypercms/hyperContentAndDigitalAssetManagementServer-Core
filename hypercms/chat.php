@@ -131,10 +131,18 @@ function switchselector (id)
   }
   else return false;
 }
+
+function adjust_height ()
+{
+  var height = hcms_getDocHeight();  
+  
+  setheight = height - 160;
+  document.getElementById('chat-area').style.height = setheight + "px";
+}
 </script>
 </head>
 
-<body class="hcmsWorkplaceExplorer" onload="setInterval('chat.update()', 1000)">
+<body class="hcmsWorkplaceExplorer" onload="setInterval('chat.update()', 1000); adjust_height();" onresize="adjust_height();">
 
 <?php
 $public_chat = "<button class=\"hcmsButtonOrange\" style=\"heigth:20px; margin:0px 5px 0px 0px; white-space:nowrap;\" onClick=\"location.reload();\">".$text2[$lang]."</button>";
@@ -158,7 +166,7 @@ echo showtopbar ($text0[$lang], $lang, "", "", $users_online_button);
 <div id="page-wrap" style="margin:0; padding:0;">
        
   <div id="chat-wrap" class="hcmsInfoBox" style="margin:8px;">
-    <div id="chat-area" style="height:500px; overflow:auto; padding:5px;"></div>
+    <div id="chat-area" style="height:300px; overflow:auto; padding:5px;"></div>
   </div>
         
   <form id="send-message-area" style="margin:8px;">

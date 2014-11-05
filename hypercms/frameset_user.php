@@ -25,15 +25,29 @@ checkusersession ($user, false);
 if (valid_publicationname ($site)) $_SESSION['hcms_temp_site'] = url_decode ($site);
 else $_SESSION['hcms_temp_site'] = Null;
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta name="viewport" content="width=800; initial-scale=1.0; user-scalable=1;">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
+<script language="JavaScript">
+<!--
+function adjust_height ()
+{
+  var height = hcms_getDocHeight();  
+  
+  setheight = height - 100;
+  if (document.getElementById('mainFrame')) document.getElementById('mainFrame').style.height = setheight + "px";
+}
+-->
+</script>
 </head>
-<frameset rows="100,*" frameborder="NO" border="0" framespacing="0">
-  <frame name="controlFrame" scrolling="NO" src="control_user_menu.php?site=<?php echo $site; ?>&selectedgroup=_all" noresize />
-  <frame name="mainFrame" scrolling="NO" src="user_objectlist.php?site=<?php echo $site; if (url_decode ($site) != "*Null*") echo "&group=_all"; ?>" />
-</frameset>
-<noframes></noframes>
+
+<body style="width:100%; height:100%; margin:0; padding:0;" onload="adjust_height();" onresize="adjust_height();">
+  <iframe id="controlFrame" name="controlFrame" scrolling="no" src="control_user_menu.php?site=<?php echo $site; ?>&selectedgroup=_all" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="mainFrame" name="mainFrame" scrolling="no" src="user_objectlist.php?site=<?php echo $site; if (url_decode ($site) != "*Null*") echo "&group=_all"; ?>" style="position:fixed; top:100px; left:0; width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</body>
 </html>
