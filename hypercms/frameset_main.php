@@ -54,7 +54,7 @@ function adjust_height (topFrameHeight)
   setheight = height - topFrameHeight;
   
   document.getElementById('navFrame').style.height = setheight + "px";
-  document.getElementById('workplFrame').style.height = setheight + "px";´
+  document.getElementById('workplFrame').style.height = setheight + "px";
   if (document.getElementById('chatLayer')) document.getElementById('chatLayer').style.height = setheight + "px";
   if (document.getElementById('chatFrame')) document.getElementById('chatFrame').style.height = setheight + "px";
 }
