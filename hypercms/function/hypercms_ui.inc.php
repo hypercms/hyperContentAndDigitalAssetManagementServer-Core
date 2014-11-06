@@ -1691,46 +1691,81 @@ function showinlineeditor_head ($lang)
         else return true;
       }
       
+      function hcms_initTextarea(ta_id, width, height)
+      {
+        if (parseInt(width) < 5) width = '100%';
+        else width = (parseInt(width)+25)+'px';
+        
+        if (parseInt(height) < 5) height = '25px';
+        else height = parseInt(height)+'px';
+        
+        document.getElementById(ta_id).style.width = '100%';
+        document.getElementById(ta_id).style.height = height;
+      }
+      
       function hcms_adjustTextarea(ta)
       {
-        ta.style.height = '1px';
-        ta.style.height = (25+ta.scrollHeight)+'px';
+        if (ta.clientHeight < ta.scrollHeight)
+        {
+          ta.style.height = ta.scrollHeight + 'px';
+          
+          if (ta.clientHeight < ta.scrollHeight)
+          {
+            ta.style.height = (ta.scrollHeight * 2 - ta.clientHeight) + 'px';
+          }
+        }
       }
     </script>
     <style>
       .hcms_editable {
+        overflow: visible;
         min-height: 10px;
         min-width: 10px;
-        margin: 0px !important;
-        padding: 0px !important;
-        border-color: #319c31 !important;
-        border-width: 2px !important;
-        border-style: solid !important;
-        color: inherit;
-        font-size: inherit;
-        font-weight: inherit;
-        display: inline-block;
-      }
-      .hcms_editable:hover {
-        border-color: #FF9000;
-      }
-      .hcms_editable_textarea {
-        overflow: hidden;
-        resize: both;
         width: auto;
         height: auto;
         margin: 0px !important;
         padding: 0px !important;
-        background-color: transparent;
-        border-color: #319c31 !important;
-        border-width: 2px !important;
-        border-style: solid !important;
+        border: 0px !important;
         color: inherit;
         font-size: inherit;
+        font-family: inherit;
         font-weight: inherit;
+        font-style: inherit;
+        line-height: inherit;
+        display: inline-block;
+        box-sizing: border-box;
+        outline: 0 auto;
+        box-shadow: none !important;
+      }
+      .hcms_editable:hover {
+        outline: 2px solid #FF9000;
+      }
+      .hcms_editable:focus {
+        outline: 0 auto;
+      }
+      .hcms_editable_textarea {
+        overflow: visible;
+        resize: both;
+        margin: 0px !important;
+        padding: 0px !important;
+        border: 0px !important;
+        color: inherit;
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        font-style: inherit;
+        line-height: inherit;
+        box-sizing: border-box;
+        white-space: pre;
+        outline: 0 auto;
+        box-shadow: none !important;
+        background-color: transparent;
       }
       .hcms_editable_textarea:hover {
-        border-color: #FF9000;
+        outline: 2px solid #FF9000;
+      }
+      .hcms_editable_textarea:focus {
+        outline: 0 auto;
       }
     </style>
     ";
@@ -1935,6 +1970,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         ";
         $element = "<input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"\"/><input title=\"".$labelname.": ".$text76[$lang]."\" type=\"checkbox\" id=\"hcms_checkbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".($value == $contentbot ? ' checked ' : '').">".$labelname;
         break;
+        
       // date picker
       case 'arttextd':
       case 'textd':
@@ -2059,6 +2095,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         ";
         $element = "<input title=\"".$labelname.": ".$text97[$lang]."\"type=\"text\" id=\"hcms_datefield_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" /><br>";
         break;
+        
       // unformatted text
       case 'arttextu':
       case 'textu':
@@ -2121,14 +2158,20 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 // jump out without changing anything
                 return false;
               }
+              
               form.hide();
               elem.show();
             });
           });
+          
+          // initalize size
+          setTimeout(function(){ hcms_initTextarea('hcms_txtarea_".$hypertagname."_".$id."', document.getElementById('".$hypertagname."_".$id."').offsetWidth, document.getElementById('".$hypertagname."_".$id."').offsetHeight); }, 800);
           </script>
         ";
-        $element = "<textarea title=\"".$labelname.": ".$text0[$lang]."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" onfocus=\"hcms_adjustTextarea(this);\" name=\"".$hypertagname."[".$id."]\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\" class=\"hcms_editable_textarea\">".$contentbot."</textarea>";
+        // textarea
+        $element = "<textarea title=\"".$labelname.": ".$text0[$lang]."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" onkeyup=\"hcms_adjustTextarea(this);\" class=\"hcms_editable_textarea\">".$contentbot."</textarea>";
         break;
+        
       // text options/list
       case 'arttextl':
       case 'textl':      
@@ -2197,6 +2240,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         
         $element .= "</select>\n";
         break;
+        
       // formatted text
       case 'arttextf':
       case 'textf':

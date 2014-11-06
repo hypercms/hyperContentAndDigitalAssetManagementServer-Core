@@ -587,6 +587,7 @@ changelog:
 - bug fix: error messages on group_access_form, worklfow_folder_form were not shown since object IDs and object paths were mixed up
 - implementation of resize function for group_access_explorer
 - bug fix: search_explorer used wrong inital_dir for the component root
+- improvements in inline editing, dynamically adjust width and height of textarea after loading the inline element
 */
 
 // current version
