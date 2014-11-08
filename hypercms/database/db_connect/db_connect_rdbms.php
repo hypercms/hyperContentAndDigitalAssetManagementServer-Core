@@ -1992,7 +1992,7 @@ function rdbms_deleterecipient ($recipient_id)
 }
 
 // ----------------------------------------------- create queue entry -------------------------------------------------
-function rdbms_createqueueentry ($action, $object, $date, $published_only, $user)
+function rdbms_createqueueentry ($action, $object, $date, $published_only=0, $user)
 {
   global $mgmt_config;
 

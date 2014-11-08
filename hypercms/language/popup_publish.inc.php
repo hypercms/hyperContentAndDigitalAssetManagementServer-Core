@@ -19,7 +19,7 @@ $text5['en'] = "No objects to publish";
 $text5['de'] = "Keine zu publizierenden Objekte gefunden";
 
 $text6['en'] = "Please set a date for publishing";
-$text6['de'] = "Bitte das Datum f&uuml;r die Publizierung definieren";
+$text6['de'] = "Bitte definieren Sie ein Datum f&uuml;r die Publizierung";
 
 $text7['en'] = "Select date";
 $text7['de'] = "Datum w&auml;hlen";

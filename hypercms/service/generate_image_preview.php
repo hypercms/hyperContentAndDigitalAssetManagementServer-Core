@@ -81,7 +81,8 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 
 // check access permissions
 $ownergroup = accesspermission ($site, $location, $cat);
-$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);  
+$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
 if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location)) killsession ($user);
 
 // check session of user
@@ -115,7 +116,7 @@ $media_size = @getimagesize ($media_root_src.$mediafile);
 
 if ($media_size != false && $site != "")
 { 
-  ini_set ("max_execution_time", "3600"); // sets the maximum execution time of this script to 1 hour.
+  ini_set ("max_execution_time", "300"); // sets the maximum execution time of this script to 300 sec.
   
   if ($imageresize == "percentage")
   {
@@ -217,7 +218,6 @@ if ($media_size != false && $site != "")
         $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -k ".$contrast;
       }
 
-
       if ($colorspace == 1) 
       {
         $mgmt_imageoptions[$formats]['preview'] .= " -cs ".$imagecolorspace;
@@ -241,10 +241,7 @@ if ($media_size != false && $site != "")
       }
       elseif ($effect == "sketch") 
       {
-        if ($sketch_angle > -1)
-        {
-          $sketch_angle = "+".$sketch_angle;
-        }
+        if ($sketch_angle > -1) $sketch_angle = "+".$sketch_angle;
         $mgmt_imageoptions[$formats]['preview'] .= " -sk ".$sketch_radius."x".$sketch_sigma.$sketch_angle;
         $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -sk ".$sketch_radius."x".$sketch_sigma.$sketch_angle;
       }
@@ -260,7 +257,7 @@ if ($media_size != false && $site != "")
       
       $output->options = $mgmt_imageoptions[$formats]['preview'];
       $output->thumboptions = $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight];
-    
+
       $result = createmedia ($site, $media_root_src, $media_root_target, $mediafile_info['file'], $imageformat, 'preview');
       
       if ($result)
@@ -268,9 +265,10 @@ if ($media_size != false && $site != "")
         list ($output->imagewidth, $output->imageheight) = getimagesize ($media_root_target.$result);
         
         if (($imageresize == "crop" || $output->imagewidth > $thumbwidth || $output->imageheight > $thumbheight))
+        {
           $resultthumb = createmedia ($site, $media_root_src, $media_root_target, $mediafile_info['file'], "png", 'render.'.$thumbwidth.'x'.$thumbheight);
-        else
-          $resultthumb = false;
+        }
+        else $resultthumb = false;
       }
     }
     else
@@ -289,12 +287,14 @@ if ($media_size != false && $site != "")
 if ($result) 
 { 
   $output->success = true;
+  // add timestamp to ensure the new image will be loaded
   $output->imagelink = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".$site."&media=".$result."&token=".hcms_crypt($result)."&ts=".time();
   
   if ($resultthumb) 
   {
+    // add timestamp to ensure the new image will be loaded
     $output->thumblink = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".$site."&media=".$resultthumb."&token=".hcms_crypt($resultthumb)."&ts=".time();
-    list($output->thumbwidth, $output->thumbheight) = getimagesize($media_root_target.$resultthumb);
+    list ($output->thumbwidth, $output->thumbheight) = getimagesize ($media_root_target.$resultthumb);
   }
   else $output->thumblink = false;
 }
@@ -302,7 +302,7 @@ else
 {
   $output->success = false;
   
-  if (empty($show)) $output->message =  $text32[$lang];
+  if (empty ($show)) $output->message =  $text32[$lang];
   else $output->message =  $show;
 }
-echo json_encode($output);
+echo json_encode ($output);

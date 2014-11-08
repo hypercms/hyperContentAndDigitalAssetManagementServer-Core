@@ -101,4 +101,13 @@ $text36['de'] = "Auf Dupliakte pr&uuml;fen";
 
 $text37['en'] = "Keep existing file as old version";
 $text37['de'] = "Bestehende Datei als alte Version behalten";
+
+$text38['en'] = "Remove file(s) on";
+$text38['de'] = "Dateien entfernen am";
+
+$text39['en'] = "Select date";
+$text39['de'] = "Datum w&auml;hlen";
+
+$text40['en'] = "Please set a date for the removement";
+$text40['de'] = "Bitte definieren Sie ein Datum f&uuml;r die Entfernung";
 ?>

@@ -9241,6 +9241,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
   
   $show = "";
   $show_command = "";
+  $result = array();
   
   if (valid_publicationname ($site) && valid_locationname ($location) && $cat != "" && accessgeneral ($site, $location, $cat) && is_array ($global_files) && valid_objectname ($user))
   {
@@ -9313,7 +9314,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
       return $result;
     }
     
-    // error if no file name is too long
+    // error if file name is too long
     if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
     
     if (strlen ($global_files['Filedata']['name']) > $mgmt_config['max_digits_filename'])
@@ -9436,6 +9437,19 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
         
         if ($result_createobject['result'] == true)
         {
+          // pass creatobject result array to result array of this function
+          $result['message'] = $result_createobject['message'];
+          $result['publication'] = $result_createobject['publication'];
+          $result['location'] = $result_createobject['location'];
+          $result['cat'] = $result_createobject['cat'];
+          $result['object'] = $result_createobject['object'];
+          $result['name'] = $result_createobject['name'];
+          $result['objecttype'] = $result_createobject['objecttype'];
+          $result['mediafile'] = $result_createobject['mediafile'];
+          $result['container'] = $result_createobject['container'];
+          $result['container_id'] = $result_createobject['container_id'];
+          $result['container_content'] = $result_createobject['container_content'];
+
           // convert uploaded original images only of given formats
           // note: output rendering must be supported and the render format must be the same format as the original file!
           $media_supported_ext = ".gif.jpg.jpeg.png";
@@ -10465,6 +10479,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
   $add_onload = "";
   $show = "";
   $allow_delete = true;
+  if (empty ($lang)) $lang = "en";
  
   if (valid_publicationname ($site) && valid_locationname ($location) && accessgeneral ($site, $location, $cat) && valid_objectname ($user) && $action != "")
   {
@@ -10472,7 +10487,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
     require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
  
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
 
     // convert location
     $location = deconvertpath ($location, "file");
@@ -13322,16 +13337,16 @@ function publishobject ($site, $location, $page, $user)
   return $result;
 }
 
-// ------------------------------------------- un/publishallobjects -------------------------------------------
-// function: publishallobjects()
-// input: action [publish, unpublish], publication, location, object, only published objects [pub, all], user name
+// ------------------------------------------- processobjects -------------------------------------------
+// function: processobjects()
+// input: action [publish, unpublish, delete], publication, location, object, only published objects [pub, all], user name
 // output: true/false on error
 
 // description:
-// publish or unpublish all objects recursively.
-// should not be used in CMS GUI, only for queue processing!
+// publish, unpublish or delete all objects recursively.
+// should not be used in CMS GUI, only for queue processing, since it does not provide feedback about the process state!
 
-function publishallobjects ($action, $site, $location, $file, $published_only="0", $user)
+function processobjects ($action, $site, $location, $file, $published_only="0", $user)
 {
   global $eventsystem,
          $lang,
@@ -13340,8 +13355,9 @@ function publishallobjects ($action, $site, $location, $file, $published_only="0
   if ($action != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($user))
   {
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
     
+    $action = strtolower ($action);
     $location = deconvertpath ($location, "file");
     $location_esc = convertpath ($site, $location, "");
     
@@ -13369,7 +13385,7 @@ function publishallobjects ($action, $site, $location, $file, $published_only="0
         {
           if ($dirfile != ".folder" && $dirfile != "." && $dirfile != "..")
           {
-            publishallobjects ($action, $site, $location.$file, $dirfile, $published_only, $user);
+            publishobjects ($action, $site, $location.$file, $dirfile, $published_only, $user);
           }
         }
         
@@ -13383,11 +13399,12 @@ function publishallobjects ($action, $site, $location, $file, $published_only="0
     {
       $result = getfileinfo ($site, $file, "");
 
-      // un/publish object
+      // process object
       if ($result['published'] == true || $published_only == "0")
       {
         if ($action == "publish") $result = publishobject ($site, $location, $file, $user);
         elseif ($action == "unpublish") $result = unpublishobject ($site, $location, $file, $user);
+        elseif ($action == "delete") $result = deleteobject ($site, $location, $file, $user);
 
         // error
         if ($result['result'] == false)
@@ -13402,7 +13419,7 @@ function publishallobjects ($action, $site, $location, $file, $published_only="0
         }
         else return true;
       }
-      // nothing to un/publish
+      // nothing to process
       else return true;
     }
     // if location does not exist

@@ -588,8 +588,20 @@ changelog:
 - implementation of resize function for group_access_explorer
 - bug fix: search_explorer used wrong inital_dir for the component root
 - improvements in inline editing, dynamically adjust width and height of textarea after loading the inline element
+
+version 5.7.1
+release 11/2014
+changelog:
+- new function processobjects replaces publishallobjects and can handle the actions 'publish', 'unpublish' and 'delete' to process queue entries
+- new feature "delete from server" on upload of new files in order to remove them again on a certain date and time
+- no resize of thumbnail if original image is smaller than defined thumbnail size
+- propagate all results from function createmediaobject to function uploadfile
+- function showmedia shows original thumbnail size if the thumbnail is smaller then the defined thumbnail size due to a small original image
+- Improvement of information in main config
+- bug fix: when using the GD library instead of ImageMagick, the aspect ration of images have been changed when creating other formats
+- bug fix: undefined variables in indexes in control_queue_menu and function manipulateobject
 */
 
 // current version
-$version = "Version 5.7.0";
+$version = "Version 5.7.1";
 ?>

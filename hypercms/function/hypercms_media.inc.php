@@ -95,7 +95,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
         {
           $indd_thumbnail = strip_tags ($result);
           // remove decoded Line Feed character
-        	$indd_thumbnail = str_replace ("#xA;", "", $indd_thumbnail);
+          $indd_thumbnail = str_replace ("#xA;", "", $indd_thumbnail);
         }
         
         // new file name
@@ -198,8 +198,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     // add slash if not present at the end of the location string
     if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
     if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";    
-  	//The GD Libary only supports jpg, png and gif
-  	$GD_allowed_ext = array (".jpg", ".jpeg", ".gif", ".png");
+    //The GD Libary only supports jpg, png and gif
+    $GD_allowed_ext = array (".jpg", ".jpeg", ".gif", ".png");
     // get file name without extension
     $file_name = strrev (substr (strstr (strrev ($file), "."), 1));
     // get the file extension
@@ -324,7 +324,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               // get image rendering options based on given destination format
               if (($check1 || $check2) && $check3)
               {
-                // Image size (in pixel) definition
+                // image size (in pixel) definition
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-s ") > 0)
                 {
                   $imagesize = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-s");
@@ -334,8 +334,15 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   $imageresize = "-resize ".round ($imagewidth, 0)."x".round ($imageheight, 0);
                 }
                 else $imageresize = "";
+                
+                // if no size parameters are provided we use the original size for the new image
+                if (empty ($imagewidth) || empty ($imageheight))
+                {
+                  $imagewidth = $imagewidth_orig;
+                  $imageheight = $imageheight_orig;
+                }
              
-                // Image crop
+                // image crop
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-c ") > 0) $crop_mode = true;
                 else $crop_mode = false;
                 
@@ -343,12 +350,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 {
                   $cropoffset = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-c");
                   list ($offsetX, $offsetY) = explode ("x", $cropoffset);
-                }
-                else
-                {
-                  if (empty ($imagewidth) || $imagewidth == false) $imagewidth = "180";
-                  if (empty ($imageheight) || $imageheight == false) $imageheight = "180";
-                }
+                }                
 
                 // image format (image file extension) definition
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-f ") > 0)
@@ -417,8 +419,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   else $imagecolorspace = "-colorspace ".$imagecolorspace;
                 }
                 else $imagecolorspace = "";
-								
-								// set image icc profile 
+                
+                // set image icc profile 
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-p ") > 0) 
                 {
                   $iccprofile = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-p");
@@ -448,7 +450,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // set sepia
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sep ") > 0) 
                 {
-									$sepia = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sep");
+                  $sepia = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sep");
                   
                   if ($sepia == "" || $sepia == false) $sepia = "";
                   else $sepia = "-sepia-tone ".$sepia;
@@ -458,7 +460,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // set sharpen
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sh ") > 0) 
                 {
-									$sharpen = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sh");
+                  $sharpen = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sh");
                   
                   if ($sharpen == "" || $sharpen == false) $sharpen = "";
                   else $sharpen = "-sharpen ".$sharpen;
@@ -468,7 +470,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // set blur
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-bl ") > 0) 
                 {
-									$blur = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-bl");
+                  $blur = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-bl");
                   
                   if ($blur == "" || $blur == false) $blur = "";
                   else $blur = "-blur ".$blur;
@@ -478,7 +480,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // set sketch
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sk ") > 0) 
                 {
-									$sketch = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sk");
+                  $sketch = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sk");
                   
                   if ($sketch == "" || $sketch == false) $sketch = "";
                   else $sketch = "-sketch ".$sketch;
@@ -488,7 +490,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // set paint
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-pa ") > 0) 
                 {
-									$paint = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-pa");
+                  $paint = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-pa");
                   
                   if ($paint == "" || $paint == false) $paint = "";
                   else $paint = "-paint ".$paint;
@@ -519,6 +521,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($type == "thumbnail")
                     {
                       $newfile = $file_name.".thumb.jpg";
+                      
                       $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_source.$file)."[0]\" ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." -background white -alpha remove \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     else 
@@ -588,7 +591,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                           }
                           else
                           {
-           		              $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagerotate)." ".shellcmd_encode ($imageBrightnessContrast)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." ".shellcmd_encode ($imageflip)." ".shellcmd_encode ($sepia)." ".shellcmd_encode ($sharpen)." ".shellcmd_encode ($blur)." ".shellcmd_encode ($sketch)." ".shellcmd_encode ($paint)." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                             $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagerotate)." ".shellcmd_encode ($imageBrightnessContrast)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." ".shellcmd_encode ($imageflip)." ".shellcmd_encode ($sepia)." ".shellcmd_encode ($sharpen)." ".shellcmd_encode ($blur)." ".shellcmd_encode ($sketch)." ".shellcmd_encode ($paint)." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                           }
                         }
                         
@@ -622,6 +625,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   {
                     if ($type == "thumbnail")
                     {
+                      // reduce thumbnail size if original image is smaller then the defined thumbnail image size
+                      if ($imagewidth_orig < $imagewidth && $imageheight_orig < $imageheight)
+                      {
+                        $imageresize = "-resize ".round ($imagewidth_orig, 0)."x".round ($imageheight_orig, 0);
+                      }
+                       
                       $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".shellcmd_encode ($imagewidth)."x".shellcmd_encode ($imageheight)." \"".shellcmd_encode ($location_source.$file)."[0]\" ".shellcmd_encode ($imageresize)." ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." -background white -alpha remove \"".shellcmd_encode ($location_dest.$file_name).".buffer.bmp\"";
                     }
                     else
@@ -664,7 +673,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                             
                           $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_dest.$file_name).".buffer.bmp\" ".shellcmd_encode ($imagecolorspace)." ".shellcmd_encode ($iccprofile)." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                         }
-                        
+  
                         @exec ($cmd, $buffer, $errorCode);
                         
                         // delete buffer file
@@ -720,135 +729,142 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($type == "thumbnail" || $type == "original") remoteclient ("delete", "abs_path_media", $site, $location_dest, "", $file_name.".thumb.jpg", "");
                     
                     return false;
-                  }          
+                  }         
                 }
                 // -------------------- convert image using GD-Library -----------------------
-                elseif ((empty ($mgmt_imagepreview[$imagepreview_ext]) || $mgmt_imagepreview[$imagepreview_ext] == "GD") && in_array (strtolower($file_ext), $GD_allowed_ext))
+                elseif ($imagewidth_orig > 0 && $imageheight_orig > 0 && (empty ($mgmt_imagepreview[$imagepreview_ext]) || $mgmt_imagepreview[$imagepreview_ext] == "GD") && in_array (strtolower($file_ext), $GD_allowed_ext))
                 {
-                  // get image size
-                  $imgdata = @getimagesize ($location_source.$file);
-                  
                   // calculate aspect ratio
-                  if (is_array ($imgdata))
+                  $imageratio_orig = $imagewidth_orig / $imageheight_orig;
+                  $imageratio = $imagewidth / $imageheight;
+                  
+                  if ($type == "thumbnail")
                   {
-                		$imgwidth = $imgdata[0];
-                		$imgheight = $imgdata[1];
-                    $imgratio = $imgwidth / $imgheight;
+                    // reduce thumbnail size, if original image will be smaller then the defined thumbnail image size
+                    if ($imagewidth_orig < $imagewidth && $imageheight_orig < $imageheight)
+                    {
+                      $resizedwidth = intval ($imagewidth_orig);
+                      $resizedheight = intval ($imageheight_orig);
+                    }
                   }
                   
-                  if ($imgwidth > 0 && $imgheight > 0)
+                  // calculate image size to fit image in the given image size frame (imagewidth x imageheight), original aspect ratio will be kept
+                  if (empty ($resizedwidth) || empty ($resizedheight))
                   {    
-                		if ($imgratio > 0)
+                    if ($imageratio_orig >= $imageratio)
                     {
-                      (int)$resizedwidth = $imagewidth;
-                		  (int)$resizedheight = $imageheight / $imgratio;
+                      $resizedwidth = intval ($imagewidth);
+                      $resizedheight = round (($resizedwidth / $imageratio_orig), 0);
                     }
                     else
                     {
-                      (int)$resizedwidth = $imagewidth * $imgratio;
-                		  (int)$resizedheight = $imageheight;
+                      $resizedheight = intval ($imageheight);
+                      $resizedwidth = round (($resizedheight * $imageratio_orig), 0);
                     }
-                    
-                		$imgresized = @ImageCreateTrueColor ($resizedwidth, $resizedheight);
-                
-                		if ($file_ext == ".gif") $imgsource = @ImageCreateFromGif ($location_source.$file);
-                		elseif ($file_ext == ".jpg" || $file_ext == ".jpeg") $imgsource = @ImageCreateFromJpeg ($location_source.$file);
-                    elseif ($file_ext == ".png") $imgsource = @ImageCreateFromPng ($location_source.$file);
-                    else return false;
-                
-                    if ($crop_mode)
-                    {
-                      @imagecopyresampled ($imgresized, $imgsource, 0, 0, $offsetX, $offsetY, $imagewidth, $imageheight, $imagewidth, $imageheight);
-                    }
-                    else
-                    {
-                      @ImageCopyResized ($imgresized, $imgsource, 0, 0, 0, 0, $resizedwidth, $resizedheight, $imgwidth, $imgheight);
-                    }        
-        
-                    if ($imageformat == "jpg" && function_exists ("imagejpeg"))
-                    {
-                      if ($type == "thumbnail")
-                      {
-                        $newfile = $file_name.".thumb.jpg";
-                        $result = @imagejpeg ($imgresized, $location_dest.$newfile);
-                      }
-                      else
-                      {
-                        if ($type == "original") $newfile = $file_name.".jpg";
-                        else $newfile = $file_name.".".$type.".jpg";
-                        
-                        $result = @imagejpeg ($imgresized, $location_dest.$newfile);
-                        
-                        // delete original file if file extension has changed
-                        if ($result == true && $file_ext != ".".$format_set && $type == "original") @unlink ($location_source.$file);
-                      }
-                    }
-                    elseif ($imageformat == "png" && function_exists("imagepng"))
-                    {
-                      if ($type == "thumbnail")
-                      {
-                        $newfile = $file_name.".thumb.png";
-                        $result = @imagepng ($imgresized, $location_dest.$newfile);
-                      }
-                      else
-                      {
-                        if ($type == "original") $newfile = $file_name.".png";
-                        else $newfile = $file_name.".".$type.".png";
-                          
-                        $result = @imagepng ($imgresized, $location_dest.$newfile);
-                        
-                        // delete original file if file extension has changed
-                        if ($result == true && $file_ext != ".".$format_set && $type == "original") @unlink ($location_source.$file);
-                      }
-                    }
-                    elseif ($imageformat == "gif" && function_exists("imagegif"))
-                    {
-                      if ($type == "thumbnail")
-                      {
-                        $newfile = $file_name.".thumb.gif";
-                        $result = @imagegif ($imgresized, $location_dest.$newfile);
-                      }
-                      else
-                      {
-                        if ($type == "original") $newfile = $file_name.".gif";
-                        else $newfile = $file_name.".".$type.".gif";
-                          
-                        $result = @imagegif ($imgresized, $location_dest.$newfile);
-                        
-                        // delete original file if file extension has changed
-                        if ($result == true && $file_ext != ".".$format_set && $type == "original") @unlink ($location_source.$file);
-                      }
-                    }
-                
-                		@ImageDestroy ($imgsource);
-                		@ImageDestroy ($imgresized);
-
-                    if ($result == true)
-                    {
-                      // rotate image
-                      if ($type != "thumbnail" && $imagerotation != "") $result = rotateimage ($site, $newfile, $imagerotation, $format_set);
-                            
-                      // remote client
-                      if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-                      
-                      // get media information from thumbnail
-                      if ($type == "thumbnail")
-                      {
-                        $id = getmediacontainerid ($newfile);
-                        $imagecolor = getimagecolors ($site, $newfile);
-                      
-                        // write media information to DB
-                        if ($id != "") rdbms_setmedia ($id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
-                      }                       
-                      
-                      return $newfile;
-                    }
-                    else return false;
                   }
-                  else return false;       
-                }               
-              }
-            }      
+                    
+                  $imgresized = @ImageCreateTrueColor ($resizedwidth, $resizedheight);
+              
+                  if ($file_ext == ".gif") $imgsource = @ImageCreateFromGif ($location_source.$file);
+                  elseif ($file_ext == ".jpg" || $file_ext == ".jpeg") $imgsource = @ImageCreateFromJpeg ($location_source.$file);
+                  elseif ($file_ext == ".png") $imgsource = @ImageCreateFromPng ($location_source.$file);
+                  else return false;
+              
+                  // crop image
+                  if ($crop_mode)
+                  {
+                    @imagecopyresampled ($imgresized, $imgsource, 0, 0, $offsetX, $offsetY, $imagewidth, $imageheight, $imagewidth, $imageheight);
+                  }
+                  // resize image
+                  else
+                  {
+                    @ImageCopyResized ($imgresized, $imgsource, 0, 0, 0, 0, $resizedwidth, $resizedheight, $imagewidth_orig, $imageheight_orig);
+                  }
+
+                  // create image in defined file format
+                  if ($imageformat == "jpg" && function_exists ("imagejpeg"))
+                  {
+                    if ($type == "thumbnail")
+                    {
+                      $newfile = $file_name.".thumb.jpg";
+                      $result = @imagejpeg ($imgresized, $location_dest.$newfile);
+                    }
+                    else
+                    {
+                      if ($type == "original") $newfile = $file_name.".jpg";
+                      else $newfile = $file_name.".".$type.".jpg";
+                      
+                      $result = @imagejpeg ($imgresized, $location_dest.$newfile);
+                      
+                      // delete original file if file extension has changed
+                      if ($result == true && $file_ext != ".".$format_set && $type == "original") @unlink ($location_source.$file);
+                    }
+                  }
+                  elseif ($imageformat == "png" && function_exists("imagepng"))
+                  {
+                    if ($type == "thumbnail")
+                    {
+                      $newfile = $file_name.".thumb.png";
+                      $result = @imagepng ($imgresized, $location_dest.$newfile);
+                    }
+                    else
+                    {
+                      if ($type == "original") $newfile = $file_name.".png";
+                      else $newfile = $file_name.".".$type.".png";
+                        
+                      $result = @imagepng ($imgresized, $location_dest.$newfile);
+                      
+                      // delete original file if file extension has changed
+                      if ($result == true && $file_ext != ".".$format_set && $type == "original") @unlink ($location_source.$file);
+                    }
+                  }
+                  elseif ($imageformat == "gif" && function_exists("imagegif"))
+                  {
+                    if ($type == "thumbnail")
+                    {
+                      $newfile = $file_name.".thumb.gif";
+                      $result = @imagegif ($imgresized, $location_dest.$newfile);
+                    }
+                    else
+                    {
+                      if ($type == "original") $newfile = $file_name.".gif";
+                      else $newfile = $file_name.".".$type.".gif";
+                        
+                      $result = @imagegif ($imgresized, $location_dest.$newfile);
+                      
+                      // delete original file if file extension has changed
+                      if ($result == true && $file_ext != ".".$format_set && $type == "original") @unlink ($location_source.$file);
+                    }
+                  }
+              
+                  @ImageDestroy ($imgsource);
+                  @ImageDestroy ($imgresized);
+
+                  if ($result == true)
+                  {
+                    // rotate image
+                    if ($type != "thumbnail" && $imagerotation != "") $result = rotateimage ($site, $location_dest.$newfile, $imagerotation, $format_set);
+
+                    // remote client
+                    if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+                    
+                    // get media information from thumbnail
+                    if ($type == "thumbnail")
+                    {
+                      $id = getmediacontainerid ($newfile);
+                      $imagecolor = getimagecolors ($site, $newfile);
+                    
+                      // write media information to DB
+                      if ($id != "") rdbms_setmedia ($id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
+                    }                       
+                    
+                    return $newfile;
+                  }
+                  else return false;
+                }
+                else return false;       
+              }               
+            }
           }
         }    
       }
@@ -888,7 +904,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         }
         else $format_set = $format;
           
-  		  // original video info
+        // original video info
         $videoinfo = getvideoinfo ($location_source.$file);
               
         reset ($mgmt_mediapreview);
@@ -960,7 +976,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     {
                       $tmpfile2 = $file_name.".thumb.tmp2";
                       $cmd = $mgmt_mediametadata['.flv']." -i \"".shellcmd_encode ($location_dest.$tmpfile)."\" -o \"".shellcmd_encode ($location_dest.$tmpfile2)."\"";
-                	    
+                      
                       @exec ($cmd, $buffer, $errorCode);
                       
                       @unlink ($location_dest.$tmpfile);
@@ -1014,7 +1030,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
   
                         foreach ($video_extension_array as $video_extension)
                         {
-                				  if ($video_extension != "" && @is_file ($location_dest.$file_name.".thumb.".$video_extension))
+                          if ($video_extension != "" && @is_file ($location_dest.$file_name.".thumb.".$video_extension))
                           {
                             // thumbnail video
                             $videos[$video_extension] = $site."/".$file_name.".thumb.".$video_extension;
@@ -1031,7 +1047,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     {
                       // generate video file links for individual generated video formats
                       $videos = array();
-              				$videos[$format_set] = $site."/".$newfile;
+                      $videos[$format_set] = $site."/".$newfile;
                       
                       if ($type == "origthumb") $config_extension = ".config.orig";
                       else $config_extension = ".config.".$format_set;
@@ -1114,15 +1130,15 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata;
   
-	$file = getobject ($file_source);
+  $file = getobject ($file_source);
   $location_source = getlocation ($file_source);
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && ($colorspace != "" || $iccprofile != ""))
   {
     //get icc profile list
-		include ($mgmt_config['abs_path_cms']."library/ICC_Profiles/ICC_Profiles.php");
-		
-		include ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+    include ($mgmt_config['abs_path_cms']."library/ICC_Profiles/ICC_Profiles.php");
+    
+    include ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
     
     // convert to abs. path of source media file
     if (strpos ($file_source, "_hcm") > 0)
@@ -1151,19 +1167,19 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
     
     // iccprofile or color space
     if ($iccprofile != "")
-		{
-			$color_para = " -p \"".$mgmt_config['abs_path_cms']."library/ICC_Profiles/".$ICC_Profiles[$iccprofile]."\"";
-			$color = $iccprofile;
-		}
-		elseif ($colorspace != "")
+    {
+      $color_para = " -p \"".$mgmt_config['abs_path_cms']."library/ICC_Profiles/".$ICC_Profiles[$iccprofile]."\"";
+      $color = $iccprofile;
+    }
+    elseif ($colorspace != "")
     {
       $color_para = " -cs ".$colorspace;
-			$color = $colorspace;
+      $color = $colorspace;
     }
     else
     {
       $color_para = "";
-			$color = "orig";
+      $color = "orig";
     }
     
     // format
@@ -1199,45 +1215,45 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
 
 // ---------------------- rotateimage -----------------------------
 // function: rotateimage()
-// input: publication, path to source location, media file name, rotation angle, destination image format [jpg,png,gif]
+// input: publication, path to source media file, rotation angle, destination image format [jpg,png,gif]
 // output: new image file name / false on error
 
 // description: rotates an image (must be jpg, png or gif) using GD library. not used if ImageMagick is available.
 
-function rotateimage ($site, $file, $angle, $imageformat)
+function rotateimage ($site, $filepath, $angle, $imageformat)
 {
   global $mgmt_config;
   
-  if (valid_publicationname ($site) && valid_objectname ($file) && $angle < 360 && ($imageformat == "jpg" || $imageformat == "png" || $imageformat == "gif"))
-  {  
-    $media_root = getmedialocation ($site, $file, "abs_path_media");
-    $file_info = getfileinfo ($site, $file, "comp");
-    $id = getmediacontainerid ($file);
-    
-    if (@is_file ($media_root.$site."/".$file))
+  if (valid_publicationname ($site) && valid_locationname ($filepath) && $angle <= 360 && ($imageformat == "jpg" || $imageformat == "png" || $imageformat == "gif"))
+  {
+    $file_info = getfileinfo ($site, $filepath, "comp");
+    $location = getlocation ($filepath);
+    $id = getmediacontainerid ($filepath);
+     
+    if (@is_file ($filepath))
     {
       // create image from file
-      if ($file_info['ext'] == ".jpg") $image = imagecreatefromjpeg ($media_root.$site."/".$file);
-      elseif ($file_info['ext'] == ".png") $image = imagecreatefrompng ($media_root.$site."/".$file);
-      elseif ($file_info['ext'] == ".gif") $image = imagecreatefromgif ($media_root.$site."/".$file);
+      if ($file_info['ext'] == ".jpg") $image = imagecreatefromjpeg ($filepath);
+      elseif ($file_info['ext'] == ".png") $image = imagecreatefrompng ($filepath);
+      elseif ($file_info['ext'] == ".gif") $image = imagecreatefromgif ($filepath);
 
       // if image resource 
       if ($image != false)
       {
-    	  if ($angle == 270) $angle = -90;
+        if ($angle == 270) $angle = -90;
     
         $src_x = imagesx ($image);
         $src_y = imagesy ($image);
         
         if ($angle == 90 || $angle == -90)
         {
-            $dest_x = $src_y;
-            $dest_y = $src_x;
+          $dest_x = $src_y;
+          $dest_y = $src_x;
         }
         else
         {
-            $dest_x = $src_x;
-            $dest_y = $src_y;
+          $dest_x = $src_x;
+          $dest_y = $src_y;
         }
     
         // create new image
@@ -1256,6 +1272,7 @@ function rotateimage ($site, $file, $angle, $imageformat)
               }
             }
             break;
+            
           case -90:
             for ($y = 0; $y < ($src_y); $y++)
             {
@@ -1266,6 +1283,7 @@ function rotateimage ($site, $file, $angle, $imageformat)
               }
             }
             break;
+            
           case 180:
             for ($y = 0; $y < ($src_y); $y++)
             {
@@ -1276,33 +1294,34 @@ function rotateimage ($site, $file, $angle, $imageformat)
               }
             }
             break;
+            
           default: $rotate = $image;
         };
         
         // save image
         if ($imageformat == "jpg" && function_exists ("imagejpeg"))
         {
-          $result = @imagejpeg ($rotate, $media_root.$site."/".$file_info['filename'].".".$imageformat);
+          $result = @imagejpeg ($rotate, $location.$file_info['filename'].".".$imageformat);
           
           // delete original file if file extension has changed
           if ($result == true && ".".$imageformat != $file_info['ext']) @unlink ($media_root.$site."/".$file);
         }
         elseif ($imageformat == "png" && function_exists ("imagepng"))
         {
-          $result = @imagepng ($rotate, $media_root.$site."/".$file_info['filename'].".".$imageformat);
+          $result = @imagepng ($rotate, $location.$file_info['filename'].".".$imageformat);
           
           // delete original file if file extension has changed
-          if ($result == true && ".".$imageformat != $file_info['ext']) @unlink ($media_root.$site."/".$file);      
+          if ($result == true && ".".$imageformat != $file_info['ext']) @unlink ($media_root.$site."/".$file);
         }
         elseif ($imageformat == "gif" && function_exists ("imagegif"))
         {
-          $result = @imagegif ($rotate, $media_root.$site."/".$file_info['filename'].".".$imageformat);
+          $result = @imagegif ($rotate, $location.$file_info['filename'].".".$imageformat);
           
           // delete original file if file extension has changed
-          if ($result == true && ".".$imageformat != $file_info['ext']) @unlink ($media_root.$site."/".$file);      
+          if ($result == true && ".".$imageformat != $file_info['ext']) @unlink ($media_root.$site."/".$file);
         }
-        else $result = false;      
-        
+        else $result = false;
+
         // return result
         if ($result == true) return $file_info['filename'].".".$imageformat;
         else false;
@@ -1348,25 +1367,25 @@ function getimagecolors ($site, $file)
 
     if (is_resource ($image))
     {
-    	$width = imagesx ($image);
+      $width = imagesx ($image);
       $height = imagesy ($image);
-    	$totalred = 0;
-    	$totalgreen = 0;
-    	$totalblue = 0;
-    	$total = 0;
-    	
-    	for ($y=0; $y<20; $y++)
-    	{
-    		for ($x=0; $x<20; $x++)
-    	  {
-    			$rgb = imagecolorat ($image, $x*($width/20), $y*($height/20));
-    			$red = ($rgb >> 16) & 0xFF;
-    			$green = ($rgb >> 8) & 0xFF;
-    			$blue = $rgb & 0xFF;
+      $totalred = 0;
+      $totalgreen = 0;
+      $totalblue = 0;
+      $total = 0;
+      
+      for ($y=0; $y<20; $y++)
+      {
+        for ($x=0; $x<20; $x++)
+        {
+          $rgb = imagecolorat ($image, $x*($width/20), $y*($height/20));
+          $red = ($rgb >> 16) & 0xFF;
+          $green = ($rgb >> 8) & 0xFF;
+          $blue = $rgb & 0xFF;
     
-    			// calculate deltas (remove brightness factor)
-    			$cmax = max ($red, $green, $blue);
-    			$cmin = min ($red, $green, $blue);
+          // calculate deltas (remove brightness factor)
+          $cmax = max ($red, $green, $blue);
+          $cmin = min ($red, $green, $blue);
           // avoid division errors
           if ($cmax == $cmin)
           {
@@ -1375,31 +1394,31 @@ function getimagecolors ($site, $file)
           } 
           
           // ignore gray, white and black
-    			if (abs ($cmax - $cmin) >= 20) 
-    			{
-    				$red = floor ((($red - $cmin) /($cmax - $cmin)) * 255);
-    				$green = floor ((($green - $cmin) / ($cmax - $cmin)) * 255);
-    				$blue = floor ((($blue - $cmin) / ($cmax - $cmin)) * 255);
+          if (abs ($cmax - $cmin) >= 20) 
+          {
+            $red = floor ((($red - $cmin) /($cmax - $cmin)) * 255);
+            $green = floor ((($green - $cmin) / ($cmax - $cmin)) * 255);
+            $blue = floor ((($blue - $cmin) / ($cmax - $cmin)) * 255);
     
-    				$total++;
-    				$totalred += $red;
-    				$totalgreen += $green;
-    				$totalblue += $blue;
-    			}
-    		}
-    	}
+            $total++;
+            $totalred += $red;
+            $totalgreen += $green;
+            $totalblue += $blue;
+          }
+        }
+      }
       
-    	if ($total == 0) $total = 1;
-    	$totalred = floor ($totalred / $total);
-    	$totalgreen = floor ($totalgreen / $total);
-    	$totalblue = floor ($totalblue / $total);
-    	
-    	$colorkey = getimagecolorkey ($image);
+      if ($total == 0) $total = 1;
+      $totalred = floor ($totalred / $total);
+      $totalgreen = floor ($totalgreen / $total);
+      $totalblue = floor ($totalblue / $total);
+      
+      $colorkey = getimagecolorkey ($image);
     
-    	// set 'portrait', 'landscape' or 'square' for the image type
-    	if ($width > $height) $imagetype = "landscape";
-    	elseif ($height > $width) $imagetype = "portrait";
-    	elseif ($height == $width) $imagetype = "square";
+      // set 'portrait', 'landscape' or 'square' for the image type
+      if ($width > $height) $imagetype = "landscape";
+      elseif ($height > $width) $imagetype = "portrait";
+      elseif ($height == $width) $imagetype = "square";
       
       // destroy image resource
       if (is_resource ($image)) imagedestroy ($image);
@@ -1443,87 +1462,87 @@ function getimagecolorkey ($image)
   
   if ($image)
   {
-  	$width = imagesx ($image);
+    $width = imagesx ($image);
     $height = imagesy ($image);
     
-  	$colors = array (
-  	"K"=>array(0,0,0), 			// Black
-  	"W"=>array(255,255,255),	// White
-  	"E"=>array(200,200,200),	// Grey
-  	"E"=>array(140,140,140),	// Grey
-  	"E"=>array(100,100,100),	// Grey
-  	"R"=>array(255,0,0),		// Red
-  	"R"=>array(128,0,0),		// Dark Red
-  	"R"=>array(180,0,40),		// Dark Red
-  	"G"=>array(0,255,0),		// Green
-  	"G"=>array(0,128,0),		// Dark Green
-  	"G"=>array(80,120,90),		// Faded Green
-  	"G"=>array(140,170,90),		// Pale Green
-  	"B"=>array(0,0,255),		// Blue
-  	"B"=>array(0,0,128),		// Dark Blue
-  	"B"=>array(90,90,120),		// Dark Blue
-  	"B"=>array(60,60,90),		// Dark Blue
-  	"B"=>array(90,140,180),		// Light Blue
-  	"C"=>array(0,255,255),		// Cyan
-  	"C"=>array(0,200,200),		// Cyan
-  	"M"=>array(255,0,255),		// Magenta
-  	"Y"=>array(255,255,0),		// Yellow
-  	"Y"=>array(180,160,40),		// Yellow
-  	"Y"=>array(210,190,60),		// Yellow
-  	"O"=>array(255,128,0),		// Orange
-  	"O"=>array(200,100,60),		// Orange
-  	"P"=>array(255,128,128),	// Pink
-  	"P"=>array(200,180,170),	// Pink
-  	"P"=>array(200,160,130),	// Pink
-  	"P"=>array(190,120,110),	// Pink
-  	"N"=>array(110,70,50),		// Brown
-  	"N"=>array(180,160,130),	// Pale Brown
-  	"N"=>array(170,140,110),	// Pale Brown
-  	);
+    $colors = array (
+    "K"=>array(0,0,0), 			// Black
+    "W"=>array(255,255,255),	// White
+    "E"=>array(200,200,200),	// Grey
+    "E"=>array(140,140,140),	// Grey
+    "E"=>array(100,100,100),	// Grey
+    "R"=>array(255,0,0),		// Red
+    "R"=>array(128,0,0),		// Dark Red
+    "R"=>array(180,0,40),		// Dark Red
+    "G"=>array(0,255,0),		// Green
+    "G"=>array(0,128,0),		// Dark Green
+    "G"=>array(80,120,90),		// Faded Green
+    "G"=>array(140,170,90),		// Pale Green
+    "B"=>array(0,0,255),		// Blue
+    "B"=>array(0,0,128),		// Dark Blue
+    "B"=>array(90,90,120),		// Dark Blue
+    "B"=>array(60,60,90),		// Dark Blue
+    "B"=>array(90,140,180),		// Light Blue
+    "C"=>array(0,255,255),		// Cyan
+    "C"=>array(0,200,200),		// Cyan
+    "M"=>array(255,0,255),		// Magenta
+    "Y"=>array(255,255,0),		// Yellow
+    "Y"=>array(180,160,40),		// Yellow
+    "Y"=>array(210,190,60),		// Yellow
+    "O"=>array(255,128,0),		// Orange
+    "O"=>array(200,100,60),		// Orange
+    "P"=>array(255,128,128),	// Pink
+    "P"=>array(200,180,170),	// Pink
+    "P"=>array(200,160,130),	// Pink
+    "P"=>array(190,120,110),	// Pink
+    "N"=>array(110,70,50),		// Brown
+    "N"=>array(180,160,130),	// Pale Brown
+    "N"=>array(170,140,110),	// Pale Brown
+    );
     
-  	$table = array();
-  	$depth = 50;
+    $table = array();
+    $depth = 50;
     
-  	for ($y=0; $y<$depth; $y++)
-  	{
-  		for ($x=0; $x<$depth; $x++)
-  		{
-  			$rgb = imagecolorat ($image, $x*($width/$depth), $y*($height/$depth));
-  			$red = ($rgb >> 16) & 0xFF;
-  			$green = ($rgb >> 8) & 0xFF;
-  			$blue = $rgb & 0xFF;
-  			// which color
-  			$bestdist = 99999;
+    for ($y=0; $y<$depth; $y++)
+    {
+      for ($x=0; $x<$depth; $x++)
+      {
+        $rgb = imagecolorat ($image, $x*($width/$depth), $y*($height/$depth));
+        $red = ($rgb >> 16) & 0xFF;
+        $green = ($rgb >> 8) & 0xFF;
+        $blue = $rgb & 0xFF;
+        // which color
+        $bestdist = 99999;
         $bestkey = "";
         
-  			reset ($colors);
+        reset ($colors);
         
-  			foreach ($colors as $key=>$value)
-  			{
-  				$distance = sqrt (pow (abs ($red - $value[0]), 2) + pow (abs ($green - $value[1]), 2) + pow (abs ($blue - $value[2]), 2));
+        foreach ($colors as $key=>$value)
+        {
+          $distance = sqrt (pow (abs ($red - $value[0]), 2) + pow (abs ($green - $value[1]), 2) + pow (abs ($blue - $value[2]), 2));
           
-  				if ($distance < $bestdist)
+          if ($distance < $bestdist)
           {
             $bestdist = $distance;
             $bestkey = $key;
           }
-  			}
+        }
         
-  			// add this color to the color table
-  			if (array_key_exists ($bestkey, $table)) $table[$bestkey]++;
+        // add this color to the color table
+        if (array_key_exists ($bestkey, $table)) $table[$bestkey]++;
         else $table[$bestkey] = 1;
-  		}
-  	}
+      }
+    }
     
-  	asort ($table);
+    asort ($table);
     reset ($table);
     $colorkey = "";
-  	foreach ($table as $key=>$value) $colorkey .= $key;
+    foreach ($table as $key=>$value) $colorkey .= $key;
     
     // color key with the 5 mostyl used colors in the image
-  	$colorkey = substr (strrev ($colorkey), 0, 5);
+    $colorkey = substr (strrev ($colorkey), 0, 5);
     
-  	return $colorkey;
+    return $colorkey;
   }
   else return false;
 }

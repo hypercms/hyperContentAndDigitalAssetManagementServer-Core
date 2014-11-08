@@ -79,7 +79,7 @@ function getcontainer ($containerid, $type)
   return loadcontainer ($containerid, $type, "");
 }
  
-// ========================================= GET FUNCTIONS ============================================
+// ========================================= GET INFORMATION ============================================
 
 // --------------------------------------- getcontainername -------------------------------------------
 // function: getcontainername()
@@ -1385,6 +1385,56 @@ function getusersonline ()
   else return false;
 }
 
+// ------------------------------ getchatstate ----------------------------------
+// function: getchatstate ()
+// input: register stat in session [true/false] (optional)
+// output: state of chat / false on error
+
+function getchatstate ($register=true)
+{
+  global $mgmt_config;
+
+  // chat log file
+  $chat_log = $mgmt_config['abs_path_data']."log/chat.log";
+
+  if (file_exists ($chat_log))
+  {
+    $lines = file ($chat_log);
+    $state = count ($lines);
+
+    // register chat state in session
+    if ($register == true && $state >= 0) $_SESSION['hcms_temp_chatstate'] = $state;
+
+    if ($state >= 0) return $state;
+    else return false;
+  }
+  else return false;
+}
+
+// ------------------------------ getimagelib ----------------------------------
+// function: getimagelib ()
+// input: %
+// output: name of image library used [GD, ImageMagick] / false on error
+
+function getimagelib ()
+{
+  global $mgmt_imagepreview;
+
+  if (isset ($mgmt_imagepreview) && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0)
+  {
+    // there should be only one entry the main config. if there are more tha last entry will be taken.
+    foreach ($mgmt_imagepreview as $key=>$value)
+    {
+      if (strtoupper ($value) == "GD") $result = "GD";
+      else $result = "ImageMagick";
+    }
+    
+    if (!empty ($result)) return $result;
+    else return false;
+  }
+  else return false;
+}
+
 // ======================================== GET FILEPOINTER =====================================
 
 // ------------------------------------------ getfilename ---------------------------------------
@@ -2152,32 +2202,6 @@ function getelementid ($id)
     else $elementid = false;
   
     return $elementid;
-  }
-  else return false;
-}
-
-// ------------------------------ getchatstate ----------------------------------
-// function: getchatstate ()
-// input: register stat in session [true/false] (optional)
-// output: state of chat / false on error
-
-function getchatstate ($register=true)
-{
-  global $mgmt_config;
-
-  // chat log file
-  $chat_log = $mgmt_config['abs_path_data']."log/chat.log";
-
-  if (file_exists ($chat_log))
-  {
-    $lines = file ($chat_log);
-    $state = count ($lines);
-
-    // register chat state in session
-    if ($register == true && $state >= 0) $_SESSION['hcms_temp_chatstate'] = $state;
-
-    if ($state >= 0) return $state;
-    else return false;
   }
   else return false;
 }

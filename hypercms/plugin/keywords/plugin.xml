@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin>
+  <definition>
+    <name>Keyword Analysis Plugin</name>
+    <author>hyperCMS</author>
+    <version>1.0</version>
+    <description>Keyword Analysis Plugin provides basic statistics about keywords.</description>
+  </definition>
+  <menus>
+    <publication>
+      <point>
+        <name>Keyword Analysis</name>
+        <icon>img/keywords.png</icon>
+        <page>pages/page.php</page>
+      </point>
+    </publication>
+  <menus>
+</plugin>

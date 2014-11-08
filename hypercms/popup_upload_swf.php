@@ -89,7 +89,7 @@ if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0
 <script type="text/javascript" src="javascript/swfupload/fileprogress.js"></script>
 <script type="text/javascript" src="javascript/swfupload/handlers.js"></script>
 <script type="text/javascript">
-<!--
+
 var swfu;
 
 window.onload = function()
@@ -105,11 +105,12 @@ window.onload = function()
           "cat" : "<?php echo $cat; ?>",
           "user" : "<?php echo $user; ?>",
           "unzip" : "",
-          "versioning" : "",
           "createthumbnail" : "",
           "imageresize" : "",
           "imagepercentage" : "",
           "checkduplicates" : "<?php if ($mgmt_config['check_duplicates']) echo '1'; ?>",
+          "versioning" : "",
+          "deletedate" : "",
           "token" : "<?php echo $token; ?>"},
 				file_size_limit : "",
 				file_types : "*.*",
@@ -156,13 +157,16 @@ function setpost_multi ()
   var resize = document.forms['upload'].elements['imageresize'];
   var unzip = document.forms['upload'].elements['unzip'];
   var checkduplicates = document.forms['upload'].elements['checkduplicates'];
+  var deleteobject = document.forms['upload'].elements['deleteobject'];
+  var deletedate = document.forms['upload'].elements['deletedate'];
   
   var imageresize = '';
   var imagepercentage = '';
   var fileunzip = '';
   var filecheckduplicates = '';
+  var filedeletedate = '';
   
-  if (resize.checked == true && (percentage.value > 1 && percentage.value <= 200))
+  if (resize.checked == true && (percentage.value > 0 && percentage.value <= 200))
   {
     percentage.disabled = false;
     imageresize = 'percentage';
@@ -187,8 +191,17 @@ function setpost_multi ()
   {
     filecheckduplicates = '1';
   }
-  alert (filecheckduplicates);
-  swfu.setPostParams({'PHPSESSID' : '<?php echo session_id(); ?>', 'site' : '<?php echo $site; ?>', 'location' : '<?php echo $location_esc; ?>', 'cat' : '<?php echo $cat; ?>', 'user' : '<?php echo $user; ?>', 'unzip' : fileunzip, 'imageresize' : imageresize, 'imagepercentage' : imagepercentage, 'checkduplicates' : filecheckduplicates , 'token' : '<?php echo $token; ?>'});
+  
+  if (deleteobject.checked == true)
+  {
+    if (deletedate.value == "")
+    {
+      alert (hcms_entity_decode('<?php echo $text40[$lang]; ?>'));
+    }
+    else filedeletedate = deletedate.value;
+  }
+  
+  swfu.setPostParams({'PHPSESSID' : '<?php echo session_id(); ?>', 'site' : '<?php echo $site; ?>', 'location' : '<?php echo $location_esc; ?>', 'cat' : '<?php echo $cat; ?>', 'user' : '<?php echo $user; ?>', 'unzip' : fileunzip, 'imageresize' : imageresize, 'imagepercentage' : imagepercentage, 'checkduplicates' : filecheckduplicates, 'deletedate' : filedeletedate, 'token' : '<?php echo $token; ?>'});
   return true;
 }
 
@@ -245,7 +258,7 @@ function translatemessage (errorno)
     if (errorno == 500) return "<?php echo $text13[$lang]; ?>";
     else if (errorno == 501) return "<?php echo $text10[$lang]; ?>";
     else if (errorno == 502) return "<?php echo $text22[$lang]; ?>";
-    else if (errorno == 503) return "<?php echo str_replace ("%maxdigits%", $mgmt_config['max_digits_filename'], $subtext20[$lang]); ?>";
+    else if (errorno == 503) return "<?php echo str_replace ("%maxdigits%", $mgmt_config['max_digits_filename'], $text20[$lang]); ?>";
     else if (errorno == 504) return "<?php echo $text23[$lang]; ?>";
     else if (errorno == 505) return "<?php echo $text24[$lang]; ?>";
     else if (errorno == 506) return "<?php echo $text25[$lang]; ?>";
@@ -280,7 +293,53 @@ function frameReload (newpage)
   
   return true;
 }
--->
+</script>
+
+<link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css">
+<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
+<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
+<script language="Javascript" type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
+<script language="JavaScript" type="text/javascript">
+
+var cal_obj = null;
+var format = '%Y-%m-%d %H:%i';
+
+// show calendar
+function show_cal (el)
+{
+	if (cal_obj) return;
+
+  var text_field = document.getElementById("text_field");
+
+	cal_obj = new RichCalendar();
+	cal_obj.start_week_day = 1;
+	cal_obj.show_time = true;
+	cal_obj.language = '<?php echo $lang; ?>';
+	cal_obj.user_onchange_handler = cal_on_change;
+	cal_obj.user_onautoclose_handler = cal_on_autoclose;
+	cal_obj.parse_date(text_field.value, format);
+	cal_obj.show_at_element(text_field, "adj_left-bottom");
+}
+
+// user defined onchange handler
+function cal_on_change (cal, object_code)
+{
+	if (object_code == 'day')
+	{
+		document.getElementById("text_field").value = cal.get_formatted_date(format);
+		document.getElementById("deletedate").value = cal.get_formatted_date(format);
+    setpost_multi();
+		cal.hide();
+		cal_obj = null;
+	}
+}
+
+// user defined onautoclose handler
+function cal_on_autoclose (cal)
+{
+	cal_obj = null;
+}
 </script>
 </head>
 
@@ -305,11 +364,12 @@ echo showtopbar ($title.": ".$object_name, $lang);
 ?>
 
 <div id="content">
-	<form name="upload" id="upload" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" enctype="multipart/form-data">
+    <form name="upload" id="upload" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" enctype="multipart/form-data">
   	<fieldset class="flash" id="fsUploadProgress">
-		</fieldset>
-		<div><div id="divStatus" style="float:left;">0</div>&nbsp;<?php echo $text6[$lang]; ?><br /></div><br />
-			<div>
+	</fieldset>
+	<div><div id="divStatus" style="float:left;">0</div>&nbsp;<?php echo $text6[$lang]; ?><br /></div>
+        <br />
+	<div>
         <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
         <input type="checkbox" name="unzip" id="unzip" value="1" onclick="setpost_multi();" /> <?php echo $text2[$lang]; ?><br />
         <?php } elseif ($uploadmode == "single") { ?> 
@@ -324,15 +384,22 @@ echo showtopbar ($title.": ".$object_name, $lang);
         <?php } ?>
           <input type="checkbox" name="checkduplicates" id="checkduplicates" value="1" onchange="setpost_multi();" <?php if ($mgmt_config['check_duplicates']) echo 'checked="checked"'; ?> />
           <?php echo $text36[$lang]; ?><br />
-
-        <table>
+        <?php if ($uploadmode == "multi") { ?>
+          <input type="checkbox" name="deleteobject" id="deleteobject" value="1" onchange="setpost_multi();" />
+          <?php echo $text38[$lang]; ?>
+          <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" />
+          <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
+          <img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo $text39[$lang]; ?>" title="<?php echo $text39[$lang]; ?>" /><br />
+        <?php } ?>
+        <br />
+        <table cellspacing="3">
           <tr>
             <td><span id="spanButtonPlaceHolder"></span></td>    
-				    <td><input id="btnCancel" type="button" value="<?php echo $text5[$lang]; ?>" onclick="swfu.cancelQueue();" disabled="disabled" style="height: 22px;" /></td>
+            <td><input id="btnCancel" type="button" class="hcmsButtonOrange" value="<?php echo $text5[$lang]; ?>" onclick="swfu.cancelQueue();" disabled="disabled" style="height:22px;" /></td>
           </tr>
         </table>
       </div>
-	</form>
+    </form>
 </div>
 
 </body>

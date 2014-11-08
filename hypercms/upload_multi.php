@@ -31,6 +31,7 @@ $imageresize = getrequest ("imageresize");
 $imagepercentage = getrequest ("imagepercentage");
 $checkduplicates = getrequest ("checkduplicates");
 $versioning = getrequest ("versioning");
+$deletedate = getrequest ("deletedate");
 $token = getrequest ("token");
 // dropbox respond array
 $dropbox_file = getrequest("dropbox_file", "dropbox_file");
@@ -75,6 +76,12 @@ if ($token != "" && checktoken ($token, $user))
   else
   {
     $result = uploadfile ($site, $location, $cat, $_FILES, $unzip, $media_update, $createthumbnail, $page, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning);
+  }
+
+  // make new entry in queue to delete object
+  if ($deletedate != "" && !empty ($result['object']))
+  {
+    rdbms_createqueueentry ("delete", $location_esc.$result['object'], $deletedate, 0, $user);
   }
 }
 

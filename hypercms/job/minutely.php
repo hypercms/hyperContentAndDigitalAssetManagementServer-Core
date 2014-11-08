@@ -64,8 +64,8 @@ if (sizeof ($config_files) > 0)
             $published_only = $queue['published_only'];
             $user = $queue['user'];
     
-            // un/publish object
-            $result = publishallobjects ($action, $site, $location, $file, $published_only, $user);
+            // process objects
+            $result = processobjects ($action, $site, $location, $file, $published_only, $user);
     
             // remove entry from queue
             if ($result == true)
@@ -79,7 +79,7 @@ if (sizeof ($config_files) > 0)
             }
             
             // save log
-            savelog ($error);       
+            savelog (@$error);       
           }
         }
       }

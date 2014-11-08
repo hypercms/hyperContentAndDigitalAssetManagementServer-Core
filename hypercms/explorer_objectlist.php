@@ -339,7 +339,7 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
         // page
         if ($file_info['type'] == "Page") $file_type = $text4[$lang];
         // component
-        elseif ($file_info['type'] == "Component") $file_type = $text5[$lang];  
+        elseif ($file_info['type'] == "Component") $file_type = $text5[$lang];
         // multimedia object 
         else $file_type = $text6[$lang]." (".$file_info['type'].")";
   
@@ -503,9 +503,21 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
                       
             // galleryview - view option for locked multimedia objects
             if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
-            else $class_image  = "class=\"hcmsImageItem\"";               
-        		
-            $thumbnail = "<div id=\"".strtolower(substr($ratio, 0, 1)).$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$media_info['filename'].".thumb.jpg")."&token=".hcms_crypt($site."/".$media_info['filename'].".thumb.jpg")."\" ".$class_image." /></div>";
+            else $class_image  = "class=\"hcmsImageItem\"";
+            
+            // if thumbnail is smaller than defined thumbnail size
+            if ($imgwidth < 180 && $imgheight < 180)
+            {
+              $div_id = "id=\"x".$items_row."\"";
+              $class_size = "";
+            }
+            else
+            {
+              $div_id = "id=\"".strtolower(substr($ratio, 0, 1)).$items_row."\"";
+              $class_size = "class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"";
+            }
+            
+            $thumbnail = "<div ".$div_id." ".$class_size."><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$media_info['filename'].".thumb.jpg")."&token=".hcms_crypt($site."/".$media_info['filename'].".thumb.jpg")."\" ".$class_image." /></div>";
           }
           // display file icon if thumbnail fails 
           else
@@ -526,7 +538,7 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
                   
     		  $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" style=\"border:0;\" ".$class_image." /></div>";
       	}
-        
+
         // if linking is used display download buttons
         if ($mediafile != false && is_array ($_SESSION['hcms_linking']) && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
         {

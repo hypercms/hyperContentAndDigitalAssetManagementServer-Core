@@ -153,7 +153,7 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
   
   if (!file_exists ($search) && !file_exists ($search."off") || $pagefile_info['ext'] == ".".$imageformat)
   {
-    ini_set ("max_execution_time", "3600"); // sets the maximum execution time of this script to 1 hour.
+    ini_set ("max_execution_time", "300"); // sets the maximum execution time of this script to 300 sec.
     
     if ($imageresize == "percentage")
     {
@@ -219,7 +219,7 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
         {
           $mgmt_imageoptions[$formats]['original'] .= " -s ".$imagecropwidth."x".$imagecropheight." -c ".$imagex."x".$imagey;
         } 
-        elseif( in_array($imageresize, array("percentage", "imagewidth", "imageheight")))
+        elseif (in_array ($imageresize, array("percentage", "imagewidth", "imageheight")))
         {
           $mgmt_imageoptions[$formats]['original'] .= " -s ".$imagewidth."x".$imageheight;
         }
@@ -242,8 +242,7 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
         {
           $mgmt_imageoptions[$formats]['original'] .= " -k ".$contrast;
         }
-        
-        
+
         if ($colorspace == 1) 
         {
           $mgmt_imageoptions[$formats]['original'] .= " -cs ".$imagecolorspace;
@@ -335,8 +334,7 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
             // set new page name and media file name 
             $page = $test['object'];
             $mediafile = $mediafile_nameonly.$file_ext_new;
-            // remove indexed content
-            unindexcontent ($site, getmedialocation ($site, $media, "abs_path_media").$site."/", $media, $contentfile, "", $user);
+
             // add onload
             $add_onload = "parent.frames['controlFrame'].location.href='control_content_menu.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\n";
           }
@@ -405,7 +403,6 @@ $token_new = createtoken ($user);
 <script src="javascript/jcrop/jquery.Jcrop.min.js"></script>
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css" />
 <link rel="stylesheet" href="javascript/jcrop/jquery.Jcrop.css" type="text/css" />
-
 
 <script language="Javascript">
 <!--
@@ -653,9 +650,8 @@ function openerReload ()
   return true;
 }
 
-function toggle_crop()
+function toggle_crop ()
 {
-  
   var crop = $('#crop');
   var cropwidth = $('#imagecropwidth');
   var cropheight = $('#imagecropheight');
@@ -671,7 +667,7 @@ function toggle_crop()
   var paint = $('#paint');
   var chbxflip = $('#chbx_flip');
   
-  if(crop.prop('checked')) 
+  if (crop.prop('checked')) 
   {
     cropwidth.prop('disabled', false);
     cropheight.prop('disabled', false);
@@ -711,16 +707,15 @@ function toggle_crop()
   }
 }
 
-function toggle_percentage() 
+function toggle_percentage () 
 {
-  
   var crop = $('#crop');
   var percentage = $('#percentage');
   var width = $('#width');
   var height = $('#height');
   var percent = $('#imagepercentage');
   
-  if(percentage.prop('checked')) 
+  if (percentage.prop('checked')) 
   {
     percent.prop('disabled', false);
     crop.prop('checked', false);
@@ -735,19 +730,17 @@ function toggle_percentage()
   {
     percent.prop('disabled', true);
   }
-  
 }
 
-function toggle_size_width() 
+function toggle_size_width () 
 {
-  
   var crop = $('#crop');
   var percentage = $('#percentage');
   var width = $('#width');
   var height = $('#height');
   var imagewidth = $('#imagewidth');
   
-  if(width.prop('checked')) 
+  if (width.prop('checked')) 
   {
     imagewidth.prop('disabled', false);
     crop.prop('checked', false);
@@ -762,19 +755,17 @@ function toggle_size_width()
   {
     imagewidth.prop('disabled', true);
   }
-  
 }
 
-function toggle_size_height() 
+function toggle_size_height () 
 {
-  
   var crop = $('#crop');
   var percentage = $('#percentage');
   var width = $('#width');
   var height = $('#height');
   var imageheight = $('#imageheight');
   
-  if(height.prop('checked')) 
+  if (height.prop('checked')) 
   {
     imageheight.prop('disabled', false);
     crop.prop('checked', false);
@@ -789,12 +780,10 @@ function toggle_size_height()
   {
     imageheight.prop('disabled', true);
   }
-  
 }
 
-function toggle_rotate() 
+function toggle_rotate () 
 {
-  
   var rotate = $('#rotate');
   var chbxflip = $('#chbx_flip');
   var degree = $('#degree');
@@ -810,16 +799,14 @@ function toggle_rotate()
   {
     degree.prop('disabled', true);
   }
-  
 }
 
-function toggle_brightness() 
+function toggle_brightness () 
 {
-  
   var chbx = $('#chbx_brightness');
   var brightness = $('#brightness');
   
-  if(chbx.prop('checked')) 
+  if (chbx.prop('checked')) 
   {
     brightness.prop('disabled', false);
     brightness.spinner("option", "disabled", false);
@@ -829,16 +816,14 @@ function toggle_brightness()
     brightness.prop('disabled', true);
     brightness.spinner("option", "disabled", true);
   }
-  
 }
 
-function toggle_contrast() 
+function toggle_contrast () 
 {
-  
   var chbx = $('#chbx_contrast');
   var contrast = $('#contrast');
   
-  if(chbx.prop('checked')) 
+  if (chbx.prop('checked')) 
   {
     contrast.prop('disabled', false);
     contrast.spinner("option", "disabled", false);
@@ -848,15 +833,14 @@ function toggle_contrast()
     contrast.prop('disabled', true);
     contrast.spinner("option", "disabled", true);
   }
-  
 }
 
-function toggle_colorspace() 
+function toggle_colorspace () 
 {
   var chbx = $('#chbx_colorspace');
   var space = $('#colorspace');
   
-  if(chbx.prop('checked'))
+  if (chbx.prop('checked'))
   {
     space.prop('disabled', false);
   }
@@ -864,18 +848,16 @@ function toggle_colorspace()
   {
     space.prop('disabled', true);
   }
-  
 }
 
-function toggle_flip() 
+function toggle_flip () 
 {
-  
   var rotate = $('#rotate');
   var chbxflip = $('#chbx_flip');
   var flip = $('#flip');
   var crop = $('#crop');
   
-  if(chbxflip.prop('checked')) 
+  if (chbxflip.prop('checked')) 
   {
     rotate.prop('checked', false);
     flip.prop('disabled', false);
@@ -888,12 +870,10 @@ function toggle_flip()
   {
     flip.prop('disabled', true);
   }
-  
 }
 
-function toggle_sepia() 
+function toggle_sepia () 
 {
-  
   var sepia = $('#sepia');
   var treshold = $('#sepia_treshold');
   var blur = $('#blur');
@@ -902,7 +882,7 @@ function toggle_sepia()
   var paint = $('#paint');
   var crop = $('#crop');
   
-  if(sepia.prop('checked')) 
+  if (sepia.prop('checked')) 
   {
     treshold.prop('disabled', false);
     blur.prop('checked', false);
@@ -925,12 +905,10 @@ function toggle_sepia()
     
     treshold.spinner("option", "disabled", true);
   }
-  
 }
 
-function toggle_blur() 
+function toggle_blur () 
 {
-  
   var sepia = $('#sepia');
   var radius = $('#blur_radius');
   var sigma = $('#blur_sigma');
@@ -940,7 +918,7 @@ function toggle_blur()
   var paint = $('#paint');
   var crop = $('#crop');
   
-  if(blur.prop('checked'))
+  if (blur.prop('checked'))
   {
     radius.prop('disabled', false);
     sigma.prop('disabled', false);
@@ -965,12 +943,10 @@ function toggle_blur()
     
    sigma.spinner("option", "disabled", true);
   }
-  
 }
 
-function toggle_sharpen()
+function toggle_sharpen ()
 {
-  
   var sepia = $('#sepia');
   var radius = $('#sharpen_radius');
   var sigma = $('#sharpen_sigma');
@@ -980,7 +956,7 @@ function toggle_sharpen()
   var paint = $('#paint');
   var crop = $('#crop');
   
-  if(sharpen.prop('checked'))
+  if (sharpen.prop('checked'))
   {
     radius.prop('disabled', false);
     sigma.prop('disabled', false);
@@ -1005,12 +981,10 @@ function toggle_sharpen()
     
    sigma.spinner("option", "disabled", true);
   }
-  
 }
 
-function toggle_sketch()
+function toggle_sketch ()
 {
-  
   var sepia = $('#sepia');
   var radius = $('#sketch_radius');
   var sigma = $('#sketch_sigma');
@@ -1021,7 +995,7 @@ function toggle_sketch()
   var paint = $('#paint');
   var crop = $('#crop');
   
-  if(sketch.prop('checked'))
+  if (sketch.prop('checked'))
   {
     radius.prop('disabled', false);
     sigma.prop('disabled', false);
@@ -1045,12 +1019,10 @@ function toggle_sketch()
     radius.prop('disabled', true);
     angle.prop('disabled', true);
   }
-  
 }
 
-function toggle_paint() 
+function toggle_paint () 
 {
-  
   var sepia = $('#sepia');
   var value = $('#paint_value');
   var blur = $('#blur');
@@ -1059,7 +1031,7 @@ function toggle_paint()
   var paint = $('#paint');
   var crop = $('#crop');
   
-  if(paint.prop('checked'))
+  if (paint.prop('checked'))
   {
     value.prop('disabled', false);
     sepia.prop('checked', false);
@@ -1078,10 +1050,9 @@ function toggle_paint()
   {
     value.prop('disabled', true);
   }
-  
 }
 
-function showPreview()
+function showPreview ()
 {  
   if (!checkform()) return false;
   
@@ -1241,7 +1212,7 @@ function showPreview()
    });
 }
 
-function activate()
+function activate ()
 {
   $('#crop').attr('checked', true);
   toggle_crop();
@@ -1257,13 +1228,13 @@ function activate()
   toggle_colorspace();
 }
 
-function toggleDivAndButton( caller, element )
+function toggleDivAndButton (caller, element)
 {
   var options = $(element);
   caller = $(caller);  
   var time = 500;
     
-  if(options.css('display') == 'none')
+  if (options.css('display') == 'none')
   {
     caller.addClass('hcmsButtonActive');
     document.forms['mediaconfig'].crop.checked = true;
@@ -1415,6 +1386,8 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
         <input name="imageheight" type="text" id="imageheight" size="5" maxlength="5" value="<?php echo $media_size[1]; ?>" /> px
       </div>
     </div>
+    
+    <?php if (getimagelib () != "GD") { ?>
     <!-- Effects -->
     <div class="cell">
       <div class="row" style="margin-left:20px;">
@@ -1453,8 +1426,9 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
         <input name="paint_value" type="text" id="paint_value" size="2" maxlength="3" value="0" />
       </div>
     </div>
+    <?php } ?>
     
-    <div class="cell">
+    <div class="cell">    
       <!-- rotate -->
       <div class="row">
         <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
@@ -1468,6 +1442,8 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
           <option value="-90" title="-90&deg;">270&deg;</option>
         </select>
       </div>
+      
+      <?php if (getimagelib () != "GD") { ?>
       <!-- flip flop -->
       <div class="row">
         <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
@@ -1485,7 +1461,10 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
           ?>
         </select>
       </div>
+      <?php } ?>      
     </div>
+    
+    <?php if (getimagelib () != "GD") { ?>
     <!-- brigthness / contrast -->
     <div class="cell">
       <div style="margin-left:20px" class="row">
@@ -1502,8 +1481,11 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
         <input name="contrast" type="text" id="contrast" size="4" value="0" />
       </div>
     </div>
-    <!-- colorspace -->
+    <?php } ?>
+    
     <div class="cell">
+    <?php if (getimagelib () != "GD") { ?>
+      <!-- colorspace -->
       <div class="row">
         <input type="checkbox" id="chbx_colorspace" name="colorspace" value="1" onclick="toggle_colorspace();" />
         <strong><label for="chbx_colorspace"><?php echo $text34[$lang]; ?></label></strong>
@@ -1520,6 +1502,8 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
           ?>
           </select>
       </div>
+      <?php } ?>
+      
       <!-- format -->
       <div style="margin-left:20px;">
         <strong><label for="imageformat"><?php echo $text8[$lang]; ?></label></strong>
@@ -1539,7 +1523,9 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
           ?>
           </select>
       </div>
-    </div><br/>    
+    </div>
+    <br/>
+    
     <div class="cell">
       <input class="hcmsButtonGreen" type="button" name="save" onclick="submitform(true);" value="<?php echo $text12[$lang]; ?>">
       <input class="hcmsButtonGreen" type="button" name="preview" onclick="showPreview();" value="<?php echo $text29[$lang]; ?>"> 

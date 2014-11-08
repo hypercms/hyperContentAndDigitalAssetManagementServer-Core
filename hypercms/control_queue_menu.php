@@ -251,7 +251,7 @@ if ($show != "") echo showmessage ($show, 650, 60, $lang, "position:absolute; le
     <?php
     // QUEUE EDIT BUTTON
     if ($multiobject_count <= 1 && $page != "" && 
-      (($media == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || ($media != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1))
+      ((empty ($media) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || (empty ($media) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1))
     )
     {
       echo "<img ".

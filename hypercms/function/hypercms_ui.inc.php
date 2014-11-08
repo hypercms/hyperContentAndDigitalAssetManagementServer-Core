@@ -700,8 +700,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             // predict the name to check if the file does exist and maybe is actual
             $newname = $file_info['filename'].'.'.$typename.'.'.$width.'x'.$height.'.'.$newext;
             
+            // if thumbnail file is smaller than the defined size of a thumbnail due to a smaller original image
+            if (is_array ($thumb_size) && $thumb_size[0] < 180 && $thumb_size[1] < 180)
+            {
+              $width = $thumb_size[0];
+              $height = $thumb_size[1];
+            }
             // generate a new image file if the new image size is greater than 150% of the width or height of the thumbnail
-            if (($width > 0 && $thumb_size[0] * 1.5 < $width) && ($height > 0 && $thumb_size[1] * 1.5 < $height) && is_array ($mgmt_imageoptions))
+            elseif (is_array ($thumb_size) && ($width > 0 && $thumb_size[0] * 1.5 < $width) && ($height > 0 && $thumb_size[1] * 1.5 < $height) && is_array ($mgmt_imageoptions))
             {
               // generate new file only when another one wasn't already created or is outdated
               if (@filemtime ($media_root.$site.'/'.$file_info['file']) > @filemtime ($viewfolder.$newname)) 
@@ -718,7 +724,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 if ($formats != "")
                 {
                   $mgmt_imageoptions[$formats][$typename.'.'.$width.'x'.$height] = '-s '.$width.'x'.$height.' -f '.$newext;
+                  
                   $result = createmedia ($site, $media_root.$site."/", $viewfolder, $file_info['file'], $newext, $typename.'.'.$width.'x'.$height);
+                  
                   if ($result) $mediafile = $result;
                 }
               }
