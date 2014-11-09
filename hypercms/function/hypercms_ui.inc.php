@@ -220,14 +220,14 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $indiv
     }
     
     return "  <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
-    <table style=\"width:100%; height:28px; padding:0; border-spacing:0; border-collapse:collapse;\">
+    <table style=\"width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
-        <td class=\"hcmsHeadline\" style=\"text-align:left; vertical-align:middle; padding:2px 6px 2px 6px; white-space:nowrap;\">".$show."</td>".
+        <td class=\"hcmsHeadline\" style=\"text-align:left; vertical-align:middle; padding:0; margin:0; white-space:nowrap;\">&nbsp;".$show."&nbsp;</td>".
         $individual_button_code.$close_button_code.
       "</tr>
     </table>
   </div>
-  <div style=\"width:100%; height:32px;\">&nbsp;</div>\n";
+  <div style=\"width:100%; height:34px;\">&nbsp;</div>\n";
   }
   else return false;
 }
@@ -265,15 +265,15 @@ function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_
     }
     
     return "  <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
-    <table style=\"width:100%; height:28px; padding:0; border-spacing:0; border-collapse:collapse;\">
+    <table style=\"width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
-        <td class=\"hcmsHeadline\" style=\"width:80px; text-align:left; vertical-align:middle; padding:2px 6px 2px 6px; white-space:nowrap;\">".$show."</td>
-        <td style=\"text-align:left; vertical-align:middle; padding:0;\">".$menu_button."</td>".
+        <td class=\"hcmsHeadline\" style=\"width:80px; text-align:left; vertical-align:middle; padding:0; margin:0; white-space:nowrap;\">&nbsp;".$show."&nbsp;</td>
+        <td style=\"text-align:left; vertical-align:middle; padding:0; margin:0;\">".$menu_button."</td>".
         $close_button.
       "</tr>
     </table>
   </div>
-  <div style=\"width:100%; height:32px;\">&nbsp;</div>\n";
+  <div style=\"width:100%; height:34px;\">&nbsp;</div>\n";
   }
   else return false;
 }
@@ -1112,7 +1112,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
           {		
     			  $youtube_uploads['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;"> 
-    			  <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openBrWindowItem("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","420","300")\'>'.$text108[$lang].'</button> </td>';
+    			  <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","420","300")\'>'.$text108[$lang].'</button> </td>';
     		  }
     		}
 	    }
@@ -1184,7 +1184,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
               {	
       			    $youtube_uploads[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;"> 
-          		<button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openBrWindowItem("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","420","300")\'>'.$text108[$lang].'</button> </td>';
+          		<button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","420","300")\'>'.$text108[$lang].'</button> </td>';
           		}
     				}
   				}
@@ -1381,7 +1381,7 @@ function sendMediaInput(newtext, newvalue)
       else $popup_upload = "popup_upload_swf.php";
       
       $result .= "<div style=\"align:center; padding:2px; width:100%;\">
-        <input name=\"UploadButton\" class=\"hcmsButtonGreen\" style=\"width:198px; float:left;\" type=\"button\" onClick=\"hcms_openBrWindowItem('".$mgmt_config['url_path_cms'].$popup_upload."?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."','','status=yes,scrollbars=no,resizable=yes,width=600,height=400','600','400');\" value=\"".$text5[$lang]."\" />
+        <input name=\"UploadButton\" class=\"hcmsButtonGreen\" style=\"width:198px; float:left;\" type=\"button\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms'].$popup_upload."?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."','','status=yes,scrollbars=no,resizable=yes,width=600,height=400','600','400');\" value=\"".$text5[$lang]."\" />
         <img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".$text7[$lang]."\" title=\"".$text7[$lang]."\" />
       </div>
       <div style=\"clear:both;\"></div>\n";
@@ -1389,7 +1389,7 @@ function sendMediaInput(newtext, newvalue)
     elseif (($compcat == "single" || $compcat == "multi") && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1 && $search_expression == "")
     {
       $result .= "<div style=\"align:center; padding:2px; width:100%;\">
-        <input name=\"UploadButton\" class=\"hcmsButtonGreen\" style=\"width:198px; float:left;\" type=\"button\" onClick=\"hcms_openBrWindowItem('".$mgmt_config['url_path_cms']."frameset_content.php?site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."','','status=yes,scrollbars=no,resizable=yes,width=800,height=600','800','600');\" value=\"".$text6[$lang]."\" />
+        <input name=\"UploadButton\" class=\"hcmsButtonGreen\" style=\"width:198px; float:left;\" type=\"button\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."frameset_content.php?site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."','','status=yes,scrollbars=no,resizable=yes,width=800,height=600','800','600');\" value=\"".$text6[$lang]."\" />
         <img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".$text7[$lang]."\" title=\"".$text7[$lang]."\" />
       </div>
       <div style=\"clear:both;\"></div>\n";

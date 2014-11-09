@@ -9381,7 +9381,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
             $dup_location = getlocation ($duplicate['objectpath']);
             $dup_object = getobject ($duplicate['objectpath']);
             $dup_name = specialchr_decode ($dup_object);
-            $links[] = '<a href="#" onclick="hcms_openBrWindowItem(\''.$mgmt_config['url_path_cms'].'frameset_content.php?site='.$site.'&ctrlreload=yes&cat=comp&location='.urlencode($dup_location).'&page='.urlencode($dup_object).'\',\''.uniqid().'\',\'status=yes,scrollbars=no,resizable=yes\',\'800\',\'600\');">'.$dup_name.'</a>';
+            $links[] = '<a href="#" onclick="hcms_openWindow(\''.$mgmt_config['url_path_cms'].'frameset_content.php?site='.$site.'&ctrlreload=yes&cat=comp&location='.urlencode($dup_location).'&page='.urlencode($dup_object).'\',\''.uniqid().'\',\'status=yes,scrollbars=no,resizable=yes\',\'800\',\'600\');">'.$dup_name.'</a>';
           }
         }
         

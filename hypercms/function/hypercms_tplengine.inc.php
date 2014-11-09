@@ -2241,7 +2241,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   }
                   else $formitem[$key] = "<b color=\"red\">".$text56[$lang]."</b>";
                   
-                  $formitem[$key] .= "</select> <img src=\"".getthemelocation()."img/button_help.gif\" onClick=\"hcms_openBrWindowItem('".$mgmt_config['url_path_cms']."head_contenttype.php','help','resizable=yes,scrollbars=yes','800','600')\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".$text57[$lang]."\" title=\"".$text57[$lang]."\"></td></tr></table></td></tr>\n";              
+                  $formitem[$key] .= "</select> <img src=\"".getthemelocation()."img/button_help.gif\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."head_contenttype.php','help','resizable=yes,scrollbars=yes','800','600')\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".$text57[$lang]."\" title=\"".$text57[$lang]."\"></td></tr></table></td></tr>\n";              
                 }   
               }
               // if page language
@@ -2422,7 +2422,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           }
           else $formitem['0'] = "<b color=\"red\">".$text56[$lang]."</b>";
           
-          $formitem['0'] .= "</select> <img border=0 src=\"".getthemelocation()."img/button_help.gif\" onClick=\"hcms_openBrWindowItem('".$mgmt_config['url_path_cms']."head_contenttype.php','help','resizable=yes,scrollbars=yes','800','600')\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".$text57[$lang]."\" title=\"".$text57[$lang]."\"></td></tr></table></td></tr>\n";              
+          $formitem['0'] .= "</select> <img border=0 src=\"".getthemelocation()."img/button_help.gif\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."head_contenttype.php','help','resizable=yes,scrollbars=yes','800','600')\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".$text57[$lang]."\" title=\"".$text57[$lang]."\"></td></tr></table></td></tr>\n";              
         }        
       }
 
@@ -4896,7 +4896,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     if ($searchtag == "component")
                     {                   
                       // create tag link for editor
-                      if (!empty ($contentbot)) $compeditlink = "<img onClick=\"hcms_openBrWindowComp('', 'scrollbars=yes,resizable=yes,width=800,height=600,status=yes', '".str_replace ("%comp%", "", $contentbot)."');\" src=\"".getthemelocation()."img/button_file_edit.gif\" alt=\"".$text25[$lang]."\" title=\"".$text25[$lang]."\"  style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /><a hypercms_href=\"".$mgmt_config['url_path_cms']."page_save.php?site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr[".$id."]=".url_encode($contentbot)."&component[".$id."]=&condition[".$id."]=".url_encode($condbot)."&token=".$token."\" /><img src=\"".getthemelocation()."img/button_delete.gif\" alt=\"".$text26[$lang]."\" title=\"".$text26[$lang]."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a>";
+                      if (!empty ($contentbot)) $compeditlink = "<img onClick=\"hcms_openWindowComp('', 'scrollbars=yes,resizable=yes,width=800,height=600,status=yes', '".str_replace ("%comp%", "", $contentbot)."');\" src=\"".getthemelocation()."img/button_file_edit.gif\" alt=\"".$text25[$lang]."\" title=\"".$text25[$lang]."\"  style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /><a hypercms_href=\"".$mgmt_config['url_path_cms']."page_save.php?site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr[".$id."]=".url_encode($contentbot)."&component[".$id."]=&condition[".$id."]=".url_encode($condbot)."&token=".$token."\" /><img src=\"".getthemelocation()."img/button_delete.gif\" alt=\"".$text26[$lang]."\" title=\"".$text26[$lang]."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a>";
                       else $compeditlink = "";
                       
                       if ($buildview == "cmsview" || $buildview == 'inlineview')
@@ -5374,7 +5374,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         {
                           if (($buildview == "cmsview" || $buildview == "inlineview") && $onedit != "hidden" && $icon != "hidden") 
                           {
-                            $taglink = "<div><img onClick=\"hcms_openBrWindowComp('', 'scrollbars=yes,resizable=yes,width=800,height=600,status=yes', '".str_replace ("%comp%", "", $component_link)."');\"  src=\"".getthemelocation()."img/button_edit.gif\" alt=\"".$text25[$lang]."\" title=\"".$text25[$lang]."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','delete');\" src=\"".getthemelocation()."img/button_delete.gif\" alt=\"".$text26[$lang]."\" title=\"".$text26[$lang]."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','moveup');\"  src=\"".getthemelocation()."img/button_moveup.gif\" alt=\"".$text27[$lang]."\" title=\"".$text27[$lang]."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','movedown');\" src=\"".getthemelocation()."img/button_movedown.gif\" alt=\"".$text28[$lang]."\" title=\"".$text28[$lang]."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></div>\n";
+                            $taglink = "<div><img onClick=\"hcms_openWindowComp('', 'scrollbars=yes,resizable=yes,width=800,height=600,status=yes', '".str_replace ("%comp%", "", $component_link)."');\"  src=\"".getthemelocation()."img/button_edit.gif\" alt=\"".$text25[$lang]."\" title=\"".$text25[$lang]."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','delete');\" src=\"".getthemelocation()."img/button_delete.gif\" alt=\"".$text26[$lang]."\" title=\"".$text26[$lang]."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','moveup');\"  src=\"".getthemelocation()."img/button_moveup.gif\" alt=\"".$text27[$lang]."\" title=\"".$text27[$lang]."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','movedown');\" src=\"".getthemelocation()."img/button_movedown.gif\" alt=\"".$text28[$lang]."\" title=\"".$text28[$lang]."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></div>\n";
   
                             $scriptarray .= "item['".$id."'][".$i."] = '".$component_link."';\n";
                             $i++;
@@ -5939,7 +5939,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           if ($buildview != "preview") $scriptcode .= "<script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
   <script language=\"JavaScript\">
   <!--  
-  function hcms_openBrWindowComp (winName, features, theURL)
+  function hcms_openWindowComp (winName, features, theURL)
   { 
     if (theURL != '')
     {

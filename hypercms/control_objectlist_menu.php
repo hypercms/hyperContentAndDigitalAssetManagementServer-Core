@@ -919,7 +919,7 @@ else
     $dropbox_rendering = (is_array ($mgmt_config) && array_key_exists ("dropbox_appkey", $mgmt_config) && !empty ($mgmt_config['dropbox_appkey']));
     
     if (!$is_mobile) $left = "262px";
-    else $left = "182px";
+    else $left = "227px";
     
     if ($multiobject_count <= 1 && $perm_rendering && $lock_rendering && $page != "" && $media != "" && ($doc_rendering || $img_rendering || $dropbox_rendering))
     {

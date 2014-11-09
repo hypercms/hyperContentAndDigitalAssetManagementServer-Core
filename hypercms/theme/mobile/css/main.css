@@ -53,8 +53,8 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 32px;
-  z-index:900;
+  height: 36px;
+  z-index: 900;
 }
 
 .hcmsLocationBar
@@ -363,15 +363,12 @@
 
 .hcmsButtonMenu
 {
-  line-height: 32px;
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #6A9FEF) );
-	background: -moz-linear-gradient( center top, #C8DCFF 5%, #6A9FEF 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#6A9FEF');
+  height: 28px;
 	border-right: 1px solid #CEE0FE;
 	float: left;
-	padding: 2px 10px 2px 10px;
+	padding: 6px 10px 0px 10px;
+  margin: 0;
 	text-decoration: none;
-  vertical-align: middle;
   cursor: pointer;
 }
 .hcmsButtonMenu:hover
@@ -598,7 +595,7 @@
 input, select, textarea 
 {
   font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 14px;
+  font-size: 16px;
   font-weight: normal;
   color: #000000;
   text-decoration: none;
@@ -610,7 +607,7 @@ input, select, textarea
 a 
 {
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   text-decoration: none;
   color: #000000;
@@ -646,7 +643,7 @@ html, body
 html, body, table, td, span
 {  
   font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 14px; 
+  font-size: 16px; 
   font-weight: normal; 
   color: #000000; 
   text-decoration: none;
@@ -661,7 +658,7 @@ ul.hcmsStructuredList
 
 ul.hcmsStructuredList li
 {
-  padding-left: 14px;
+  padding-left: 16px;
 }
 
 ins

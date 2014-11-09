@@ -600,6 +600,10 @@ changelog:
 - Improvement of information in main config
 - bug fix: when using the GD library instead of ImageMagick, the aspect ration of images have been changed when creating other formats
 - bug fix: undefined variables in indexes in control_queue_menu and function manipulateobject
+- change personal theme in GUI immediately and not after next logon
+- removed statistics on home screen of mobile edition
+- bug fix: hyperCMS API used deprecated JS function hcms_openBrWindow
+- bug fix: top-bar spacing issues in mobile edition 
 */
 
 // current version

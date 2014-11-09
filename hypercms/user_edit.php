@@ -55,6 +55,7 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 $show = "";
+$add_onload = "";
 
 // save user
 if ($action == "user_save" && ($site == "*Null*" || checkpublicationpermission ($site)) && checktoken ($token, $user))
@@ -77,6 +78,13 @@ if ($action == "user_save" && ($site == "*Null*" || checkpublicationpermission (
     $result = edituser ($site, $login, $old_password, $password, $confirm_password, $superadmin, $realname, $language, $theme, $email, $signature, $usergroup, $usersite, $user);
     $add_onload = "";
     $show = $result['message'];
+    
+    // change theme in session if user changed it
+    if ($login_cat == "home" && $login == $user && !empty ($theme) && $hcms_themename != $theme)
+    {
+      $_SESSION['hcms_themename'] = $theme;
+      $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
+    }
   }
   else
   {
@@ -266,7 +274,7 @@ function move(fbox, tbox)
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric">
+<body class="hcmsWorkplaceGeneric" onload="<?php echo $add_onload; ?>">
 
 <?php
 echo showmessage ($show, 460, 70, $lang, "position:absolute; left:15px; top:15px;");

@@ -259,16 +259,19 @@
 
 .hcmsWorkplaceBar
 {
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #A2C5F9) );
-	background: -moz-linear-gradient( center top, #C8DCFF 5%, #A2C5F9 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#A2C5F9');
   background-color: #A2C5F9;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#A2C5F9');
+  background-image: linear-gradient(#C8DCFF 0%, #A2C5F9 100%);
+  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #A2C5F9) );
+  background: -moz-linear-gradient( center top, #C8DCFF 5%, #A2C5F9 100% );
   border-bottom: 1px solid #5AAD5A;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 26px;
+  height: 28px;
+  marin: 0;
+  padding: 0;
   z-index:900;
 }
 

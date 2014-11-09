@@ -218,7 +218,7 @@ function hcms_geoposition (position)
   
   <?php
   // ---------------------- STATS ---------------------
-  if (isset ($mgmt_config['home_stats']) && $mgmt_config['home_stats'] == true && isset ($siteaccess) && is_array ($siteaccess))
+  if (!$is_mobile && isset ($mgmt_config['home_stats']) && $mgmt_config['home_stats'] == true && isset ($siteaccess) && is_array ($siteaccess))
   {
     $title = $text2[$lang];
     
