@@ -65,15 +65,6 @@ function adjust_width ()
   setwidth = width;
   document.getElementById('workplFrame').style.width = setwidth + "px";
 }
-
-function logoutUser()
-{
-  top.location.href = "userlogout.php";
-  return null;
-}
-
-// disabled
-// window.onunload = window.onbeforeunload = logoutUser;
 -->
 </script>
 </head>
@@ -116,9 +107,14 @@ $servertime->InstallClockBody();
 ?>
 
 <!-- workplace -->
-<iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php" border="0" style="position:fixed; top:32px; left:0; width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+<div id="workplLayer" style="position:fixed; top:32px; bottom:0; left:0; width:100%; margin:0; padding:0;">
+  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php" border="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</div>
+
 <!-- chat sidebar -->
-<div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:32px; right:0px; width:300px; z-index:10; display:none;"><iframe id="chatFrame" scrolling="auto" src="chat.php" border="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe></div>
+<div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:32px; right:0; bottom:0; width:300px; z-index:100; display:none;">
+  <iframe id="chatFrame" scrolling="auto" src="chat.php" border="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</div>
 
 </body>
 </html>

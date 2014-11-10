@@ -213,6 +213,9 @@ $text69['de'] = "Mittelgro&szlig;e Symbole";
 $text70['en'] = "Large thumbnails";
 $text70['de'] = "Gro&szlig;e Symbole";
 
+$text71['en'] = "";
+$text71['de'] = "";
+
 $text72['en'] = "PDF";
 $text72['de'] = "PDF";
 

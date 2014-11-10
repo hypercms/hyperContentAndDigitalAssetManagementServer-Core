@@ -47,36 +47,14 @@ function openInfo()
   hcms_openWindow('top_info.php', 'help', 'resizable=no,scrollbars=no', '640', '400');
 }
 
-function adjust_height (topFrameHeight)
-{
-  var height = hcms_getDocHeight();  
-  if (!topFrameHeight) topFrameHeight = 32;  
-  setheight = height - topFrameHeight;
-  
-  document.getElementById('navFrame').style.height = setheight + "px";
-  document.getElementById('workplFrame').style.height = setheight + "px";
-  if (document.getElementById('chatLayer')) document.getElementById('chatLayer').style.height = setheight + "px";
-  if (document.getElementById('chatFrame')) document.getElementById('chatFrame').style.height = setheight + "px";
-}
-
-function adjust_width (navFrameWidth)
-{
-  var width = hcms_getDocWidth();  
-  if (!navFrameWidth) navFrameWidth = 260;  
-  setwidth = width - navFrameWidth;
-  
-  document.getElementById('workplFrame').style.width = setwidth + "px";
-}
-
 function minNavFrame ()
 {
   if (document.getElementById('navFrame'))
   {
     var width = 42;
     
-    document.getElementById('navFrame').style.width = width + 'px';
-    document.getElementById('workplFrame').style.left = width + 'px';
-    adjust_width (width);
+    document.getElementById('navLayer').style.width = width + 'px';
+    document.getElementById('workplLayer').style.left = width + 'px';
   }
 }
 
@@ -86,16 +64,15 @@ function maxNavFrame ()
   {
     var width = 260;
     
-    document.getElementById('navFrame').style.width = width + 'px';
-    document.getElementById('workplFrame').style.left = width + 'px';
-    adjust_width (width);
+    document.getElementById('navLayer').style.width = width + 'px';
+    document.getElementById('workplLayer').style.left = width + 'px';
   }
 }
 -->
 </script>
 </head>
 
-<body style="width:100%; height:100%; margin:0; padding:0;" onload="adjust_height(); adjust_width();" onresize="adjust_height(); adjust_width();">
+<body style="width:100%; height:100%; margin:0; padding:0;">
 
 <!-- top bar -->
 <div class="hcmsWorkplaceTop" style="position:fixed; left:0px; top:0px; width:100%; height:32px;">
@@ -133,14 +110,18 @@ $servertime->InstallClockBody();
 ?>
 
 <!-- explorer -->
-<iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php?refresh=1" style="position:fixed; top:32px; left:0px; width:260px; height:100%; border:0; margin:0; padding:0;"></iframe>
+<div id="navLayer" style="position:fixed; top:32px; bottom:0; left:0; width:260px; margin:0; padding:0;">
+  <iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php?refresh=1" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</div>
 
 <!-- workplace -->
-<iframe id="workplFrame" name="workplFrame" scrolling="no" src="home.php" style="position:fixed; top:32px; left:260px; width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+<div id="workplLayer" style="position:fixed; top:32px; right:0; bottom:0; left:260px; margin:0; padding:0;">
+  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="home.php" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</div>
 
 <!-- chat sidebar -->
 <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
-<div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:32px; right:0px; width:300px; z-index:10; display:none;">
+<div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:32px; right:0; bottom:0; width:300px; z-index:100; display:none;">
   <iframe id="chatFrame" scrolling="auto" src="chat.php" border="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
 </div>
 <?php } ?>

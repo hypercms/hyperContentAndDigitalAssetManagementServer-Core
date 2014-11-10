@@ -31,22 +31,13 @@ checkusersession ($user, false);
 <meta name="viewport" content="width=800; initial-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
-<script language="JavaScript">
-<!--
-function adjust_height ()
-{
-  var height = hcms_getDocHeight();  
-  
-  var setheight = height - 24;
-  if (document.getElementById('mainFrame2')) document.getElementById('mainFrame2').style.height = setheight + "px";
-}
--->
-</script>
 </head>
 
-<body style="width:100%; height:100%; margin:0; padding:0;" onload="adjust_height();" onresize="adjust_height();">
+<body style="width:100%; height:100%; margin:0; padding:0;">
   <iframe id="controlFrame2" name="controlFrame2" scrolling="no" src="<?php echo "template_edit_menu.php?site=".$site."&cat=".$cat."&template=".$template; ?>" style="position:fixed; top:0; left:0; width:100%; height:24px; border:0; margin:0; padding:0;"></iframe>
-  <iframe id="mainFrame2" name="mainFrame2" src="<?php echo "template_edit.php?site=".$site."&cat=".$cat."&template=".$template; ?>" style="position:fixed; top:24px; left:0; width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+  <div style="position:fixed; top:24px; right:0; bottom:0; left:0; margin:0; padding:0;">
+    <iframe id="mainFrame2" name="mainFrame2" src="<?php echo "template_edit.php?site=".$site."&cat=".$cat."&template=".$template; ?>" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+  </div>
 </frameset>
 <noframes></noframes>
 </html>

@@ -604,6 +604,7 @@ changelog:
 - removed statistics on home screen of mobile edition
 - bug fix: hyperCMS API used deprecated JS function hcms_openBrWindow
 - bug fix: top-bar spacing issues in mobile edition 
+- replacing framesets by iframes in instance manager and import/export manager
 */
 
 // current version

@@ -571,7 +571,7 @@ else
     elseif ($perm_rendering && $lock_rendering && (!empty ($media) || $page == ".folder") && $page != "")
     {
       echo "<div class=\"hcmsButton hcmsButtonSizeWide\" onClick=\"submitToSelf('download');\">".
-      "<img class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_download.gif\" alt=\"".$text6[$lang]."\" title=\"".$text6[$lang]."\" /><img src=\"".getthemelocation()."img/pointer_select.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeNarrow\" alt=\"".$text71[$lang]."\" title=\"".$text71[$lang]."\" /></div>\n";
+      "<img class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_download.gif\" alt=\"".$text6[$lang]."\" title=\"".$text6[$lang]."\" /><img src=\"".getthemelocation()."img/pointer_select.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeNarrow\" alt=\"".$text6[$lang]."\" title=\"".$text6[$lang]."\" /></div>\n";
     }
     else
     {

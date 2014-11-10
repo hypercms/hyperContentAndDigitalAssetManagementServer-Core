@@ -580,12 +580,12 @@ function switchsidebar ()
     {
       if (view)
       {
-        parent.frames['sidebarFrame'].hcms_resizeFrameWidth('mainFrame', 70, 'sidebarFrame', 0, '%');
+        parent.frames['sidebarFrame'].hcms_resizeFrameWidth('mainLayer', 75, 'sidebarLayer', 0, '%');
         sidebar = true;
       }
       else
       {
-        parent.frames['sidebarFrame'].hcms_resizeFrameWidth('mainFrame', 100, 'sidebarFrame', 0, '%');
+        parent.frames['sidebarFrame'].hcms_resizeFrameWidth('mainLayer', 100, 'sidebarLayer', 0, '%');
         sidebar = false;
       }
         

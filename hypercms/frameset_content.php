@@ -31,32 +31,21 @@ checkusersession ($user, false);
 <meta name="viewport" content="width=800; initial-scale=1.0; user-scalable=1;">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
-<script language="JavaScript">
-<!--
-function adjust_height ()
-{
-  var height = hcms_getDocHeight();  
-  
-  setheight = height - 100;
-  if (document.getElementById('objFrame')) document.getElementById('objFrame').style.height = setheight + "px";
-}
--->
-</script>
 </head>
 
-<body style="width:100%; height:100%; margin:0; padding:0;" onload="adjust_height();" onresize="adjust_height();">
+<body style="width:100%; height:100%; margin:0; padding:0;">
 <?php
 // open an object 
 if (isset ($page) && $page != "")
 {
-  echo "<iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" scrolling=\"no\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe>\n";
-  echo "<iframe id=\"objFrame\" name=\"objFrame\" src=\"page_view.php?ctrlreload=".$ctrlreload."&location=".$location."&page=".$page."\" scrolling=\"auto\" style=\"position:fixed; top:100px; left:0; width:100%; height:80%; border:0; margin:0; padding:0;\"></iframe>\n";
+  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" scrolling=\"no\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe>\n";
+  echo "  <div style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;\"><iframe id=\"objFrame\" name=\"objFrame\" src=\"page_view.php?ctrlreload=".$ctrlreload."&location=".$location."&page=".$page."\" scrolling=\"auto\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
 }
-// explorer/navigator  
+// open a location  
 elseif (isset ($location) && $location != "")
 {
-  echo "<iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_content_menu.php?location=".$location."\" scrolling=\"no\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe>\n";
-  echo "<iframe id=\"objFrame\" name=\"objFrame\" src=\"empty.php\" scrolling=\"auto\" style=\"position:fixed; top:100px; left:0; width:100%; height:90%; border:0; margin:0; padding:0;\"></iframe>\n";
+  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_content_menu.php?location=".$location."\" scrolling=\"no\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe>\n";
+  echo "  <div style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;\"><iframe id=\"objFrame\" name=\"objFrame\" src=\"empty.php\" scrolling=\"auto\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div\n";
 }
 ?>
 </body>
