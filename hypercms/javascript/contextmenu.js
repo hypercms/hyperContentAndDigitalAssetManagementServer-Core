@@ -209,6 +209,8 @@ function hcms_showContextmenu ()
       {
         if (eval (document.getElementById("img_preview"))) document.getElementById("img_preview").className = "hcmsIconOn";
         if (eval (document.getElementById("img_cmsview"))) document.getElementById("img_cmsview").className = "hcmsIconOn";
+        if (eval (document.getElementById("img_notify"))) document.getElementById("img_notify").className = "hcmsIconOn";
+        if (eval (document.getElementById("img_chat"))) document.getElementById("img_chat").className = "hcmsIconOn";
         if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOn";
         if (eval (document.getElementById("img_cut"))) document.getElementById("img_cut").className = "hcmsIconOn";
         if (eval (document.getElementById("img_copy"))) document.getElementById("img_copy").className = "hcmsIconOn";
@@ -221,6 +223,8 @@ function hcms_showContextmenu ()
       {
         if (eval (document.getElementById("img_preview"))) document.getElementById("img_preview").className = "hcmsIconOn";
         if (eval (document.getElementById("img_cmsview"))) document.getElementById("img_cmsview").className = "hcmsIconOn";
+        if (eval (document.getElementById("img_notify"))) document.getElementById("img_notify").className = "hcmsIconOn";
+        if (eval (document.getElementById("img_chat"))) document.getElementById("img_chat").className = "hcmsIconOn";
         if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOn";   
         if (eval (document.getElementById("img_cut"))) document.getElementById("img_cut").className = "hcmsIconOn";
         if (eval (document.getElementById("img_copy"))) document.getElementById("img_copy").className = "hcmsIconOn";      
@@ -233,6 +237,8 @@ function hcms_showContextmenu ()
       {  
         if (eval (document.getElementById("img_preview"))) document.getElementById("img_preview").className = "hcmsIconOff";
         if (eval (document.getElementById("img_cmsview"))) document.getElementById("img_cmsview").className = "hcmsIconOff";
+        if (eval (document.getElementById("img_notify"))) document.getElementById("img_notify").className = "hcmsIconOff";
+        if (eval (document.getElementById("img_chat"))) document.getElementById("img_chat").className = "hcmsIconOff";
         if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOff";   
         if (eval (document.getElementById("img_cut"))) document.getElementById("img_cut").className = "hcmsIconOff";
         if (eval (document.getElementById("img_copy"))) document.getElementById("img_copy").className = "hcmsIconOff";      

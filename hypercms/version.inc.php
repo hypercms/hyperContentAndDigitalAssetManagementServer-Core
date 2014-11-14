@@ -596,7 +596,7 @@ changelog:
 - new feature "delete from server" on upload of new files in order to remove them again on a certain date and time
 - no resize of thumbnail if original image is smaller than defined thumbnail size
 - propagate all results from function createmediaobject to function uploadfile
-- function showmedia shows original thumbnail size if the thumbnail is smaller then the defined thumbnail size due to a small original image
+- function showmedia shows original thumbnail size if the thumbnail is smaller than the defined thumbnail size due to a small original image
 - Improvement of information in main config
 - bug fix: when using the GD library instead of ImageMagick, the aspect ration of images have been changed when creating other formats
 - bug fix: undefined variables in indexes in control_queue_menu and function manipulateobject
@@ -605,6 +605,12 @@ changelog:
 - bug fix: hyperCMS API used deprecated JS function hcms_openBrWindow
 - bug fix: top-bar spacing issues in mobile edition 
 - replacing framesets by iframes in instance manager and import/export manager
+- define date and time to remove files from system on upload
+- set default language and lang variable in function userlogin
+- bug fix: relocation version information on home screen for better support of small mobile screen resolutions
+- bug fix: JS function hcms_showContextmenu did not disable icons for notfication and chat in context menu if no object has been selected
+- bug fix: explorer_objectlist did hide notfication and chat completety in context menu if user has no permissions
+- improvements in hyperCMS UI document viewer regarding size of view
 */
 
 // current version

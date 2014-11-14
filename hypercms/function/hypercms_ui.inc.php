@@ -595,17 +595,28 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
         elseif (is_numeric ($width) && $width > 0)
         {
-          $height = round (($width / 0.73), 0);
+          // min. width is required for document viewer
+          if ($width < 320) $width = 320;
+          
+          $height = round (($width / 0.68), 0);
           $style .= "width=\"".$width."\" height=\"".$height."\"";
         }
         elseif (is_numeric ($height) && $height > 0)
         {
-          $width = round (($height * 0.73), 0);
+          $width = round (($height * 0.68), 0);
+          
+          // min. width is required for document viewer
+          if ($width < 320)
+          {
+            $width = 320;
+            $height = round (($width / 0.68), 0);
+          }
+          
           $style .= "width=\"".$width."\" height=\"".$height."\"";
         }
         else
         {
-          $style = "width=\"580\" height=\"720\"";
+          $style = "width=\"540\" height=\"740\"";
         }
       
         // generate security token from site/file name

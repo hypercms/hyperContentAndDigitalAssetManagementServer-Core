@@ -704,10 +704,12 @@ function sendtochat (text)
           <a href=# id="_href_cmsview" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" id="_img_cmsview" align="absmiddle" border=0 class="hcmsIconOff">&nbsp;<?php echo $text9[$lang]; ?></a><br /> 
           <?php } ?>
           <?php if ($setlocalpermission['root'] == 1) { ?>
-          <a href=# id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="img_notify" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo $text30[$lang]; ?></a><br /> 
+          <a href=# id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="img_notify" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo $text30[$lang]; ?></a><br />
+          <?php } else { ?>
+          <a href=# id="_href_notify" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="_img_notify" align="absmiddle" border=0 class="hcmsIconOff">&nbsp;<?php echo $text30[$lang]; ?></a><br /> 
           <?php } ?>
           <?php if ($setlocalpermission['root'] == 1 && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
-          <a href=# id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.gif" id="img_chat" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo $text38[$lang]; ?></a><br /> 
+          <a href=# id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.gif" id="img_chat" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo $text38[$lang]; ?></a><br />
           <?php } ?>
           <hr />
           <?php if ($setlocalpermission['root'] == 1 && $setlocalpermission['delete'] == 1 && $setlocalpermission['folderdelete'] == 1) { ?>

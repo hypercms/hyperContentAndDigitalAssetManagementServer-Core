@@ -13385,7 +13385,7 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
         {
           if ($dirfile != ".folder" && $dirfile != "." && $dirfile != "..")
           {
-            publishobjects ($action, $site, $location.$file, $dirfile, $published_only, $user);
+            processobjects ($action, $site, $location.$file, $dirfile, $published_only, $user);
           }
         }
         

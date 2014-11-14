@@ -162,7 +162,7 @@ function submitform ()
 echo showtopbar ($text0[$lang], $lang);
 ?>
 
-<?php echo showmessage ($message, 360, 70, $lang, "position:absolute; left:15px; top:15px;"); ?>
+<?php echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px;"); ?>
 
 <form name="notify" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
   <input type="hidden" name="action" value="save" />      

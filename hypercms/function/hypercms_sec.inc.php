@@ -743,7 +743,9 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
 
   require ($mgmt_config['abs_path_cms']."language/userlogin.inc.php");
   // include hypermailer class
-  if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php"); 
+  if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
+  // set default language
+  if (empty ($lang)) $lang = "en";
   
   // result array containing the following fields:
   $result = array(
@@ -934,6 +936,8 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         $userlanguage = getcontent ($usernode[0], "<language>");
         if (!empty ($userlanguage[0])) $result['lang'] = $userlanguage[0];
         else $result['lang'] = "en";
+        
+        $lang = $result['lang'];
         
         // hyperCMS theme
         if (is_mobilebrowser ())

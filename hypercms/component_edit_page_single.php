@@ -184,7 +184,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     <tr>
       <td nowrap="nowrap"><?php echo $text1[$lang]; ?>:</td>
       <td>
-        <input type="text" name="comp_name" style="width:350px;" value="<?php echo $component_name; ?>" disabled="disabled" />
+        <input type="text" name="comp_name" style="width:265px;" value="<?php echo $component_name; ?>" disabled="disabled" />
         <img onClick="openBrWindowComp('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" align="absmiddle" alt="<?php echo $text9[$lang]; ?>" title="<?php echo $text9[$lang]; ?>" />                          
         <img onClick="deleteEntry(document.forms['component']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" align="absmiddle" alt="<?php echo $text6[$lang]; ?>" title="<?php echo $text6[$lang]; ?>" />
         <img onclick="submitSingleComp(document.forms['component']);" name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1);" align="absmiddle" alt="OK" title="OK" />    
@@ -199,7 +199,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     <tr>
       <td nowrap="nowrap"><?php echo $text8[$lang]; ?>:</td>
       <td>
-        <select name="condition" style="width:350px;">
+        <select name="condition" style="width:265px;">
           <option value="">--- <?php echo $text9[$lang]; ?> ---</option>
           <?php
           $dir_item = @dir ($mgmt_config['abs_path_data']."customer/".$site."/");

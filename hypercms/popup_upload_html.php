@@ -764,7 +764,7 @@ echo showtopbar ($title.": ".$object_name, $lang);
       <?php if ($uploadmode == "multi") { ?>
       <div class="inline">
         <input type="checkbox" name="deleteobject" id="deleteobject" value="1" /><?php echo $text38[$lang]; ?>
-        <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" />
+        <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
         <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
         <img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo $text39[$lang]; ?>" title="<?php echo $text39[$lang]; ?>" />
       </div>
