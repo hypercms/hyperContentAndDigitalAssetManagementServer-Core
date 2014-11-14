@@ -598,12 +598,12 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           // min. width is required for document viewer
           if ($width < 320) $width = 320;
           
-          $height = round (($width / 0.68), 0);
+          $height = round (($width / 0.75), 0);
           $style .= "width=\"".$width."\" height=\"".$height."\"";
         }
         elseif (is_numeric ($height) && $height > 0)
         {
-          $width = round (($height * 0.68), 0);
+          $width = round (($height * 0.75), 0);
           
           // min. width is required for document viewer
           if ($width < 320)

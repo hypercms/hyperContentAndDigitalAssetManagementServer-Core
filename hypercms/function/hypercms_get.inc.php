@@ -1365,7 +1365,7 @@ function getusersonline ()
     
     while (($user = readdir ($dir)) !== false)
     {
-      if (is_file ($session_dir.$user) && $user != "." && $user != ".." && strpos ($user, ".dat") > 0)
+      if (is_file ($session_dir.$user) && $user != "." && $user != ".." && strpos ($user, ".dat") > 0 && strpos ($user, "hyperdav_") === false)
       {
         // only users that have been logged in the past 8 hours are online users
         $now = time();

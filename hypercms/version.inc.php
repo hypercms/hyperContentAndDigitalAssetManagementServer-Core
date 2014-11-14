@@ -611,6 +611,7 @@ changelog:
 - bug fix: JS function hcms_showContextmenu did not disable icons for notfication and chat in context menu if no object has been selected
 - bug fix: explorer_objectlist did hide notfication and chat completety in context menu if user has no permissions
 - improvements in hyperCMS UI document viewer regarding size of view
+- bug fix: funtion getusersonline returned WebDAV users, these users are not able to chat and must not be returned
 */
 
 // current version
