@@ -167,7 +167,7 @@ function openHelp ()
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <?php
-echo showmessage ($show, 500, 70, $lang, "position:absolute; left:15px; top:100px;")
+echo showmessage ($show, 500, 70, $lang, "position:fixed; left:15px; top:100px;")
 ?>
 
 <p class="hcmsHeadline"><?php echo $text1[$lang]; ?>: <?php echo $wf_name; ?></p>

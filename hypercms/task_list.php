@@ -65,7 +65,7 @@ $token_new = createtoken ($user);
 <body class="hcmsWorkplaceGeneric" leftmargin=2 topmargin=2 marginwidth=0 marginheight=0 onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif')">
 
 <?php
-echo showmessage ($show, 500, 70, $lang, "position:absolute; left:50px; top:100px;")
+echo showmessage ($show, 500, 70, $lang, "position:fixed; left:50px; top:100px;")
 ?>
 
 <!-- top bar -->

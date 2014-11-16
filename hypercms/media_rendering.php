@@ -556,7 +556,7 @@ $().ready(function() {
 
 <?php
 echo showinfobox ($text36[$lang], $lang, 8, "position:fixed; top:34px; left:10px; width:95%;");
-echo showmessage ($show, 600 , 80, $lang, "position:absolute; left:50px; top:150px;");
+echo showmessage ($show, 600 , 80, $lang, "position:fixed; left:50px; top:150px;");
 ?> 
 
 <!-- top bar -->

@@ -175,7 +175,7 @@ function selectAll (form_name, select_name, input_name)
 <body class="hcmsWorkplaceGeneric" onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif')">
 
 <?php
-echo showmessage ($show, 500, 70, $lang, "position:absolute; left:20px; top:100px;");
+echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;");
 ?> 
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">

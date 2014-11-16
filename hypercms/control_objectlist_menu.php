@@ -1282,7 +1282,7 @@ else
 <?php } ?>
 
 <?php
-if ($show != "") echo showmessage ($show, 650, 60, $lang, "position:absolute; left:15px; top:15px; ");
+echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
 ?>
 
 <div id="foldercreateLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:1; left:15px; top:15px; visibility:hidden">
@@ -1424,7 +1424,7 @@ setTimeout('downloadFile()', 1000);
   // download failed (zip file could not be created)
   else
   {
-    echo showmessage (str_replace ("%filesize%", $mgmt_config['maxzipsize'], $text81[$lang]), 650, 60, $lang, "position:absolute; left:15px; top:15px; ");
+    echo showmessage (str_replace ("%filesize%", $mgmt_config['maxzipsize'], $text81[$lang]), 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
   }
 }
 ?>

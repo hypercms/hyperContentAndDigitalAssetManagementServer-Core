@@ -314,7 +314,7 @@ function goToURL()
 </div>
 
 <?php
-if ($show != "") echo showmessage ($show, 650, 80, $lang, "position:absolute; left:15px; top:5px; ");
+echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ");
 ?>
 
 <div id="createmediacatLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:1; left:15px; top:5px; visibility:hidden;">

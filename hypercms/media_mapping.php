@@ -71,7 +71,7 @@ else
 <p class=hcmsHeadline><?php echo $text1[$lang]; ?></p>
 
 <?php
-echo showmessage ($show, 600, 70, $lang, "position:absolute; left:5px; top:50px;");
+echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
 ?>
 
 <form id="editor" name="editor" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">

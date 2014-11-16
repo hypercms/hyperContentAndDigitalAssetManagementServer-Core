@@ -1188,7 +1188,7 @@ $token_new = createtoken ($user);
   
   			$show .= "</div>";
               
-        echo showmessage ($show, 570, 200, $lang, "position:absolute; left:5px; top:55px;");
+        echo showmessage ($show, 570, 200, $lang, "position:fixed; left:5px; top:55px;");
 			}
 			?>
       <br />

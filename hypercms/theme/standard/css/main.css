@@ -232,6 +232,9 @@
 {
   vertical-align: middle;
   border: 2px solid #4294FF;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
   background-color: #ABD0FF;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;

@@ -573,7 +573,7 @@ if (isset ($stage_max) && $stage_max >= 0)
 ?>
 
 <?php
-echo showmessage ($show, 600, 70, $lang, "position:absolute; left:5px; top:100px;")
+echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
 ?>
             
   <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">

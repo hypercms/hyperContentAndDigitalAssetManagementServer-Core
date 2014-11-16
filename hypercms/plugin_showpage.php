@@ -112,7 +112,7 @@ else
 
 <body class="hcmsWorkplaceGeneric">
   <?php 
-  echo showmessage ($text0[$lang], 500, 40, $lang, "position:absolute; left:15px; top:40px;");
+  echo showmessage ($text0[$lang], 500, 40, $lang, "position:fixed; left:15px; top:40px;");
   ?>
 </body>
 </html>

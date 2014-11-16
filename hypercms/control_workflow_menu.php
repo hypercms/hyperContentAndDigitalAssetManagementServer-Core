@@ -260,7 +260,7 @@ function checkForm_item_create()
 </div>
 
 <?php
-echo showmessage ($show, 650, 60, $lang, "position:absolute; left:15px; top:15px; ");
+echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
 ?>
 
 <div id="createworkflowLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:4; left:15px; top:5px; visibility:hidden;">

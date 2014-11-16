@@ -174,7 +174,7 @@ if (is_array ($content_array))
   // output results
   if ($result != "") echo $result;
 }
-else showmessage ($text20[$lang], 600, 70, $lang, "position:absolute; left:5px; top:100px;");
+else showmessage ($text20[$lang], 600, 70, $lang, "position:fixed; left:5px; top:100px;");
 ?>
 </div>
 

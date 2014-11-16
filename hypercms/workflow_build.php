@@ -158,7 +158,7 @@ if ($savefile != false) echo "<meta http-equiv=\"refresh\" content=\"0; URL=".$m
 <body class="hcmsWorkplaceGeneric">
 
 <?php
-if ($show != "") echo showmessage ($show, 600, 70, $lang, "position:absolute; left:20px; top:20px;");
+echo showmessage ($show, 600, 70, $lang, "position:fixed; left:20px; top:20px;");
 ?>
 
 </body>

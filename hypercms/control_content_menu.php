@@ -683,7 +683,7 @@ else
 </div>
 
 <?php
-echo showmessage ($show, 650, 60, $lang, "position:absolute; left:15px; top:15px; ");
+echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
 ?>
 <!-- form used by send_link function -->
 <form target="_blank" method="post" action="" name="pagemenu_object">
@@ -849,7 +849,7 @@ setTimeout('downloadFile()', 1000);
   // download failed (zip file could not be created)
   else
   {
-    echo showmessage (str_replace ("%filesize%", $mgmt_config['maxzipsize'], $text81[$lang]), 650, 60, $lang, "position:absolute; left:15px; top:15px; ");
+    echo showmessage (str_replace ("%filesize%", $mgmt_config['maxzipsize'], $text81[$lang]), 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
   }
 }
 ?>

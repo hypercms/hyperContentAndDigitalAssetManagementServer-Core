@@ -565,7 +565,7 @@ function savetemplate(mode)
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <?php
-echo showmessage ($show, 650, 70, $lang, "position:absolute; left:15px; top:100px;")
+echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;")
 ?>
 
 <form name="template_edit" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">

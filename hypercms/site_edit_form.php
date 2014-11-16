@@ -96,7 +96,7 @@ function switchDAM ()
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <?php
-echo showmessage ($show, 500, 70, $lang, "position:absolute; left:15px; top:15px;");
+echo showmessage ($show, 500, 70, $lang, "position:fixed; left:15px; top:15px;");
 ?>
 
 <?php

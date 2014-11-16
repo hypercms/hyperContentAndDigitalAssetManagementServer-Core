@@ -100,7 +100,7 @@ if ($action)
     else $help = "";
 
     echo showtopbar ($text0[$lang], $lang, "", "", $help);
-    echo showmessage ($show, 500, 40, $lang, "position:absolute; left:15px; top:40px;");
+    echo showmessage ($show, 500, 40, $lang, "position:fixed; left:15px; top:40px;");
     ?>
     
     <!-- content -->    

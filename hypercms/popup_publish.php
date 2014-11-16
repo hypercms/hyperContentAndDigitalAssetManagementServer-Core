@@ -200,7 +200,7 @@ elseif ($action == "unpublish") echo $headline = $text8[$lang];
 echo showtopbar ($headline, $lang);
 ?>
 
-<?php echo showmessage ($message, 360, 70, $lang, "position:absolute; left:15px; top:15px;"); ?>
+<?php echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px;"); ?>
 
 <form name="publish" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
   <input type="hidden" name="action" value="<?php echo $action; ?>" />

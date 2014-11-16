@@ -277,7 +277,7 @@ function move(fbox, tbox)
 <body class="hcmsWorkplaceGeneric" onload="<?php echo $add_onload; ?>">
 
 <?php
-echo showmessage ($show, 460, 70, $lang, "position:absolute; left:15px; top:15px;");
+echo showmessage ($show, 460, 70, $lang, "position:fixed; left:15px; top:15px;");
 ?>  
 
 <?php

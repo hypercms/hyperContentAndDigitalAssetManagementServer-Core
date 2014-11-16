@@ -74,7 +74,7 @@ function warning_delete()
 <body class="hcmsWorkplaceControlWallpaper" onLoad="<?php echo $add_onload; ?>">
 
 <?php
-if ($show != "") echo showmessage ($show, 650, 60, $lang, "position:absolute; left:15px; top:15px; ");
+echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
 ?>
 
 <div class="hcmsLocationBar">
