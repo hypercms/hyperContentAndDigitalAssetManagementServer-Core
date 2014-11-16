@@ -66,13 +66,6 @@
   display: block;
 }
 
-.hcmsNavigator
-{
-  background-color: #FFFFFF;
-  border-color: #FFFFFF;
-  border: 2px solid #FFFFFF;
-}
-
 .hcmsContextMenu
 {
   border: 1px solid #000000;
@@ -676,5 +669,8 @@ del
 
 hr
 {
-  width: 98%;
+  height: 1px;
+  border-width :0;
+  color: #0ACA03;
+  background-color: #8EA9EC;
 }

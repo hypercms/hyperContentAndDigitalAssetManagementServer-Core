@@ -68,20 +68,10 @@
   display: block;
 }
 
-.hcmsNavigator
-{
-  border: 0;
-  margin: 0;
-  padding: 0;
-  background-color: #FFFFFF;
-  border-color: #FFFFFF;
-  border: 2px solid #FFFFFF;
-}
-
 .hcmsContextMenu
 {
   border: 1px solid #000000;
-  background-color: #FFFFFF;
+  background-color: #B9EDB7;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
@@ -685,5 +675,8 @@ del
 
 hr
 {
-  width: 98%;
+  height: 1px;
+  border-width :0;
+  color: #0ACA03;
+  background-color: #C0C0C0;
 }

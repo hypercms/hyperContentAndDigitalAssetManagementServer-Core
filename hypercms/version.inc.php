@@ -614,6 +614,7 @@ changelog:
 - bug fix: funtion getusersonline returned WebDAV users, these users are not able to chat and must not be returned#
 - fixed showmessage boxes positioning in GUI
 - rounded corners of showmessage boxes
+- improved design of context menu for all themes
 */
 
 // current version

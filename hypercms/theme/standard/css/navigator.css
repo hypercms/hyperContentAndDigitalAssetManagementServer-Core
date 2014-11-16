@@ -469,3 +469,11 @@ html, body, table, td, span
   height: 124px;
   border: 0;
 }
+
+hr
+{
+  height: 1px;
+  border-width :0;
+  color: #0ACA03;
+  background-color: #C0C0C0;
+}
