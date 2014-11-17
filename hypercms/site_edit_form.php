@@ -231,7 +231,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
         {
           while ($theme_opt = @readdir ($dir_handler))
           {
-            if ($theme_opt != "." && $theme_opt != ".." && is_dir ($theme_dir.$theme_opt))
+            if (strtolower($theme_opt) != "mobile" && $theme_opt != "." && $theme_opt != ".." && is_dir ($theme_dir.$theme_opt))
             {
               if ($mgmt_config[$site_name]['theme'] == $theme_opt)
               {

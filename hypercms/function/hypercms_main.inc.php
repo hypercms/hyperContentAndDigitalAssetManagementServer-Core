@@ -747,7 +747,7 @@ function deconvertlink ($path, $type="url")
         else $root_var = "%page%/".$site;
         
         // convert
-        if ($type == "url") $path = str_replace ($root_var, $publ_config['url_publ_page'], $path);
+        if ($type == "url") $path = cleandomain (str_replace ($root_var, $publ_config['url_publ_page'], $path));
         elseif ($type == "file") $path = str_replace ($root_var, $publ_config['abs_publ_page'], $path);
         
         // cut of host

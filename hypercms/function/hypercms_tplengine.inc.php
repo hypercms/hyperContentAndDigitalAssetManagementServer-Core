@@ -188,7 +188,7 @@ end if %>";
 function tpl_tslink ($application, $datefrom, $dateto, $content)
 {
   $application = strtolower (trim ($application));
-  
+
   // escape double quotes
   $content = str_replace ("\"", "\\\"", $content);
   
@@ -238,12 +238,13 @@ function tpl_insertcomponent ($application, $linkindex, $id)
 {
   $application = strtolower (trim ($application));
   
+  if (substr_count ($linkindex, "%comp%") > 0) $linkindex = str_replace ("%comp%", "", $linkindex);
+  
   if ($application == "php") 
   {
     if ($id != "") return "<?php insertcomponent (\$$linkindex, \"$id\"); ?>";
     else return "<?php insertcomponent (\"$linkindex\", \"$id\"); ?>";
-  } 
-  
+  }  
   elseif ($application == "jsp") 
   {
     if ($id != "") return "<% tok = insertcomponent ($linkindex, \"$id\", properties, out);
@@ -280,6 +281,8 @@ if(tok != null){
 function tpl_persinsertcomponent ($application, $condition, $linkindex, $id)
 {
   $application = strtolower (trim ($application));
+  
+  if (substr_count ($linkindex, "%comp%") > 0) $linkindex = str_replace ("%comp%", "", $linkindex);
   
   if ($application == "php") 
   {
@@ -335,6 +338,8 @@ function tpl_tsinsertcomponent ($application, $datefrom, $dateto, $linkindex, $i
 {
   $application = strtolower (trim ($application));
   
+  if (substr_count ($linkindex, "%comp%") > 0) $linkindex = str_replace ("%comp%", "", $linkindex);
+  
   if ($application == "php") 
   {
     if ($id != "") return "<?php if (\$hypercms_today >= ".$datefrom." && \$hypercms_today <= ".$dateto.") insertcomponent (\$$linkindex, \"$id\"); ?>";
@@ -388,6 +393,8 @@ end if %>";
 function tpl_tspersinsertcomponent ($application, $datefrom, $dateto, $condition, $linkindex, $id)
 {
   $application = strtolower (trim ($application));
+  
+  if (substr_count ($linkindex, "%comp%") > 0) $linkindex = str_replace ("%comp%", "", $linkindex);
   
   if ($application == "php") 
   {
@@ -475,13 +482,13 @@ hypercms_charset = \"$charset\"; %>\n";
 }
 
 // include livelink function
-function tpl_livelink ($application, $abs_publ_config)
+function tpl_livelink ($application, $abs_publ_config, $site)
 {
   $application = strtolower (trim ($application));
   
   if ($application == "php")
   {
-    return "<?php if (empty (\$hypercms_livelink_set)) {include_once ('".$abs_publ_config."livelink.inc.php'); \$hypercms_livelink_set = true;} ?>\n";
+    return "<?php \$publ_config = parse_ini_file ('".$abs_publ_config.$site.".ini'); if (empty (\$hypercms_livelink_set)) {include_once ('".$abs_publ_config."livelink.inc.php'); \$hypercms_livelink_set = true;} ?>\n";
   }
   elseif ($application == "jsp")
   { 
@@ -490,7 +497,20 @@ function tpl_livelink ($application, $abs_publ_config)
     // if you have each publication as one webapplication, you will have to locate livelink.inc.php to the application root
     // of each application. otherwise livelink.inc.jsp can not be included. java based web applications mostly don't allow 
     // to static include files outside the application root!
-    return "<%@ include file=\"/livelink.inc.jsp\" %>\n";
+    return "<%@ include file=\"/livelink.inc.jsp\" %>
+<%
+Properties properties = new Properties();
+
+try 
+{
+  properties.load(new FileInputStream(\"".$abs_publ_config.$site.".properties\"));
+} 
+
+catch (IOException e) 
+{
+  out.println(\"Error loading properties\");
+}
+%>\n";
   }
   elseif ($application == "asp")
   {
@@ -498,7 +518,25 @@ function tpl_livelink ($application, $abs_publ_config)
     // in ASP/VBScript functions can not be included using absolute paths in #include file.
     // this means you will have to locate livelink.inc.asp to the root of a virtual directory to include it using 'include virtual.
     // otherwise livelink.inc.asp can not be included. therefore you have to create a virtual directory named "include" in IIS.
-    return "<% if (IsNull(hypercms_livelink) and hypercms_livelink <> 1) then %><!--#include virtual=\"/include/livelink.inc.asp\"--><% hypercms_livelink = 1\nend if %>\n";
+    return "<% if (IsNull(hypercms_livelink) and hypercms_livelink <> 1) then %><!--#include virtual=\"/include/livelink.inc.asp\"--><% hypercms_livelink = 1\nend if %>
+<% 
+PathINI = \"".$abs_publ_config.$site.".ini\"
+Set objFSO = Server.CreateObject(\"Scripting.FileSystemObject\")
+Set publ_config = Server.CreateObject(\"Scripting.Dictionary\")
+
+if objFSO.FileExists(PathINI) then
+  set fileINI = objFSO.OpenTextFile(PathINI)
+  
+  do while fileINI.AtEndOfStream <> true
+	  lineINI = fileINI.ReadLine
+	
+  	if (left(lineINI,1)<>\";\" and len(lineINI) > 1) then
+  		MyArray = split(lineINI, \" = \")
+  		publ_config.Add MyArray(0), replace(MyArray(1),\"\"\"\",\"\")
+  	end if
+  loop
+end if
+%>\n";
   }
   elseif ($application == "aspx")
   {
@@ -506,7 +544,25 @@ function tpl_livelink ($application, $abs_publ_config)
     // in ASP/C# functions can not be included using absolute paths in #include file.
     // this means you will have to locate livelink.inc.asp to the root of a virtual directory to include it using 'include virtual.
     // otherwise livelink.inc.asp can not be included. therefore you have to create a virtual directory named "include" in IIS.
-    return "<% if (IsNull(hypercms_livelink) && hypercms_livelink!=1) { %><!--#include virtual=\"/include/livelink.inc.aspx\"--><% hypercms_livelink=1;\n} %>\n";
+    return "<% if (IsNull(hypercms_livelink) && hypercms_livelink!=1) { %><!--#include virtual=\"/include/livelink.inc.aspx\"--><% hypercms_livelink=1;\n} %>
+<% 
+PathINI = \"".$abs_publ_config.$site.".ini\"
+Set objFSO = Server.CreateObject(\"Scripting.FileSystemObject\")
+Set publ_config = Server.CreateObject(\"Scripting.Dictionary\")
+
+if objFSO.FileExists(PathINI) then
+  set fileINI = objFSO.OpenTextFile(PathINI)
+  
+  do while fileINI.AtEndOfStream <> true
+	  lineINI = fileINI.ReadLine
+	
+  	if (left(lineINI,1)<>\";\" and len(lineINI) > 1) then
+  		MyArray = split(lineINI, \" = \")
+  		publ_config.Add MyArray(0), replace(MyArray(1),\"\"\"\",\"\")
+  	end if
+  loop
+end if
+%>\n";
   }  
   else return "";
 }
@@ -520,22 +576,11 @@ function tpl_linkindex ($application, $abs_publ_config, $site, $container_id)
   
   if ($application == "php")
   {
-    return "<?php \$publ_config = parse_ini_file ('".$abs_publ_config.$site.".ini'); \$hypercms_$container_id = @file (\$publ_config['abs_publ_link'].'".$container_id."'); ?>\n";
+    return "<?php \$hypercms_$container_id = @file (\$publ_config['abs_publ_link'].'".$container_id."'); ?>\n";
   }
   elseif ($application == "jsp")
   {
-    return "<% Properties properties = new Properties();
-
-try 
-{
-  properties.load(new FileInputStream(\"".$abs_publ_config.$site.".properties\"));
-} 
-
-catch (IOException e) 
-{
-  out.println(\"Error loading properties\");
-}  
-
+    return "<%
 String abs_publ_link = properties.getProperty(\"abs_publ_link\");
 abs_publ_link += \"$container_id\";
 
@@ -566,24 +611,29 @@ if(f.exists())
   }
   elseif ($application == "asp")
   {
-    return "<% 
-PathINI = \"".$abs_publ_config.$site.".ini\"
+    return "<%
+PathLinkIndex = publ_config.item(\"abs_publ_link\") & \"".$container_id."\"
 Set objFSO = Server.CreateObject(\"Scripting.FileSystemObject\")
-Set publ_config = Server.CreateObject(\"Scripting.Dictionary\")
+Set hypercms_".$container_id." = Server.CreateObject(\"Scripting.Dictionary\")
 
-if objFSO.FileExists(PathINI) then
-  set fileINI = objFSO.OpenTextFile(PathINI)
+if objFSO.FileExists(PathLinkIndex) then
+  set fileLinkIndex = objFSO.OpenTextFile(PathLinkIndex)
+  i = 0 
   
-  do while fileINI.AtEndOfStream <> true
-	  lineINI = fileINI.ReadLine
-	
-  	if (left(lineINI,1)<>\";\" and len(lineINI) > 1) then
-  		MyArray = split(lineINI, \" = \")
-  		publ_config.Add MyArray(0), replace(MyArray(1),\"\"\"\",\"\")
+  do while fileLinkIndex.AtEndOfStream <> true
+  	lineLinkIndex = fileLinkIndex.ReadLine
+    
+  	if len(lineLinkIndex) > 1 Then
+      hypercms_".$container_id.".Add i, (lineLinkIndex)
+      i = i + 1
   	end if
   loop
-end if
-
+end if 
+%>\n";
+  }
+  elseif ($application == "aspx")
+  {
+    return "<%
 PathLinkIndex = publ_config.item(\"abs_publ_link\") & \"".$container_id."\"
 Set objFSO = Server.CreateObject(\"Scripting.FileSystemObject\")
 Set hypercms_".$container_id." = Server.CreateObject(\"Scripting.Dictionary\")
@@ -4604,14 +4654,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // $linkhrefbot[$id] must use the publication target settings
                       $linkhrefbot_insert = deconvertlink ($linkhrefbot[$id]);                 
                     }            
-                    // build article time management code when timeswitched
+                    // build article time management code if link is timeswitched
                     elseif ($searchtag == "artlink" && $artstatus[$artid] == "timeswitched")
                     {
-                      $linkhrefbot_insert = tpl_tslink ($application, $artdatefrom[$artid], $artdateto[$artid], $linkhrefbot[$id]);
+                      $linkhrefbot_insert = tpl_tslink ($application, $artdatefrom[$artid], $artdateto[$artid], deconvertlink ($linkhrefbot[$id]));
                       if ($hypertag_target[$id][$tagid] != "") $linktargetbot[$id] = tpl_tselement ($application, $artdatefrom[$artid], $artdateto[$artid], $linktargetbot[$id]);
                       if ($hypertag_text[$id][$tagid] != "") $linktextbot[$id] = tpl_tselement ($application, $artdatefrom[$artid], $artdateto[$artid], $linktextbot[$id]);
                     }
-                    // build article time management code when link inactive
+                    // build article time management code if link is inactive
                     elseif ($searchtag == "artlink" && $artstatus[$artid] == "inactive")
                     {
                       $linkhrefbot_insert = "#";
@@ -5633,7 +5683,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // components will be executed remotely and only the output will be inlcuded in the page              
           
             // set livelink function            
-            $tpl_livelink = tpl_livelink ($application, $publ_config['abs_publ_config']);
+            $tpl_livelink = tpl_livelink ($application, $publ_config['abs_publ_config'], $site);
       
             // set configuration and link index
             if ($mgmt_config[$site]['linkengine'] == true && isset ($container_id))
@@ -6112,7 +6162,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $tpl_globals = tpl_globals ($application, $contentfile, $charset);
 
             // insert code        
-            $viewstore = $tpl_globals.$tpl_linkindex.$tpl_livelink.$pagetracking.trim ($viewstore);     
+            $viewstore = $tpl_globals.$tpl_livelink.$tpl_linkindex.$pagetracking.trim ($viewstore);     
           }
         }
       }

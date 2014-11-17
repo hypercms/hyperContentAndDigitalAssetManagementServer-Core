@@ -615,6 +615,8 @@ changelog:
 - fixed showmessage boxes positioning in GUI
 - rounded corners of showmessage boxes
 - improved design of context menu for all themes
+- removed mobile theme as an option in publication management
+- bug fix: the template engine did not include the publication configuration if the link management has been disabled, therefore component have not been included by function insertcomponent
 */
 
 // current version
