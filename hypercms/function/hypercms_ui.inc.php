@@ -573,7 +573,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     if ($viewtype == "template" || ($setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1))
     {    
       // define html code for media file embedding
-    
+
       // ----------- if Version -----------
       if (strpos ("_".substr ($mediafile, strrpos ($mediafile, ".")), ".v_") == 1)
       {
@@ -923,6 +923,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $mediaheight = 240;
         }
         
+        // set width and height of media file as file-parameter
+        $mediaview .= "
+        <!-- hyperCMS:width file=\"".$mediawidth."\" -->
+        <!-- hyperCMS:height file=\"".$mediaheight."\" -->";
+        
         // if media size input is given (overwrite values)
         if ((is_numeric ($width) && $width > 0) && (is_numeric ($height) && $height > 0))
         {
@@ -939,11 +944,6 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $mediaheight = $height;
           $mediawidth = round (($mediaheight * $mediaratio), 0);
         }
-        
-        // set width and height of media file as file-parameter
-        $mediaview .= "
-        <!-- hyperCMS:width file=\"".$mediawidth."\" -->
-        <!-- hyperCMS:height file=\"".$mediaheight."\" -->";
         
         // check player size (and overwrite values)
         if ($mediawidth > 750)
@@ -1033,7 +1033,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
       }
     }
-    
+
     // ----------- show standard file icon ----------- 
     if ($mediaview == "")
     {

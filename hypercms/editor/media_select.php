@@ -42,8 +42,8 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 
 // check permissions
 if (
-     $globalpermission[$site]['component'] != 1 || 
      !valid_publicationname ($site) ||
+     $globalpermission[$site]['component'] != 1 || 
      ($mediatype != "image" && $mgmt_config[$site]['dam'] == true)
    ) killsession ($user);
 
@@ -65,6 +65,10 @@ if ($mediaobject != "")
   // convert location
   $location = deconvertpath ($location, "file");
   $location_esc = convertpath ($site, $location, "comp");
+  
+  // access permissions
+  $ownergroup = accesspermission ($site, $location, "comp");
+  $setlocalpermission = setlocalpermission ($site, $ownergroup, "comp");
   
   // load object file
   if (valid_locationname ($location) && valid_objectname ($object))
@@ -93,8 +97,8 @@ if (!empty ($mediafile) && $mediafile != "Null_media.gif")
   }
 	
 	// show media
-  $show = showmedia ($mediafile, $object_info['name'], "preview_no_rendering", "", 320);
-  
+  $show = showmedia ($mediafile, $object_info['name'], "preview_no_rendering", "", 288);
+
   // extract width and height from content
   if ($show != "")
   {
@@ -201,7 +205,7 @@ if (!empty ($mediafile))
   <input type=\"hidden\" name=\"mediaheight\" value=\"".$mediaheight."\" />
   <input type=\"hidden\" name=\"mediatype\" value=\"".$mediatype."\" />
 
-  <table border=0 cellpadding= cellspacing=2>
+  <table border=0 cellpadding=0 cellspacing=2>
     <tr>
       <td align=left valign=top>\n";
         

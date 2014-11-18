@@ -934,11 +934,24 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // keep video ratio for original thumbnail video
                 if ($type == "origthumb" && $videoinfo['ratio'] != "" && strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0)
                 {
+                  // get video size defined by media option 
                   $mediasize = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v");
                   list ($mediawidth, $mediaheight) = explode ("x", $mediasize);
                   
-                  if ($videoinfo['ratio'] > 1) $mediasize_new = intval($mediawidth)."x".round((intval($mediawidth)/$videoinfo['ratio']), 0);
-                  else $mediasize_new = round((intval($mediaheight)*$videoinfo['ratio']), 0)."x".intval($mediaheight);
+                  // if original video size is smaller than the defined size of the media option
+                  if ($videoinfo['width'] > 0 && $videoinfo['height'] > 0 && $videoinfo['width'] < $mediawidth && $videoinfo['height'] < $mediaheight)
+                  {
+                    $mediawidth = $videoinfo['width'];
+                    $mediaheight = $videoinfo['height'];
+                    
+                    $mediasize_new = intval($mediawidth)."x".intval($mediaheight);
+                  }
+                  // use size defined by media option
+                  else
+                  {
+                    if ($videoinfo['ratio'] > 1) $mediasize_new = intval($mediawidth)."x".round((intval($mediawidth)/$videoinfo['ratio']), 0);
+                    else $mediasize_new = round((intval($mediaheight)*$videoinfo['ratio']), 0)."x".intval($mediaheight);
+                  }
                   
                   $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-s:v ".$mediasize, "-s:v ".$mediasize_new, $mgmt_mediaoptions[$mediaoptions_ext]);
                 }

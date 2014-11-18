@@ -617,6 +617,8 @@ changelog:
 - improved design of context menu for all themes
 - removed mobile theme as an option in publication management
 - bug fix: the template engine did not include the publication configuration if the link management has been disabled, therefore component have not been included by function insertcomponent
+- bug fix: access permission has not been when using the editor to select a media file. this led to issues with the video preview.
+- if the provided thumbnail size of the main config is greater than the original video size the original video size will be used for video rendering
 */
 
 // current version
