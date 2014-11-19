@@ -474,7 +474,7 @@ function convertpath ($site, $path, $cat)
           }
           else 
           {
-            $path_page_url = cleandomain ($path_comp_url);
+            $path_comp_url = cleandomain ($path_comp_url);
             $path = cleandomain ($path);
             
             $path = str_replace ($path_comp_url, $root_var_url, $path);
@@ -573,7 +573,7 @@ function convertlink ($site, $path, $cat)
           }
           else 
           {
-            $path_page_url = cleandomain ($path_comp_url);
+            $path_comp_url = cleandomain ($path_comp_url);
             $path = cleandomain ($path);
             
             $path = str_replace ($path_comp_url, $root_var_url, $path);
@@ -747,11 +747,11 @@ function deconvertlink ($path, $type="url")
         else $root_var = "%page%/".$site;
         
         // convert
-        if ($type == "url") $path = cleandomain (str_replace ($root_var, $publ_config['url_publ_page'], $path));
+        if ($type == "url") $path = str_replace ($root_var, $publ_config['url_publ_page'], $path);
         elseif ($type == "file") $path = str_replace ($root_var, $publ_config['abs_publ_page'], $path);
         
-        // cut of host
-        $path = substr ($path, strpos ($path, "/", 8));
+        // cut of host/domain
+        if ($type == "url") $path = cleandomain ($path);
       }      
       elseif ($root_var == "%comp%/")
       {
@@ -1037,7 +1037,7 @@ function cleandomain ($path)
   
   if ($path != "")
   {
-    if (substr_count ($path, "://") == 1) $path = substr ($path, strpos ($path, "/", 9));
+    if (substr_count ($path, "://") == 1 && substr_count ($path, "/") > 2) $path = substr ($path, strpos ($path, "/", 9));
 
     if ($path != "") return $path;
     else return false;
@@ -13181,18 +13181,22 @@ function publishobject ($site, $location, $page, $user)
                     }
                     
                     $linkfile = substr ($container, 0, strpos ($container, ".xml")); 
-  
-                    $test = savefile ($mgmt_config['abs_path_link'], $linkfile, $link_data);   
                     
-                    if ($test != false)
+                    // save link index file in repository
+                    if (!empty ($link_data))
                     {
-                      // remote client
-                      remoteclient ("save", "abs_path_link", $site, $mgmt_config['abs_path_link'], "", $linkfile, "");                  
-                    }
-                    else
-                    {
-                      $errcode = "10879";
-                      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|link index file of container $container could not be saved";                
+                      $test = savefile ($mgmt_config['abs_path_link'], $linkfile, $link_data);   
+                      
+                      if ($test != false)
+                      {
+                        // remote client
+                        remoteclient ("save", "abs_path_link", $site, $mgmt_config['abs_path_link'], "", $linkfile, "");                  
+                      }
+                      else
+                      {
+                        $errcode = "10879";
+                        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|link index file of container $container could not be saved";                
+                      }
                     }
                   }
                   

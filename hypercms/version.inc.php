@@ -620,6 +620,7 @@ changelog:
 - bug fix: access permission has not been when using the editor to select a media file. this led to issues with the video preview.
 - if the provided thumbnail size of the main config is greater than the original video size the original video size will be used for video rendering
 - implementation of loading screen for file unzip
+- bug fix: function deconvertlink removed host name from page links twice. this led to a miss-converted link since the host name has been cut of again without using the function cleandomain.
 */
 
 // current version
