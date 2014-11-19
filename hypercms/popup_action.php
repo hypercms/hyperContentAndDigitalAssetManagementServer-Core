@@ -50,6 +50,9 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+$show = "";
+$add_onload = "";
+
 // correct location for access permission
 if ($folder != "")
 {
@@ -96,19 +99,7 @@ if ($authorized == true)
     $mediapath = getmedialocation ($site, $mediafile, "abs_path_media");
     $media_info = getfileinfo ($site, $location.$page, $cat);
     
-    if ($mediapath != "" && $mediafile != "" && $location != "") $result_unzip =  unzipfile ($site, $mediapath.$site.'/'.$mediafile, $location, $media_info['name'], $user);
-    else $result_unzip = false;
-    
-    if ($result_unzip == true)
-    {
-      $result['result'] = true;
-      $add_onload = "if (eval (opener.parent.frames['mainFrame'])) {opener.parent.frames['mainFrame'].location.reload();}";
-      $show = "<span class=\"hcmsHeadline\">".$text1[$lang]."</span><br />\n";
-    }
-    else
-    {
-      $show = "<span class=\"hcmsHeadline\">".$text2[$lang]."</span><br />\n";
-    }
+    // unzip will be exectued in after loading-div since it might take some time for large ZIP files
   }
   // delete
   elseif ($action == "delete") 
@@ -350,27 +341,6 @@ if ($authorized == true)
     $add_onload = $result['add_onload'];
     $show = $result['message'];  
   }
-  
-  if ($result['result'] != false)
-  {
-    $add_javascript = $add_onload."
-    
-  function popupfocus ()
-  {
-    self.focus();
-    setTimeout('popupfocus()', 100);
-  }
-  
-  popupfocus ();
-  
-  function popupclose ()
-  {
-    self.close();
-  }
-  
-  setTimeout('popupclose()', 1000);\n";
-  
-  }
 }
 else
 {
@@ -385,9 +355,55 @@ else
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/click.js" type="text/javascript"></script>
+<script language="JavaScript">
+<!--
+function popupfocus ()
+{
+  self.focus();
+  setTimeout('popupfocus()', 500);
+}
+
+popupfocus ();
+//-->
+</script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
+
+<?php
+// show loading screen for unzip 
+if ($action == "unzip")
+{
+?>
+<div id="loadingLayer" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10;">
+  <div style="width:128px; margin-left:auto; margin-right:auto; margin-top:60px;">
+    <img src="<?php echo getthemelocation(); ?>img/loading.gif" />
+  </div>
+</div>
+<?php
+  // flush
+  ob_implicit_flush (true);
+  ob_end_flush ();
+  sleep (1);
+  
+  // unzip file
+  if ($mediapath != "" && $mediafile != "" && $location != "") $result_unzip =  unzipfile ($site, $mediapath.$site.'/'.$mediafile, $location, $media_info['name'], $user);
+  else $result_unzip = false;
+  
+  if ($result_unzip == true)
+  {
+    $result['result'] = true;
+    $add_onload = "document.getElementById('loadingLayer').style.display='none'; if (eval (opener.parent.frames['mainFrame'])) {opener.parent.frames['mainFrame'].location.reload();}";
+    $show = "<span class=\"hcmsHeadline\">".$text1[$lang]."</span><br />\n";
+  }
+  else
+  {
+    $result['result'] = false;
+    $add_onload = "document.getElementById('loadingLayer').style.display='none';";
+    $show = "<span class=\"hcmsHeadline\">".$text2[$lang]."</span><br />\n";
+  }
+}
+?>
 
 <table width="100%" height="120" border=0 cellpadding="3" cellspacing="0">
   <tr>
@@ -398,7 +414,19 @@ else
 
 <script language="JavaScript">
 <!--
-<?php echo $add_javascript; ?>
+<?php
+if ($result['result'] == true)
+{
+  echo $add_onload."
+
+function popupclose ()
+{
+  self.close();
+}
+
+setTimeout('popupclose()', 1500);";
+}
+?>
 //-->
 </script>
 
