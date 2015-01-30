@@ -31,7 +31,8 @@ $config['exactmatches'] = true;
 // exclude path identifier (string) from indexing
 $config['exclude_path'] = "/_";
 
-// text entries for different languages 
+// ---------------------------- text entries for different languages -----------------------------------
+
 $text[0]['de'] = "Treffer";
 $text[0]['en'] = "hits";
 $text[0]['al'] = "klikime";

@@ -281,7 +281,7 @@ setTimeout('closepopup()', 1000);
     </tr>
   </table><br />
   
-  <form name="stop" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+  <form name="stop" action="" method="post">
     <input type="hidden" name="force" value="stop" />
     <input type="hidden" name="action" value="<?php echo $action; ?>" />
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />

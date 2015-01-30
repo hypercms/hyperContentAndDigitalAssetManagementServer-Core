@@ -667,8 +667,8 @@ if (is_array (\$_GET['hcms_session']))
 {
   foreach (\$_GET['hcms_session'] as \$key => \$value)
   {
-    // if session key is allowed
-    if (\$key != \"\" && substr_count ('|hcms_user|hcms_passwd|hcms_lang|hcms_siteaccess|hcms_pageaccess|hcms_compaccess|hcms_rootpermission|hcms_globalpermission|hcms_localpermission|hcms_hiddenfolder|hcms_linking|hcms_temp_explorerview|hcms_temp_site|hcms_temp_user|hcms_temp_pagelocation|hcms_temp_complocation|hcms_temp_token|', \"|\".\$key.\"|\") == 0)
+    // if session key is allowed (prefix hcms_ must not be used for the name)
+    if (\$key != \"\" && substr (\$key, 0, 5) != \"hcms_\")
     { 
       \$_SESSION[\$key] = \$value;
     }
@@ -1637,30 +1637,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // define container collection
     if ($container_collection != "live") $container_collection = "work";
     
-    // if Tamino is used load container once and don't use db_read functions
-    if (isset ($mgmt_config['db_connect_tamino']) && $mgmt_config['db_connect_tamino'] != "" && @substr_count ($contentfile, ".xml.v_") == 0 && (!isset ($container) || @substr_count ($container, ".xml.v_") == 0))
-    {
-      @include_once ($mgmt_config['abs_path_data']."db_connect/".$mgmt_config['db_connect_tamino']); 
-    
-      $bufferarray = db_read_container ($container_collection, $site, $contentfile, $charset, $user);
-     
-      if ($bufferarray != false)
-      {     
-        $contentdata = $bufferarray['content'];
-        
-        // set flag if container was loaded using db_connect
-        $db_read_container = true;
-      }
-      else $db_read_container = false;
-    }
-    else $db_read_container = false;
-    
     // load live container from filesystem
     // get user who checked the object out and read associated working content container file
     
     $usedby = "";
     
-    if ($db_read_container == false && ($buildview == "cmsview" || $buildview == "inlineview") || $buildview == "preview" || $buildview == "publish" || $buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
+    if ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview" || $buildview == "publish" || $buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
     {  
       // load working container for none-live-view
       if ($container_collection != "live" && $container == "")
@@ -1670,23 +1652,24 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
        
         // get container name
         $result_containername = getcontainername ($contentfile);
-        $contentfile_load = $result_containername['container'];
-        $usedby = $result_containername['user'];
-        $db_read_container = $result_containername['result'];
         
+        if (!empty ($result_containername['container']))
+        {
+          $contentfile_load = $result_containername['container'];
+          $usedby = $result_containername['user'];
+        }
+
         // check container content and try to reload
-        if (!$contentdata) $contentdata = loadcontainer ($contentfile_load, "version", $user);
+        if ($contentdata == false) $contentdata = loadcontainer ($contentfile_load, "version", $user);
       }
       // else load given container
       else
       {
-        $contentfile_load = $contentfile;
-        $contentdata = loadcontainer ($contentfile_load, "version", $user);
-        $usedby = "";
-        $db_read_container = true;   
+        $contentdata = loadcontainer ($contentfile, "version", $user);
+        $usedby = ""; 
       }
     }
-    
+ 
     // define popup message if container is locked by another user
     if ($usedby != "" && $usedby != $user) $bodytag_popup = "alert(hcms_entity_decode('".$text23[$lang]."\\r".$text24[$lang]." \'".$usedby."\''));";
     else $bodytag_popup = "";

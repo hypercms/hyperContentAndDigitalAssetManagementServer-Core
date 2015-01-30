@@ -39,7 +39,7 @@ $location_esc = convertpath ($site, $location, $cat);
 // check access permissions
 $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
-if ($cat == "" || $setlocalpermission['root'] != 1 || ($cat == "comp" && $setlocalpermission['download'] != 1) || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
+if ($cat == "" || $setlocalpermission['root'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
 
 // check session of user
 checkusersession ($user, false);
@@ -98,18 +98,16 @@ if ($pagestore != false)
     // read associated content file
     $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
     
-    if (isset ($usedby) && $usedby != "" && $usedby != $user)
+    if (!empty ($usedby) && $usedby != $user)
     {
-      $contentdata = loadfile (getcontentlocation ($container_id, 'abs_path_content'), $contentfile.".wrk.@".$usedby); 
+      $contentdata = loadcontainer ($contentfile.".wrk.@".$usedby, "version", $usedby); 
     }
-    else $contentdata = loadfile (getcontentlocation ($container_id, 'abs_path_content'), $contentfile.".wrk"); 
+    else $contentdata = loadcontainer ($container_id, "work", $user); 
   
     $owner = getcontent ($contentdata, "<contentuser>");
-  
     $last_updated = getcontent ($contentdata, "<contentdate>");
-  
     $last_published = getcontent ($contentdata, "<contentpublished>");
-  
+      
     // ---------------------------- page info ---------------------------
     
     if (!empty ($contentfile))
@@ -119,8 +117,21 @@ if ($pagestore != false)
                 
       echo "<tr><td valign=top>".$text0[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$owner[0]."</td></tr>\n";
       echo "<tr><td valign=top>".$text1[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$last_updated[0]."</td></tr>\n";
-      echo "<tr><td valign=top>".$text2[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$last_published[0]."</td></tr>\n";
-      echo "<tr><td valign=top>".$text3[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$contentfile."</td></tr>\n";    
+      echo "<tr><td valign=top>".$text2[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$last_published[0]."</td></tr>\n"; 
+    }
+ 
+    // if object will be deleted automatically
+    $queue = rdbms_getqueueentries ("delete", "", "", "", $location_esc.$page);
+
+    if (is_array ($queue) && !empty ($queue[0]['date']))
+    {
+      echo "<tr><td valign=\"top\">".$text31[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".substr ($queue[0]['date'], 0, -3)."</td></tr>\n";
+    }
+    
+    // container
+    if (!empty ($contentfile))
+    {
+      echo "<tr><td valign=top>".$text3[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$container_id."</td></tr>\n";    
     }
   
     if (!empty ($template))
@@ -157,13 +168,21 @@ if ($pagestore != false)
       $filecount = 0;
       
       // get file size in kB for:
-      // multimedia objects/components
+      // multimedia objects
       if ($media != false && !empty ($media))
       {
-        $mediadir = getmedialocation ($site, $media, "abs_path_media");
-        
-        $fileMD5 = md5_file ($mediadir.$site."/".$media);
-        $filesize = filesize ($mediadir.$site."/".$media) / 1024;
+        if ($mgmt_config['db_connect_rdbms'] != "")
+        {
+          $media_info = rdbms_getmedia ($container_id);
+          $fileMD5 = $media_info['md5_hash'];
+          $filesize = $media_info['filesize'];
+        }
+        else
+        {
+          $mediadir = getmedialocation ($site, $media, "abs_path_media");          
+          $fileMD5 = md5_file ($mediadir.$site."/".$media);
+          $filesize = filesize ($mediadir.$site."/".$media) / 1024;
+        }
        
         // direct link
         if ($mgmt_config[$site]['dam'] != true) $filedirectlink = getmedialocation ($site, $media, "url_path_media").$site."/".$media;
@@ -206,7 +225,8 @@ if ($pagestore != false)
       if ($filecount > 1) echo "<tr><td valign=\"top\">".$text29[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filecount."</td></tr>\n";
     }
     
-    if ($mgmt_config['publicdownload'] == true)
+    // links
+    if ($mgmt_config['publicdownload'] == true && ($cat == "page" || $setlocalpermission['download'] == 1))
     {
       // wrapper link
       if ($mgmt_config['db_connect_rdbms'] != "") $filewrapperlink = createwrapperlink ($site, $location, $page, $cat);
@@ -220,9 +240,9 @@ if ($pagestore != false)
     }
     
     // file access links
-    if ($filedirectlink != "") echo "<tr><td valign=\"top\">".$text24[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filedirectlink."</td></tr>\n";
-    if ($filewrapperlink != "") echo "<tr><td valign=\"top\">".$text25[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filewrapperlink."</td></tr>\n";
-    if ($filewrapperdownload != "") echo "<tr><td valign=\"top\">".$text26[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filewrapperdownload."</td></tr>\n";
+    if (!empty ($filedirectlink)) echo "<tr><td valign=\"top\">".$text24[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filedirectlink."</td></tr>\n";
+    if (!empty ($filewrapperlink)) echo "<tr><td valign=\"top\">".$text25[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filewrapperlink."</td></tr>\n";
+    if (!empty ($filewrapperdownload)) echo "<tr><td valign=\"top\">".$text26[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filewrapperdownload."</td></tr>\n";
     
     // MD5 Checksum of media file
     if (!empty ($fileMD5)) echo "<tr><td valign=\"top\">".$text28[$lang].": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$fileMD5."</td></tr>\n";

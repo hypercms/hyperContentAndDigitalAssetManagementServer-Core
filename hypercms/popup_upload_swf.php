@@ -364,7 +364,7 @@ echo showtopbar ($title.": ".$object_name, $lang);
 ?>
 
 <div id="content">
-    <form name="upload" id="upload" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" enctype="multipart/form-data">
+    <form name="upload" id="upload" action="" method="post" enctype="multipart/form-data">
   	<fieldset class="flash" id="fsUploadProgress">
 	</fieldset>
 	<div><div id="divStatus" style="float:left;">0</div>&nbsp;<?php echo $text6[$lang]; ?><br /></div>

@@ -3,14 +3,14 @@
 $text0['en'] = "Owner";
 $text0['de'] = "Besitzer";
 
-$text1['en'] = "Last modified";
-$text1['de'] = "zuletzt ge&auml;ndert";
+$text1['en'] = "Modified";
+$text1['de'] = "Ge&auml;ndert";
 
-$text2['en'] = "Last published";
-$text2['de'] = "zuletzt publiziert";
+$text2['en'] = "Published";
+$text2['de'] = "Publiziert";
 
-$text3['en'] = "Content container";
-$text3['de'] = "Content Container";
+$text3['en'] = "Container ID";
+$text3['de'] = "Container ID";
 
 $text4['en'] = "Template component";
 $text4['de'] = "Vorlagenkomponente";
@@ -92,4 +92,7 @@ $text29['de'] = "Anzahl Dateien";
 
 $text30['en'] = "Meta information";
 $text30['de'] = "Metainformation";
+
+$text31['en'] = "Will be removed";
+$text31['de'] = "Wird entfernt";
 ?>

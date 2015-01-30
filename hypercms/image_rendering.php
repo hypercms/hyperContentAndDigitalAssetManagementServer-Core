@@ -96,20 +96,27 @@ $add_onload = "";
 $objectdata = loadfile ($location, $page);
 $mediafile = getfilename ($objectdata, "media");
 
-// set a zoom factor for the thumbnail image
-$thumb_size_percent = 200; // e.g. 200 % of the normal thumb size.
-
 // get file information of original media file
 $mediafile_info = getfileinfo ($site, $mediafile, "");
 $media_root = getmedialocation ($site, $mediafile_info['name'], "abs_path_media").$site."/";
 
 // get file information of original component file
-$pagefile_info = getfileinfo ($site, $page, $cat); 
+$pagefile_info = getfileinfo ($site, $location.$page, $cat);
 
-// render new image
-$media_size = @getimagesize ($media_root.$mediafile);
+// create temp file if file is encrypted
+$temp = createtempfile ($media_root, $mediafile);
 
-// Read all possible formats to convert to from the mediaoptions
+// get image dimensions
+if ($temp['result'] && $temp['crypted'])
+{
+  $media_size = getimagesize ($temp['templocation'].$temp['tempfile']);
+}
+else
+{
+  $media_size = getimagesize ($media_root.$mediafile);
+}
+
+// read all possible formats to convert to from the mediaoptions
 $convert_formats = array();
 
 if (isset ($mgmt_imageoptions) && is_array ($mgmt_imageoptions) && !empty ($mgmt_imageoptions))
@@ -124,11 +131,9 @@ if (isset ($mgmt_imageoptions) && is_array ($mgmt_imageoptions) && !empty ($mgmt
   }
 }
 
-// Add gif, jpg and png because these are our default conversion
-if (!in_array ('gif', $convert_formats)) $convert_formats[] = 'gif';
-  
+// add gif, jpg and png because these are our default conversion
+if (!in_array ('gif', $convert_formats)) $convert_formats[] = 'gif';  
 if (!in_array ('jpg', $convert_formats) && !in_array ('jpeg', $convert_formats)) $convert_formats[] = 'jpg';
-
 if (!in_array ('png', $convert_formats)) $convert_formats[] = 'png';
 
 $available_colorspaces = array();
@@ -144,7 +149,6 @@ $available_flip = array();
 $available_flip['-fv'] = $text36[$lang];
 $available_flip['-fh'] = $text37[$lang];
 $available_flip['-fv -fh'] = $text38[$lang];
-
 
 // render image
 if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != false && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
@@ -177,16 +181,16 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
     if (
         $imageformat != "" &&
         (
-          (in_array ($imageresize, array ("percentage", "imagewidth", "imageheight")) && $imagewidth != "" && $imageheight != "") || 
+          (in_array ($imageresize, array("percentage", "imagewidth", "imageheight")) && $imagewidth != "" && $imageheight != "") || 
           ($imageresize == "crop" && $imagecropwidth != "" && $imagecropheight != "") ||
-          ($rotate == "rotate" && $angle != "" && $imageformat != "" && array_key_exists (0, $media_size) && array_key_exists(1, $media_size)) ||
+          ($rotate == "rotate" && $angle != "" && $imageformat != "" && array_key_exists(0, $media_size) && array_key_exists(1, $media_size)) ||
           ($use_brightness == 1 && $imageformat != "" && $brightness != 0) ||
           ($use_contrast == 1 && $imageformat != "" && $contrast != 0) ||
           ($colorspace == 1 && is_array($available_colorspaces) && array_key_exists( $imagecolorspace, $available_colorspaces )) ||
           ($rotate == "flip" && array_key_exists($flip, $available_flip)) ||
           ($effect == "sepia" && $sepia_treshold > 0 && $sepia_treshold <= 99.9) ||
-          ($effect == "blur" && $blur_sigma > 0.1 && $blur_sigma <= 3 && $blur_radius !== NULL ) ||
-          ($effect == "sharpen" && $sharpen_sigma > 0.1 && $sharpen_sigma <= 3 && $sharpen_radius !== NULL) ||
+          ($effect == "blur" && $blur_sigma >= 0.1 && $blur_sigma <= 3 && $blur_radius !== NULL ) ||
+          ($effect == "sharpen" && $sharpen_sigma >= 0.1 && $sharpen_sigma <= 3 && $sharpen_radius !== NULL) ||
           ($effect == "sketch" && $sketch_sigma !== NULL && $sketch_radius !== NULL && $sketch_angle !== NULL) ||
           ($effect == "paint" && $paintvalue !== NULL)
         )
@@ -195,7 +199,7 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
       $formats = "";
 
       // We need to reset here
-      reset($mgmt_imageoptions);
+      reset ($mgmt_imageoptions);
       
       while (list ($formatstring, $settingstring) = each ($mgmt_imageoptions))
       {
@@ -209,9 +213,20 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
       {
         // convert the image file
         // Options:
-        // -s ... size in pixels (width x height)
-        // -c ... offset in x and y (x-offset x y-offset)
-        // -f ... image output format      
+        // -s ... output size in width x height in pixel (WxH)
+        // -f ... output format (file extension without dot [jpg, png, gif])
+        // -c ... cropy size
+        // -r ... rotate image
+        // -b ... image brightness
+        // -k .... image contrast
+        // -cs ... color space of image, e.g. RGB, CMYK, gray
+        // -flip ... flip image in the vertical direction
+        // -flop ... flop image in the horizontal direction
+        // -sharpen ... sharpen image, e.g. one pixel size sharpen: -sharpen 0x1.0
+        // -sketch ... skecthes an image, e.g. -sketch 0x20+120
+        // -sepia-tone ... apply -sepia-tone on image, e.g. -sepia-tone 80%
+        // -monochrome ... transform image to black and white
+        // -wm ... watermark in watermark image->positioning->geometry, e.g. image.png->topleft->+30
         
         $mgmt_imageoptions[$formats]['original'] = "";
         
@@ -274,10 +289,37 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
           $mgmt_imageoptions[$formats]['original'] .= " -pa ".$paintvalue;
         }
         
-        // Add the mandatory format
-        $mgmt_imageoptions[$formats]['original'] .= " -f ".$imageformat;
+        // watermarking     
+        if (!empty ($mgmt_config[$site]['watermark_image'])) 
+        {
+          $watermarking = getoption ($mgmt_config[$site]['watermark_image'], "-wm");
+          
+          if (trim ($watermarking) != "")
+          {
+            // parameters:
+            // watermark ... reference to watermark PNG image
+            // -gravity ... sets where in the image the watermark should be added
+            // -geometry ... Can be used to modify the size of the watermark being passed in, and also the positioning of the watermark (relative to the gravity placement). 
+            //               It is specified in the form width x height +/- horizontal offset +/- vertical offset (<width>x<height>{+-}<xoffset>{+-}<yoffset>).
+            // -composite ... parameter, which tells ImageMagick to add the watermark image we’ve just specified to the image. 
+            list ($watermark, $gravity, $geometry) = explode ("->", $watermarking);
+            
+            if ($gravity == "topleft") $gravity = "northwest";
+            elseif ($gravity == "topright") $gravity = "northeast";
+            elseif ($gravity == "bottomleft") $gravity = "southwest";
+            elseif ($gravity == "bottomleft") $gravity = "southeast";
+            
+            if ($watermark != "" && $gravity != "" && $geometry != "")
+            {
+              $mgmt_imageoptions[$formats]['original'] .= " ".shellcmd_encode(trim($watermark))." -gravity ".$gravity." -geometry ".shellcmd_encode(trim($geometry))." -composite";
+            }
+          }                  
+        }
         
-        $result = createmedia ($site, $media_root, $media_root, $mediafile, $imageformat, 'original');  
+        // add mandatory format
+        $mgmt_imageoptions[$formats]['original'] .= " -f ".$imageformat;
+
+        $result = createmedia ($site, $media_root, $media_root, $mediafile, $imageformat, 'original');
       }
       else
       {
@@ -352,10 +394,10 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
           $show = $text26[$lang]."\n";         
         }
       }
-      
+
       // create new thumbnail
       createmedia ($site, $media_root, $media_root, $mediafile, $imageformat, "thumbnail");
-      
+
       $show = $text2[$lang];
     }
   }
@@ -365,32 +407,50 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
   }
 }
 
-// get file information of original component file
-$pagefile_info = getfileinfo ($site, $location.$page, $cat); 
+// get file information of component file in case it was renamed due to a new file extension
+$pagefile_info = getfileinfo ($site, $location.$page, $cat);
 
-// get file information of new original media file
-$media_size = @getimagesize ($media_root.$mediafile);
+// get file information of the new generated original media file
+$temp = createtempfile ($media_root, $mediafile);
 
-// image information
-$thumb_size = array();
-$media_thumb = $mediafile_info['filename'].".thumb.jpg";
-
-if (file_exists ($media_root.$media_thumb))
+// get image dimensions
+if ($temp['result'] && $temp['crypted'])
 {
-  $media_thumb = $mediafile_info['filename'].".thumb.jpg";  
-  $thumb_size = @getimagesize ($media_root.$media_thumb);
-  
-  $thumb_size[0] = 740;
-  $imgratio =  $thumb_size[0] / $media_size[0];
-  $thumb_size[1] = $media_size[1] * $imgratio;
-
-  $mediaview = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_no_rendering", "cropbox", $thumb_size[0], $thumb_size[1], "");
+  $media_size = getimagesize ($temp['templocation'].$temp['tempfile']);
 }
+else
+{
+  $media_size = getimagesize ($media_root.$mediafile);
+}
+
+// initalize thumb width and height
+$thumb_size = array();
+$thumb_size[0] = 740;
+$thumb_size[1] = "";
+
+// define width and height for image editing
+if (!empty ($media_size[0]) && !empty ($media_size[1]))
+{
+  // use original size
+  if ($media_size[0] < 740)
+  {
+    $thumb_size[0] = $media_size[0];
+    $thumb_size[1] = $media_size[1];
+  }
+  // use reduzed size
+  else
+  {
+    $imgratio = $media_size[0] / $media_size[1];
+    $thumb_size[1] = round (($thumb_size[0] / $imgratio), 0);
+  }
+}
+
+$mediaview = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_no_rendering", "cropbox", $thumb_size[0], $thumb_size[1], "");
 
 // security token
 $token_new = createtoken ($user);
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head>
 <title>hyperCMS</title>
@@ -414,7 +474,6 @@ var imgWidth = <?php echo $media_size[0] ?>;
 var imgHeight= <?php echo $media_size[1] ?>;
 var thumbImgRatio = thumbWidth / imgWidth;
 var imgRatio = imgWidth / imgHeight;
-var test = <?php echo $imgratio; ?>;
 
 function updateCoords(c)
 {
@@ -1010,8 +1069,7 @@ function toggle_sketch ()
     toggle_blur();
     toggle_sharpen();
     toggle_paint();
-    toggle_crop();
-    
+    toggle_crop(); 
   }
   else
   {
@@ -1058,7 +1116,7 @@ function showPreview ()
   
   hcms_showHideLayers('savelayer','','show');
   
-  var link = "<?php echo $mgmt_config['url_path_cms']; ?>service/generate_image_preview.php?media=<?php echo $mediafile; ?>&site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&location=<?php echo $location_esc; ?>";
+  var link = "<?php echo $mgmt_config['url_path_cms']; ?>service/generate_image_preview.php?site=<?php echo url_encode ($site); ?>&media=<?php echo url_encode ($mediafile); ?>&cat=<?php echo url_encode ($cat); ?>&location=<?php echo $location_esc; ?>";
     
   var changed = false;
   
@@ -1263,8 +1321,7 @@ $(window).load( function()
   // Add our special function
   $.fn.getGeneratorParameter = function() {
     return this.prop('name')+'='+this.val();
-  }
-  
+  } 
 });
 
 <?php echo $add_onload; ?>
@@ -1332,7 +1389,7 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
 <!-- rendering settings -->
 <div id="renderOptions" style="padding:10px; width:730px; display:none; vertical-align:top; z-index:1; margin-left:10px" class="hcmsMediaRendering">    
   <!-- start edit image -->
-  <form name="mediaconfig" id="mediaconfig" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+  <form name="mediaconfig" id="mediaconfig" action="" method="post">
     <input type="hidden" id="action" name="action" value="rendermedia">
     <input type="hidden" name="site" value="<?php echo $site; ?>">
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>">
@@ -1402,21 +1459,21 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
         <input type="checkbox" id="blur" name="effect" value="blur" onclick="toggle_blur();" />
         <label style="width:60px; display:inline-block;" for="blur"><?php echo $text41[$lang]; ?></label>
         <input name="blur_radius" type="text" id="blur_radius" size="2" maxlength="2" value="0"  title="<?php echo $text44[$lang]; ?>" />
-        <label style="width:6px; display:inline-block;"for="blur_sigma">x</label>
+        <label style="width:6px; display:inline-block;" for="blur_sigma">x</label>
         <input name="blur_sigma" type="text" id="blur_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo $text45[$lang]; ?>" />
       </div>
       <div class="row">
         <input type="checkbox" id="sharpen" name="effect" value="sharpen" onclick="toggle_sharpen();" />
         <label style="width:60px; display:inline-block;" for="sharpen"><?php echo $text42[$lang]; ?></label>
         <input name="sharpen_radius" type="text" id="sharpen_radius" size="2" maxlength="2" value="0"  title="<?php echo $text44[$lang]; ?>" />
-        <label style="width:6px; display:inline-block;"for="sharpen_sigma">x</label>
+        <label style="width:6px; display:inline-block;" for="sharpen_sigma">x</label>
         <input name="sharpen_sigma" type="text" id="sharpen_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo $text45[$lang]; ?>" />
       </div>
       <div class="row">
         <input type="checkbox" id="sketch" name="effect" value="sketch" onclick="toggle_sketch();" />
         <label style="width:60px; display:inline-block;" for="sketch"><?php echo $text43[$lang]; ?></label>
         <input name="sketch_radius" type="text" id="sketch_radius" size="2" maxlength="2" value="0"  title="<?php echo $text44[$lang]; ?> "/>
-        <label style="width:6px; display:inline-block;"for="sketch_sigma">x</label>
+        <label style="width:6px; display:inline-block;" for="sketch_sigma">x</label>
         <input name="sketch_sigma" type="text" id="sketch_sigma" size="2" maxlength="2" value="0" title="<?php echo $text45[$lang]; ?>" />
         <input name="sketch_angle" type="text" id="sketch_angle" size="3" maxlength="3" value="0" title="<?php echo $text46[$lang]; ?>" />
       </div>
@@ -1468,7 +1525,7 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
     <!-- brigthness / contrast -->
     <div class="cell">
       <div style="margin-left:20px" class="row">
-        <strong><?php echo $text30[$lang].'/'.$text31[$lang]; ?></strong>
+        <strong><?php echo $text49[$lang]; ?></strong>
       </div>
       <div>
         <input type="checkbox" id="chbx_brightness" name="use_brightness" value="1" onclick="toggle_brightness();" />

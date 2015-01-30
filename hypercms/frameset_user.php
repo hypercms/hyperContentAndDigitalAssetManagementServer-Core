@@ -22,8 +22,8 @@ $site = url_encode (getrequest ("site", "url")); // site can be *Null* which is 
 checkusersession ($user, false);
 
 // save selected publication in session
-if (valid_publicationname ($site)) $_SESSION['hcms_temp_site'] = url_decode ($site);
-else $_SESSION['hcms_temp_site'] = Null;
+if (valid_publicationname ($site)) setsession ('hcms_temp_site', url_decode ($site));
+else setsession ('hcms_temp_site', Null);
 ?>
 <!DOCTYPE html>
 <html>

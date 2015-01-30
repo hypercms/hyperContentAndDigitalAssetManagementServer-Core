@@ -439,7 +439,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 ?>
 
 <div id="createuserLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:90px; z-index:4; left:15px; top:2px; visibility:hidden;">
-<form name="userform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="userform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="group" value="<?php echo $group; ?>" />
   <input type="hidden" name="action" value="create" />

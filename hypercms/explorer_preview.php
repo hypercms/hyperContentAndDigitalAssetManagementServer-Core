@@ -114,8 +114,8 @@ if (empty ($charset['contenttype'])) $charset['contenttype'] = $lang_codepage[$l
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
-<?php if (!empty ($file_info) && substr_count ($hcms_ext['audio'], $file_info['ext']) > 0) echo showaudioplayer_head (); ?>
-<?php if (!empty ($file_info) && substr_count ($hcms_ext['video'], $file_info['ext']) > 0) echo showvideoplayer_head ($site, false); ?>
+<?php if (!empty ($file_info['ext']) && substr_count ($hcms_ext['audio'], $file_info['ext']) > 0) echo showaudioplayer_head (); ?>
+<?php if (!empty ($file_info['ext']) && substr_count ($hcms_ext['video'], $file_info['ext']) > 0) echo showvideoplayer_head ($site, false); ?>
 </head>
 
 <body class="hcmsWorkplaceGeneric">

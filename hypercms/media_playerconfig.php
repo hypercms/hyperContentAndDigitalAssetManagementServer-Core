@@ -62,8 +62,12 @@ $file_info = getfileinfo ($site, $mediafile, "");
 $audio = false;
 
 // video type/format
-if ($type != "") $type = strtolower ($type);
-else if(substr_count ($hcms_ext['audio'].'.', $file_info['ext'].'.') > 0){
+if ($type != "")
+{
+  $type = strtolower ($type);
+}
+elseif (substr_count ($hcms_ext['audio'].'.', $file_info['ext'].'.') > 0)
+{
   $type = "audio";
   $audio = true;
 }
@@ -79,11 +83,15 @@ if ($media_root && file_exists ($media_root.$file_info['filename'].".config.".$t
 elseif($media_root && file_exists ($media_root.$file_info['filename'].".config.orig")) 
 {
   $config = readmediaplayer_config ($media_root, $file_info['filename'].".config.orig");
+  
   // We try to detect if we should use audio player
-  if(is_array($config['mediafiles'])) {
-    list($test, $duh) = explode(";", reset($config['mediafiles']));
-    $testfinfo = getfileinfo($site, $test, $cat);
-    if(substr_count ($hcms_ext['audio'].'.', $testfinfo['ext'].'.') > 0) {
+  if (is_array ($config['mediafiles']))
+  {
+    list ($test, $duh) = explode (";", reset($config['mediafiles']));
+    $testfinfo = getfileinfo ($site, $test, $cat);
+    
+    if (substr_count ($hcms_ext['audio'].'.', $testfinfo['ext'].'.') > 0)
+    {
       $audio = true;
     }
   }
@@ -96,14 +104,15 @@ else
 
 $head = false;
 
-$frameid = rand_secure()+time();
+$frameid = rand_secure() + time();
 
 if ($config && is_array ($config))
 {
   if (intval ($config['version']) >= 2) 
   {
     $url = $mgmt_config['url_path_cms'].'videoplayer.php?media='.$mediafile.'&site='.$site;
-    if($audio) 
+    
+    if ($audio) 
     {
       $size = 'height="36" width="320"';
       $fullscreen = '';
@@ -327,20 +336,20 @@ echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.p
       <?php 
       }
       if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
-      <div style="height: 20px">
+      <div style="height:20px">
       <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="keyboard" />
       </div>
-      <div style="height: 20px">
+      <div style="height:20px">
         <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="pause" />
       </div>
-      <div style="height: 20px">
+      <div style="height:20px">
         <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="seek" />
       </div>
       <?php
       }
       if (!$audio) { 
       ?>
-      <div style="height: 20px;">
+      <div style="height:20px;">
         <input style="vertical-align: top;" type="text" onchange="updateCodeSegment();" id="logo" />
         <img class="hcmsButtonTiny hcmsButtonSizeSquare" title="<?php echo $text14[$lang]; ?>" style="cursor: pointer;" src="<?php echo getthemelocation(); ?>img/button_media.gif" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 600, 400);" />
       </div>
@@ -354,11 +363,11 @@ echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.p
   <div style="margin-left:10px; margin-top:10px;">
   	<strong><?php echo $text1[$lang];?></strong><br />
   	<?php echo $text2[$lang];?><br /><br />
-  	<textarea id="codesegment" style="height:250px; width:98%" wrap="VIRTUAL"><?php	echo html_encode($playercode, $lang_codepage[$lang]); ?></textarea>
+  	<textarea id="codesegment" style="height:80px; width:98%" wrap="VIRTUAL"><?php	echo html_encode($playercode, $lang_codepage[$lang]); ?></textarea>
   </div>
   <hr>
   <div style="margin-left:10px; margin-top:10px;">
-    <strong><?php echo $text15[$lang];?></strong><br /><br />
+    <strong><?php echo $text15[$lang];?></strong><br />
     <?php echo $playercode; ?>
   </div>
 </div>

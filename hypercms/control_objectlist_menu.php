@@ -1286,7 +1286,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 ?>
 
 <div id="foldercreateLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:1; left:15px; top:15px; visibility:hidden">
-<form name="folder_create" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" onsubmit="return checkForm_folder_create();">
+<form name="folder_create" action="" method="post" onsubmit="return checkForm_folder_create();">
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
   <input type="hidden" name="action" value="folder_create" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
@@ -1307,7 +1307,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 </div>
 
 <div id="folderrenameLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:2; left:15px; top:15px; visibility:hidden">
-<form name="folder_rename" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" onsubmit="return checkForm_folder_rename();">
+<form name="folder_rename" action="" method="post" onsubmit="return checkForm_folder_rename();">
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
   <input type="hidden" name="folder" value="<?php echo $folder; ?>" />
   <input type="hidden" name="action" value="folder_rename" />
@@ -1329,7 +1329,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 </div>
 
 <div id="objrenameLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:3; left:15px; top:15px; visibility:hidden">
-<form name="page_rename" action="<?php echo $_SERVER['PHP_SELF']; ?>" onsubmit="return checkForm_folder_rename();">
+<form name="page_rename" action="" onsubmit="return checkForm_folder_rename();">
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
   <input type="hidden" name="page" value="<?php echo $page; ?>" />
   <input type="hidden" name="action" value="page_rename" />
@@ -1351,7 +1351,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 </div>
 
 <div id="zipLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:4; left:15px; top:15px; visibility:hidden">
-<form name="page_zip" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+<form name="page_zip" action="">
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
   <input type="hidden" name="page" value="<?php echo $page; ?>" />
   <input type="hidden" name="folder" value="<?php echo $folder; ?>" />

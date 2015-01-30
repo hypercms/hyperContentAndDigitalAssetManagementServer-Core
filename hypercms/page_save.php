@@ -180,27 +180,11 @@ if ($usedby == "" || $usedby == $user)
   }
   
   // ---------------------------------------load content container -------------------------------------
-  // if Tamino is used the same content container will be availbale in the database
-  if (isset ($mgmt_config['db_connect_tamino']) && $mgmt_config['db_connect_tamino'] != "" && file_exists ($mgmt_config['abs_path_data']."db_connect/".$mgmt_config['db_connect_tamino']))
-  {
-    @include_once ($mgmt_config['abs_path_data']."db_connect/".$mgmt_config['db_connect_tamino']); 
-    
-    $db_container = db_read_container ("work", $site, $contentfile, $charset, $user);
-    
-    if ($db_container != false) $contentdata = $db_container['content'];
-    else $contentdata = false;
-  }
-  else $contentdata = false;
-  
-  // if Tamino is not used read from content repository
-  $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
-  
-  if ($contentdata == false)
-  {
-    // load content container
-    $contentdata = loadcontainer ($contentfile, "work", $user);
-  } 
-  
+
+  // load content container
+  $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
+  $contentdata = loadcontainer ($container_id, "work", $user);
+
   // check if content is not empty
   if ($contentdata != false)
   {
@@ -282,51 +266,42 @@ if ($usedby == "" || $usedby == $user)
         
         $object_mediafile = getmedialocation ($site, $object_info['media'], "abs_path_media").$site."/".$object_info['media'];
         
-        // write IPTC data only to following file extensions
+        // write IPTC data to media file
         $result_iptc = false;
         
         if ($mgmt_config['iptc_save'])
         {
-          $allowed_ext = array('.jpg', '.jpeg', '.pjpeg');   
-        
-          // get file info
-          $file_info = getfileinfo ($site, $object_info['media'], $cat);     
-  
-          if (in_array ($file_info['ext'], $allowed_ext))
+          $iptc = iptc_create ($site, $textmeta);
+
+          if (is_array ($iptc))
           {
-            $iptc = iptc_create ($site, $textmeta);
-  
-            // write IPTC tags to file
-            if (is_array ($iptc))
-            {
-              $result_iptc = iptc_writefile ($object_mediafile, $iptc, 1);
-                
-              if ($result_iptc == false)
-              {
-                $errcode = "20119";
-                $error[] = $mgmt_config['today']."|page_save.inc.php|error|$errcode|unable to save IPTC tags to file '".$object_info['media']."'";          
-              }            
-            }
-          } 
+            $result_iptc = iptc_writefile ($object_mediafile, $iptc, true);   
+          }
         }
         
-        // write XMP data only to following file extensions
+        // write XMP data to media file
         $result_xmp = false;
         
         if ($mgmt_config['xmp_save'])
         {
           $xmp = xmp_create ($site, $textmeta);
 
-          // write IPTC tags to file
           if (is_array ($xmp))
           {
-            $result_xmp = xmp_writefile ($object_mediafile, $xmp, 1);
-              
-            if ($result_xmp == false)
-            {
-              $errcode = "20119";
-              $error[] = $mgmt_config['today']."|page_save.inc.php|error|$errcode|unable to save XMP tags to file '$media'";          
-            }            
+            $result_xmp = xmp_writefile ($object_mediafile, $xmp, true);   
+          }
+        }
+        
+        // write ID3 data to media file
+        $result_id3 = false;
+        
+        if ($mgmt_config['id3_save'])
+        {
+          $id3 = id3_create ($site, $textmeta);
+
+          if (is_array ($id3))
+          {
+            $result_id3 = id3_writefile ($object_mediafile, $id3, true);   
           }
         }
         
@@ -334,14 +309,18 @@ if ($usedby == "" || $usedby == $user)
         if (
              is_file ($object_mediafile) && 
              (
-               (!$mgmt_config['iptc_save'] && !$mgmt_config['xmp_save']) || 
+               (!$mgmt_config['iptc_save'] && !$mgmt_config['xmp_save'] && !$mgmt_config['id3_save']) || 
                ($mgmt_config['iptc_save'] && !$result_iptc) ||
-               ($mgmt_config['xmp_save'] && !$result_xmp)
+               ($mgmt_config['xmp_save'] && !$result_xmp) ||
+               ($mgmt_config['id3_save'] && !$result_id3)
              )
            )
         {
           touch ($object_mediafile);
         }
+        
+        // set modified date in DB
+        rdbms_setcontent ($container_id);
       }
       
       // media content
@@ -372,7 +351,7 @@ if ($usedby == "" || $usedby == $user)
   
       if ($contentdatanew != false && isset ($headcontent) && is_array ($headcontent)) $contentdatanew = sethead ($site, $contentdatanew, $contentfile, $headcontent, $user);
     }
-   
+
     // ----------------------------------- write data into content container --------------------------------------
     if ($contentdatanew != false)
     {
@@ -393,13 +372,7 @@ if ($usedby == "" || $usedby == $user)
       {
         // write XML declaration parameter for text encoding
         if ($charset != "") $contentdatanew = setxmlparameter ($contentdatanew, "encoding", $charset);
-      }    
-      
-      // db_connect will save content in Tamino 
-      if (isset ($mgmt_config['db_connect_tamino']) && $mgmt_config['db_connect_tamino'] != "") 
-      {
-        db_write_container ("work", $site, $contentfile, $contentdatanew, $user);      
-      }    
+      }
       
       // save working xml content container file
       $savefile = savecontainer ($container_id, "work", $contentdatanew, $user);

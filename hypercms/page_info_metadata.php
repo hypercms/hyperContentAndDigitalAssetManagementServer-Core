@@ -85,9 +85,9 @@ echo showtopbar ($text1[$lang]." ".$pagename, $lang, $mgmt_config['url_path_cms'
     {
       if (substr_count ($extensions.".", $file_info['ext'].".") > 0)
       {
-        $image = image_getdata ($mediadir.$mediafile);
-        
-        if (is_array ($image)) echo showmetadata ($image, $lang, "hcmsRowHead2");
+        $metadata_array = extractmetadata ($mediadir.$mediafile);
+
+        if (is_array ($metadata_array)) echo showmetadata ($metadata_array, $lang, "hcmsRowHead2");
         else echo "&nbsp;".$text2[$lang]."\n";
         
         $exiftool = true;

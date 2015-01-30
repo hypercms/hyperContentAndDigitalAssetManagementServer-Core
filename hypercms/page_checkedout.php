@@ -59,6 +59,9 @@ if ($mgmt_config['explorer_list_maxitems'] == "") $mgmt_config['explorer_list_ma
 if ($next != "" && is_numeric ($next)) $next_max = $next + $mgmt_config['explorer_list_maxitems'];
 else $next_max = $mgmt_config['explorer_list_maxitems'];
 
+// check if checked out file exists
+if (!is_file ($mgmt_config['abs_path_data']."checkout/".$user.".dat")) savefile ($mgmt_config['abs_path_data']."checkout/", $user.".dat", "");
+
 // get checked out objects of user
 $checkedout_data = loadfile ($mgmt_config['abs_path_data']."checkout/", $user.".dat");
 
@@ -311,9 +314,6 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
 
         if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object))
         {
-          $mediafile = false;
-          $metadata = "";
-          
           // check access permissions
           $ownergroup = accesspermission ($site, $location, $cat);
           $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);      
@@ -325,62 +325,57 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
           // multimedia object 
           else $file_type = $text6[$lang]." (".$file_info['type'].")";
 
-          // if object is of any multimedia type
-          if ($file_info['ext'] == "" || substr_count ($hcms_ext['cms'], $file_info['ext']) == 0)
-          {   
-            // read file
-            $objectdata = loadfile ($location, $object);
+          // get name of media file
+          $mediafile = getfilename ($objectdata, "media");        
+          
+          if ($mediafile != false)
+          {
+            // location of file
+            $mediadir = getmedialocation ($site, $mediafile, "abs_path_media");
+
+            // get file time
+            if (is_file ($mediadir.$site."/".$mediafile)) $file_time = date ("Y-m-d H:i", @filemtime ($mediadir.$site."/".$mediafile));
+            else $file_time = "-";
             
-            // get name of media file
-            $mediafile = getfilename ($objectdata, "media");                 
-            
-            if ($mediafile != false)
+            // get file size
+            if ($mgmt_config['db_connect_rdbms'] != "")
             {
-              // location of file
-              $mediadir = getmedialocation ($site, $mediafile, "abs_path_media");
-             
-              // media file info
-              $media_info = getfileinfo ($site, $mediafile, $cat);
-              
-              // get file size
-              if (is_file ($mediadir.$site."/".$mediafile))
-              {              
-                $file_size = round (@filesize ($mediadir.$site."/".$mediafile) / 1024);
-                if ($file_size == 0) $file_size = 1;
-                $file_size = number_format ($file_size, 0, "", ".");
-                  
-                // get file time
-                $file_time = date ("Y-m-d H:i", @filemtime (getmedialocation ($site, $mediafile, "abs_path_media").$site."/".$mediafile));                  
-              }
-              else
-              {
-                $file_size = "-";
-                $file_time = "-";
-              }
-                      
-              // get name of content file and load content container
-              $contentfile = getfilename ($objectdata, "content");
-              
-              // read meta data of media file
-              if (!$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
-              else $metadata = "";
-              
-              // link for copy & paste of download links
-              if ($mgmt_config[$site]['sendmail'] && $setlocalpermission['download'] == 1)
-              {
-                $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"hash\" data-href=\"".createdownloadlink($site, $location, $object, $cat)."\">";
-                $dlink_end = "</a>";
-              }
-              else
-              {
-                $dlink_start = "";
-                $dlink_end = "";
-              }
+              $media_info = rdbms_getmedia ($container_id);
+              $file_size = $media_info['filesize'];
+              $file_size = number_format ($file_size, 0, "", "."); 
+            }
+            elseif (is_file ($mediadir.$site."/".$mediafile))
+            {
+              $file_size = round (@filesize ($mediadir.$site."/".$mediafile) / 1024);
+              if ($file_size == 0) $file_size = 1;
+              $file_size = number_format ($file_size, 0, "", ".");                 
+            }
+            else
+            {
+              $file_size = "-";
+            }
+          
+            // media file info
+            $media_info = getfileinfo ($site, $mediafile, $cat);
+            
+            // read meta data of media file
+            if (!$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
+            else $metadata = "";
+            
+            // link for copy & paste of download links
+            if ($mgmt_config[$site]['sendmail'] && $setlocalpermission['download'] == 1)
+            {
+              $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"hash\" data-href=\"".createdownloadlink($site, $location, $object, $cat)."\">";
+              $dlink_end = "</a>";
+            }
+            else
+            {
+              $dlink_start = "";
+              $dlink_end = "";
             }
           }
-
           // object without media file
-          if (!$mediafile)
+          else
           {
             // get file size
             $file_size = round (@filesize ($location.$object) / 1024);
@@ -510,7 +505,7 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
         	}
             
           // if linking is used display download buttons
-          if ($mediafile != false && is_array ($_SESSION['hcms_linking']) && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
+          if ($mediafile != false && is_array (getsession ('hcms_linking')) && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
           {
             if (!$is_mobile) $width = "160px";
             else $width = "180px";

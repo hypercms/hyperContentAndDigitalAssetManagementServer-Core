@@ -159,7 +159,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
 ?>
 <div class="hcmsWorkplaceFrame">
 <!-- change versions -->
-<form name="versionform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="versionform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
@@ -198,25 +198,11 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
       // make version actual
       if ($rename_1 != false)
       {
-        // load working content container from Tamino
-        if (isset ($mgmt_config['db_connect_tamino']) && $mgmt_config['db_connect_tamino'] != "")
-        {       
-          @include_once ($mgmt_config['abs_path_data']."db_connect/".$mgmt_config['db_connect_tamino']);
-        
-          $bufferdata = db_read_container ("work", $site, $container, "", $user);
-           
-          if ($bufferdata != false) $bufferdata = $bufferdata['content'];
-        }
-        
-        // load working container from file system
+        // load working container from file system even if it is locked
         $result = getcontainername ($contentfile_recent);
         $contentfile_wrk = $result['container'];
-        
-        if ($bufferdata == false)
-        {
-          $bufferdata = loadfile (getcontentlocation ($contentfile_id, 'abs_path_content'), $container_wrk);  
-        }  
-        
+        $bufferdata = loadcontainer ($container_wrk, "work", $user);  
+
         // get current objects
         if ($bufferdata != false) $contentobjects = getcontent ($bufferdata, "<contentobjects>");    
 
@@ -235,19 +221,9 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
           // reindex
           indexcontent ($site, $mediadir, $media, $container_id, $bufferdata, $user);
         }
-
-        // load new working content container from Tamino
-        if (isset ($mgmt_config['db_connect_tamino']) && $mgmt_config['db_connect_tamino'] != "")
-        {       
-          $bufferdata = db_read_container ("work", $site, $container, "", $user);
-          if ($bufferdata != false) $bufferdata = $bufferdata['content'];
-        }
         
         // load working container from file system
-        if ($bufferdata == false)
-        {
-          $bufferdata = loadcontainer ($contentfile_id, "work", $user); 
-        }
+        $bufferdata = loadcontainer ($contentfile_id, "work", $user); 
 
         if ($bufferdata != false) 
         {
@@ -261,14 +237,14 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
           }  
             
           // save working container 
-          $test = savecontainer ($contentfile_id, "work", $bufferdata, $user);       
+          $test = savecontainer ($contentfile_id, "work", $bufferdata, $user);
         }
         else $test = false;         
         
         if ($test == false)
         {
           $errcode = "10100";
-          $error[] = $mgmt_config['today']."|version_content.php|error|$errcode|savefile failed for ".getcontentlocation ($contentfile_id, 'abs_path_content').$contentfile_wrk;           
+          $error[] = $mgmt_config['today']."|version_content.php|error|$errcode|savecontainer failed for container ".$contentfile_wrk;           
         }      
 
         if ($rename_2 == false || $copy_2 == false) echo "<p class=hcmsHeadline>".$text10[$lang]."</p>\n".$text11[$lang]."<br /><br />\n";

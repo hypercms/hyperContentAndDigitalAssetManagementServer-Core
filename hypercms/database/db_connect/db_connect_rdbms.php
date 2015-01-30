@@ -297,13 +297,13 @@ function rdbms_createobject ($container_id, $object, $template, $container, $use
     if ($container != "") $container = $db->escape_string($container);
     if ($user != "") $user = $db->escape_string($user);
         
-    $date = date ("Y-m-d", time());
+    $date = date ("Y-m-d H:i:s", time());
     $hash = createuniquetoken ();
     $object = str_replace ("%", "*", $object);
     if (strtolower (strrchr ($object, ".")) == ".off") $object = substr ($object, 0, -4);
     
     // insert values in table object
-    $sql = 'INSERT INTO object (id, hash, objectpath, template) ';    
+    $sql = 'INSERT INTO object (id, hash, objectpath, template) ';
     $sql .= 'VALUES ('.intval ($container_id).', "'.$hash.'", "'.$object.'", "'.$template.'")';
     
     $errcode = "50001";
@@ -316,22 +316,22 @@ function rdbms_createobject ($container_id, $object, $template, $container, $use
     // insert values in table container
     if (!empty ($container) && !empty ($user) && !empty ($_SESSION['hcms_temp_latitude']) && is_numeric ($_SESSION['hcms_temp_latitude']) && !empty ($_SESSION['hcms_temp_longitude']) && is_numeric ($_SESSION['hcms_temp_longitude']))
     {
-      $sql = 'INSERT INTO container (id, container, date, latitude, longitude, user) ';    
-      $sql .= 'VALUES ('.intval ($container_id).', "'.$container.'", "'.$date.'", '.floatval($_SESSION['hcms_temp_latitude']).', '.floatval($_SESSION['hcms_temp_longitude']).', "'.$user.'")';
+      $sql = 'INSERT INTO container (id, container, createdate, date, latitude, longitude, user) ';
+      $sql .= 'VALUES ('.intval ($container_id).', "'.$container.'", "'.$date.'", "'.$date.'", '.floatval($_SESSION['hcms_temp_latitude']).', '.floatval($_SESSION['hcms_temp_longitude']).', "'.$user.'")';
     }
     elseif (!empty ($container) && !empty ($user))
     {
-      $sql = 'INSERT INTO container (id, container, date, user) ';    
+      $sql = 'INSERT INTO container (id, container, date, user) ';
       $sql .= 'VALUES ('.intval ($container_id).', "'.$container.'", "'.$date.'", "'.$user.'")';
     }
     elseif (!empty ($user))
     {
-      $sql = 'UPDATE container SET user="'.$user.'", date="'.$date.'" ';    
+      $sql = 'UPDATE container SET user="'.$user.'", date="'.$date.'" ';
       $sql .= 'WHERE id='.intval ($container_id).'';
     }
     else
     {
-      $sql = 'UPDATE container SET date="'.$date.'" ';    
+      $sql = 'UPDATE container SET date="'.$date.'" ';
       $sql .= 'WHERE id='.intval ($container_id).'';
     }
     
@@ -348,19 +348,18 @@ function rdbms_createobject ($container_id, $object, $template, $container, $use
 }
 
 // ----------------------------------------------- set content -------------------------------------------------
-function rdbms_setcontent ($container_id, $text_array, $user)
+function rdbms_setcontent ($container_id, $text_array="", $user="")
 {
   global $mgmt_config;
   
   if ($container_id != "")
-  {   
-    
+  {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     $container_id = $db->escape_string($container_id);
     if ($user != "") $user = $db->escape_string($user);
     
-    $date = date ("Y-m-d", time());
+    $date = date ("Y-m-d H:i:s", time());
     
     // update container
     $sql_attr = null;
@@ -545,7 +544,7 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
 } 
 
 // ------------------------------------------------ get media attributes -------------------------------------------------
-function rdbms_getmedia ($container_id)
+function rdbms_getmedia ($container_id, $extended=false)
 {
   global $mgmt_config;
 
@@ -557,7 +556,8 @@ function rdbms_getmedia ($container_id)
     $container_id = $db->escape_string ($container_id);  
     
     // get media info
-    $sql = 'SELECT * FROM media WHERE id='.intval($container_id).'';   
+    if ($extended == true) $sql = 'SELECT med.*, cnt.createdate, cnt.date, cnt.latitude, cnt.longitude, cnt.user FROM media AS med, container AS cnt WHERE med.id=cnt.id AND med.id='.intval($container_id).'';   
+    else $sql = 'SELECT * FROM media WHERE id='.intval($container_id).'';   
 
     $errcode = "50067";
     $done = $db->query ($sql, $errcode, $mgmt_config['today']);
@@ -571,7 +571,7 @@ function rdbms_getmedia ($container_id)
     savelog ($db->getError());    
     $db->close();      
          
-    if (is_array ($media)) return $media;
+    if (!empty ($media) && is_array ($media)) return $media;
     else return false;
   }
   else return false;
@@ -1558,7 +1558,7 @@ function rdbms_getobject_id ($object)
       
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    $object = $db->escape_string ($object);        
+    $object = $db->escape_string ($object);  
     $object = str_replace ("%", "*", $object);
 
     $sql = 'SELECT object_id FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
@@ -1568,11 +1568,11 @@ function rdbms_getobject_id ($object)
     
     if ($done && $row = $db->getResultRow ())
     {
-      $object_id = $row['object_id'];   
+      $object_id = $row['object_id'];
     }
     
     // save log
-    savelog ($db->getError ());    
+    savelog ($db->getError ());
     $db->close();
       
     if ($object_id != "")
@@ -2033,7 +2033,7 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only=0, $us
 }
 
 // ------------------------------------------------ get queue entries -------------------------------------------------
-function rdbms_getqueueentries ($action, $site, $date, $user)
+function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $object="")
 {
   global $mgmt_config;
 
@@ -2041,26 +2041,36 @@ function rdbms_getqueueentries ($action, $site, $date, $user)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
     
+    // check object (can be valid path or ID)
+    if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0) $object_id = rdbms_getobject_id ($object);
+    elseif (is_numeric ($object)) $object_id = $object; 
+    elseif ($object != "") return false;  
+    
     // clean input
-    if ($action != "") $action = $db->escape_string ($action);
-    if ($site != "") $site = $db->escape_string ($site);
-    if ($date != "") $date = $db->escape_string ($date);
-    if ($user != "") $user = $db->escape_string ($user);
-        
+    if (!empty ($action)) $action = $db->escape_string ($action);
+    if (!empty ($site)) $site = $db->escape_string ($site);
+    if (!empty ($date)) $date = $db->escape_string ($date);
+    if (!empty ($user)) $user = $db->escape_string ($user);
+    if (!empty ($object_id)) $object_id = $db->escape_string ($object_id);
+
     // get recipients
     $sql = 'SELECT que.queue_id, que.action, que.date, que.published_only, que.user, obj.objectpath FROM queue AS que, object AS obj WHERE obj.object_id=que.object_id';
-    if ($action != "") $sql .= ' AND que.action="'.$action.'"';
-    if ($site != "") $sql .= ' AND (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
-    if ($date != "") $sql .= ' AND que.date<="'.$date.'"'; 
-    if ($user != "") $sql .= ' AND que.user="'.$user.'"';
+    if (!empty ($action)) $sql .= ' AND que.action="'.$action.'"';
+    if (!empty ($site)) $sql .= ' AND (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
+    if (!empty ($date)) $sql .= ' AND que.date<="'.$date.'"'; 
+    if (!empty ($user)) $sql .= ' AND que.user="'.$user.'"';
+    if (!empty ($object_id)) $sql .= ' AND que.object_id="'.$object_id.'"';
     $sql .= ' ORDER BY que.date';
   
     $errcode = "50034";
     $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
     
+    $queue = array();
+          
     if ($done)
     {  
       $i = 0;
+      
       // insert recipients
       while ($row = $db->getResultRow ('select'))
       {
@@ -2079,7 +2089,7 @@ function rdbms_getqueueentries ($action, $site, $date, $user)
     
     $db->close();
     
-    if (is_array (@$queue)) return $queue;
+    if (is_array ($queue) && sizeof ($queue) > 0) return $queue;
     else return false;
   }
   else return false;

@@ -164,7 +164,7 @@ echo showtopbar ($text0[$lang], $lang);
 
 <?php echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px;"); ?>
 
-<form name="notify" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+<form name="notify" method="post" action="">
   <input type="hidden" name="action" value="save" />      
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
   <input type="hidden" name="page" value="<?php echo correctfile ($location, $page, $user); ?>" />        
@@ -194,7 +194,7 @@ $notify_array = rdbms_getnotification ("", "", $user);
 
 if (is_array ($notify_array))
 {
-  echo "  <form name=\"delete\" method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">
+  echo "  <form name=\"delete\" method=\"post\" action=\"\">
   <input type=\"hidden\" name=\"action\" value=\"delete\" />
   <input type=\"hidden\" name=\"location\" value=\"".$location_esc."\" />
   <input type=\"hidden\" name=\"page\" value=\"".correctfile ($location, $page, $user)."\" />        

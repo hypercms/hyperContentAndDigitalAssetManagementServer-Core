@@ -137,7 +137,7 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/fclick.js" type="text/javascript"></script>
+<script src="javascript/click.js" type="text/javascript"></script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">

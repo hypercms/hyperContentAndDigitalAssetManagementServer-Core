@@ -125,7 +125,7 @@ $token_new = createtoken ($user);
 <body class="hcmsWorkplaceGeneric" onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif')">
 
 <div class="hcmsWorkplaceFrame">
-  <form name="template_change" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+  <form name="template_change" action="" method="post">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />

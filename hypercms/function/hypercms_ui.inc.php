@@ -382,7 +382,7 @@ function showmetadata ($data, $lang="en", $class_headline="hcmsRowData2")
 {
   global $mgmt_config, $lang_codepage;
   
-	if (is_array ($data))
+  if (is_array ($data))
   {
     // XMP always using UTF-8 so should any other XML-based format
     $charset_source = "UTF-8";
@@ -451,7 +451,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
     $file_info = getfileinfo ($site, $location.$page, $cat);
     
     // define object name
-    if ($name == "") $name = $file_info['name'];
+    if ($name == "") $name = $object_info['name'];
     
     // if folder
     if ($page == ".folder")
@@ -476,7 +476,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
       // get file time
       $filetime = date ("Y-m-d H:i", @filemtime ($location.$page));
       // get file size
-    	$filesize = round (@filesize ($location.$page) / 1024, 0);
+      $filesize = round (@filesize ($location.$page) / 1024, 0);
     }
   
     // format file size
@@ -504,7 +504,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
 
 // --------------------------------------- showmedia -----------------------------------------------
 // function: showmedia ()
-// input: mediafile (publication/filename), name of mediafile for display, view type [template, preview, preview_no_rendering], ID of the media tag,
+// input: mediafile (publication/filename), name of mediafile for display, view type [template, preview, preview_download, preview_no_rendering], ID of the media tag,
 //        width in px (optional), height in px (optional), CSS class (optional)
 // output: html presentation / false
 
@@ -515,7 +515,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 {
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docconvert, $lang_codepage, $lang,
          $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions; // used for image rendering (in case the format requires rename of the object file extension)	 
-		 
+     
   $pdfjs_path = $mgmt_config['url_path_cms']."javascript/pdfpreview/build/generic/web/viewer.html?file=";
   $gdocs_path = "https://docs.google.com/viewer?url=";
 
@@ -528,39 +528,112 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   // define document type extensions that are convertable into pdf or which the document viewer (google doc viewer) can display
   $doc_ext = ".pages.pdf.doc.docx.ppt.pptx.xls.xlsx.odt.ods.odp";
   
+  // get publication 
+  $site = substr ($mediafile, 0, strpos ($mediafile, "/"));
+  
+  // get filename and save original media file name (required as reference)
+  $mediafile_orig = $mediafile = getobject ($mediafile);
+  
   // check access permissions
-  if (!is_array ($setlocalpermission) && valid_locationname ($site) && valid_locationname ($location) && $cat == "comp")
+  if (!is_array ($setlocalpermission) && valid_publicationname ($site) && valid_locationname ($location) && $cat == "comp")
   {
-    $ownergroup = accesspermission ($site, $location, $cat);
-    $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+    $ownergroup = accesspermission ($site, $location, "comp");
+    $setlocalpermission = setlocalpermission ($site, $ownergroup, "comp");
   }
 
   if (@substr_count (strtolower ($mediafile), "null_media.gif") > 0 || $mediafile == "")
   {
     return "";
   }
-  elseif ($mediafile != "")
+  elseif ($mediafile != "" && valid_publicationname ($site))
   {
-    $mediafile_orig = $mediafile;
-    $medianame = getobject ($medianame);    
+    // display name
+    $medianame = getobject ($medianame);
     if ($medianame == "") $medianame = getobject ($mediafile);
     
-    // get publication 
-    $site = substr ($mediafile, 0, strpos ($mediafile, "/"));
-    // get pure filename
-    $mediafile_pure = getobject ($mediafile);
-    
     // get file info
-    if (strpos ($mediafile_pure, ".config.") > 0) $file_info = getfileinfo ($site, str_replace ("config.", "", $mediafile), "comp");
+    if (strpos ($mediafile, ".config.") > 0) $file_info = getfileinfo ($site, str_replace ("config.", "", $mediafile), "comp");
     elseif (strpos ("_".substr ($mediafile, strrpos ($mediafile, ".")), ".v_") == 1) $file_info = getfileinfo ($site, substr ($mediafile, 0, strrpos ($mediafile, ".")), "comp");
     else $file_info = getfileinfo ($site, $mediafile, "comp");
 
     // file extension of original file
     $file_info['orig_ext'] = $file_info['ext'];
 
-    // define media file root
-    if ($viewtype == "template") $media_root = $mgmt_config['abs_path_tplmedia'];
-    else $media_root = getmedialocation ($site, $mediafile, "abs_path_media");
+    // define media file root directory for template media files
+    if ($viewtype == "template" && valid_publicationname ($site))
+    {
+      $media_root = $mgmt_config['abs_path_tplmedia'].$site."/";
+    }
+    // define media file root directory for assets
+    elseif (valid_publicationname ($site))
+    {
+      $thumb_root = $media_root = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";;
+      
+      // get file time
+      $mediafiletime = date ("Y-m-d H:i", @filemtime ($thumb_root.$mediafile_orig));
+
+      // get container ID
+      $container_id = getmediacontainerid ($mediafile);
+      
+      // locked by user
+      $usedby_array = getcontainername ($container_id.".xml");
+
+      if (!empty ($usedby_array['user'])) $usedby = $usedby_array['user'];
+      else $usedby = "";
+
+      // create temp file if file is encrypted
+      $temp = createtempfile ($media_root, $mediafile);
+      
+      if ($temp['result'] && $temp['crypted'])
+      {
+        $media_root = $temp['templocation'];
+        $mediafile = $temp['tempfile'];
+      }
+
+      // load container
+      if (!empty ($usedby) && $usedby != $user)
+      {
+        $contentdata = loadcontainer ($container_id.".xml.wrk.@".$usedby, "version", $usedby);
+      }
+      else $contentdata = loadcontainer ($container_id, "work", $user);
+    
+      // extract information from container
+      $owner = getcontent ($contentdata, "<contentuser>");
+      $date_published = getcontent ($contentdata, "<contentpublished>");
+
+      // get media information
+      if ($mgmt_config['db_connect_rdbms'] != "")
+      {
+        // get media file information from database
+        $media_info = rdbms_getmedia ($container_id);
+        
+        $mediafilesize = $media_info['filesize'];
+        $width_orig = $media_info['width'];
+        $height_orig = $media_info['height'];
+      }
+      else
+      {
+        // get file size
+        $mediafilesize = round (@filesize ($media_root.$mediafile) / 1024, 0);
+      
+        // get dimensions of original media file
+        $media_size = @getimagesize ($media_root.$mediafile);
+        
+        if (!empty ($media_size[0]) && !empty ($media_size[1]))
+        {
+          $width_orig = $media_size[0];
+          $height_orig = $media_size[1];
+        }
+      }
+
+      // if object will be deleted automatically
+      if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
+      {
+        $location_esc = convertpath ($site, $location, "comp"); 
+        $queue = rdbms_getqueueentries ("delete", "", "", "", $location_esc.$page);
+        if (is_array ($queue) && !empty ($queue[0]['date'])) $date_delete = substr ($queue[0]['date'], 0, -3);
+      }
+    }
 
     // tag id
     if ($id != "") $id = "id=\"".$id."\"";
@@ -577,10 +650,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       // ----------- if Version -----------
       if (strpos ("_".substr ($mediafile, strrpos ($mediafile, ".")), ".v_") == 1)
       {
-        $mediaview = "<table>
+        $mediaview = "
+      <table>
         <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">
           <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$id." /> ".$text78[$lang].": 
-          <a href=\"".$mgmt_config['url_path_cms']."explorer_download.php?site=".url_encode($site)."&name=".$medianame."&media=".url_encode($mediafile)."&token=".hcms_crypt($mediafile)."\">
+          <a href=\"".$mgmt_config['url_path_cms']."explorer_download.php?site=".url_encode($site)."&name=".$medianame."&media=".url_encode($site."/".$mediafile_orig)."&token=".hcms_crypt($site."/".$mediafile_orig)."\">
             ".showshorttext($medianame, 40, false)."
           </a>
         </td></tr>\n";
@@ -618,15 +692,12 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           $style = "width=\"540\" height=\"740\"";
         }
-      
-        // generate security token from site/file name
-        $token_doc = hcms_crypt ($mediafile_orig);
-  	  
+
         // get browser information/version
         $user_client = getbrowserinfo ();
 
-  			// check user browser for compatibility with pdf render javascript - pdfjs and if orig. file is a pdf or is convertable to a pdf
-  	    if (
+        // check user browser for compatibility with pdf render javascript - pdfjs and if orig. file is a pdf or is convertable to a pdf
+        if (
              (
                (isset ($user_client['firefox']) && $user_client['firefox'] >= 6) || 
                (isset ($user_client['msie']) && $user_client['msie'] >= 9) || 
@@ -638,56 +709,51 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                (is_array ($mgmt_docconvert[$file_info['orig_ext']]) && in_array (".pdf", $mgmt_docconvert[$file_info['orig_ext']]))
              )
            )
-  	    {    			
-  				// check if original file is a pdf
-  				if (substr_count (".pdf", $file_info['orig_ext']) == 1) 
-  				{
-  					// using pdfjs with orig. file via iframe
-  					$doc_link = cleandomain ($mgmt_config['url_path_cms'])."explorer_wrapper.php?site=".$site."&name=".$medianame."&media=".$mediafile_orig."&token=".$token_doc;
-  					$mediaview = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
-  				}
-  				else
-  				{
-  					$medianame_thumb = $file_info['filename'].".thumb.pdf";
-  					$mediafile_thumb = $site."/".$medianame_thumb;
-  					$thumb_pdf_path = $mgmt_config['abs_path_media'].$mediafile_thumb;
-  					
-  					// if no thumb.pdf exsists => create one 
-  					if (file_exists ($thumb_pdf_path) && is_file ($thumb_pdf_path)) 
-  					{
-  						$thumb_pdf_exsists = true;
-  					}
-  					else
-  					{
-  						$medialocaiton = getmedialocation ($site, $mediafile_pure, "abs_path_media").$site."/";
-  						$thumb_pdf_exsists = createdocument ($site, $medialocaiton, $medialocaiton, $mediafile_pure, "pdf");
-  					}
-  					
-  					// thumb pdf exsists or creation was successful
-  					if ($thumb_pdf_exsists != false) 
-  					{
-  						// generate security token from site/file name
-  						$token_doc = hcms_crypt ($mediafile_thumb);
-  						// using pdfjs with orig. file via iframe
-  						$doc_link = cleandomain ($mgmt_config['url_path_cms'])."explorer_wrapper.php?site=".$site."&name=".$medianame_thumb."&media=".$mediafile_thumb."&token=".$token_doc;
-  						$mediaview = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
-  					}
-  					else
-  					{
-  						// was not able to convert into pdf - using google docs
-  						$doc_link = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".$site."&name=".$medianame."&media=".$mediafile_orig."&token=".$token_doc;
-  						$mediaview = "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
-  					}
-  				}
-  	    }
-  	    else
-  	    {
-  				// Not compatible Browser - using google docs
-  	      $doc_link = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".$site."&name=".$medianame."&media=".$mediafile_orig."&token=".$token_doc;
-  				$mediaview = "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
-  	    }
-  	 
-  	    $mediaview .= "<div style=\"padding:5px 0px 8px 0px; width:".$width."px; text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</div>";
+        {    			
+          // check if original file is a pdf
+          if (substr_count (".pdf", $file_info['orig_ext']) == 1) 
+          {
+            // using pdfjs with orig. file via iframe
+            $doc_link = cleandomain ($mgmt_config['url_path_cms'])."explorer_wrapper.php?site=".$site."&name=".$medianame."&media=".$site."/".$mediafile_orig."&token=".hcms_crypt ($site."/".$mediafile_orig);
+            $mediaview = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
+          }
+          else
+          {
+            $mediafile_thumb = $medianame_thumb = $file_info['filename'].".thumb.pdf";
+            
+            // if no thumb.pdf exists => create one 
+            if (is_file ($thumb_root.$mediafile_thumb)) 
+            {
+              $thumb_pdf_exsists = true;
+            }
+            else
+            {
+              $thumb_pdf_exsists = createdocument ($site, $thumb_root, $thumb_root, $mediafile_orig, "pdf");
+            }
+            
+            // thumb pdf exsists or creation was successful
+            if ($thumb_pdf_exsists != false) 
+            {
+              // using pdfjs with orig. file via iframe
+              $doc_link = cleandomain ($mgmt_config['url_path_cms'])."explorer_wrapper.php?site=".$site."&name=".$medianame_thumb."&media=".$site."/".$mediafile_thumb."&token=".hcms_crypt ($site."/".$mediafile_thumb);
+              $mediaview = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
+            }
+            else
+            {
+              // was not able to convert into pdf - using Google Docs
+              $doc_link = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".$site."&name=".$medianame."&media=".$site."/".$mediafile_orig."&token=".hcms_crypt ($site."/".$mediafile_orig);
+              $mediaview = "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
+            }
+          }
+        }
+        else
+        {
+          // Not compatible Browser - using google docs
+          $doc_link = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&name=".url_encode($medianame)."&media=".url_encode($site."/".$mediafile_orig)."&token=".hcms_crypt ($site."/".$mediafile_orig);
+          $mediaview = "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
+        }
+     
+        $mediaview .= "<div style=\"padding:5px 0px 8px 0px; width:".$width."px; text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</div>";
       }
       // ----------- if Image ----------- 
       elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['image'].".", $file_info['ext'].".") > 0)
@@ -698,30 +764,32 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if ($viewtype != "template")
         {
           // use thumbnail if it is valid (larger than 400 bytes)
-          if (@is_file ($media_root.$site."/".$file_info['filename'].".thumb.jpg") && @filesize ($media_root.$site."/".$file_info['filename'].".thumb.jpg") > 400)
+          if (@is_file ($thumb_root.$file_info['filename'].".thumb.jpg") && @filesize ($thumb_root.$file_info['filename'].".thumb.jpg") > 400)
           {
             $viewfolder = $mgmt_config['abs_path_cms'].'temp/';
             $newext = 'png';
             $typename = 'view';
             
-            $mediafile = $site."/".$file_info['filename'].".thumb.jpg";
-            $thumb_size = @getimagesize ($media_root.$mediafile);
+            // get thumbnail image information
+            $thumbfile = $file_info['filename'].".thumb.jpg";
+            $thumb_size = @getimagesize ($thumb_root.$thumbfile);
             $mediaratio = $thumb_size[0] / $thumb_size[1];
             
             // predict the name to check if the file does exist and maybe is actual
             $newname = $file_info['filename'].'.'.$typename.'.'.$width.'x'.$height.'.'.$newext;
-            
+
             // if thumbnail file is smaller than the defined size of a thumbnail due to a smaller original image
             if (is_array ($thumb_size) && $thumb_size[0] < 180 && $thumb_size[1] < 180)
             {
               $width = $thumb_size[0];
               $height = $thumb_size[1];
+              $mediafile = $thumbfile;
             }
             // generate a new image file if the new image size is greater than 150% of the width or height of the thumbnail
             elseif (is_array ($thumb_size) && ($width > 0 && $thumb_size[0] * 1.5 < $width) && ($height > 0 && $thumb_size[1] * 1.5 < $height) && is_array ($mgmt_imageoptions))
             {
-              // generate new file only when another one wasn't already created or is outdated
-              if (@filemtime ($media_root.$site.'/'.$file_info['file']) > @filemtime ($viewfolder.$newname)) 
+              // generate new file only when another one wasn't already created or is outdated (use thumbnail since the date of the decrypted temporary file is not representative)
+              if (!is_file ($viewfolder.$newname) || @filemtime ($thumb_root.$thumbfile) > @filemtime ($viewfolder.$newname)) 
               {
                 // searching for the configuration we need
                 foreach ($mgmt_imageoptions as $formatstring => $settingArray)
@@ -736,8 +804,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 {
                   $mgmt_imageoptions[$formats][$typename.'.'.$width.'x'.$height] = '-s '.$width.'x'.$height.' -f '.$newext;
                   
-                  $result = createmedia ($site, $media_root.$site."/", $viewfolder, $file_info['file'], $newext, $typename.'.'.$width.'x'.$height);
-                  
+                  // create new temporary thumbnail
+                  $result = createmedia ($site, $thumb_root, $viewfolder, $mediafile_orig, $newext, $typename.'.'.$width.'x'.$height, true);
+
                   if ($result) $mediafile = $result;
                 }
               }
@@ -746,16 +815,19 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             }
             elseif ($width > 0 && $height > 0)
             {
-              // do nothing
+              $mediafile = $thumbfile;
             }
             elseif ($width > 0)
             {
               $height = round (($width / $mediaratio), 0);
+              $mediafile = $thumbfile;
             }
             elseif ($height > 0)
             {
               $width = round (($height / $mediaratio), 0);
+              $mediafile = $thumbfile;
             }
+            else $mediafile = $thumbfile;
             
             if ($width > 0 && $height > 0) $style = "style=\"width:".intval($width)."px; height:".intval($height)."px;\"";
             
@@ -767,31 +839,34 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             // get file extension of new file (preview file)
             $file_info['ext'] = strtolower (strrchr ($mediafile, "."));
 
-            $mediaview .= "<table>
-            <tr><td align=left><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($mediafile)."&token=".hcms_crypt($mediafile)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style."/></td></tr>
-            <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";           
+            $mediaview .= "
+          <table>
+            <tr><td align=left><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile)."&token=".hcms_crypt($site."/".$mediafile)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style."/></td></tr>
+            <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>";           
           }
           // if no thumbnail/preview exists
           else
           {
-            $mediaview = "<table>
+            $mediaview = "
+          <table>
             <tr><td align=\"left\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /></td></tr>
-            <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";
+            <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>";
           }
         }      
         // if template media view
         elseif (file_exists ($media_root.$mediafile))
         {
-          $mediaview = "<table>
+          $mediaview = "
+        <table>
           <tr><td align=\"left\"><img src=\"".$mgmt_config['url_path_tplmedia'].$mediafile."\" ".$id." alt=\"".$mediafile."\" title=\"".$mediafile."\" class=\"".$class."\" ".$style."/></td></tr>
-          <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($mediafile, 40, false)."</td></tr>\n";
+          <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($mediafile, 40, false)."</td></tr>";
         }      
   
         // image rendering (only if image conversion software and permissions are given)
         if ($viewtype == "preview" && is_supported ($mgmt_imagepreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) 
         {
           // add image rendering button
-          $mediaview .= "<tr><td align=middle><input name=\"media_rendering\" class=\"hcmsButtonGreen\" type=\"button\" value=\"".$text83[$lang]."\" onclick=\"setSaveType('imagerendering_so', '');\" /></td></tr>\n";
+          $mediaview .= "<tr><td align=middle><input name=\"media_rendering\" class=\"hcmsButtonGreen\" type=\"button\" value=\"".$text83[$lang]."\" onclick=\"if (typeof setSaveType == 'function') setSaveType('imagerendering_so', '');\" /></td></tr>\n";
         }
         
         $mediaview .= "</table>\n";
@@ -802,49 +877,62 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         // media size
         $style = "";
         
+        // use provided dimensions
         if (is_numeric ($width) && $width > 0) $style .= "width=\"".$width."\"";
         if (is_numeric ($height) && $height > 0) $style .= " height=\"".$height."\"";
-  
+        
+        // use original dimensions
         if ($style == "")
         {
-          $media_size = @getimagesize ($media_root.$mediafile);
-          $style = $media_size[3];
+          if (!empty ($width_orig) && !empty ($height_orig))
+          {
+            $style .= "width=\"".$width_orig."\" height=\"".$height_orig."\"";
+          }
+          // try to get the dimensions from media file
+          else
+          {
+            $media_size = @getimagesize ($media_root.$mediafile);
+            if (!empty ($media_size[3])) $style .= $media_size[3];
+          }
         }
         
-        $mediaview = "<table>
-        <tr><td align=left><object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" ".$style.">
-        <param name=movie value=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($mediafile)."&token=".hcms_crypt($mediafile)."\" />
-        <param name=quality value=high />
-        <embed src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($mediafile)."&token=".hcms_crypt($mediafile)."\" ".$id." quality=high pluginspage=\"http://www.macromedia.com/go/getflashplayer\" type=\"application/x-shockwave-flash\" ".$style." />
-        </object></td></tr>
+        $mediaview = "
+      <table>
+        <tr><td align=\"left\">
+          <object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" ".$style.">
+            <param name=\"movie\" value=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile_orig)."&token=".hcms_crypt($site."/".$mediafile_orig)."\" />
+            <param name=\"quality\" value=\"high\" />
+            <embed src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile_orig)."&token=".hcms_crypt($site."/".$mediafile_orig)."\" ".$id." quality=\"high\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" type=\"application/x-shockwave-flash\" ".$style." />
+          </object>
+        </td></tr>
         <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>
-        </table>\n";
+      </table>";
       }
       // ----------- if Audio ----------- 
       elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['audio'].".", $file_info['ext'].".") > 0)
       {
         // media player config file is given
-        if (strpos ($mediafile_pure, ".config.") > 0 && is_file ($media_root.$site."/".$mediafile_pure))
+        if (strpos ($mediafile_orig, ".config.") > 0 && is_file ($thumb_root.$mediafile_orig))
         {
-          $config = readmediaplayer_config ($media_root.$site."/", $mediafile_pure);
+          $config = readmediaplayer_config ($thumb_root, $mediafile_orig);
         }
         // new since version 5.6.3 (config of original-preview file)
-        elseif (file_exists ($media_root.$site."/".$file_info['filename'].".config.orig"))
+        elseif (file_exists ($thumb_root.$file_info['filename'].".config.orig"))
         {
-          $config = readmediaplayer_config ($media_root.$site."/", $file_info['filename'].".config.orig");
+          $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
         }
         // new since version 5.6.3 (config of audioplayer)
-        elseif (file_exists ($media_root.$site."/".$file_info['filename'].".config.audio"))
+        elseif (file_exists ($thumb_root.$file_info['filename'].".config.audio"))
         {
-          $config = readmediaplayer_config ($media_root.$site."/", $file_info['filename'].".config.audio");
+          $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.audio");
         }
         // no media config file is available, try to create video thumbnail file
-        elseif (is_file ($media_root.$site."/".$mediafile_pure))
+        elseif (is_file ($thumb_root.$mediafile_orig))
         {
           // create thumbnail video of original file
-          $create_media = createmedia ($site, $media_root.$site."/", $media_root.$site."/", $mediafile_pure, "", "origthumb");
+          $create_media = createmedia ($site, $thumb_root, $thumb_root, $mediafile_orig, "", "origthumb");
           
-          if ($create_media) $config = readmediaplayer_config ($media_root.$site."/", $file_info['filename'].".config.orig");
+          if ($create_media) $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
         }
 
         // use default values
@@ -857,22 +945,34 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         <!-- hyperCMS:height file=\"".$mediaheight."\" -->";
         
         // generate player code
-        if (empty ($config['mediafiles'])) $config['mediafiles'] = array ($site."/".$mediafile_pure);
+        if (empty ($config['mediafiles'])) $config['mediafiles'] = array ($site."/".$mediafile);
         
         $playercode = showaudioplayer ($site, $config['mediafiles'], "preview", "cut_audio");
       
-        $mediaview .= "<table>
+        $mediaview .= "
+      <table>
         <tr><td align=left>".$playercode."</td></tr>
-        <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";
+        <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>";
         
-        // video rendering and embedding
-        if ($viewtype != "preview_no_rendering" && $viewtype != "template" && is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+        // video rendering and embedding (requires the JS function 'setSaveType' provided by the template engine)
+        if (is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
         {
-          $mediaview .= "<tr><td style=\"text-align:center;\">
-          <button type=\"button\" name=\"media_rendering\" class=\"hcmsButtonGreen\" onclick=\"setSaveType('mediarendering_so', '');\" />".$text106[$lang]."</button>&nbsp;
-          <button type=\"button\" name=\"media_embedding\" class=\"hcmsButtonBlue\" onclick=\"setSaveType('mediaplayerconfig_so', '');\">".$text107[$lang]."</button>&nbsp;
-        </td></tr>\n";
-        }     
+          if ($viewtype == "preview")
+          {
+            $mediaview .= "
+        <tr><td style=\"text-align:center;\">
+          <button type=\"button\" name=\"media_rendering\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '');\" />".$text106[$lang]."</button>&nbsp;
+          <button type=\"button\" name=\"media_embedding\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '');\">".$text107[$lang]."</button>&nbsp;
+        </td></tr>";
+          }
+          elseif ($viewtype == "preview_download")
+          {
+            $mediaview .= "
+        <tr><td style=\"text-align:center;\">
+          <button type=\"button\" name=\"media_embedding\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\">".$text107[$lang]."</button>&nbsp;
+        </td></tr>";
+          }
+        }    
         
         $mediaview .= "</table>\n";
       }
@@ -880,33 +980,33 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['video'].".", $file_info['ext'].".") > 0)
       {
         // media player config file is given
-        if (strpos ($mediafile_pure, ".config.") > 0 && is_file ($media_root.$site."/".$mediafile_pure))
+        if (strpos ($mediafile_orig, ".config.") > 0 && is_file ($thumb_root.$mediafile_orig))
         {
-          $config = readmediaplayer_config ($media_root.$site."/", $mediafile_pure);
+          $config = readmediaplayer_config ($thumb_root, $mediafile_orig);
         }
         // get media player config file
         // new since version 5.6.3 (config/preview of original file)
-        elseif (is_file ($media_root.$site."/".$file_info['filename'].".config.orig"))
+        elseif (is_file ($thumb_root.$file_info['filename'].".config.orig"))
         {
-          $config = readmediaplayer_config ($media_root.$site."/", $file_info['filename'].".config.orig");
+          $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
         }
         // new since version 5.5.7 (config of videoplayer)
-        elseif (is_file ($media_root.$site."/".$file_info['filename'].".config.video"))
+        elseif (is_file ($thumb_root.$file_info['filename'].".config.video"))
         {
-          $config = readmediaplayer_config ($media_root.$site."/", $file_info['filename'].".config.video");
+          $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.video");
         }
         // old version (only FLV support)
-        elseif (is_file ($media_root.$site."/".$file_info['filename'].".config.flv"))
+        elseif (is_file ($thumb_root.$file_info['filename'].".config.flv"))
         {
-          $config = readmediaplayer_config ($media_root.$site."/", $file_info['filename'].".config.flv");
+          $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.flv");
         }
         // no media config file is available, try to create video thumbnail file
-        elseif (is_file ($media_root.$site."/".$mediafile_pure))
+        elseif (is_file ($thumb_root.$mediafile_orig))
         {
           // create thumbnail video of original file
-          $create_media = createmedia ($site, $media_root.$site."/", $media_root.$site."/", $mediafile_pure, "", "origthumb");
+          $create_media = createmedia ($site, $thumb_root, $thumb_root, $mediafile_orig, "", "origthumb");
           
-          if ($create_media) $config = readmediaplayer_config ($media_root.$site."/", $file_info['filename'].".config.orig");
+          if ($create_media) $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
         }
 
         // use config values
@@ -921,6 +1021,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           $mediawidth = 320;
           $mediaheight = 240;
+          $mediaratio = $mediawidth / $mediaheight;
         }
         
         // set width and height of media file as file-parameter
@@ -929,30 +1030,25 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         <!-- hyperCMS:height file=\"".$mediaheight."\" -->";
         
         // if media size input is given (overwrite values)
+        // width and height is provided
         if ((is_numeric ($width) && $width > 0) && (is_numeric ($height) && $height > 0))
         {
           $mediawidth = $width;
           $mediaheight = $height;
         }
+        // only width is provided
         elseif (is_numeric ($width) && $width > 0 && $mediaratio > 0)
         {
           $mediawidth = $width;
           $mediaheight = round (($mediawidth / $mediaratio), 0);
         }
+        // only height is provided
         elseif (is_numeric ($height) && $height > 0 && $mediaratio > 0)
         {
           $mediaheight = $height;
           $mediawidth = round (($mediaheight * $mediaratio), 0);
         }
-        
-        // check player size (and overwrite values)
-        if ($mediawidth > 750)
-        {
-          $mediaratio = $mediaheight / $mediawidth;
-          $mediawidth = 750;
-          $mediaheight = $mediawidth * $mediaratio;
-        }
-    
+
         // generate player code
         $playercode = showvideoplayer ($site, $config['mediafiles'], $mediawidth, $mediaheight, "preview", Null, "cut_video", "", false);
       
@@ -962,12 +1058,23 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";
         
         // video rendering and embedding
-        if ($viewtype != "preview_no_rendering" && $viewtype != "template" && is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+        if (is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
         {
-          $mediaview .= "<tr><td style=\"text-align:center;\">
-          <button type=\"button\" name=\"media_rendering\" class=\"hcmsButtonGreen\" onclick=\"setSaveType('mediarendering_so', '');\" />".$text82[$lang]."</button>&nbsp;
-          <button type=\"button\" name=\"media_embedding\" class=\"hcmsButtonBlue\" onclick=\"setSaveType('mediaplayerconfig_so', '');\">".$text92[$lang]."</button>&nbsp;
-        </td></tr>\n";
+          if ($viewtype == "preview")
+          {
+            $mediaview .= "
+        <tr><td style=\"text-align:center;\">
+          <button type=\"button\" name=\"media_rendering\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '');\" />".$text82[$lang]."</button>&nbsp;
+          <button type=\"button\" name=\"media_embedding\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '');\">".$text92[$lang]."</button>&nbsp;
+        </td></tr>";
+          }
+          elseif ($viewtype == "preview_download" && valid_locationname ($location) && valid_objectname ($page))
+          {
+            $mediaview .= "
+        <tr><td style=\"text-align:center;\">
+          <button type=\"button\" name=\"media_embedding\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\">".$text92[$lang]."</button>&nbsp;
+        </td></tr>";
+          }
         }     
         
         $mediaview .= "</table>\n";
@@ -1038,15 +1145,15 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     if ($mediaview == "")
     {
       // use thumbnail if it is valid (larger than 400 bytes)
-      if (file_exists ($media_root.$site."/".$file_info['filename'].".thumb.jpg") && @filesize ($media_root.$site."/".$file_info['filename'].".thumb.jpg") > 400)
+      if (file_exists ($thumb_root.$file_info['filename'].".thumb.jpg") && @filesize ($thumb_root.$file_info['filename'].".thumb.jpg") > 400)
       {
         // thumbnail file
-        $mediafile = $site."/".$file_info['filename'].".thumb.jpg";
+        $mediafile = $file_info['filename'].".thumb.jpg";
         // get file extension of new file (preview file)
         $file_info['ext'] = strtolower (strrchr ($mediafile, "."));
         
         $mediaview = "<table>
-        <tr><td align=left><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($mediafile)."&token=".hcms_crypt($mediafile)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" /></td></tr>
+        <tr><td align=left><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile)."&token=".hcms_crypt($site."/".$mediafile)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" /></td></tr>
         <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";           
       }
       // if no thumbnail/preview exists
@@ -1061,175 +1168,153 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     // properties of video files (original and thumbnail files)
     if (is_array ($mgmt_mediapreview) && $file_info['ext'] != "" && substr_count ($hcms_ext['video'].$hcms_ext['audio'], $file_info['ext']) > 0)
     {
-  		$dimensions = array();
-  		$durations = array();
-  		$bitrates = array();
-  		$filesizes = array();
+      $dimensions = array();
+      $durations = array();
+      $bitrates = array();
+      $audio_bitrates = array();
+      $audio_frequenzies = array();
+      $audio_channels = array();
+      $filesizes = array();
       $downloads = array();
-	    $youtube_uploads = array();
+      $youtube_uploads = array();
       
       // is file a video
       if (substr_count ($hcms_ext['video'], $file_info['ext']) > 0) $is_video = true;
       else $is_video = false;
-		
-		  // original video file
-      $videoinfo = getvideoinfo ($media_root.$mediafile_orig);
+    
+      // original video file
+      $mediafile_config = substr ($mediafile_orig, 0, strrpos ($mediafile_orig, ".")).".config.orig";
+      $videoinfo = readmediaplayer_config ($thumb_root, $mediafile_config);
+      
+      if (empty ($videoinfo['version']) || floatval ($videoinfo['version']) < 2.2) $videoinfo = getvideoinfo ($media_root.$mediafile);
 
-		  // show the values
-	    if (is_array ($videoinfo)) //media file
-		  {
-  			if ($videoinfo['filesize'] != "")
-        {          
-  			  $filesizes['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;">'.$videoinfo['filesize'].' MB&nbsp;&nbsp;&nbsp;</td>';
-        }
-        else
-        {
-  				$dimensions['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;">&nbsp;&nbsp;&nbsp;&nbsp;</td>';
-  			}            
+      // show the values
+      if (is_array ($videoinfo)) //media file
+      {       
+        $filesizes['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].' &nbsp;&nbsp;&nbsp;</td>';
+
+        $dimensions['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].' &nbsp;&nbsp;&nbsp;</td>';
+
+        $durations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration'].'&nbsp;&nbsp;&nbsp;</td>';
+
+        $bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['videobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
+
+        $audio_bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
+
+        $audio_frequenzies['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';
+
+        $audio_channels['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
         
-  			if ($videoinfo['dimension'] != "")
-        {
-  				$dimensions['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;">'.$videoinfo['dimension'].' Pixel&nbsp;&nbsp;&nbsp;</td>';
-  			}
-        else
-        {
-  				$dimensions['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;">&nbsp;&nbsp;&nbsp;&nbsp;</td>';
-  			}
-
-  			if ($videoinfo['duration'] != "")
-        {
-  				$durations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;">'.$videoinfo['duration'].'&nbsp;&nbsp;&nbsp;</td>';
-  			}
-        else
-        {
-  				$durations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;">&nbsp;&nbsp;&nbsp;&nbsp;</td>';
-  			}
-
-  			if ($videoinfo['bitrate'] != "")
-        {
-  				$bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;">'.$videoinfo['bitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-  			}
-        else
-        {
-  				$bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;">&nbsp;&nbsp;&nbsp;&nbsp;</td>';
-  			}
-        
-        $download_link = "top.location.href='".$mgmt_config['url_path_cms']."explorer_download.php?media=".url_encode($mediafile_orig)."&name=".url_encode($medianame)."&token=".hcms_crypt($mediafile_orig)."'; return false;";
+        $download_link = "top.location.href='".$mgmt_config['url_path_cms']."explorer_download.php?media=".url_encode($site."/".$mediafile_orig)."&name=".url_encode($medianame)."&token=".hcms_crypt($site."/".$mediafile_orig)."'; return false;";
        
-        if ($viewtype != "preview_no_rendering") 
-    		{
-    			$downloads['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;"><button class="hcmsButtonBlue" onclick="'.$download_link.'">'.$text78[$lang].'</button></td>';
-    		  
+        // download button
+        if ($viewtype == "preview" || $viewtype == "preview_download") 
+        {
+          $downloads['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;"><button class="hcmsButtonBlue" onclick="'.$download_link.'">'.$text78[$lang].'</button></td>';
+          
           if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
           {		
-    			  $youtube_uploads['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;"> 
-    			  <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","420","300")\'>'.$text108[$lang].'</button> </td>';
-    		  }
-    		}
-	    }
-  		
-  		$videos = array ('<th style="text-align:left;">'.$text89[$lang].'</th>');
-      
-      // video thumbnail files
-      if ($is_video) $media_extension_array = explode (".", substr ($hcms_ext['video'], 1));
-      // audio thumbnail files
-      else $media_extension_array = explode (".", substr ($hcms_ext['audio'], 1));
-  		
-  		foreach ($media_extension_array as $media_extension)
-      {
-        // try individual video
-        $video_thumbfile = $site."/".$file_info['filename'].".media.".$media_extension;
-        // or use thumnail video
-  			if (!file_exists ($media_root.$video_thumbfile))
-        {
-          $video_thumbfile = $site."/".$file_info['filename'].".thumb.".$media_extension;
+            $youtube_uploads['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;"> 
+            <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","420","300")\'>'.$text108[$lang].'</button> </td>';
+          }
         }
+      }
+      
+      $videos = array ('<th style="text-align:left;">'.$text89[$lang].'</th>');
+      
+      if ($viewtype == "preview" || $viewtype == "preview_download")
+      {
+        // video thumbnail files
+        if ($is_video) $media_extension_array = explode (".", substr ($hcms_ext['video'], 1));
+        // audio thumbnail files
+        else $media_extension_array = explode (".", substr ($hcms_ext['audio'], 1));
         
-        $video_filename = substr ($medianame, 0, strrpos ($medianame, ".")).".".$media_extension;
-        
-  			if (file_exists ($media_root.$video_thumbfile))
+        foreach ($media_extension_array as $media_extension)
         {
-  				$videos[$media_extension] = '<th style="text-align:left;">'.$media_extension.'</th>';
+          // try individual video
+          $video_thumbfile = $file_info['filename'].".media.".$media_extension;
           
-  				// get video information from thumbnail file
-          $videoinfo = getvideoinfo ($media_root.$video_thumbfile);
+          // or use thumbnail video for videoplayer (only if file is not encrypted!)
+          if (!is_file ($thumb_root.$video_thumbfile) && !is_encryptedfile ($thumb_root, $file_info['filename'].".thumb.".$media_extension))
+          {
+            $video_thumbfile = $file_info['filename'].".thumb.".$media_extension;
+          }
           
-  				// show the values
-  				if (is_array ($videoinfo))
-  				{
-  				  $filesizes[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;">'.$videoinfo['filesize'].' MB&nbsp;&nbsp;&nbsp;</td>';
-
-  					if ($videoinfo['dimension'] != "")
-            {
-  						$dimensions[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;">'.$videoinfo['dimension'].' Pixel&nbsp;&nbsp;&nbsp;</td>';
-  					}
-            else
-            {
-  						$dimensions[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;">&nbsp;&nbsp;&nbsp;&nbsp;</td>';
-  					}
-
-  					if ($videoinfo['duration'] != "")
-            {
-  						$durations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;">'.$videoinfo['duration'].'&nbsp;&nbsp;&nbsp;</td>';
-  					}
-            else
-            {
-  						$durations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;">&nbsp;&nbsp;&nbsp;&nbsp;</td>';
-  					}
-
-  					if ($videoinfo['bitrate'] != "")
-            {
-  						$bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;">'.$videoinfo['bitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-  					}
-            else
-            {
-  						$bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;">&nbsp;&nbsp;&nbsp;&nbsp;</td>';
-  					}
+          $video_filename = substr ($medianame, 0, strrpos ($medianame, ".")).".".$media_extension;
+  
+          if (is_file ($thumb_root.$video_thumbfile))
+          {
+            $videos[$media_extension] = '<th style="text-align:left;">'.$media_extension.'</th>';
+            
+            // get video information from thumbnail file
+            $mediafile_config = substr ($mediafile_orig, 0, strrpos ($mediafile_orig, ".")).".config.".$media_extension;
+            $videoinfo = readmediaplayer_config ($thumb_root, $mediafile_config);
+  
+            if (empty ($videoinfo['version']) || floatval ($videoinfo['version']) < 2.2) $videoinfo = getvideoinfo ($thumb_root.$video_thumbfile);
+  
+            // show the values
+            if (is_array ($videoinfo))
+            {          
+              $filesizes[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].' &nbsp;&nbsp;&nbsp;</td>';
+  
+              $dimensions[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].' &nbsp;&nbsp;&nbsp;</td>';
+  
+              $durations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration'].'&nbsp;&nbsp;&nbsp;</td>';
+  
+              $bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['videobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
+  
+              $audio_bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
+  
+              $audio_frequenzies[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';
+  
+              $audio_channels[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
+  
+              $download_link = "top.location.href='".$mgmt_config['url_path_cms']."explorer_download.php?media=".url_encode($site."/".$video_thumbfile)."&name=".url_encode($video_filename)."&token=".hcms_crypt($site."/".$video_thumbfile)."'; return false;";
+             
+              // download button
+              if ($viewtype == "preview" || $viewtype == "preview_download")
+              {
+                $downloads[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;"><button class="hcmsButtonBlue" onclick="'.$download_link.'">'.$text78[$lang].'</button></td>'; 
                 
-            $download_link = "top.location.href='".$mgmt_config['url_path_cms']."explorer_download.php?media=".url_encode($video_thumbfile)."&name=".url_encode($video_filename)."&token=".hcms_crypt($video_thumbfile)."'; return false;";
-           
-            if ($viewtype != "preview_no_rendering")
-      			{
-      				$downloads[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;"><button class="hcmsButtonBlue" onclick="'.$download_link.'">'.$text78[$lang].'</button></td>'; 
-        			
-              if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
-              {	
-      			    $youtube_uploads[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;"> 
-          		<button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","420","300")\'>'.$text108[$lang].'</button> </td>';
-          		}
-    				}
-  				}
-  			}
-  		}
+                if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
+                {	
+                  $youtube_uploads[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;"> 
+                <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","420","300")\'>'.$text108[$lang].'</button> </td>';
+                }
+              }
+            }
+          }
+        }
+      }
 
-	    // Generation of output	    
-	    if (is_array ($videos)) $mediaview .= '<table style="cellspacing:2px;"><tr><th>&nbsp;</th>'.implode("", $videos).'</tr>';		
-	    // Filesize
-	    if (is_array ($filesizes)) $mediaview .= '<tr><td>'.$text80[$lang].'&nbsp;</td>'.implode ("", $filesizes).'</tr>';	    
-	    // Dimension
-	    if ($is_video && is_array ($dimensions)) $mediaview .= '<tr><td>'.$text88[$lang].'&nbsp;</td>'.implode ("", $dimensions).'</tr>';			    
-		  // Durations
-	    if ($is_video && is_array ($durations)) $mediaview .= '<tr><td>'.$text86[$lang].'&nbsp;</td>'.implode ("", $durations).'</tr>';		
-		  // Bitrate
-	    if ($is_video && is_array ($bitrates)) $mediaview .= '<tr><td>'.$text87[$lang].'&nbsp;</td>'.implode ("", $bitrates).'</tr>';
-		  // Bitrate
-	    if (is_array ($downloads) && sizeof ($downloads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $downloads).'</tr>';
-		  // Youtube
+      // generate output	    
+      if (is_array ($videos)) $mediaview .= '<table style="cellspacing:2px;"><tr><th>&nbsp;</th>'.implode("", $videos).'</tr>';		
+      // Filesize
+      if (is_array ($filesizes)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.$text80[$lang].'&nbsp;</td>'.implode ("", $filesizes).'</tr>';	    
+      // Dimension
+      if ($is_video && is_array ($dimensions)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.$text88[$lang].'&nbsp;</td>'.implode ("", $dimensions).'</tr>';			    
+      // Durations
+      if (is_array ($durations)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.$text86[$lang].'&nbsp;</td>'.implode ("", $durations).'</tr>';		
+      // Bitrate
+      if ($is_video && is_array ($bitrates)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.$text87[$lang].'&nbsp;</td>'.implode ("", $bitrates).'</tr>';
+      // Audio bitrate
+      if (is_array ($audio_bitrates)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.$text117[$lang].'&nbsp;</td>'.implode ("", $audio_bitrates).'</tr>';
+      // Audio frequenzy
+      if (is_array ($audio_frequenzies)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.$text118[$lang].'&nbsp;</td>'.implode ("", $audio_frequenzies).'</tr>';
+      // Audio frequenzy
+      if (is_array ($audio_channels)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.$text119[$lang].'&nbsp;</td>'.implode ("", $audio_channels).'</tr>';
+      // Download
+      if (is_array ($downloads) && sizeof ($downloads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $downloads).'</tr>';
+      // Youtube
       if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
-		  {
-	      if (is_array ($youtube_uploads) && sizeof ($youtube_uploads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $youtube_uploads).'</tr>';
-		  }
-	    if (is_array ($videos)) $mediaview .= '</table>';
+      {
+        if (is_array ($youtube_uploads) && sizeof ($youtube_uploads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $youtube_uploads).'</tr>';
+      }
+      if (is_array ($videos)) $mediaview .= '</table>';
     }
     // width and height of other media files
     else
     {
-      // get file time
-      $mediafiletime = date ("Y-m-d H:i", @filemtime ($media_root.$mediafile_orig));
-      
-      // get file size
-    	$mediafilesize = round (@filesize ($media_root.$mediafile_orig) / 1024, 0);
-    	
       // format file size
       if ($mediafilesize > 1000)
       {
@@ -1240,39 +1325,59 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       
       $mediafilesize = number_format ($mediafilesize, 0, "", ".")." ".$unit;
       
-    	// output information
-    	$mediaview .= "<table>
-    	<tr>
-    	<td>".$text104[$lang].": </td>
-    	<td class=\"hcmsHeadlineTiny\">".$mediafiletime."</td>
-    	</tr>
-    	<tr>
-    	<td>".$text80[$lang].": </td>
-    	<td class=\"hcmsHeadlineTiny\">".$mediafilesize."</td>
-    	</tr>\n";
+      // output information
+      $mediaview .= "    <table>";
+      if (!empty ($owner[0])) $mediaview .= "
+      <tr>
+      <td style=\"text-align:left; white-space:nowrap;\">".$text116[$lang].": </td>
+      <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$owner[0]."</td>
+      </tr>";
+      $mediaview .= "
+      <tr>
+      <td style=\"text-align:left; white-space:nowrap;\">".$text104[$lang].": </td>
+      <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$mediafiletime."</td>
+      </tr>";
+      if (!empty ($date_published[0])) $mediaview .= "
+      <tr>
+      <td style=\"text-align:left; white-space:nowrap;\">".$text111[$lang].": </td>
+      <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$date_published[0]."</td>
+      </tr>";
+      if (!empty ($date_delete)) $mediaview .= "
+      <tr>
+      <td style=\"text-align:left; white-space:nowrap;\">".$text115[$lang].": </td>
+      <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$date_delete."</td>
+      </tr>";
+      $mediaview .= "
+      <tr>
+      <td style=\"text-align:left; white-space:nowrap;\">".$text80[$lang].": </td>
+      <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$mediafilesize."</td>
+      </tr>\n";
+
+      if (!empty ($width_orig) && !empty ($height_orig))
+      {
+        // size in pixel of media file
+        $mediaview .= "
+      <tr>
+      <td style=\"text-align:left; white-space:nowrap;\">".$text79[$lang].": </td>
+      <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$width_orig."x".$height_orig." px</td>
+      </tr>\n";
       
-      // get file information of original media file
-      $media_size = @getimagesize ($media_root.$mediafile_orig);  
-    	
-      // size in pixel
-    	if ($media_size != false) $mediaview .= "<tr>
-    	<td>".$text79[$lang].": </td>
-    	<td class=\"hcmsHeadlineTiny\">".$media_size[0]." x ".$media_size[1]." pixel</td>
-    	</tr>\n";
+        // size in cm
+        $mediaview .= "
+      <tr>
+      <td style=\"text-align:left; white-space:nowrap;\">".$text79[$lang]." (72 dpi): </td>
+      <td class=\"hcmsHeadlineTiny\">".round(($width_orig / 72 * 2.54), 1)."x".round(($height_orig / 72 * 2.54), 1)." cm, ".round(($width_orig / 72), 1)."x".round(($height_orig / 72), 1)." inch</td>
+      </tr>\n";
       
-      // size in cm
-    	if ($media_size != false) $mediaview .= "<tr>
-    	<td>".$text79[$lang]." (72 dpi): </td>
-    	<td class=\"hcmsHeadlineTiny\">".round(($media_size[0] / 72 * 2.54), 1)." x ".round(($media_size[1] / 72 * 2.54), 1)." cm, ".round(($media_size[0] / 72), 1)." x ".round(($media_size[1] / 72), 1)." inch</td>
-    	</tr>\n";
+        // size in inch
+        $mediaview .= "
+      <tr>
+      <td style=\"text-align:left; white-space:nowrap;\">".$text79[$lang]." (300 dpi): </td>
+      <td class=\"hcmsHeadlineTiny\">".round(($width_orig / 300 * 2.54), 1)."x".round(($height_orig / 300 * 2.54), 1)." cm, ".round(($width_orig / 300), 1)."x".round(($height_orig / 300), 1)." inch</td>
+      </tr>\n";
+      }
       
-      // size in inch
-    	if ($media_size != false) $mediaview .= "<tr>
-    	<td>".$text79[$lang]." (300 dpi): </td>
-    	<td class=\"hcmsHeadlineTiny\">".round(($media_size[0] / 300 * 2.54), 1)." x ".round(($media_size[1] / 300 * 2.54), 1)." cm, ".round(($media_size[0] / 300), 1)." x ".round(($media_size[1] / 300), 1)." inch</td>
-    	</tr>\n";
-    	
-    	$mediaview .= "</table>";
+      $mediaview .= "    </table>";
     }
     
     return $mediaview;
@@ -1409,7 +1514,7 @@ function sendMediaInput(newtext, newvalue)
     // search form
     if ($mgmt_config['db_connect_rdbms'] != "") $result .= "
     <div style=\"padding:2px; width:100%;\">
-      <form name=\"searchform_general\" method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">
+      <form name=\"searchform_general\" method=\"post\" action=\"\">
         <input type=\"hidden\" name=\"dir\" value=\"".$dir_esc."\" />
         <input type=\"hidden\" name=\"site\" value=\"".$site."\" />
         <input type=\"hidden\" name=\"location\" value=\"".$location_esc."\" />
@@ -1603,15 +1708,15 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
   {
     if (valid_publicationname ($site) && !is_array ($publ_config)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
     
-		//initialize scaling factor 
-		$scalingfactor = 1;
+    //initialize scaling factor 
+    $scalingfactor = 1;
     
-		//check if $dpi is valid and than calculate scalingfactor
-		if ($dpi > 0 && $dpi < 1000) 
-		{
-			$scalingfactor = 72 / $dpi; 
-		}
-		
+    //check if $dpi is valid and than calculate scalingfactor
+    if ($dpi > 0 && $dpi < 1000) 
+    {
+      $scalingfactor = 72 / $dpi; 
+    }
+    
     return "<textarea id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\">".$contentbot."</textarea>
       <script type=\"text/javascript\">
       <!--
@@ -1916,7 +2021,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
     
     // Building the display of the content
     $return = "<".$tag." id=\"".$hypertagname."_".$id."\" title=\"".$title."\" class=\"hcms_editable\" ".($contenteditable ? 'contenteditable="true" ' : '').">".(empty($contentbot) ? $defaultText : $contentbot)."</".$tag.">";
-	  
+    
     // Building of the specific editor
     $element = "";
     
@@ -2263,17 +2368,17 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
       // formatted text
       case 'arttextf':
       case 'textf':
-				//get attribute dpi for right scaling of the images 72/dpi
-				$dpi = getattribute ($hypertag, "dpi");
+        //get attribute dpi for right scaling of the images 72/dpi
+        $dpi = getattribute ($hypertag, "dpi");
         
-				//initialize scaling factor 
-				$scalingfactor = 1;
+        //initialize scaling factor 
+        $scalingfactor = 1;
         
-				//check if $dpi is valid and than calculate scalingfactor
-				if ($dpi > 0 && $dpi < 1000) 
-				{
-					$scalingfactor = 72 / $dpi; 
-				}
+        //check if $dpi is valid and than calculate scalingfactor
+        if ($dpi > 0 && $dpi < 1000) 
+        {
+          $scalingfactor = 72 / $dpi; 
+        }
         
         $return .= "
           <script type=\"text/javascript\">
@@ -2351,7 +2456,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
     }
     
     // Adding the form that is submitted including the element that is sent
-	  $return .= "
+    $return .= "
       <form style=\"display:none;\" method=\"post\" id=\"hcms_form_".$hypertagname."_".$id."\">
         <input type=\"hidden\" name=\"contenttype\" value=\"".$contenttype."\"> 
         <input type=\"hidden\" name=\"site\" value=\"".$site."\"> 
@@ -2394,9 +2499,9 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 // description:
 // Generates a html segment for the video code we use. False on error.
 
-function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="publish", $logo_url=Null, $id="", $title="", $autoplay=true, $enableFullScreen=true, $enableKeyBoard=true, $enablePause=true, $enableSeek=true, $iframe = false)
+function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="publish", $logo_url=Null, $id="", $title="", $autoplay=true, $enableFullScreen=true, $enableKeyBoard=true, $enablePause=true, $enableSeek=true, $iframe=false)
 {
-	global $mgmt_config;
+  global $mgmt_config;
 
   if (valid_publicationname ($site) && is_array ($video_array) && $width != "" && $height != "" && $view != "")
   {
@@ -2412,24 +2517,29 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
         if (strpos ("_".$value, "explorer_wrapper.php") > 0)
         {
           $media = getattribute ($value, "media");
+          
           if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
           else $type = "";
+          
           $url = $mgmt_config['url_path_cms'].$value;
         }
         // version 2.0 (only media reference is given, no ; as seperator is used)
         elseif (strpos ($value, ";") < 1)
         {
           $media = getattribute ($value, "media");
+          
           if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
           else $type = "";
+          
           $url = $mgmt_config['url_path_cms']."explorer_wrapper.php?media=".$value."&token=".hcms_crypt($value);
         }
         // version 2.1 (media reference and mimetype is given)
         elseif (strpos ($value, ";") > 0)
         {
-          list ($media, $type) = explode (";", $value);  
+          list ($media, $type) = explode (";", $value);
+           
           $type = "type=\"".$type."\" ";
-          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt($media, "hmed", "weak");
+          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt($media);
         }
         else $url = "";
       }
@@ -2437,8 +2547,10 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
       else
       {
         $media = getattribute ($value, "media");
+        
         if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
         else $type = "";
+        
         $url = $value;
       }
 
@@ -2484,12 +2596,12 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
     // PROJEKKTOR Player
     if (isset ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor")
     {
-  	  $return = '
+      $return = '
   <video id="hcms_mediaplayer_'.$id.'" class="projekktor"'.((!empty($logo_url)) ? ' poster="'.$logo_url.'" ' : ' ').((!empty($title)) ? ' title="'.$title.'" ' : ' ').'width="'.$width.'" height="'.$height.'" '.($enableFullScreen ? 'allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" ' : '').'controls>'."\n";
 
       $return .= $sources;
     
-    	$return .= '  </video>
+      $return .= '  </video>
   <script type="text/javascript">
   <!--
   jQuery(document).ready(function() 
@@ -2537,8 +2649,8 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
       
       $return .= "  </video>\n";
     }
-  
-  	return $return;
+
+    return $return;
   }
   else return false;
 }
@@ -2550,8 +2662,8 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
 
 function showvideoplayer_head ($site, $secureHref=true, $view="publish")
 {
-	global $mgmt_config;
-	
+  global $mgmt_config;
+  
   if (valid_publicationname ($site))
   {
     // PROJEKKTOR Player
@@ -2561,7 +2673,7 @@ function showvideoplayer_head ($site, $secureHref=true, $view="publish")
       $css = $mgmt_config['url_path_cms']."javascript/video/theme/style.css";
       $projekktor = $mgmt_config['url_path_cms']."javascript/video/projekktor.min.js";
 
-    	$return = '
+      $return = '
   <script type="text/javascript">
     var noConflict = (typeof $ !== "undefined");
   </script>
@@ -2601,7 +2713,7 @@ function showvideoplayer_head ($site, $secureHref=true, $view="publish")
 
 function showaudioplayer ($site, $audioArray, $view="publish", $id="", $autoplay=false, $loop=false)
 {
-	global $mgmt_config;
+  global $mgmt_config;
 
   if (valid_publicationname ($site) && is_array ($audioArray) && $view != "")
   {
@@ -2617,24 +2729,29 @@ function showaudioplayer ($site, $audioArray, $view="publish", $id="", $autoplay
         if (strpos ("_".$value, "explorer_wrapper.php") > 0)
         {
           $media = getattribute ($value, "media");
+          
           if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
           else $type = "";
+          
           $url = $mgmt_config['url_path_cms'].$value;
         }
         // version 2.0 (only media reference is given, no ; as seperator is used)
         elseif (strpos ($value, ";") < 1)
         {
           $media = getattribute ($value, "media");
+          
           if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
           else $type = "";
+          
           $url = $mgmt_config['url_path_cms']."explorer_wrapper.php?media=".$value."&token=".hcms_crypt($value);
         }
         // version 2.1 (media reference and mimetype is given)
         elseif (strpos ($value, ";") > 0)
         {
-          list ($media, $type) = explode (";", $value);  
+          list ($media, $type) = explode (";", $value);
+          
           $type = "type=\"".$type."\" ";
-          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt($media, "hmed", "weak");
+          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt($media);
         }
         else $url = "";
       }
@@ -2642,8 +2759,10 @@ function showaudioplayer ($site, $audioArray, $view="publish", $id="", $autoplay
       else
       {
         $media = getattribute ($value, "media");
+        
         if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
         else $type = "";
+        
         $url = $value;
       }
       
@@ -2657,7 +2776,7 @@ function showaudioplayer ($site, $audioArray, $view="publish", $id="", $autoplay
 
       $return .= $sources;
     
-    	$return .= '  </audio>
+      $return .= '  </audio>
   <script type="text/javascript">
   <!--
     audiojs.events.ready(function() {
@@ -2683,8 +2802,8 @@ function showaudioplayer ($site, $audioArray, $view="publish", $id="", $autoplay
 
 function showaudioplayer_head ()
 {
-	global $mgmt_config;
-	
+  global $mgmt_config;
+  
   return "<script src=\"".$mgmt_config['url_path_cms']."javascript/audio-js/audio.js\"></script>\n";
 }
 

@@ -1677,23 +1677,6 @@ function checkpassword ($password)
 
 // ===================================== SECURITY FUNCTIONS =====================================
 
-// ----------------------------------------- getuserip ------------------------------------------
-// function: getuserip()
-// input: %
-// output: IP address of client / false on error
-
-// description:
-// retrieves IP address of the client/user.
-
-function getuserip ()
-{
-  if (!isset($_SERVER['HTTP_X_FORWARDED_FOR'])) $client_ip = $_SERVER['REMOTE_ADDR'];
-  else $client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-  
-  if ($client_ip != "") return $client_ip;
-  else return false;
-}
-
 // --------------------------------------- loguserip -------------------------------------------
 // function: loguserip()
 // input: client IP address, user logon name
@@ -2367,68 +2350,6 @@ function shellcmd_encode ($variable)
   else return false;
 }
 
-// ------------------------- getrequest -----------------------------
-// function: getrequest()
-// input: variable name, must be of certain type [numeric,array,publicationname,locationname,objectname,url,bool] (optional), default value (optional)
-// output: value
-
-// description:
-// return a value from POST, GET or COOKIE, or a default value if none set
-
-function getrequest ($variable, $force_type=false, $default="")
-{
-  if ($variable != "")
-  {
-    // get from request
-    if (array_key_exists ($variable, $_POST)) $result = $_POST[$variable];
-    elseif (array_key_exists ($variable, $_GET)) $result = $_GET[$variable];
-    // elseif (array_key_exists ($variable, $_COOKIE)) $result = $_COOKIE[$variable];
-    else $result = $default;
-        
-    // check for type
-    if ($result != "" && ($force_type == "numeric" || $force_type == "array" || $force_type == "publicationname" || $force_type == "locationname" || $force_type == "objectname" || $force_type == "url" || $force_type == "bool"))
-    {
-      if ($force_type == "numeric" && !is_numeric ($result)) $result = $default;
-      elseif ($force_type == "array" && !is_array ($result)) $result = $default;
-      elseif ($force_type == "publicationname" && !valid_publicationname ($result)) $result = $default;
-      elseif ($force_type == "locationname" && !valid_locationname ($result)) $result = $default;
-      elseif ($force_type == "objectname" && !valid_objectname ($result)) $result = $default;
-      elseif ($force_type == "url" && strpos ("_".strtolower (urldecode ($result)), "<script") > 0) $result = $default;
-      elseif ($force_type == "bool") 
-      {
-        if ($result == 1 || $result == "yes" || $result == "true" || $result == "1") $result = true;
-        elseif($result == 0 || $result == "no" || $result == "false" || $result == "0") $result = false;
-        else $result = $default;
-      }      
-    }
-  
-    // return result
-    return $result;
-  }
-  else return $default;
-}
-
-// ------------------------- getrequest_esc -----------------------------
-// function: getrequest_esc()
-// input: variable name, must be of certain type [numeric,array,publicationname,locationname,objectname] (optional), default value (optional), 
-//        remove characters to avoid JS injection [true,false] (optional)
-// output: value
-
-// description:
-// return a escaped value tp prevent XSS from POST, GET or COOKIE, or a default value if none set
-
-function getrequest_esc ($variable, $force_type=false, $default="", $js_protection=false)
-{    
-  if ($variable != "")
-  {
-    $result = getrequest ($variable, $force_type, $default);
-    $result = html_encode ($result, "", $js_protection);
-    
-    return $result;
-  }
-  else return $default;  
-}
-
 // ======================================= CRYPTOGRAPHY =======================================
 
 // ---------------------- hcms_crypt -----------------------------
@@ -2468,24 +2389,28 @@ function hcms_crypt ($string, $start=0, $length=0)
 
 // ---------------------- hcms_encrypt -----------------------------
 // function: hcms_encrypt()
-// input: string to encode, key (optional), crypt strength level [weak,standard,strong] (optional)
+// input: string to encode, key of length 16, 24 or 32 (optional), crypt strength level [weak,standard,strong] (optional), 
+//        encoding [base64,url,none] use base64 for files (optional)
 // output: encoded string / false on error
 
 // description:
-// encryption of a string
+// encryption of a string. only strong encryption is binary-safe!
 
-function hcms_encrypt ($string, $key="hcms", $crypt_level="")
+function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
 {
   global $mgmt_config;
   
   if ($string != "")
   {
-    // define crypt level
-    if ($crypt_level == "") $crypt_level = strtolower ($mgmt_config['crypt_level']);
-    else $crypt_level = strtolower ($crypt_level);
+    // define key
+    if ($key == "" && !empty ($mgmt_config['crypt_key'])) $key = $mgmt_config['crypt_key'];
+    else $key = "h1y2p3e4r5c6m7s8";
     
+    // define crypt level
+    if ($crypt_level == "" && !empty ($mgmt_config['crypt_level'])) $crypt_level = strtolower ($mgmt_config['crypt_level']);
+    else $crypt_level = strtolower ($crypt_level);
     // weak
-    // main purpose is to gain a short encrypted string, not recommended for sensitive data
+    // main purpose is to gain a short encrypted string, not recommended for sensitive data or files!
     if ($crypt_level == "weak")
     {
       $key = sha1 ($key);
@@ -2503,27 +2428,40 @@ function hcms_encrypt ($string, $key="hcms", $crypt_level="")
         $hash .= strrev (base_convert (dechex ($ordStr + $ordKey), 16, 36));
       }
     }
-    // strong
+    // strong (binary-safe)
     elseif ($crypt_level == "strong")
     {
+      // base 64 encode string to be binary-safe
+      $string = base64_encode ($string);
+      
       // MCRYPT_MODE_CBC (cipher block chaining) 
       // is especially suitable for encrypting files where the security is increased over ECB significantly.
-      $hash = trim (base64_encode (mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($key), $string, MCRYPT_MODE_CBC, md5(md5($key)))));
+      $ivSize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+      $iv = mcrypt_create_iv ($ivSize, MCRYPT_RAND);
+      $hash = mcrypt_encrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_CBC, $iv);
+      $hash = $iv.$hash;
     }
     // standard
     else
     {
       // MCRYPT_MODE_ECB (electronic codebook) 
-      // is suitable for random data, such as encrypting other keys. Since data there is short and random, the disadvantages of ECB have a favorable negative effect.    
-      $hash = trim (base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $string, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
+      // is suitable for random data, such as encrypting other keys. Since data there is short and random, the disadvantages of ECB have a favorable negative effect.
+      $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
+      $iv = mcrypt_create_iv ($ivsize, MCRYPT_RAND);
+      $hash = mcrypt_encrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB, $iv);
+      
+      // base 64 encode string in order to get a shorter urlencoded string
+      $hash = base64_encode ($hash);
     } 
     
     if ($hash != "")
     {
-      $hash = urlencode ($hash);
-      $hash = str_replace ("%", "~", $hash);   
-      
-      return $hash;
+      // to be used to encode files
+      if (strtolower($encoding) == "base64") return base64_encode ($hash);
+      // to be used for short strings passed via GET
+      elseif (strtolower($encoding) == "url") return str_replace ("%", "~", urlencode ($hash));
+      // no encoding
+      else return $hash;
     }
     else return false;
   }
@@ -2532,25 +2470,32 @@ function hcms_encrypt ($string, $key="hcms", $crypt_level="")
 
 // ---------------------- hcms_decrypt -----------------------------
 // function: hcms_decrypt()
-// input: hash-string to decode, key (optional), crypt strength level [weak,standard,strong] (optional)
+// input: hash-string to decode, key of length 16, 24 or 32 (optional), crypt strength level [weak,standard,strong] (optional), 
+//        encoding [base64,url,none] use base64 for files (optional)
 // output: decoded string / false on error
 
 // description:
-// decryption of a string
+// decryption of a string. only strong encryption is binary-safe!
 
-function hcms_decrypt ($string, $key="hcms", $crypt_level="")
+function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
 {
   global $mgmt_config;
   
   if ($string != "")
   {
+    // define key
+    if ($key == "" && !empty ($mgmt_config['crypt_key'])) $key = $mgmt_config['crypt_key'];
+    else $key = "h1y2p3e4r5c6m7s8";
+  
     // define crypt level
-    if ($crypt_level == "") $crypt_level = strtolower ($mgmt_config['crypt_level']);
+    if ($crypt_level == "" && !empty ($mgmt_config['crypt_level'])) $crypt_level = strtolower ($mgmt_config['crypt_level']);
     else $crypt_level = strtolower ($crypt_level);
-    
-    $string = str_replace ("~", "%", $string);
-    $string = urldecode ($string);
-    
+
+    // to be used to decode files
+    if (strtolower ($encoding) == "base64") $string = base64_decode ($string);
+    // to be used for short strings passed via GET
+    elseif (strtolower($encoding) == "url") $string = urldecode (str_replace ("~", "%", $string));
+
     // weak
     if ($crypt_level == "weak")
     {
@@ -2562,28 +2507,42 @@ function hcms_decrypt ($string, $key="hcms", $crypt_level="")
       
       for ($i = 0; $i < $strLen; $i+=2)
       {
-        $ordStr = hexdec (base_convert (strrev (substr ($string,$i,2)), 36, 16));
+        $ordStr = hexdec (base_convert (strrev (substr ($string, $i, 2)), 36, 16));
         if ($j == $keyLen) $j = 0;
         $ordKey = ord (substr ($key, $j, 1));
         $j++;
         $hash_decrypted .= chr ($ordStr - $ordKey);
       }
     }
-    // strong
+    // strong (binary-safe)
     elseif ($crypt_level == "strong")
     {
       // MCRYPT_MODE_CBC (cipher block chaining) 
       // is especially suitable for encrypting files where the security is increased over ECB significantly.
-      $hash_decrypted = rtrim (mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($key), base64_decode($string), MCRYPT_MODE_CBC, md5(md5($key))), "\0");
+      $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+      if (strlen ($string) < $ivsize) return false;
+      $iv = substr ($string, 0, $ivsize);
+      $string = substr ($string, $ivsize);
+      $hash_decrypted = mcrypt_decrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_CBC, $iv);
+      $hash_decrypted = rtrim ($hash_decrypted, "\0");
+      
+      // base 64 decode (binary-safe)
+      $hash_decrypted = base64_decode ($hash_decrypted);
     }
     // standard
     else
     {
+      // base 64 decode string
+      $string = base64_decode ($string);
+      
       // MCRYPT_MODE_ECB (electronic codebook) 
-      // is suitable for random data, such as encrypting other keys. Since data there is short and random, the disadvantages of ECB have a favorable negative effect.    
-      $hash_decrypted = trim (mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, base64_decode($string), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+      // is suitable for random data, such as encrypting other keys. Since data there is short and random, the disadvantages of ECB have a favorable negative effect.
+      $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
+      $iv = mcrypt_create_iv ($ivsize, MCRYPT_RAND);
+      $hash_decrypted = mcrypt_decrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB, $iv);
+      $hash_decrypted = rtrim ($hash_decrypted, "\0");
     }
-    
+
     if ($hash_decrypted != "") return $hash_decrypted;
     else return false;
   }
@@ -2657,11 +2616,11 @@ function createtoken ($user="sys", $lifetime=0, $secret=4)
       // default lifetime of token (valid for one day from now)
       if ($mgmt_config['token_lifetime'] < 60) $lifetime = 86400;
       else $lifetime = intval ($mgmt_config['token_lifetime']);
-    }
+    }    
     // create token
     $timetoken = createtimetoken ($lifetime, $secret);
     // create security token
-    $token = hcms_encrypt ($timetoken."@".$user, "tok");
+    $token = hcms_encrypt ($timetoken."@".$user);
     
     return $token;
   }
@@ -2680,7 +2639,7 @@ function checktoken ($token, $user="sys", $secret=4)
   if ($token != "" && $user != "")
   {
     // decrypt token
-    $token = hcms_decrypt ($token, "tok");
+    $token = hcms_decrypt ($token);
     // extract user name and timestamp
     if ($token != false) list ($timetoken, $token_user) = explode ("@", $token);
     // check if token is valid
@@ -2703,7 +2662,7 @@ function createuniquetoken ($length=16)
 {
   global $mgmt_config;
   
-  if ($length > 0 && $length <= 20)
+  if ($length > 0 && $length <= 32)
   {
     $characters = "abcdefghijklmnopqrstuvwxyz0123456789";
     $string = "";

@@ -95,7 +95,7 @@ if ($ctrlreload == "") $ctrlreload = "yes";
 // set view in session
 if ($view != "")
 {
-  if ($view == "cmsview" || $view == "inlineview") $_SESSION['hcms_temp_objectview'] = $view;
+  if ($view == "cmsview" || $view == "inlineview") setsession ('hcms_temp_objectview', $view);
 }
 // set default view
 else
@@ -110,14 +110,13 @@ if (is_array ($hcms_session))
 {
   foreach ($hcms_session as $key => $value)
   {
-    // if session key is allowed
-    if ($key != "" && substr_count ("|user|passwd|lang|siteaccess|pageaccess|compaccess|rootpermission|globalpermission|localpermission|hiddenfolder|hcms_linking|explorerview|temp_site|temp_user|temp_pagelocation|temp_complocation|temp_token|", "|".$key."|") == 0)
+    // if session key is allowed (prefix hcms_ must not be used for the name)
+    if ($key != "" && substr ($key, 0, 5) != "hcms_")
     { 
       $_SESSION[$key] = $value;
     }
   }
 }
-
 
 // if link refers to other domain (external page) or to mail client (mailto)
 if (@substr_count ($follow, "://") > 0 || @substr_count (strtolower ($follow), "mailto:") > 0)

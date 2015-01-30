@@ -92,7 +92,7 @@ if (is_array ($delete_id) && @sizeof ($delete_id) > 0 && $setlocalpermission['de
   }
 }
 ?>
-<form name="recipientform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="recipientform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />

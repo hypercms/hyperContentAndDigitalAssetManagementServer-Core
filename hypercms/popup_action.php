@@ -80,7 +80,7 @@ if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
 if ($authorized == true)
 {
   // empty clipboard
-  $_SESSION['hcms_temp_clipboard'] = "";
+  setsession ('hcms_temp_clipboard', "");
   $temp_clipboard = "";
       
   // perform actions
@@ -90,16 +90,10 @@ if ($authorized == true)
   // 2. folder
   // 3. object
   
-  // unzip file
-  if ($action == "unzip") 
+  // unzip
+  if ($action == "unzip")
   {
-    // load object file and get container and media file
-    $objectdata = loadfile ($location, $page);
-    $mediafile = getfilename ($objectdata, "media");    
-    $mediapath = getmedialocation ($site, $mediafile, "abs_path_media");
-    $media_info = getfileinfo ($site, $location.$page, $cat);
-    
-    // unzip will be exectued in after loading-div since it might take some time for large ZIP files
+    // action for unzip is below
   }
   // delete
   elseif ($action == "delete") 
@@ -372,7 +366,7 @@ popupfocus ();
 
 <?php
 // show loading screen for unzip 
-if ($action == "unzip")
+if ($action == "unzip" && $authorized == true)
 {
 ?>
 <div id="loadingLayer" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10;">
@@ -380,12 +374,19 @@ if ($action == "unzip")
     <img src="<?php echo getthemelocation(); ?>img/loading.gif" />
   </div>
 </div>
+
 <?php
+  // load object file and get container and media file
+  $objectdata = loadfile ($location, $page);
+  $mediafile = getfilename ($objectdata, "media");    
+  $mediapath = getmedialocation ($site, $mediafile, "abs_path_media");
+  $media_info = getfileinfo ($site, $location.$page, $cat);
+    
   // flush
   ob_implicit_flush (true);
   ob_end_flush ();
   sleep (1);
-  
+
   // unzip file
   if ($mediapath != "" && $mediafile != "" && $location != "") $result_unzip =  unzipfile ($site, $mediapath.$site.'/'.$mediafile, $location, $media_info['name'], $user);
   else $result_unzip = false;
@@ -393,13 +394,13 @@ if ($action == "unzip")
   if ($result_unzip == true)
   {
     $result['result'] = true;
-    $add_onload = "document.getElementById('loadingLayer').style.display='none'; if (eval (opener.parent.frames['mainFrame'])) {opener.parent.frames['mainFrame'].location.reload();}";
+    $add_onload = "document.getElementById('loadingLayer').style.display='none'; if (eval (opener.parent.frames['mainFrame'])) {opener.parent.frames['mainFrame'].location.reload();}\n";
     $show = "<span class=\"hcmsHeadline\">".$text1[$lang]."</span><br />\n";
   }
   else
   {
     $result['result'] = false;
-    $add_onload = "document.getElementById('loadingLayer').style.display='none';";
+    $add_onload = "document.getElementById('loadingLayer').style.display='none';\n";
     $show = "<span class=\"hcmsHeadline\">".$text2[$lang]."</span><br />\n";
   }
 }
@@ -415,10 +416,11 @@ if ($action == "unzip")
 <script language="JavaScript">
 <!--
 <?php
+echo $add_onload;
+
 if ($result['result'] == true)
 {
-  echo $add_onload."
-
+  echo "
 function popupclose ()
 {
   self.close();

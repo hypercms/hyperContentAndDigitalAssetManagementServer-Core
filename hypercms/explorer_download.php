@@ -127,7 +127,7 @@ if ($object_id != "" && $mgmt_config['db_connect_rdbms'] != "")
 // get media from crypted video string
 if ($dm != "")
 {
-  $media = hcms_decrypt ($dm, "hmed", "weak");
+  $media = hcms_decrypt ($dm);
   $media_approved = true;  
 }
 // get media from object path
@@ -246,40 +246,37 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
     // convert file
     if ($type != "")
     {
-      // Target is the folder the temporary files get stored
+      // target path for the temporary file
       $media_target = $mgmt_config['abs_path_cms'].'temp/';
       $media_old = $site."/".getobject ($media);
       
-      // Information needed to extract the file name only
+      // information needed to extract the file name only
       $media_info_original = getfileinfo ($site, getobject ($media), "comp");
       
-      // Predicting the name the file will get by createmedia
+      // predicting the name the file will get by createmedia
       $newname = $media_info_original['filename'].'.'.$media_config.'.'.$type;
       
       // convert-config is empty when we are using unoconv
       if ($media_config == "")
       {
-        $result_conv = createdocument ($site, $media_root.$site."/", $media_target, getobject ($media), $type);
+        $result_conv = createdocument ($site, $media_root.$site."/", $media_target, getobject ($media), $type, true);
       }
       else 
       {
-        // Generate new file only if we must
-        if (@filemtime ($media_root.$media_old) > @filemtime ($media_target.$newname)) 
+        // generate new file only if necessary
+        if (!is_file ($media_target.$newname) || @filemtime ($media_root.$media_old) > @filemtime ($media_target.$newname)) 
         {
-          $result_conv = createmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config);
+          $result_conv = createmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config, true);
         }
-        // we use the existing file
+        // use the existing file
         else $result_conv = $newname;
       }
       
-      if ($result_conv != "") 
+      // if new file has been converted successfully, set new media root path and new media file name
+      if ($result_conv != "")
       { 
         $media_new = $media = $result_conv;
         $media_info_new = getfileinfo ($site, getobject ($media), "comp");
-        
-        // copy metadata from original file using EXIFTOOL
-        $result_copy = copymetadata ($media_root."/".$media_old, $media_target.$media_new);
-        
         $media_root = $media_target;
       }
       else $media = "";

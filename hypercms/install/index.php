@@ -664,7 +664,7 @@ $(document).ready(function(){
 
 <div id="error" style="padding:4px; border:1px solid red; background:#ffdcd5;">There were errors on the form!</div>
 
-<?php echo showmessage ($show, 480, 300, "en", "position:absolute; top:40px; margin-left:auto; margin-right:auto;"); ?>  
+<?php echo showmessage ($show, 480, 300, "en", "position:fixed; top:40px; margin-left:auto; margin-right:auto;"); ?>  
 
 <form id="installform" name="installform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
   <input type="hidden" name="action" value="install">

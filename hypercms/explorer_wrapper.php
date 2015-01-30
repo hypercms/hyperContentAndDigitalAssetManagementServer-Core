@@ -129,7 +129,7 @@ if ($object_id != "" && $mgmt_config['db_connect_rdbms'] != "")
 // get media from crypted video string
 if ($wm != "")
 {
-  $media = hcms_decrypt ($wm, "hmed", "weak");
+  $media = hcms_decrypt ($wm);
   $media_approved = true;  
 }
 // get media from object path
@@ -201,16 +201,15 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
   if (@is_file (getmedialocation ($site, $media, "abs_path_media").$media))
   {
     $media_root = getmedialocation ($site, $media, "abs_path_media");
-    $container_id = getmediacontainerid ($media);
   }
   elseif (@is_file ($mgmt_config['abs_path_tplmedia'].$media))
   {
     $media_root = $mgmt_config['abs_path_tplmedia'];
   }
-  elseif(@is_file($mgmt_config['abs_path_cms'].'temp/'.getobject($media)) && $user != "")
+  elseif (@is_file($mgmt_config['abs_path_cms'].'temp/'.getobject($media)) && $user != "")
   {
     $media_root = $mgmt_config['abs_path_cms'].'temp/';
-    $media = getobject($media);
+    $media = getobject ($media);
   }
   else $media_root = "";
 
@@ -218,17 +217,17 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
   if ($eventsystem['onfiledownload_pre'] == 1) onfiledownload_pre ($site, $media_root, $media, $name, $user); 
   
   $media_info_new = Null;
-  
+
   if ($media_root != "")
   {
     // convert file
     if ($type != "")
     {
-      // Target is the folder the temporary files get stored
+      // target path for the temporary file
       $media_target = $mgmt_config['abs_path_cms'].'temp/';
       $media_old = $site."/".getobject ($media);
       
-      // Information needed to extract the file name only
+      // information needed to extract the file name only
       $media_info_original = getfileinfo ($site, getobject ($media), "comp");
       
       // Predicting the name the file will get by createmedia
@@ -237,16 +236,16 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
       // convert-config is empty when we are using unoconv
       if ($media_config == "")
       {
-        $result_conv = createdocument ($site, $media_root.$site."/", $media_target, getobject ($media), $type);
+        $result_conv = createdocument ($site, $media_root.$site."/", $media_target, getobject ($media), $type, true);
       }
       else 
       {
-        // Generate new file only if we must
-        if (@filemtime ($media_root.$media_old) > @filemtime ($media_target.$newname)) 
+        // generate new file only if necessary
+        if (!is_file ($media_target.$newname) || @filemtime ($media_root.$media_old) > @filemtime ($media_target.$newname)) 
         {
-          $result_conv = createmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config);
+          $result_conv = createmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config, true);
         }
-        // we use the existing file
+        // use the existing file
         else $result_conv = $newname;
       }
       
@@ -254,9 +253,6 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
       { 
         $media_new = $media = $result_conv;
         $media_info_new = getfileinfo ($site, getobject ($media), "comp");
-        
-        // copy metadata from original file using EXIFTOOL
-        $result_copy = copymetadata ($media_root."/".$media_old, $media_target.$media_new);
         
         // define new name
         if ($name != "")
@@ -301,7 +297,7 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
        
       // for IE the name must by urlencoded
       if (substr_count ($_SERVER['HTTP_USER_AGENT'], "MSIE") > 0) $name = rawurlencode ($name);
-      
+
       // stream file content
       downloadfile ($media_root.$media, $name, "wrapper", $user);
       

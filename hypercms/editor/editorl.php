@@ -105,17 +105,6 @@ if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['a
 }  
 else $contentbot = false;
 
-// read content using db_connect_tamino
-if ($contentbot == false && !empty ($mgmt_config['db_connect_tamino']) && file_exists ($mgmt_config['abs_path_data']."db_connect/".$mgmt_config['db_connect_tamino']))
-{
-  include ($mgmt_config['abs_path_data']."db_connect/".$mgmt_config['db_connect_tamino']);
-  
-  $db_connect_data = db_read_text ("work", $site, $contentfile, "", $id, "", $charset, $user);
-  
-  if ($db_connect_data != false) $contentbot = $db_connect_data['text'];
-  else $contentbot = false;
-}
-
 // read content from content container
 if ($contentbot == false) 
 {

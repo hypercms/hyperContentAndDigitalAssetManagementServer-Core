@@ -202,7 +202,7 @@ echo showtopbar ($headline, $lang);
 
 <?php echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px;"); ?>
 
-<form name="publish" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+<form name="publish" method="post" action="">
   <input type="hidden" name="action" value="<?php echo $action; ?>" />
   <input type="hidden" name="force" value="start" />      
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />

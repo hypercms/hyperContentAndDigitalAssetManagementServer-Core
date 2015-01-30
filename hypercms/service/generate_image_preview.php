@@ -20,11 +20,10 @@ require_once ("../language/image_rendering.inc.php");
 
 
 // input parameters
-$action = getrequest_esc ("action");
-$site = getrequest_esc ("site", "publicationname");
-$cat = getrequest_esc ("cat", "objectname");
-$location = getrequest_esc ("location", "locationname");
-$mediafile = getrequest_esc ("media", "objectname");
+$site = getrequest ("site", "publicationname");
+$cat = getrequest ("cat", "objectname");
+$location = getrequest ("location", "locationname");
+$mediafile = getrequest ("media", "objectname");
 // image format
 $imageformat = getrequest ("imageformat");
 // image resize
@@ -91,9 +90,22 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // get file information of original media file
-$mediafile_info = getfileinfo ($site, $mediafile, "");
-$media_root_src = getmedialocation ($site, $mediafile_info['file'], "abs_path_media").$site."/";
+$mediafile_info = getfileinfo ($site, $mediafile, "comp");
+$media_root_source = getmedialocation ($site, $mediafile_info['file'], "abs_path_media").$site."/";
 $media_root_target = $mgmt_config['abs_path_cms'].'temp/';
+
+// create temp file if file is encrypted
+$temp_source = createtempfile ($media_root_source, $mediafile);
+
+// get file information of new original media file
+if ($temp_source['result'] && $temp_source['crypted'])
+{
+  $media_size = @getimagesize ($temp_source['templocation'].$temp_source['tempfile']);
+}
+else
+{
+  $media_size = @getimagesize ($media_root_source.$mediafile);
+}
 
 $available_colorspaces = array();
 $available_colorspaces['CMYK'] = 'CMYK';
@@ -110,11 +122,10 @@ $available_flip['-fh'] = $text37[$lang];
 $available_flip['-fv -fh'] = $text38[$lang];
 
 $show = "";
+$result = false;
 
-// render new image
-$media_size = @getimagesize ($media_root_src.$mediafile);
-
-if ($media_size != false && $site != "")
+// render image
+if ($media_size != false && valid_publicationname ($site))
 { 
   ini_set ("max_execution_time", "300"); // sets the maximum execution time of this script to 300 sec.
   
@@ -135,21 +146,21 @@ if ($media_size != false && $site != "")
     $imageheight = round ($imageheight, 0);
     $imagewidth = round ($imageheight * $imageratio, 0);
   }
-    
+
   // get new rendering settings and set image options
   if (
       $imageformat != "" &&
       (
-        (in_array ($imageresize, array ("percentage", "imagewidth", "imageheight")) && $imagewidth != "" && $imageheight != "") || 
+        (in_array ($imageresize, array("percentage", "imagewidth", "imageheight")) && $imagewidth != "" && $imageheight != "") || 
         ($imageresize == "crop" && $imagecropwidth != "" && $imagecropheight != "") ||
-        ($rotate == "rotate" && $angle != "" && $imageformat != "" && array_key_exists (0, $media_size) && array_key_exists(1, $media_size)) ||
+        ($rotate == "rotate" && $angle != "" && $imageformat != "" && array_key_exists(0, $media_size) && array_key_exists(1, $media_size)) ||
         ($use_brightness == 1 && $imageformat != "" && $brightness != 0) ||
         ($use_contrast == 1 && $imageformat != "" && $contrast != 0) ||
         ($colorspace == 1 && is_array($available_colorspaces) && array_key_exists( $imagecolorspace, $available_colorspaces )) ||
         ($rotate == "flip" && array_key_exists($flip, $available_flip)) ||
         ($effect == "sepia" && $sepia_treshold > 0 && $sepia_treshold <= 99.9 ) ||
-        ($effect == "blur" && $blur_sigma > 0.1 && $blur_sigma <= 3 && $blur_radius !== NULL ) ||
-        ($effect == "sharpen" && $sharpen_sigma > 0.1 && $sharpen_sigma <= 3 && $sharpen_radius !== NULL) ||
+        ($effect == "blur" && $blur_sigma >= 0.1 && $blur_sigma <= 3 && $blur_radius !== NULL ) ||
+        ($effect == "sharpen" && $sharpen_sigma >= 0.1 && $sharpen_sigma <= 3 && $sharpen_radius !== NULL) ||
         ($effect == "sketch" && $sketch_sigma !== NULL && $sketch_radius !== NULL && $sketch_angle !== NULL) ||
         ($effect == "paint" && $paintvalue !== NULL)
       )
@@ -258,15 +269,15 @@ if ($media_size != false && $site != "")
       $output->options = $mgmt_imageoptions[$formats]['preview'];
       $output->thumboptions = $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight];
 
-      $result = createmedia ($site, $media_root_src, $media_root_target, $mediafile_info['file'], $imageformat, 'preview');
-      
+      $result = createmedia ($site, $media_root_source, $media_root_target, $mediafile_info['file'], $imageformat, 'preview', true);
+
       if ($result)
       {
         list ($output->imagewidth, $output->imageheight) = getimagesize ($media_root_target.$result);
         
         if (($imageresize == "crop" || $output->imagewidth > $thumbwidth || $output->imageheight > $thumbheight))
         {
-          $resultthumb = createmedia ($site, $media_root_src, $media_root_target, $mediafile_info['file'], "png", 'render.'.$thumbwidth.'x'.$thumbheight);
+          $resultthumb = createmedia ($site, $media_root_source, $media_root_target, $mediafile_info['file'], "png", 'render.'.$thumbwidth.'x'.$thumbheight);
         }
         else $resultthumb = false;
       }
@@ -274,13 +285,11 @@ if ($media_size != false && $site != "")
     else
     {
       $show = $text1[$lang];
-      $result = false;
     }
   }
   else
   {
     $show = $text28[$lang];
-    $result = false;
   }
 }
 
@@ -288,12 +297,27 @@ if ($result)
 { 
   $output->success = true;
   // add timestamp to ensure the new image will be loaded
-  $output->imagelink = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".$site."&media=".$result."&token=".hcms_crypt($result)."&ts=".time();
+  $output->imagelink = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($result)."&token=".hcms_crypt($result)."&ts=".time();
   
   if ($resultthumb) 
   {
     // add timestamp to ensure the new image will be loaded
-    $output->thumblink = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".$site."&media=".$resultthumb."&token=".hcms_crypt($resultthumb)."&ts=".time();
+    $output->thumblink = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($resultthumb)."&token=".hcms_crypt($resultthumb)."&ts=".time();
+    
+    // create temp file if file is encrypted
+    $temp_target = createtempfile ($media_root_target, $resultthumb);
+    
+    // get file information of new original media file
+    if ($temp_target['result'] && $temp_target['crypted'])
+    {
+      $media_size = @getimagesize ($temp_target['templocation'].$temp_target['tempfile']);
+    }
+    else
+    {
+      $media_size = @getimagesize ($media_root_source.$mediafile);
+    }
+
+    // set image size
     list ($output->thumbwidth, $output->thumbheight) = getimagesize ($media_root_target.$resultthumb);
   }
   else $output->thumblink = false;
@@ -302,7 +326,7 @@ else
 {
   $output->success = false;
   
-  if (empty ($show)) $output->message =  $text32[$lang];
-  else $output->message =  $show;
+  if (empty ($show)) $output->message = $text32[$lang];
+  else $output->message = $show;
 }
 echo json_encode ($output);

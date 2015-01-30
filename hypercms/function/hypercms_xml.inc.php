@@ -86,7 +86,7 @@ function setxmlparameter ($xmldata, $parameter, $value)
 function getcontent ($xmldata, $starttagname)
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || is_array ($xmldata) || is_array ($starttagname))
+  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -177,7 +177,7 @@ function getcontent ($xmldata, $starttagname)
 function geticontent ($xmldata, $starttagname)
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || is_array ($xmldata) || is_array ($starttagname))
+  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -268,7 +268,7 @@ function geticontent ($xmldata, $starttagname)
 function getxmlcontent ($xmldata, $starttagname)
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || is_array ($xmldata) || is_array ($starttagname))
+  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -333,7 +333,7 @@ function getxmlcontent ($xmldata, $starttagname)
 function getxmlicontent ($xmldata, $starttagname)
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || is_array ($xmldata) || is_array ($starttagname))
+  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -409,7 +409,7 @@ function getxmlicontent ($xmldata, $starttagname)
 function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || is_array ($xmldata) || is_array ($starttagname))
+  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -566,7 +566,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || is_array ($xmldata) || is_array ($starttagname))
+  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -727,7 +727,7 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || is_array ($xmldata) || is_array ($starttagname))
+  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -886,7 +886,7 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || is_array ($xmldata) || is_array ($starttagname))
+  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -1045,7 +1045,7 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 function deletecontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || is_array ($xmldata) || is_array ($starttagname))
+  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -1100,7 +1100,7 @@ function deletecontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 function deleteicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || is_array ($xmldata) || is_array ($starttagname))
+  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -1163,7 +1163,7 @@ function deleteicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag="", $condvalue="")
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || is_array ($xmldata) || is_array ($starttagname))
+  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -1240,7 +1240,7 @@ function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, 
 function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag, $condvalue)
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || is_array ($xmldata) || is_array ($starttagname))
+  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -1323,7 +1323,7 @@ function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew,
 function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag="", $condvalue="")
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || is_array ($xmldata) || is_array ($starttagname))
+  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -1380,7 +1380,7 @@ function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $content
 
 function updatecontent ($xmldata, $xmlnode, $xmlnodenew)
 {
-  if ($xmldata == "" || $xmlnode == "" || is_array ($xmldata))
+  if ($xmldata == "" || $xmlnode == "" || !is_string ($xmldata))
   {
     return false;
   }  
@@ -1408,7 +1408,7 @@ function updatecontent ($xmldata, $xmlnode, $xmlnodenew)
 function insertcontent ($xmldata, $insertxmldata, $starttagname)
 {
   // if variables contain no content
-  if ($xmldata == "" || $insertxmldata == "" || is_array ($xmldata) || is_array ($insertxmldata))
+  if ($xmldata == "" || $insertxmldata == "" || !is_string ($xmldata) || !is_string ($insertxmldata))
   {
     return false;
   }
@@ -1450,7 +1450,7 @@ function insertcontent ($xmldata, $insertxmldata, $starttagname)
 function inserticontent ($xmldata, $insertxmldata, $starttagname)
 {  
   // if variables contain no content
-  if ($xmldata == "" || $insertxmldata == "" || is_array ($xmldata) || is_array ($insertxmldata))
+  if ($xmldata == "" || $insertxmldata == "" || !is_string ($xmldata) || !is_string ($insertxmldata))
   {
     return false;
   }
@@ -1505,7 +1505,7 @@ function inserticontent ($xmldata, $insertxmldata, $starttagname)
 function addcontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, $condvalue, $startparenttagname, $starttagname, $contentnew)
 {
   // if variables contain no content
-  if ($xmldata == "" || $sub_xmldata == "" || is_array ($xmldata) || is_array ($sub_xmldata))
+  if ($xmldata == "" || $sub_xmldata == "" || !is_string ($xmldata) || !is_string ($sub_xmldata))
   {
     return false;
   }
@@ -1590,7 +1590,7 @@ function addcontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, 
 function addicontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, $condvalue, $startparenttagname, $starttagname, $contentnew)
 {
   // if variables contain no content
-  if ($xmldata == "" || $sub_xmldata == "" || is_array ($xmldata) || is_array ($sub_xmldata))
+  if ($xmldata == "" || $sub_xmldata == "" || !is_string ($xmldata) || !is_string ($sub_xmldata))
   {
     return false;
   }

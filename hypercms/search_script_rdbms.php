@@ -373,12 +373,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               else $usedby = "";          
             }
           }            
-          
-          $mediafile = false;
-          $metadata = "";
-          $file_time = "";
-          $ratio = "";
-          
+
           // check access permission
           $ownergroup = accesspermission ($item_site, $location, $item_cat);
           $setlocalpermission = setlocalpermission ($item_site, $ownergroup, $item_cat);
@@ -391,70 +386,66 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             elseif ($item_info['type'] == "Component") $item_type = $text5[$lang];    
             // multimedia object 
             else $item_type = $text6[$lang]." (".$item_info['type'].")";
-              
-            // if object is of any multimedia type
-            if ($item_info['ext'] == "" || substr_count ($hcms_ext['cms'].".", $item_info['ext'].".") == 0)
-            {   
-              // read file
-              $objectdata = loadfile ($location, $object);
-              
-              // get name of media file
-              $mediafile = getfilename ($objectdata, "media");
 
-              if ($mediafile != false)
+            // get name of media file
+            $mediafile = getfilename ($objectdata, "media");
+
+            if ($mediafile != false)
+            {
+              // location of file
+              $mediadir = getmedialocation ($item_site, $mediafile, "abs_path_media");
+                          
+              // get file time
+              if (is_file ($mediadir.$item_site."/".$mediafile)) $file_time = date ("Y-m-d H:i", @filemtime ($mediadir.$item_site."/".$mediafile));
+              else $file_time = "-";
+              
+              // get file size
+              if ($mgmt_config['db_connect_rdbms'] != "")
               {
-                // location of file
-                $mediadir = getmedialocation ($item_site, $mediafile, "abs_path_media");
-                            
-                // get file size
-                if (is_file ($mediadir.$item_site."/".$mediafile))
-                {
-                  $item_size = round (@filesize ($mediadir.$item_site."/".$mediafile) / 1024);
-                  if ($item_size == 0) $item_size = 1;
-                  $item_size = number_format ($item_size, 0, "", ".");
-                    
-                  // get file time
-                  $item_time = @date ("Y-m-d H:i", @filemtime ($mediadir.$item_site."/".$mediafile));
-                }
-                else
-                {
-                  $file_size = "-";
-                  $file_time = "-";
-                }             
-         
-                $media_info = getfileinfo ($item_site, $mediafile, $item_cat);          
-                
-                // get name of content file and load content container
-                $contentfile = getfilename ($objectdata, "content");
-                
-                // read meta data of media file
-                if (!$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
-                else $metadata = "";
-                
-                // link for copy & paste of download links
-                if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
-                {
-                  $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"hash\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
-                  $dlink_end = "</a>";
-                }
-                else
-                {
-                  $dlink_start = "";
-                  $dlink_end = "";
-                }
-              }    
-            }
-            
+                $media_info = rdbms_getmedia ($container_id);
+                $file_size = $media_info['filesize'];
+                $file_size = number_format ($file_size, 0, "", "."); 
+              }
+              elseif (is_file ($mediadir.$item_site."/".$mediafile))
+              {
+                $file_size = round (@filesize ($mediadir.$item_site."/".$mediafile) / 1024);
+                if ($file_size == 0) $file_size = 1;
+                $file_size = number_format ($file_size, 0, "", ".");                 
+              }
+              else
+              {
+                $file_size = "-";
+              }
+              
+              // media file info
+              $media_info = getfileinfo ($item_site, $mediafile, $item_cat);
+              
+              // read meta data of media file
+              if (!$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
+              else $metadata = "";
+              
+              // link for copy & paste of download links
+              if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
+              {
+                $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"hash\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
+                $dlink_end = "</a>";
+              }
+              else
+              {
+                $dlink_start = "";
+                $dlink_end = "";
+              }
+            }    
             // object without media file
-            if (!$mediafile)
+            else
             {
               // get file size
-              $item_size = round (@filesize ($location.$object) / 1024);
-              if ($item_size == 0) $item_size = 1;
-              $item_size = number_format ($item_size, 0, "", ".");
+              $file_size = round (@filesize ($location.$object) / 1024);
+              if ($file_size == 0) $file_size = 1;
+              $file_size = number_format ($file_size, 0, "", ".");
               
               // get file time
-              $item_time = date ("Y-m-d H:i", @filemtime ($location.$object));
+              $file_time = date ("Y-m-d H:i", @filemtime ($location.$object));
               
               // link for copy & paste of download links
               if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
@@ -482,7 +473,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             $style = "style=\"display:block;\" ";
 
             // metadata
-            $metadata = $text0[$lang].": ".$object_name." \r\n".$text2[$lang].": ".$file_time." \r\n".$text7[$lang].": ".$item_size." \r\n".$metadata;
+            $metadata = $text0[$lang].": ".$object_name." \r\n".$text2[$lang].": ".$file_time." \r\n".$text7[$lang].": ".$file_size." \r\n".$metadata;
             
             // listview - view option for un/published objects
             if ($item_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
@@ -503,7 +494,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                              </div>
                            </td>\n";
             if (!$is_mobile) $listview .= "<td id=h".$items_row."_1 width=\"250\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style." title=\"".$item_location."\">&nbsp;&nbsp;".showshorttext($item_location, -32)."</span></td>
-                           <td id=h".$items_row."_2 width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$item_time."</span></td>
+                           <td id=h".$items_row."_2 width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_time."</span></td>
                            <td id=h".$items_row."_3 nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$item_site."</span></td>\n";
             $listview .= "</tr>\n";  
                            
@@ -577,7 +568,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
           	}
             
             // if linking is used, display download buttons
-            if ($mediafile != false && is_array ($_SESSION['hcms_linking']) && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
+            if ($mediafile != false && is_array (getsession ('hcms_linking')) && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
             {
               if (!$is_mobile) $width = "160px";
               else $width = "180px";

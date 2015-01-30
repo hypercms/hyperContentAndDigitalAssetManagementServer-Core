@@ -250,24 +250,12 @@ if ($db_connect != false && valid_objectname ($db_connect) && file_exists ($mgmt
 }  
 else $contentbot = false;
 
-// read content using db_connect_tamino
-if ($contentbot == false && !empty ($mgmt_config['db_connect_tamino']) && file_exists ($mgmt_config['abs_path_data']."db_connect/".$mgmt_config['db_connect_tamino']))
-{
-  include ($mgmt_config['abs_path_data']."db_connect/".$mgmt_config['db_connect_tamino']);
-  
-  $db_connect_data = db_read_component ("work", $site, $contentfile, "", $id, "", $user);
-  
-  if ($db_connect_data != false) $contentbot = $db_connect_data['file'];
-  else $contentbot = false;
-}
-else $contentbot = false;  
-
 // read content from content container
 if ($contentbot == false) 
 {
   $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
 
-  $filedata = loadfile (getcontentlocation ($container_id, 'abs_path_content'), $contentfile.".wrk");
+  $filedata = loadcontainer ($container_id, "work", $user);
   $contentarray = selectcontent ($filedata, "<component>", "<component_id>", $id);
   $contentarray = getcontent ($contentarray[0], "<componentfiles>");
   $contentbot = $contentarray[0];

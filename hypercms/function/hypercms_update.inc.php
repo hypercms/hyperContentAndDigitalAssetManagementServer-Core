@@ -14,7 +14,7 @@
 // input: publication name, user group data (XML)
 // output: updated user group data (XML), false on error
 
-// update to version 5.6.4 (group names will be replaced by object-IDs)
+// description: update to version 5.6.4 (group names will be replaced by object-IDs)
 
 function update_usergroups_v564 ($site, $data)
 {

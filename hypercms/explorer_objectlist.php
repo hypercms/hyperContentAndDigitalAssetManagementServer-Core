@@ -226,7 +226,7 @@ if (!$is_mobile && is_array ($folder_array) && @sizeof ($folder_array) > 0)
           {
             $result = getcontainername ($contentfile);
             
-            if ($result['user'] != "") $usedby = $result['user'];
+            if (!empty ($result['user'])) $usedby = $result['user'];
             else $usedby = "";          
           }
           
@@ -353,12 +353,12 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
           $contentfile = getfilename ($objectdata, "content");
           $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
           
-          // read meta data of media file
+          // get container info
           if ($contentfile != false)
           {
             $result = getcontainername ($contentfile);
             
-            if ($result['user'] != "") $usedby = $result['user'];
+            if (!empty ($result['user'])) $usedby = $result['user'];
             else $usedby = "";          
           }
                            
@@ -370,22 +370,29 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
             // location of file
             $mediadir = getmedialocation ($site, $mediafile, "abs_path_media");
             
+            // get file time
+            if (is_file ($mediadir.$site."/".$mediafile)) $file_time = date ("Y-m-d H:i", @filemtime ($mediadir.$site."/".$mediafile));
+            else $file_time = "-";
+            
             // get file size
-            if (is_file ($mediadir.$site."/".$mediafile))
+            if ($mgmt_config['db_connect_rdbms'] != "")
+            {
+              $media_info = rdbms_getmedia ($container_id);
+              $file_size = $media_info['filesize'];
+              $file_size = number_format ($file_size, 0, "", "."); 
+            }
+            elseif (is_file ($mediadir.$site."/".$mediafile))
             {
               $file_size = round (@filesize ($mediadir.$site."/".$mediafile) / 1024);
               if ($file_size == 0) $file_size = 1;
-              $file_size = number_format ($file_size, 0, "", ".");
-              
-              // get file time
-              $file_time = date ("Y-m-d H:i", @filemtime ($mediadir.$site."/".$mediafile));                   
+              $file_size = number_format ($file_size, 0, "", ".");                 
             }
             else
             {
               $file_size = "-";
-              $file_time = "-";
             }
             
+            // media file info
             $media_info = getfileinfo ($site, $mediafile, $cat);
             
             // read meta data of media file
@@ -407,14 +414,14 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
           // object without media file
           else
           {
+            // get file time
+            $file_time = date ("Y-m-d H:i", @filemtime ($location.$object)); 
+            
             // get file size
             $file_size = round (@filesize ($location.$object) / 1024);
             if ($file_size == 0) $file_size = 1;
             $file_size = number_format ($file_size, 0, "", ".");
-            
-            // get file time
-            $file_time = date ("Y-m-d H:i", @filemtime ($location.$object)); 
-            
+
             // link for copy & paste of download links
             if ($mgmt_config[$site]['sendmail'] && $setlocalpermission['download'] == 1)
             {
@@ -540,7 +547,7 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
       	}
 
         // if linking is used display download buttons
-        if ($mediafile != false && is_array ($_SESSION['hcms_linking']) && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
+        if ($mediafile != false && is_array (getsession ('hcms_linking')) && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
         {
           if (!$is_mobile) $width = "160px";
           else $width = "180px";

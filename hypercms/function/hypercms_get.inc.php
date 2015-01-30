@@ -7,6 +7,106 @@
  * You should have received a copy of the License along with hyperCMS.
  */
  
+// =========================================== REQUESTS AND SESSION ==============================================
+ 
+// ------------------------- getsession -----------------------------
+// function: getsession()
+// input: variable name, default value (optional)
+// output: value
+
+function getsession ($variable, $default="")
+{
+  if ($variable != "" && session_id() != "")
+  {
+    // get from session
+    if (array_key_exists ("hcms_".$variable, $_SESSION)) $result = $_SESSION["hcms_".$variable];
+    elseif (array_key_exists ($variable, $_SESSION)) $result = $_SESSION[$variable];
+    else $result = $default;
+    
+    return $result;    
+  }
+  else return $default;
+}
+
+// ------------------------- getrequest -----------------------------
+// function: getrequest()
+// input: variable name, must be of certain type [numeric,array,publicationname,locationname,objectname,url,bool] (optional), default value (optional)
+// output: value
+
+// description:
+// return a value from POST, GET or COOKIE, or a default value if none set
+
+function getrequest ($variable, $force_type=false, $default="")
+{
+  if ($variable != "")
+  {
+    // get from request
+    if (array_key_exists ($variable, $_POST)) $result = $_POST[$variable];
+    elseif (array_key_exists ($variable, $_GET)) $result = $_GET[$variable];
+    // elseif (array_key_exists ($variable, $_COOKIE)) $result = $_COOKIE[$variable];
+    else $result = $default;
+        
+    // check for type
+    if ($result != "" && ($force_type == "numeric" || $force_type == "array" || $force_type == "publicationname" || $force_type == "locationname" || $force_type == "objectname" || $force_type == "url" || $force_type == "bool"))
+    {
+      if ($force_type == "numeric" && !is_numeric ($result)) $result = $default;
+      elseif ($force_type == "array" && !is_array ($result)) $result = $default;
+      elseif ($force_type == "publicationname" && !valid_publicationname ($result)) $result = $default;
+      elseif ($force_type == "locationname" && !valid_locationname ($result)) $result = $default;
+      elseif ($force_type == "objectname" && !valid_objectname ($result)) $result = $default;
+      elseif ($force_type == "url" && strpos ("_".strtolower (urldecode ($result)), "<script") > 0) $result = $default;
+      elseif ($force_type == "bool") 
+      {
+        if ($result == 1 || $result == "yes" || $result == "true" || $result == "1") $result = true;
+        elseif($result == 0 || $result == "no" || $result == "false" || $result == "0") $result = false;
+        else $result = $default;
+      }      
+    }
+  
+    // return result
+    return $result;
+  }
+  else return $default;
+}
+
+// ------------------------- getrequest_esc -----------------------------
+// function: getrequest_esc()
+// input: variable name, must be of certain type [numeric,array,publicationname,locationname,objectname] (optional), default value (optional), 
+//        remove characters to avoid JS injection [true,false] (optional)
+// output: value
+
+// description:
+// return a escaped value tp prevent XSS from POST, GET or COOKIE, or a default value if none set
+
+function getrequest_esc ($variable, $force_type=false, $default="", $js_protection=false)
+{    
+  if ($variable != "")
+  {
+    $result = getrequest ($variable, $force_type, $default);
+    $result = html_encode ($result, "", $js_protection);
+    
+    return $result;
+  }
+  else return $default;  
+}
+
+// ----------------------------------------- getuserip ------------------------------------------
+// function: getuserip()
+// input: %
+// output: IP address of client / false on error
+
+// description:
+// retrieves IP address of the client/user.
+
+function getuserip ()
+{
+  if (!isset($_SERVER['HTTP_X_FORWARDED_FOR'])) $client_ip = $_SERVER['REMOTE_ADDR'];
+  else $client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+  
+  if ($client_ip != "") return $client_ip;
+  else return false;
+}
+
  // ========================================= LOAD CONTENT ============================================
 
 // ---------------------------------------------- getobjectcontainer ----------------------------------------------
@@ -83,7 +183,7 @@ function getcontainer ($containerid, $type)
 
 // --------------------------------------- getcontainername -------------------------------------------
 // function: getcontainername()
-// input: container name (e.g. 0000112.xml.wrk)
+// input: container name (e.g. 0000112.xml.wrk) or container ID
 // output: Array with file name of the working content container (locked or unlocked!) and username if locked
 // requires: config.inc.php to be loaded
 
@@ -91,18 +191,29 @@ function getcontainername ($container)
 {
   global $mgmt_config;
   
-  if ($container != "" && strpos ($container, ".xml") > 0)
+  $result = array();
+  
+  if (valid_objectname ($container))
   {
-    $container_id = substr ($container, 0, strpos ($container, ".xml"));
+    // define container ID and container name
+    if (strpos ($container, ".xml") > 0)
+    {
+      $container_id = substr ($container, 0, strpos ($container, ".xml"));
+    }
+    else
+    {
+      $container_id = $container;
+      $container = $container_id.".xml";
+    }
     
     if (strpos ($container, ".wrk") > 0)
     {
+      // cut off version or user extension
       $container = substr ($container, 0, strpos ($container, ".wrk"));
       $containerwrk = $container.".wrk";
     }
     else $containerwrk = $container.".wrk";
     
-    $user = "";
     $location = getcontentlocation ($container_id, 'abs_path_content');
 
     // container exists and is not locked
@@ -111,7 +222,7 @@ function getcontainername ($container)
       // return result
       $result['result'] = true;
       $result['container'] = $containerwrk;
-      $result['user'] = $user;    
+      $result['user'] = "";    
       return $result;
     }
     // container exists and is locked by current user
@@ -146,18 +257,15 @@ function getcontainername ($container)
             
             // return result 
             return $result;
-            break;
           }   
         }
         
         $dir->close();
         
-        // return result
         $result['result'] = false;
       }
       else 
       {
-        // return result
         $result['result'] = false;    
       }
       
@@ -957,7 +1065,7 @@ function getmimetype ($file)
     $file_ext = strtolower (strrchr ($file, "."));
     
     // avoid version file extension
-    if (substr_count ($file_ext, "v_") == 1)
+    if (substr_count ($file_ext, "v_") == 1 && strpos ($file, ".") > 0)
     {
       $file = substr ($file, 0, strrchr ($file, "."));
       $file_ext = strtolower (strrchr ($file, "."));
@@ -1016,21 +1124,38 @@ function getvideoinfo ($mediafile)
 {
   global $mgmt_config, $mgmt_mediapreview;
   
+  // read media information from media files
   if ($mediafile != "" && @is_file ($mediafile))
   {
   	$dimensionRegExp = "/, ([0-9]+x[0-9]+)/";
   	$durationRegExp = "/Duration: ([0-9\:\.]+)/i";
   	$bitRateRegExp = "/bitrate: ([0-9]+ [a-z]+\/s)/i";
-    
+
     $dimension = "";
     $width = "";
     $height = ""; 
     $duration = "";   
-    $bitrate = "";
+    $video_bitrate = "";
     $imagetype = "";
+    $audio_codec = "";
+    $audio_bitrate = "";
+    $audio_frequenzy = "";
+    $audio_channels = "";
+    
+    $location = getlocation ($mediafile);
+    $media = getobject ($mediafile);
+    
+    // create temp file if file is encrypted
+    $temp = createtempfile ($location, $media);
+    
+    if ($temp['result'] && $temp['crypted'])
+    {
+      $mediafile = $temp['templocation'].$temp['tempfile'];
+    }
     
     // get video file size in MB
-    $filesize = (int)round (@filesize ($mediafile) / 1024 / 1024, 0);
+    $filesize = round (@filesize ($mediafile) / 1024 / 1024, 0)." MB";
+    if ($filesize < 1) $filesize = "<1 MB";
     
     // file extension
     $file_ext = strtolower (strrchr ($mediafile, ".")); 
@@ -1045,10 +1170,11 @@ function getvideoinfo ($mediafile)
           
         // get info from video file using FFMPEG
       	$cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($mediafile)."\" -y -f rawvideo -vframes 1 /dev/null 2>&1";
-        exec ($cmd, $metadata, $return); 
         
+        exec ($cmd, $metadata, $return); 
+
         // parsing the values
-        if ($return == 0)
+        if (is_array ($metadata) && sizeof ($metadata) > 0)
         {
           // video dimension in pixels
     			$matches = array();
@@ -1056,14 +1182,29 @@ function getvideoinfo ($mediafile)
     			if (preg_match ($dimensionRegExp, implode ("\n", $metadata), $matches))
           {
     				$dimension = $matches[1];
-            list ($width, $height) = explode ("x", $dimension);
-                  
-          	// set 'portrait', 'landscape' or 'square' for the image type
-          	if ($width > $height) $imagetype = "landscape";
-          	elseif ($height > $width) $imagetype = "portrait";
-          	elseif ($height == $width) $imagetype = "square";      
+            
+            if ($dimension != "")
+            {
+              list ($width, $height) = explode ("x", $dimension);
+              
+              $dimension = $dimension." px";
+                
+            	// set 'portrait', 'landscape' or 'square' for the image type
+              if ($width > 0 && $height > 0)
+              {
+              	if ($width > $height) $imagetype = "landscape";
+              	elseif ($height > $width) $imagetype = "portrait";
+              	elseif ($height == $width) $imagetype = "square";
+              }
+              else
+              {
+                $dimension = "";
+                $width = "";
+                $height = "";
+              }
+            }
     			}
-          
+
           // video duration in hours:minutes:seconds
     			$matches = array();
           
@@ -1073,16 +1214,39 @@ function getvideoinfo ($mediafile)
     				$duration = $matches[1];
     			}
           
-          // video bitrate in kB/s
+          // video bitrate in kB/s (flac file uses the same bitrate declaration as video streams)
     			$matches = array();
           
     			if (preg_match ($bitRateRegExp, implode ("\n", $metadata), $matches))
           {
-    				$bitrate = $matches[1];
+    				$video_bitrate = $matches[1];
     			}
+
+          // audio information (bitrate and frequenzy)
+          reset ($metadata);
+          
+          foreach ($metadata as $line)
+          {
+            if (strpos ("_".$line, "Audio: ") > 0)
+            {
+              // Audio: aac (mp4a / 0x6134706D), 11025 Hz, mono, s16, 53 kb/s
+              $line = substr ($line, strpos ($line, "Audio: ") + 7);
+              
+              // audio (audio bitrate might be missing in flac files)
+              @list ($audio_codec, $audio_frequenzy, $audio_channels, $audio_sample, $audio_bitrate) = explode (", ", $line);
+
+              break;
+            }
+          }
+          
+          // use video bitrate if audio is not available (for flac audio files)
+          if (empty ($audio_bitrate) && !empty ($video_bitrate)) $audio_bitrate = $video_bitrate;
         }
       }
     }
+
+    // delete temp file
+    if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
     
     // return result 
     $result = array();
@@ -1090,12 +1254,16 @@ function getvideoinfo ($mediafile)
     $result['dimension'] = $dimension;
     $result['width'] = $width;
     $result['height'] = $height;
-    if ($height > 0) $result['ratio'] = $width / $height;
+    if ($height > 0) $result['ratio'] = round (($width / $height), 5);
     else $result['ratio'] = 0;      
     $result['duration'] = $duration;
-    $result['bitrate'] = $bitrate;
+    $result['videobitrate'] = $video_bitrate;
     $result['imagetype'] = $imagetype;
-    
+    $result['audio_codec'] = $audio_codec;
+    $result['audiobitrate'] = $audio_bitrate;
+    $result['audiofrequenzy'] = $audio_frequenzy;
+    $result['audiochannels'] = $audio_channels;
+
     return $result;
   }
   else return false;
@@ -1221,7 +1389,7 @@ function getcontentlocation ($container_id, $type="abs_path_content")
 
 // ---------------------- getmedialocation -----------------------------
 // function: getmedialocation()
-// input: publication, multimedia file name (including hcm-ID), type [url_path_media, abs_path_media, url_publ_media, abs_publ_media]
+// input: publication name, multimedia file name (including hcm-ID), type [url_path_media, abs_path_media, url_publ_media, abs_publ_media]
 // output: location of the multimedia file / false on error
 
 // description:

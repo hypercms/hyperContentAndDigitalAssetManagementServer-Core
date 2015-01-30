@@ -189,28 +189,28 @@ if (checkuserip (getuserip ()) == true)
     // register root, global and local pemissions
     if (!empty ($login_result['rootpermission']))
     {
-      $_SESSION['hcms_rootpermission'] = $login_result['rootpermission'];
+      setsession ('hcms_rootpermission', $login_result['rootpermission']);
     }
     
     if (!empty ($login_result['globalpermission']))
     {
-      $_SESSION['hcms_globalpermission'] = $login_result['globalpermission'];
+      setsession ('hcms_globalpermission', $login_result['globalpermission']);
     }
     
     if (!empty ($login_result['localpermission']))
     {
-      $_SESSION['hcms_localpermission'] = $login_result['localpermission'];
+      setsession ('hcms_localpermission', $login_result['localpermission']);
     }
       
     // register values for this session
-    $_SESSION['hcms_user'] = $login_result['user'];
-    $_SESSION['hcms_passwd'] = md5 ($login_result['passwd']);
-    $_SESSION['hcms_siteaccess'] = $login_result['siteaccess'];
-    $_SESSION['hcms_pageaccess'] = $login_result['pageaccess'];
-    $_SESSION['hcms_compaccess'] = $login_result['compaccess'];
-    $_SESSION['hcms_superadmin'] = $login_result['superadmin'];
-    $_SESSION['hcms_lang'] = $login_result['lang'];
-    $_SESSION['hcms_hiddenfolder'] = $login_result['hiddenfolder'];
+    setsession ('hcms_user', $login_result['user']);
+    setsession ('hcms_passwd', md5 ($login_result['passwd']));
+    setsession ('hcms_siteaccess', $login_result['siteaccess']);
+    setsession ('hcms_pageaccess', $login_result['pageaccess']);
+    setsession ('hcms_compaccess', $login_result['compaccess']);
+    setsession ('hcms_superadmin', $login_result['superadmin']);
+    setsession ('hcms_lang', $login_result['lang']);
+    setsession ('hcms_hiddenfolder', $login_result['hiddenfolder']);
     
     // reset mobile settings by values of client side browser detection (JavaScript)
     if ($is_mobile == "1" || $is_mobile == "yes")
@@ -227,21 +227,21 @@ if (checkuserip (getuserip ()) == true)
     else $login_result['iphone'] = false;
     
     // register temporary view settings
-    $_SESSION['hcms_temp_explorerview'] = $mgmt_config['explorerview'];
-    $_SESSION['hcms_temp_objectview'] = $mgmt_config['objectview'];
-    $_SESSION['hcms_temp_sidebar'] = $mgmt_config['sidebar'];
+    setsession ('hcms_temp_explorerview', $mgmt_config['explorerview']);
+    setsession ('hcms_temp_objectview', $mgmt_config['objectview']);
+    setsession ('hcms_temp_sidebar', $mgmt_config['sidebar']);
     // register permanent view settings
-    $_SESSION['hcms_mobile'] = $login_result['mobile'];
-    $_SESSION['hcms_iphone'] = $login_result['iphone'];
+    setsession ('hcms_mobile', $login_result['mobile']);
+    setsession ('hcms_iphone', $login_result['iphone']);
     // register chat state after logon
-    $_SESSION['hcms_temp_chatstate'] = $login_result['chatstate'];
+    setsession ('hcms_temp_chatstate', $login_result['chatstate']);
     // register theme settings
-    $_SESSION['hcms_themename'] = $login_result['themename'];
-    $_SESSION['hcms_themelocation'] = getthemelocation ($login_result['themename']);    
+    setsession ('hcms_themename', $login_result['themename']);
+    setsession ('hcms_themelocation', getthemelocation ($login_result['themename']));    
     // register HTML5 file support in session
-    $_SESSION['hcms_html5file'] = $html5support;    
+    setsession ('hcms_html5file', $html5support);    
     // register server feedback
-    $_SESSION['hcms_keyserver'] = $login_result['keyserver'];
+    setsession ('hcms_keyserver', $login_result['keyserver']);
 
     // write hypercms session file
     $login_result['writesession'] = writesession ($login_result['user'], $login_result['passwd'], $login_result['checksum']);
@@ -251,7 +251,7 @@ if (checkuserip (getuserip ()) == true)
       // define frameset for access via mail link
       if (!empty ($login_result['hcms_linking']) && is_array ($login_result['hcms_linking']))
       {
-        $_SESSION['hcms_linking'] = $login_result['hcms_linking'];
+        setsession ('hcms_linking', $login_result['hcms_linking']);
 
         if ($login_result['mobile']) $result_frameset = "frameset_mobile.php";
         else $result_frameset = "frameset_main_linking.php";
@@ -259,7 +259,7 @@ if (checkuserip (getuserip ()) == true)
       // frameset for standard logon
       else
       {
-        $_SESSION['hcms_linking'] = Null;
+        setsession ('hcms_linking', Null);
         
         if ($login_result['mobile']) $result_frameset = "frameset_mobile.php";
         else $result_frameset = "frameset_main.php";
@@ -289,7 +289,7 @@ if (checkuserip (getuserip ()) == true)
   // login form
   if ((!isset ($login_result) || $login_result['auth'] != true))
   {    
-    $show = "<form name=\"login\" method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">
+    $show = "<form name=\"login\" method=\"post\" action=\"\">
         <input type=\"hidden\" name=\"token\" value=\"".$token_new."\" />
         <input type=\"hidden\" name=\"is_mobile\" value=\"0\" />
         <input type=\"hidden\" name=\"is_iphone\" value=\"0\" />

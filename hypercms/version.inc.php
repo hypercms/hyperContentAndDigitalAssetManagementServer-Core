@@ -576,7 +576,7 @@ release 11/2014
 changelog:
 - implementation of user chat with object-link exchange
 - new configuration setting for chat
-- integration of top in frameset_amin and replacement of frames by iframes
+- integration of top in frameset_main and replacement of frames by iframes
 - implementation of logout on window close (not supported by all browsers)
 - bug fix: charset declaration was missing in explorer
 - removed timeout.js from all controls and js-library
@@ -590,14 +590,14 @@ changelog:
 - improvements in inline editing, dynamically adjust width and height of textarea after loading the inline element
 
 version 5.7.1
-release 11/2014
+release 12/2014
 changelog:
 - new function processobjects replaces publishallobjects and can handle the actions 'publish', 'unpublish' and 'delete' to process queue entries
 - new feature "delete from server" on upload of new files in order to remove them again on a certain date and time
 - no resize of thumbnail if original image is smaller than defined thumbnail size
 - propagate all results from function createmediaobject to function uploadfile
 - function showmedia shows original thumbnail size if the thumbnail is smaller than the defined thumbnail size due to a small original image
-- Improvement of information in main config
+- improvement of information in main config
 - bug fix: when using the GD library instead of ImageMagick, the aspect ration of images have been changed when creating other formats
 - bug fix: undefined variables in indexes in control_queue_menu and function manipulateobject
 - change personal theme in GUI immediately and not after next logon
@@ -621,8 +621,49 @@ changelog:
 - if the provided thumbnail size of the main config is greater than the original video size the original video size will be used for video rendering
 - implementation of loading screen for file unzip
 - bug fix: function deconvertlink removed host name from page links twice. this led to a miss-converted link since the host name has been cut of again without using the function cleandomain.
+
+version 5.7.2
+release 02/2015
+changelog:
+- encryption for content containers to secure data an server side
+- new publication setting for container and media file encryption
+- new function loadfile_header to load file partially in order to determine if fill is encrypted
+- removed Tamino support
+- removed all $_SERVER['PHP_SELF'] in all forms due to XSS weakness
+- bug fix: working content container could be checked out by several users
+- bug fix: function loadcontainer restored working container if it was locked by another user
+- bug fix: CSS issue with chat in IE 8 and 9
+- function copymetadata has been removed from explorer_download and explorer_wrapper and has been integrated in function createdocument
+- new functions encryptfile and decryptfile
+- watermarking for images and videos based on image and video options in the main config file
+- function createmedia supports gamma, sharpness, brightness, contrast and saturation for video editing 
+- bug fix: impementation of binary-safe encryption and decryption to en/decrypt binary files
+- bug fix: popup_action did not hide loading layer if an error occured after unzip
+- 2 new input parameters (object_id, objectpath) for function rdbms_getqeueentries
+- implementation of information regarding the automatic removement of files/objects in mail form, info tab of objects and sidebar object viewer
+- function getcontainername supports container ID or container name as input
+- improved implementations of functions hcms_encrypt and hcms_decrypt for standard and strong en/decryption
+- function showmedia provides additional information about owner, last published date and date of deletion
+- implementation of file caching to reduce I/O for action chains that would save data in each step
+- bug fix: checked out file for user has not been created and deleted in function createuser and deleteuser
+- page_checkedout creates checked out file if it does not exist
+- using database media information as primary source for all media displays
+- bug fix: sidebar on checkout objects list was not displayed properly
+- freegeoip.net stopped providing it's service, changed to API of ip-api.com
+- linkengine is automatically disabled in the publication management for DAM configurations
+- function showmedia support new type "preview_download", which only enables the download in media previews
+- videos can be downloaded and embeded in video editor
+- function getvideoinfo extracts audio information as well
+- new column createdate in table container, change of column date in table container to type datetime (requires update script)
+- function rdbms_getmedia provides extended media information
+- function downloadfile supports new type "noheader" without any HTML headers tp provide file download for WebDAV
+- function image_getdata has been renamed to extractmetadata
+- new function id3_getdata, id3_create and id3_writefile to support ID3 tags of audio files (e.g. mp files)
+- support for ID3 tags of audio files in mapping
+- support for thumbnails of audio files
+- new input parameters for function getgooglesitemap ti show or hide the frequency and priority tags
 */
 
 // current version
-$version = "Version 5.7.1";
+$version = "Version 5.7.2";
 ?>

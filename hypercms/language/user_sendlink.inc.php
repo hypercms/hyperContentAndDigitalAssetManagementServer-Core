@@ -158,4 +158,7 @@ $text51['de'] = "g&uuml;ltig f&uuml;r";
 
 $text52['en'] = "Period of validity is not correct!";
 $text52['de'] = "Die G&uuml;ltigkeitsdauer ist nicht korrekt!";
+
+$text53['en'] = "The link will be active till %date%.";
+$text53['de'] = "Der Link ist bis %date% aktiv.";
 ?>

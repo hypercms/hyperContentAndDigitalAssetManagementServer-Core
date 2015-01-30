@@ -196,6 +196,9 @@ $mgmt_config['iptc_save'] = true;
 // Save XMP tags to image files (true) or not (false).
 $mgmt_config['xmp_save'] = true;
 
+// Save ID3 tags to audio files (true) or not (false).
+$mgmt_config['id3_save'] = true;
+
 // Versioning of Containers
 // Save versions of published containers and media files (true) or disable versioning (false).
 $mgmt_config['contentversions'] = true;
@@ -217,6 +220,8 @@ $mgmt_config['strongpassword'] = true;
 // Encryption
 // Encryption strength (weak, standard, strong)
 $mgmt_config['crypt_level'] = "standard";
+// Key used for en/decryption of length 16, 24 or 32
+$mgmt_config['crypt_key'] = "h1y2p3e4r5c6m7s8";
 
 // Template code
 // Cleaning level of template code from none = 0 to strong = 3 (no cleaning = 0, basic set of disabled functions = 1, 1 + file access functions = 2, 2 + include functions = 3)
@@ -323,7 +328,7 @@ $mgmt_docconvert['.odp'] = array('.pdf', '.ppt');
 
 // Define Image Preview using the GD Library or ImageMagick
 // Options:
-// -s ... output size in width x height in pixel
+// -s ... output size in width x height in pixel (WxH)
 // -f ... output format (file extension without dot [jpg, png, gif])
 // -c ... cropy size
 // -r ... rotate image
@@ -336,6 +341,7 @@ $mgmt_docconvert['.odp'] = array('.pdf', '.ppt');
 // -sketch ... skecthes an image, e.g. -sketch 0x20+120
 // -sepia-tone ... apply -sepia-tone on image, e.g. -sepia-tone 80%
 // -monochrome ... transform image to black and white
+// -wm ... watermark in watermark image->positioning->geometry, e.g. image.png->topleft->+30
 
 // Define Image Preview using the GD Library and PHP (thumbnail generation)
 // The GD Library only supports jpg, png and gif images, set value to "GD" to use it.
@@ -375,14 +381,19 @@ $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -f jpg';
 // -flags ... specific options for video encoding
 // -mbd ... macroblock decision algorithm (high quality mode)
 // -r ... frame rate in Hz (default = 25)
-// -s:v ... frame size in pixel (w x h)
+// -s:v ... frame size in pixel (WxH)
+// -sh ... sharpness (blur -1 up to 1 sharpen)
+// -gbcs ... gamma, brightness, contrast, saturation (neutral values are 1.0:1:0:0.0:1.0)
+// -wm .... watermark image and watermark positioning (PNG-file-reference->positioning [topleft, topright, bottomleft, bottomright] e.g. image.png->topleft)
 // The path to the executable is usually /usr/bin/ffmpeg.
-$mgmt_mediapreview['.asf.avi.flv.mpg.mpeg.mp4.m4v.mp4v.m4a.m4b.m4p.m4r.mov.wmv.mp3.ogv.wav.vob'] = "%ffmpeg%";
+$mgmt_mediapreview['.asf.avi.flv.mpg.mpeg.mp4.m4v.mp4v.m4a.m4b.m4p.m4r.mov.wmv.mp3.ogv.wav.vob.aiff.audio.wav.mp2.mp3.au.mid.flac.la.pac.m4a.apr.oga.rka.wv.wma.aac.mpc.ra.rm.ots.swa.vox.voc.dwd'] = "%ffmpeg%";
 $mgmt_mediaoptions['.flv'] = "-b:v 768k -s:v 480x320 -f flv -c:a libmp3lame -b:a 64k -ac 2 -ar 22050";
 $mgmt_mediaoptions['.mp4'] = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
 $mgmt_mediaoptions['.ogv'] = "-b:v 768k -s:v 480x320 -f ogv -c:a libvorbis -b:a 64k -ac 2";
 $mgmt_mediaoptions['.webm'] = "-b:v 768k -s:v 480x320 -f webm -c:a libvorbis -b:a 64k -ac 2";
 $mgmt_mediaoptions['.mp3'] = "-f mp3 -c:a libmp3lame -b:a 64k -ar 22050";
+$mgmt_mediaoptions['.flac'] = "-f flac -c:a flac -b:a 64k -ar 22050";
+$mgmt_mediaoptions['.wav'] = "-c:a pcm_u8 -b:a 64k -ar 22050";
 
 // Define Metadata Injection
 // YAMDI to inject metadata (play length) into the generated flash video file (FFMPEG discards metadata)
@@ -419,20 +430,6 @@ $mgmt_config['dbcharset'] = "utf8";
 // RDBMS Log
 // Log queries and their executing time in logs/sql.log
 $mgmt_config['rdbms_log'] = false;
-
-// ------------------------------------ Tamino Database Connectivity -------------------------------------
-
-// Tamino integration (or other databases)
-// ATTENTION: The DB Connectivity for Tamino is no longer maintained!
-// You can write and read all XML containers into and from the XML database Tamino from Software AG.
-// If you specify the file "db_connect_tamino.php" the Tamino DB Connectivity will be used for all containers.
-// Create a database named "hypercms" and define the collection "live" and "work" using the schemas in the "tamino" directory. 
-// $mgmt_config['db_connect_tamino'] = "db_connect_tamino.php";
-
-// Only if Tamino is used as database: 
-// URL of hyperCMS database in Tamino (http://host/tamino/database/).
-// Please note: Create a database named "hypercms" and define the collections "work" and "live".
-// $mgmt_config['url_tamino'] = "http://atr10135/tamino/hypercms/";
 
 // ---------------------------------- SMTP Mail System Configuration -----------------------------------
 

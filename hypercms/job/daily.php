@@ -53,7 +53,7 @@ if (sizeof ($config_files) > 0)
       {
         while (($file = readdir ($dir)) !== false)
         {
-          if ($file != "." && $file != ".." && $file != "" && strtolower ($file) != ".htaccess" && strtolower ($file) != "view")
+          if ($file != "." && $file != ".." && $file != "" && strtolower ($file) != ".htaccess" && strtolower ($file) != "web.config" && strtolower ($file) != "view")
           {
             if (filemtime ($location.$file) + $timespan < time())
             {

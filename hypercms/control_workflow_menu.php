@@ -104,7 +104,7 @@ $token_new = createtoken ($user);
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script src="javascript/fclick.js" type="text/javascript"></script>
+<script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript">
 <!--
@@ -264,7 +264,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 ?>
 
 <div id="createworkflowLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:4; left:15px; top:5px; visibility:hidden;">
-<form name="item_create" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="item_create" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="item_create" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
@@ -297,7 +297,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 </div>
 
 <div id="deleteworkflowLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:4; left:15px; top:15px; visibility:hidden;">
-<form name="item_delete" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="item_delete" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
   <input type="hidden" name="action" value="item_delete" />

@@ -126,7 +126,7 @@ $token_new = createtoken ($user);
 <body class="hcmsWorkplaceGeneric">
 
 <?php if ($show == "") { ?>
-<form name="message" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+<form name="message" method="post" action="">
   <input type="hidden" name="action" value="<?php echo $action; ?>">      
   <input type="hidden" name="location" value="<?php echo $location; ?>">
   <input type="hidden" name="page" value="<?php echo $page; ?>">

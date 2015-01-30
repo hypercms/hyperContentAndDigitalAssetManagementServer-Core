@@ -915,17 +915,26 @@ function getconnectedobject ($container)
   
   if (valid_objectname ($container))
   {
+    // load container
     $container_data = loadcontainer ($container, "work", $user);
  
-    if ($container_data != "") $object_array = getcontent ($container_data, "<contentobjects>");
-    if (is_array ($object_array) && $object_array[0] != "") $object_array = link_db_getobject ($object_array[0]);
+    // extract object references
+    if ($container_data != "")
+    {
+      $object_array = getcontent ($container_data, "<contentobjects>");
+      
+      if (is_array ($object_array) && !empty ($object_array[0])) $object_array = link_db_getobject ($object_array[0]);
+      else $object_array = false;
+    }
+    else $object_array = false;
 
+    // collect object information
     if (is_array ($object_array)) 
     {
       // set result array counter
       $counter = 0;
-      $result = Null;       
-          
+      $result = array();
+  
       // collect objects and form result
       foreach ($object_array as $object_path)
       {  
@@ -960,7 +969,7 @@ function getconnectedobject ($container)
   }  
   
   // return result
-  if (is_array ($result) && sizeof ($result) > 0) return $result;
+  if (isset ($result) && is_array ($result) && sizeof ($result) > 0) return $result;
   else return false;
 }
 

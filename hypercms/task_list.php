@@ -74,7 +74,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:50px; top:100px;"
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
   <div id="scrollFrame" style="width:98%; height:90%; overflow:auto;">
-  <form name="taskform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+  <form name="taskform" action="" method="post">
     <input type="hidden" name="action" value="task_delete" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   

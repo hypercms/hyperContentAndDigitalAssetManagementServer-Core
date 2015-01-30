@@ -115,7 +115,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
 
 <div style="background: url('<?php echo getthemelocation(); ?>img/backgrd_history.gif') no-repeat left top; width:450px; min-height:400px; border:0; margin:0; padding:4px;">
 <p><?php echo $text1[$lang]; ?></p>
-<form name="history" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="history" action="" method="post">
   <input type="hidden" name="action" value="">
   <input type="hidden" name="contentdate" value="">
   <input type="hidden" name="templatedate" value="">

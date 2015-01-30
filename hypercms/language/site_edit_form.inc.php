@@ -92,4 +92,13 @@ $text29['de'] = "Asset-Zugriff nur f&uuml;r bestimmte IP Adressen erlauben";
 
 $text30['en'] = "Theme";
 $text30['de'] = "Design";
+
+$text31['en'] = "Encrypt content";
+$text31['de'] = "Inhalte verschl&uuml;sseln";
+
+$text32['en'] = "Watermark options for images";
+$text32['de'] = "Watermark Optionen f&uuml;r Bilder";
+
+$text33['en'] = "Watermark options for vidoes";
+$text33['de'] = "Watermark Optionen f&uuml;r Videos";
 ?>

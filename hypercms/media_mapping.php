@@ -74,7 +74,7 @@ else
 echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
 ?>
 
-<form id="editor" name="editor" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form id="editor" name="editor" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="save" value="yes" />
   <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />

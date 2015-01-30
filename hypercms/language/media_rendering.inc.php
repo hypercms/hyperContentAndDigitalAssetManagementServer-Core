@@ -102,6 +102,24 @@ $text34['de'] = "Audioschnitt";
 $text35['en'] = "Audio Quality";
 $text35['de'] = "Audioqualit&auml;t";
 
-$text36['en'] = "Use 'Options' to edit the video. Individual video formats can be downloaded after closing the Video Editing mode. Use the 'Embed video' button to play the video for the 'Videoplayer'.";
-$text36['de'] = "Verwenden Sie 'Optionen' for die Video-Bearbeitung. Individuelle Videoformate lassen sich nach Schliessen der Videbearbeitung herunterladen. Verwenden Sie die 'Video einbetten' Schaltfl&auml;che, um das  Video f&uuml;r den 'Videploayer' abzupsielen.";
+$text36['en'] = "Use 'Options' to edit the video/audio. Individual video/audio formats can be downloaded after they have been created. Use the 'Embed video/audio' button to play and embed the video/audio for the 'Videoplayer'.";
+$text36['de'] = "Verwenden Sie 'Optionen' for die Video/Audio-Bearbeitung. Individuelle Video/Audioformate lassen sich nach deren Erzeugung herunterladen. Verwenden Sie die 'Video einbetten' Schaltfl&auml;che, um das  Video/Audio f&uuml;r den 'Videploayer' abzupsielen bzw. einzubetten.";
+
+$text37['en'] = "Adjust";
+$text37['de'] = "Anpassen";
+
+$text38['en'] = "Gamma";
+$text38['de'] = "Gamma";
+
+$text39['en'] = "Brightness";
+$text39['de'] = "Helligkeit";
+
+$text40['en'] = "Contrast";
+$text40['de'] = "Kontrast";
+
+$text41['en'] = "Saturation";
+$text41['de'] = "S&auml;ttigung";
+
+$text42['en'] = "Sharpen";
+$text42['de'] = "Sch&auml;rfe";
 ?>

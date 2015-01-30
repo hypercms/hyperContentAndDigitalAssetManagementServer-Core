@@ -7,7 +7,26 @@
  * You should have received a copy of the License along with hyperCMS.
  */
  
-// ======================================== SET FUNCTIONS ============================================
+// =========================================== SESSION ==============================================
+
+// ------------------------- setsession -----------------------------
+// function: setsession()
+// input: temporary hyperCMS variable name, value (optional)
+// output: true / false on error
+
+function setsession ($variable, $content="")
+{
+  if ($variable != "" && session_id() != "")
+  {
+    // define variable name (prefix hcms_ is required)
+    if (strpos ("_".$variable, "hcms_") == 0) $variable = "hcms_".$variable;
+    // set value for session variable
+    $_SESSION[$variable] = $content;
+
+    return true;    
+  }
+  else return false;
+}
 
 // ========================================= SAVE CONTENT ============================================
 

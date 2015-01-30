@@ -187,7 +187,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 ?>
 
 <div id="createsiteLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:4; left:15px; top:15px; visibility:hidden;">
-<form name="site_create" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="site_create" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="site_create" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
@@ -209,7 +209,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 </div>
 
 <div id="deletesiteLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:4; left:15px; top:15px; visibility:hidden;">
-<form name="site_delete" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="site_delete" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="site_delete" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />

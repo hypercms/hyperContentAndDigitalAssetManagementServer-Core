@@ -95,7 +95,7 @@ function insertvars ($text)
 
 function createquerypattern ($query)
 {
-  if ($query != "")
+  if ($query != "" && is_string ($query))
   {
     // prepare query pattern
     $hquery = $query;
@@ -155,11 +155,11 @@ function createquerypattern ($query)
 // input: query as string, start position as string, exclude url as string, language as string, charset as string, query attributes as array
 // output: echo of serach result and true/false
 
-function searchindex ($query, $start, $exclude_url, $lang, $charset="UTF-8", $query_attribute=null)
+function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF-8", $query_attribute=null)
 {
   global $config, $text, $start, $end, $max, $query;
   
-  if ($query != "" && strlen ($query) < 800)
+  if ($query != "" && is_string ($query) && strlen ($query) < 800)
   {
     $data = loadindex ();
   
@@ -212,7 +212,7 @@ function searchindex ($query, $start, $exclude_url, $lang, $charset="UTF-8", $qu
             else $query_check = true;
           }
 
-          if ($query_check && ($exclude_url == "" || substr_count ($url, $exclude_url) == 0))
+          if ($query_check && ($exclude_url == "" || (is_string ($exclude_url) && substr_count ($url, $exclude_url) == 0)))
           {
             if (strlen ($content) > 0) $hits = preg_match_all ($hquery, $content, $matches, PREG_OFFSET_CAPTURE);
             else $hits = 0;

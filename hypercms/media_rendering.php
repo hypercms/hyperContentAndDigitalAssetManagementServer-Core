@@ -25,12 +25,58 @@ require ("include/format_ext.inc.php");
 require_once ("language/media_rendering.inc.php");
 
 
+// input parameters
+$action = getrequest_esc ("action");
+$location = getrequest_esc ("location", "locationname");
+$page = getrequest_esc ("page", "objectname");
+$token = getrequest ("token");
+// video settings
+$filetype = getrequest ("filetype");
+$format = getrequest ("format");
+$bitrate = getrequest ("bitrate");
+$audiobitrate = getrequest ("audiobitrate");
+$videosize = getrequest ("videosize");
+$width = getrequest ("width", "numeric");
+$height = getrequest ("height", "numeric");
+$cut = getrequest ("cut", "numeric", 0);
+$cut_begin = getrequest ("cut_begin");
+$cut_end = getrequest ("cut_end");
+$thumb = getrequest ("thumb", "numeric", 0);
+$thumb_frame = getrequest ("thumb_frame");
+$sharpen = getrequest ("sharpen");
+$gamma = getrequest ("gamma");
+$brightness = getrequest ("brightness");
+$contrast = getrequest ("contrast");
+$saturation = getrequest ("saturation");
+
+// get publication and category
+$site = getpublication ($location);
+$cat = getcategory ($site, $location); 
+
+// publication management config
+if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+
+// convert location
+$location = deconvertpath ($location, "file");
+$location_esc = convertpath ($site, $location, $cat);
+
+// ------------------------------ permission section --------------------------------
+// check access permissions
+$ownergroup = accesspermission ($site, $location, $cat);
+$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
+
+// check session of user
+checkusersession ($user);
+
+// --------------------------------- logic section ----------------------------------
+
 function startConversion ($videotype) 
 {
   // Needed for createmedia
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata;
   // Used for $mgmt_mediaoptions
-  global $filetype, $cut_add, $bitrate, $audiobitrate, $width, $height, $ffmpeg_options;
+  global $filetype, $cut_add, $sh_add, $gbcs_add, $bitrate, $audiobitrate, $width, $height, $ffmpeg_options;
   // Used for createmedia
   global $site, $media_root, $file_info;
   // Used for createthumbnail_video
@@ -39,7 +85,7 @@ function startConversion ($videotype)
   global $text1, $text2, $text30, $text31, $lang;
     
   // FFMPEG options
-  $mgmt_mediaoptions['.'.$filetype] = $cut_add.str_replace (array('%bitrate%', '%audiobitrate%', '%width%', '%height%'), array($bitrate, $audiobitrate, $width, $height), $ffmpeg_options[$filetype]);
+  $mgmt_mediaoptions['.'.$filetype] = $cut_add.$sh_add.$gbcs_add.str_replace (array('%bitrate%', '%audiobitrate%', '%width%', '%height%'), array($bitrate, $audiobitrate, $width, $height), $ffmpeg_options[$filetype]);
     
   // create video
   if ($videotype == "videoplayer") $videotype = "thumbnail";
@@ -66,48 +112,6 @@ function startConversion ($videotype)
   
   return $show;
 }
-
-
-// input parameters
-$action = getrequest_esc ("action");
-$location = getrequest_esc ("location", "locationname");
-$page = getrequest_esc ("page", "objectname");
-$token = getrequest ("token");
-// video settings
-$filetype = getrequest ("filetype");
-$format = getrequest ("format");
-$bitrate = getrequest ("bitrate");
-$audiobitrate = getrequest ("audiobitrate");
-$videosize = getrequest ("videosize");
-$width = getrequest ("width", "numeric");
-$height = getrequest ("height", "numeric");
-$cut = getrequest("cut", "numeric", 0);
-$cut_begin = getrequest("cut_begin");
-$cut_end = getrequest("cut_end");
-$thumb = getrequest("thumb", "numeric", 0);
-$thumb_frame = getrequest("thumb_frame");
-
-// get publication and category
-$site = getpublication ($location);
-$cat = getcategory ($site, $location); 
-
-// publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-
-// convert location
-$location = deconvertpath ($location, "file");
-$location_esc = convertpath ($site, $location, $cat);
-
-// ------------------------------ permission section --------------------------------
-// check access permissions
-$ownergroup = accesspermission ($site, $location, $cat);
-$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
-if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
-
-// check session of user
-checkusersession ($user);
-
-// --------------------------------- logic section ----------------------------------
 
 $show = "";
 
@@ -191,17 +195,17 @@ $available_videosizes['i'] = array(
 $available_audiobitrates = array();
 
 $available_audiobitrates['64k'] = array(
-  'name'    => $text8[$lang].' (64k)',
+  'name'    => $text8[$lang].' (64 kb/s)',
   'checked' => true
 );
 
 $available_audiobitrates['128k'] = array(
-  'name'    => $text9[$lang].' (128k)',
+  'name'    => $text9[$lang].' (128 kb/s)',
   'checked' => false
 );
 
 $available_audiobitrates['192k'] = array(
-  'name'    => $text10[$lang].' (192k)',
+  'name'    => $text10[$lang].' (192 kb/s)',
   'checked' => false
 );
 
@@ -226,7 +230,7 @@ else $videosize = "s";
 // -ac ... number of audio channels
 // -an ... disable audio
 // -ar ... audio sampling frequency (default = 44100 Hz)
-// -b:a ... audio bitrate (default = 64k)
+// -b:a ... audio bitrate (default = 64 kb/s)
 // -c:a ... audio codec (e.g. libmp3lame, libfaac, libvorbis)
 // Video Options:
 // -b:v ... video bitrate in bit/s (default = 200 kb/s)
@@ -236,7 +240,10 @@ else $videosize = "s";
 // -flags ... specific options for video encoding
 // -mbd ... macroblock decision algorithm (high quality mode)
 // -r ... frame rate in Hz (default = 25)
-// -s:v ... frame size in pixel (w x h) 
+// -s:v ... frame size in pixel (WxH)
+// -sh ... sharpness (blur -1 up to 1 sharpen)
+// -gbcs ... gamma, brightness, contrast, saturation (neutral values are 1.0:1:0:0.0:1.0)
+// -wm .... watermark image and watermark positioning (PNG-file-reference->positioning [topleft, topright, bottomleft, bottomright] e.g. image.png->topleft)
 
 $ffmpeg_options['flv'] = "-b:v %bitrate% -s:v %width%x%height% -f flv -c:a libmp3lame -b:a %audiobitrate% -ac 2 -ar 22050";
 $ffmpeg_options['mp4'] = "-b:v %bitrate% -s:v %width%x%height% -f mp4 -c:a libfaac -b:a %audiobitrate% -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
@@ -319,6 +326,37 @@ if ($action == "rendermedia" && checktoken ($token, $user) && valid_publicationn
     $cut_add = '-ss '.$starttime->format('H:i:s').'.'.$startmsec.' -t '.$duration->format('%H:%I:%S').'.'.$durationmsec.' '; 
   }
   
+  // sharpen
+  $sh_add = "";
+  
+  if ($sharpen != "")
+  {
+    $sharpen = round (($sharpen / 100), 2);
+            
+    $sh_add = "-sh ".$sharpen." ";
+  }
+  
+  // gamma, brightness, contrast, saturation
+  $gbcs_add = "";
+  
+  if ($gamma != "" || $brightness != "" || $contrast != "" || $saturation != "")
+  {
+    // set default values
+    if ($gamma == "") $gamma = "1";
+    else $gamma = round ((($gamma + 100) / 100), 2);
+    
+    if ($brightness == "") $brightness = "0";
+    else $brightness = round (($brightness / 100), 2);
+    
+    if ($contrast == "") $contrast = "1";
+    else $contrast = round ((($contrast + 100) / 100), 2);
+    
+    if ($saturation == "") $saturation = "1";
+    else $saturation = round ((($saturation + 100) / 100), 2);
+                    
+    $gbcs_add = "-gbcs ".$gamma.":".$brightness.":".$contrast.":".$saturation." ";
+  }
+
   // check for max video size
 	if ($width > 1920) $width = 1920;
 	if ($height > 1080) $height = 1080;    
@@ -335,7 +373,7 @@ if ($action == "rendermedia" && checktoken ($token, $user) && valid_publicationn
       // we only convert the most used video formats (FLV, MP4, OGV)
       if (in_array ($filetype, array('flv', 'mp4', 'ogv')))
       {
-        // only capture video screen for tzhumbnail image for the first video
+        // only capture video screen for thumbnail image for the first video
         if ($run == 1) $thumb = 0;
           
         $show .= startConversion ("videoplayer")."<br />\n";
@@ -347,7 +385,6 @@ if ($action == "rendermedia" && checktoken ($token, $user) && valid_publicationn
   else $show = startConversion ($filetype);
 }
 
-
 // generate media player config
 if ($hcms_ext['video'] != "" && $hcms_ext['audio'] != "")
 {
@@ -355,7 +392,7 @@ if ($hcms_ext['video'] != "" && $hcms_ext['audio'] != "")
   $mediaheight = 0;
 
   // generate player code
-  $playercode = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_no_rendering", "cut_video", $mediawidth, $mediaheight, "");
+  $playercode = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_download", "cut_video", $mediawidth, $mediaheight, "");
 }
 else
 {
@@ -373,6 +410,8 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/jquery/jquery-1.9.1.min.js"></script>
+<script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css" />
 <?php 
 if ($audio) echo showaudioplayer_head ();
 else echo showvideoplayer_head ($site, false, 'preview'); 
@@ -471,10 +510,104 @@ function openerReload ()
   // reload object frame
   if (opener != null && eval (opener.parent.frames['objFrame']))
   { 
-    opener.parent.frames['objFrame'].location.href='page_view.php?ctrlreload=yes&site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&location=<?php echo $location_esc; ?>&page=<?php echo $page; ?>';
+    opener.parent.frames['objFrame'].location.href='page_view.php?ctrlreload=yes&site=<?php echo url_encode ($site); ?>&cat=<?php echo url_encode ($cat); ?>&location=<?php echo url_encode ($location_esc); ?>&page=<?php echo url_encode ($page); ?>';
   }
   
   return true;
+}
+
+function toggle_sharpen () 
+{
+  var chbx = $('#chbx_sharpen');
+  var sharpen = $('#sharpen');
+  
+  if (chbx.prop('checked')) 
+  {
+    sharpen.prop('disabled', false);
+    sharpen.spinner("option", "disabled", false);
+  }
+  else 
+  {
+    sharpen.prop('disabled', true);
+    sharpen.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_gamma () 
+{
+  var chbx = $('#chbx_gamma');
+  var gamma = $('#gamma');
+  
+  if (chbx.prop('checked')) 
+  {
+    gamma.prop('disabled', false);
+    gamma.spinner("option", "disabled", false);
+  }
+  else 
+  {
+    gamma.prop('disabled', true);
+    gamma.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_brightness () 
+{
+  var chbx = $('#chbx_brightness');
+  var brightness = $('#brightness');
+  
+  if (chbx.prop('checked')) 
+  {
+    brightness.prop('disabled', false);
+    brightness.spinner("option", "disabled", false);
+  }
+  else 
+  {
+    brightness.prop('disabled', true);
+    brightness.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_contrast () 
+{
+  var chbx = $('#chbx_contrast');
+  var contrast = $('#contrast');
+  
+  if (chbx.prop('checked')) 
+  {
+    contrast.prop('disabled', false);
+    contrast.spinner("option", "disabled", false);
+  }
+  else 
+  {
+    contrast.prop('disabled', true);
+    contrast.spinner("option", "disabled", true);
+  }
+}
+
+function toggle_saturation () 
+{
+  var chbx = $('#chbx_saturation');
+  var saturation = $('#saturation');
+  
+  if (chbx.prop('checked')) 
+  {
+    saturation.prop('disabled', false);
+    saturation.spinner("option", "disabled", false);
+  }
+  else 
+  {
+    saturation.prop('disabled', true);
+    saturation.spinner("option", "disabled", true);
+  }
+}
+
+function activate ()
+{
+  toggle_sharpen();
+  toggle_gamma();
+  toggle_brightness();
+  toggle_contrast();
+  toggle_saturation();
 }
 
 function toggleDivAndButton (caller, element)
@@ -486,6 +619,7 @@ function toggleDivAndButton (caller, element)
   if (options.css('display') == 'none')
   {
     caller.addClass('hcmsButtonActive');
+    activate();
     options.fadeIn(time);
   }
   else
@@ -494,6 +628,22 @@ function toggleDivAndButton (caller, element)
     options.fadeOut(time);
   }
 }
+
+$(window).load( function()
+{
+  var spinner_config = { step: 1, min: -100, max: 100}
+  
+  $('#sharpen').spinner(spinner_config);
+  $('#gamma').spinner(spinner_config);
+  $('#brightness').spinner(spinner_config);
+  $('#contrast').spinner(spinner_config);
+  $('#saturation').spinner(spinner_config);
+  
+  // add special function
+  $.fn.getGeneratorParameter = function() {
+    return this.prop('name')+'='+this.val();
+  } 
+});
 
 <?php if (!$audio) { ?>
 $().ready(function() {
@@ -555,18 +705,18 @@ $().ready(function() {
 </div>
 
 <?php
-echo showinfobox ($text36[$lang], $lang, 8, "position:fixed; top:34px; left:10px; width:95%;");
+echo showinfobox ($text36[$lang], $lang, 8, "position:fixed; top:40px; left:10px; width:90%;", "hcms_infoLayer");
 echo showmessage ($show, 600 , 80, $lang, "position:fixed; left:50px; top:150px;");
 ?> 
 
 <!-- top bar -->
 <?php
-echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivAndButton(this, \'#renderOptions\');"'), $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
+echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivAndButton(this, \'#renderOptions\'); hcms_hideInfo (\'hcms_infoLayer\')"'), $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
 ?>
 
 <!-- rendering settings -->
 <div id="renderOptions" style="padding:10px; width:730px; vertical-align:top; z-index:1; display: none; margin-left: 10px" class="hcmsMediaRendering">
-  <form name="mediaconfig" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+  <form name="mediaconfig" action="" method="post">
   	<input type="hidden" name="action" value="rendermedia" />
   	<input type="hidden" name="site" value="<?php echo $site; ?>" />
   	<input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
@@ -575,7 +725,9 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
   	<input type="hidden" name="media" value="<?php echo $mediafile; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     
-    <?php if(!$audio) { ?>
+    <?php if (!$audio) { ?>
+    
+    <!-- video screen format -->
   	<div class="cell">
   		<strong><?php echo $text11[$lang]; ?></strong><br />
   		<?php foreach ($available_formats as $format => $data) { ?>
@@ -584,6 +736,8 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
         </div>
   		<?php } ?>
   	</div>
+    
+    <!-- video bitrate -->
   	<div class="cell">
   		<strong><?php echo $text13[$lang]; ?></strong><br />
   		<?php foreach ($available_bitrates as $bitrate => $data) { ?>
@@ -592,6 +746,8 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
       </div>
   		<?php } ?>
   	</div>
+    
+    <!-- video size -->
   	<div class="cell" style="width:260px;">
   		<strong><?php echo $text12[$lang]; ?></strong><br />
   		<?php foreach ($available_videosizes as $videosize => $data) { ?>
@@ -603,11 +759,14 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
   		</div>
   		<?php }	?>
   	</div>
+    
     <?php } ?>
+    
     <div class="cell">
+    <!-- video cut -->
       <input type="checkbox" name="cut" id="cut_yes" onclick="checkCut();" value="1"><strong><label for="cut_yes" onclick="checkCut();" /><?php echo ($audio) ? $text34[$lang] : $text23[$lang]; ?></label></strong>
       <div id="cut_area" style="display:none;">
-        <div>
+        <div class="row">
           <label for="cut_start" style="width: 70px; display:inline-block; vertical-align: middle;"><?php echo $text25[$lang]; ?></label>
           <input id="cut_start" type="button" value="<?php echo $text24[$lang]; ?>" onclick="updateField(document.getElementById('cut_begin'));" class="cellButton" />
           <input type="text" name="cut_begin" id="cut_begin" READONLY style="width:70px; text-align:center; vertical-align:middle;" />
@@ -618,19 +777,21 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
           <input type="text" name="cut_end" id="cut_end" READONLY style="width:70px; text-align:center; vertical-align:middle;" />
         </div>
       </div>
-    </div>
+      
     <?php if (!$audio) { ?>
-    <div class="cell">
-      <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1"><strong><label for="thumb_yes" onclick="checkThumb();" /><?php echo $text28[$lang]; ?></label></strong>
-      <div id="thumb_area" style="display:none;">
-        <div>
-          <label for="thumb_frame_select" style="display:inline-block; vertical-align: middle;"><?php echo $text29[$lang]; ?></label>
-          <input id="thumb_frame_select" type="button" value="<?php echo $text24[$lang]; ?>" onclick="updateField(document.getElementById('thumb_frame'));" class="cellButton" />
-          <input type="text" name="thumb_frame" id="thumb_frame" READONLY style="width:70px; text-align:center; vertical-align:middle;" />
+    <!-- video thumbnail -->
+      <div class="row"> 
+        <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1"><strong><label for="thumb_yes" onclick="checkThumb();" /><?php echo $text28[$lang]; ?></label></strong>
+        <div id="thumb_area" style="display:none;">
+            <label for="thumb_frame_select" style="display:inline-block; vertical-align: middle;"><?php echo $text29[$lang]; ?></label>
+            <input id="thumb_frame_select" type="button" value="<?php echo $text24[$lang]; ?>" onclick="updateField(document.getElementById('thumb_frame'));" class="cellButton" />
+            <input type="text" name="thumb_frame" id="thumb_frame" READONLY style="width:70px; text-align:center; vertical-align:middle;" />
         </div>
       </div>
-    </div>
     <?php } ?>
+    </div>
+
+    <!-- audio bitrate -->
     <div class="cell">
   		<strong><?php echo $text35[$lang]; ?></strong><br />
   		<?php foreach ($available_audiobitrates as $bitrate => $data) { ?>
@@ -639,17 +800,57 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
       </div>
   		<?php } ?>
   	</div>
+    
+    <?php if (!$audio) { ?>
+    <!-- sharpness / gamma / brigthness / contrast / saturation -->
+    <div class="cell">
+      <div class="row">
+        <strong><?php echo $text37[$lang]; ?></strong>
+      </div>
+      <div>
+        <input type="checkbox" id="chbx_sharpen" name="use_sharpen" value="1" onclick="toggle_sharpen();" />
+        <label style="width:70px; display:inline-block;" for="chbx_sharpen"><?php echo $text42[$lang]; ?></label>
+        <input name="sharpen" type="text" id="sharpen" size="4" value="0" />
+      </div>
+      <div>
+        <input type="checkbox" id="chbx_gamma" name="use_gamma" value="1" onclick="toggle_gamma();" />
+        <label style="width:70px; display:inline-block;" for="chbx_gamma"><?php echo $text38[$lang]; ?></label>
+        <input name="gamma" type="text" id="gamma" size="4" value="0" />
+      </div>
+      <div>
+        <input type="checkbox" id="chbx_brightness" name="use_brightness" value="0" onclick="toggle_brightness();" />
+        <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo $text39[$lang]; ?></label>
+        <input name="brightness" type="text" id="brightness" size="4" value="0" />
+      </div>
+      <div>
+         <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
+        <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo $text40[$lang]; ?></label>
+        <input name="contrast" type="text" id="contrast" size="4" value="0" />
+      </div>
+      <div>
+        <input type="checkbox" id="chbx_saturation" name="use_saturation" value="1" onclick="toggle_saturation();" />
+        <label style="width:70px; display:inline-block;" for="chbx_saturation"><?php echo $text41[$lang]; ?></label>
+        <input name="saturation" type="text" id="saturation" size="4" value="0" />
+      </div>
+    </div>
+    <?php } ?>
+    
+    <!-- save as video format -->
     <div class="cell">
   		<strong><?php echo $text21[$lang];?></strong><br />
   		<label for="filetype"><?php echo $text22[$lang];?></label>
   		<select name="filetype">
-        <?php if (!$audio) { ?>
+        <?php
+        if (!$audio)
+        {
+        ?>
         <option value="videoplayer" ><?php echo $text32[$lang]; ?></option>
-  			<?php 
+  			<?php
         }
+        
         foreach ($available_extensions as $ext => $name)
         { 
-          if (!$audio || in_array($name, array('MP3')))
+          if (!$audio || strpos ("_".$hcms_ext['audio'].".", ".".strtolower($name).".") > 0)
           { 
           ?>
   				<option value="<?php echo $ext; ?>"><?php echo $name; ?></option>
@@ -659,15 +860,20 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
         ?>
   		</select>
   	</div>
-  	<div class="cell">
+    
+    <!-- save button -->
+  	<div class="cell" style="vertical-align:bottom;">
   		<input class="hcmsButtonGreen" type="button" name="save" onclick="hcms_showHideLayers('savelayer','','show'); document.forms['mediaconfig'].submit();" value="<?php echo $text14[$lang];?>"/>
   	</div>
+    
   </form>
 </div>
+
 <!-- media view -->
 <div style="margin:0; padding:10px; width:700px; height:500px; display:inline-block; z-index:1;">
   <!-- show video -->
   <?php echo $playercode; ?>
 </div>
+
 </body>
 </html>

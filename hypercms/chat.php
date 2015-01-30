@@ -145,26 +145,26 @@ function adjust_height ()
 <body class="hcmsWorkplaceExplorer" onload="setInterval('chat.update()', 1000); adjust_height();" onresize="adjust_height();">
 
 <?php
-$public_chat = "<button class=\"hcmsButtonOrange\" style=\"heigth:20px; margin:0px 5px 0px 0px; white-space:nowrap;\" onClick=\"location.reload();\">".$text2[$lang]."</button>";
-
 $users_online = getusersonline ();
 
 if (is_array ($users_online) && sizeof ($users_online) > 1)
 {
-  $users_online_button = "<button class=\"hcmsButtonOrange\" style=\"heigth:20px; margin:0px 5px 0px 0px; white-space:nowrap;\" onClick=\"switchselector ('select_user');\">".$text2[$lang]."</button>
-  <div id=\"select_user\" class=\"hcmsSelector\" style=\"position:absolute; top:27px; right:5px; visibility:hidden; z-index:999; max-height:300px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">\n";
+  $users_online_button = "<button class=\"hcmsButtonOrange\" style=\"heigth:20px; margin:0; white-space:nowrap;\" onClick=\"switchselector ('select_user');\">".$text2[$lang]."</button>
+  <div id=\"select_user\" class=\"hcmsSelector\" style=\"position:fixed; top:26px; right:8px; visibility:hidden; z-index:999; max-height:300px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">\n";
 
   foreach ($users_online as $user_online) if ($user_online != $user) $users_online_button .= "    <div class=\"hcmsSelectorItem\" style=\"text-align:left\" onclick=\"invite('".$user_online."');\"><img src=\"".getthemelocation()."img/user.gif\" style=\"border:0; margin:0; padding:0;\" align=\"absmiddle\" />".$user_online."&nbsp;</div>\n";
 
   $users_online_button .= "  </div>\n";
 }
-else $users_online_button = "<button class=\"hcmsButtonOrange\" style=\"heigth:20px; margin:0px 5px 0px 0px; white-space:nowrap;\" onClick=\"location.reload();\">".$text2[$lang]."</button>";
-
-echo showtopbar ($text0[$lang], $lang, "", "", $users_online_button);
+else $users_online_button = "<button class=\"hcmsButtonOrange\" style=\"heigth:20px; margin:0; white-space:nowrap;\" onClick=\"location.reload();\">".$text2[$lang]."</button>";
 ?>
 
+<?php echo showtopbar ($text0[$lang], $lang); ?>
+
+<div style="position:fixed; top:2px; right:8px; z-index:1000;"><?php echo $users_online_button; ?></div>
+
 <div id="page-wrap" style="margin:0; padding:0;">
-       
+   
   <div id="chat-wrap" class="hcmsInfoBox" style="margin:8px;">
     <div id="chat-area" style="height:300px; overflow:auto; padding:5px;"></div>
   </div>

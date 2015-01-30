@@ -1131,6 +1131,55 @@ function deleteversions ($type, $report)
 // deletefile removes files and empty directories.
 // appendfile appends the given content at the end of the file content.
 
+// ------------------------------------------- loadfile_header -------------------------------------------
+// function: loadfile_header()
+// input: path to file, file name 
+// output: file content
+
+function loadfile_header ($abs_path, $filename)
+{
+  global $user, $mgmt_config;
+  
+  $filedata = false;
+  
+  // check and correct file
+  if (valid_locationname ($abs_path) && valid_objectname ($filename))
+  {
+    $headersize = 2048;
+    
+    // add slash if not present at the end of the location string
+    if (substr ($abs_path, -1) != "/") $abs_path = $abs_path."/";  
+    
+    // deconvert path
+    if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
+    {
+      $abs_path = deconvertpath ($abs_path, "file");
+    }
+    
+    // check and correct file
+    $filename = correctfile ($abs_path, $filename, $user);
+    
+    // get file size
+    $filesize = filesize ($abs_path.$filename);
+    
+    if ($filesize < $headersize) $headersize = $filesize;
+    
+    $filehandle = @fopen ($abs_path.$filename, "rb");
+
+    // load file
+    if ($filename != false)
+    {
+      if ($filehandle != false)
+      {
+        $filedata = @fread ($filehandle, 2048);
+        @fclose ($filehandle);
+      }
+    }
+  } 
+  
+  return $filedata;
+}
+
 // ------------------------------------------- loadfile_fast -------------------------------------------
 // function: loadfile_fast()
 // input: path to file, file name 
@@ -1139,6 +1188,8 @@ function deleteversions ($type, $report)
 function loadfile_fast ($abs_path, $filename)
 {
   global $user, $mgmt_config;
+  
+  $filedata = false;
 
   // check and correct file
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
@@ -1158,29 +1209,21 @@ function loadfile_fast ($abs_path, $filename)
     // load file
     if ($filename != false)
     {   
-      $filehandle = @fopen ($abs_path.$filename, "r");
+      $filehandle = @fopen ($abs_path.$filename, "rb");
   
       if ($filehandle != false)
       {
         @flock ($filehandle,2);
   
         $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
-        
-        if ($filedata != "") 
-        {         
-          $filedata = $filedata;   
-        }       
-  
+
         @flock ($filehandle,3);
         @fclose ($filehandle);
-        
-        return $filedata;
       }
-      else return false;
-    } 
-    else return false;    
-  } 
-  else return false;
+    }   
+  }
+  
+  return $filedata;
 }
 
 // ------------------------------------------- loadfile -------------------------------------------
@@ -1191,6 +1234,8 @@ function loadfile_fast ($abs_path, $filename)
 function loadfile ($abs_path, $filename)
 {
   global $user, $mgmt_config;
+  
+  $filedata = false;
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -1210,7 +1255,7 @@ function loadfile ($abs_path, $filename)
     // load file
     if ($filename != false)
     {    
-      $filehandle = @fopen ($abs_path.$filename, "r");
+      $filehandle = @fopen ($abs_path.$filename, "rb");
 
       if ($filehandle != false)
       {
@@ -1218,17 +1263,9 @@ function loadfile ($abs_path, $filename)
   
         $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
         
-        if ($filedata != "") 
-        {         
-          $filedata = $filedata;  
-        }       
-  
         @flock ($filehandle,3);
         @fclose ($filehandle);
-        
-        return $filedata;
       }
-      else return false;
     }    
     // if file is locked by other user or system, wait 10 seconds
     elseif ($filename_unlocked != ".folder")
@@ -1246,33 +1283,23 @@ function loadfile ($abs_path, $filename)
           // if file is offline
           if (@is_file ($abs_path.$filename.".off")) $filename = $filename.".off";    
                   
-          $filehandle = @fopen ($abs_path.$filename, "r");
+          $filehandle = @fopen ($abs_path.$filename, "rb");
   
           if ($filehandle != false)
           {
             @flock ($filehandle,2);
   
             $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
-  
-            if ($filedata != "") 
-            { 
-              $filedata = $filedata;      
-            } 
-             
-            @flock ($filehandle,3);
-            @fclose ($filehandle);  
 
-            return $filedata;
+            @flock ($filehandle,3);
+            @fclose ($filehandle);
           }
-          else return false;
         }
       }
-      
-      return false;
     }
-    else return false;
   }
-  else return false;
+
+  return $filedata;
 }
 
 // ---------------------------------------- loadlockfile ---------------------------------------------
@@ -1283,6 +1310,8 @@ function loadfile ($abs_path, $filename)
 function loadlockfile ($user, $abs_path, $filename, $force_unlock=0)
 {
   global $mgmt_config;
+  
+  $filedata = false;
 
   if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -1315,7 +1344,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=0)
       // if file is locked
       if ($locked == true)
       {
-        $filehandle = @fopen ($abs_path.$filename, "r");
+        $filehandle = @fopen ($abs_path.$filename, "rb");
     
         if ($filehandle != false)
         {
@@ -1323,23 +1352,14 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=0)
     
           // read file
           $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
-    
-          if ($filedata != "") 
-          {   
-            $filedata = $filedata;   
-          }      
-          
+
           @flock ($filehandle, 3);
           @fclose ($filehandle);
-          
-          return $filedata;
         }
         else
         {
           // unlock file
           @rename ($abs_path.$filename, $abs_path.$filename_unlocked);
-          
-          return false;
         }
       }
     }
@@ -1373,7 +1393,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=0)
           // if file is locked
           if ($locked == true)
           {  
-            $filehandle = @fopen ($abs_path.$filename, "r");
+            $filehandle = @fopen ($abs_path.$filename, "rb");
             
             // file can be loaded   
             if ($filehandle != false)
@@ -1382,24 +1402,15 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=0)
     
               // read file
               $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
-    
-              if ($filedata != "") 
-              {    
-                $filedata = $filedata;        
-              }
-                
+ 
               @flock ($filehandle, 3);
-              @fclose ($filehandle);
-                       
-              return $filedata;          
+              @fclose ($filehandle);       
             }
             // file can not be loaded
             else
             {
               // unlock file
               @rename ($abs_path.$filename, $abs_path.$filename_unlocked);
-              
-              return false;
             }
           }
         }
@@ -1420,16 +1431,13 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=0)
           {
             // lock and load file
             $filedata = loadlockfile ($user, $abs_path, $filename_unlocked);
-            return $filedata;
           }
         }
-      }      
-
-      return false;    
+      }
     }
-    else return false;
   }
-  else return false; 
+
+  return $filedata; 
 }
 
 // --------------------------------------- savefile ------------------------------------------------
@@ -1465,7 +1473,7 @@ function savefile ($abs_path, $filename, $filedata)
       @fwrite ($filehandle, $filedata);  
       @flock ($filehandle, 3);  
       @fclose ($filehandle);
-      
+
       return true;
     }
     else return false;
@@ -1763,6 +1771,257 @@ function appendfile ($abs_path, $filename, $filedata)
   else return false;
 }
 
+// ---------------------- encryptfile -----------------------------
+// function: encryptfile()
+// input: path to file [string], file name [string], key (optional), crypt strength level [weak,standard,strong] (optional)
+// output: content of encrypted file / false on error
+
+// description:
+// encryption of a file if it has not already been encrypted.
+
+function encryptfile ($location, $file, $key="", $crypt_level="")
+{
+  global $user, $mgmt_config;
+  
+  if (valid_locationname ($location) && valid_objectname ($file))
+  {
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
+    if (is_file ($location.$file))
+    {
+      // load file
+      $data = loadfile ($location, $file);
+      
+      // encrypt data if file is not encypted
+      if (!empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") == 0)
+      {
+        // decrpyt content
+        $data = hcms_encrypt ($data, $key, $crypt_level, "base64");
+          
+        if (!empty ($data)) return "<!-- hyperCMS:encrypted -->".$data;
+        else return false;
+      }
+      else return $data;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// ---------------------- decryptfile -----------------------------
+// function: decryptfile()
+// input: path to file [string], file name [string], key (optional), crypt strength level [weak,standard,strong] (optional)
+// output: content of decrypted file / false on error
+
+// description:
+// decrypts of a file if it has not already been decrypted.
+
+function decryptfile ($location, $file, $key="", $crypt_level="")
+{
+  global $user, $mgmt_config;
+
+  if (valid_locationname ($location) && valid_objectname ($file))
+  {
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+
+    if (is_file ($location.$file))
+    {
+      // load file
+      $data = loadfile ($location, $file);
+      
+      // decrypt data if file is encypted
+      if (!empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") > 0)
+      {
+        $data = str_replace ("<!-- hyperCMS:encrypted -->", "", $data);
+        $data = hcms_decrypt ($data, $key, $crypt_level, "base64");
+          
+        if (!empty ($data)) return $data;
+        else return false;
+      }
+      else return $data;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// ---------------------- createtempfile -----------------------------
+// function: createtempfile()
+// input: path to file [string], file name [string], key (optional), crypt strength level [weak,standard,strong] (optional)
+// output: saves temporary decrypted file if the files content is encrypted and returns parh to file / false on error
+
+// description:
+// decrypts the provided file if it has not already been decrypted and saves it as temporary file.
+
+function createtempfile ($location, $file, $key="", $crypt_level="")
+{
+  global $user, $mgmt_config;
+  
+  $result = array();
+  $result['result'] = false;
+  $result['crypted'] = false;
+  $result['created'] = false;
+  $result['location'] = $location;
+  $result['file'] = $file;
+  $result['templocation'] = "";
+  $result['tempfile'] = "";
+  
+  if (valid_locationname ($location) && valid_objectname ($file) && !empty ($mgmt_config['abs_path_cms']))
+  {    
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
+    // define temporary file location to store decrypted file to
+    $location_temp = $mgmt_config['abs_path_cms']."temp/";
+    $file_temp = "stream.".$file;
+    
+    // check if file is encrypted
+    $is_encryptedfile = is_encryptedfile ($location, $file);
+    if ($is_encryptedfile) $result['crypted'] = true;
+
+    // file is not encrypted
+    if (!$is_encryptedfile)
+    {
+      $result['result'] = true;
+    }
+    // file is encrypted and temp file exists already, is newer than encrypted file and temp file is not encrypted
+    elseif ($is_encryptedfile && is_file ($location_temp.$file_temp) && filemtime ($location_temp.$file_temp) >= filemtime ($location.$file) && !is_encryptedfile ($location_temp, $file_temp))
+    {
+      $result['result'] = true;
+      $result['templocation'] = $location_temp;
+      $result['tempfile'] = $file_temp;
+    }
+    // decrypted temporary file must be created (if temporary file does not exist or is older than original file)
+    elseif (
+             $is_encryptedfile && 
+             (
+               !file_exists ($location_temp.$file_temp) || 
+               (
+                 is_file ($location_temp.$file_temp) && 
+                 filemtime ($location_temp.$file_temp) < filemtime ($location.$file)
+               ) || 
+               is_encryptedfile ($location_temp, $file_temp)
+             )
+           )
+    {
+      // load file
+      $data = loadfile ($location, $file);
+
+      // decrypt data if file is encypted
+      if (!empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") > 0)
+      {
+        $data = str_replace ("<!-- hyperCMS:encrypted -->", "", $data);
+        $data = hcms_decrypt ($data, $key, $crypt_level, "base64");
+        
+        // save decrypted file
+        $save = savefile ($location_temp, $file_temp, $data);
+
+        // file has been encrypted and saved
+        if ($save)
+        {
+          $result['result'] = true;
+          $result['created'] = true;
+          $result['templocation'] = $location_temp;
+          $result['tempfile'] = $file_temp;
+        }
+        else
+        {
+          $result['result'] = false;
+        }
+      }
+      // file is not encrypted because it is empty
+      else
+      {
+        $result['result'] = true;
+      }
+    }
+  }
+
+  // return result
+  return $result;
+}
+
+// ---------------------- movetempfile -----------------------------
+// function: movetempfile()
+// input: path to file [string], file name [string], delete temp file [true/false] (optional), 
+//        force encryption of file [true/false] (optional), key (optional), crypt strength level [weak,standard,strong] (optional)
+// output: content of encrypted file / false on error
+
+// description:
+// encrypts the temporary file if it exists and copies or moves it to the location.
+
+function movetempfile ($location, $file, $delete=false, $force_encrypt=false, $key="", $crypt_level="")
+{
+  global $user, $mgmt_config;
+  
+  $result = array();
+  $result['result'] = false;
+  $result['crypted'] = false;
+  $result['location'] = $location;
+  $result['file'] = $file;
+  
+  // extract publication (get the directory name from location)
+  // only works if file is stored in the repository
+  $site = getobject ($location);
+  
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && !empty ($mgmt_config['abs_path_cms']))
+  {
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
+    // define temporary file location to store decrypted file to
+    $location_temp = $mgmt_config['abs_path_cms']."temp/";
+    $file_temp = "stream.".$file;
+    
+    // temp file and source file exists
+    if (is_file ($location_temp.$file_temp))
+    {
+      // load temp file
+      $data = loadfile ($location_temp, $file_temp);
+      
+      // delete temp file
+      if ($delete == true) deletefile ($location_temp, $file_temp);
+      
+      // encrypt data if file is not encypted or is not a thumbnail
+      if (
+           (
+             (isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true) || 
+             $force_encrypt == true
+           ) && 
+           !is_thumbnail ($file_temp) && !empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") == 0
+         )
+      {
+        // encrpyt content
+        $data = hcms_encrypt ($data, $key, $crypt_level, "base64");
+        
+        // add crypted information to files content
+        if (!empty ($data))
+        {
+          $data = "<!-- hyperCMS:encrypted -->".$data;
+          $result['crypted'] = true;
+        }
+      }
+      
+      // save file  
+      if ($data)
+      {
+        $save = savefile ($location, $file, $data);
+        if ($save) $result['result'] = true;
+      }
+    }
+    // temp file has not been created and does not exist (encryption of content is not enabled)
+    else
+    {
+      $result['result'] = true;
+    }
+  }
+  
+  // return result
+  return $result;
+}
+
 // -------------------------------------- fileversion -------------------------------------------
 // function: fileversion()
 // input: file name [string]
@@ -1869,6 +2128,37 @@ function is_config ($media)
   else return false;
 }
 
+// ---------------------- is_encryptedfile -----------------------------
+// function: is_encryptedfile()
+// input: path to file [string], file name [string]
+// output: true / false
+
+// description:
+// this functions checks if a given file name is encrypted
+
+function is_encryptedfile ($location, $file)
+{
+  global $mgmt_config;
+  
+  if (valid_locationname ($location) && valid_objectname ($file))
+  {
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
+    // load media file header
+    if (is_file ($location.$file))
+    {
+      $data = loadfile_header ($location, $file);
+
+      // encrypt data if media file is not encypted
+      if (strpos ("_".$data, "<!-- hyperCMS:encrypted -->") > 0) return true;
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
 // -------------------------------------- substr_in_array -------------------------------------------
 // function: substr_in_array()
 // input: search-string, array
@@ -1950,206 +2240,228 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
 
 // -------------------------------------- downloadfile -------------------------------------------
 // function: downloadfile()
-// input: path to file [string], file name to show for download via http, force file wrapper or download [download,wrapper], user name (optional)
+// input: path to file [string], file name to show for download via http, force file wrapper, download or no file headers for WebDAV [download,wrapper,noheader], user name (optional)
 // output: stream of file content / false on error
 
 // description:
 // this functions provides a file via http for view or download
 
-function downloadfile ($medialocation, $name, $force="wrapper", $user="")
+function downloadfile ($filepath, $name, $force="wrapper", $user="")
 {
   global $mgmt_config, $is_iphone;
 
   $allowrange = true;
   $error = array();
-  
-  if (valid_locationname ($medialocation) && is_file ($medialocation) && $name != "")
+  $range = false;
+
+  if (valid_locationname ($filepath) && is_file ($filepath) && $name != "")
   {
-     // get browser information/version
+    $location = getlocation ($filepath);
+    $media = getobject ($filepath);
+    
+    // create temp file if file is encrypted
+    $temp = createtempfile ($location, $media);
+    
+    if ($temp['result'] && $temp['crypted'])
+    {
+      $location = $temp['templocation'];
+      $media = $temp['tempfile'];
+    }
+
+    // get browser information/version
     $user_client = getbrowserinfo ();
     
-    // if Browser is IE then we need to encode it (does not detect IE 11)
+    // if browser is IE then we need to encode it (does not detect IE 11)
     if (isset ($user_client['msie']) && $user_client['msie'] > 0) $name = rawurlencode ($name);     
       
-    // define header
-    header ('HTTP/1.1 200 Ok', true, 200);
-    if ($allowrange) header ("Accept-Ranges: bytes");
-    header ("Server: Apache");
-    header ("Content-Description: File Transfer");
-    
-    // force download of file
-    if ($force == "download")
+    // read file without headers
+    if ($force == "noheader")
     {
-      // iOS Safari does not support file downloads, so the file need to be opened instead
-      if (!$is_iphone)
-      {
-        header ("Content-Type: application/octet-stream", false);
-        header ("Content-Type: application/octetstream", false);
-        header ("Content-Type: application/force-download", false);
-        header ("Content-Disposition: attachment; filename=\"".$name."\"");
-      }
-        
-      // check for IE only headers
-      if (isset ($user_client['msie']) && $user_client['msie'] > 0)
-      {
-        header ('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header ('Pragma: public');
-      }
-      else
-      {
-        header ('Pragma: no-cache');
-      }  
-          
-      header ("Expires: 0");      
+      $filedata = file_get_contents ($location.$media);
     }
-    // provide content of file inline
+    // define file header and provide file
     else
     {
-      header ("Content-Disposition: inline; filename=\"".$name."\"");
-    }
+      header ('HTTP/1.1 200 Ok', true, 200);
+      if ($allowrange) header ("Accept-Ranges: bytes");
+      header ("Server: Apache");
+      header ("Content-Description: File Transfer");
 
-    // content-type
-    // deprecated since version 5.6.8 since not supported properly by iPhone
-    // if ($is_iphone) header ("Content-Type: application/mac-binhex40");
-    // else header ("Content-Type: ".getmimetype ($medialocation));
-    header ("Content-Type: ".getmimetype ($medialocation));
-    header ("Content-Transfer-Encoding: binary");
-    
-    // file stat
-    $fstat = stat ($medialocation);
-    
-    // for partial file download support
-    header ('ETag: '.sprintf ('"%x-%x-%x"', $fstat['ino'], $fstat['size'], str_pad ($fstat['mtime'], 16, "0")));
-    $range = false;
-    
-    // get the 'Range' header if one was sent
-    if ($allowrange && isset ($_SERVER['HTTP_RANGE'])) 
-    {
-      list ($type, $tmp) = explode ('=', $_SERVER['HTTP_RANGE']);
-
-      if (strtolower (trim ($type)) != 'bytes')
+      // force download of file
+      if ($force == "download")
       {
-        // bad request - range unit is not 'bytes'
-        header ("HTTP/1.1 400 Invalid Request", true, 400);
-        exit;
+        // iOS Safari does not support file downloads, so the file need to be opened instead
+        if (!$is_iphone)
+        {
+          header ("Content-Type: application/octet-stream", false);
+          header ("Content-Type: application/octetstream", false);
+          header ("Content-Type: application/force-download", false);
+          header ("Content-Disposition: attachment; filename=\"".$name."\"");
+        }
+          
+        // check for IE only headers
+        if (isset ($user_client['msie']) && $user_client['msie'] > 0)
+        {
+          header ('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+          header ('Pragma: public');
+        }
+        else
+        {
+          header ('Pragma: no-cache');
+        }  
+            
+        header ("Expires: 0");      
       }
-      
-      $tmp = explode (',',$tmp);
-      $tmp = explode ('-', $tmp[0]); // We only use the first range and deliver it
-      
-      if ($tmp[0] === '')
-      {
-        // first number missing, return last $range[1] in bytes
-        $end = $fstat['size']-1;
-        $start = $end - intval ($tmp[1]);
-      }
-      elseif ($tmp[1] === '')
-      {
-        // second number missing, return from byte $range[0] to end
-        $start = intval($tmp[0]);
-        $end = $fstat['size']-1;
-      }
+      // provide content of file inline
       else
       {
-        // both numbers present, return specific range
-        $start = intval($tmp[0]);
-        $end = intval($tmp[1]);
-      }  
-
-      if ($start > $end || $start > $fstat['size'] || $end > $fstat['size']) 
-      {
-        // bad request - start is greater than end
-        header ("HTTP/1.1 416 Requested range not satisfiable", true, 416);
-        $errcode = 60000;
-        $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile() -> Range not satisfiable: '.$start.' - '.$end.' ('.$fstat['size'].')';
-        // write log
-        savelog (@$error);
-        exit;
+        header ("Content-Disposition: inline; filename=\"".$name."\"");
       }
 
-      $range = true; 
-      unset ($tmp);
-    }
-
-    // partial file download
-    if ($allowrange && $range)
-    {
-      $length = $end - $start+1;
-
-      header ('HTTP/1.1 206 Partial Content', true, 206);      
-      header ("Content-Length: ".$length);
-      header ("Content-Range: bytes ".$start."-".$end."/".$fstat['size']);
-
-      // read partial if not the whole file has been requested
-      if ($length != $fstat['size'])
+      // content-type
+      // deprecated since version 5.6.8 since not supported properly by iPhone
+      // if ($is_iphone) header ("Content-Type: application/mac-binhex40");
+      // else header ("Content-Type: ".getmimetype ($medialocation));
+      header ("Content-Type: ".getmimetype ($location.$media));
+      header ("Content-Transfer-Encoding: binary");
+      
+      // file stat
+      $fstat = stat ($location.$media);
+      
+      // for partial file download support
+      header ('ETag: '.sprintf ('"%x-%x-%x"', $fstat['ino'], $fstat['size'], str_pad ($fstat['mtime'], 16, "0")));
+      
+      // get the 'Range' header if one was sent
+      if ($allowrange && isset ($_SERVER['HTTP_RANGE'])) 
       {
-        if (!($fh = fopen ($medialocation, 'r')))
+        list ($type, $tmp) = explode ('=', $_SERVER['HTTP_RANGE']);
+  
+        if (strtolower (trim ($type)) != 'bytes')
         {
-          // if we can't read the file
-          header ("HTTP/1.1 500 Internal Server Error", true, 500);
-          $errcode = 60001;
-          $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$medialocation.')';
+          // bad request - range unit is not 'bytes'
+          header ("HTTP/1.1 400 Invalid Request", true, 400);
+          exit;
+        }
+        
+        $tmp = explode (',',$tmp);
+        $tmp = explode ('-', $tmp[0]); // We only use the first range and deliver it
+        
+        if ($tmp[0] === '')
+        {
+          // first number missing, return last $range[1] in bytes
+          $end = $fstat['size']-1;
+          $start = $end - intval ($tmp[1]);
+        }
+        elseif ($tmp[1] === '')
+        {
+          // second number missing, return from byte $range[0] to end
+          $start = intval($tmp[0]);
+          $end = $fstat['size']-1;
+        }
+        else
+        {
+          // both numbers present, return specific range
+          $start = intval($tmp[0]);
+          $end = intval($tmp[1]);
+        }  
+  
+        if ($start > $end || $start > $fstat['size'] || $end > $fstat['size']) 
+        {
+          // bad request - start is greater than end
+          header ("HTTP/1.1 416 Requested range not satisfiable", true, 416);
+          $errcode = 60000;
+          $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile() -> Range not satisfiable: '.$start.' - '.$end.' ('.$fstat['size'].')';
           // write log
           savelog (@$error);
           exit;
         }
-
-        if ($start)
+  
+        $range = true; 
+        unset ($tmp);
+      }
+  
+      // partial file download
+      if ($allowrange && $range)
+      {
+        $length = $end - $start+1;
+  
+        header ('HTTP/1.1 206 Partial Content', true, 206);      
+        header ("Content-Length: ".$length);
+        header ("Content-Range: bytes ".$start."-".$end."/".$fstat['size']);
+  
+        // read partial if not the whole file has been requested
+        if ($length != $fstat['size'])
         {
-          $result = fseek ($fh, $start);
-          
-          if ($result == -1)
+          if (!($fh = fopen ($location.$media, 'r')))
           {
+            // if we can't read the file
             header ("HTTP/1.1 500 Internal Server Error", true, 500);
-            $errcode = 60002;
-            $error[] = $mgmt_config['today'].'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not seek '.$medialocation.')';
+            $errcode = 60001;
+            $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$location.$media.')';
             // write log
             savelog (@$error);
             exit;
           }
+  
+          if ($start)
+          {
+            $result = fseek ($fh, $start);
+            
+            if ($result == -1)
+            {
+              header ("HTTP/1.1 500 Internal Server Error", true, 500);
+              $errcode = 60002;
+              $error[] = $mgmt_config['today'].'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not seek '.$location.$media.')';
+              // write log
+              savelog (@$error);
+              exit;
+            }
+          }
+  
+          while ($length)
+          { 
+            // read in blocks of 8KB so we don't chew up memory on the server
+            $read = ($length > 8192) ? 8192 : $length;
+            $length -= $read;
+            print (fread ($fh, $read));
+          }
+          
+          fclose ($fh);
         }
-
-        while ($length)
-        { 
-          // read in blocks of 8KB so we don't chew up memory on the server
-          $read = ($length > 8192) ? 8192 : $length;
-          $length -= $read;
-          print (fread ($fh, $read));
+        else
+        {
+          // read file
+          readfile ($location.$media);
         }
-        
-        fclose ($fh);
       }
+      // standard file download
       else
       {
+        if (!$is_iphone)
+        {
+          header ("Content-Length: ".$fstat['size']);
+          header ("Connection: close");
+        }
+    
         // read file
-        readfile ($medialocation);
+        readfile ($location.$media);
       }
-    }
-    // standard file download
-    else
-    {
-      if (!$is_iphone)
-      {
-        header ("Content-Length: ".$fstat['size']);
-        header ("Connection: close");
-      }
-  
-      // read file
-      readfile ($medialocation);
     }
 
     // write stats for partial file download (range has been provided) only if start of file or end of file has been requested 
-    if (!is_thumbnail ($medialocation) && (($range && ($start == 0 || $end == ($fstat['size']-1))) || !$range))
+    if (!is_thumbnail ($location.$media) && (($range && ($start == 0 || $end == ($fstat['size']-1))) || !$range))
     {
-      $container_id = getmediacontainerid (getobject ($medialocation));
+      $container_id = getmediacontainerid ($media);
       if (is_numeric ($container_id) && $container_id > 0) rdbms_insertdailystat ("download", $container_id, $user);
     }
 
     // write log
     savelog (@$error);
 
-    if (!empty ($error)) return false;
-    else return true;
+    // return result
+    if ($force == "noheader" && !empty ($filedata)) return $filedata;
+    elseif ($force != "noheader" && empty ($error)) return true;
+    else return false;
   }
   else return false;
 }
@@ -2158,16 +2470,27 @@ function downloadfile ($medialocation, $name, $force="wrapper", $user="")
 
 // ----------------------------------------- loadcontainer ---------------------------------------------
 // function: loadcontainer()
-// input: container file name or container id (working container will be loaded by default), optional container type [published, work, version], user
+// input: container file name or container id (working container will be loaded by default), optional container type [published, work, version], user name
 // output: XML content of container / false on error
 // requires: config.inc.php to be loaded before
 
 function loadcontainer ($container, $type="work", $user)
 {
   global $mgmt_config;
+  
+  $contentdata = false;
 
   if (valid_objectname ($container) && ($type == "work" || $type == "published" || $type == "version") && valid_objectname ($user))
   {
+    $restored = false;
+    
+    // use temporary cache to reduce I/O if save is disabled
+    if (getsession ("hcms_temp_save", "yes") == "no")
+    {
+      // container data exists in cache
+      if (getsession ("hcms_temp_cache") != "") return $contentdata = getsession ("hcms_temp_cache");
+    }
+      
     // if container holds file name
     if (strpos ($container, ".xml") > 0)
     {
@@ -2189,34 +2512,33 @@ function loadcontainer ($container, $type="work", $user)
       }    
       else
       {
-        if ($type == "published") $container = $container_id.".xml";      
+        if ($type == "published") $container = $container_id.".xml";
         elseif ($type == "work") $container = $container_id.".xml.wrk";
       }
     
       // container location
       $location = getcontentlocation ($container_id, 'abs_path_content');
+      
+      // get container info
+      $container_info = getcontainername ($container);
   
       // try to load container if it is locked by another user and current user is superadmin
-      if ($type == "work" && !empty ($_SESSION['hcms_superadmin']) && $_SESSION['hcms_superadmin'] == 1)
+      if ($type == "work" && !empty ($_SESSION['hcms_superadmin']) && $_SESSION['hcms_superadmin'] == 1 && !empty ($container_info['container']) && is_file ($location.$container_info['container']))
       {
-        $result = getcontainername ($container);
-        
-        // container was found
-        if (!empty ($result['container'])) return loadfile ($location, $result['container']);
-        else return false;
+        $contentdata = loadfile ($location, $container_info['container']);
       }
       // load unlocked container
       elseif (@is_file ($location.$container))
       {
-        return loadfile ($location, $container);
+        $contentdata = loadfile ($location, $container);
       }
       // load locked container for current user
       elseif (valid_objectname ($user) && @is_file ($location.$container.".@".$user))
       {
-        return loadfile ($location, $container.".@".$user);
+        $contentdata = loadfile ($location, $container.".@".$user);
       }
-      // working container is missing -> restore container
-      elseif ($type == "work" && is_file ($location.$container_id.".xml"))
+      // working container is not locked and is missing -> restore container
+      elseif (empty ($container_info['user']) && $type == "work" && is_file ($location.$container_id.".xml"))
       {
         // try to restore working from live container
         $result_copy = copy ($location.$container_id.".xml", $location.$container_id.".xml.wrk");
@@ -2231,10 +2553,7 @@ function loadcontainer ($container, $type="work", $user)
         else
         {
           $contentdata = loadfile ($location, $container_id.".xml.wrk");
-          $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentstatus>", "restored", "", "");
-          
-          if ($contentdata != "") return $contentdata;
-          else return false;
+          $restored = true;
         }      
       }
       // live/published container is missing -> restore container
@@ -2253,32 +2572,58 @@ function loadcontainer ($container, $type="work", $user)
         else
         {
           $contentdata = loadfile ($location, $container_id.".xml");
-          $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentstatus>", "active", "", "");
-          
-          if ($contentdata != "") return $contentdata;
-          else return false;
-        }      
+          $restored = true;
+        }
       }
-      // container is missing
-      else return false;
+      
+      // decrypt container if it is encrypted
+      if (!empty ($contentdata) && strpos ("_".$contentdata, "<!-- hyperCMS:encrypted -->") > 0)
+      {
+        $contentdata = str_replace ("<!-- hyperCMS:encrypted -->", "", $contentdata);
+        $contentdata = hcms_decrypt ($contentdata, "", "", "base64");
+        
+        // set status to "restored"
+        if ($restored) $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentstatus>", "restored", "", "");
+      }
     }
-    else return false;
   }
-  else return false;
+  
+  // use temporary cache to reduce I/O if save if disabled
+  if (getsession ("hcms_temp_save", "yes") == "no")
+  {
+    // save container data in cache
+    if ($contentdata != false) setsession ("hcms_temp_cache", $contentdata);
+    // container is not available but exists in cache
+    elseif ($contentdata == false && getsession ("hcms_temp_cache") != "") $contentdata = getsession ("hcms_temp_cache");
+  }
+
+  // return container content
+  return $contentdata;
 }
 
 // ----------------------------------------- savecontainer ---------------------------------------------
 // function: savecontainer()
-// input: container file name or container id (working container will be loaded by default), optional container type [published, work], container content, user
+// input: container file name or container id (working container will be loaded by default), optional container type [published, work], container content, user, 
+//        save container initally [true/false] (optional)
 // output: true / false on error
 // requires: config.inc.php to be loaded before
 
-function savecontainer ($container, $type="work", $data, $user)
+// description: saves data into existing content container by default. Only if $init is set to true it will initally save a non existing container.
+
+function savecontainer ($container, $type="work", $data, $user, $init=false)
 {
   global $mgmt_config;
 
   if (valid_objectname ($container) && $data != "" && ($type == "work" || $type == "published") && valid_objectname ($user))
   {
+    // use temporary cache to reduce I/O if save is disabled
+    if (getsession ("hcms_temp_save", "yes") == "no") 
+    {
+      setsession ("hcms_temp_cache", $data);
+      // dont save data to file if saving is disabled
+      if (getsession ("hcms_temp_save", "yes") == "no") return true;
+    }
+   
     // if container file name (given container file will be saved)
     if (strpos ($container, ".xml") > 0)
     {
@@ -2295,14 +2640,32 @@ function savecontainer ($container, $type="work", $data, $user)
       }    
       else
       {
-        if ($type == "published") $container = $container_id.".xml";      
+        if ($type == "published") $container = $container_id.".xml";
         else $container = $container_id.".xml.wrk";
       }
       
       $location = getcontentlocation ($container_id, 'abs_path_content');
-  
-      if (@is_file ($location.$container)) return savefile ($location, $container, $data);
+      
+      // get publication from container (the publication where the content has been initally created will be used)
+      $origin = getcontent ($data, "<contentorigin>");
+      
+      if (!empty ($origin[0])) $site = getpublication ($origin[0]);
+      else $site = false;
+      
+      // encrypt data
+      if (
+           (!empty ($site) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true) && 
+           $data != "" && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") == 0
+         )
+      {
+        $data = hcms_encrypt (trim ($data), "", "", "base64");
+        if (!empty ($data)) $data = "<!-- hyperCMS:encrypted -->".trim ($data); 
+      }
+
+      // save data
+      if ($init == true) return savefile ($location, $container, $data);
       elseif (valid_objectname ($user) && @is_file ($location.$container.".@".$user)) return savefile ($location, $container.".@".$user, $data);
+      elseif (@is_file ($location.$container)) return savefile ($location, $container, $data);
       else return false;
     }
     else return false;
@@ -4896,7 +5259,7 @@ function createpublication ($site_name, $user="sys")
 // output: result array
 
 // description:
-// this function saves the settings a publication.
+// this function saves the settings of a publication.
 
 function editpublication ($site_name, $setting, $user="sys")
 {
@@ -4941,6 +5304,9 @@ function editpublication ($site_name, $setting, $user="sys")
     
     if (array_key_exists ('dam', $setting) && $setting['dam'] == true) $dam_new = "true";
     else $dam_new = "false";
+    
+    if (array_key_exists ('crypt_content', $setting) && $setting['crypt_content'] == true) $crypt_content = "true";
+    else $crypt_content = "false";
     
     // create htaccess and web.config files for DAM usage
     if ($dam_new == "true")
@@ -4988,6 +5354,14 @@ function editpublication ($site_name, $setting, $user="sys")
     if (!array_key_exists ('default_codepage', $setting) || $setting['default_codepage'] == "") $default_codepage_new = "UTF-8";
     else $default_codepage_new = $setting['default_codepage'];
     
+    // watermark for images
+    if (!array_key_exists ('watermark_image', $setting) || $setting['watermark_image'] == "") $watermark_image = "";
+    else $watermark_image = $setting['watermark_image'];
+    
+    // watermark for videos
+    if (!array_key_exists ('watermark_video', $setting) || $setting['watermark_video'] == "") $watermark_video = "";
+    else $watermark_video = $setting['watermark_video'];
+    
     // correct path for excluded folders
     if (array_key_exists ('url_path_page', $setting)) $url_path_page_new = correctpath ($setting['url_path_page'], "/");
     else $url_path_page_new = "";
@@ -5013,7 +5387,7 @@ function editpublication ($site_name, $setting, $user="sys")
     if (is_array ($setting) && array_key_exists ('allow_ip', $setting) && $setting['allow_ip'] != "")
     {
       $allow_ip_new = splitstring ($setting['allow_ip']);
-      $allow_ip_new = implode ($allow_ip_new, ";");
+      $allow_ip_new = implode (";", $allow_ip_new);
     }
     else $allow_ip_new = "";
     
@@ -5095,6 +5469,15 @@ function editpublication ($site_name, $setting, $user="sys")
 // Storage limit
 // storage limit for all multimedia files (assets) in MB
 \$mgmt_config['".$site_name."']['storage'] = ".$storage_new.";
+
+// Encrypt content on server
+// enable (false) or disable (true) encryption of content
+\$mgmt_config['".$site_name."']['crypt_content'] = ".$crypt_content.";
+
+// Watermark 
+// watermark options for images and videos
+\$mgmt_config['".$site_name."']['watermark_image'] = \"".$watermark_image."\";
+\$mgmt_config['".$site_name."']['watermark_video'] = \"".$watermark_video."\";
 
 // Allow upload to Youtube
 // enable (false) or disable (true) restricted system usage of youtube uploader. 
@@ -6228,6 +6611,10 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
   require ($mgmt_config['abs_path_cms']."language/user_create.inc.php");
   
   $show = "";
+  
+  // default theme
+  if ($mgmt_config['theme'] != "") $theme = $mgmt_config['theme'];
+  else $theme = "standard";
     
   // check if sent data is available
   if (!valid_objectname ($login) || strlen ($login) > 20 || $password == "" || strlen ($password) > 20 || $confirm_password == "")
@@ -6292,7 +6679,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
       // before version 5.5.15 new theme nodes needs to be inserted
       if (substr_count ($userdata, "<theme>") == 0)
       {
-        $userdata = str_replace ("</language>", "</language>\n<theme>standard</theme>", $userdata);
+        $userdata = str_replace ("</language>", "</language>\n<theme></theme>", $userdata);
       }      
           
       // check if user already exists
@@ -6327,6 +6714,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
           $newuser = setcontent ($newuser, "<user>", "<hashcode>", $hashcode, "", "");
           $newuser = setcontent ($newuser, "<user>", "<userdate>", date ("Y-m-d", time()), "", "");
           $newuser = setcontent ($newuser, "<user>", "<language>", $lang_shortcut_default, "", "");
+          $newuser = setcontent ($newuser, "<user>", "<theme>", $theme, "", "");
           
           if (isset ($site) && $site != "*Null*") 
           {
@@ -6354,6 +6742,9 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
         {
           // create task list file for user
           $test = @copy ($mgmt_config['abs_path_cms']."xmlschema/task.schema.xml.php", $mgmt_config['abs_path_data']."task/".$login.".xml.php");
+          
+          // create checked out file
+          if ($test != false) savefile ($mgmt_config['abs_path_data']."checkout/", $login.".dat", "");
 
           if ($test == false)
           {
@@ -6424,7 +6815,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
 // description:
 // this function edits a user
 
-function edituser ($site, $login, $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="", $language="en", $theme="standard", $email="", $signature="", $usergroup="", $usersite="", $user="sys")
+function edituser ($site, $login, $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="", $language="en", $theme="", $email="", $signature="", $usergroup="", $usersite="", $user="sys")
 {
   global $login_cat, $group,
          $eventsystem,
@@ -6439,10 +6830,17 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
     $userdata = loadlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", 5);
     
     $show = "";
+      
+    // default theme
+    if ($theme == "")
+    {
+      if (!empty ($mgmt_config['theme'])) $theme = $mgmt_config['theme'];
+      elseif (!empty ($mgmt_config[$site]['theme'])) $theme = $mgmt_config[$site]['theme'];
+      else $theme = "standard";
+    }
     
     if ($userdata != false)
     {
-
       // Updates in XML nodes:
       // before version 5.4.6 new hashcode nodes needs to be inserted
       if (substr_count ($userdata, "<hashcode>") == 0)
@@ -6457,7 +6855,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       // before version 5.5.15 new theme nodes needs to be inserted
       if (substr_count ($userdata, "<theme>") == 0)
       {
-        $userdata = str_replace ("</language>", "</language>\n<theme>standard</theme>", $userdata);
+        $userdata = str_replace ("</language>", "</language>\n<theme>".$theme."</theme>", $userdata);
       }         
             
       // check if password was changed
@@ -6759,7 +7157,10 @@ function deleteuser ($site, $login, $user="sys")
         $userdata = deletecontent ($userdata, "<user>", "<login>", $login);
         
         // remove task list file of user
-        deletefile ($mgmt_config['abs_path_data']."task/", $login.".xml.php", 0);    
+        deletefile ($mgmt_config['abs_path_data']."task/", $login.".xml.php", 0);
+        
+        // remove checked out list file of user
+        deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".dat", 0);
       }
       elseif (valid_publicationname ($site))
       {
@@ -8902,6 +9303,7 @@ function createobject ($site, $location, $page, $template, $user)
     
           // --------------------------------- hyperCMS content ------------------------------------
           // create the content file name:
+          
           // load content count file and add the new page
           $filedata = loadlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat", 5);
     
@@ -8934,8 +9336,8 @@ function createobject ($site, $location, $page, $template, $user)
         {
             $add_onload = "parent.frames['objFrame'].location.href='empty.php'; ";
             $show = "<span class=\"hcmsHeadline\">".$subtext8[$lang]."</span><br />\n".$subtext9[$lang]."\n";
-        }          
-
+        }
+        
         if ($show == "")
         {
           // create the name of the content file based on the unique content count value
@@ -9087,17 +9489,28 @@ function createobject ($site, $location, $page, $template, $user)
           // save working xml content container and published container
           if ($link_db_append != false && $show == "")
           {   
-            $test = @mkdir (getcontentlocation ($container_id, 'abs_path_content'), $mgmt_config['fspermission']);
+            $container_location = getcontentlocation ($container_id, 'abs_path_content');
+            
+            // create container directory
+            $test = @mkdir ($container_location, $mgmt_config['fspermission']);
 
-            if ($test != false) $test = savefile (getcontentlocation ($container_id, 'abs_path_content'), $contentfile.".wrk", $page_box_xml);
+            // save container initally since savecontainer only saves data to existing containers
+            if ($test != false)
+            {
+              $test = savecontainer ($container_id, "work", $page_box_xml, $user, true);
+            }
             
             if ($test == false)
             {
               $errcode = "10882";
               $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|working container $contentfile.wrk could not be saved";                
-            }            
-            
-            $test = savefile (getcontentlocation ($container_id, 'abs_path_content'), $contentfile, $page_box_xml);
+            }
+                    
+            // save container initally since savecontainer only saves data to existing containers
+            if ($test != false)
+            {
+              $test = savecontainer ($container_id, "published", $page_box_xml, $user, true);
+            }
             
             if ($test == false)
             {
@@ -9131,7 +9544,7 @@ function createobject ($site, $location, $page, $template, $user)
       
               clearstatcache ();             
       
-              // save page file
+              // save object file
               $savefile = savefile ($location, $pagefile, $sourcefiles);
               $filetype = "cms";
       
@@ -9220,7 +9633,7 @@ function createobject ($site, $location, $page, $template, $user)
 
 // ---------------------------------------- uploadfile --------------------------------------------
 // function: uploadfile()
-// input: publication name, destination location, category [page/comp], uploaded file (PHP Autoglobale), unzip [1/0], media file name to be updated, 
+// input: publication name, destination location, category [page/comp], uploaded file (PHP Autoglobale), unzip [1/0], media file name to be updated or true/false, 
 //        create only a new thumbnail [1/0], object name, imageresize [percentage, null], imagepercentage (%-value as integer), user name, check for duplicates [true,false], versioning of file [true,false]
 // output: result array
 // requires: config.inc.php, $pageaccess, $compaccess, $hiddenfolder, $localpermission
@@ -9229,13 +9642,13 @@ function createobject ($site, $location, $page, $template, $user)
 // this function manages all file uploads, like unzip files, create media objects and resize images.
 // the container name will be extracted from the media file name for updating an existing multimedia file
 
-function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_update, $createthumbnail=0, $page, $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $versioning=false)
+function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_update=false, $createthumbnail=0, $page="", $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $versioning=false)
 {
   global $mgmt_config, $mgmt_uncompress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_parser, $lang, $eventsystem,
          $pageaccess, $compaccess, $hiddenfolder, $localpermission;
   
   require ($mgmt_config['abs_path_cms']."language/popup_upload.inc.php");
-  
+
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
   
@@ -9265,8 +9678,17 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
       $result['header'] = "HTTP/1.1 500 Internal Server Error";
       $result['message'] = $text13[$lang];
       return $result;
-    }    
-  
+    }
+    
+    // get media file name if page has been provided and media_update is true
+    if (valid_objectname ($page) && $media_update == true)
+    {
+      $object_info = getobjectinfo ($site, $location, $page, $user);
+      
+      if (!empty ($object_info['media'])) $media_update = $object_info['media'];
+      else $media_update = "";
+    }  
+
     // define variables
     $updir = $location; //absolute path to where files are uploaded, no trailing slash
     $size = $mgmt_config['maxfilesize'] * 1024 * 1024; // size limited in bytes
@@ -9333,7 +9755,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     {
       $file_renamed = $global_files['Filedata']['name'];
     }
-    
+
     // error if file exists
     if ($media_update == "" && @file_exists ($location.$file_renamed))
     {
@@ -9437,7 +9859,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
         
         if ($result_createobject['result'] == true)
         {
-          // pass creatobject result array to result array of this function
+          // pass createbject result array to result array of this function
           $result['message'] = $result_createobject['message'];
           $result['publication'] = $result_createobject['publication'];
           $result['location'] = $result_createobject['location'];
@@ -9587,12 +10009,19 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
           {
             // create new version of file name
             $media_update_v = fileversion ($media_update);
-            // rename old version of media file
-            @rename (getmedialocation ($site, $media_update, "abs_path_media").$site."/".$media_update, getmedialocation ($site, $media_update, "abs_path_media").$site."/".$media_update_v);
-            // create version of container
+            
+            // create new version of media file
+            $media_root = getmedialocation ($site, $media_update, "abs_path_media").$site."/";
+            
+            if (is_file ($media_root.$media_update) && filesize ($media_root.$media_update) > 0)
+            {
+              @rename ($media_root.$media_update, $media_root.$media_update_v);
+            }
+            
+            // create new version of container
             $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
 
-            if (@is_file ($contentlocation.$contentfile.".wrk"))
+            if (@is_file ($contentlocation.$contentfile.".wrk") && filesize ($contentlocation.$contentfile.".wrk") > 0)
             {
               @copy ($contentlocation.$contentfile.".wrk", $contentlocation.$media_update_v);
             }
@@ -9621,13 +10050,17 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
           // save new multimedia file
           if (!empty ($media_root))
           {
-            if ($is_url)
+            // move uploaded file
+            if (!$is_url)
             {
-              $test = @rename ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update) or $show = $text5[$lang];
+              $test = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update);
             }
-            else
+            else $test = false;
+            
+            // save file from URL or if file has already been saved in the temp directory (WebDAV saves files in temp directory)
+            if ($is_url || $test == false)
             {
-              $test = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update) or $show = $text5[$lang];
+               $test = @rename ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update); 
             }
           }
           else $test = false;
@@ -9655,7 +10088,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
             }
 
             // get new rendering settings and set image options (if given)
-            if ($imagewidth > 0 && $imageheight > 0 && $imageformat != "")
+            if ($imagewidth > 0 && $imageheight > 0 && !empty ($imageformat))
             {
               $formats = "";
 
@@ -9724,6 +10157,13 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
               }
             }
           }
+          
+          // encrypt and save data
+          if (isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
+          {
+            $data = encryptfile ($media_root.$site."/", $media_update);
+            if (!empty ($data)) savefile ($media_root.$site."/", $media_update, $data);
+          }
 
           // eventsystem
           if ($eventsystem['onfileupload_post'] == 1) onfileupload_post ($site, $cat, $location, $page, $media_update, $contentfile, $user);
@@ -9735,10 +10175,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     }
     
     // define message on success
-    if ($show == "")
-    {
-      $show = $text27[$lang];
-    }
+    if ($show == "") $show = $text27[$lang];
   
     // return message and command to flash object
     $result['header'] = "HTTP/1.1 200 OK";
@@ -9756,29 +10193,35 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
 
 // ---------------------------------------- indexcontent --------------------------------------------
 // function: indexcontent()
-// input: publication name, multimedia file location, multimedia file name (file to be indexed), container name or ID, container XML-content, user name
-// output: true/false
+// input: publication name, path to multimedia file, multimedia file name (file to be indexed), container name or ID, container XML-content (optional), user name
+// output: result array
 
 // description:
-// this function reads multimedia objects and writes the text to the container.
+// this function extracts the text content of multimedia objects and writes it the text to the container.
 // the given charset of the publication (not set by default), container or publication (not set by default) will be used.
-// the default character set of default.meta.tpl ist UTF-8, so all content should be in UTF-8.
+// the default character set of default.meta.tpl ist UTF-8, so all content should be saved in UTF-8.
 
-function indexcontent ($site, $location, $file, $container, $container_content, $user)
+function indexcontent ($site, $location, $file, $container="", $container_content="", $user)
 {
   global $mgmt_config, $mgmt_parser, $mgmt_uncompress;
 
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($container) && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($user))
   {
-    include ($mgmt_config['abs_path_cms']."include/format_ext.inc.php"); 
-    
     $usedby = "";
+    
+    require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php"); 
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";            
   
     // get file extension
     $file_ext = strtolower (strrchr ($file, "."));
+    
+    // get container from media file
+    if (!valid_objectname ($container))
+    {
+      $container = getmediacontainername ($file);
+    }
     
     // get container id
     if (substr_count ($container, ".xml") > 0)
@@ -9795,13 +10238,26 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
     if ($container_content == "")
     {
       $result = getcontainername ($container);
-      $container = $result['container'];
-      $usedby = $result['user'];
-      $container_content = loadcontainer ($container, "work", $user);
+
+      if (!empty ($result['container']))
+      {
+        $container = $result['container'];
+        $usedby = $result['user'];
+        $container_content = loadcontainer ($container, "work", $user);
+      }
     }
 
-    if ($container_content != false && $container_content != "" && ($usedby == "" || $usedby == $user) && $file_ext != "")
+    if (!empty ($container_content) && ($usedby == "" || $usedby == $user) && $file_ext != "")
     {
+      // create temp file if file is encrypted
+      $temp = createtempfile ($location, $file);
+      
+      if ($temp['crypted'])
+      {
+        $location = $temp['templocation'];
+        $file = $temp['tempfile'];
+      }
+    
       // set injected for functions which will inject meta data directly
       $injected = false;
       
@@ -9830,7 +10286,8 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
           $file_content = implode ("\n", $file_content);
         }
         else $file_content = "";  
-      }   
+      }
+      
       // ------------------------ OPEN OFFICE -----------------------
       // get file content from Open Office Text (odt) in UTF-8
       elseif (($file_ext == ".odt" || $file_ext == ".ods" || $file_ext == ".odp") && $mgmt_uncompress['.zip'] != "")   
@@ -9838,17 +10295,19 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
         // temporary directory for extracting file
         $temp_name = uniqid ("index");
         $temp_dir = $mgmt_config['abs_path_cms']."temp/".$temp_name."/";
+        
         // create temporary directory for extraction
-        @mkdir ($temp_dir, $mgmt_config['fspermission']);    
-        // odt is a ZIP-file with the content placed in the file content.xml
+        @mkdir ($temp_dir, $mgmt_config['fspermission']);
+          
+        // .odt is a ZIP-file with the content placed in the file content.xml
         $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" content.xml -d \"".shellcmd_encode ($temp_dir)."\"";
         
         @exec ($cmd, $error_array);
 
-        if (substr_count ($error_message, "error") > 0)
+        if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
         {
           $errcode = "20133";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|unzip failed for: ".$location.$file;   
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array);   
         } 
         else
         {
@@ -9895,17 +10354,19 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
         // temporary directory for extracting file
         $temp_name = uniqid ("index");
         $temp_dir = $mgmt_config['abs_path_cms']."temp/".$temp_name."/";
+        
         // create temporary directory for extraction
-        @mkdir ($temp_dir, $mgmt_config['fspermission']);    
+        @mkdir ($temp_dir, $mgmt_config['fspermission']);
+        
         // docx is a ZIP-file with the content placed in the file word/document.xml
         $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" word/document.xml -d \"".shellcmd_encode ($temp_dir)."\"";
         
         @exec ($cmd, $error_array);
 
-        if (substr_count ($error_message, "error") > 0)
+        if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
         {
           $errcode = "20134";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|unzip failed for: ".$location.$file;   
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array);   
         } 
         else
         {
@@ -9934,17 +10395,19 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
         // temporary directory for extracting file
         $temp_name = uniqid ("index");
         $temp_dir = $mgmt_config['abs_path_cms']."temp/".$temp_name."/";
+        
         // create temporary directory for extraction
-        @mkdir ($temp_dir, $mgmt_config['fspermission']);    
+        @mkdir ($temp_dir, $mgmt_config['fspermission']);
+        
         // xlsx is a ZIP-file with the content placed in the file xl/sharedStrings.xml
         $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" xl/sharedStrings.xml -d \"".shellcmd_encode ($temp_dir)."\"";
         
         @exec ($cmd, $error_array);
 
-        if (substr_count ($error_message, "error") > 0)
+        if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
         {
           $errcode = "20134";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|unzip failed for: ".$location.$file;   
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array);   
         } 
         else
         {
@@ -10014,16 +10477,19 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
         // temporary directory for extracting file
         $temp_name = uniqid ("index");
         $temp_dir = $mgmt_config['abs_path_cms']."temp/".$temp_name."/";
+        
         // create temporary directory for extraction
-        @mkdir ($temp_dir, $mgmt_config['fspermission']);          
+        @mkdir ($temp_dir, $mgmt_config['fspermission']);
+        
         // pptx is a ZIP-file with the content placed in the file ppt/slides/slide#.xml (# ... number of the slide)
         $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" ppt/slides/slide* -d \"".shellcmd_encode ($temp_dir)."\"";
+        
         @exec ($cmd, $error_array);
 
-        if (substr_count ($error_message, "error") > 0)
+        if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
         {
           $errcode = "20136";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|unzip failed for: ".$location.$file;   
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array);   
         } 
         else
         {
@@ -10084,15 +10550,19 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
           $file_content = convertchars ($file_content, $charset_source, "UTF-8");
         }        
       }    
-      // ------------------------ IMAGES -----------------------    
-      // get file content from image formats holding meta data using injectmetadata
-      elseif ($file_ext != "" && substr_count ($hcms_ext['image'].".", $file_ext.".") > 0)
+      // ------------------------ AUDIO, IMAGES, VIDEOS -----------------------   
+      // SPECIAL CASE: the meta data attributes found in the file will be saved using a mapping.
+      // get file content from image formats holding meta data using setmetadata
+      elseif ($file_ext != "" && substr_count ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video'].".", $file_ext.".") > 0)
       {
-        $injected = injectmetadata ($site, $location, "", $file, "", $user);
+        $injected = setmetadata ($site, "", "", $file, "", $user);
       } 
       else $file_content = "";
+      
+      // delete temp file
+      if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
  
-      // if not injected by a function (injectmetadata)
+      // if not already saved in the content container (by a function setmetadata)
       if ($injected == false)
       {
         // write to content container
@@ -10193,15 +10663,14 @@ function indexcontent ($site, $location, $file, $container, $container_content, 
           {
             return savecontainer ($container, "work", $container_content, $user);
           }
-          else return false;
         }
       }
       // if already injected
       else return true;
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------------------------- unindexcontent --------------------------------------------
@@ -10229,13 +10698,13 @@ function unindexcontent ($site, $location, $file, $container, $container_content
       $container = $container.".xml";
     }
     
-    // read content container
+    // read working content container if no container is provided
     if ($container_content == "")
     {
       $result = getcontainername ($container);
       $container = $result['container'];
       $usedby = $result['user'];
-      $container_content = loadfile (getcontentlocation ($container_id, 'abs_path_content'), $container);
+      $container_content = loadcontainer ($container_id, "work", $user);
     }
 
     if ($container_content != false && $container_content != "" && ($usedby == "" || $usedby == $user))
@@ -10249,7 +10718,7 @@ function unindexcontent ($site, $location, $file, $container, $container_content
       }
 
       // save container
-      if ($container_contentnew != false) return savefile (getcontentlocation ($container_id, 'abs_path_content'), $container, $container_contentnew);
+      if ($container_contentnew != false) return savecontainer ($container, "version", $container_contentnew, $user);
       else return false;
     }  
   }
@@ -10288,7 +10757,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user)
     
     // information log entry
     $errcode = "00101";
-    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|new multimedia file creation by user '$user' ($site, $location_esc, $file, $path_source_file, $user)";     
+    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|new multimedia file created by user '$user' ($site, $location_esc, $file, $path_source_file, $user)";     
 
     if (@is_file ($path_source_file))
     {     
@@ -10296,35 +10765,46 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user)
       $result = createobject ($site, $location, $file, "default.meta.tpl", $user);
 
       // copy file
-      if ($result['result'] == true && $result['mediafile'] != "")
+      if ($result['result'] == true && !empty ($result['mediafile']) && !empty ($result['container_id']) && !empty ($result['container_content']))
       {
         $file_name = substr ($result['object'], 0, strrpos ($result['object'], "."));
         $file_ext = strtolower (strrchr ($result['object'], "."));
         $mediafile = $result['mediafile'];
+        $container_id = $result['container_id'];
+        $container_content = $result['container_content'];
+
+        // define media location
+        $medialocation = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
         
         // move multimedia file to content media repository
         // case "upload": move uploaded file from temp directory
-        $result_move = @move_uploaded_file ($path_source_file, getmedialocation ($site, $mediafile, "abs_path_media").$site."/".$mediafile);
+        $result_move = @move_uploaded_file ($path_source_file, $medialocation.$mediafile);
         // case "import": move import file from source directory 
-        if (!$result_move) $result_move = @rename ($path_source_file, getmedialocation ($site, $mediafile, "abs_path_media").$site."/".$mediafile);
-        
+        if (!$result_move) $result_move = @rename ($path_source_file, $medialocation.$mediafile);
+
         if ($result_move)
         {
-          // get container id
-          $container_id = getmediacontainerid ($mediafile);
-          
           // write stats for upload
-          if ($container_id != "" && !is_thumbnail ($mediafile, false))
+          if (!is_thumbnail ($mediafile, false))
           {
             rdbms_insertdailystat ("upload", $container_id, $user);
           }
-                    
+          
+          // create preview
+          createmedia ($site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", getmedialocation ($site, $mediafile, "abs_path_media").$site."/", $mediafile, "", "origthumb", false);
+
+          // index content
+          indexcontent ($site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", $mediafile, $container_id, $container_content, $user);
+
           // remote client
           remoteclient ("save", "abs_path_media", $site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", "", $mediafile, "");
-          // create preview
-          createmedia ($site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", getmedialocation ($site, $mediafile, "abs_path_media").$site."/", $mediafile, "", "origthumb");
-          // Index
-          indexcontent ($site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", $mediafile, $result['container'], $result['container_content'], $user);
+          
+          // encrypt data
+          if (isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
+          {
+            $data = encryptfile ($medialocation, $mediafile);
+            if (!empty ($data)) savefile ($medialocation, $mediafile, $data);
+          } 
 
           // eventsystem
           if ($eventsystem['onfileupload_post'] == 1) onfileupload_post ($site, $result['cat'], $location, $result['object'], $mediafile, $result['container'], $user);            
@@ -10420,27 +10900,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
             if (substr_count ($objectname, "#U") > 0) $objectname = json_decode (str_replace ('#U', '\u', $objectname));
 
             // create multimedia object
-            $result = createobject ($site, $location_destination, $objectname, "default.meta.tpl", $user);
-
-            // copy file
-            if ($result['result'] == true && $result['mediafile'] != "")
-            {
-              $file_name = substr ($result['object'], 0, strrpos ($result['object'], "."));
-              $file_ext = strtolower (strrchr ($file, "."));
-              $mediafile = $result['mediafile'];
-
-              if (@copy ($location_source.$file, getmedialocation ($site, $mediafile, "abs_path_media").$site."/".$mediafile))
-              {
-                // remote client
-                remoteclient ("save", "abs_path_media", $site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", "", $mediafile, "");                 
-              
-                createmedia ($site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", getmedialocation ($site, $mediafile, "abs_path_media").$site."/", $mediafile, "", "thumbnail");
-                indexcontent ($site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", $mediafile, $result['container'], $result['container_content'], $user);
-                
-                // eventsystem
-                if ($eventsystem['onfileupload_post'] == 1) onfileupload_post ($site, $result['cat'], $location, $result['object'], $mediafile, $result['container'], $user);                 
-              }
-            }     
+            createmediaobject ($site, $location_destination, $objectname, $location_source.$file, $user);   
           }
         }
       }
@@ -10940,7 +11400,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                   if ($action == "page_delete" || $action == "page_unpublish")
                   {
                     // get user name
-                    $container_data = loadfile (getcontentlocation ($container_id, 'abs_path_content'), $contentcontainer);
+                    $container_data = loadcontainer ($contentcontainer, "version", $user);
                     $contentuser_array = getcontent ($container_data, "<contentuser>");
                     $contentuser = $contentuser_array[0];
                     
@@ -11091,10 +11551,14 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
       {      
         // load content container from repository
         $result = getcontainername ($contentfile_self);
-        $contentfile_self_wrk = $result['container'];
-        $bufferdata = loadfile (getcontentlocation ($contentfile_id, 'abs_path_content'), $contentfile_self_wrk);
+        
+        if (!empty ($result['container']))
+        {
+          $contentfile_self_wrk = $result['container'];
+          $bufferdata = loadcontainer ($contentfile_self_wrk, "work", $user);
+        }
   
-        if ($bufferdata != false)
+        if (!empty ($bufferdata))
         {
           // insert new content status and objects references into content file
           if ($action == "page_delete") 
@@ -11144,7 +11608,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           // save content container
           if ($bufferdata != "" && $bufferdata != false)
           {              
-            $test = savefile (getcontentlocation ($contentfile_id, 'abs_path_content'), $contentfile_self_wrk, $bufferdata);
+            $test = savecontainer ($contentfile_self_wrk, "work", $bufferdata, $user);
             
             // final container data
             $containerdata = $bufferdata;          
@@ -11218,8 +11682,8 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                       remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
                     }
                   }
-                }       
-              }              
+                }
+              }
               
               // video thumbnail files (original, media player thumbs, individual video files and configs) 
               if (is_array ($mgmt_mediaoptions))
@@ -11227,7 +11691,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                 foreach ($mgmt_mediaoptions as $mediaoptions_ext => $mediaoptions)
                 {
                   if ($mediaoptions_ext != "")
-                  {                    
+                  {
                     // original thumbnail video file
                     $mediafile_orig = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".orig".$mediaoptions_ext;
                     
@@ -11338,7 +11802,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             if ($test_temp == false)
             {
               $errcode = "10117";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$contentfile.".wrk";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$contentfile_self_wrk;
             }   
             
             // delete link file
@@ -11701,7 +12165,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         if ($link_db)
         {
           // load container from file system
-          $bufferdata = loadfile (getcontentlocation ($contentfile_id, 'abs_path_content'), $contentfile_self_wrk);  
+          $bufferdata = loadcontainer ($contentfile_self_wrk, "work", $user);  
           
           // get current objects
           if ($bufferdata != false) $objects = getcontent ($bufferdata, "<contentobjects>");
@@ -11712,7 +12176,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           if ($bufferdata != false) 
           {         
             // save working container 
-            $test = savefile (getcontentlocation ($contentfile_id, 'abs_path_content'), $contentfile_self_wrk, $bufferdata);  
+            $test = savecontainer ($contentfile_self_wrk, "work", $bufferdata, $user);  
             
             // final container data
             $containerdata = $bufferdata;                   
@@ -11722,7 +12186,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           if ($test == false)
           {
             $errcode = "10276";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savefile failed for ".getcontentlocation ($contentfile_id, 'abs_path_content').$contentfile_self;           
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savecontainer failed for container ".$contentfile_self;           
           }        
           
           if ($test != false)
@@ -11802,7 +12266,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
   
             exit ("severe error: contentcount empty!");
           }
-  
+
           // create the name of the content container based on the unique content count value
           $contentcountlen = strlen ($contentcount);
           $zerolen = 7 - $contentcountlen;
@@ -11820,7 +12284,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           @mkdir (getcontentlocation ($contentfile_new_id, 'abs_path_content'), $mgmt_config['fspermission']);       
           
           // load container from file system
-          $bufferdata = loadfile (getcontentlocation ($contentfile_id, 'abs_path_content'), $contentfile_self_wrk);
+          $bufferdata = loadcontainer ($contentfile_self_wrk, "work", $user);
           
           // insert content container name
           if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentcontainer>", $contentfile_new, "", "");
@@ -11837,10 +12301,10 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           if ($bufferdata != false) 
           {
             // save published container 
-            $test = savefile (getcontentlocation ($contentfile_new_id, 'abs_path_content'), $contentfile_new, $bufferdata);
+            $test = savecontainer ($contentfile_new_id, "published", $bufferdata, $user);
             
             // save working container 
-            $test = savefile (getcontentlocation ($contentfile_new_id, 'abs_path_content'), $contentfile_new.".wrk", $bufferdata);   
+            $test = savecontainer ($contentfile_new_id, "work", $bufferdata, $user);   
             
             // final container data
             $containerdata = $bufferdata;
@@ -11850,7 +12314,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           if ($test == false)
           {
             $errcode = "10206";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savefile failed for ".getcontentlocation ($contentfile_new_id, 'abs_path_content').$contentfile_new;           
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savecontainer failed for container ".$contentfile_new;           
           }
         }
         elseif ($filetype != "cms")
@@ -12852,6 +13316,7 @@ function publishobject ($site, $location, $page, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     require ($mgmt_config['abs_path_cms']."language/page_edit_publish.inc.php");
+    // load template engine (is not included by API and needs to be loaded seperately!)
     require_once ($mgmt_config['abs_path_cms']."function/hypercms_tplengine.inc.php");
     
     $buffer_site = "";
@@ -13006,7 +13471,7 @@ function publishobject ($site, $location, $page, $user)
                 // if user has the workflow permission to publish or no workflow is attached
                 if ($release >= 3 && ($viewstore != "" || $application == "generator"))
                 {
-                  // eventsystem  
+                  // eventsystem
                   if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
                     onpublishobject_pre ($site, $cat, $location, $page, $contentfile, $contentdata, $templatefile, $templatedata, $viewstore, $user);   
                   
@@ -13273,7 +13738,7 @@ function publishobject ($site, $location, $page, $user)
     
           if (@is_file ($contentlocation.$container))
           {
-            @rename ($contentlocation.$container, $contentlocation.$contentfile_v);
+            @copy ($contentlocation.$container, $contentlocation.$contentfile_v);
           }
         }
 
@@ -13284,7 +13749,7 @@ function publishobject ($site, $location, $page, $user)
         if ($contentdata != false)
         {   
           // save working xml content container file
-          $test = savefile ($contentlocation, $container.".wrk", $contentdata);
+          $test = savecontainer ($container, "work", $contentdata, $user);
           
           if ($test == false)
           {
@@ -13293,12 +13758,12 @@ function publishobject ($site, $location, $page, $user)
           }            
           
           // save published xml content container file     
-          $test = savefile ($contentlocation, $container, $contentdata);
+          $test = savecontainer ($container, "published", $contentdata, $user);
 
           if ($test == false)
           {
             $errcode = "10881";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|container $container could not be saved";                
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|published container $container could not be saved";                
           }
         }
         else $test = false;
@@ -14122,7 +14587,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
                                     // load container from file system
                                     $result = getcontainername ($container);
                                     $container_wrk = $result['container'];
-                                    $bufferdata = loadfile (getcontentlocation ($container_id, 'abs_path_content'), $container_wrk);  
+                                    $bufferdata = loadcontainer ($container_wrk, "work", $user);  
                                     
                                     // get current objects
                                     if ($bufferdata != false) $objects = getcontent ($bufferdata, "<contentobjects>");
@@ -14133,7 +14598,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
                                     if ($bufferdata != false) 
                                     {         
                                       // save working container 
-                                      $test = savefile (getcontentlocation ($contentfile_id, 'abs_path_content'), $container_wrk, $bufferdata);           
+                                      $test = savecontainer ($container_wrk, "work", $bufferdata, $user);           
                                     }
                                     else $test = false;         
                                     

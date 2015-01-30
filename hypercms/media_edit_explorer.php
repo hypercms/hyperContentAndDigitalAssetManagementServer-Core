@@ -101,7 +101,7 @@ function goToURL()
   <tr align="left">
     <td class=hcmsHeadline>
       <?php echo $text0[$lang]; ?>
-      <form name="imagesearch" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+      <form name="imagesearch" method="post" action="">
         <input type="hidden" name="site" value="<?php echo $site; ?>" />
         <input type="hidden" name="mediacat" value="<?php echo $mediacat; ?>" />
         <input type="hidden" name="mediatype" value="<?php echo $mediatype; ?>" />

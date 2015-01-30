@@ -249,7 +249,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 ?>
 
 <div id="createtplLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:4; left:15px; top:5px; visibility:hidden;">
-<form name="tpl_create" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="tpl_create" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
   <input type="hidden" name="action" value="tpl_create" />
@@ -274,7 +274,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 </div>
 
 <div id="uploadtplLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:3; left:15px; top:15px; visibility:hidden;">
-<form name="file_upload" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
+<form name="file_upload" method="post" action="" enctype="multipart/form-data">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
   <input type="hidden" name="action" value="file_upload" />
@@ -297,7 +297,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 </div>
 
 <div id="deletetplLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:4; left:15px; top:15px; visibility:hidden;">
-<form name="tpl_delete" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="tpl_delete" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
   <input type="hidden" name="action" value="tpl_delete" />

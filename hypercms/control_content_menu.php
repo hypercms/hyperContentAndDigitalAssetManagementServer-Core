@@ -699,7 +699,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 </form>
 
 <div id="objcreateLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:4; left:15px; top:15px; visibility:<?php if ($page != "") echo "hidden"; else echo "visible"; ?>">
-<form name="page_create" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" onsubmit="return checkForm_page_create();">
+<form name="page_create" action="" method="post" onsubmit="return checkForm_page_create();">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
@@ -765,19 +765,19 @@ if ($page != "")
         <td align=\"left\" valign=\"top\" class=\"hcmsTab\">&nbsp;\n";
           if (($usedby == "" || $usedby == $user) && ($wf_role >= 4 || $wf_role == 2) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) 
             echo "<a href=\"frameset_template_change.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&template=".url_encode($template)."\" target=\"objFrame\" onClick=\"hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','show','Layer_tab3','','hide','Layer_tab4','','hide')\">".$text31[$lang]."</a>";
-          else echo "<b>".$text31[$lang]."</b>";
+          else echo "<b class=\"hcmsButtonOff\">".$text31[$lang]."</b>";
         echo "</td>
         <td style=\"width:3px;\"><img src=\"".getthemelocation()."img/backgrd_tabs_spacer.gif\" style=\"width:3px; height:3px; border:0;\" /></td>
         <td align=\"left\" valign=\"top\" class=\"hcmsTab\">&nbsp;\n";
           if (($usedby == "" || $usedby == $user) && ($wf_role >= 4 || $wf_role == 2) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
             echo "<a href=\"version_content.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\" target=\"objFrame\" onClick=\"hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','hide','Layer_tab3','','show','Layer_tab4','','hide')\">".$text32[$lang]."</a>";
-          else echo "<b>".$text32[$lang]."</b>";
+          else echo "<b class=\"hcmsButtonOff\">".$text32[$lang]."</b>";
         echo "</td>
         <td style=\"width:3px;\"><img src=\"".getthemelocation()."img/backgrd_tabs_spacer.gif\" style=\"width:3px; height:3px; border:0;\" /></td>
         <td align=\"left\" valign=\"top\" class=\"hcmsTab\">&nbsp;\n";
-          if (($usedby == "" || $usedby == $user) && $wf_role >= 1 && $setlocalpermission['root'] == 1 && ($cat == "page" || $setlocalpermission['download'] == 1)) 
+          if ($wf_role >= 1 && $setlocalpermission['root'] == 1) 
             echo "<a href=\"page_info.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\" target=\"objFrame\" onClick=\"hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','hide','Layer_tab3','','hide','Layer_tab4','','show')\">".$text33[$lang]."</a>";
-          else echo "<b>".$text33[$lang]."</b>";
+          else echo "<b class=\"hcmsButtonOff\">".$text33[$lang]."</b>";
         echo "</td>
       </tr>
     </table>

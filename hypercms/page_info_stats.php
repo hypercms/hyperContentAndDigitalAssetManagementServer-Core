@@ -104,7 +104,7 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 ?>
 
 <!-- forms -->
-<form name="previousform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="previousform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
@@ -112,7 +112,7 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
   <input type="hidden" name="date_from" value="<?php echo $previous_date_from; ?>" />
   <input type="hidden" name="date_to" value="<?php echo $previous_date_to; ?>" />
 </form>
-<form name="nextform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="nextform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />

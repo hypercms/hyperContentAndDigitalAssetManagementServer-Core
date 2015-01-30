@@ -144,6 +144,9 @@ $text46['de'] = "Winkel";
 $text47['en'] = "Oil";
 $text47['de'] = "&Ouml;l";
 
-$text48['en'] = "You must select at least one Konversionmethod!";
-$text48['de'] = "Es muss zumindest eine Konvertierungsoption ausgewählt sein";
+$text48['en'] = "You must select at least one conversion methode!";
+$text48['de'] = "Es muss zumindest eine Konvertierungsoption ausgew&auml;hlt sein";
+
+$text49['en'] = "Adjust";
+$text49['de'] = "Anpassen";
 ?>

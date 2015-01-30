@@ -86,9 +86,9 @@ elseif ($action == "checkedout")
   // control
   echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" scrolling=\"".$scrolling."\" src=\"control_objectlist_menu.php?virtual=1&from_page=checkedout\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe></div>\n";
   // object list
-  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; width:".$objectlist_width."%; height:100%; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"no\" src=\"page_checkedout.php\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; width:".$objectlist_width."%; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"no\" src=\"page_checkedout.php\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
   // sidebar
-  if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:0; right:0; bottom:0; width:".(100 - $objectlist_width)."%; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" scrolling=\"auto\" name=\"sidebarFrame\" src=\"explorer_preview.php\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".(100 - $objectlist_width)."%; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" scrolling=\"auto\" name=\"sidebarFrame\" src=\"explorer_preview.php\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
 }
 ?>
 </body>

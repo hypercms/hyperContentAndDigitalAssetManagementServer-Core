@@ -7,7 +7,7 @@ $text1['en'] = "Type";
 $text1['de'] = "Typ";
 
 $text2['en'] = "Date modified";
-$text2['de'] = "Ge&auml;ndert am";
+$text2['de'] = "&Auml;nderungsdatum";
 
 $text3['en'] = "Folder";
 $text3['de'] = "Ordner";

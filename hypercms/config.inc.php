@@ -12,9 +12,11 @@ $mgmt_config['instances'] = false;
 
 // Include hyperCMS Main Configuration File
 // if instances are used, load configuration file of the given instance
-if ($mgmt_config['instances'] && !empty ($_SESSION['hcms_instance']) && preg_match ('/^[a-z0-9-_]+$/', $_SESSION['hcms_instance']))
+$instance = $_SESSION['hcms_instance'];
+
+if ($mgmt_config['instances'] && !empty ($instance) && preg_match ('/^[a-z0-9-_]+$/', $instance))
 {
-  include ("config/".$_SESSION['hcms_instance'].".inc.php");
+  include ("config/".$instance.".inc.php");
 }
 // load standard configuration file
 else

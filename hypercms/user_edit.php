@@ -82,7 +82,7 @@ if ($action == "user_save" && ($site == "*Null*" || checkpublicationpermission (
     // change theme in session if user changed it
     if ($login_cat == "home" && $login == $user && !empty ($theme) && $hcms_themename != $theme)
     {
-      $_SESSION['hcms_themename'] = $theme;
+      setsession ('hcms_themename', $theme);
       $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
     }
   }
@@ -333,7 +333,7 @@ if ($login != "" && $login != false)
   }
 }
 ?>
-<form name="userform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="userform" action="" method="post">
   <input type="hidden" name="action" value="user_save">
   <input type="hidden" name="site" value="<?php echo $site; ?>">
   <?php if ($login_cat == "home") echo "<input type=\"hidden\" name=\"login_cat\" value=\"".$login_cat."\">\n"; ?>
@@ -409,7 +409,12 @@ if ($login != "" && $login != false)
         </select>
       </td>
     </tr>
-    <?php if (($site == "*Null*" && $mgmt_config['theme'] == "") || ($site != "*Null*" && $mgmt_config[$site]['theme'] == "")) { ?>
+    <?php
+    // check if publication defines a theme
+    foreach ($siteaccess as $entry) if (!empty ($mgmt_config[$entry]['theme'])) { $config_theme = $mgmt_config[$entry]['theme']; break; }
+    
+    if (($site == "*Null*" && empty ($mgmt_config['theme']) && empty ($config_theme)) || ($site != "*Null*" && empty ($mgmt_config['theme']) && empty ($mgmt_config[$site]['theme']))) {
+    ?>
     <tr>
       <td nowrap="nowrap"><?php echo $text21[$lang]; ?>: </td>
       <td align="right">

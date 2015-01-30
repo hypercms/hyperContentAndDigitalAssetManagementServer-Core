@@ -22,8 +22,8 @@ $queueuser = url_encode (getrequest ("queueuser", "url"));
 checkusersession ($user, false);
 
 // save selected queue user in session
-if ($queueuser != "") $_SESSION['hcms_temp_user'] = $queueuser;
-else $_SESSION['hcms_temp_user'] = Null;
+if ($queueuser != "") setsession ('hcms_temp_user', $queueuser);
+else setsession ('hcms_temp_user', Null);
 ?>
 <!DOCTYPE html>
 <html>

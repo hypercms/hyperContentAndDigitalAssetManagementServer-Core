@@ -568,7 +568,7 @@ function savetemplate(mode)
 echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;")
 ?>
 
-<form name="template_edit" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="template_edit" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="template" value="<?php echo $template; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />

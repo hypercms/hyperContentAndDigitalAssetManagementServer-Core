@@ -83,7 +83,7 @@ if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, '
 <body class="hcmsWorkplaceGeneric" onLoad="<?php echo $add_onload; ?>hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif');">
 <p class="hcmsHeadline"><?php echo $text4[$lang]; ?></p>
   <table border="0">
-  <form name="media" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+  <form name="media" action="">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="mediafile" value="" />
     <input type="hidden" name="action" value="delete" />

@@ -53,13 +53,13 @@ if (!valid_locationname ($dir) && isset ($temp_pagelocation[$site]))
   {
     $dir = "";
     $temp_pagelocation[$site] = null;
-    $_SESSION['hcms_temp_pagelocation'] = $temp_pagelocation;
+    setsession ('hcms_temp_pagelocation', $temp_pagelocation);
   }
 }
 elseif (valid_locationname ($dir))
 {
   $temp_pagelocation[$site] = $dir;
-  $_SESSION['hcms_temp_pagelocation'] = $temp_pagelocation;
+  setsession ('hcms_temp_pagelocation', $temp_pagelocation);
 }
 
 // define root location if no location data is available
@@ -110,7 +110,7 @@ function sendInput(text, value)
   <?php if ($mgmt_config['db_connect_rdbms'] != "") { ?>
   <tr>
     <td align="left" colspan="2">
-    <form name="searchform_general" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+    <form name="searchform_general" action="" method="post">
       <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
       <input type="text" name="search_expression" value="<?php if ($search_expression != "") echo html_encode ($search_expression); else echo $text3[$lang]; ?>" onblur="if (this.value=='') this.value='<?php echo $text3[$lang]; ?>';" onfocus="if (this.value=='<?php echo $text3[$lang]; ?>') this.value='';" style="width:190px;" maxlength="60" />

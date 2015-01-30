@@ -308,7 +308,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         ?>        
       </select>
     </div>
-    <?php if ($_SESSION['hcms_temp_user'] == "" && (checkrootpermission ('site') || checkrootpermission ('user'))) { ?>
+    <?php if (getsession ('hcms_temp_user') == "" && (checkrootpermission ('site') || checkrootpermission ('user'))) { ?>
     
   </div>
   <div class="hcmsToolbarBlock">    

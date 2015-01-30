@@ -15,8 +15,8 @@ Optionally required for full Digital Asset Management (DAM) support on server-si
 - FFMPEG (for converting video and audio files)
 - YAMDI (for meta data injection into FLV files)
 - ImageMagick (for converting images)
-- XPDF (for reading in indexing PDF-documents)
-- ANTIWORD (for reading and indexing Word-documents)
+- XPDF (for indexing PDF-documents)
+- ANTIWORD (for indexing Word-documents)
 - ZIP (for packing files)
 - UNZIP (for unpacking files)
 - GUNZIP (for unpacking files)
@@ -24,8 +24,8 @@ Optionally required for full Digital Asset Management (DAM) support on server-si
 - EXIFTOOL (for reading meta data of files)
 
 On client-side:
-- As Browser Internet Explorer 7+, Firefox 3+, Chrome 18+, Safari 5+ as well as Opera 9.5+ can be used.
-  hyperCMS is 100% browser based no additional client software is required. 
+- Internet Explorer 7+, Firefox 3+, Chrome 18+, Safari 5+ as well as Opera 9.5+ can be used.
+  hyperCMS is 100% browser based, no additional software is required. 
 
 
 Installation:

@@ -3,7 +3,8 @@ DROP TABLE IF EXISTS `container`;
 CREATE TABLE `container` (
   `id` int(11) NOT NULL default '0',
   `container` varchar(20) NOT NULL default '',
-  `date` date NOT NULL default '0000-00-00',
+  `createdate` datetime NOT NULL, 
+  `date` datetime NOT NULL,
   `latitude` float(10,6) DEFAULT NULL,
   `longitude` float(10,6) DEFAULT NULL,
   `user` varchar(60) NOT NULL default '',

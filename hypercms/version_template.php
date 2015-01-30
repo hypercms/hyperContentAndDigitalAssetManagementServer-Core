@@ -154,7 +154,7 @@ function compare_submit ()
 
 <div class="hcmsWorkplaceFrame">
 <!-- change versions -->
-<form name="versionform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+<form name="versionform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="template" value="<?php echo $template; ?>" />
   <input type="hidden" name="template_recent" value="<?php echo $template; ?>" />

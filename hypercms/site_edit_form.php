@@ -78,6 +78,8 @@ function switchDAM ()
     document.getElementById('url_publ_page').disabled = true;
     document.getElementById('abs_publ_page').disabled = true;
     document.getElementById('abs_publ_app').disabled = true;
+    document.getElementById('linkengine').disabled = true;
+    document.getElementById('crypt_content').disabled = false;
   }
   else
   {
@@ -86,6 +88,8 @@ function switchDAM ()
     document.getElementById('url_publ_page').disabled = false;
     document.getElementById('abs_publ_page').disabled = false;
     document.getElementById('abs_publ_app').disabled = false;
+    document.getElementById('linkengine').disabled = false;
+    document.getElementById('crypt_content').disabled = true;
   }
 }
 -->
@@ -122,27 +126,29 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     $formaction = "";
   }
   
+  // initalize
+  $mgmt_config[$site_name]['site_admin'] = "";
+  $mgmt_config[$site_name]['url_path_page'] = "";
+  $mgmt_config[$site_name]['abs_path_page'] = "";
+  $mgmt_config[$site_name]['exclude_folders'] = "";
+  $mgmt_config[$site_name]['allow_ip'] = "";
+  $mgmt_config[$site_name]['webdav'] = "";
+  $mgmt_config[$site_name]['linkengine'] = "";
+  $mgmt_config[$site_name]['default_codepage'] = "";
+  $mgmt_config[$site_name]['sendmail'] = "";
+  $mgmt_config[$site_name]['mailserver'] = "";
+  $mgmt_config[$site_name]['remoteclient'] = "";
+  $mgmt_config[$site_name]['specialchr_disable'] = "";
+  $mgmt_config[$site_name]['dam'] = "";
+  $mgmt_config[$site_name]['storage'] = "";
+  $mgmt_config[$site_name]['crypt_content'] = "";
+  $mgmt_config[$site_name]['watermark_image'] = "";
+  $mgmt_config[$site_name]['watermark_video'] = "";
+  
   // load site config file of management system
   if (valid_publicationname ($site_name) && file_exists ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
   {
     include ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
-  }
-  else
-  {
-    $mgmt_config[$site_name]['site_admin'] = "";
-    $mgmt_config[$site_name]['url_path_page'] = "";
-    $mgmt_config[$site_name]['abs_path_page'] = "";
-    $mgmt_config[$site_name]['exclude_folders'] = "";
-    $mgmt_config[$site_name]['allow_ip'] = "";
-    $mgmt_config[$site_name]['webdav'] = "";
-    $mgmt_config[$site_name]['linkengine'] = "";
-    $mgmt_config[$site_name]['default_codepage'] = "";
-    $mgmt_config[$site_name]['sendmail'] = "";
-    $mgmt_config[$site_name]['mailserver'] = "";
-    $mgmt_config[$site_name]['remoteclient'] = "";
-    $mgmt_config[$site_name]['specialchr_disable'] = "";
-    $mgmt_config[$site_name]['dam'] = "";
-    $mgmt_config[$site_name]['storage'] = "";
   }
 ?>
 
@@ -193,7 +199,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <?php } ?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo $text7[$lang]; ?>: </td>
-      <td nowrap="nowrap"> <input type="checkbox" name="setting[linkengine]" value="true" <?php if ($mgmt_config[$site_name]['linkengine'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="checkbox" id="linkengine" name="setting[linkengine]" value="true" <?php if ($mgmt_config[$site_name]['linkengine'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo $text8[$lang]; ?>: </td>
@@ -219,6 +225,35 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td nowrap="nowrap"><?php echo $text28[$lang]; ?>: </td>
       <td nowrap="nowrap"> <input type="text" name="setting[storage]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['storage']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
+    <tr align="left" valign="top"> 
+      <td nowrap="nowrap"><?php echo $text31[$lang]; ?>: </td>
+      <td nowrap="nowrap"> <input type="checkbox" id="crypt_content" name="setting[crypt_content]" value="true" <?php if ($mgmt_config[$site_name]['crypt_content'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td nowrap="nowrap"><?php echo $text32[$lang]; ?>: </td>
+      <td nowrap="nowrap"> <input type="text" name="setting[watermark_image]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['watermark_image']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td nowrap="nowrap"><?php echo $text33[$lang]; ?>: </td>
+      <td nowrap="nowrap"> <input type="text" name="setting[watermark_video]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['watermark_video']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+    </tr>
+    <?php 
+  	if (is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
+  	{
+  	?>
+      <tr align="left" valign="top"> 
+        <td nowrap="nowrap"><?php echo $text27[$lang]; ?>: </td>
+        <td nowrap="nowrap"> <input type="checkbox" id="youtube" name="setting[youtube]"  value="true" <?php if ($mgmt_config[$site_name]['youtube'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      </tr>
+    <?php 
+  	}
+  	else
+  	{
+  	?>
+  		<input type="hidden" id="youtube" name="setting[youtube]" value="false" />
+    <?php	
+  	}
+  	?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo $text30[$lang]; ?>: </td>
       <td nowrap="nowrap">
@@ -249,31 +284,13 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
         </select>
       </td>
     </tr>
-    <?php 
-	if(is_file($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
-	{
-	?>
-    <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo $text27[$lang]; ?>: </td>
-      <td nowrap="nowrap"> <input type="checkbox" id="youtube" name="setting[youtube]"  value="true" <?php if ($mgmt_config[$site_name]['youtube'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />    </td>
-    </tr>
-    <?php 
-	}
-	else
-	{
-	?>
-		<input type="hidden" id="youtube" name="setting[youtube]"  value="false"/>
-	
-    <?php	
-	}
-	?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap" colspan=2>&nbsp;</td>
     </tr>      
     <tr align="left" valign="top"> 
       <td nowrap="nowrap" colspan=2 class="hcmsHeadlineTiny"><?php echo $text15[$lang]; ?>: </td>
     </tr>  
-<?php
+  <?php
   // load site config file of publication system
   if (valid_publicationname ($site_name) && file_exists ($mgmt_config['abs_path_rep']."config/".$site_name.".ini"))
   {
@@ -289,7 +306,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     $publ_config['http_incl'] = "";
     $publ_config['publ_os'] = "";
   }    
-?>
+  ?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo $text4[$lang]; ?>: </td>
       <td nowrap="nowrap"> <input type="text" id="url_publ_page" name="setting[url_publ_page]" style="width:350px;" value="<?php echo $publ_config['url_publ_page']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>

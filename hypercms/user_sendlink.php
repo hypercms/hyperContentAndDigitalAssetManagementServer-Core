@@ -206,7 +206,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
 				// email and signature of sender
 				if ($userdata != false)
         {
-					$mail_sender_array = selectcontent ($userdata, "<user>", "<login>", $_SESSION['hcms_user']);
+					$mail_sender_array = selectcontent ($userdata, "<user>", "<login>",getsession ('hcms_user'));
           
 					if ($mail_sender_array != false)
           {
@@ -514,7 +514,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
 			// email of sender
 			if (!empty ($_SESSION['hcms_user']))
       {
-				$mail_sender_array = selectcontent ($userdata, "<user>", "<login>", $_SESSION['hcms_user']);
+				$mail_sender_array = selectcontent ($userdata, "<user>", "<login>", getsession ('hcms_user'));
         
 				if ($mail_sender_array != false)
         {
@@ -1143,7 +1143,7 @@ $token_new = createtoken ($user);
     echo showtopbar ($text0[$lang].": ".$title, $lang);
     ?>
   
-		<form id="userform" name="userform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+		<form id="userform" name="userform" action="" method="post">
 			<input type="hidden" name="site" value="<?php echo $site; ?>" />
 			<input type="hidden" name="cat" value="<?php echo $cat; ?>" />
 			<input type="hidden" name="location" value="<?php echo $location_esc; ?>" />  
@@ -1395,7 +1395,27 @@ $token_new = createtoken ($user);
 					<tr>
 						<td align="left" valign="top" nowrap="nowrap"><?php echo $text7[$lang]; ?>:</td>
 						<td align="left" valign="top">
-							<textarea id="mail_body" name="mail_body" rows="6" style="width:350px;"><?php echo $mail_body; ?></textarea>
+							<textarea id="mail_body" name="mail_body" rows="6" style="width:350px;"><?php
+                                      
+              // define message if object will be deleted automatically
+              if ($location_esc != "" && $folder != "") $objectpath = $location_esc.$folder."/.folder";
+              elseif ($location_esc != "" && $page != "") $objectpath = $location_esc.$page;
+
+              $queue = rdbms_getqueueentries ("delete", "", "", "", $objectpath);
+
+              if (is_array ($queue) && !empty ($queue[0]['date']))
+              {
+                $message = str_replace ("%date%", substr ($queue[0]['date'], 0, -3), $text53[$lang]);
+              
+                if (substr_count ($mail_body, $message) == 0)
+                {                
+                  $mail_body .= $message."\n";
+                }
+              }
+              
+              echo $mail_body;
+              
+              ?></textarea>
 						</td>
 					</tr>
 					<!-- SEND FILES AS ATTACHMENT OR AS LINK -->

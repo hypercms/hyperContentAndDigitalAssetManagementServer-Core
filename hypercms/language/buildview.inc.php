@@ -237,8 +237,8 @@ $text77['de'] = "Live-Ansicht";
 $text78['en'] = "Download";
 $text78['de'] = "Download";
 
-$text79['en'] = "Media size";
-$text79['de'] = "Mediengr&ouml;&szlig;e";
+$text79['en'] = "Size";
+$text79['de'] = "Gr&ouml;&szlig;e";
 
 $text80['en'] = "File size";
 $text80['de'] = "Dateigr&ouml;&szlig;e";
@@ -261,8 +261,8 @@ $text85['de'] = "Ziehen";
 $text86['en'] = "Duration (hh:mm:ss)";
 $text86['de'] = "Dauer (hh:mm:ss)";
 
-$text87['en'] = "Bitrate";
-$text87['de'] = "Bitrate";
+$text87['en'] = "Video bitrate";
+$text87['de'] = "Video Bitrate";
 
 $text88['en'] = "width x height";
 $text88['de'] = "Breite x H&ouml;he";
@@ -312,8 +312,8 @@ $text102['de'] = "L&ouml;schen";
 $text103['en'] = "%date% by %user%";
 $text103['de'] = "%date% von %user%";
 
-$text104['en'] = "Date modified";
-$text104['de'] = "Ge&auml;ndert am";
+$text104['en'] = "Modified";
+$text104['de'] = "Ge&auml;ndert";
 
 $text105['en'] = "Number of files";
 $text105['de'] = "Anzahl Dateien";
@@ -333,8 +333,8 @@ $text109['de'] = "Die Objekte m&uuml;ssen die gleiche Vorlage verwenden.";
 $text110['en'] = "The files must be from the same publication.";
 $text110['de'] = "Die Dateien m&uuml;ssen aus derselben Publikation sein.";
 
-$text111['en'] = "";
-$text111['de'] = "";
+$text111['en'] = "Published";
+$text111['de'] = "Publiziert";
 
 $text112['en'] = "Only fields marked with * hold the same content may be changed.";
 $text112['de'] = "Nur Felder die mit * gekennzeichnet sind besitzen den gleichen Inhalt und k&ouml;nnen ver&auml;ndert werden.";
@@ -344,4 +344,19 @@ $text113['de'] = "Der Wert eines Feldes konnte nicht festgestellt werden.";
 
 $text114['en'] = "Saving in progress";
 $text114['de'] = "Speichervorgang l&auml;uft";
+
+$text115['en'] = "Will be removed";
+$text115['de'] = "Wird entfernt";
+
+$text116['en'] = "Owner";
+$text116['de'] = "Besitzer";
+
+$text117['en'] = "Audio bitrate";
+$text117['de'] = "Audio Bitrate";
+
+$text118['en'] = "Audio frequenzy";
+$text118['de'] = "Audio Frequenz";
+
+$text119['en'] = "Audio channels";
+$text119['de'] = "Audio Kan&auml;le";
 ?>

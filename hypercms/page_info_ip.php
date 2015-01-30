@@ -31,7 +31,7 @@ checkusersession ($user, false);
 
 if ($ip != "")
 {
-  $json = file_get_contents ("http://freegeoip.net/json/".$ip);
+  $json = file_get_contents ("http://ip-api.com/json/".$ip);
   $data = json_decode ($json, true);
 }
 ?>
@@ -57,7 +57,7 @@ echo showtopbar ($text7[$lang]." ".$ip, $lang);
 <div class="hcmsWorkplaceFrame">
 
   <iframe width="760" height="400" frameborder="no" scrolling="no" style="margin:10px; border:0;" 
-    src="http://maps.google.de/maps?ll=<?php echo $data['latitude']; ?>,<?php echo $data['longitude']; ?>&amp;ie=UTF8&amp;om=1&amp;iwloc=near
+    src="http://maps.google.de/maps?ll=<?php echo $data['lat']; ?>,<?php echo $data['lon']; ?>&amp;ie=UTF8&amp;om=1&amp;iwloc=near
     &amp;z=13&amp;iwloc=addr&amp;output=embed">
   </iframe>
   
@@ -66,12 +66,12 @@ echo showtopbar ($text7[$lang]." ".$ip, $lang);
   if (is_array ($data)) 
   { 
     echo "<table border=\"0\" celspacing=\"2\" cellpadding=\"1\">\n";
-    echo "  <tr class=\"hcmsRowData1\"><td width=\"180\">Country </td><td width=\"300\">".$data['country_name']." </td></tr>\n";
-    echo "  <tr class=\"hcmsRowData2\"><td>Region </td><td>".$data['region_name']." </td></tr>\n";
-    echo "  <tr class=\"hcmsRowData1\"><td>City </td><td>".$data['region_name']." </td></tr>\n";
-    echo "  <tr class=\"hcmsRowData2\"><td>ZIP code </td><td>".$data['zipcode']." </td></tr>\n";
-    echo "  <tr class=\"hcmsRowData1\"><td>Latitude </td><td>".$data['latitude']." </td></tr>\n";
-    echo "  <tr class=\"hcmsRowData2\"><td>Longitude </td><td>".$data['longitude']." </td></tr>\n";   
+    echo "  <tr class=\"hcmsRowData1\"><td width=\"180\">Country </td><td width=\"300\">".$data['country']." </td></tr>\n";
+    echo "  <tr class=\"hcmsRowData2\"><td>Region </td><td>".$data['regionName']." </td></tr>\n";
+    echo "  <tr class=\"hcmsRowData1\"><td>City </td><td>".$data['city']." </td></tr>\n";
+    echo "  <tr class=\"hcmsRowData2\"><td>ZIP code </td><td>".$data['zip']." </td></tr>\n";
+    echo "  <tr class=\"hcmsRowData1\"><td>Latitude </td><td>".$data['lat']." </td></tr>\n";
+    echo "  <tr class=\"hcmsRowData2\"><td>Longitude </td><td>".$data['lon']." </td></tr>\n";   
     echo "</table>\n";
   }
   ?>

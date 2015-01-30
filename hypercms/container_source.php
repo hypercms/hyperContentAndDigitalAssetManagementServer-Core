@@ -71,7 +71,7 @@ if (valid_objectname ($contentfile))
     header("Content-Transfer-Encoding: binary");
     header("Content-Length: ".$bytelen);
     
-    readfile ($container_root.$contentfile);
+    echo loadcontainer ($contentfile, "version", $user);
   }
 }
 ?>
