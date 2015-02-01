@@ -662,6 +662,7 @@ changelog:
 - support for ID3 tags of audio files in mapping
 - support for thumbnails of audio files
 - new input parameters for function getgooglesitemap ti show or hide the frequency and priority tags
+- optimized database attributes
 */
 
 // current version
