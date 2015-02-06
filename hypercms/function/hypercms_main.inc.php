@@ -1773,13 +1773,14 @@ function appendfile ($abs_path, $filename, $filedata)
 
 // ---------------------- encryptfile -----------------------------
 // function: encryptfile()
-// input: path to file [string], file name [string], key (optional), crypt strength level [weak,standard,strong] (optional)
+// input: path to file [string], file name [string], key (optional)
 // output: content of encrypted file / false on error
 
 // description:
 // encryption of a file if it has not already been encrypted.
+// encryption level is strong since encryption must be binary-safe.
 
-function encryptfile ($location, $file, $key="", $crypt_level="")
+function encryptfile ($location, $file, $key="")
 {
   global $user, $mgmt_config;
   
@@ -1797,7 +1798,7 @@ function encryptfile ($location, $file, $key="", $crypt_level="")
       if (!empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") == 0)
       {
         // decrpyt content
-        $data = hcms_encrypt ($data, $key, $crypt_level, "base64");
+        $data = hcms_encrypt ($data, $key, "strong", "base64");
           
         if (!empty ($data)) return "<!-- hyperCMS:encrypted -->".$data;
         else return false;
@@ -1811,13 +1812,14 @@ function encryptfile ($location, $file, $key="", $crypt_level="")
 
 // ---------------------- decryptfile -----------------------------
 // function: decryptfile()
-// input: path to file [string], file name [string], key (optional), crypt strength level [weak,standard,strong] (optional)
+// input: path to file [string], file name [string], key (optional)
 // output: content of decrypted file / false on error
 
 // description:
 // decrypts of a file if it has not already been decrypted.
+// decryption level is strong since decryption must be binary-safe.
 
-function decryptfile ($location, $file, $key="", $crypt_level="")
+function decryptfile ($location, $file, $key="")
 {
   global $user, $mgmt_config;
 
@@ -1835,7 +1837,7 @@ function decryptfile ($location, $file, $key="", $crypt_level="")
       if (!empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") > 0)
       {
         $data = str_replace ("<!-- hyperCMS:encrypted -->", "", $data);
-        $data = hcms_decrypt ($data, $key, $crypt_level, "base64");
+        $data = hcms_decrypt ($data, $key, "strong", "base64");
           
         if (!empty ($data)) return $data;
         else return false;
@@ -1849,13 +1851,14 @@ function decryptfile ($location, $file, $key="", $crypt_level="")
 
 // ---------------------- createtempfile -----------------------------
 // function: createtempfile()
-// input: path to file [string], file name [string], key (optional), crypt strength level [weak,standard,strong] (optional)
+// input: path to file [string], file name [string], key (optional)
 // output: saves temporary decrypted file if the files content is encrypted and returns parh to file / false on error
 
 // description:
 // decrypts the provided file if it has not already been decrypted and saves it as temporary file.
+// decryption level is strong since decryption must be binary-safe.
 
-function createtempfile ($location, $file, $key="", $crypt_level="")
+function createtempfile ($location, $file, $key="")
 {
   global $user, $mgmt_config;
   
@@ -1913,7 +1916,7 @@ function createtempfile ($location, $file, $key="", $crypt_level="")
       if (!empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") > 0)
       {
         $data = str_replace ("<!-- hyperCMS:encrypted -->", "", $data);
-        $data = hcms_decrypt ($data, $key, $crypt_level, "base64");
+        $data = hcms_decrypt ($data, $key, "strong", "base64");
         
         // save decrypted file
         $save = savefile ($location_temp, $file_temp, $data);
@@ -1946,13 +1949,14 @@ function createtempfile ($location, $file, $key="", $crypt_level="")
 // ---------------------- movetempfile -----------------------------
 // function: movetempfile()
 // input: path to file [string], file name [string], delete temp file [true/false] (optional), 
-//        force encryption of file [true/false] (optional), key (optional), crypt strength level [weak,standard,strong] (optional)
+//        force encryption of file [true/false] (optional), key (optional)
 // output: content of encrypted file / false on error
 
 // description:
 // encrypts the temporary file if it exists and copies or moves it to the location.
+// encryption level is strong since encryption must be binary-safe.
 
-function movetempfile ($location, $file, $delete=false, $force_encrypt=false, $key="", $crypt_level="")
+function movetempfile ($location, $file, $delete=false, $force_encrypt=false, $key="")
 {
   global $user, $mgmt_config;
   
@@ -1994,7 +1998,7 @@ function movetempfile ($location, $file, $delete=false, $force_encrypt=false, $k
          )
       {
         // encrpyt content
-        $data = hcms_encrypt ($data, $key, $crypt_level, "base64");
+        $data = hcms_encrypt ($data, $key, "strong", "base64");
         
         // add crypted information to files content
         if (!empty ($data))

@@ -944,9 +944,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         <!-- hyperCMS:width file=\"".$mediawidth."\" -->
         <!-- hyperCMS:height file=\"".$mediaheight."\" -->";
         
-        // generate player code
-        if (empty ($config['mediafiles'])) $config['mediafiles'] = array ($site."/".$mediafile);
+        // add original file if config is empty
+        if (empty ($config['mediafiles']) && strpos ($mediafile_orig, ".config.") == 0 && is_file ($thumb_root.$mediafile_orig))
+        {
+          $config['mediafiles'] = array ($site."/".$mediafile_orig.";".getmimetype ($mediafile_orig));
+        }
         
+        // generate player code
         $playercode = showaudioplayer ($site, $config['mediafiles'], "preview", "cut_audio");
       
         $mediaview .= "
@@ -989,6 +993,12 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         elseif (is_file ($thumb_root.$file_info['filename'].".config.orig"))
         {
           $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
+          
+          // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
+          if (strpos ($mediafile_orig, ".config.") == 0 && is_file ($thumb_root.$mediafile_orig) && substr_count (".mp4.ogg.ogv.webm.", $file_info['orig_ext'].".") > 0)
+          {
+            $config['mediafiles'][] = $site."/".$mediafile_orig.";".getmimetype ($mediafile_orig);
+          }
         }
         // new since version 5.5.7 (config of videoplayer)
         elseif (is_file ($thumb_root.$file_info['filename'].".config.video"))
@@ -1048,7 +1058,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $mediaheight = $height;
           $mediawidth = round (($mediaheight * $mediaratio), 0);
         }
-
+        
         // generate player code
         $playercode = showvideoplayer ($site, $config['mediafiles'], $mediawidth, $mediaheight, "preview", Null, "cut_video", "", false);
       
@@ -2499,7 +2509,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 // description:
 // Generates a html segment for the video code we use. False on error.
 
-function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="publish", $logo_url=Null, $id="", $title="", $autoplay=true, $enableFullScreen=true, $enableKeyBoard=true, $enablePause=true, $enableSeek=true, $iframe=false)
+function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="publish", $logo_url="", $id="", $title="", $autoplay=true, $enableFullScreen=true, $enableKeyBoard=true, $enablePause=true, $enableSeek=true, $iframe=false)
 {
   global $mgmt_config;
 
@@ -2563,19 +2573,32 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
     $media_url = getmedialocation ($site, $logo_file, "url_path_media");
 
     // define logo if undefined
-    if ($logo_url == NULL && $media_dir != "")
+    if ($logo_url == "" && $media_dir != "")
     {
+      // if original video preview file (FLV)
       if (strpos ($logo_file, ".orig.") > 0)
       {
         $logo_name = substr ($logo_file, 0, strrpos ($logo_file, ".orig."));
-        
-        if (is_file ($media_dir.$site."/".$logo_name.".thumb.jpg")) $logo_url = $media_url.$site."/".$logo_name.".thumb.jpg";
       }
+      // if video thumbnail file
       elseif (strpos ($logo_file, ".thumb.") > 0)
       {
         $logo_name = substr ($logo_file, 0, strrpos ($logo_file, ".thumb."));
-        
-        if (is_file ($media_dir.$site."/".$logo_name.".thumb.jpg")) $logo_url = $media_url.$site."/".$logo_name.".thumb.jpg";
+      }
+      // if individual video file
+      elseif (strpos ($logo_file, ".media.") > 0)
+      {
+        $logo_name = substr ($logo_file, 0, strrpos ($logo_file, ".media."));
+      }
+      // if original video file
+      elseif (strpos ($logo_file, ".") > 0)
+      {
+        $logo_name = substr ($logo_file, 0, strrpos ($logo_file, "."));
+      }
+      
+      if ($logo_name != "" && is_file ($media_dir.$site."/".$logo_name.".thumb.jpg"))
+      {
+        $logo_url = $media_url.$site."/".$logo_name.".thumb.jpg";
       }
     }
 

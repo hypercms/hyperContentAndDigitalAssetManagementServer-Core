@@ -2431,7 +2431,7 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
     // strong (binary-safe)
     elseif ($crypt_level == "strong")
     {
-      // base 64 encode string to be binary-safe
+      // base 64 encode binary data to be binary-safe
       $string = base64_encode ($string);
       
       // MCRYPT_MODE_CBC (cipher block chaining) 
