@@ -2911,7 +2911,8 @@ function deletetask ($user, $delete_id)
   // save log
   savelog (@$error); 
   
-  $result = Null;
+  $result = array();
+  
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
 
@@ -2933,6 +2934,9 @@ function createworkflow ($site, $wf_name, $cat, $usermax=2, $scriptmax=0)
   global $eventsystem, $lang, $mgmt_config;
 
   require ($mgmt_config['abs_path_cms']."language/workflow_create.inc.php"); 
+  
+  $add_onload = "";
+  $show = "";
   
   if (!valid_publicationname ($site) || !valid_objectname ($wf_name) || strlen ($wf_name) > 100 || $cat == "")
   {
@@ -3007,7 +3011,8 @@ function createworkflow ($site, $wf_name, $cat, $usermax=2, $scriptmax=0)
     }
   }
 
-  $result = Null;
+  $result = array();
+  
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
 
@@ -3028,6 +3033,9 @@ function deleteworkflow ($site, $wf_name, $cat)
 
   require ($mgmt_config['abs_path_cms']."language/workflow_delete.inc.php");
 
+  $add_onload = "";
+  $show = "";
+  
   if (!valid_publicationname ($site) || !valid_objectname ($wf_name) || $cat == "")
   {
     $add_onload = "";
@@ -3090,7 +3098,8 @@ function deleteworkflow ($site, $wf_name, $cat)
     }
   }
 
-  $result = Null;
+  $result = array();
+  
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
 
@@ -3753,6 +3762,9 @@ function acceptobject ($site, $location, $object, $item_id, $user, $message, $se
 {
   global $mgmt_config, $lang, $contentfile;
 
+  $add_onload = "";
+  $show = "";
+  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $item_id != "" && in_array ($priority, array("high","medium","low")))
   {  
     require ($mgmt_config['abs_path_cms']."language/page_workflow_accept.inc.php");
@@ -3794,18 +3806,19 @@ function acceptobject ($site, $location, $object, $item_id, $user, $message, $se
       $add_onload = "";
       $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />\n".$subtext5[$lang]."\n";
     }
-    
-    // return results
-    $result = Null;
-    if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-    else $result['result'] = false;
-    $result['add_onload'] = $add_onload;
-    $result['message'] = $show;
-    $result['object'] = $page;
-    
-    return $result;
   }
-  else return false;
+  
+    
+  // return results
+  $result = array();
+  
+  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
+  else $result['result'] = false;
+  $result['add_onload'] = $add_onload;
+  $result['message'] = $show;
+  $result['object'] = $page;
+  
+  return $result;
 }
 
 // -------------------------------------------- workflowreject -------------------------------------------
@@ -3989,6 +4002,9 @@ function rejectobject ($site, $location, $object, $item_id, $user, $message, $se
 {
   global $mgmt_config, $lang, $contentfile;
  
+  $add_onload = "";
+  $show = "";
+ 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $item_id != "" && in_array ($priority, array("high","medium","low")))
   {  
     require ($mgmt_config['abs_path_cms']."language/page_workflow_reject.inc.php");
@@ -4029,19 +4045,19 @@ function rejectobject ($site, $location, $object, $item_id, $user, $message, $se
     {
       $add_onload = "";
       $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />\n".$subtext5[$lang]."\n";
-    } 
-           
-    // return results
-    $result = Null;
-    if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-    else $result['result'] = false;
-    $result['add_onload'] = $add_onload;
-    $result['message'] = $show;
-    $result['object'] = $page;
-    
-    return $result;
+    }
   }
-  else return false;   
+  
+  // return result
+  $result = array();
+  
+  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
+  else $result['result'] = false;
+  $result['add_onload'] = $add_onload;
+  $result['message'] = $show;
+  $result['object'] = $page;
+  
+  return $result;
 }          
 
 // ======================================= INHERITANCE DATABASE ==========================================
@@ -6614,6 +6630,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
 
   require ($mgmt_config['abs_path_cms']."language/user_create.inc.php");
   
+  $add_onload = "";
   $show = "";
   
   // default theme
@@ -6801,7 +6818,8 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
   }
   
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -6828,12 +6846,13 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
          
   require ($mgmt_config['abs_path_cms']."language/user_edit.inc.php");
   
+  $add_onload = "";
+  $show = "";
+  
   if (valid_objectname ($login) && valid_objectname ($user))
   { 
     // load user xml file
     $userdata = loadlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", 5);
-    
-    $show = "";
       
     // default theme
     if ($theme == "")
@@ -7120,7 +7139,8 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
   }
   
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -7143,6 +7163,9 @@ function deleteuser ($site, $login, $user="sys")
   
   require ($mgmt_config['abs_path_cms']."language/user_delete.inc.php");
 
+  $add_onload = "";
+  $show = "";
+  
   // site can be *Null*, which is naot a valid publication name
   if ($site != "" && valid_objectname ($login) && valid_objectname ($user))
   {
@@ -7224,7 +7247,8 @@ function deleteuser ($site, $login, $user="sys")
   }  
   
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -7248,6 +7272,9 @@ function creategroup ($site, $group_name, $user="sys")
   global $eventsystem, $lang, $mgmt_config;
          
   require ($mgmt_config['abs_path_cms']."language/group_create.inc.php");
+  
+  $add_onload = "";
+  $show = "";
   
   // check if sent data is available
   if (!valid_publicationname ($site) || !valid_objectname ($group_name) || strlen ($group_name) > 100 || !valid_objectname ($user))
@@ -7343,7 +7370,8 @@ function creategroup ($site, $group_name, $user="sys")
   }
   
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -7366,6 +7394,8 @@ function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $
          
   require ($mgmt_config['abs_path_cms']."language/group_edit_script.inc.php");
 
+  $add_onload = "";
+  $show = "";
     // check if sent data is available
   if (!valid_publicationname ($site) || !valid_objectname ($group_name) || !valid_objectname ($user))
   {
@@ -7591,7 +7621,8 @@ function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $
   }
   
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -7613,6 +7644,9 @@ function deletegroup ($site, $group_name, $user)
   global $eventsystem, $lang, $mgmt_config;
          
   require ($mgmt_config['abs_path_cms']."language/group_delete.inc.php");
+  
+  $add_onload = "";
+  $show = "";
   
   // check if sent data is available
   if (!valid_publicationname ($site) || !valid_objectname ($group_name) || !valid_objectname ($user))
@@ -7723,7 +7757,8 @@ function deletegroup ($site, $group_name, $user)
   }
 
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -8445,8 +8480,15 @@ function createfolder ($site, $location, $foldernew, $user)
          $cat;
 
   require ($mgmt_config['abs_path_cms']."language/folder_create.inc.php");
-  
+
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
+  
+  $add_onload = "";
+  $show = "";
+  $foldernew_orig = "";
+  $contentfile = "";
+  $container_id = "";
+  $page_box_xml = "";
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($foldernew) && accessgeneral ($site, $location, "") && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
@@ -8552,7 +8594,8 @@ function createfolder ($site, $location, $foldernew, $user)
   savelog (@$error);      
 
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -8601,11 +8644,14 @@ function createfolders ($site, $location, $foldernew, $user)
     
     // folder exists
     if (@file_exists ($location.$foldernew)) return $result['result'] = true;
+    
     // folder can be created
     $result = createfolder ($site, $location, $foldernew, $user);
     if ($result['result'] == true) return $result;
+    
     // folder cannot be created, create parent folder
     $result = createfolders ($site, dirname ($location), getobject ($location), $user);
+    
     if ($result['result'] == true) $result = createfolder ($site, $location, $foldernew, $user);
     if ($result['result'] == true) return $result;
   }
@@ -8767,6 +8813,9 @@ function deletefolder ($site, $location, $folder, $user)
          $lang,
          $mgmt_config,
          $cat;
+         
+  $add_onload = "";
+  $show = "";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, $cat) && $user != "")
   {  
@@ -8865,7 +8914,8 @@ function deletefolder ($site, $location, $folder, $user)
   savelog (@$error);     
  
   // return results
-  $result = Null;  
+  $result = array();
+    
   if (isset ($error_switch) && $error_switch == "no") 
   {
     $folder = "";
@@ -8895,6 +8945,10 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
          $cat;
   
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
+  
+  $add_onload = "";
+  $show = "";
+  $foldernew_orig = ""; 
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && valid_objectname ($foldernew) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
@@ -9142,7 +9196,8 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
   savelog (@$error);      
   
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -10936,6 +10991,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
          $cat, $temp_clipboard;
          
   // default values for action = paste before loading the clipboard
+  $error_switch = "";
   $method = "";
   $site_source = "";
   $cat_source = "";
@@ -10943,6 +10999,8 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
   $add_onload = "";
   $show = "";
   $allow_delete = true;
+  
+  // set default language as "en" if not set
   if (empty ($lang)) $lang = "en";
  
   if (valid_publicationname ($site) && valid_locationname ($location) && accessgeneral ($site, $location, $cat) && valid_objectname ($user) && $action != "")
@@ -11220,7 +11278,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
       elseif ($action == "page_paste" && ($method == "copy" || $method == "linkcopy"))
       {
         // check if user has access to paste file in current location
-        if ($access != "" && accesspermission ($site, $location, $cat) == false)
+        if (!empty ($access) && accesspermission ($site, $location, $cat) == false)
         {
           // no access permission
           $add_onload = "";
@@ -11275,7 +11333,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
       elseif ($action == "page_paste" && $method == "cut")
       {
         // check if user has access to paste file in current location
-        if ($access != "" && accesspermission ($site, $location, $cat) == false)
+        if (!empty ($access) && accesspermission ($site, $location, $cat) == false)
         {
           // no access permission
           $add_onload = "";
@@ -12568,7 +12626,8 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
   else $error_switch = "yes";      
         
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -12732,6 +12791,11 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false)
          $lang,
          $mgmt_config,
          $cat, $temp_clipboard;
+         
+  $add_onload = "";
+  $show = "";
+  $filetype = ""; 
+  $clipboard = ""; 
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -12801,7 +12865,8 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false)
   else $error_switch = "yes";      
          
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -12828,6 +12893,11 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false)
          $mgmt_config,
          $cat, $temp_clipboard;
  
+  $add_onload = "";
+  $show = "";
+  $filetype = "";
+  $clipboard = "";
+  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     require ($mgmt_config['abs_path_cms']."language/page_edit_cutcopy.inc.php");
@@ -12901,7 +12971,8 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false)
   else $error_switch = "yes";
          
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -12928,6 +12999,11 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
          $mgmt_config,
          $cat, $temp_clipboard;  
 
+  $add_onload = "";
+  $show = "";
+  $filetype = "";
+  $clipboard = "";
+  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {        
     require ($mgmt_config['abs_path_cms']."language/page_edit_cutcopy.inc.php");
@@ -13001,7 +13077,8 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
   else $error_switch = "yes";
            
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -13068,6 +13145,12 @@ function lockobject ($site, $location, $page, $user)
          $lang,
          $mgmt_config,
          $cat;
+         
+  $add_onload = "";
+  $show = "";
+  $pagename = "";
+  $usedby = "";
+  $filetype = "";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -13168,7 +13251,8 @@ function lockobject ($site, $location, $page, $user)
   else $error_switch = "yes";  
   
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -13195,6 +13279,12 @@ function unlockobject ($site, $location, $page, $user)
          $lang,
          $mgmt_config,
          $cat;
+         
+  $add_onload = "";
+  $show = "";
+  $pagename = "";
+  $usedby = "";
+  $filetype = "";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -13289,7 +13379,8 @@ function unlockobject ($site, $location, $page, $user)
   else $error_switch = "yes";
            
   // return results
-  $result = Null;
+  $result = array();
+  
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
@@ -13315,20 +13406,20 @@ function publishobject ($site, $location, $page, $user)
   global $eventsystem,
          $lang,
          $mgmt_config,
-         $cat, $ctrlreload;      
+         $cat, $ctrlreload;
+         
+  $buffer_site = "";
+  $buffer_location = "";
+  $buffer_page = "";
+  $show = "";
+  $add_onload = "";
+  $release = false; 
    
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     require ($mgmt_config['abs_path_cms']."language/page_edit_publish.inc.php");
     // load template engine (is not included by API and needs to be loaded seperately!)
     require_once ($mgmt_config['abs_path_cms']."function/hypercms_tplengine.inc.php");
-    
-    $buffer_site = "";
-    $buffer_location = "";
-    $buffer_page = "";
-    $show = "";
-    $add_onload = "";
-    $release = false;
   
     // publication management config
     if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
@@ -15236,7 +15327,8 @@ function deletelog ()
     $show = "<span class=hcmsHeadline>".$subtext1[$lang]."</span><br />\n".$subtext2[$lang]."\n";
   }
   
-  $result = Null;
+  $result = array();
+  
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;  
   

@@ -82,7 +82,7 @@ if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
   elseif (($action == "publish" || $action == "unpublish") && $setlocalpermission['publish'] == 1) $authorized = true;
   
   // check if folder or object exists
-  if ($action != "paste")
+  if ($force == "start" && $action != "paste")
   {
     if ($location_ACCESS != "" && $page != "" && !is_file ($location_ACCESS.correctfile ($location_ACCESS, $page, $user))) $authorized = false;
     elseif ($location_ACCESS != "" && $folder != "" && !is_file ($location_ACCESS, ".folder", $user)) $authorized = false;

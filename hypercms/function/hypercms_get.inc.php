@@ -121,7 +121,7 @@ function getuserip ()
 function getobjectcontainer ($site, $location, $object, $user)
 {
   global $mgmt_config;
-  
+
   if (valid_publicationname ($site) && valid_locationname ($location) && $object != "" && valid_objectname ($user))
   {
     // add slash if not present at the end of the location string
@@ -135,27 +135,29 @@ function getobjectcontainer ($site, $location, $object, $user)
     }
     
     // evaluate if object is a file or a folder
-    if (@is_file ($location.$object))
-    {   
-      $object = correctfile ($location, $object, $user);   
-    }
-    elseif (@is_dir ($location.$object))
+    if (@is_dir ($location.$object))
     {
       $location = $location.$object."/";
       $object = ".folder";
     }
+    else
+    {   
+      $object = correctfile ($location, $object, $user);   
+    }
     
     // load object file
     $data = loadfile ($location, $object);
-    
+
     if ($data != "") $container = getfilename ($data, "content");
     else $container = false;
-    
+
     // load container
     if ($container != false)
     {
       $container_id = substr ($container, 0, strpos ($container, ".xml"));
+
       $data = loadcontainer ($container, "work", $user);
+      
       if ($data != false && $data != "") return $data;
       else return false;
     }    
