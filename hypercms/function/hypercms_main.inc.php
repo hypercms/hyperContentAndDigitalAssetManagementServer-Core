@@ -12305,11 +12305,11 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           if ($bufferdata != false) 
           {
             // save published container 
-            $test = savecontainer ($contentfile_new_id, "published", $bufferdata, $user);
-            
+            $test = savecontainer ($contentfile_new_id, "published", $bufferdata, $user, true);
+
             // save working container 
-            $test = savecontainer ($contentfile_new_id, "work", $bufferdata, $user);   
-            
+            $test = savecontainer ($contentfile_new_id, "work", $bufferdata, $user, true);   
+
             // final container data
             $containerdata = $bufferdata;
           }
@@ -14268,7 +14268,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
   else $rootpathold_array = Null;
   if ((!isset ($rootpathnew_array) || !is_array ($rootpathnew_array)) && (isset ($_SESSION['clipboard_rootpathnew']) && is_array ($_SESSION['clipboard_rootpathnew']))) $rootpathnew_array = $_SESSION['clipboard_rootpathnew'];
   else $rootpathnew_array = Null;
-  
+
   if (is_array ($objectpath_array) && valid_objectname ($user) && $action != "")
   {
     $collection = array ();
@@ -14320,12 +14320,12 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
             // read clipboard if action = paste
             if ($action == "paste")
             {            
-              // read clipboard
+              // get clipboard from session
               $clipboard = $_SESSION['hcms_temp_clipboard'];
               $clipboard_array = explode ("\n", $clipboard);
               $collection = array ();
               $j = 0;
-         
+
               foreach ($clipboard_array as $clipboard_entry)
               {
                 if ($clipboard_entry != "")
@@ -14355,7 +14355,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
                           else $location_dest = $location;
         
                           $result = copyfolders ($site, $location_source, $location_dest, $object_source, $user);
-  
+
                           if ($result['result'] == false)
                           {
                             return $result;

@@ -1360,18 +1360,26 @@ function getbrowserinfo ()
 // output: location of the container file / false on error
 
 // description:
-// gets the content location due to the given container id
-// a split up of folders is necessary since the number of directories are limited by
+// gets the content location based on the given container id
+// a split up of folders is necessary since the number of directories is limited by
 // the filesystem, e.g. Linux ext3 is limited to 32000.
 
 function getcontentlocation ($container_id, $type="abs_path_content")
 {
   global $mgmt_config;
   
-  if ($container_id != "" && ($type == "url_path_content" || $type == "abs_path_content") && is_array ($mgmt_config))
+  if (intval ($container_id) > 0 && ($type == "url_path_content" || $type == "abs_path_content") && is_array ($mgmt_config))
   {
+    // correct container ID (add zeros)
+    if (strlen ($container_id) < 7)
+    {
+      $multiplier = 7 - strlen ($container_id);
+      $container_id = str_repeat ("0", $multiplier).$container_id;
+    }
+    
     // directory block size of 10.000
     $limitbase = 10000;
+    
     // max. 32000 subdirectories
     for ($i=0; $i<32000; $i++)
     {
