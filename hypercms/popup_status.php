@@ -80,6 +80,14 @@ if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
   if ($action == "delete" && $setlocalpermission['folderdelete'] == 1 && $setlocalpermission['delete'] == 1) $authorized = true;
   elseif ($action == "paste" && $setlocalpermission['folderrename'] == 1 && $setlocalpermission['rename'] == 1) $authorized = true;
   elseif (($action == "publish" || $action == "unpublish") && $setlocalpermission['publish'] == 1) $authorized = true;
+  
+  // check if folder or object exists
+  if ($action != "paste")
+  {
+    if ($location_ACCESS != "" && $page != "" && !is_file ($location_ACCESS.correctfile ($location_ACCESS, $page, $user))) $authorized = false;
+    elseif ($location_ACCESS != "" && $folder != "" && !is_file ($location_ACCESS.correctfile ($location_ACCESS, ".folder", $user))) $authorized = false;
+    elseif ($location_ACCESS != "" && ($page == "" || $folder == "")) $authorized = false;
+  }
 }
 
 // execute action
