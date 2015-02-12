@@ -993,12 +993,6 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         elseif (is_file ($thumb_root.$file_info['filename'].".config.orig"))
         {
           $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
-          
-          // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
-          if (strpos ($mediafile_orig, ".config.") == 0 && is_file ($thumb_root.$mediafile_orig) && substr_count (".mp4.ogg.ogv.webm.", $file_info['orig_ext'].".") > 0)
-          {
-            $config['mediafiles'][] = $site."/".$mediafile_orig.";".getmimetype ($mediafile_orig);
-          }
         }
         // new since version 5.5.7 (config of videoplayer)
         elseif (is_file ($thumb_root.$file_info['filename'].".config.video"))
@@ -1017,6 +1011,15 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $create_media = createmedia ($site, $thumb_root, $thumb_root, $mediafile_orig, "", "origthumb");
           
           if ($create_media) $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
+        }
+
+        // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
+        if (!is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) <= 1)
+        {
+          if (strpos ($mediafile_orig, ".config.") == 0 && is_file ($thumb_root.$mediafile_orig) && substr_count (".mp4.ogg.ogv.webm.", $file_info['orig_ext'].".") > 0)
+          {
+            $config['mediafiles'][] = $site."/".$mediafile_orig.";".getmimetype ($mediafile_orig);
+          }
         }
 
         // use config values
@@ -2604,15 +2607,29 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
 
     // if logo is in media repository
     if (substr_count ($logo_url, $mgmt_config['url_path_media'])) 
-    {
-      $logo_new = str_replace ($mgmt_config['url_path_media'], "", $logo_url);
-      $logo_url = $mgmt_config['url_path_cms'].'explorer_wrapper.php?media='.$logo_new.'&token='.hcms_crypt($logo_new);
+    {      
+      $container_id = getmediacontainerid (getobject ($logo_url));
+      
+      if ($container_id != "")
+      {
+        $logo_wrapperlink = createwrapperlink ("", "", "", "", $container_id);
+      } 
+
+      if (!empty ($logo_wrapperlink))
+      {
+        $logo_url = $logo_wrapperlink;
+      }
+      else
+      {
+        $logo_new = str_replace ($mgmt_config['url_path_media'], "", $logo_url);
+        $logo_url = $mgmt_config['url_path_cms'].'explorer_wrapper.php?media='.$logo_new.'&token='.hcms_crypt($logo_new);
+      }
     }
 
     $flashplayer = $mgmt_config['url_path_cms']."javascript/video/jarisplayer.swf";
     
     // if no logo is defined set default logo
-    if (is_null ($logo_url)) $logo_url = getthemelocation()."img/logo_player.jpg";
+    if (empty ($logo_url)) $logo_url = getthemelocation()."img/logo_player.jpg";
     
     if (empty ($id)) $id = uniqid();    
   

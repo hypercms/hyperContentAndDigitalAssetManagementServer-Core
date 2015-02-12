@@ -832,17 +832,19 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
 
 // ---------------------- createwrapperlink -----------------------------
 // function: createwrapperlink()
-// input: publication, location (optional), object (optional), category [page,comp] (optional), object-ID (optional)
+// input: publication (optional), location (optional), object (optional), category [page,comp] (optional), container-ID (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
-function createwrapperlink ($site, $location, $object, $cat, $object_id="")
+function createwrapperlink ($site="", $location="", $object="", $cat="", $container_id="")
 {
   global $mgmt_config;
 
-  if (((valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "") || $object_id != "") && isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
+  if (isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
   {
+    $object_hash = false;
+    
     // check if object is folder or page/component
-    if ($site != "" && $location != "" && $object != "")
+    if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
     {
       $location = deconvertpath ($location, "file"); 
       
@@ -856,7 +858,11 @@ function createwrapperlink ($site, $location, $object, $cat, $object_id="")
       $objectpath = convertpath ($site, $location.$object, $cat);
       $object_hash = rdbms_getobject_hash ($objectpath);
     }
-    
+    elseif ($container_id != "")
+    {
+      $object_hash = rdbms_getobject_hash ($container_id);
+    }
+
     if ($object_hash != false)
     {  
       // object link
@@ -882,17 +888,19 @@ function createwrapperlink ($site, $location, $object, $cat, $object_id="")
 
 // ---------------------- createdownloadlink -----------------------------
 // function: createdownloadlink()
-// input: publication name (optional), location (optional), object (optional), category [page,comp] (optional), object-ID (optional)
+// input: publication name (optional), location (optional), object (optional), category [page,comp] (optional), container-ID (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
-function createdownloadlink ($site="", $location, $object, $cat, $object_id="")
+function createdownloadlink ($site="", $location="", $object="", $cat="", $container_id="")
 {
   global $mgmt_config;
 
-  if (((valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "") || $object_id != "") && isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
+  if (isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
   {
+    $object_hash = false;
+    
     // check if object is folder or page/component
-    if ($site != "" && $location != "" && $object != "")
+    if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
     {
       $location = deconvertpath ($location, "file"); 
       
@@ -905,6 +913,10 @@ function createdownloadlink ($site="", $location, $object, $cat, $object_id="")
       // get object id
       $objectpath = convertpath ($site, $location.$object, $cat);
       $object_hash = rdbms_getobject_hash ($objectpath);
+    }
+    elseif ($container_id != "")
+    {
+      $object_hash = rdbms_getobject_hash ($container_id);
     }
     
     if ($object_hash != false)

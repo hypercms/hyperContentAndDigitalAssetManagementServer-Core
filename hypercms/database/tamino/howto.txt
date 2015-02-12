@@ -1,6 +1,0 @@
----------------------------- Tamino Integration Information ---------------------------------
-A XML schema is necessary for creating a collection/doctype namend "work" and "live" in Tamino.
-Please use "container_work_tamino.tsd" and "container_live_tamino.tsd" to define these collections 
-in Tamino. 
-You can use the Tamino Interactive Interface to define the collections for the database.
-Please see the Tamino manual for details.

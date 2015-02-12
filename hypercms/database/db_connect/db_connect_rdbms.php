@@ -1601,60 +1601,73 @@ function rdbms_getobject_hash ($object)
 {
   global $mgmt_config;
 
-  if ($object != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0))
+  // object can be an object path or the container ID
+  if ($object != "")
   {
-    // correct object name 
-    if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
-      
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
-    // if unpublished object
-    if (strtolower (strrchr ($object, ".")) == ".off")
-    {
-      $object = substr ($object, 0, -4);
-    }
-    // if object is a folder
-    elseif (is_dir (deconvertpath ($object, "file")))
-    {
-      if (substr ($object, -1) != "/") $object = $object."/.folder";
-      else $object = $object.".folder";
-    }
-    
-    $object = $db->escape_string ($object);
-        
-    $object = str_replace ("%", "*", $object);
-
-    $sql = 'SELECT hash FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
-    
-    $errcode = "50026";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today']);
-    
-    if ($done && $row = $db->getResultRow ())
-    {
-      $hash = $row['hash'];   
-    }
-    
-    // save log
-    savelog ($db->getError ());    
-    $db->close();
       
-    if (!empty ($hash))
+    // if object path
+    if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0)
     {
-      return $hash;
-    }
-    else
-    {
-      // if object is a root folder (created since version 5.6.3)
-      if (substr_count ($object, "/") == 2)
+      // correct object name 
+      if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
+      
+      // if unpublished object
+      if (strtolower (strrchr ($object, ".")) == ".off")
       {
-        $object_esc = str_replace ("*", "%", $object);
-        $createobject = createobject (getpublication ($object_esc), getlocation ($object_esc), ".folder", "default.meta.tpl", "sys");
+        $object = substr ($object, 0, -4);
+      }
+      // if object is a folder
+      elseif (is_dir (deconvertpath ($object, "file")))
+      {
+        if (substr ($object, -1) != "/") $object = $object."/.folder";
+        else $object = $object.".folder";
+      }
+      
+      $object = $db->escape_string ($object);          
+      $object = str_replace ("%", "*", $object);
+  
+      $sql = 'SELECT hash FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin LIMIT 1';
+    }
+    // if container id
+    elseif (intval ($object) > 0)
+    {
+      $sql = 'SELECT hash FROM object WHERE id='.intval($object).' LIMIT 1';
+    }
+
+    if (!empty ($sql))
+    {
+      $errcode = "50026";
+      $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+      
+      if ($done && $row = $db->getResultRow ())
+      {
+        $hash = $row['hash'];   
+      }
+
+      // save log
+      savelog ($db->getError ());    
+      $db->close();
         
-        if ($createobject['result'] == true) return $hash = rdbms_getobject_hash ($object_esc);
+      if (!empty ($hash))
+      {
+        return $hash;
+      }
+      else
+      {
+        // if object is a root folder (created since version 5.6.3)
+        if (substr_count ($object, "/") == 2)
+        {
+          $object_esc = str_replace ("*", "%", $object);
+          $createobject = createobject (getpublication ($object_esc), getlocation ($object_esc), ".folder", "default.meta.tpl", "sys");
+          
+          if ($createobject['result'] == true) return $hash = rdbms_getobject_hash ($object_esc);
+          else return false;
+        }
         else return false;
       }
-      else return false;
     }
+    else return false;
   }
   else return false;
 } 

@@ -85,7 +85,7 @@ if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
   if ($force == "start" && $action != "paste")
   {
     if ($location_ACCESS != "" && $page != "" && !is_file ($location_ACCESS.correctfile ($location_ACCESS, $page, $user))) $authorized = false;
-    elseif ($location_ACCESS != "" && $folder != "" && !is_file ($location_ACCESS, ".folder", $user)) $authorized = false;
+    elseif ($location_ACCESS != "" && $folder != "" && !is_file ($location_ACCESS.".folder")) $authorized = false;
     elseif ($location_ACCESS != "" && $page == "" && $folder == "") $authorized = false;
   }
 }
