@@ -2607,13 +2607,17 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
 
     // if logo is in media repository
     if (substr_count ($logo_url, $mgmt_config['url_path_media'])) 
-    {      
-      $container_id = getmediacontainerid (getobject ($logo_url));
-      
-      if ($container_id != "")
+    {
+      // if publication is configured as a DAM, the direct access is not allowed and a wrapper link is required
+      if ($mgmt_config[$site]['dam'])
       {
-        $logo_wrapperlink = createwrapperlink ("", "", "", "", $container_id);
-      } 
+        $container_id = getmediacontainerid (getobject ($logo_url));
+        
+        if ($container_id != "")
+        {
+          $logo_wrapperlink = createwrapperlink ("", "", "", "", "", $container_id);
+        }
+      }
 
       if (!empty ($logo_wrapperlink))
       {

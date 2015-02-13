@@ -832,10 +832,10 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
 
 // ---------------------- createwrapperlink -----------------------------
 // function: createwrapperlink()
-// input: publication (optional), location (optional), object (optional), category [page,comp] (optional), container-ID (optional)
+// input: publication (optional), location (optional), object (optional), category [page,comp] (optional), object ID (optional), container-ID (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
-function createwrapperlink ($site="", $location="", $object="", $cat="", $container_id="")
+function createwrapperlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="")
 {
   global $mgmt_config;
 
@@ -858,9 +858,15 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $contai
       $objectpath = convertpath ($site, $location.$object, $cat);
       $object_hash = rdbms_getobject_hash ($objectpath);
     }
+    // if object id
+    elseif ($object_id != "")
+    {
+      $object_hash = rdbms_getobject_hash ($object_id);
+    }
+    // if container id
     elseif ($container_id != "")
     {
-      $object_hash = rdbms_getobject_hash ($container_id);
+      $object_hash = rdbms_getobject_hash ("", $container_id);
     }
 
     if ($object_hash != false)
@@ -888,10 +894,10 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $contai
 
 // ---------------------- createdownloadlink -----------------------------
 // function: createdownloadlink()
-// input: publication name (optional), location (optional), object (optional), category [page,comp] (optional), container-ID (optional)
+// input: publication name (optional), location (optional), object (optional), category [page,comp] (optional), object ID (optional), container-ID (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
-function createdownloadlink ($site="", $location="", $object="", $cat="", $container_id="")
+function createdownloadlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="")
 {
   global $mgmt_config;
 
@@ -914,9 +920,15 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $conta
       $objectpath = convertpath ($site, $location.$object, $cat);
       $object_hash = rdbms_getobject_hash ($objectpath);
     }
+    // if object id
+    elseif ($object_id != "")
+    {
+      $object_hash = rdbms_getobject_hash ($object_id);
+    }
+    // if container id
     elseif ($container_id != "")
     {
-      $object_hash = rdbms_getobject_hash ($container_id);
+      $object_hash = rdbms_getobject_hash ("", $container_id);
     }
     
     if ($object_hash != false)
@@ -10862,13 +10874,13 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user)
           }
           
           // create preview
-          createmedia ($site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", getmedialocation ($site, $mediafile, "abs_path_media").$site."/", $mediafile, "", "origthumb", false);
+          createmedia ($site, $medialocation, $medialocation, $mediafile, "", "origthumb", false);
 
           // index content
-          indexcontent ($site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", $mediafile, $container_id, $container_content, $user);
+          indexcontent ($site, $medialocation, $mediafile, $container_id, $container_content, $user);
 
           // remote client
-          remoteclient ("save", "abs_path_media", $site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", "", $mediafile, "");
+          remoteclient ("save", "abs_path_media", $site, $medialocation, "", $mediafile, "");
           
           // encrypt data
           if (isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)

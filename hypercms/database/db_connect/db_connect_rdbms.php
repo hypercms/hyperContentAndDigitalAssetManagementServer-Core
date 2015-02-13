@@ -1597,12 +1597,12 @@ function rdbms_getobject_id ($object)
 }
 
 // ----------------------------------------------- get object_hash ------------------------------------------------- 
-function rdbms_getobject_hash ($object)
+function rdbms_getobject_hash ($object="", $container_id="")
 {
   global $mgmt_config;
 
-  // object can be an object path or the container ID
-  if ($object != "")
+  // object can be an object path or object ID, second input parameter can only be the container ID
+  if ($object != "" || $container_id != "")
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
       
@@ -1629,10 +1629,15 @@ function rdbms_getobject_hash ($object)
   
       $sql = 'SELECT hash FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin LIMIT 1';
     }
-    // if container id
+    // if object id
     elseif (intval ($object) > 0)
     {
-      $sql = 'SELECT hash FROM object WHERE id='.intval($object).' LIMIT 1';
+      $sql = 'SELECT hash FROM object WHERE object_id='.intval($object).' LIMIT 1';
+    }
+    // if container id
+    elseif (intval ($container_id) > 0)
+    {
+      $sql = 'SELECT hash FROM object WHERE id='.intval($container_id).' LIMIT 1';
     }
 
     if (!empty ($sql))

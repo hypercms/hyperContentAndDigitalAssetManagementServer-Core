@@ -146,20 +146,20 @@ if ($config && is_array ($config) && intval ($config['version']) >= 2)
 <script type="text/javascript">
 function updateCodeSegment()
 {
-  <?php if(!$audio) { ?>
+  <?php if (!$audio) { ?>
   var title = document.getElementById("title").value;
   <?php } ?>
   var autoplay = document.getElementById("autoplay").checked;
-  <?php if(!$audio) { ?>
+  <?php if (!$audio) { ?>
   var fullscreen = document.getElementById("fullscreen").checked;
   <?php } ?>
   <?php if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
   var keyboard = document.getElementById("keyboard").checked;
   var pause = document.getElementById("pause").checked;
   var seek = document.getElementById("seek").checked;
-  <?php 
-  }
-  if(!$audio) {
+  <?php }
+  
+  if (!$audio) {
   ?>
   
   var logo = document.getElementById("logo").value;
@@ -170,7 +170,7 @@ function updateCodeSegment()
   
   var newurl = url;
   
-  <?php if(!$audio) { ?>
+  <?php if (!$audio) { ?>
   if (title != "")
   {
     newurl += '&amp;title='+title;
@@ -185,7 +185,7 @@ function updateCodeSegment()
     newurl += '&amp;autoplay=false';
   }
   
-  <?php if(!$audio) { ?>
+  <?php if (!$audio) { ?>
   if(fullscreen)
   {
     newurl += '&amp;fullscreen=true';
@@ -222,9 +222,9 @@ function updateCodeSegment()
   {
     newurl += '&amp;seek=false';
   }
-  <?php
-  } 
-  if(!$audio) {
+  <?php }
+   
+  if (!$audio) {
   ?>
   if (logo)
   {
@@ -236,7 +236,7 @@ function updateCodeSegment()
   document.getElementById("<?php echo $frameid; ?>").src = decodeURI(newurl.replace(/\&amp\;/g, "&"));
 }
 
-// The image selector expects there to be a CKEDITOR.tools.callFunction function so we fake it here. 
+// The image selector expects to be a CKEDITOR.tools.callFunction function, so we fake it here
 var CKEDITOR = { 
   tools: { 
     callFunction: 
@@ -252,9 +252,7 @@ var CKEDITOR = {
 };
 
 </script>
-<?php
-}
-?>
+<?php } ?>
 </head>
     
 <body class="hcmsWorkplaceGeneric" leftmargin=0 topmargin=0 marginwidth=0 marginheight=0>
@@ -286,7 +284,7 @@ echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.p
   {
   ?>
     <div style="margin-left:10px; margin-top:10px; float:left; width:250px;">
-      <?php if(!$audio) { ?>
+      <?php if (!$audio) { ?>
       <div style="height: 20px">
         <label for="title"><?php echo $text7[$lang];?>:</label><br/>
       </div>
@@ -294,12 +292,12 @@ echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.p
       <div style="height: 20px">
         <label for="autoplay"><?php echo $text8[$lang];?>:</label>
       </div>
-      <?php if(!$audio) { ?>
+      <?php if (!$audio) { ?>
       <div style="height: 20px">
         <label for="fullscreen"><?php echo $text9[$lang];?>:</label>
       </div>
-      <?php 
-      } 
+      <?php }
+       
       if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
       <div style="height: 20px">
         <label for="keyboard"><?php echo $text10[$lang];?>: </label>
@@ -310,8 +308,8 @@ echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.p
       <div style="height: 20px">
         <label for="seek"><?php echo $text12[$lang];?>: </label>
       </div>
-      <?php 
-      } 
+      <?php }
+       
       if (!$audio) {
       ?>
       <div style="height: 20px">
@@ -333,8 +331,8 @@ echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.p
       <div style="height: 20px">
         <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="fullscreen" />
       </div>
-      <?php 
-      }
+      <?php }
+      
       if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
       <div style="height:20px">
       <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="keyboard" />
@@ -345,13 +343,13 @@ echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.p
       <div style="height:20px">
         <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="seek" />
       </div>
-      <?php
-      }
+      <?php }
+      
       if (!$audio) { 
       ?>
       <div style="height:20px;">
         <input style="vertical-align: top;" type="text" onchange="updateCodeSegment();" id="logo" />
-        <img class="hcmsButtonTiny hcmsButtonSizeSquare" title="<?php echo $text14[$lang]; ?>" style="cursor: pointer;" src="<?php echo getthemelocation(); ?>img/button_media.gif" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 600, 400);" />
+        <img class="hcmsButtonTiny hcmsButtonSizeSquare" title="<?php echo $text14[$lang]; ?>" style="cursor: pointer;" src="<?php echo getthemelocation(); ?>img/button_media.gif" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 620, 550);" />
       </div>
       <?php } ?>
     </div>
@@ -372,7 +370,7 @@ echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.p
   </div>
 </div>
 <?php
-if ($config && is_array($config) && intval ($config['version']) >= 2) 
+if ($config && is_array ($config) && intval ($config['version']) >= 2) 
 {
 ?>
 <script type="text/javascript">

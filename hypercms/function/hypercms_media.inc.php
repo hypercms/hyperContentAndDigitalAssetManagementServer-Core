@@ -1181,7 +1181,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         
         // define default option for support of versions before 5.3.4
         // note: audio codec could be "mp3" or in newer ffmpeg versions "libmp3lame"!
-        if ($mgmt_mediaoptions['.flv'] == "") $mgmt_mediaoptions['.flv'] = "-b:v 768k -s 320x240 -f flv -c:a libmp3lame -b:a 64k -ac 2 -ar 22050 -title \"".$file_name."\"";
+        if ($mgmt_mediaoptions['.mp4'] == "") $mgmt_mediaoptions['.mp4'] = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
         
         // reset type to input value
         $type = $type_memory;
@@ -1190,7 +1190,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         if ($format == "")
         {
           if (substr_count ($hcms_ext['audio'].".", $file_ext.".") > 0) $format_set = "mp3";
-          else $format_set = "flv";
+          else $format_set = "mp4";
         }
         else $format_set = $format;
           
