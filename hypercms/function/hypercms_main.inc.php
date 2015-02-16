@@ -11750,6 +11750,14 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                 // remote client
                 remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");               
               }
+
+              // image file from RAW image  
+              $mediafile_raw = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".jpg";
+              
+              if (@is_file ($medialocation.$site."/".$mediafile_raw))
+              {
+                deletefile ($medialocation.$site."/", $mediafile_raw, 0);            
+              }
               
               // document thumbnail files
               if (is_array ($mgmt_docoptions))

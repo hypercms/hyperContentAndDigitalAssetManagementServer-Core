@@ -462,7 +462,10 @@ function copymetadata ($file_source, $file_dest)
           // save log
           savelog (@$error);
         }
-        else return true;
+        else
+        {
+          return true;
+        }
       }
     }
 	}
@@ -1128,7 +1131,7 @@ function xmp_writefile ($file, $xmp, $keep_data=true)
             
             if ($tag != "" && ($namespace == "dc" || $namespace == "photoshop"))
             {
-              $cmd = $executable." -xmp:".$tag."=\"".shellcmd_encode (html_decode ($value, "UTF-8"))."\" \"".shellcmd_encode ($file)."\"";
+              $cmd = $executable." -overwrite_original -xmp:".$tag."=\"".shellcmd_encode (html_decode ($value, "UTF-8"))."\" \"".shellcmd_encode ($file)."\"";
               @exec ($cmd, $buffer, $errorCode);
     
               // on error
@@ -1809,7 +1812,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true)
             // remove all IPTC tags from file
             $cmd = $executable." -overwrite_original -r -IPTC:all= \"".shellcmd_encode ($file)."\"";          
             @exec ($cmd, $buffer, $errorCode);
-            
+
             // on error
             if ($errorCode)
             {

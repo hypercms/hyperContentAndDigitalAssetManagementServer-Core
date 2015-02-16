@@ -15,6 +15,8 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
+// file formats extensions
+require ("include/format_ext.inc.php");
 // language file
 require_once ("language/image_rendering.inc.php");
 
@@ -94,7 +96,7 @@ $add_onload = "";
 
 // load object file and get container and media file
 $objectdata = loadfile ($location, $page);
-$mediafile = getfilename ($objectdata, "media");
+$mediafile = $mediafile_orig = getfilename ($objectdata, "media");
 
 // get file information of original media file
 $mediafile_info = getfileinfo ($site, $mediafile, "");
@@ -103,8 +105,18 @@ $media_root = getmedialocation ($site, $mediafile_info['name'], "abs_path_media"
 // get file information of original component file
 $pagefile_info = getfileinfo ($site, $location.$page, $cat);
 
-// create temp file if file is encrypted
-$temp = createtempfile ($media_root, $mediafile);
+// if RAW image use equivalent JPEG image to get image size
+if (substr_count ($hcms_ext['rawimage'].".", $mediafile_info['ext'].".") > 0 && is_file ($media_root.$mediafile_info['filename'].".jpg"))
+{
+  // create temp file if file is encrypted
+  $temp = createtempfile ($media_root, $mediafile_info['filename'].".jpg");
+  $mediafile = $mediafile_info['filename'].".jpg";
+}
+else
+{
+  // create temp file if file is encrypted
+  $temp = createtempfile ($media_root, $mediafile);
+}
 
 // get image dimensions
 if ($temp['result'] && $temp['crypted'])
@@ -319,7 +331,7 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
         // add mandatory format
         $mgmt_imageoptions[$formats]['original'] .= " -f ".$imageformat;
 
-        $result = createmedia ($site, $media_root, $media_root, $mediafile, $imageformat, 'original');
+        $result = createmedia ($site, $media_root, $media_root, $mediafile_orig, $imageformat, 'original');
       }
       else
       {
@@ -337,16 +349,16 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
     if ($result)
     {
       // get the file extension of the old file      
-      $file_ext_old = strtolower (strrchr ($mediafile, "."));
+      $file_ext_old = strtolower (strrchr ($mediafile_orig, "."));
       // get the file extension of the new file
       $file_ext_new = ".".$imageformat;
       // get file name without extension of the old file
-      $mediafile_nameonly = strrev (substr (strstr (strrev ($mediafile), "."), 1));
+      $mediafile_nameonly = strrev (substr (strstr (strrev ($mediafile_orig), "."), 1));
       // get object name without extension
       $page_nameonly = strrev (substr (strstr (strrev ($pagefile_info['name']), "."), 1));
       
       $add_onload = "";
-      
+
       // rename object file extension if file extension has changed due to coversion
       if ($file_ext_old != $file_ext_new)
       {
@@ -396,7 +408,7 @@ if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != fal
       }
 
       // create new thumbnail
-      createmedia ($site, $media_root, $media_root, $mediafile, $imageformat, "thumbnail");
+      createmedia ($site, $media_root, $media_root, $mediafile_orig, $imageformat, "thumbnail");
 
       $show = $text2[$lang];
     }

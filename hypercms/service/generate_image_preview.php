@@ -93,9 +93,20 @@ checkusersession ($user);
 $mediafile_info = getfileinfo ($site, $mediafile, "comp");
 $media_root_source = getmedialocation ($site, $mediafile_info['file'], "abs_path_media").$site."/";
 $media_root_target = $mgmt_config['abs_path_cms'].'temp/';
+$mediafile_orig = $mediafile;
 
-// create temp file if file is encrypted
-$temp_source = createtempfile ($media_root_source, $mediafile);
+// if RAW image use equivalent JPEG image
+if (substr_count ($hcms_ext['rawimage'].".", $mediafile_info['ext'].".") > 0 && is_file ($media_root_source.$mediafile_info['filename'].".jpg"))
+{
+  // create temp file if file is encrypted
+  $temp = createtempfile ($media_root_source, $mediafile_info['filename'].".jpg");
+  $mediafile = $mediafile_info['filename'].".jpg";
+}
+else
+{
+  // create temp file if file is encrypted
+  $temp = createtempfile ($media_root_source, $mediafile);
+}
 
 // get file information of new original media file
 if ($temp_source['result'] && $temp_source['crypted'])
@@ -330,3 +341,4 @@ else
   else $output->message = $show;
 }
 echo json_encode ($output);
+?>

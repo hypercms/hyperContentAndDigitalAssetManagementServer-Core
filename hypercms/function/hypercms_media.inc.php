@@ -256,7 +256,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     // add slash if not present at the end of the location string
     if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
     if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";
-      
+    
+    // save original file source location and file name
+    $location_source_orig = $location_source;
+    $file_orig = $file;
+
     //The GD Libary only supports jpg, png and gif
     $GD_allowed_ext = array (".jpg", ".jpeg", ".gif", ".png");
     
@@ -283,6 +287,61 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     
     // get file size of media file in kB
     $filesize_orig = round (@filesize ($location_source.$file) / 1024, 0);
+
+    // convert RAW image to equivalent JPEG image if not already converted
+    if (substr_count ($hcms_ext['rawimage'].".", $file_ext.".") > 0)
+    {
+      if  (!is_file ($location_dest.$file_name.".jpg") || filemtime ($location_dest.$file_name.".jpg") < filemtime ($location_source_orig.$file_orig))
+      {
+        // if image conversion software is given
+        if (is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0)
+        {            
+          reset ($mgmt_imagepreview);    
+      
+          // supported extensions for image rendering
+          foreach ($mgmt_imagepreview as $imagepreview_ext => $imagepreview)
+          {
+            // check file extension
+            if ($file_ext != "" && substr_count ($imagepreview_ext.".", $file_ext.".") > 0)
+            {
+              $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_source.$file)."\" \"".shellcmd_encode ($location_dest.$file_name).".jpg\"";
+
+              @exec ($cmd, $error_array, $errorCode);
+
+              // on error
+              if ($errorCode)
+              {          
+                $errcode = "20259";
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file."<br />".implode ("<br />", $error_array);   
+              }
+              else
+              {
+                // copy met data
+                copymetadata ($location_source.$file, $location_dest.$file_name.".jpg");
+
+                $location_source = $location_dest;
+                $file = $file_name.".jpg";
+              }
+            }
+          }
+        }
+      }
+      // use existing converted image file
+      else
+      {
+        $location_source = $location_dest;
+        $file = $file_name.".jpg";
+
+        // create temp file if file is encrypted
+        $temp_raw = createtempfile ($location_source, $file);
+    
+        if ($temp_raw['result'] && $temp_raw['crypted'])
+        {
+          $location_source = $temp_raw['templocation'];
+          $file = $temp_raw['tempfile'];
+        }
+      }
+    }
     
     // get file width and heigth in pixels
     $imagesize_orig = @getimagesize ($location_source.$file);
@@ -728,9 +787,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   elseif ($type != "thumbnail" && @is_file ($location_source.$file))
                   {
                     // create buffer file
-                    $buffer_file = $location_dest.$file_name.".buffer".$file_ext;
+                    $buffer_file = $location_dest.$file_name.".buffer".strrchr ($file, ".");;
                     @copy ($location_source.$file, $buffer_file);
-                    // delete the old file if we use original
+
+                    // delete the old file if we overwrite the original file
                     if ($type == "original") @unlink ($location_source.$file);
                   }
                
@@ -890,25 +950,31 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // IMAGE: standard images
                   else
                   {
+                    // only for RAW image
+                    if (substr_count ($hcms_ext['rawimage'].".", $file_ext.".") > 0)
+                    {
+                      $imagecolorspace = "";
+                    }
+
                     if ($type == "thumbnail")
                     {
                       // reduce thumbnail size if original image is smaller then the defined thumbnail image size
-                      if ($imagewidth_orig < $imagewidth && $imageheight_orig < $imageheight)
+                      if ($imagewidth_orig > 0 && $imagewidth_orig < $imagewidth && $imageheight_orig > 0 && $imageheight_orig < $imageheight)
                       {
                         $imageresize = "-resize ".round ($imagewidth_orig, 0)."x".round ($imageheight_orig, 0);
                       }
                        
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." ".$imagecolorspace." ".$iccprofile." -background white -alpha remove \"".shellcmd_encode ($location_temp.$file_name).".buffer.bmp\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove \"".shellcmd_encode ($location_temp.$file_name).".buffer.bmp\"";
                     }
                     else
                     {
                       if ($crop_mode)
                       {
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imagecolorspace." ".$iccprofile." \"".shellcmd_encode ($location_temp.$file_name).".buffer.bmp\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." \"".shellcmd_encode ($location_temp.$file_name).".buffer.bmp\"";
                       }
                       else
                       {
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imagecolorspace." ".$iccprofile." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." \"".shellcmd_encode ($location_temp.$file_name).".buffer.bmp\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." \"".shellcmd_encode ($location_temp.$file_name).".buffer.bmp\"";
                       }
                     }
 
@@ -943,7 +1009,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
                         @exec ($cmd, $error_array, $errorCode);
 
-                        // delete buffer file
+                        // delete BMP buffer file
                         @unlink ($location_temp.$file_name.".buffer.bmp");
                         
                         // on error
@@ -962,6 +1028,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                           if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
                           // remote client
                           if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+                          // delete original RAW image if converted to other format
+                          if ($type == "original" && substr_count ($hcms_ext['rawimage'].".", $file_ext.".") > 0) deletefile ($location_source_orig, $file_orig, 0);
                         }               
                       }
                     }
@@ -973,7 +1041,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // save log
                   savelog (@$error);           
 
-                  // return new file name if new file is larger than 5 bytes
+                  // if new file is larger than 5 bytes
                   if (!empty ($newfile) && @filesize ($location_dest.$newfile) > 5)
                   {
                     // watermark using composite
@@ -1524,14 +1592,23 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       }
     }
 
-    // delete temp file
+    // delete temp files
     if ($temp_source['result'] && $temp_source['created']) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+    if (!empty ($temp_raw) && $temp_raw['result'] && $temp_raw['created']) deletefile ($temp_raw['templocation'], $temp_raw['tempfile'], 0);
     
     // encrypt and save data if media file is not a thumbnail image
     if ($force_no_encrypt == false && !empty ($newfile) && !is_thumbnail ($newfile) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
     {
+      // encrypt new file
       $data = encryptfile ($location_dest, $newfile);
       if (!empty ($data)) savefile ($location_dest, $newfile, $data);
+
+      // encrypt original image file, required in case of a RAW image
+      if (!is_encryptedfile ($location_dest, $file))
+      {
+        $data = encryptfile ($location_dest, $file);
+        if (!empty ($data)) savefile ($location_dest, $file, $data);
+      }
     }
 
     // return result
