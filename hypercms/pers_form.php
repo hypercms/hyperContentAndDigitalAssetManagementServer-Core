@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/pers_form.inc.php");
 
 
 // input parameters
@@ -58,12 +56,12 @@ if (strpos ($persfile, ".php") > 0)
 // define category name and extract pers name
 if ($cat == "tracking")
 {
-  $regpro = $text1[$lang];
+  $regpro = $hcms_lang['customer-tracking'][$lang];
   if ($persfile != "") $pers_name = substr ($persfile, 0, strpos ($persfile, ".track.dat"));
 }
 elseif ($cat == "profile")
 {
-  $regpro = $text2[$lang];
+  $regpro = $hcms_lang['customer-profile'][$lang];
   if ($persfile != "") $pers_name = substr ($persfile, 0, strpos ($persfile, ".prof.dat"));
 }
 
@@ -118,10 +116,10 @@ if ($save == "yes" && $persfile != "" && checktoken ($token, $user))
   {
     $savefile = savefile ($mgmt_config['abs_path_data']."customer/".$site."/", $persfile, $persdata_save);
 
-    if ($savefile == false) $show = "<span class=hcmsHeadline>".$text4[$lang]."</span><br />\n".$text5[$lang];
-    else $show = "<span class=hcmsHeadline>".$text8[$lang]."</span>";
+    if ($savefile == false) $show = "<span class=hcmsHeadline>".$hcms_lang['the-data-could-not-be-saved'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang];
+    else $show = "<span class=hcmsHeadline>".$hcms_lang['the-data-was-saved-successfully'][$lang]."</span>";
   }
-  else $show = "<span class=hcmsHeadline>".$text4[$lang]."</span><br />\n".$text7[$lang].": <span style=\"color:red;\">".$persdata_check['found']."</span>";
+  else $show = "<span class=hcmsHeadline>".$hcms_lang['the-data-could-not-be-saved'][$lang]."</span><br />\n".$hcms_lang['there-are-unsecure-functions-in-the-code'][$lang].": <span style=\"color:red;\">".$persdata_check['found']."</span>";
 }
 else
 {
@@ -205,10 +203,10 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;"
   <table cellspacing="0" cellpadding="0" style="border:1px solid #000000; margin:2px;">
     <tr>
       <td align="left">
-        <?php if ($preview == "no") echo "<img onclick=\"document.forms['editor'].submit();\" name=\"save\" src=\"".getthemelocation()."img/button_save.gif\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" alt=\"".$text3[$lang]."\" title=\"".$text3[$lang]."\" />"; ?>
+        <?php if ($preview == "no") echo "<img onclick=\"document.forms['editor'].submit();\" name=\"save\" src=\"".getthemelocation()."img/button_save.gif\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" alt=\"".$hcms_lang['save'][$lang]."\" title=\"".$hcms_lang['save'][$lang]."\" />"; ?>
       </td>
       <td align="right">
-        <a href=# onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('pic_obj_help','','<?php echo getthemelocation(); ?>img/button_help_over.gif',1);" onClick="openHelp();"><img name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $text6[$lang]; ?>" title="<?php echo $text6[$lang]; ?>" /></a>
+        <a href=# onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('pic_obj_help','','<?php echo getthemelocation(); ?>img/button_help_over.gif',1);" onClick="openHelp();"><img name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['help'][$lang]; ?>" title="<?php echo $hcms_lang['help'][$lang]; ?>" /></a>
       </td>
     </tr>
     <tr>

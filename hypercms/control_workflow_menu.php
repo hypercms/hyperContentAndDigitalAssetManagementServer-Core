@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/control_workflow_menu.inc.php");
 
 
 // input parameters
@@ -48,13 +46,13 @@ $add_onload = "";
 // define category name
 if ($cat == "man")
 {
-  $item_type = $text6[$lang];
-  $item_title = $text22[$lang];
+  $item_type = $hcms_lang['workflow'][$lang];
+  $item_title = $hcms_lang['workflow-management'][$lang];
 }
 elseif ($cat == "script")
 {
-  $item_type = $text7[$lang];
-  $item_title = $text7[$lang];
+  $item_type = $hcms_lang['workflow-script'][$lang];
+  $item_title = $hcms_lang['workflow-script'][$lang];
 }
 
 // check if template name is an attribute of a sent string
@@ -102,7 +100,7 @@ $token_new = createtoken ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
@@ -112,7 +110,7 @@ function warning_delete()
 {
   var form = document.forms['item_delete'];
   
-  check = confirm(hcms_entity_decode("<?php echo $text0[$lang]; ?>:\r<?php echo $text1[$lang]; ?>\r<?php echo $text2[$lang]; ?>"));
+  check = confirm(hcms_entity_decode("<?php echo $hcms_lang['warning'][$lang]; ?>:\r<?php echo $hcms_lang['the-selected-item-will-be-removed'][$lang]; ?>\r<?php echo $hcms_lang['are-you-sure-you-want-to-delete-the-template'][$lang]; ?>"));
   if (check == true) form.submit();
   return check;
 }
@@ -135,7 +133,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert("<?php echo $text3[$lang]; ?>: "+addText);
+		alert("<?php echo $hcms_lang['please-do-not-use-the-following-special-characters'][$lang]; ?>: "+addText);
 		return false;
 	}
   else
@@ -151,7 +149,7 @@ function checkForm_item_create()
   
   if (workflowname.value == "")
   {
-    alert (hcms_entity_decode("<?php echo $text4[$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo $hcms_lang['a-name-is-required'][$lang]; ?>"));
     workflowname.focus();
     return false;
   }
@@ -173,7 +171,7 @@ function checkForm_item_create()
          
     if (val1=="" || val1<min1 || max1<val1) 
     {
-      alert (hcms_entity_decode ('<?php echo $text18[$lang]." ".$text20[$lang]; ?> '+min1+' <?php echo $text21[$lang]; ?> '+max1));
+      alert (hcms_entity_decode ('<?php echo $hcms_lang['number-of-users'][$lang]." ".$hcms_lang['must-contain-a-number-between'][$lang]; ?> '+min1+' <?php echo $hcms_lang['and'][$lang]; ?> '+max1));
       usermax.focus();
       return false;
     }
@@ -185,7 +183,7 @@ function checkForm_item_create()
       
     if (val2<min2 || max2<val2) 
     {
-      alert (hcms_entity_decode ('<?php echo $text19[$lang]." ".$text20[$lang]; ?> '+min2+' <?php echo $text21[$lang]; ?> '+max2));
+      alert (hcms_entity_decode ('<?php echo $hcms_lang['number-of-scripts'][$lang]." ".$hcms_lang['must-contain-a-number-between'][$lang]; ?> '+min2+' <?php echo $hcms_lang['and'][$lang]; ?> '+max2));
       scriptmax.focus();
       return false;
     }  
@@ -216,19 +214,19 @@ function checkForm_item_create()
   <div class="hcmsToolbarBlock">
     <?php
     if (($cat == "script" && checkglobalpermission ($site, 'workflowscript') && checkglobalpermission ($site, 'workflowscriptcreate')) || ($cat == "man" && checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowproccreate')))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createworkflowLayer','','show','deleteworkflowLayer','','hide','editworkflowLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_new\" src=\"".getthemelocation()."img/button_workflow_new.gif\" alt=\"".$text9[$lang]."\" title=\"".$text9[$lang]."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createworkflowLayer','','show','deleteworkflowLayer','','hide','editworkflowLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_new\" src=\"".getthemelocation()."img/button_workflow_new.gif\" alt=\"".$hcms_lang['create'][$lang]."\" title=\"".$hcms_lang['create'][$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_workflow_new.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
     if (($cat == "script" && checkglobalpermission ($site, 'workflowscript') && checkglobalpermission ($site, 'workflowscriptdelete')) || ($cat == "man" && checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowprocdelete')))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createworkflowLayer','','hide','deleteworkflowLayer','','show','editworkflowLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_delete\" src=\"".getthemelocation()."img/button_workflow_reject.gif\" alt=\"".$text11[$lang]."\" title=\"".$text11[$lang]."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createworkflowLayer','','hide','deleteworkflowLayer','','show','editworkflowLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_delete\" src=\"".getthemelocation()."img/button_workflow_reject.gif\" alt=\"".$hcms_lang['delete'][$lang]."\" title=\"".$hcms_lang['delete'][$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_workflow_reject.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
     if (($cat == "script" && checkglobalpermission ($site, 'workflowscript') && checkglobalpermission ($site, 'workflowscriptedit')) || ($cat == "man" && checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowprocedit')))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createworkflowLayer','','hide','deleteworkflowLayer','','hide','editworkflowLayer','','show','hcms_messageLayer','','hide')\" name=\"media_edit\" src=\"".getthemelocation()."img/button_workflow_edit.gif\" alt=\"".$text12[$lang]."\" title=\"".$text12[$lang]."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createworkflowLayer','','hide','deleteworkflowLayer','','hide','editworkflowLayer','','show','hcms_messageLayer','','hide')\" name=\"media_edit\" src=\"".getthemelocation()."img/button_workflow_edit.gif\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".$hcms_lang['edit'][$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_workflow_edit.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
@@ -239,12 +237,12 @@ function checkForm_item_create()
       <div class=\"hcmsToolbarBlock\">\n";
       
       if (checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowprocfolder'))
-      {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='frameset_workflow_folder.php?site=".url_encode($site)."&cat=comp'; hcms_showHideLayers('createworkflowLayer','','hide','deleteworkflowLayer','','hide','editworkflowLayer','','hide','hcms_messageLayer','','hide');\" name=\"media_foldercomp\" src=\"".getthemelocation()."img/button_workflow_foldercomp.gif\" salt=\"".$text23[$lang]."\" title=\"".$text23[$lang]."\" />\n";}
+      {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='frameset_workflow_folder.php?site=".url_encode($site)."&cat=comp'; hcms_showHideLayers('createworkflowLayer','','hide','deleteworkflowLayer','','hide','editworkflowLayer','','hide','hcms_messageLayer','','hide');\" name=\"media_foldercomp\" src=\"".getthemelocation()."img/button_workflow_foldercomp.gif\" salt=\"".$hcms_lang['apply-workflow-on-component-folder'][$lang]."\" title=\"".$hcms_lang['apply-workflow-on-component-folder'][$lang]."\" />\n";}
       else
       {echo "<img src=\"".getthemelocation()."img/button_workflow_foldercomp.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
 
       if (checkglobalpermission ($site, 'workflowproc') && checkglobalpermission ($site, 'workflowprocfolder'))
-      {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='frameset_workflow_folder.php?site=".url_encode($site)."&cat=page'; hcms_showHideLayers('createworkflowLayer','','hide','deleteworkflowLayer','','hide','editworkflowLayer','','hide','hcms_messageLayer','','hide');\" name=\"media_folder\" src=\"".getthemelocation()."img/button_workflow_folder.gif\" alt=\"".$text24[$lang]."\" title=\"".$text24[$lang]."\" />\n";}
+      {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='frameset_workflow_folder.php?site=".url_encode($site)."&cat=page'; hcms_showHideLayers('createworkflowLayer','','hide','deleteworkflowLayer','','hide','editworkflowLayer','','hide','hcms_messageLayer','','hide');\" name=\"media_folder\" src=\"".getthemelocation()."img/button_workflow_folder.gif\" alt=\"".$hcms_lang['apply-workflow-on-page-folder'][$lang]."\" title=\"".$hcms_lang['apply-workflow-on-page-folder'][$lang]."\" />\n";}
       else
       {echo "<img src=\"".getthemelocation()."img/button_workflow_folder.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     }
@@ -253,8 +251,10 @@ function checkForm_item_create()
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    if (!$is_mobile && file_exists ("help/workflowguide_".$lang_shortcut[$lang].".pdf"))
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/workflowguide_".$lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text50[$lang]."\" title=\"".$text50[$lang]."\" /></a>\n";}
+    if (!$is_mobile && file_exists ("help/workflowguide_".$hcms_lang_shortcut[$lang].".pdf"))
+    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/workflowguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>\n";}
+    elseif (!$is_mobile && file_exists ("help/workflowguide_en.pdf"))
+    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/workflowguide_en.pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>\n";}
     ?>
   </tdiv>
 </div>
@@ -272,14 +272,14 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   
   <table width="100%" border="0" cellspacing="1" cellpadding="0">
     <tr>
-      <td colspan="2"><span class=hcmsHeadline><?php echo $text9[$lang]; ?></span></td>
+      <td colspan="2"><span class=hcmsHeadline><?php echo $hcms_lang['create'][$lang]; ?></span></td>
       <td rowspan="2" width="16" align="right" valign="top">
-        <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $text16[$lang]; ?>" title="<?php echo $text16[$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('createworkflowLayer','','hide');" />
+        <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['close'][$lang]; ?>" title="<?php echo $hcms_lang['close'][$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('createworkflowLayer','','hide');" />
       </td>        
     </tr>  
     <tr>
       <td width="100" nowrap="nowrap">
-        <?php echo $item_type." ".$text13[$lang]; ?>:</td>
+        <?php echo $item_type." ".$hcms_lang['name'][$lang]; ?>:</td>
       <td>
         <input type="text" name="wf_name" maxlength="100" style="width:220px;" />
         <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_item_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
@@ -288,8 +288,8 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <?php 
     if ($cat == "man") 
     echo "<tr>
-      <td nowrap=\"nowrap\">".$text18[$lang].": </td>      
-      <td nowrap=\"nowrap\"><input type=\"text\" name=\"usermax\" size=3 maxlength=3 /> &nbsp;&nbsp;&nbsp;".$text19[$lang].": <input type=\"text\" name=\"scriptmax\" size=3 maxlength=3 /></td>
+      <td nowrap=\"nowrap\">".$hcms_lang['number-of-users'][$lang].": </td>      
+      <td nowrap=\"nowrap\"><input type=\"text\" name=\"usermax\" size=3 maxlength=3 /> &nbsp;&nbsp;&nbsp;".$hcms_lang['number-of-scripts'][$lang].": <input type=\"text\" name=\"scriptmax\" size=3 maxlength=3 /></td>
     </tr>\n";
     ?>    
   </table>
@@ -306,10 +306,10 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
     <tr>
       <td nowrap="nowrap">
-        <span class="hcmsHeadline"><?php echo $text11[$lang]; ?></span><br />
+        <span class="hcmsHeadline"><?php echo $hcms_lang['delete'][$lang]; ?></span><br />
         <span style="float:left; margin:2px;"><?php echo $item_type; ?>:&nbsp;</span>
         <select name="wf_file" style="width:220px; float:left; margin:2px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
-          <option value="empty.php">--- <?php echo $text15[$lang]; ?> ---</option>
+          <option value="empty.php">--- <?php echo $hcms_lang['select'][$lang]; ?> ---</option>
           <?php
           $temp_dir = $mgmt_config['abs_path_data']."workflow_master/";
           $dir_item = @dir ($temp_dir);
@@ -370,7 +370,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
       <td width="16" align="right" valign="top">
-        <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $text16[$lang]; ?>" title="<?php echo $text16[$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('deleteworkflowLayer','','hide');" />
+        <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['close'][$lang]; ?>" title="<?php echo $hcms_lang['close'][$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('deleteworkflowLayer','','hide');" />
       </td>        
     </tr>
   </table>
@@ -384,10 +384,10 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
     <tr>
       <td nowrap="nowrap">
-        <span class=hcmsHeadline><?php echo $text12[$lang]; ?></span><br />
+        <span class=hcmsHeadline><?php echo $hcms_lang['edit'][$lang]; ?></span><br />
         <?php echo $item_type; ?>:
         <select name="wf_file" style="width:220px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
-          <option value="empty.php">--- <?php echo $text15[$lang]; ?> ---</option>
+          <option value="empty.php">--- <?php echo $hcms_lang['select'][$lang]; ?> ---</option>
           <?php
           if (isset ($item_option_edit) && is_array ($item_option_edit) && sizeof ($item_option_edit) > 0)
           {
@@ -400,7 +400,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         </select>
       </td>
       <td width="16" align="right" valign="top">
-        <img name="hcms_mediaClose3" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $text16[$lang]; ?>" title="<?php echo $text16[$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose3','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('editworkflowLayer','','hide');" />
+        <img name="hcms_mediaClose3" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['close'][$lang]; ?>" title="<?php echo $hcms_lang['close'][$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose3','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('editworkflowLayer','','hide');" />
       </td>        
     </tr>
   </table>

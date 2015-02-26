@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/page_save.inc.php");
 
 
 // input parameters
@@ -213,13 +211,13 @@ if ($usedby == "" || $usedby == $user)
             echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
             echo "<html>\n<head>\n";
             echo "<title>hyperCMS</title>\n";
-            echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".$lang_codepage[$lang]."\">\n";
+            echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
             echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
             echo "</head>\n";
             echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-            echo "<p class=hcmsHeadline>".$text1[$lang]."</p>\n";
-            echo $text2[$lang]."\n";
-            echo "<a href=\"#\" onlick=\"history.back();\">".$text3[$lang]."</a><br />\n";
+            echo "<p class=hcmsHeadline>".$hcms_lang['the-end-date-is-before-the-start-date-of-the-article'][$lang]."</p>\n";
+            echo $hcms_lang['please-go-back-and-correct-the-date-settings'][$lang]."\n";
+            echo "<a href=\"#\" onlick=\"history.back();\">".$hcms_lang['back'][$lang]."</a><br />\n";
             echo "</body>\n</html>";
             exit;
           }
@@ -385,13 +383,13 @@ if ($usedby == "" || $usedby == $user)
         
         if ($auto)
         {
-        	$message[] = $text12[$lang];
-        	$message[] = $text13[$lang];
+        	$message[] = $hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang];
+        	$message[] = $hcms_lang['without-write-permission-the-content-cant-be-edited'][$lang];
         }
         else
         {
   	      //define message to display
-      	  $message = "<p class=hcmsHeadline>".$text12[$lang]."</p>\n".$text13[$lang]."<br />\n";
+      	  $message = "<p class=hcmsHeadline>".$hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang]."</p>\n".$hcms_lang['without-write-permission-the-content-cant-be-edited'][$lang]."<br />\n";
         }
       }
       else
@@ -456,8 +454,8 @@ if ($usedby == "" || $usedby == $user)
          	}
           
          	// define message to display
-         	$message = "<p class=hcmsHeadline>".$text16[$lang]."</p>\n";
-         	$message .= "<a href=\"page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&ctrlreload=no\">".$text18[$lang]."</a>\n";
+         	$message = "<p class=hcmsHeadline>".$hcms_lang['refreshing-view-'][$lang]."</p>\n";
+         	$message .= "<a href=\"page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&ctrlreload=no\">".$hcms_lang['manual-refresh'][$lang]."</a>\n";
       	}
       }
   
@@ -482,11 +480,11 @@ if ($usedby == "" || $usedby == $user)
       // define message to display
       if ($auto)
       {
-      	$message[] = $text17[$lang];
+      	$message[] = $hcms_lang['functional-error-occured'][$lang];
       }
       else
       {
-      	$message = "<p class=hcmsHeadline>".$text17[$lang]."</p>\n<a href=\"page_view.php?site=".$site."&location=".$location_esc."&page=".$page."\">".$text18[$lang]."</a>";
+      	$message = "<p class=hcmsHeadline>".$hcms_lang['functional-error-occured'][$lang]."</p>\n<a href=\"page_view.php?site=".$site."&location=".$location_esc."&page=".$page."\">".$hcms_lang['manual-refresh'][$lang]."</a>";
       }
     }
   }
@@ -499,13 +497,13 @@ if ($usedby == "" || $usedby == $user)
     if ($auto)
     {
     	//define message to display
-    	$message[] = $text19[$lang];
-    	$message[] = $text20[$lang];
-    	$message[] = $text21[$lang];
+    	$message[] = $hcms_lang['content-container-is-missing'][$lang];
+    	$message[] = $hcms_lang['the-content-of-this-object-is-missing'][$lang];
+    	$message[] = $hcms_lang['to-create-a-new-content-container-please-delete-the-object-and-create-a-new-one'][$lang];
     }
     else
     {
-    	$message = "<p class=hcmsHeadline>".$text19[$lang]."</p>\n".$text20[$lang]."<br />\n".$text21[$lang]."<br />\n";
+    	$message = "<p class=hcmsHeadline>".$hcms_lang['content-container-is-missing'][$lang]."</p>\n".$hcms_lang['the-content-of-this-object-is-missing'][$lang]."<br />\n".$hcms_lang['to-create-a-new-content-container-please-delete-the-object-and-create-a-new-one'][$lang]."<br />\n";
     }
   }
   else
@@ -515,12 +513,12 @@ if ($usedby == "" || $usedby == $user)
     //define message to display
     if ($auto) 
     {
-  	  $message[] = $text19[$lang];
+  	  $message[] = $hcms_lang['content-container-is-missing'][$lang];
     }
     else
     {
     	//define message to display
-    	$message = "<p class=hcmsHeadline>".$text19[$lang]."</p>\n";
+    	$message = "<p class=hcmsHeadline>".$hcms_lang['content-container-is-missing'][$lang]."</p>\n";
     }
   }
 }
@@ -531,12 +529,12 @@ else
   //define message to display
   if ($auto) 
   {
-	  $message[] = $text12[$lang];
+	  $message[] = $hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang];
   }
   else
   {
   	//define message to display
-  	$message = "<p class=hcmsHeadline>".$text12[$lang]."</p>\n";
+  	$message = "<p class=hcmsHeadline>".$hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang]."</p>\n";
   }
 }
 
@@ -547,7 +545,7 @@ if ($auto)
 {
   if ($usedby != "" && $usedby != $user)
   {
-    $message[] = $text12[$lang];
+    $message[] = $hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang];
   }
   
   // answer request from autosave
@@ -560,7 +558,7 @@ else
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script language="JavaScript">
 <!--

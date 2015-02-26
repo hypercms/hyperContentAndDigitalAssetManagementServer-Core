@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/head_contenttype.inc.php");
 
 // ------------------------------ permission section --------------------------------
 
@@ -29,7 +27,7 @@ checkusersession ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -37,12 +35,12 @@ checkusersession ($user);
 
 <body class="hcmsWorkplaceGeneric" leftmargin="3" topmargin="3" marginwidth="0" marginheight="0">
 
-<span class="hcmsHeadline"><?php echo $text6[$lang]; ?></span><br /><br />
+<span class="hcmsHeadline"><?php echo $hcms_lang['content-type'][$lang]; ?></span><br /><br />
 <table width="100%" border="0" cellspacing="2" cellpadding="3">
   <tr>
-    <td class="hcmsHeadline"><?php echo $text3[$lang]; ?></td>
-    <td class="hcmsHeadline"><?php echo $text4[$lang]; ?></td>
-    <td class="hcmsHeadline"><?php echo $text5[$lang]; ?></td>
+    <td class="hcmsHeadline"><?php echo $hcms_lang['character-set'][$lang]; ?></td>
+    <td class="hcmsHeadline"><?php echo $hcms_lang['description'][$lang]; ?></td>
+    <td class="hcmsHeadline"><?php echo $hcms_lang['language'][$lang]; ?></td>
   </tr>
   <?php
   //load code page index file
@@ -73,7 +71,7 @@ checkusersession ($user);
       </tr>\n";
     }
   }
-  else echo "<p class=hcmsHeadline>".$text2[$lang]."</p>";
+  else echo "<p class=hcmsHeadline>".$hcms_lang['could-not-find-code-page-index'][$lang]."</p>";
   ?>
 </table>
 

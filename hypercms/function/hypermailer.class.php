@@ -13,11 +13,11 @@ class HyperMailer extends PHPMailer
 {  
   function HyperMailer()
   {
-    global $mgmt_config, $lang_codepage, $lang;
+    global $mgmt_config, $hcms_lang_codepage, $lang;
 
     $this->IsSMTP();
     $this->SMTPAuth = true;
-    $this->CharSet = $lang_codepage[$lang];
+    $this->CharSet = $hcms_lang_codepage[$lang];
     
     $this->Host     = $mgmt_config['smtp_host'];
     $this->Username = $mgmt_config['smtp_username'];

@@ -15,14 +15,12 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require ("language/videoplayer.inc.php");
 // extension definitions
 include ("include/format_ext.inc.php");
 
 // input parameters
 $media = getrequest_esc ("media", "objectname");
-$lang = getrequest_esc ("lang", false, 'en');
+$lang = getrequest_esc ("lang", false, "en");
 $site = getrequest_esc ("site", "publicationname");
 $logo = getrequest_esc ("logo", "url", NULL);
 $title = getrequest_esc ("title", "objectname", NULL);
@@ -33,6 +31,9 @@ $enablePause = getrequest ("pause", "bool", true);
 $enableSeek = getrequest ("seek", "bool", true);
 $width = getrequest_esc ("width", "numeric", 0);
 $height = getrequest_esc ("height", "numeric", 0);
+
+// language file
+require ("language/".getlanguagefile ($lang));
 
 $media_dir = false;
 $config = false;
@@ -48,7 +49,7 @@ else
   // publication name is missing
   if (!$site) 
   {
-    echo showinfopage ($text1[$lang], $lang);
+    echo showinfopage ($hcms_lang['couldnt-find-the-requested-video'][$lang], $lang);
     exit;
   }
   // add publication name
@@ -71,7 +72,7 @@ if ($user != "")
 // check ip access if public access (no user available)
 elseif (allowuserip ($site) == false)
 {
-  echo showinfopage ($text2[$lang], $lang);
+  echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
   exit;
 }
 
@@ -174,6 +175,6 @@ if ($playercode != "")
 }
 else 
 {
-  echo showinfopage ($text1[$lang], $lang);
+  echo showinfopage ($hcms_lang['couldnt-find-the-requested-video'][$lang], $lang);
 }
 ?>

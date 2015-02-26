@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/task_list.inc.php");
 
 
 // input parameters
@@ -56,7 +54,7 @@ $token_new = createtoken ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -69,7 +67,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:50px; top:100px;"
 ?>
 
 <!-- top bar -->
-<?php echo showtopbar ($text9[$lang], $lang); ?>
+<?php echo showtopbar ($hcms_lang['task-management'][$lang], $lang); ?>
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
@@ -92,15 +90,15 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:50px; top:100px;"
     if (isset ($task_array) && is_array ($task_array) && sizeof ($task_array) > 0)
     {
       echo "<tr>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"10\" nowrap=\"nowrap\">".$text0[$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$text1[$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$text2[$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"100\" nowrap=\"nowrap\">".$text7[$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$text8[$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\">".$text3[$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$text14[$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$text13[$lang]."</td>
-        <td width=\"10\" class=\"hcmsHeadline\">".$text4[$lang]."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"10\" nowrap=\"nowrap\">".$hcms_lang['no'][$lang]."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$hcms_lang['date'][$lang]."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$hcms_lang['name'][$lang]."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"100\" nowrap=\"nowrap\">".$hcms_lang['location'][$lang]."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$hcms_lang['publication'][$lang]."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\">".$hcms_lang['description'][$lang]."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$hcms_lang['category'][$lang]."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$hcms_lang['priority'][$lang]."</td>
+        <td width=\"10\" class=\"hcmsHeadline\">".$hcms_lang['done'][$lang]."</td>
       </tr>\n";
       
       $site_memory = "";
@@ -132,17 +130,17 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:50px; top:100px;"
           if ($task_priority_array[0] == "high")
           {
             $rowcolor = "hcmsPriorityHigh";
-            $priority = $text12[$lang];
+            $priority = $hcms_lang['high'][$lang];
           }
           elseif ($task_priority_array[0] == "medium")
           {
             $rowcolor = "hcmsPriorityMedium";
-            $priority = $text11[$lang];
+            $priority = $hcms_lang['medium'][$lang];
           }
           else
           {
             $rowcolor = "hcmsPriorityLow";
-            $priority = $text10[$lang];
+            $priority = $hcms_lang['low'][$lang];
           }
           
           // load site config
@@ -225,12 +223,12 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:50px; top:100px;"
       }
       
       // button
-      $show_button = $text5[$lang].": <img name=\"Button\" src=\"".getthemelocation()."img/button_OK.gif\" onClick=\"document.forms['taskform'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)\" style=\"border:0; cursor:pointer;\" align=\"absmiddle\" alt=\"OK\" />\n";
+      $show_button = $hcms_lang['remove-finished-tasks-from-list'][$lang].": <img name=\"Button\" src=\"".getthemelocation()."img/button_OK.gif\" onClick=\"document.forms['taskform'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_OK_over.gif',1)\" style=\"border:0; cursor:pointer;\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" />\n";
     }
     else
     {
       echo "<tr>
-        <td>".$text6[$lang]."</td>
+        <td>".$hcms_lang['your-task-queue-is-empty'][$lang]."</td>
       </tr>\n";
     }
     

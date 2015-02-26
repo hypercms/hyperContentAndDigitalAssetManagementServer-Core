@@ -107,6 +107,69 @@ function getuserip ()
   else return false;
 }
 
+// ----------------------------------------- getlanguagefile ------------------------------------------
+// function: getlanguagefile()
+// input: language code (optional)
+// output: language file name
+
+function getlanguagefile ($lang="en")
+{
+  global $mgmt_config;
+  
+  if ($lang != "" && $mgmt_config['abs_path_cms'] != "")
+  {
+    if (is_file ($mgmt_config['abs_path_cms']."language/".$lang.".inc.php")) return $lang.".inc.php";
+    else return "en.inc.php";
+  }
+  else return "en.inc.php";
+}
+
+// ----------------------------------------- getcodepage ------------------------------------------
+// function: getcodepage()
+// input: language code (optional)
+// output: code page/character set
+
+function getcodepage ($lang="en")
+{
+  global $mgmt_config, $hcms_lang_codepage;
+  
+  if ($lang != "" && !empty ($hcms_lang_codepage[$lang]))
+  {
+    return $hcms_lang_codepage[$lang];
+  }
+  elseif ($lang != "" && empty ($hcms_lang_codepage[$lang]) && !empty ($mgmt_config['abs_path_cms']))
+  {
+    // try to include langauge file
+    if (is_file ($mgmt_config['abs_path_cms']."language/".$lang.".inc.php")) require_once ($mgmt_config['abs_path_cms']."language/".$lang.".inc.php");
+    
+    if (!empty ($hcms_lang_codepage[$lang])) return $hcms_lang_codepage[$lang];
+    else return "UTF-8";
+  }
+  else return "UTF-8";
+}
+
+// ----------------------------------------- getcalendarlang ------------------------------------------
+// function: getcalendarlang()
+// input: language code (optional)
+// output: supported language code for calendar
+
+function getcalendarlang ($lang="en")
+{
+  global $mgmt_config;
+  
+  if ($lang != "")
+  {
+    // define supported languages of calendar
+    $lang_supported = array("de", "en", "fr", "pt", "ru");
+    
+    $lang = strtolower ($lang);
+    
+    if (in_array ($lang, $lang_supported)) return $lang;
+    else return "en";
+  }
+  else return "en";
+}
+
  // ========================================= LOAD CONTENT ============================================
 
 // ---------------------------------------------- getobjectcontainer ----------------------------------------------
@@ -289,7 +352,7 @@ function getcontainername ($container)
 
 function getlocationname ($site, $location, $cat, $source="path")
 {
-  global $mgmt_config, $lang, $lang_codepage;
+  global $mgmt_config, $lang, $hcms_lang_codepage;
   
   if (valid_locationname ($location))
   {

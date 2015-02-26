@@ -17,8 +17,6 @@ require ("function/hypercms_api.inc.php");
 require ("function/hypercms_ui.inc.php");
 // template engine
 require ("function/hypercms_tplengine.inc.php");
-// language file
-require_once ("language/buildview.inc.php");
 
 // input parameters
 $site = getrequest ("site", "publicationname");
@@ -172,7 +170,7 @@ foreach ($multiobject_array as $object)
   }
   elseif ($site != $osite)
   {
-    $error = $text110[$lang];
+    $error = $hcms_lang['the-files-must-be-from-the-same-publication'][$lang];
     break;
   }
   
@@ -214,7 +212,7 @@ foreach ($multiobject_array as $object)
   }
   elseif ($template != $oinfo['template'])
   {
-    $error = $text109[$lang];
+    $error = $hcms_lang['the-objects-must-use-the-same-template'][$lang];
     break;
   }
   
@@ -419,7 +417,7 @@ $token = createtoken ($user);
           
           if (!field.prop) 
           {
-            alert ('<?php echo $text113[$lang]; ?>');
+            alert ('<?php echo $hcms_lang['could-not-find-the-value-for-one-of-the-fields'][$lang]; ?>');
           }
           
           var name = field.prop('name');
@@ -524,12 +522,12 @@ $token = createtoken ($user);
             else if (test.indexOf('isEmail')!=-1) 
             { 
               p=val.indexOf('@');
-              if (p<1 || p==(val.length-1)) errors += nm+' - <?php echo $text34[$lang]; ?>\n';
+              if (p<1 || p==(val.length-1)) errors += nm+' - <?php echo $hcms_lang['value-must-contain-an-e-mail-address'][$lang]; ?>\n';
             } 
             else if (test!='R') 
             { 
               num = parseFloat(val);
-              if (isNaN(val)) errors += nm+' - ".$text35[$lang].".\n';
+              if (isNaN(val)) errors += nm+' - ".$hcms_lang['value-must-contain-a-number'][$lang].".\n';
               if (test.indexOf('inRange') != -1) 
               { 
                 p=test.indexOf(':');
@@ -540,17 +538,17 @@ $token = createtoken ($user);
                   min=test.substring(7,p); 
                 }
                 max=test.substring(p+1);
-                if (num<min || max<num) errors += nm+' - <?php echo $text36[$lang]; ?> '+min+' - '+max+'.\n';
+                if (num<min || max<num) errors += nm+' - <?php echo $hcms_lang['value-must-contain-a-number-between'][$lang]; ?> '+min+' - '+max+'.\n';
               } 
             } 
           } 
-          else if (test.charAt(0) == 'R') errors += nm+' - <?php echo $text37[$lang]; ?>\n'; 
+          else if (test.charAt(0) == 'R') errors += nm+' - <?php echo $hcms_lang['a-value-is-required'][$lang]; ?>\n'; 
         }
       } 
       
       if (errors) 
       {
-        alert (hcms_entity_decode ('<?php echo $text38[$lang]; ?>:\n'+errors));
+        alert (hcms_entity_decode ('<?php echo $hcms_lang['the-input-is-not-valid'][$lang]; ?>:\n'+errors));
         return false;
       }  
       else return true;
@@ -563,7 +561,7 @@ $token = createtoken ($user);
     <!-- Save Layer --> 
     <div id="savelayer" class="hcmsWorkplaceGeneric" style="position:fixed; width:100%; height: 100%; margin:0; padding:0; left:0px; top:0px; display: none; z-index:100;">
       <span style="position:absolute; top:50%; height:150px; margin-top:-75px; width:200px; left:50%; margin-left:-100px;">
-        <b><?php echo $text114[$lang];?></b>
+        <b><?php echo $hcms_lang['saving-in-progress'][$lang];?></b>
         <br />
         <br />
         <img src="<?php echo getthemelocation(); ?>img/loading.gif" />
@@ -575,8 +573,8 @@ $token = createtoken ($user);
       <table style="width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;">
         <tr>
           <td class="hcmsHeadline" style="text-align:left; vertical-align:middle; padding:0px 1px 0px 2px">
-            <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="save(true);" alt="<?php echo $text31[$lang]; ?>" title="<?php echo $text31[$lang] ?>" align="absmiddle" />
-            <img name="Button_sc" src="<?php echo getthemelocation()?>img/button_saveclose.gif" class="hcmsButton" onClick="saveClose()" alt="<?php echo $text32[$lang]; ?>" title="<?php echo $text32[$lang]; ?>" align="absmiddle" />
+            <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="save(true);" alt="<?php echo $hcms_lang['save'][$lang]; ?>" title="<?php echo $hcms_lang['save'][$lang] ?>" align="absmiddle" />
+            <img name="Button_sc" src="<?php echo getthemelocation()?>img/button_saveclose.gif" class="hcmsButton" onClick="saveClose()" alt="<?php echo $hcms_lang['save-and-close'][$lang]; ?>" title="<?php echo $hcms_lang['save-and-close'][$lang]; ?>" align="absmiddle" />
           </td>
           <td style="width:26px; text-align:right; vertical-align:middle;">
             &nbsp;
@@ -607,7 +605,7 @@ $token = createtoken ($user);
     <form id="sendform">
       <div>
         <span class="hcmsHeadlineTiny">
-          <?php echo $text112[$lang];?>
+          <?php echo $hcms_lang['only-fields-marked-with-*-hold-the-same-content-may-be-changed'][$lang];?>
         </span>
         <?php
         $ids = array();
@@ -643,7 +641,7 @@ $token = createtoken ($user);
             if ($tagdata->ignore == false) 
             {
             ?>
-            <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="<?php echo $onclick; ?>" align="absmiddle" style="width:22px; height:22px; border:0; cursor:pointer;" alt="<?php echo $text97[$lang]; ?>" title="<?php echo $text97[$lang]; ?>"/>
+            <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="<?php echo $onclick; ?>" align="absmiddle" style="width:22px; height:22px; border:0; cursor:pointer;" alt="<?php echo $hcms_lang['pick-a-date'][$lang]; ?>" title="<?php echo $hcms_lang['pick-a-date'][$lang]; ?>"/>
             <script type="text/javascript">
             <!--
             var cal_obj_<?php echo $id; ?> = null;
@@ -657,7 +655,7 @@ $token = createtoken ($user);
               cal_obj_<?php echo $id; ?> = new RichCalendar();
               cal_obj_<?php echo $id; ?>.start_week_day = 1;
               cal_obj_<?php echo $id; ?>.show_time = false;
-              cal_obj_<?php echo $id; ?>.language = '<?php echo $lang; ?>';
+              cal_obj_<?php echo $id; ?>.language = '<?php echo getcalendarlang ($lang); ?>';
               cal_obj_<?php echo $id; ?>.user_onchange_handler = cal_on_change_<?php echo $id; ?>;
               cal_obj_<?php echo $id; ?>.user_onautoclose_handler = cal_on_autoclose_<?php echo $id; ?>;
               cal_obj_<?php echo $id; ?>.parse_date(datefield_<?php echo $id; ?>.value, format_<?php echo $id; ?>);

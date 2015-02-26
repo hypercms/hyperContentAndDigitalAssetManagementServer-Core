@@ -17,8 +17,6 @@ require ("function/hypercms_api.inc.php");
 require ("function/hypercms_ui.inc.php");
 // formats/file extensions
 require_once ("include/format_ext.inc.php");
-// language file
-require_once ("language/media_view.inc.php");
 
 
 // input parameters
@@ -52,19 +50,19 @@ $show = "";
 if ($save == "yes" && valid_objectname ($mediafile) && checktoken ($token, $user) && checkglobalpermission ($site, 'tpledit'))
 {
   // decode characters
-  $content = html_decode ($content, $lang_codepage[$lang]);
+  $content = html_decode ($content, $hcms_lang_codepage[$lang]);
   // save file
   $savefile = savefile ($mgmt_config['abs_path_rep']."media_tpl/", $mediafile, $content);
 
-  if ($savefile == false) $show = "<span class=hcmsHeadline>".$text12[$lang]."</span>\n";
-  else $show = "<span class=hcmsHeadline>".$text13[$lang]."</span>";
+  if ($savefile == false) $show = "<span class=hcmsHeadline>".$hcms_lang['the-data-could-not-be-saved'][$lang]."</span>\n";
+  else $show = "<span class=hcmsHeadline>".$hcms_lang['the-data-was-saved-successfully'][$lang]."</span>";
 }
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 </head>
@@ -103,7 +101,7 @@ if ($mediaobject != "")
 
 if (substr_count ($mediafile, "Null_media.gif") == 1)
 {
-  echo "<p class=hcmsHeadline>".$text0[$lang]."</p>";
+  echo "<p class=hcmsHeadline>".$hcms_lang['no-file-selected'][$lang]."</p>";
 }
 elseif ($mediafile != "")
 {

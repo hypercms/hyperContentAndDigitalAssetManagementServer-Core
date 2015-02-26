@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/popup_status.inc.php");
 
 
 // input parameters
@@ -131,7 +129,7 @@ if ($authorized == true || $force == "stop")
       if (isset ($result['count'])) $count = $result['count']; 
       else $count =  0;
       
-      if (!empty ($maxcount) && !empty ($count)) $status = ($maxcount - $count)." / ".$maxcount." ".$text2[$lang];
+      if (!empty ($maxcount) && !empty ($count)) $status = ($maxcount - $count)." / ".$maxcount." ".$hcms_lang['items'][$lang];
       else $status = "";
       
       if (isset ($result['working'])) $working = $result['working'];
@@ -162,7 +160,7 @@ if ($authorized == true || $force == "stop")
       else $count =  0;
       
       if (!empty ($result['message'])) $status = strip_tags ($result['message']);    
-      else $status = $text0[$lang];
+      else $status = $hcms_lang['error-occured'][$lang];
       
       $working = "error";
       
@@ -227,7 +225,7 @@ if ($authorized == true || $force == "stop")
       $add_javascript = "self.close();\n";  
     }
   
-    $status = $maxcount." / ".$maxcount." ".$text2[$lang];
+    $status = $maxcount." / ".$maxcount." ".$hcms_lang['items'][$lang];
   }
   // cancel process
   elseif ($force == "stop")
@@ -236,12 +234,12 @@ if ($authorized == true || $force == "stop")
   
     $add_javascript = "self.close();\n";
   
-    $status = ($maxcount - $count)." / ".$maxcount." ".$text2[$lang];
+    $status = ($maxcount - $count)." / ".$maxcount." ".$hcms_lang['items'][$lang];
   }
 }
 else
 {
-  $status = $text4[$lang];
+  $status = $hcms_lang['you-do-not-have-permissions-to-execute-this-function'][$lang];
 }
 
 // define progress bar
@@ -255,7 +253,7 @@ if ($progress == 0) $progress = 1;
 <head>
 <title>hyperCMS</title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;">
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/click.js" type="text/javascript"></script>
 <script language="JavaScript">
@@ -275,7 +273,7 @@ setTimeout('closepopup()', 1000);
 <body class="hcmsWorkplaceGeneric">
 
 <div align="center">
-  <p align="center"><span class="hcmsHeadlineTiny"><?php echo $text1[$lang]; ?>: </span><?php echo $status; ?></p>
+  <p align="center"><span class="hcmsHeadlineTiny"><?php echo $hcms_lang['status'][$lang]; ?>: </span><?php echo $status; ?></p>
   
   <table width="80%" border="1" cellspacing="1" cellpadding="0" bgcolor="#CCCCCC">
     <tr> 
@@ -299,7 +297,7 @@ setTimeout('closepopup()', 1000);
     <input type="hidden" name="maxcount" value="<?php echo $maxcount; ?>" />
     <input type="hidden" name="tempfile" value="<?php echo $tempfile; ?>" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
-    <button class="hcmsButtonBlue" type="submit" /><?php echo $text3[$lang]; ?></button>
+    <button class="hcmsButtonBlue" type="submit" /><?php echo $hcms_lang['cancel'][$lang]; ?></button>
   </form>
 </div>
 

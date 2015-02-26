@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/plugin_management.inc.php");
 
 // plugin file
 if (file_exists ($mgmt_config['abs_path_data']."config/plugin.conf.php"))
@@ -57,7 +55,7 @@ if ($action)
       break;
       
     case "change":
-      if (!is_array ($mgmt_plugin)) $show = $text10[$lang];
+      if (!is_array ($mgmt_plugin)) $show = $hcms_lang['could-not-determine-which-addons-to-activate'][$lang];
 
       foreach ($mgmt_plugin as $key => &$data)
       {
@@ -74,7 +72,7 @@ if ($action)
       break;
       
     default:
-      $show  = $text7[$lang];
+      $show  = $hcms_lang['this-action-is-not-supported'][$lang];
       break;    
   }
 }
@@ -83,7 +81,7 @@ if ($action)
 <html>
   <head>
     <title>hyperCMS</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
     <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
     <script src="javascript/main.js" type="text/javascript"></script>
     <script src="javascript/click.js" type="text/javascript"></script>
@@ -93,13 +91,17 @@ if ($action)
 
     <!-- top bar -->
     <?php
-    if (!$is_mobile && file_exists ($mgmt_config['abs_path_cms']."help/pluginguide_".$lang_shortcut[$lang].".pdf"))
+    if (!$is_mobile && file_exists ($mgmt_config['abs_path_cms']."help/pluginguide_".$hcms_lang_shortcut[$lang].".pdf"))
     {
-      $help = "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/pluginguide_".$lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text50[$lang]."\" title=\"".$text50[$lang]."\" /></a>";
+      $help = "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/pluginguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>";
+    }
+    elseif (!$is_mobile && file_exists ($mgmt_config['abs_path_cms']."help/pluginguide_en.pdf"))
+    {
+      $help = "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/pluginguide_en.pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>";
     }
     else $help = "";
 
-    echo showtopbar ($text0[$lang], $lang, "", "", $help);
+    echo showtopbar ($hcms_lang['plugin-management'][$lang], $lang, "", "", $help);
     echo showmessage ($show, 500, 40, $lang, "position:fixed; left:15px; top:40px;");
     ?>
     
@@ -108,12 +110,12 @@ if ($action)
       <table cellspacing="2" cellpadding="3" border="0" width="98%">
         <tbody>
           <tr>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="50"><?php echo $text6[$lang]; ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="30%"><?php echo $text1[$lang]; ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="30%"><?php echo $text2[$lang]; ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap"><?php echo $text3[$lang]; ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="40%"><?php echo $text4[$lang]; ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap"><?php echo $text5[$lang]; ?></th>
+            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="50"><?php echo $hcms_lang['number'][$lang]; ?></th>
+            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="30%"><?php echo $hcms_lang['plugin-name'][$lang]; ?></th>
+            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="30%"><?php echo $hcms_lang['author'][$lang]; ?></th>
+            <th class="hcmsHeadline" align="left" nowrap="nowrap"><?php echo $hcms_lang['version'][$lang]; ?></th>
+            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="40%"><?php echo $hcms_lang['description'][$lang]; ?></th>
+            <th class="hcmsHeadline" align="left" nowrap="nowrap"><?php echo $hcms_lang['active'][$lang]; ?></th>
           </tr>
         <?php
         $cnt = 0;
@@ -142,10 +144,10 @@ if ($action)
       </table>
       
       <div style="margin-top:10px;">
-        <div style="width:260px; float:left;"><?php echo $text9[$lang] ?>:</div>
+        <div style="width:260px; float:left;"><?php echo $hcms_lang['apply-changes'][$lang] ?>:</div>
         <img align="absmiddle" alt="OK" title="OK" onmouseover="hcms_swapImage('Button1','', '<?php echo getthemelocation(); ?>/img/button_OK_over.gif',1)" onmouseout="hcms_swapImgRestore()" onclick="document.forms['editplugins'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" name="Button1">
         <div style="clear:both;"></div>
-        <div style="width:260px; float:left;"><?php echo $text8[$lang] ?>:</div>
+        <div style="width:260px; float:left;"><?php echo $hcms_lang['check-for-new-or-changed-plugins'][$lang] ?>:</div>
         <img align="absmiddle" alt="OK" title="OK" onmouseover="hcms_swapImage('Button2','', '<?php echo getthemelocation(); ?>/img/button_OK_over.gif',1)" onmouseout="hcms_swapImgRestore()" onclick="window.location='?action=reparse'" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" name="Button2">
       </div>
         

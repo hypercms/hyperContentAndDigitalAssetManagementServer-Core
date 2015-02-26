@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/link_edit_explorer.inc.php");
 
 
 // input parameters
@@ -76,7 +74,7 @@ $location_name = getlocationname ($site, $dir_esc, "page", "path");
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
@@ -102,7 +100,7 @@ function sendInput(text, value)
 <div class="hcmsWorkplaceFrame">
 <table width="98%" border="0" cellspacing="2" cellpadding="0">
   <tr>
-    <td class="hcmsHeadline" style="padding:3px 0px 3px 0px;" align="left" colspan="2"><?php echo $text0[$lang]; ?><td>
+    <td class="hcmsHeadline" style="padding:3px 0px 3px 0px;" align="left" colspan="2"><?php echo $hcms_lang['select-object'][$lang]; ?><td>
   </tr>
   <tr>
     <td class="hcmsHeadlineTiny" align="left" colspan="2" nowrap="nowrap"><?php echo $location_name; ?></td>
@@ -113,7 +111,7 @@ function sendInput(text, value)
     <form name="searchform_general" action="" method="post">
       <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
-      <input type="text" name="search_expression" value="<?php if ($search_expression != "") echo html_encode ($search_expression); else echo $text3[$lang]; ?>" onblur="if (this.value=='') this.value='<?php echo $text3[$lang]; ?>';" onfocus="if (this.value=='<?php echo $text3[$lang]; ?>') this.value='';" style="width:190px;" maxlength="60" />
+      <input type="text" name="search_expression" value="<?php if ($search_expression != "") echo html_encode ($search_expression); else echo $hcms_lang['search-expression'][$lang]; ?>" onblur="if (this.value=='') this.value='<?php echo $hcms_lang['search-expression'][$lang]; ?>';" onfocus="if (this.value=='<?php echo $hcms_lang['search-expression'][$lang]; ?>') this.value='';" style="width:190px;" maxlength="60" />
       <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['searchform_general'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="top" alt="OK" title="OK" />
     </form>
   </td>
@@ -127,7 +125,7 @@ if (substr_count ($dir, $mgmt_config[$site]['abs_path_page']) > 0 && $dir != $mg
   //get parent directory
   $updir_esc = getlocation ($dir_esc);
 
-  echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.gif\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" />&nbsp; ".$text1[$lang]."</a></td></tr>\n";
+  echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.gif\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" />&nbsp; ".$hcms_lang['back'][$lang]."</a></td></tr>\n";
 }
 
 // search results

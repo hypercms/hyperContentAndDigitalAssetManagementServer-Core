@@ -21,8 +21,6 @@ require ("function/hypercms_api.inc.php");
 require ("function/hypercms_ui.inc.php");
 // format extensions
 require ("include/format_ext.inc.php");
-// language file
-require_once ("language/media_rendering.inc.php");
 
 
 // input parameters
@@ -95,18 +93,18 @@ function startConversion ($videotype)
 
   if ($result == false)
   {
-    $show = str_replace ('%filetype%', $filetype, $text1[$lang]);
+    $show = str_replace ('%filetype%', $filetype, $hcms_lang['the-file-could-not-be-converted-to-filetype'][$lang]);
   }
   else
   {
     if ($thumb == 0 || ($match1 = preg_match ("/\d{1,2}:\d{1,2}:\d{1,2}(.\d){0,3}/", $thumb_frame)) && ($match2 = createthumbnail_video ($site, $media_root, $media_root, $file_info['file'], $thumb_frame)))
     {
-      $show = str_replace ('%filetype%', $filetype, $text2[$lang]);
+      $show = str_replace ('%filetype%', $filetype, $hcms_lang['the-file-was-converted-successfully-to-filetype'][$lang]);
     } 
     else
     {
-      if (!$match1) $show = $text30[$lang];
-      else $show = $text31[$lang];
+      if (!$match1) $show = $hcms_lang['could-not-determine-the-frame-for-the-preview-image-when-'][$lang];
+      else $show = $hcms_lang['could-not-extract-the-preview-image'][$lang];
     }
   }
   
@@ -137,12 +135,12 @@ foreach ($mgmt_mediaoptions as $ext => $options)
 $available_formats = array();
 
 $available_formats['fs'] = array(
-	'name'					 => $text3[$lang],
+	'name'					 => $hcms_lang['standard-video-43'][$lang],
 	'checked'				 => false
 );
 
 $available_formats['ws'] = array(
-	'name'					 => $text4[$lang],
+	'name'					 => $hcms_lang['widescreen-video-169'][$lang],
 	'checked'				 => true
 );
 
@@ -150,17 +148,17 @@ $available_formats['ws'] = array(
 $available_bitrates = array();
 
 $available_bitrates['200k'] = array(
-	'name'					=> $text8[$lang].' (200k)',
+	'name'					=> $hcms_lang['low'][$lang].' (200k)',
 	'checked'				=> false
 );
 
 $available_bitrates['768k'] = array(
-	'name'					=> $text9[$lang].' (768k)',
+	'name'					=> $hcms_lang['medium'][$lang].' (768k)',
 	'checked'				=> true
 );
 
 $available_bitrates['1856k'] = array(
-	'name'		 => $text10[$lang].' (1856k)',
+	'name'		 => $hcms_lang['high'][$lang].' (1856k)',
 	'checked'	 => false
 );
 
@@ -168,25 +166,25 @@ $available_bitrates['1856k'] = array(
 $available_videosizes = array();
 
 $available_videosizes['s'] = array(
-	'name'					=> $text6[$lang],
+	'name'					=> $hcms_lang['low-resolution-of-320-pixel-width'][$lang],
 	'checked'				=> false,
 	'individual'		=> false
 );
 
 $available_videosizes['l'] = array(
-	'name'					=> $text7[$lang],
+	'name'					=> $hcms_lang['medium-resolution-of-640-pixel-width'][$lang],
 	'checked'				=> true,
 	'individual'		=> false
 );
 
 $available_videosizes['xl'] = array(
-	'name'					=> $text18[$lang],
+	'name'					=> $hcms_lang['high-resoltion-of-1280x720-pixel'][$lang],
 	'checked'				=> false,
 	'individual'		=> false
 );
 
 $available_videosizes['i'] = array(
-	'name'		 => $text19[$lang],
+	'name'		 => $hcms_lang['individual-of-'][$lang],
 	'checked'	 => false,
 	'individual' => true
 );
@@ -195,17 +193,17 @@ $available_videosizes['i'] = array(
 $available_audiobitrates = array();
 
 $available_audiobitrates['64k'] = array(
-  'name'    => $text8[$lang].' (64 kb/s)',
+  'name'    => $hcms_lang['low'][$lang].' (64 kb/s)',
   'checked' => true
 );
 
 $available_audiobitrates['128k'] = array(
-  'name'    => $text9[$lang].' (128 kb/s)',
+  'name'    => $hcms_lang['medium'][$lang].' (128 kb/s)',
   'checked' => false
 );
 
 $available_audiobitrates['192k'] = array(
-  'name'    => $text10[$lang].' (192 kb/s)',
+  'name'    => $hcms_lang['high'][$lang].' (192 kb/s)',
   'checked' => false
 );
 
@@ -406,7 +404,7 @@ $token_new = createtoken ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang];?>" />
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/jquery/jquery-1.9.1.min.js"></script>
@@ -476,7 +474,7 @@ function updateField (field)
   }
   else
   {
-    alert (hcms_entity_decode('<?php echo $text26[$lang]; ?>'));
+    alert (hcms_entity_decode('<?php echo $hcms_lang['videoplayer-must-be-playing-or-paused-to-set-start-and-end-positions'][$lang]; ?>'));
     return 0;
   }
   <?php 
@@ -697,7 +695,7 @@ $().ready(function() {
 <!-- saving --> 
 <div id="savelayer" class="hcmsWorkplaceGeneric" style="position:fixed; width:100%; height:100%; margin:0; padding:0; left:0px; top:0px; visibility:hidden; z-index:10;">
 	<span style="position:absolute; top:50%; height:150px; margin-top:-75px; width:200px; left:50%; margin-left:-100px;">
-		<b><?php echo $text17[$lang];?></b>
+		<b><?php echo $hcms_lang['the-file-is-being-processed'][$lang];?></b>
 		<br />
 		<br />
 		<img src="<?php echo getthemelocation(); ?>img/loading.gif" />
@@ -705,13 +703,13 @@ $().ready(function() {
 </div>
 
 <?php
-echo showinfobox ($text36[$lang], $lang, 8, "position:fixed; top:40px; left:10px; width:90%;", "hcms_infoLayer");
+echo showinfobox ($hcms_lang['use-ÂoptionsÂ-to-edit-the-video'][$lang], $lang, 8, "position:fixed; top:40px; left:10px; width:90%;", "hcms_infoLayer");
 echo showmessage ($show, 600 , 80, $lang, "position:fixed; left:50px; top:150px;");
 ?> 
 
 <!-- top bar -->
 <?php
-echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivAndButton(this, \'#renderOptions\'); hcms_hideInfo (\'hcms_infoLayer\')"'), $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
+echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['options'][$lang] => 'onclick="toggleDivAndButton(this, \'#renderOptions\'); hcms_hideInfo (\'hcms_infoLayer\')"'), $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
 ?>
 
 <!-- rendering settings -->
@@ -729,7 +727,7 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
     
     <!-- video screen format -->
   	<div class="cell">
-  		<strong><?php echo $text11[$lang]; ?></strong><br />
+  		<strong><?php echo $hcms_lang['type'][$lang]; ?></strong><br />
   		<?php foreach ($available_formats as $format => $data) { ?>
         <div class="row">
           <input type="radio" id="format_<?php echo $format; ?>" name="format" value="<?php echo $format; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="format_<?php echo $format; ?>"><?php echo $data['name']; ?></label>
@@ -739,7 +737,7 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
     
     <!-- video bitrate -->
   	<div class="cell">
-  		<strong><?php echo $text13[$lang]; ?></strong><br />
+  		<strong><?php echo $hcms_lang['video-quality'][$lang]; ?></strong><br />
   		<?php foreach ($available_bitrates as $bitrate => $data) { ?>
       <div class="row">
   			<input type="radio" id="bitrate_<?php echo $bitrate; ?>" name="bitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="bitrate_<?php echo $bitrate; ?>"><?php echo $data['name']; ?></label><br />
@@ -749,12 +747,12 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
     
     <!-- video size -->
   	<div class="cell" style="width:260px;">
-  		<strong><?php echo $text12[$lang]; ?></strong><br />
+  		<strong><?php echo $hcms_lang['video-size'][$lang]; ?></strong><br />
   		<?php foreach ($available_videosizes as $videosize => $data) { ?>
       <div class="row">
   			<input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>"<?php if($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo $data['name']; ?></label>
   			<?php if ($data['individual']) { ?>
-  				<input type="text" name="width" size=4 maxlength=4 id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" size="4" maxlength=4 id="height_<?php echo $videosize;?>" value="" /><span> <?php echo $text20[$lang]; ?></span>
+  				<input type="text" name="width" size=4 maxlength=4 id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" size="4" maxlength=4 id="height_<?php echo $videosize;?>" value="" /><span> <?php echo $hcms_lang['pixel'][$lang]; ?></span>
   			<?php }	?>
   		</div>
   		<?php }	?>
@@ -764,16 +762,16 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
     
     <div class="cell">
     <!-- video cut -->
-      <input type="checkbox" name="cut" id="cut_yes" onclick="checkCut();" value="1"><strong><label for="cut_yes" onclick="checkCut();" /><?php echo ($audio) ? $text34[$lang] : $text23[$lang]; ?></label></strong>
+      <input type="checkbox" name="cut" id="cut_yes" onclick="checkCut();" value="1"><strong><label for="cut_yes" onclick="checkCut();" /><?php echo ($audio) ? $hcms_lang['audio-montage'][$lang] : $hcms_lang['video-montage'][$lang]; ?></label></strong>
       <div id="cut_area" style="display:none;">
         <div class="row">
-          <label for="cut_start" style="width: 70px; display:inline-block; vertical-align: middle;"><?php echo $text25[$lang]; ?></label>
-          <input id="cut_start" type="button" value="<?php echo $text24[$lang]; ?>" onclick="updateField(document.getElementById('cut_begin'));" class="cellButton" />
+          <label for="cut_start" style="width: 70px; display:inline-block; vertical-align: middle;"><?php echo $hcms_lang['start'][$lang]; ?></label>
+          <input id="cut_start" type="button" value="<?php echo $hcms_lang['set'][$lang]; ?>" onclick="updateField(document.getElementById('cut_begin'));" class="cellButton" />
           <input type="text" name="cut_begin" id="cut_begin" READONLY style="width:70px; text-align:center; vertical-align:middle;" />
         </div>
         <div class="row">
-          <label for="cut_stop" style="width: 70px; display:inline-block; vertical-align: middle;"><?php echo $text27[$lang]; ?></label>
-          <input id="cut_stop" type="button" value="<?php echo $text24[$lang]; ?>" onclick="updateField(document.getElementById('cut_end'));" class="cellButton" />
+          <label for="cut_stop" style="width: 70px; display:inline-block; vertical-align: middle;"><?php echo $hcms_lang['end'][$lang]; ?></label>
+          <input id="cut_stop" type="button" value="<?php echo $hcms_lang['set'][$lang]; ?>" onclick="updateField(document.getElementById('cut_end'));" class="cellButton" />
           <input type="text" name="cut_end" id="cut_end" READONLY style="width:70px; text-align:center; vertical-align:middle;" />
         </div>
       </div>
@@ -781,10 +779,10 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
     <?php if (!$audio) { ?>
     <!-- video thumbnail -->
       <div class="row"> 
-        <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1"><strong><label for="thumb_yes" onclick="checkThumb();" /><?php echo $text28[$lang]; ?></label></strong>
+        <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1"><strong><label for="thumb_yes" onclick="checkThumb();" /><?php echo $hcms_lang['pick-preview-image'][$lang]; ?></label></strong>
         <div id="thumb_area" style="display:none;">
-            <label for="thumb_frame_select" style="display:inline-block; vertical-align: middle;"><?php echo $text29[$lang]; ?></label>
-            <input id="thumb_frame_select" type="button" value="<?php echo $text24[$lang]; ?>" onclick="updateField(document.getElementById('thumb_frame'));" class="cellButton" />
+            <label for="thumb_frame_select" style="display:inline-block; vertical-align: middle;"><?php echo $hcms_lang['frame'][$lang]; ?></label>
+            <input id="thumb_frame_select" type="button" value="<?php echo $hcms_lang['set'][$lang]; ?>" onclick="updateField(document.getElementById('thumb_frame'));" class="cellButton" />
             <input type="text" name="thumb_frame" id="thumb_frame" READONLY style="width:70px; text-align:center; vertical-align:middle;" />
         </div>
       </div>
@@ -793,7 +791,7 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
 
     <!-- audio bitrate -->
     <div class="cell">
-  		<strong><?php echo $text35[$lang]; ?></strong><br />
+  		<strong><?php echo $hcms_lang['audio-quality'][$lang]; ?></strong><br />
   		<?php foreach ($available_audiobitrates as $bitrate => $data) { ?>
       <div class="row">
   			<input type="radio" id="audiobitrate_<?php echo $bitrate; ?>" name="audiobitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="audiobitrate_<?php echo $bitrate; ?>"><?php echo $data['name']; ?></label><br />
@@ -805,31 +803,31 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
     <!-- sharpness / gamma / brigthness / contrast / saturation -->
     <div class="cell">
       <div class="row">
-        <strong><?php echo $text37[$lang]; ?></strong>
+        <strong><?php echo $hcms_lang['adjust'][$lang]; ?></strong>
       </div>
       <div>
         <input type="checkbox" id="chbx_sharpen" name="use_sharpen" value="1" onclick="toggle_sharpen();" />
-        <label style="width:70px; display:inline-block;" for="chbx_sharpen"><?php echo $text42[$lang]; ?></label>
+        <label style="width:70px; display:inline-block;" for="chbx_sharpen"><?php echo $hcms_lang['sharpen'][$lang]; ?></label>
         <input name="sharpen" type="text" id="sharpen" size="4" value="0" />
       </div>
       <div>
         <input type="checkbox" id="chbx_gamma" name="use_gamma" value="1" onclick="toggle_gamma();" />
-        <label style="width:70px; display:inline-block;" for="chbx_gamma"><?php echo $text38[$lang]; ?></label>
+        <label style="width:70px; display:inline-block;" for="chbx_gamma"><?php echo $hcms_lang['gamma'][$lang]; ?></label>
         <input name="gamma" type="text" id="gamma" size="4" value="0" />
       </div>
       <div>
         <input type="checkbox" id="chbx_brightness" name="use_brightness" value="0" onclick="toggle_brightness();" />
-        <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo $text39[$lang]; ?></label>
+        <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo $hcms_lang['brightness'][$lang]; ?></label>
         <input name="brightness" type="text" id="brightness" size="4" value="0" />
       </div>
       <div>
          <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
-        <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo $text40[$lang]; ?></label>
+        <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo $hcms_lang['contrast'][$lang]; ?></label>
         <input name="contrast" type="text" id="contrast" size="4" value="0" />
       </div>
       <div>
         <input type="checkbox" id="chbx_saturation" name="use_saturation" value="1" onclick="toggle_saturation();" />
-        <label style="width:70px; display:inline-block;" for="chbx_saturation"><?php echo $text41[$lang]; ?></label>
+        <label style="width:70px; display:inline-block;" for="chbx_saturation"><?php echo $hcms_lang['saturation'][$lang]; ?></label>
         <input name="saturation" type="text" id="saturation" size="4" value="0" />
       </div>
     </div>
@@ -837,14 +835,14 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
     
     <!-- save as video format -->
     <div class="cell">
-  		<strong><?php echo $text21[$lang];?></strong><br />
-  		<label for="filetype"><?php echo $text22[$lang];?></label>
+  		<strong><?php echo $hcms_lang['save-as'][$lang];?></strong><br />
+  		<label for="filetype"><?php echo $hcms_lang['file-type'][$lang];?></label>
   		<select name="filetype">
         <?php
         if (!$audio)
         {
         ?>
-        <option value="videoplayer" ><?php echo $text32[$lang]; ?></option>
+        <option value="videoplayer" ><?php echo $hcms_lang['for-videoplayer'][$lang]; ?></option>
   			<?php
         }
         
@@ -863,7 +861,7 @@ echo showtopmenubar ($text0[$lang], array($text33[$lang] => 'onclick="toggleDivA
     
     <!-- save button -->
   	<div class="cell" style="vertical-align:bottom;">
-  		<input class="hcmsButtonGreen" type="button" name="save" onclick="hcms_showHideLayers('savelayer','','show'); document.forms['mediaconfig'].submit();" value="<?php echo $text14[$lang];?>"/>
+  		<input class="hcmsButtonGreen" type="button" name="save" onclick="hcms_showHideLayers('savelayer','','show'); document.forms['mediaconfig'].submit();" value="<?php echo $hcms_lang['save'][$lang];?>"/>
   	</div>
     
   </form>

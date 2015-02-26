@@ -15,8 +15,6 @@ require ("../config.inc.php");
 require ("../function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("../function/hypercms_ui.inc.php");
-// load language file
-require_once ("../language/editorl.inc.php");
 
 
 // input parameters
@@ -70,6 +68,12 @@ if ($contenttype == "")
 }
 elseif (strpos ($contenttype, "charset") > 0) $charset = getattribute ($contenttype, "charset");
 
+// if the destination character set is not supported by language set it need to be HTML escaped
+if (strtolower ($charset) != $hcms_lang_codepage[$lang])
+{
+  $hcms_lang = html_encode ($hcms_lang, "ASCII");
+}
+
 // create secure token
 $token = createtoken ($user);
 ?>
@@ -100,7 +104,7 @@ function show_cal (el)
 
 	cal_obj = new RichCalendar();
 	cal_obj.start_week_day = 1;
-	cal_obj.language = '<?php echo $lang; ?>';
+	cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
 	cal_obj.user_onchange_handler = cal_on_change;
 	cal_obj.user_onautoclose_handler = cal_on_autoclose;
 	cal_obj.parse_date(date_field.value, format);
@@ -196,11 +200,11 @@ if ($label == "") $label = $id;
     <table border="0" cellspacing="2">
       <tr>
         <td>
-        <img border="0" name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editord_so');" alt="<?php echo $text1[$lang]; ?>" title="<?php echo $text1[$lang]; ?>">
-        <img border="0" name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editord_sc');" alt="<?php echo $text2[$lang]; ?>" title="<?php echo $text2[$lang]; ?>">
+        <img border="0" name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editord_so');" alt="<?php echo $hcms_lang['save'][$lang]; ?>" title="<?php echo $hcms_lang['save'][$lang]; ?>">
+        <img border="0" name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editord_sc');" alt="<?php echo $hcms_lang['save-and-close'][$lang]; ?>" title="<?php echo $hcms_lang['save-and-close'][$lang]; ?>">
         <br />
         <input type="text" id="date_field" name="<?php echo $tagname."[".$id."]"; ?>" value="<?php echo $contentbot; ?>" />
-        <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo $text3[$lang]; ?>" title="<?php echo $text3[$lang]; ?>" />
+        <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['select-date'][$lang]; ?>" title="<?php echo $hcms_lang['select-date'][$lang]; ?>" />
         </td>
       </tr>
     </table>

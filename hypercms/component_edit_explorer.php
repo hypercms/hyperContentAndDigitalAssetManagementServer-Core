@@ -17,8 +17,6 @@ require ("function/hypercms_api.inc.php");
 require ("function/hypercms_ui.inc.php");
 // load file extension defintions
 require_once ("include/format_ext.inc.php");
-// language file
-require_once ("language/component_edit_explorer.inc.php");
 
 
 // input parameters
@@ -55,7 +53,7 @@ checkusersession ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>

@@ -185,21 +185,12 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
             // cut off </p> at the end of the content
             $textcontent =  substr ($textcontent, 0, strlen ($textcontent) - 4);   
           }  
+          
           // correct \" of richtext editor
           $textcontent = str_replace ("\\\"", "\"", $textcontent);
         }
-        // if date
-        elseif ($type[$id] == "d")
-        {
-          // convert to international time format for database (deprecated since version 5.6.7)
-          // $timestamp = strtotime ($textcontent);
-          // if ($timestamp != "") $textcontent = date ("Y-m-d", $timestamp);
-          
-          // escape special characters (transform all special chararcters into their html/xml equivalents)
-          $textcontent  = html_encode ($textcontent, $charset);          
-        }
-        // unformatted text, checkbox value, text options
-        else
+        // unformatted text
+        elseif ($type[$id] == "u")
         {
           // html tags are not allowed
           if ($mgmt_config['editoru_html'] == false) 
@@ -209,19 +200,23 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
 
             // correct quotes
             $textcontent = str_replace (array ("\\'", "\\\""), array ("'", "\""), $textcontent);
-            
-            // escape special characters (transform all special chararcters into their html/xml equivalents)
-            $textcontent  = html_encode ($textcontent, $charset);
           }
-          // html tags are allowed
-          else
-          {
-            // escape special characters (transform ALL special chararcters into their html/xml equivalents)
-            $textcontent  = html_encode ($textcontent, $charset);
-            
-            // unescape special characters (only: ", ', &, <, >) and leave letters escaped
-            $textcontent  = html_decode ($textcontent);
-          }
+        }
+        // if date
+        elseif ($type[$id] == "d")
+        {
+          // convert to international time format for database (deprecated since version 5.6.7)
+          // $timestamp = strtotime ($textcontent);
+          // if ($timestamp != "") $textcontent = date ("Y-m-d", $timestamp);
+          
+          // escape special characters (transform all special chararcters into their html/xml equivalents)
+          $textcontent  = html_encode ($textcontent);          
+        }
+        // checkbox value, text options
+        else
+        {
+          // escape special characters
+          $textcontent  = html_encode ($textcontent);
         }
 
         // replace all characters that invoke a server-side script parser with "<" and ">"
@@ -449,10 +444,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
       if ($mgmt_config['db_connect_rdbms'] != "")
       {
         $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
-        
-        // encode special characters
-        if ($charset != "") $text = html_encode ($text, $charset);
-                
+       
         rdbms_setcontent ($container_id, $text, $user);                     
       }       
       
@@ -527,18 +519,10 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
         $mediafile[$id] = str_replace (">", "&gt;", $mediafile[$id]);  
         
         // remove dangerous script code
-        $mediaalttext[$id] = scriptcode_encode ($mediaalttext[$id]);        
+        $mediaalttext[$id] = scriptcode_encode ($mediaalttext[$id]);
+        
         // encode special characters in alternative text
-        if ($charset != "")
-        {
-          $mediaalttext[$id] = html_encode ($mediaalttext[$id], $charset);
-        }  
-        else
-        {
-          $mediaalttext[$id] = str_replace ("&", "&amp;", $mediaalttext[$id]);
-          $mediaalttext[$id] = str_replace ("<", "&lt;", $mediaalttext[$id]);
-          $mediaalttext[$id] = str_replace (">", "&gt;", $mediaalttext[$id]);
-        }   
+        $mediaalttext[$id] = html_encode ($mediaalttext[$id]);
     
         // check media file (url or component link)
         if (substr_count ($mediafile[$id], "://") == 0)
@@ -949,17 +933,7 @@ function sethead ($site, $contentdata, $contentfile, $headcontent, $user, $chars
           $content = scriptcode_encode ($content);
           
           // encode special characters
-          if ($charset != "")
-          {
-            $content = html_encode ($content, $charset);
-          }
-          else
-          {
-            $content = str_replace ("\"", "&quot;", $content);  
-            $content = str_replace ("&", "&amp;", $content);
-            $content = str_replace ("<", "&lt;", $content);
-            $content = str_replace (">", "&gt;", $content);
-          }
+          $content = html_encode ($content);
         }
         
         $contentdata = setcontent ($contentdata, "<head>", "<".$tagname.">", "<![CDATA[".trim ($content)."]]>", "", "");
@@ -988,9 +962,6 @@ function sethead ($site, $contentdata, $contentfile, $headcontent, $user, $chars
         if (isset ($headcontent['pagekeywords'])) $text_array['head:pagekeywords'] = $headcontent['pagekeywords'];
 
         $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
-        
-        // encode special characters
-        if ($charset != "") $text_array = html_encode ($text_array, $charset);
                     
         rdbms_setcontent ($container_id, $text_array, $user);
       }  

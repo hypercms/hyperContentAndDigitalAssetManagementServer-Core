@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/popup_message.inc.php");
 
 
 // input parameters
@@ -58,12 +56,12 @@ checkusersession ($user);
 if ($action == "accept")
 {
   $icon = getthemelocation()."img/button_workflow_accept.gif";
-  $message_default = $text2[$lang];
+  $message_default = $hcms_lang['please-check-the-content'][$lang];
 }
 else
 {
   $icon = getthemelocation()."img/button_workflow_reject.gif";
-  $message_default = $text3[$lang];
+  $message_default = $hcms_lang['your-content-has-been-rejected'][$lang];
 }
 
 // check authorization
@@ -118,7 +116,7 @@ $token_new = createtoken ($user);
 <head>
 <title>hyperCMS</title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;">
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 </head>
@@ -138,7 +136,7 @@ $token_new = createtoken ($user);
   <table width="100%" height="100%" border=0 cellpadding="3" cellspacing="0">
     <tr class="hcmsWorkplaceControl"> 
       <td align="left" valign="top">
-        <img src="<?php echo $icon; ?>" align="absmiddle"/><span class="hcmsHeadline"><?php echo $text0[$lang]; ?>:</span><br />    
+        <img src="<?php echo $icon; ?>" align="absmiddle"/><span class="hcmsHeadline"><?php echo $hcms_lang['message'][$lang]; ?>:</span><br />    
       </td>
     </tr>
     <tr> 
@@ -148,17 +146,17 @@ $token_new = createtoken ($user);
     </tr>    
     <tr>  
       <td align="left" valign="top">
-			  <div style="width:100px; float:left;"><?php echo $text4[$lang]; ?></div>
+			  <div style="width:100px; float:left;"><?php echo $hcms_lang['priority'][$lang]; ?></div>
         <select name="priority">
-          <option value="low"><?php echo $text5[$lang]; ?></option>
-          <option value="medium" selected="selected"><?php echo $text6[$lang]; ?></option>
-          <option value="high"><?php echo $text7[$lang]; ?></option>
+          <option value="low"><?php echo $hcms_lang['low'][$lang]; ?></option>
+          <option value="medium" selected="selected"><?php echo $hcms_lang['medium'][$lang]; ?></option>
+          <option value="high"><?php echo $hcms_lang['high'][$lang]; ?></option>
         </select>
       </td>
     </tr>        
     <tr>  
       <td align="left" valign="top">        
-        <div style="width:100px; float:left;"><?php echo $text1[$lang]; ?>:</div> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['message'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK">
+        <div style="width:100px; float:left;"><?php echo $hcms_lang['send'][$lang]; ?>:</div> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['message'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK">
       </td>
     </tr>
   </table>

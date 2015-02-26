@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/group_access_explorer.inc.php");
 
 
 // input parameters
@@ -42,7 +40,7 @@ checkusersession ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script src="javascript/click.js" type="text/javascript"></script>
 <script language="JavaScript">
@@ -65,7 +63,7 @@ function sendOption(folder_name, folder_location)
 <div class="hcmsWorkplaceFrame">
 <table width="98%" border="0" cellspacing="2" cellpadding="0">
   <tr>
-    <td class="hcmsHeadline" align="left" colspan="2" style="padding: 0px 0px 8px 0px;"><?php echo $text0[$lang]; ?></td>
+    <td class="hcmsHeadline" align="left" colspan="2" style="padding: 0px 0px 8px 0px;"><?php echo $hcms_lang['access-to-folders'][$lang]; ?></td>
   </tr>
 <?php
 if (($cat == "page" && $mgmt_config[$site]['abs_path_page'] != "") || $cat == "comp")
@@ -73,13 +71,13 @@ if (($cat == "page" && $mgmt_config[$site]['abs_path_page'] != "") || $cat == "c
   // define variables depending on content category
   if ($cat == "page")
   {
-    $folder_name = $text3[$lang];
+    $folder_name = $hcms_lang['pages'][$lang];
     $initialdir = $mgmt_config[$site]['abs_path_page'];
     $initialdir_esc = convertpath ($site, $initialdir, $cat);
   }
   elseif ($cat == "comp")
   {
-    $folder_name = $text1[$lang];
+    $folder_name = $hcms_lang['assets'][$lang];
     $initialdir = $mgmt_config['abs_path_comp'].$site."/";
     $initialdir_esc = convertpath ($site, $initialdir, $cat);
   }
@@ -115,7 +113,7 @@ if (($cat == "page" && $mgmt_config[$site]['abs_path_page'] != "") || $cat == "c
     // back to parent directory
     if (substr_count ($dir, $initialdir) > 0)
     {
-      echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($updir_esc)."&group_name=".url_encode($group_name)."\"><img src=\"".getthemelocation()."img/back.gif\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" />&nbsp;".$text2[$lang]."</a></td></tr>\n";
+      echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($updir_esc)."&group_name=".url_encode($group_name)."\"><img src=\"".getthemelocation()."img/back.gif\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" />&nbsp;".$hcms_lang['back'][$lang]."</a></td></tr>\n";
     }
   
     // get all files in dir

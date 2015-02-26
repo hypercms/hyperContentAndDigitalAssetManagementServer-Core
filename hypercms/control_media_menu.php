@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/control_media_menu.inc.php");
 
 
 // input parameters
@@ -83,7 +81,7 @@ $token_new = createtoken ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
@@ -95,13 +93,13 @@ function warning_mediacat_delete()
   
   if (form.elements['mediacat_name'].options[0].selected)
   {
-    alert (hcms_entity_decode("<?php echo $text0[$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo $hcms_lang['please-select-a-media-category'][$lang]; ?>"));
     form.elements['mediacat_name'].focus();
     return false;
   }
   else
   {
-    check = confirm (hcms_entity_decode("<?php echo $text1[$lang]; ?>:\r<?php echo $text2[$lang]; ?>\r<?php echo $text3[$lang],"."; ?>\r<?php echo $text4[$lang]; ?>"));
+    check = confirm (hcms_entity_decode("<?php echo $hcms_lang['warning'][$lang]; ?>:\r<?php echo $hcms_lang['the-selected-item-will-be-removed'][$lang]; ?>\r<?php echo $hcms_lang['before-you-can-delete-the-category-it-must-not-hold-any-files'][$lang],"."; ?>\r<?php echo $hcms_lang['are-you-sure-you-want-to-delete-this-item'][$lang]; ?>"));
     if (check == true) form.submit();
     return true;
   }
@@ -125,7 +123,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert (hcms_entity_decode("<?php echo $text5[$lang]; ?>:\r") + addText);
+		alert (hcms_entity_decode("<?php echo $hcms_lang['please-do-not-use-the-following-special-characters'][$lang]; ?>:\r") + addText);
 		return false;
 	}
   else
@@ -140,7 +138,7 @@ function checkForm_mediacat_create()
   
   if (form.elements['mediacat_name'].value == "")
   {
-    alert (hcms_entity_decode("<?php echo $text6[$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo $hcms_lang['a-category-name-is-required'][$lang]; ?>"));
     form.elements['mediacat_name'].focus();
     return false;
   }
@@ -161,7 +159,7 @@ function checkForm_mediacat_rename()
   
   if (form.elements['mediacat_name'].value == "")
   {
-    alert (hcms_entity_decode("<?php echo $text6[$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo $hcms_lang['a-category-name-is-required'][$lang]; ?>"));
     form.elements['mediacat_name'].focus();
     return false;
   }
@@ -182,7 +180,7 @@ function checkForm_mediafile_upload()
   
   if (form.elements['mediacat_name'].options[0].selected)
   {
-    alert (hcms_entity_decode("<?php echo $text7[$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo $hcms_lang['please-select-a-destination-media-category'][$lang]; ?>"));
     form.elements['mediacat_name'].focus();
     return false;
   }
@@ -199,7 +197,7 @@ function checkForm_mediafile_upload()
     
     if (mediafile == "")
     {
-      alert (hcms_entity_decode("<?php echo $text5[$lang]; ?>"));
+      alert (hcms_entity_decode("<?php echo $hcms_lang['please-do-not-use-the-following-special-characters'][$lang]; ?>"));
       form.elements['file'].focus();
       return false;
     }
@@ -249,7 +247,7 @@ function goToURL()
     <tr>
       <?php
       // define title
-      echo "<td class=\"hcmsHeadline\">".$text10[$lang]."</td>\n";
+      echo "<td class=\"hcmsHeadline\">".$hcms_lang['template-media'][$lang]."</td>\n";
       ?>
     </tr>
     <tr>
@@ -263,19 +261,19 @@ function goToURL()
   <div class="hcmsToolbarBlock">
     <?php
     if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediacatcreate'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createmediacatLayer','','show','deletemediacatLayer','','hide','renamemediacatLayer','','hide','uploadmediaLayer','','hide','Layer5','','hide','hcms_messageLayer','','hide')\" name=\"media1\" src=\"".getthemelocation()."img/button_folder_new.gif\" alt=\"".$text11[$lang]."\" title=\"".$text11[$lang]."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createmediacatLayer','','show','deletemediacatLayer','','hide','renamemediacatLayer','','hide','uploadmediaLayer','','hide','Layer5','','hide','hcms_messageLayer','','hide')\" name=\"media1\" src=\"".getthemelocation()."img/button_folder_new.gif\" alt=\"".$hcms_lang['create-media-category'][$lang]."\" title=\"".$hcms_lang['create-media-category'][$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_folder_new.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
     if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediacatdelete'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','show','renamemediacatLayer','','hide','uploadmediaLayer','','hide','hcms_messageLayer','','hide')\" name=\"media2\" src=\"".getthemelocation()."img/button_folder_delete.gif\" alt=\"".$text12[$lang]."\" title=\"".$text12[$lang]."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','show','renamemediacatLayer','','hide','uploadmediaLayer','','hide','hcms_messageLayer','','hide')\" name=\"media2\" src=\"".getthemelocation()."img/button_folder_delete.gif\" alt=\"".$hcms_lang['delete-media-category'][$lang]."\" title=\"".$hcms_lang['delete-media-category'][$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_folder_delete.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
     if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediacatrename'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','hide','renamemediacatLayer','','show','uploadmediaLayer','','hide','hcms_messageLayer','','hide')\" name=\"media3\" src=\"".getthemelocation()."img/button_folder_rename.gif\" alt=\"".$text13[$lang]."\" title=\"".$text13[$lang]."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','hide','renamemediacatLayer','','show','uploadmediaLayer','','hide','hcms_messageLayer','','hide')\" name=\"media3\" src=\"".getthemelocation()."img/button_folder_rename.gif\" alt=\"".$hcms_lang['rename-media-category'][$lang]."\" title=\"".$hcms_lang['rename-media-category'][$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_folder_rename.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
@@ -284,13 +282,13 @@ function goToURL()
   <div class="hcmsToolbarBlock">
     <?php
     if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediaupload'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','hide','renamemediacatLayer','','hide','uploadmediaLayer','','show','hcms_messageLayer','','hide')\" name=\"media_upload\" src=\"".getthemelocation()."img/button_media_new.gif\" alt=\"".$text14[$lang]."\" title=\"".$text14[$lang]."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','hide','renamemediacatLayer','','hide','uploadmediaLayer','','show','hcms_messageLayer','','hide')\" name=\"media_upload\" src=\"".getthemelocation()."img/button_media_new.gif\" alt=\"".$hcms_lang['upload-media-file'][$lang]."\" title=\"".$hcms_lang['upload-media-file'][$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_media_new.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
     if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediadelete'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='frameset_edit_media.php?site=".url_encode($site)."&action=mediafile_delete&mediacat=".url_encode($mediacat)."'; hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','hide','renamemediacatLayer','','hide','uploadmediaLayer','','hide','hcms_messageLayer','','hide');\" name=\"media_delete\" src=\"".getthemelocation()."img/button_media_delete.gif\" alt=\"".$text15[$lang]."\" title=\"".$text15[$lang]."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='frameset_edit_media.php?site=".url_encode($site)."&action=mediafile_delete&mediacat=".url_encode($mediacat)."'; hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','hide','renamemediacatLayer','','hide','uploadmediaLayer','','hide','hcms_messageLayer','','hide');\" name=\"media_delete\" src=\"".getthemelocation()."img/button_media_delete.gif\" alt=\"".$hcms_lang['delete-media-file'][$lang]."\" title=\"".$hcms_lang['delete-media-file'][$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_media_delete.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
     ?>
@@ -299,7 +297,7 @@ function goToURL()
   <div class="hcmsToolbarBlock">
     <?php
     if (checkglobalpermission ($site, 'tplmedia'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='frameset_edit_media.php?site=".url_encode($site)."&action=mediafile_preview&mediacat=".url_encode($mediacat)."'; hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','hide','renamemediacatLayer','','hide','uploadmediaLayer','','hide','hcms_messageLayer','','hide');\" name=\"media_view\" src=\"".getthemelocation()."img/button_media_view.gif\" alt=\"".$text16[$lang]."\" title=\"".$text16[$lang]."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='frameset_edit_media.php?site=".url_encode($site)."&action=mediafile_preview&mediacat=".url_encode($mediacat)."'; hcms_showHideLayers('createmediacatLayer','','hide','deletemediacatLayer','','hide','renamemediacatLayer','','hide','uploadmediaLayer','','hide','hcms_messageLayer','','hide');\" name=\"media_view\" src=\"".getthemelocation()."img/button_media_view.gif\" alt=\"".$hcms_lang['view-media-file'][$lang]."\" title=\"".$hcms_lang['view-media-file'][$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_media_view.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
@@ -307,8 +305,10 @@ function goToURL()
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    if (!$is_mobile && file_exists ("help/usersguide_".$lang_shortcut[$lang].".pdf"))
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/usersguide_".$lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text50[$lang]."\" title=\"".$text50[$lang]."\" /></a>\n";}
+    if (!$is_mobile && file_exists ("help/usersguide_".$hcms_lang_shortcut[$lang].".pdf"))
+    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/usersguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>\n";}
+    elseif (!$is_mobile && file_exists ("help/usersguide_en.pdf"))
+    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/usersguide_en.pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>\n";}
     ?>
   </div>
 </div>
@@ -326,13 +326,13 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
   <table width="100%" height="80" border="0" cellspacing="2" cellpadding="0">
     <tr>
       <td valign="middle" nowrap="nowrap">
-        <span class=hcmsHeadline><?php echo $text11[$lang]; ?></span><br />
-        <?php echo $text18[$lang]; ?>:
+        <span class=hcmsHeadline><?php echo $hcms_lang['create-media-category'][$lang]; ?></span><br />
+        <?php echo $hcms_lang['media-category'][$lang]; ?>:
         <input type="text" name="mediacat_name" maxlength="100" style="width:150px;">
         <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" value="Submit" onclick="checkForm_mediacat_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
       <td width="16" align="right" valign="top">
-        <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $text20[$lang]; ?>" title="<?php echo $text20[$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('createmediacatLayer','','hide');" />
+        <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['close'][$lang]; ?>" title="<?php echo $hcms_lang['close'][$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('createmediacatLayer','','hide');" />
       </td>         
     </tr>
   </table>
@@ -348,10 +348,10 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
   <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
     <tr>
       <td valign="middle" nowrap="nowrap">
-        <span class=hcmsHeadline><?php echo $text12[$lang]; ?></span><br />
-        <?php echo $text18[$lang]; ?>:
+        <span class=hcmsHeadline><?php echo $hcms_lang['delete-media-category'][$lang]; ?></span><br />
+        <?php echo $hcms_lang['media-category'][$lang]; ?>:
         <select name="mediacat_name" style="width:150px;">
-          <option value="">--- <?php echo $text17[$lang]; ?> ---</option>
+          <option value="">--- <?php echo $hcms_lang['select'][$lang]; ?> ---</option>
           <?php
           $mediacat_data = loadfile ($mgmt_config['abs_path_data']."media/", $datafile);
           
@@ -374,7 +374,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
         <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_mediacat_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
       <td width="16" align="right" valign="top">
-        <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $text20[$lang]; ?>" title="<?php echo $text20[$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('deletemediacatLayer','','hide');" />
+        <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['close'][$lang]; ?>" title="<?php echo $hcms_lang['close'][$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('deletemediacatLayer','','hide');" />
       </td>         
     </tr>
   </table>
@@ -389,18 +389,18 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
   
   <table width="100%" height="80" border="0" cellspacing="2" cellpadding="0">
     <tr>
-      <td colspan="2"><span class=hcmsHeadline><?php echo $text13[$lang]; ?></span></td>
+      <td colspan="2"><span class=hcmsHeadline><?php echo $hcms_lang['rename-media-category'][$lang]; ?></span></td>
       <td rowspan="2" width="16" align="right" valign="top">
-        <img name="hcms_mediaClose3" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $text20[$lang]; ?>" title="<?php echo $text20[$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose3','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('renamemediacatLayer','','hide');" />
+        <img name="hcms_mediaClose3" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['close'][$lang]; ?>" title="<?php echo $hcms_lang['close'][$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose3','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('renamemediacatLayer','','hide');" />
       </td>        
     </tr>
     <tr>
       <td width="100" nowrap="nowrap">
-        <?php echo $text18[$lang]; ?>: 
+        <?php echo $hcms_lang['media-category'][$lang]; ?>: 
       </td>
       <td>
         <select name="mediacat_name_curr" style="width:150px;" onChange="insertCat()">
-          <option value="">--- <?php echo $text17[$lang]; ?> ---</option>
+          <option value="">--- <?php echo $hcms_lang['select'][$lang]; ?> ---</option>
           <?php
           if (is_array ($mediacat_array) && sizeof ($mediacat_array) > 0)
           {
@@ -416,7 +416,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
     </tr>
     <tr>
       <td nowrap="nowrap">
-        <?php echo $text19[$lang]; ?>: 
+        <?php echo $hcms_lang['rename-selected-category'][$lang]; ?>: 
       </td>
       <td>
         <input type="text" name="mediacat_name" maxlength="100" style="width:150px;" />
@@ -435,18 +435,18 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
   
   <table width="100%" height="80" border="0" cellspacing="2" cellpadding="0">
     <tr>
-      <td colspan="2"><span class=hcmsHeadline><?php echo $text14[$lang]; ?></span></td>
+      <td colspan="2"><span class=hcmsHeadline><?php echo $hcms_lang['upload-media-file'][$lang]; ?></span></td>
       <td rowspan="2" width="16" align="right" valign="top">
-        <img name="hcms_mediaClose4" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonBlank hcmsButtonSizeSquare" alt="<?php echo $text20[$lang]; ?>" title="<?php echo $text20[$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose4','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('uploadmediaLayer','','hide');" />
+        <img name="hcms_mediaClose4" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['close'][$lang]; ?>" title="<?php echo $hcms_lang['close'][$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose4','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('uploadmediaLayer','','hide');" />
       </td>        
     </tr>  
     <tr>
       <td width="100" nowrap="nowrap">
-        <?php echo $text18[$lang]; ?>: 
+        <?php echo $hcms_lang['media-category'][$lang]; ?>: 
       </td>
       <td>
         <select name="mediacat_name" style="width:150px;">
-          <option value="">--- <?php echo $text17[$lang]; ?> ---</option>
+          <option value="">--- <?php echo $hcms_lang['select'][$lang]; ?> ---</option>
           <?php
           if (is_array ($mediacat_array) && sizeof ($mediacat_array) > 0)
           {
@@ -462,7 +462,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
     </tr>
     <tr>
       <td nowrap="nowrap">
-        <?php echo $text14[$lang]; ?>:
+        <?php echo $hcms_lang['upload-media-file'][$lang]; ?>:
       </td>
       <td>
         <input type="file" name="file" size="25" />

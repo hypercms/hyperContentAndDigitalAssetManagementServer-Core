@@ -9,6 +9,18 @@
  
 // ======================================== API loader ==========================================
 
+// include get API
+if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_get.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."function/hypercms_get.inc.php");
+}
+
+// include language file for API functions
+if (empty ($hcms_lang) || !is_array ($hcms_lang))
+{
+  require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile (@$lang));
+}
+
 // include hyperCMS Event System
 if (is_file ($mgmt_config['abs_path_data']."eventsystem/hypercms_eventsys.inc.php"))
 {
@@ -33,13 +45,7 @@ if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_sec.inc.php"))
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_sec.inc.php");
 }
 
-// include get information API
-if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_get.inc.php"))
-{
-  require_once ($mgmt_config['abs_path_cms']."function/hypercms_get.inc.php");
-}
-
-// include set information API
+// include set API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_set.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_set.inc.php");
@@ -81,7 +87,7 @@ if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_update.inc.php"))
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_update.inc.php");
 }
 
-// include developer AddOn
+// include developer AddOns
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_dev.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_dev.inc.php");

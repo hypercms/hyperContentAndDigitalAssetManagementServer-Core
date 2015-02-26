@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/page_info_stats.inc.php");
 
 
 // input parameters
@@ -40,7 +38,7 @@ if ($ip != "")
 <head>
 <title>hyperCMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -50,7 +48,7 @@ if ($ip != "")
 
 <!-- top bar -->
 <?php
-echo showtopbar ($text7[$lang]." ".$ip, $lang);
+echo showtopbar ($hcms_lang['geo-location-of'][$lang]." ".$ip, $lang);
 ?>
 
 <!-- content -->

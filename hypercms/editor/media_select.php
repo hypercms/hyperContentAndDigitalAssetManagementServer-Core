@@ -17,8 +17,6 @@ require ("../function/hypercms_api.inc.php");
 require ("../function/hypercms_ui.inc.php");
 // formats/file extensions
 require ("../include/format_ext.inc.php");
-// load language file
-require_once ("../language/media_view.inc.php");
 
 
 // input parameters
@@ -129,7 +127,7 @@ if (!empty ($mediafile) && $mediafile != "Null_media.gif")
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="../javascript/main.js" type="text/javascript"></script>
 <script language="JavaScript">
@@ -155,7 +153,7 @@ function checkType()
       
       if (allowedext.indexOf(mediaext) < 0) 
       {
-        alert(hcms_entity_decode("<?php echo $text11[$lang]." ".$mediatype; ?>"));
+        alert(hcms_entity_decode("<?php echo $hcms_lang['file-is-of-wrong-media-type-required-type'][$lang]." ".$mediatype; ?>"));
         return false;
       }
       else return true;   
@@ -192,7 +190,7 @@ function submitMedia ()
 
 <body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 marginwidth=0 marginheight=0>
 
-<?php echo showtopbar ($text9[$lang], $lang); ?>
+<?php echo showtopbar ($hcms_lang['selected-file'][$lang], $lang); ?>
 
 <?php
 if (!empty ($mediafile))
@@ -211,7 +209,7 @@ if (!empty ($mediafile))
         
   if ($show == "" || substr_count ($mediafile, "Null_media.gif") == 1)
   {
-    echo "<p class=hcmsHeadline>".$text0[$lang]."</p>";
+    echo "<p class=hcmsHeadline>".$hcms_lang['no-file-selected'][$lang]."</p>";
   }
   else
   {
@@ -223,7 +221,7 @@ if (!empty ($mediafile))
     <tr>
     <tr>
       <td align=left valign=center>
-        ".$text10[$lang].":&nbsp;
+        ".$hcms_lang['confirm-selection'][$lang].":&nbsp;
         <img src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"submitMedia();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('ButtonOK','','".getthemelocation()."img/button_OK_over.gif',1)\" name=\"ButtonOK\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" />
       </td>
     </tr>

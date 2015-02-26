@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/licensenotification_form.inc.php");
 
 
 // input parameters
@@ -48,9 +46,9 @@ if ($save == "yes" && valid_publicationname ($site) && in_array ($cat, array("pa
   
   if ($test == false)   
   {  
-    $show = "<p class=hcmsHeadline>".$text2[$lang]."</p>\n".$text3[$lang];
+    $show = "<p class=hcmsHeadline>".$hcms_lang['notification-settings-could-not-be-saved'][$lang]."</p>\n".$hcms_lang['write-permission-is-missing'][$lang];
   }
-  else $show = $text9[$lang];
+  else $show = $hcms_lang['notification-settings-were-saved-successfully'][$lang];
 }
 
 // create secure token
@@ -60,7 +58,7 @@ $token_new = createtoken ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -127,7 +125,7 @@ function insertOption (sent_name, sent_file)
   }
   else 
   {
-    alert (hcms_entity_decode("<?php echo $text8[$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo $hcms_lang['user-and-text-id-are-mandatory'][$lang]; ?>"));
     return false;
   }
 }
@@ -180,7 +178,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
-<p class=hcmsHeadline><?php echo $text0[$lang]; ?></p>
+<p class=hcmsHeadline><?php echo $hcms_lang['apply-license-notification-on-selected-folder'][$lang]; ?></p>
 
 <form name="notification_area" action="licensenotification_form.php" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
@@ -191,37 +189,37 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
     
   <table border="0" cellspacing="2" cellpadding="0">
     <tr>
-      <td nowrap="nowrap"><?php echo $text14[$lang]; ?>:</td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['text-id-expiration-date-to-monitor'][$lang]; ?>:</td>
     </tr>
     <tr>
       <td nowrap="nowrap"><input type="text" name="text_id" value="" style="width:350px;" /></td>
     </tr> 
     <tr>
-      <td nowrap="nowrap"><?php echo $text15[$lang]; ?>:</td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['date-format-eg'][$lang]; ?>:</td>
     </tr>
     <tr>
       <td nowrap="nowrap"><input type="text" name="format" value="%Y-%m-%d" style="width:350px;" /></td>
     </tr> 
     <tr>
-      <td nowrap="nowrap"><?php echo $text13[$lang]; ?>:</td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['user-comma-seperated'][$lang]; ?>:</td>
     </tr>
     <tr>
       <td nowrap="nowrap"><input type="text" name="users" value="" style="width:350px;" /></td>
     </tr>    
     <tr>
-      <td nowrap="nowrap"><?php echo $text7[$lang]; ?>:</td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['select-period'][$lang]; ?>:</td>
     </tr>
     <tr> 
       <td>
         <select name="period" style="width:350px;">
-          <option value="monthly"><?php echo $text10[$lang]; ?></option>
-          <option value="weekly"><?php echo $text11[$lang]; ?></option>
-          <option value="daily"><?php echo $text12[$lang]; ?></option>
+          <option value="monthly"><?php echo $hcms_lang['monthly'][$lang]; ?></option>
+          <option value="weekly"><?php echo $hcms_lang['weekly'][$lang]; ?></option>
+          <option value="daily"><?php echo $hcms_lang['daily'][$lang]; ?></option>
         </select>
       </td>
     </tr>   
     <tr>
-      <td  colspan="2" nowrap="nowrap"><?php echo $text4[$lang]; ?>:</td>          
+      <td  colspan="2" nowrap="nowrap"><?php echo $hcms_lang['applied-settings-on-selected-folders'][$lang]; ?>:</td>          
     </tr>     
     <tr>
       <td>
@@ -275,7 +273,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
               </select>
             </td>
             <td align="center" valign="middle">
-              <img onClick="deleteSelected(document.forms['notification_area'].elements['folder']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" title="<?php echo $text5[$lang]; ?>" alt="<?php echo $text5[$lang]; ?>" />
+              <img onClick="deleteSelected(document.forms['notification_area'].elements['folder']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" title="<?php echo $hcms_lang['delete'][$lang]; ?>" alt="<?php echo $hcms_lang['delete'][$lang]; ?>" />
           </td>
           </tr>
         </table>
@@ -285,7 +283,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
       <td>&nbsp;</td>
     </tr>
     <tr>
-      <td valign="top" nowrap="nowrap"><?php echo $text6[$lang]; ?>:
+      <td valign="top" nowrap="nowrap"><?php echo $hcms_lang['save-settings'][$lang]; ?>:
         <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll('notification_area', 'folder', 'result');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
       </td>
     </tr>

@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/page_info_metadata.inc.php");
 
 
 // input parameters
@@ -55,7 +53,7 @@ $mediafile = $object_info['media'];
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -65,7 +63,7 @@ $mediafile = $object_info['media'];
 
 <!-- top bar -->
 <?php
-echo showtopbar ($text1[$lang]." ".$pagename, $lang, $mgmt_config['url_path_cms']."page_info.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
+echo showtopbar ($hcms_lang['meta-information-of-'][$lang]." ".$pagename, $lang, $mgmt_config['url_path_cms']."page_info.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
 ?>
 
 <!-- content -->
@@ -88,7 +86,7 @@ echo showtopbar ($text1[$lang]." ".$pagename, $lang, $mgmt_config['url_path_cms'
         $metadata_array = extractmetadata ($mediadir.$mediafile);
 
         if (is_array ($metadata_array)) echo showmetadata ($metadata_array, $lang, "hcmsRowHead2");
-        else echo "&nbsp;".$text2[$lang]."\n";
+        else echo "&nbsp;".$hcms_lang['no-meta-inforamtion-available'][$lang]."\n";
         
         $exiftool = true;
         break;
@@ -103,26 +101,26 @@ echo showtopbar ($text1[$lang]." ".$pagename, $lang, $mgmt_config['url_path_cms'
       $exif = exif_getdata ($mediadir.$mediafile);
       
       if (is_array ($exif)) echo showmetadata ($exif);
-      else echo "&nbsp;".$text2[$lang]."\n";
+      else echo "&nbsp;".$hcms_lang['no-meta-inforamtion-available'][$lang]."\n";
       
       // IPTC
       echo "<div class=\"hcmsRowHead2\" style=\"width:100%;\"><div class=\"hcmsHeadline\">IPTC</div></div>\n";
       $iptc = iptc_getdata ($mediadir.$mediafile);
       
       if (is_array ($iptc)) echo showmetadata ($iptc);
-      else echo "&nbsp;".$text2[$lang]."\n";
+      else echo "&nbsp;".$hcms_lang['no-meta-inforamtion-available'][$lang]."\n";
       
       // XMP
       echo "<div class=\"hcmsRowHead2\" style=\"width:100%;\"><div class=\"hcmsHeadline\">XMP</div></div>\n";
       $xmp = xmp_getdata ($mediadir.$mediafile);
   
       if (is_array ($xmp)) echo showmetadata ($xmp);
-      else echo "&nbsp;".$text2[$lang]."\n";
+      else echo "&nbsp;".$hcms_lang['no-meta-inforamtion-available'][$lang]."\n";
     }
   }
   else
   {
-    echo $text2[$lang];
+    echo $hcms_lang['no-meta-inforamtion-available'][$lang];
   } 
   ?>
 

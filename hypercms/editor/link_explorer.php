@@ -15,8 +15,6 @@ require ("../config.inc.php");
 require ("../function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("../function/hypercms_ui.inc.php");
-// load language file
-require_once ("../language/link_edit_explorer.inc.php");
 
 // input parameters
 $site = getrequest_esc ("site", "publicationname");
@@ -57,7 +55,7 @@ $location_name = getlocationname ($site, $dir, "page", "path");
 <head>
 <title>Page Browser</title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;">
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script src="../javascript/click.js" type="text/javascript"></script>
 <script src="../javascript/main.js" type="text/javascript"></script>
@@ -84,7 +82,7 @@ function submitLink (url)
 <body class="hcmsWorkplaceObjectlist">
   
   <!-- top bar -->
-  <?php echo showtopbar ($text0[$lang], $lang); ?>
+  <?php echo showtopbar ($hcms_lang['select-object'][$lang], $lang); ?>
   
   <div class="hcmsWorkplaceFrame">
     <span class="hcmsHeadlineTiny" style="padding:0px 0px 5px 0px; display:block;"><?php echo $location_name; ?></span>
@@ -94,7 +92,7 @@ function submitLink (url)
     <form name="searchform_general" method="post">
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
       <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
-      <input type="text" name="search_expression" value="<?php if ($search_expression != "") echo html_encode ($search_expression); else echo $text3[$lang]; ?>" onblur="if (this.value=='') this.value='<?php echo $text3[$lang]; ?>';" onfocus="if (this.value=='<?php echo $text3[$lang]; ?>') this.value='';" style="width:210px;" maxlength="60" />
+      <input type="text" name="search_expression" value="<?php if ($search_expression != "") echo html_encode ($search_expression); else echo $hcms_lang['search-expression'][$lang]; ?>" onblur="if (this.value=='') this.value='<?php echo $hcms_lang['search-expression'][$lang]; ?>';" onfocus="if (this.value=='<?php echo $hcms_lang['search-expression'][$lang]; ?>') this.value='';" style="width:210px;" maxlength="60" />
       <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onclick="document.forms['searchform_general'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="top" alt="OK" title="OK" />
     </form>
     </div>
@@ -110,7 +108,7 @@ function submitLink (url)
         //get parent directory
         $updir_esc = getlocation ($dir_esc);  
         
-        echo "<tr class=\"hcmsWorkplaceGeneric\"><td align=\"left\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\"><img src=\"".getthemelocation()."img/back.gif\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp;".$text1[$lang]."</a></td></tr>\n";
+        echo "<tr class=\"hcmsWorkplaceGeneric\"><td align=\"left\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\"><img src=\"".getthemelocation()."img/back.gif\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp;".$hcms_lang['back'][$lang]."</a></td></tr>\n";
       }
       
       // search results
@@ -222,7 +220,7 @@ function submitLink (url)
   </div>
 
   <?php
-  if ($site == "") echo showmessage ($text2[$lang], 600, 70, $lang, "position:absolute; left:20px; top:20px;");
+  if ($site == "") echo showmessage ($hcms_lang['required-input-is-missing'][$lang], 600, 70, $lang, "position:absolute; left:20px; top:20px;");
   ?>
 
 </body>

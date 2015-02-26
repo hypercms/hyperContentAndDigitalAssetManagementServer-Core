@@ -134,26 +134,164 @@ $mgmt_config['os_cms'] = "%os_cms%";
 $mgmt_config['today'] = date ("Y-m-d H:i", time());
 
 // Language Settings
-// Define the languages and their codepages that are available in hyperCMS.
-// Use the language shortcut as array key, e.g. $lang_name['en'] = "english";
-// It is strongly recommended to use UTF-8 as character set for all languages to 
-// support file names in all different languages based on UTF-8.
+// Define the languages which should be active in hyperCMS.
+// Delete or comment language entries that should not be visible.
 
-// English Version
-$lang_name['en'] = "English";
-$lang_shortcut['en'] = "en";
-$lang_codepage['en'] = "utf-8";
-$lang_date['en'] = 'Y-m-d H:i:s';
+// Albanian
+$mgmt_lang_name['sq'] = "Albanian";
+$mgmt_lang_shortcut['sq'] = "sq";
 
-// German Version
-$lang_name['de'] = "German";
-$lang_shortcut['de'] = "de";
-$lang_codepage['de'] = "utf-8";
-$lang_date['de'] = 'd.m.Y H:i:s';
+// Arabic
+$mgmt_lang_name['ar'] = "Arabic";
+$mgmt_lang_shortcut['ar'] = "ar";
+
+// Czech
+$mgmt_lang_name['cz'] = "Czech";
+$mgmt_lang_shortcut['cz'] = "cz";
+
+// Bengali
+$mgmt_lang_name['bn'] = "Bengali";
+$mgmt_lang_shortcut['bn'] = "bn";
+
+// Bulgarian
+$mgmt_lang_name['bg'] = "Bulgarian";
+$mgmt_lang_shortcut['bg'] = "bg";
+
+// Chinese (simplified)
+$mgmt_lang_name['zh-s'] = "Chinese (simplified)";
+$mgmt_lang_shortcut['zh-s'] = "zh-s";
+
+// Danish
+$mgmt_lang_name['da'] = "Danish";
+$mgmt_lang_shortcut['da'] = "da";
+
+// Dutch
+$mgmt_lang_name['nl'] = "Dutch";
+$mgmt_lang_shortcut['nl'] = "nl";
+
+// English
+$mgmt_lang_name['en'] = "English";
+$mgmt_lang_shortcut['en'] = "en";
+
+// Finnish
+$mgmt_lang_name['fi'] = "Finnish";
+$mgmt_lang_shortcut['fi'] = "fi";
+
+// French
+$mgmt_lang_name['fr'] = "French";
+$mgmt_lang_shortcut['fr'] = "fr";
+
+// German
+$mgmt_lang_name['de'] = "German";
+$mgmt_lang_shortcut['de'] = "de";
+
+// Greek
+$mgmt_lang_name['el'] = "Greek";
+$mgmt_lang_shortcut['el'] = "el";
+
+// Hebrew
+$mgmt_lang_name['he'] = "Hebrew";
+$mgmt_lang_shortcut['he'] = "he";
+
+// Hindi
+$mgmt_lang_name['hi'] = "Hindi";
+$mgmt_lang_shortcut['hi'] = "hi";
+
+// Hungarian
+$mgmt_lang_name['hu'] = "Hungarian";
+$mgmt_lang_shortcut['hu'] = "hu";
+
+// Indonesian
+$mgmt_lang_name['id'] = "Indonesian";
+$mgmt_lang_shortcut['id'] = "id";
+
+// Italian
+$mgmt_lang_name['it'] = "Italian";
+$mgmt_lang_shortcut['it'] = "it";
+
+// Japanese
+$mgmt_lang_name['ja'] = "Japanese";
+$mgmt_lang_shortcut['ja'] = "ja";
+
+// Korean
+$mgmt_lang_name['ko'] = "Korean";
+$mgmt_lang_shortcut['ko'] = "ko";
+
+// Malay
+$mgmt_lang_name['ms'] = "Malay";
+$mgmt_lang_shortcut['ms'] = "ms";
+
+// Norwegian
+$mgmt_lang_name['no'] = "Norwegian";
+$mgmt_lang_shortcut['no'] = "no";
+
+// Malay
+$mgmt_lang_name['ko'] = "Malay";
+$mgmt_lang_shortcut['ko'] = "ko";
+
+// Polish
+$mgmt_lang_name['pl'] = "Polish";
+$mgmt_lang_shortcut['pl'] = "pl";
+
+// Portuguese
+$mgmt_lang_name['pt'] = "Portuguese";
+$mgmt_lang_shortcut['pt'] = "pt";
+
+// Romanian
+$mgmt_lang_name['ro'] = "Romanian";
+$mgmt_lang_shortcut['ro'] = "ro";
+
+// Russian
+$mgmt_lang_name['ru'] = "Russian";
+$mgmt_lang_shortcut['ru'] = "ru";
+
+// Serbian
+$mgmt_lang_name['sr'] = "Serbian";
+$mgmt_lang_shortcut['sr'] = "sr";
+
+// Slovak
+$mgmt_lang_name['sk'] = "Slovak";
+$mgmt_lang_shortcut['sk'] = "sk";
+
+// Slovenian
+$mgmt_lang_name['sl'] = "Slovenian";
+$mgmt_lang_shortcut['sl'] = "sl";
+
+// Spanish
+$mgmt_lang_name['es'] = "Spanish";
+$mgmt_lang_shortcut['es'] = "es";
+// Swedish
+$mgmt_lang_name['sv'] = "Swedish";
+$mgmt_lang_shortcut['sv'] = "sv";
+
+// Thai
+$mgmt_lang_name['th'] = "Thai";
+$mgmt_lang_shortcut['th'] = "th";
+
+// Turkish
+$mgmt_lang_name['tr'] = "Turkish";
+$mgmt_lang_shortcut['tr'] = "tr";
+
+// Somali
+$mgmt_lang_name['so'] = "Somali";
+$mgmt_lang_shortcut['so'] = "so";
+
+// Swedish
+$mgmt_lang_name['sv'] = "Swedish";
+$mgmt_lang_shortcut['sv'] = "sv";
+
+// Ukrainian
+$mgmt_lang_name['uk'] = "Ukrainian";
+$mgmt_lang_shortcut['uk'] = "uk";
+
+
+// Urdu
+$mgmt_lang_name['ur'] = "Urdu";
+$mgmt_lang_shortcut['ur'] = "ur";
+
 
 // Default Language
-// If a user is created that language will be default until a change in the setting.
-$lang_shortcut_default = "en";
+$mgmt_lang_shortcut_default = "en";
 
 // Supported Applications
 // Set value to true if your content management server supports rendering of objects
@@ -220,6 +358,7 @@ $mgmt_config['strongpassword'] = true;
 // Encryption
 // Encryption strength (weak, standard, strong)
 $mgmt_config['crypt_level'] = "standard";
+
 // Key used for en/decryption of length 16, 24 or 32
 $mgmt_config['crypt_key'] = "h1y2p3e4r5c6m7s8";
 
@@ -354,7 +493,7 @@ $mgmt_docconvert['.odp'] = array('.pdf', '.ppt');
 // To define the supported formats for image editing please use:
 //   $mgmt_imageoptions['.jpg.jpeg']['original'] = "-f jpg";
 // The path to the executable is usually /usr/bin/convert.
-$mgmt_imagepreview['.ai.aai.act.art.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.html.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mtv.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.txt.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
+$mgmt_imagepreview['.ai.aai.act.art.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mtv.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.txt.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
 $mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 180x180 -f jpg";
 $mgmt_imageoptions['.jpg.jpeg']['original'] = "-f jpg";
 $mgmt_imageoptions['.gif']['original'] = "-f gif";

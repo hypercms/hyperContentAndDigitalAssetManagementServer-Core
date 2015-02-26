@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/group_edit_script.inc.php");
 
 
 // input parameters
@@ -65,7 +63,7 @@ if ($sender == "settings" && checktoken ($token, $user))
     }
     
     $add_onload = "parent.frames['mainFrame'].location.href='".$target_href."'; ";
-    $show = $result['message']."<br />\n<a href=\"group_edit_form.php?site=".url_encode($site)."&group_name=".url_encode($group_name)."&preview=no\">".$text2[$lang]."</a><br />\n";      
+    $show = $result['message']."<br />\n<a href=\"group_edit_form.php?site=".url_encode($site)."&group_name=".url_encode($group_name)."&preview=no\">".$hcms_lang['back'][$lang]."</a><br />\n";      
   }
   else
   {
@@ -107,7 +105,7 @@ elseif ($sender == "access" && checktoken ($token, $user))
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/click.js" type="text/javascript"></script>
 </head>

@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/workflow_script_help.inc.php");
 
 
 // input parameters
@@ -36,29 +34,29 @@ checkusersession ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 </head>
 
 <body class="hcmsWorkplaceGeneric">
 
 <!-- top bar -->
-<?php echo showtopbar ($text0[$lang], $lang); ?>
+<?php echo showtopbar ($hcms_lang['workflow-scripting'][$lang], $lang); ?>
 
 <!-- content -->
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 <?php
-echo "<p class=\"hcmsHeadlineTiny\">".$text1[$lang].":</p>
-".$text2[$lang].": \$site<br />
-".$text3[$lang].": \$location<br /> 
-".$text4[$lang].": \$object<br />
+echo "<p class=\"hcmsHeadlineTiny\">".$hcms_lang['you-can-use-the-following-given-input-variables'][$lang].":</p>
+".$hcms_lang['publication'][$lang].": \$site<br />
+".$hcms_lang['location-of-the-object'][$lang].": \$location<br /> 
+".$hcms_lang['object'][$lang].": \$object<br />
 <br />
-<p class=\"hcmsHeadlineTiny\">".$text5[$lang].":</p>
+<p class=\"hcmsHeadlineTiny\">".$hcms_lang['also-the-following-system-constants-can-be-accessed'][$lang].":</p>
 \$mgmt_config<br />
-<p class=\"hcmsHeadlineTiny\">".$text6[$lang].":</p>
-".$text7[$lang].": return true;<br /> 
-".$text8[$lang].": return false;<br /> 
-<p class=\"hcmsHeadlineTiny\">".$text9[$lang]."</p>";
+<p class=\"hcmsHeadlineTiny\">".$hcms_lang['the-result-of-the-workflow-script-must-be-in-the-form'][$lang].":</p>
+".$hcms_lang['if-successful-accept-the-object-and-send-to-next-member'][$lang].": return true;<br /> 
+".$hcms_lang['if-not-successful-reject-the-object-and-send-it-back'][$lang].": return false;<br /> 
+<p class=\"hcmsHeadlineTiny\">".$hcms_lang['for-detailed-information-please-see-the-hypercms-programmers-guide-and-hypercms-workflow-guide'][$lang]."</p>";
 ?>
 </div>
 

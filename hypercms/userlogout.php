@@ -17,8 +17,6 @@ require ("function/hypercms_api.inc.php");
 require ("function/hypercms_ui.inc.php");
 // version info
 require ("version.inc.php");
-// language file
-require_once ("language/userlogout.inc.php");
 ?>
 <!DOCTYPE html>
 <html>
@@ -42,12 +40,12 @@ if (empty ($lang)) $lang = "en";
 if ($test == true) 
 {
   @session_destroy();
-  $answer = $text1[$lang];
+  $answer = $hcms_lang['logged-out'][$lang];
 }
 else
 { 
   @session_destroy();
-  $answer = $text0[$lang];
+  $answer = $hcms_lang['session-cannot-be-closed'][$lang];
 }
 ?>
 

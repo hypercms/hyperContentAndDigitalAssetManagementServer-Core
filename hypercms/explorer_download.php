@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/page_view.inc.php");
 
 
 // input parameters
@@ -73,7 +71,7 @@ elseif ($hcms_id_token != "")
   else
   {
     header ('HTTP/1.0 403 Forbidden', true, 403);
-    echo showinfopage ($text8[$lang], $lang);
+    echo showinfopage ($hcms_lang['the-provided-link-is-expired'][$lang], $lang);
     exit;
   }
 }
@@ -95,7 +93,7 @@ elseif ($hcms_objid != "" && substr ($hcms_token, 0, 1) == "_")
     else
     {
       header ('HTTP/1.0 403 Forbidden', true, 403);
-      echo showinfopage ($text8[$lang], $lang);
+      echo showinfopage ($hcms_lang['the-provided-link-is-expired'][$lang], $lang);
       exit;
     }
   }
@@ -179,7 +177,7 @@ elseif ($objectpath_esc != "")
       }
       else
       {
-        echo showinfopage ($text14[$lang], $lang);
+        echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
         exit;
       }
     }
@@ -220,7 +218,7 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
   if ($user == "" && !allowuserip ($site))
   {
     header ('HTTP/1.0 403 Forbidden', true, 403);
-    echo showinfopage ($text14[$lang], $lang);
+    echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
     exit;
   }
 
@@ -308,7 +306,7 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
     else
     {
       header ("HTTP/1.1 500 Internal Server Error", true, 500);
-      echo showinfopage ($text14[$lang], $lang);
+      echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
     }    
     
     // eventsystem
@@ -317,12 +315,12 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
   else
   {
     header ("HTTP/1.1 400 Invalid Request", true, 400);
-    echo showinfopage ($text14[$lang], $lang);
+    echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
   }
 }
 else
 {
   header ("HTTP/1.1 400 Invalid Request", true, 400);
-  echo showinfopage ($text14[$lang], $lang);
+  echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
 }
 ?>

@@ -79,7 +79,7 @@ function specialchr ($expression, $accept="")
 
 function specialchr_encode ($expression, $remove="no")
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if (!is_array ($expression))
   {
@@ -134,7 +134,7 @@ function specialchr_encode ($expression, $remove="no")
 
 function specialchr_decode ($expression)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if (!is_array ($expression))
   { 
@@ -265,7 +265,7 @@ function splitstring ($string)
 // output: true / false
 
 // description:
-// this function determines if a certain file type by its extension is supported by the system media conversion.
+// this function determines if a certain file type by its extension is supported by the systems media conversion.
 
 function is_supported ($preview_array, $file_ext)
 {
@@ -319,7 +319,7 @@ function copyrecursive ($src, $dst)
 
 function correctfile ($abs_path, $filename, $user="")
 {
-  global $mgmt_config;
+  global $mgmt_config, $hcms_lang, $lang;
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -399,7 +399,7 @@ function correctpath ($path, $slash="/")
 
 function convertpath ($site, $path, $cat)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && $path != "" && is_array ($mgmt_config))
   {  
@@ -500,7 +500,7 @@ function convertpath ($site, $path, $cat)
 
 function convertlink ($site, $path, $cat)
 {
-  global $mgmt_config, $publ_config;
+  global $user, $mgmt_config, $publ_config, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && $path != "" && is_array ($mgmt_config))
   {  
@@ -601,7 +601,7 @@ function convertlink ($site, $path, $cat)
 
 function deconvertpath ($path, $type="file", $specialchr_transform=false)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   // BE AWARE: path could hold template data and therefore valid_publicationname could cause problems!
   if ($path != "" && (strtolower ($type) == "file" || strtolower ($type) == "url") && is_array ($mgmt_config))
@@ -712,7 +712,7 @@ function deconvertpath ($path, $type="file", $specialchr_transform=false)
 
 function deconvertlink ($path, $type="url")
 {
-  global $mgmt_config, $publ_config;
+  global $user, $mgmt_config, $publ_config, $hcms_lang, $lang;
   
   if (valid_locationname ($path) && isset ($mgmt_config) && ($type == "url" || $type == "file"))
   {
@@ -777,7 +777,7 @@ function deconvertlink ($path, $type="url")
 
 function createaccesslink ($site, $location="", $object="", $cat="", $object_id="", $login, $type="al", $lifetime=0, $formats="")
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
 
   if (((valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "") || $object_id != "") && (($type == "al" && valid_objectname ($login)) || $type == "dl") && isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
   {
@@ -837,7 +837,7 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
 
 function createwrapperlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="")
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
 
   if (isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
   {
@@ -899,7 +899,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
 
 function createdownloadlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="")
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
 
   if (isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
   {
@@ -968,7 +968,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
 
 function createmultidownloadlink ($site, $multiobject="", $media="", $location="", $name="", $user, $type="", $mediacfg="")
 {
-  global $mgmt_config, $mgmt_compress, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission;
+  global $mgmt_config, $mgmt_compress, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission, $hcms_lang, $lang;
   
   if (valid_publicationname ($site) && valid_objectname ($user) && (valid_locationname ($location) || valid_locationname ($multiobject) || valid_objectname ($media)))
   {
@@ -1057,7 +1057,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
 
 function cleandomain ($path)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if ($path != "")
   {
@@ -1079,7 +1079,7 @@ function cleandomain ($path)
 
 function deleteversions ($type, $report)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
 
   if (strtolower ($type) == "content") $versiondir = $mgmt_config['abs_path_content'];
   elseif (strtolower ($type) == "template") $versiondir = $mgmt_config['abs_path_template'];
@@ -1162,7 +1162,7 @@ function deleteversions ($type, $report)
 
 function loadfile_header ($abs_path, $filename)
 {
-  global $user, $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   $filedata = false;
   
@@ -1211,7 +1211,7 @@ function loadfile_header ($abs_path, $filename)
 
 function loadfile_fast ($abs_path, $filename)
 {
-  global $user, $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   $filedata = false;
 
@@ -1257,7 +1257,7 @@ function loadfile_fast ($abs_path, $filename)
 
 function loadfile ($abs_path, $filename)
 {
-  global $user, $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   $filedata = false;
 
@@ -1333,7 +1333,7 @@ function loadfile ($abs_path, $filename)
 
 function loadlockfile ($user, $abs_path, $filename, $force_unlock=0)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   $filedata = false;
 
@@ -1471,7 +1471,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=0)
 
 function savefile ($abs_path, $filename, $filedata)
 {
-  global $user, $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -1514,7 +1514,7 @@ function savefile ($abs_path, $filename, $filedata)
 
 function savelockfile ($user, $abs_path, $filename, $filedata)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -1570,7 +1570,7 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
 // lockfile requires the file to be opened by loadlockfile before
 function lockfile ($user, $abs_path, $filename)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -1607,7 +1607,7 @@ function lockfile ($user, $abs_path, $filename)
 // unlockfile requires the file to be opened by loadlockfile before
 function unlockfile ($user, $abs_path, $filename)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -1643,7 +1643,7 @@ function unlockfile ($user, $abs_path, $filename)
 
 function deletefile ($abs_path, $filename, $recursive=0)
 {
-  global $user, $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {    
@@ -1729,7 +1729,7 @@ function deletefile ($abs_path, $filename, $recursive=0)
 
 function appendfile ($abs_path, $filename, $filedata)
 {
-  global $user, $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename) && $filedata != "")
   {
@@ -1806,7 +1806,7 @@ function appendfile ($abs_path, $filename, $filedata)
 
 function encryptfile ($location, $file, $key="")
 {
-  global $user, $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if (valid_locationname ($location) && valid_objectname ($file))
   {
@@ -1845,7 +1845,7 @@ function encryptfile ($location, $file, $key="")
 
 function decryptfile ($location, $file, $key="")
 {
-  global $user, $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
 
   if (valid_locationname ($location) && valid_objectname ($file))
   {
@@ -1884,7 +1884,7 @@ function decryptfile ($location, $file, $key="")
 
 function createtempfile ($location, $file, $key="")
 {
-  global $user, $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   $result = array();
   $result['result'] = false;
@@ -1982,7 +1982,7 @@ function createtempfile ($location, $file, $key="")
 
 function movetempfile ($location, $file, $delete=false, $force_encrypt=false, $key="")
 {
-  global $user, $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   $result = array();
   $result['result'] = false;
@@ -2083,7 +2083,7 @@ function fileversion ($file)
 
 function is_tempfile ($path)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   @require ($mgmt_config['abs_path_cms']."include/tempfilepatterns.inc.php");
 
@@ -2112,7 +2112,7 @@ function is_tempfile ($path)
 
 function is_thumbnail ($media, $images_only=true)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if ($media != "")
   {
@@ -2140,7 +2140,7 @@ function is_thumbnail ($media, $images_only=true)
 
 function is_config ($media)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if ($media != "")
   {
@@ -2166,7 +2166,7 @@ function is_config ($media)
 
 function is_encryptedfile ($location, $file)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if (valid_locationname ($location) && valid_objectname ($file))
   {
@@ -2225,14 +2225,12 @@ function substr_in_array ($search, $array)
 
 function downloadobject ($location, $object, $container="", $lang="en", $user="")
 {
-  global $mgmt_config;
+  global $mgmt_config, $hcms_lang, $lang;
   
   $location = deconvertpath ($location, "file");
 
   if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object))
   {
-    // language file
-    require_once ($mgmt_config['abs_path_cms']."language/page_view.inc.php");
     
     $prefix = uniqid();
 
@@ -2261,7 +2259,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
       echo $content;
     }
     // return info page
-    else echo showinfopage ($text14[$lang], $lang);
+    else echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
   }
   else return false;
 }
@@ -2301,7 +2299,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     
     // if browser is IE then we need to encode it (does not detect IE 11)
     if (isset ($user_client['msie']) && $user_client['msie'] > 0) $name = rawurlencode ($name);     
-      
+
     // read file without headers
     if ($force == "noheader")
     {
@@ -2504,7 +2502,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
 
 function loadcontainer ($container, $type="work", $user)
 {
-  global $mgmt_config;
+  global $mgmt_config, $hcms_lang, $lang;
   
   $contentdata = false;
 
@@ -2640,7 +2638,7 @@ function loadcontainer ($container, $type="work", $user)
 
 function savecontainer ($container, $type="work", $data, $user, $init=false)
 {
-  global $mgmt_config;
+  global $mgmt_config, $hcms_lang, $lang;
 
   if (valid_objectname ($container) && $data != "" && ($type == "work" || $type == "published") && valid_objectname ($user))
   {
@@ -2713,7 +2711,7 @@ function savecontainer ($container, $type="work", $data, $user, $init=false)
 
 function is_mobilebrowser ()
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if ($_SERVER['HTTP_USER_AGENT'])
   {
@@ -2742,10 +2740,9 @@ function is_mobilebrowser ()
 
 function createtask ($site, $from_user, $from_email, $to_user, $to_email, $category, $object, $message, $sendmail, $priority="low")
 {
-  global $mgmt_config, $lang, $lang_codepage;
+  global $mgmt_config, $lang, $hcms_lang_codepage;
   
-  require ($mgmt_config['abs_path_cms']."language/task_create.inc.php");
-  // include hypermailer class
+    // include hypermailer class
   if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");  
 
   // ---------------------------------- create new task -----------------------------------
@@ -2792,7 +2789,7 @@ function createtask ($site, $from_user, $from_email, $to_user, $to_email, $categ
 <object>".$object_esc."</object>
 <object_id>".$object_id."</object_id>
 <priority>".$priority."</priority>
-<description><![CDATA[<strong>".$text13[$lang]." '".$from_user."'".$email_schema.":</strong>\n".$message."]]></description>
+<description><![CDATA[<strong>".$hcms_lang['new-task-from-user'][$lang]." '".$from_user."'".$email_schema.":</strong>\n".$message."]]></description>
 </task>";
 
     // send mail
@@ -2805,11 +2802,11 @@ function createtask ($site, $from_user, $from_email, $to_user, $to_email, $categ
   
       $mailer = new HyperMailer();
       $mailer->AddAddress ($to_email);
-      $mailer->AddReplyTo ($from_email, "hyperCMS: ".$text0[$lang]." ".$from_user);
+      $mailer->AddReplyTo ($from_email, "hyperCMS: ".$hcms_lang['please-select-a-user'][$lang]." ".$from_user);
       $mailer->From = $from_email;
-      $mailer->Subject = "hyperCMS: ".$text13[$lang]." ".$from_user;
-      $mailer->CharSet = $lang_codepage[$lang];
-      $mailer->Body = html_decode ($message."\n\n".$object_link, $lang_codepage[$lang]);
+      $mailer->Subject = "hyperCMS: ".$hcms_lang['new-task-from-user'][$lang]." ".$from_user;
+      $mailer->CharSet = $hcms_lang_codepage[$lang];
+      $mailer->Body = html_decode ($message."\n\n".$object_link, $hcms_lang_codepage[$lang]);
       $mailer->Send();
     }
 
@@ -2864,10 +2861,9 @@ function createtask ($site, $from_user, $from_email, $to_user, $to_email, $categ
 
 function deletetask ($user, $delete_id)
 {
-  global $mgmt_config, $lang;
+  global $mgmt_config, $hcms_lang, $lang;
   
-  require ($mgmt_config['abs_path_cms']."language/task_delete.inc.php");
-  
+    
   if (is_array ($delete_id) && valid_objectname ($user))
   {
      // load task file
@@ -2891,7 +2887,7 @@ function deletetask ($user, $delete_id)
           if ($test != false)
           {
             $add_onload = "";
-            $show = "<span class=hcmsHeadline>".$text0[$lang]."</span><br />\n";
+            $show = "<span class=hcmsHeadline>".$hcms_lang['the-tasks-were-successfully-removed'][$lang]."</span><br />\n";
           }
           else
           {
@@ -2914,7 +2910,7 @@ function deletetask ($user, $delete_id)
       else
       {
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$text1[$lang]."</span>\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['no-tasks-selected'][$lang]."</span>\n";
       }
     }
     else
@@ -2923,13 +2919,13 @@ function deletetask ($user, $delete_id)
       unlockfile ($user, $mgmt_config['abs_path_data']."task/", $user.".xml.php");
       
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$text2[$lang]."</span><br />\n".$text3[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['could-not-access-task-list'][$lang]."</span><br />\n".$hcms_lang['task-list-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
   else
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$text4[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span>\n";
   }
      
   // save log
@@ -2955,9 +2951,7 @@ function deletetask ($user, $delete_id)
 
 function createworkflow ($site, $wf_name, $cat, $usermax=2, $scriptmax=0)
 {
-  global $eventsystem, $lang, $mgmt_config;
-
-  require ($mgmt_config['abs_path_cms']."language/workflow_create.inc.php"); 
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
   
   $add_onload = "";
   $show = "";
@@ -2965,7 +2959,7 @@ function createworkflow ($site, $wf_name, $cat, $usermax=2, $scriptmax=0)
   if (!valid_publicationname ($site) || !valid_objectname ($wf_name) || strlen ($wf_name) > 100 || $cat == "")
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext5[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['a-name-is-required'][$lang]."</span>\n";
   }
   else
   {
@@ -2987,7 +2981,7 @@ function createworkflow ($site, $wf_name, $cat, $usermax=2, $scriptmax=0)
     if (@is_file ($mgmt_config['abs_path_data']."workflow_master/".$wf_file))
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span><br />\n".$subtext1[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-name'][$lang]."\n";
     }
     else
     {
@@ -3008,12 +3002,12 @@ function createworkflow ($site, $wf_name, $cat, $usermax=2, $scriptmax=0)
         if ($test == false)
         {
           $add_onload = "";
-          $show = "<span class=hcmsHeadline>".$item_type." '".$wf_name."' ".$subtext2[$lang]."</span>\n".$subtext3[$lang]."\n";
+          $show = "<span class=hcmsHeadline>".$item_type." '".$wf_name."' ".$hcms_lang['the-workflow-object-could-not-be-created'][$lang]."</span>\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
         }
         else
         {
           $add_onload = "parent.frames['mainFrame'].location.href='workflow_manager.php?site=".url_encode($site)."&wf_name=".url_encode($wf_name)."'; ";
-          $show = "<span class=hcmsHeadline>".$subtext4[$lang]."</span>\n";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-was-created'][$lang]."</span>\n";
         }
       }
       elseif ($cat == "script")
@@ -3024,12 +3018,12 @@ function createworkflow ($site, $wf_name, $cat, $usermax=2, $scriptmax=0)
         if ($test == false)
         {
           $add_onload = "";
-          $show = "<span class=hcmsHeadline>".$subtext2[$lang]."</span><br />\n".$subtext3[$lang]."\n";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
         }
         else
         {
           $add_onload = "parent.frames['mainFrame'].location.href='workflow_script_form.php?site=".url_encode($site)."&cat=".url_encode($cat)."&save=no&preview=no&wf_file=".url_encode($wf_file)."'; ";
-          $show = "<span class=hcmsHeadline>".$subtext4[$lang]."</span>\n";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-was-created'][$lang]."</span>\n";
         }
       }
     }
@@ -3053,17 +3047,16 @@ function createworkflow ($site, $wf_name, $cat, $usermax=2, $scriptmax=0)
 
 function deleteworkflow ($site, $wf_name, $cat)
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  require ($mgmt_config['abs_path_cms']."language/workflow_delete.inc.php");
-
+  
   $add_onload = "";
   $show = "";
   
   if (!valid_publicationname ($site) || !valid_objectname ($wf_name) || $cat == "")
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext3[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['a-name-is-required'][$lang]."</span>\n";
   }
   else
   {
@@ -3107,18 +3100,18 @@ function deleteworkflow ($site, $wf_name, $cat)
       if ($deletefile == true)
       {
         $add_onload = "parent.frames['mainFrame'].location.href='empty.php'; ";
-        $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span>\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-was-removed'][$lang]."</span>\n";
       }
       else
       {
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$subtext1[$lang]."</span><br />\n".$subtext2[$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-could-not-be-removed'][$lang]."</span><br />\n".$hcms_lang['the-workflow-object-does-not-exist-or-you-do-not-have-write-permissions'][$lang]."\n";
       }  
     }
     else
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$subtext1[$lang]."</span><br />\n".$subtext2[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-could-not-be-removed'][$lang]."</span><br />\n".$hcms_lang['the-workflow-object-does-not-exist-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
 
@@ -3333,7 +3326,7 @@ function buildworkflow ($workflow_data)
 
 function getworkflowitem ($site, $workflow_file, $workflow, $user)
 {
-  global $mgmt_config;
+  global $mgmt_config, $hcms_lang, $lang;
   
   if (valid_publicationname ($site) && valid_objectname ($workflow_file) && $workflow != "" && valid_objectname ($user))
   {
@@ -3488,7 +3481,7 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
 
 function workflowaccept ($site, $location, $object, $workflow, $item_id, $user, $message, $sendmail=true, $priority="medium")
 {
-  global $mgmt_config, $lang;
+  global $mgmt_config, $hcms_lang, $lang;
  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $workflow != "" && $item_id != "" && in_array ($priority, array("high","medium","low")))
   {
@@ -3754,9 +3747,8 @@ function workflowaccept ($site, $location, $object, $workflow, $item_id, $user, 
                 else
                 {
                   // include page reject language file
-                  require ($mgmt_config['abs_path_cms']."language/page_workflow_reject.inc.php");
-                  
-                  $message = $subtext0[$lang];
+                                    
+                  $message = $hcms_lang['onsubtext1'][$lang];
                   
                   $workflow = workflowreject ($site, $location, $object, $workflow, $scriptid_array[0], $user, $message, $sendmail, $priority);
                 }
@@ -3791,8 +3783,7 @@ function acceptobject ($site, $location, $object, $item_id, $user, $message, $se
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $item_id != "" && in_array ($priority, array("high","medium","low")))
   {  
-    require ($mgmt_config['abs_path_cms']."language/page_workflow_accept.inc.php");
-    
+        
     // read actual file info (to get associated template and content)
     if (!isset ($contentfile)) 
     {
@@ -3815,20 +3806,20 @@ function acceptobject ($site, $location, $object, $item_id, $user, $message, $se
       if ($test == true)
       {
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$subtext1[$lang]."</span><br />\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['content-has-been-forwarded-to-next-instance'][$lang]."</span><br />\n";
         
         $error_switch = "no";
       }
       else
       {
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$subtext2[$lang]."</span><br />\n".$subtext3[$lang]."\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['workflow-could-not-be-saved'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       }  
     }
     else
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />\n".$subtext5[$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['workflow-access-is-missing'][$lang]."</span><br />\n".$hcms_lang['worklfow-doesnt-exist-or-could-not-be-loaded'][$lang]."\n";
     }
   }
   
@@ -3853,7 +3844,7 @@ function acceptobject ($site, $location, $object, $item_id, $user, $message, $se
 
 function workflowreject ($site, $location, $object, $workflow, $item_id, $user, $message, $sendmail, $priority="medium")
 {
-  global $mgmt_config, $lang;
+  global $mgmt_config, $hcms_lang, $lang;
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $workflow != "" && $item_id != "" && in_array ($priority, array("high","medium","low")))
   {  
@@ -4024,15 +4015,14 @@ function workflowreject ($site, $location, $object, $workflow, $item_id, $user, 
 
 function rejectobject ($site, $location, $object, $item_id, $user, $message, $sendmail, $priority="medium")
 {
-  global $mgmt_config, $lang, $contentfile;
+  global $mgmt_config, $contentfile, $hcms_lang, $lang;
  
   $add_onload = "";
   $show = "";
  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $item_id != "" && in_array ($priority, array("high","medium","low")))
   {  
-    require ($mgmt_config['abs_path_cms']."language/page_workflow_reject.inc.php");
-    
+        
     // read actual file info (to get associated template and content)
     if (!isset ($contentfile)) 
     {
@@ -4055,20 +4045,20 @@ function rejectobject ($site, $location, $object, $item_id, $user, $message, $se
       if ($test == true)
       {
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$subtext1[$lang]."</span><br />\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['content-has-been-send-back'][$lang]."</span><br />\n";
         
         $error_switch = "no";
       }
       else
       {
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$subtext2[$lang]."</span><br />\n".$subtext3[$lang]."\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['workflow-could-not-be-saved'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       }  
     }
     else
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />\n".$subtext5[$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['workflow-access-is-missing'][$lang]."</span><br />\n".$hcms_lang['worklfow-doesnt-exist-or-could-not-be-loaded'][$lang]."\n";
     }
   }
   
@@ -4100,7 +4090,7 @@ function rejectobject ($site, $location, $object, $item_id, $user, $message, $se
 
 function inherit_db_load ($user)
 {
-  global $siteaccess, $mgmt_config;  
+  global $siteaccess, $mgmt_config, $hcms_lang, $lang;  
 
   $inherit_db_data = loadlockfile ($user, $mgmt_config['abs_path_data']."config/", "inheritance.dat", 3);
   
@@ -4161,7 +4151,7 @@ function inherit_db_load ($user)
 
 function inherit_db_read ()
 { 
-  global $mgmt_config;  
+  global $user, $mgmt_config, $hcms_lang, $lang;  
 
   $inherit_db_data = loadfile ($mgmt_config['abs_path_data']."config/", "inheritance.dat");
   
@@ -4218,7 +4208,7 @@ function inherit_db_read ()
 
 function inherit_db_close ($user)
 {
-  global $mgmt_config;  
+  global $mgmt_config, $hcms_lang, $lang;  
   
   return unlockfile ($user, $mgmt_config['abs_path_data']."config/", "inheritance.dat");
 }  
@@ -4234,7 +4224,7 @@ function inherit_db_close ($user)
 
 function inherit_db_save ($inherit_db, $user)
 {
-  global $mgmt_config;
+  global $mgmt_config, $hcms_lang, $lang;
   
   if (sizeof ($inherit_db) >= 1)
   {    
@@ -4435,12 +4425,9 @@ function getconfigvalue ($config, $in_key="")
 
 function createinstance ($instance_name, $settings, $user="sys")
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
          
-  require ($mgmt_config['abs_path_cms']."language/instance_create.inc.php");
-  
+    
   // eventsystem
   if ($eventsystem['oncreateinstance_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
     oncreateinstance_pre ($instance_name, $settings, $user); 
@@ -4462,7 +4449,7 @@ function createinstance ($instance_name, $settings, $user="sys")
      )
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$text0[$lang]."</span><br />\n".$text1[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-enter-an-instance-name'][$lang]."\n";
   }
   // test if input data includes special characters incl. white spaces
   elseif (
@@ -4472,19 +4459,19 @@ function createinstance ($instance_name, $settings, $user="sys")
          )
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$text2[$lang]."</span><br />\n".$text3[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
   }
   // check write permissions in CMS
   elseif (!is_writeable ($mgmt_config['abs_path_cms']."config/") || !is_writeable ($mgmt_config['abs_path_cms']."temp/") || !is_writeable ($mgmt_config['abs_path_cms']."temp/view/"))
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$text8[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['you-do-not-have-write-permissions'][$lang]."</span>\n";
   }
   // check if instance name exists already
   elseif (is_file ($mgmt_config['abs_path_cms']."config/".trim ($instance_name).".inc.php"))
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$text4[$lang]."</span><br />\n".$text3[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
   }
   else
   {
@@ -4532,7 +4519,7 @@ function createinstance ($instance_name, $settings, $user="sys")
       if (!$result_data || !$result_rep)
       {
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$text8[$lang]."</span>\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['you-do-not-have-write-permissions'][$lang]."</span>\n";
         
         $errcode = "10701";
         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createinstance could not create ".$abs_path_data." or ".$abs_path_rep;
@@ -4543,17 +4530,17 @@ function createinstance ($instance_name, $settings, $user="sys")
     if ($show == "" && is_dir ($abs_path_data))
     {
       $result = copyrecursive ($mgmt_config['abs_path_cms']."install/data/", $abs_path_data);
-      if ($result == false) $show = "<span class=hcmsHeadline>".$text7[$lang]."</span><br />\n".$text8[$lang]."\n";
+      if ($result == false) $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
     }
-    else $show = "<span class=hcmsHeadline>".$text9[$lang]."</span><br />\n";
+    else $show = "<span class=hcmsHeadline>".$hcms_lang['information-is-missing-or-you-do-not-have-write-permissions'][$lang]."</span><br />\n";
     
     // copy structure to external repository
     if ($show == "" && is_dir ($abs_path_rep))
     {
       $result = copyrecursive ($mgmt_config['abs_path_cms']."install/repository/", $abs_path_rep);
-      if ($result == false) $show = "<span class=hcmsHeadline>".$text7[$lang]."</span><br />\n".$text8[$lang]."\n";
+      if ($result == false) $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
     }
-    else $show = "<span class=hcmsHeadline>".$text9[$lang]."</span><br />\n";
+    else $show = "<span class=hcmsHeadline>".$hcms_lang['information-is-missing-or-you-do-not-have-write-permissions'][$lang]."</span><br />\n";
     
     // create database
     if ($show == "")
@@ -4631,7 +4618,7 @@ function createinstance ($instance_name, $settings, $user="sys")
         
         if ($result == false)
         {
-          $show = "<span class=hcmsHeadline>".$text7[$lang]."</span><br />\n".$text8[$lang]."\n";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
         
           $errcode = "10702";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createinstance could not create config/".$instance_name.".inc.php";
@@ -4654,7 +4641,7 @@ function createinstance ($instance_name, $settings, $user="sys")
         
         if ($result == false)
         {
-          $show = "<span class=hcmsHeadline>".$text7[$lang]."</span><br />\n".$text8[$lang]."\n";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
           
           $errcode = "10703";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createinstance could not create search/search_config.inc.php";
@@ -4680,7 +4667,7 @@ function createinstance ($instance_name, $settings, $user="sys")
         oncreateinstance_post ($instance_name, $settings, $user); 
     
       $result_ok = true;
-      $show = "<span class=hcmsHeadline>".$text5[$lang]."</span><br />\n".$text6[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-was-created-successfully'][$lang]."</span><br />\n".$hcms_lang['now-you-can-login-using-the-admin-user'][$lang]."\n";
     }
   }
   
@@ -4706,12 +4693,9 @@ function createinstance ($instance_name, $settings, $user="sys")
 
 function editinstance ($instance_name, $content, $user="sys")
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
          
-  require ($mgmt_config['abs_path_cms']."language/instance_edit.inc.php");
-  
+    
   // eventsystem
   if ($eventsystem['onsaveinstance_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
     onsaveinstance_pre ($instance_name, $content, $user); 
@@ -4725,7 +4709,7 @@ function editinstance ($instance_name, $content, $user="sys")
   if (!is_array ($mgmt_config) || trim ($content) == "" || !valid_publicationname ($instance_name) || !is_file ($mgmt_config['abs_path_cms']."config/".$instance_name.".inc.php") || !valid_objectname ($user) || trim ($instance_name) == "config")
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$text0[$lang]."</span><br />\n".$text1[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-select-an-instance'][$lang]."\n";
   }
   else
   {
@@ -4734,7 +4718,7 @@ function editinstance ($instance_name, $content, $user="sys")
     
     if ($result == false)
     {
-      $show = "<span class=hcmsHeadline>".$text3[$lang]."</span><br />\n".$text4[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-could-not-be-saved'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       
       $errcode = "10721";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|editinstance could not save config/".$instance_name.".inc.php";
@@ -4751,7 +4735,7 @@ function editinstance ($instance_name, $content, $user="sys")
         onsaveinstance_post ($instance_name, $content, $user); 
     
       $result_ok = true;
-      $show = "<span class=hcmsHeadline>".$text2[$lang]."</span><br />\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-configuration-was-saved-successfully'][$lang]."</span><br />\n";
     }
   }
   
@@ -4777,12 +4761,9 @@ function editinstance ($instance_name, $content, $user="sys")
 
 function deleteinstance ($instance_name, $user="sys")
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
          
-  require ($mgmt_config['abs_path_cms']."language/instance_delete.inc.php");
-  
+    
   // eventsystem
   if ($eventsystem['ondeleteinstance_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
     ondeleteinstance_pre ($instance_name, $user); 
@@ -4809,7 +4790,7 @@ function deleteinstance ($instance_name, $user="sys")
   if (!is_array ($mgmt_config) || !valid_publicationname ($instance_name) || !is_file ($mgmt_config['abs_path_cms']."config/".$instance_name.".inc.php") || !valid_objectname ($user) || trim ($instance_name) == "config")
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$text0[$lang]."</span><br />\n".$text1[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-select-an-instance'][$lang]."\n";
   }
   elseif (is_file ($mgmt_config['abs_path_cms']."config/".$instance_name.".inc.php"))
   {
@@ -4869,7 +4850,7 @@ function deleteinstance ($instance_name, $user="sys")
     }
     else
     {
-      $show = "<span class=hcmsHeadline>".$text6[$lang]."</span><br />\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-information-cannot-be-accessed'][$lang]."</span><br />\n";
       
       $errcode = "10736";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deleteinstance could not connect to the database ".$mgmt_config['dbname'];
@@ -4882,7 +4863,7 @@ function deleteinstance ($instance_name, $user="sys")
       
       if ($result == false)
       {
-        $show = "<span class=hcmsHeadline>".$text4[$lang]."</span><br />\n".$text5[$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-could-not-be-removed'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       
         $errcode = "10711";
         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deleteinstance could not delete config/".$instance_name.".inc.php";
@@ -4898,10 +4879,10 @@ function deleteinstance ($instance_name, $user="sys")
     
       $result_ok = true;
       $add_onload = "parent.frames['mainFrame'].location.href='../../empty.php'; ";
-      $show = "<span class=hcmsHeadline>".$text2[$lang]."</span><br />\n".$text3[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-was-deleted-successfully'][$lang]."</span><br />\n".$hcms_lang['all-instance-entries-were-removed-successfully'][$lang]."\n";
     }
   }
-  else $show = "<span class=hcmsHeadline>".$text6[$lang]."</span><br />\n";
+  else $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-information-cannot-be-accessed'][$lang]."</span><br />\n";
   
   // save log
   include ($mgmt_config['abs_path_cms']."config.inc.php");
@@ -4927,12 +4908,9 @@ function deleteinstance ($instance_name, $user="sys")
 
 function createpublication ($site_name, $user="sys")
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
          
-  require ($mgmt_config['abs_path_cms']."language/site_create.inc.php");
-  
+    
   // eventsystem
   if ($eventsystem['oncreatepublication_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
     oncreatepublication_pre ($site_name, $user); 
@@ -4943,13 +4921,13 @@ function createpublication ($site_name, $user="sys")
   if (!valid_publicationname ($site_name) || strlen ($site_name) > 100 || !valid_objectname ($user))
   {
     $add_onload = "parent.frames['mainFrame'].location.href='empty.php'); ";
-    $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span><br />\n".$subtext1[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['required-publication-name-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-enter-a-name'][$lang]."\n";
   }
   // test if site name includes special characters
   elseif (specialchr ($site_name, "-_") == true)
   {
     $add_onload = "parent.frames['mainFrame'].location.href='empty.php'); ";
-    $show = "<span class=hcmsHeadline>".$subtext2[$lang]."</span><br />\n".$subtext3[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
   }
   else
   {
@@ -4976,7 +4954,7 @@ function createpublication ($site_name, $user="sys")
             
             // return message if site exists already
             $add_onload = "parent.frames['mainFrame'].location.href='empty.php'); ";
-            $show = "<span class=hcmsHeadline>".$subtext4[$lang]."</span><br />\n".$subtext3[$lang]."\n";
+            $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
                   
             break;
           }
@@ -5246,7 +5224,7 @@ function createpublication ($site_name, $user="sys")
                 oncreatepublication_post ($site_name, $user);            
              
               $add_onload = "parent.frames['mainFrame'].location.href='site_edit_form.php?site=*Null*&preview=no&site_name=".url_encode($site_name)."'; setTimeout (function(){parent.frames['controlFrame'].location.href='control_site_menu.php?site=".url_encode($site_name)."'}, 1000); ";
-              $show = "<span class=hcmsHeadline>".$subtext5[$lang]."</span><br />\n".$subtext6[$lang]."\n";
+              $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-was-created-successfully'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-publication'][$lang]."\n";
               
               // success
               $result_ok = true;
@@ -5257,7 +5235,7 @@ function createpublication ($site_name, $user="sys")
               inherit_db_close ($user);
               
               $add_onload = "parent.frames['mainFrame'].location.href='empty.php'; ";
-              $show = "<span class=hcmsHeadline>".$subtext7[$lang]."</span><br />\n".$subtext8[$lang]."\n";          
+              $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";          
             }
           }
           else
@@ -5266,7 +5244,7 @@ function createpublication ($site_name, $user="sys")
             inherit_db_close ($user);
         
             $add_onload = "parent.frames['mainFrame'].location.href='empty.php'; ";
-            $show = "<span class=hcmsHeadline>".$subtext7[$lang]."</span><br />\n".$subtext12[$lang]."\n";
+            $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['an-error-occured-in-the-data-manipulation'][$lang]."\n";
           }
         }
         else
@@ -5282,7 +5260,7 @@ function createpublication ($site_name, $user="sys")
       inherit_db_close ($user);
     
       $add_onload = "parent.frames['mainFrame'].location.href='empty.php'; ";
-      $show = "<span class=hcmsHeadline>".$subtext9[$lang]."</span><br />\n".$subtext10[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
   
@@ -5307,12 +5285,9 @@ function createpublication ($site_name, $user="sys")
 
 function editpublication ($site_name, $setting, $user="sys")
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
          
-  require ($mgmt_config['abs_path_cms']."language/site_edit_script.inc.php");
-  
+    
   $result_ok = false;
   $exclude_folders_new = "";
   
@@ -5740,7 +5715,7 @@ allow_ip = ".$allow_ip_new;
           onsavepublication_post ($site_name, $site_mgmt_config, $site_publ_config_ini, $site_publ_config_prop, $user);
     
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$text0[$lang]."</span>\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-configuration-was-saved-successfully'][$lang]."</span>\n";
         
         // success
         $result_ok = true;
@@ -5748,19 +5723,19 @@ allow_ip = ".$allow_ip_new;
       else
       {
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$text1[$lang]."</span>\n".$text2[$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span>\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
       }
     }
     else
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$text1[$lang]."</span>\n".$text2[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span>\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
   else
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$text3[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span>\n";
   }
   
   $result = array();
@@ -5781,10 +5756,9 @@ allow_ip = ".$allow_ip_new;
 
 function deletepublication ($site_name, $user="sys")
 {
-  global $mgmt_config, $eventsystem, $lang;
+  global $mgmt_config, $eventsystem, $hcms_lang, $lang;
          
-  require ($mgmt_config['abs_path_cms']."language/site_delete.inc.php");
-  
+    
   $result_ok = false;
   
   // check if login is an attribute of a sent string
@@ -5827,13 +5801,13 @@ function deletepublication ($site_name, $user="sys")
   if ($file_count > 0)
   {
     $add_onload = "parent.frames['mainFrame'].location.href='empty.php'; ";
-    $show = "<span class=hcmsHeadline>".$subtext4[$lang]."</span><br />\n".$subtext8[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-cannot-be-removed'][$lang]."</span><br />\n".$hcms_lang['the-publication-still-holds-folders-or-objects'][$lang]."\n";
   }
   // check if sent data is available
   elseif (!valid_publicationname ($site_name) || !valid_objectname ($user))
   {
     $add_onload = "parent.frames['mainFrame'].location.href='empty.php'; ";
-    $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span><br />\n".$subtext1[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-select-a-publication'][$lang]."\n";
   }
   else
   {
@@ -6031,7 +6005,7 @@ function deletepublication ($site_name, $user="sys")
             ondeletepublication_post ($site_name, $user);        
         
           $add_onload = "top.frames['navFrame'].location.href='explorer.php?refresh=1'; parent.frames['mainFrame'].location.href='empty.php'; ";
-          $show = "<span class=hcmsHeadline>".$subtext2[$lang]."</span><br />\n".$subtext3[$lang]."<br>\n";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-was-deleted-successfully'][$lang]."</span><br />\n".$hcms_lang['all-publication-entries-were-removed-successfully'][$lang]."<br>\n";
           
           // success
           $result_ok = true;
@@ -6048,7 +6022,7 @@ function deletepublication ($site_name, $user="sys")
         inherit_db_close ($user);
     
         $add_onload = "parent.frames['mainFrame'].location.href='empty.php'); ";
-        $show = "<span class=hcmsHeadline>".$subtext4[$lang]."</span><br />\n".$subtext5[$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-cannot-be-removed'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       }
     }
     else
@@ -6057,7 +6031,7 @@ function deletepublication ($site_name, $user="sys")
       inherit_db_close ($user);
     
       $add_onload = "parent.frames['mainFrame'].location.href='empty.php'); ";
-      $show = "<span class=hcmsHeadline>".$subtext6[$lang]."</span><br />\n".$subtext7[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
   
@@ -6085,10 +6059,9 @@ function deletepublication ($site_name, $user="sys")
 
 function createpersonalization ($site, $pers_name, $cat)
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  require ($mgmt_config['abs_path_cms']."language/pers_create.inc.php");
-  
+    
   $result_ok = false;
   
   if (valid_publicationname ($site) && valid_objectname ($pers_name) && strlen ($pers_name) <= 100 && ($cat == "tracking" || $cat == "profile"))
@@ -6105,8 +6078,8 @@ function createpersonalization ($site, $pers_name, $cat)
     if (@is_file ($mgmt_config['abs_path_data']."customer/".$site."/".$persfile))
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span>
-      ".$subtext1[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-object-exists-already'][$lang]."</span>
+      ".$hcms_lang['please-try-another-template-name'][$lang]."\n";
     }
     else
     {
@@ -6116,13 +6089,13 @@ function createpersonalization ($site, $pers_name, $cat)
       if ($test == false)
       {
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$subtext2[$lang]."</span>
-        ".$subtext3[$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-object-could-not-be-created'][$lang]."</span>
+        ".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       }
       else
       {
         $add_onload = "parent.frames['mainFrame'].location.href='pers_form.php?site=".url_encode($site)."&cat=".url_encode($cat)."&save=no&preview=no&persfile=".url_encode($persfile)."'; ";
-        $show = "<span class=hcmsHeadline>".$subtext4[$lang]."</span>\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-object-was-created-successfully'][$lang]."</span>\n";
         
         // success
         $result_ok = true;
@@ -6132,7 +6105,7 @@ function createpersonalization ($site, $pers_name, $cat)
   else 
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext5[$lang]."</span>";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['a-name-is-required'][$lang]."</span>";
   }    
 
   $result = array();
@@ -6154,10 +6127,9 @@ function createpersonalization ($site, $pers_name, $cat)
 
 function deletepersonalization ($site, $pers_name, $cat)
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  require ($mgmt_config['abs_path_cms']."language/pers_delete.inc.php");
-  
+    
   $result_ok = false;
   
   if (valid_publicationname ($site) && valid_objectname ($pers_name) && ($cat == "tracking" || $cat == "profile"))
@@ -6197,7 +6169,7 @@ function deletepersonalization ($site, $pers_name, $cat)
       if ($test == true)
       {
         $add_onload = "parent.frames['mainFrame'].location.href='empty.php'; ";
-        $show = "<span class=hcmsHeadline>".$subtext2[$lang]."</span>\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-object-was-removed'][$lang]."</span>\n";
         
         // success
         $result_ok = true;
@@ -6205,19 +6177,19 @@ function deletepersonalization ($site, $pers_name, $cat)
       else
       {
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$subtext3[$lang]."</span><br />".$subtext4[$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-object-could-not-be-removed'][$lang]."</span><br />".$hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions'][$lang]."\n";
       }  
     }
     else
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$subtext3[$lang]."</span><br />\n".$subtext4[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-object-could-not-be-removed'][$lang]."</span><br />\n".$hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions'][$lang]."\n";
     }
   }
   else 
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext5[$lang]."</span>";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['a-name-is-required'][$lang]."</span>";
   }    
   
   $result = array();
@@ -6241,10 +6213,9 @@ function deletepersonalization ($site, $pers_name, $cat)
 
 function createtemplate ($site, $template, $cat)
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  require ($mgmt_config['abs_path_cms']."language/template_create.inc.php");
-  
+    
   $result_ok = false;
   
   if (valid_publicationname ($site) && valid_objectname ($template) && strlen ($template) <= 60 && in_array ($cat, array("page","comp","inc","meta")))
@@ -6279,7 +6250,7 @@ function createtemplate ($site, $template, $cat)
     if (@is_file ($mgmt_config['abs_path_template'].$site."/".$template))
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span><br />\n".$subtext1[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-tempate-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-template-name'][$lang]."\n";
     }
     else
     {
@@ -6294,12 +6265,12 @@ function createtemplate ($site, $template, $cat)
       if ($test == false)
       {
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$subtext2[$lang]."</span><br />\n".$subtext3[$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-template-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       }
       else
       {
         $add_onload = "parent.frames['mainFrame'].location.href='frameset_template_edit.php?site=".url_encode($site)."&cat=".url_encode($cat)."&save=no&template=".url_encode($template)."'; ";
-        $show = "<span class=hcmsHeadline>".$subtext4[$lang]."</span><br />\n".$subtext5[$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-template-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-template'][$lang]."\n";
         
         // success
         $result_ok = true;
@@ -6309,7 +6280,7 @@ function createtemplate ($site, $template, $cat)
   else 
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext6[$lang]."</span>";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['a-template-name-is-required'][$lang]."</span>";
   }
   
   $result = array();
@@ -6334,7 +6305,7 @@ function createtemplate ($site, $template, $cat)
 
 function gettemplates ($site, $cat)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   $result = array();
   
@@ -6414,7 +6385,7 @@ function gettemplates ($site, $cat)
 
 function loadtemplate ($site, $template)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   $result = array();
   
@@ -6475,10 +6446,9 @@ function loadtemplate ($site, $template)
 
 function edittemplate ($site, $template, $cat, $user, $content="", $extension="", $application="")
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  require ($mgmt_config['abs_path_cms']."language/template_edit.inc.php");
-  
+    
   $result_save = false;
   $add_onload = "";
   $show = "";
@@ -6536,12 +6506,12 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
     
       if ($result_save == false)
       {
-        $show = "<p class=hcmsHeadline>".$text0[$lang]."</p>\n".$text1[$lang]."\n";
+        $show = "<p class=hcmsHeadline>".$hcms_lang['template-could-not-be-saved'][$lang]."</p>\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       }
     }
     else
     {
-      $show = "<p class=hcmsHeadline>".$text6[$lang]."</p>\n".$text7[$lang]."\n"; 
+      $show = "<p class=hcmsHeadline>".$hcms_lang['functional-error-occured'][$lang]."</p>\n".$hcms_lang['an-error-occured-in-function-setcontent'][$lang]."\n"; 
     }
   }
   
@@ -6565,10 +6535,9 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
 
 function deletetemplate ($site, $template, $cat)
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  require ($mgmt_config['abs_path_cms']."language/template_delete.inc.php");
-  
+    
   $result_ok = false;
   
   if (valid_publicationname ($site) && valid_objectname ($template) && in_array ($cat, array("page","comp","inc","meta")))
@@ -6607,7 +6576,7 @@ function deletetemplate ($site, $template, $cat)
       if ($test == true)
       {
         $add_onload = "parent.frames['mainFrame'].location.href='empty.php'; ";
-        $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span>\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-template-was-removed'][$lang]."</span>\n";
         
         // success
         $result_ok = true;
@@ -6615,19 +6584,19 @@ function deletetemplate ($site, $template, $cat)
       else
       {
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$subtext1[$lang]."</span><br />\n".$subtext2[$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-template-could-not-be-removed'][$lang]."</span><br />\n".$hcms_lang['the-template-does-not-exist-or-you-do-not-have-write-permissions'][$lang]."\n";
       }  
     }
     else
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$subtext1[$lang]."</span><br />\n".$subtext2[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-template-could-not-be-removed'][$lang]."</span><br />\n".$hcms_lang['the-template-does-not-exist-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
   else 
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext3[$lang]."</span>";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['a-template-name-is-required'][$lang]."</span>";
   }
   
   $result = array();
@@ -6650,10 +6619,9 @@ function deletetemplate ($site, $template, $cat)
 
 function createuser ($site, $login, $password, $confirm_password, $user="sys")
 {
-  global $eventsystem, $lang, $lang_shortcut_default, $mgmt_config;
+  global $eventsystem, $mgmt_config, $mgmt_lang_shortcut_default, $hcms_lang, $lang;
 
-  require ($mgmt_config['abs_path_cms']."language/user_create.inc.php");
-  
+    
   $add_onload = "";
   $show = "";
   
@@ -6665,37 +6633,37 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
   if (!valid_objectname ($login) || strlen ($login) > 20 || $password == "" || strlen ($password) > 20 || $confirm_password == "")
   {
     $add_onload = "";
-    $show = "<span class=\"hcmsHeadline\">".$subtext0[$lang]."</span><br />\n".$subtext1[$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['necessary-user-information-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-fill-out-all-fields'][$lang]."\n";
   }
   // check if user it not admin or sys
   elseif ($login == "admin" || $login == "sys")
   {
     $add_onload = "";
-    $show = "<span class=\"hcmsHeadline\">".$subtext6[$lang]."!</span><br />\n".$subtext7[$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-exists-already'][$lang]."!</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
   }
   // check if submitted passwords has at least 8 digits
   elseif (strlen ($password) < 8 || strlen ($confirm_password) < 8)
   {  
     $add_onload = "";
-    $show = "<span class=\"hcmsHeadline\">".$subtext8[$lang]."</span><br />\n".$subtext9[$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['your-submitted-passwords-has-less-than-8-digits'][$lang]."</span><br />\n".$hcms_lang['please-select-a-password-with-at-least-8-digits'][$lang]."\n";
   }    
   // test if login name contains special characters
   elseif (specialchr ($login, "-_") == true)
   {
     $add_onload = "";
-    $show = "<span class=\"hcmsHeadline\">".$subtext3[$lang]."</span><br />\n".$subtext4[$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['onhcms_lang'][$lang]."\n";
   }
   // check if submitted passwords are equal
   elseif ($password != $confirm_password)
   {  
     $add_onload = "";
-    $show = "<span class=\"hcmsHeadline\">".$subtext10[$lang]."</span><br />\n".$subtext11[$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['your-submitted-passwords-are-not-equal'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-it-again-'][$lang]."\n";
   }    
   // check for strong password (if enabled)
   elseif ($mgmt_config['strongpassword'] == true && strlen (checkpassword ($password)) > 1)
   {
     $add_onload = "";
-    $show = "<span class=\"hcmsHeadline\">".$subtext16[$lang]."</span><br />\n".checkpassword ($password)."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['password-insufficient'][$lang]."</span><br />\n".checkpassword ($password)."\n";
   }
   else
   {     
@@ -6737,7 +6705,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
             
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$subtext6[$lang]."!</span><br />\n".$subtext7[$lang]."\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-exists-already'][$lang]."!</span><br />\n".$hcms_lang['please-try-another-user-name'][$lang]."\n";
       }
 
       if ($show == "")
@@ -6758,7 +6726,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
           $newuser = setcontent ($newuser, "<user>", "<password>", $password, "", "");
           $newuser = setcontent ($newuser, "<user>", "<hashcode>", $hashcode, "", "");
           $newuser = setcontent ($newuser, "<user>", "<userdate>", date ("Y-m-d", time()), "", "");
-          $newuser = setcontent ($newuser, "<user>", "<language>", $lang_shortcut_default, "", "");
+          $newuser = setcontent ($newuser, "<user>", "<language>", $mgmt_lang_shortcut_default, "", "");
           $newuser = setcontent ($newuser, "<user>", "<theme>", $theme, "", "");
           
           if (isset ($site) && $site != "*Null*") 
@@ -6780,7 +6748,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");      
         
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext21[$lang]."</span><br />\n".$subtext22[$lang]."\n";  
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-xml-schema-cannot-be-loaded'][$lang]."</span><br />\n".$hcms_lang['the-schema-is-missing-or-you-do-not-have-read-permissions'][$lang]."\n";  
         }
       
         if ($show == "" && $userdatanew != false)
@@ -6797,7 +6765,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
             unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
                 
             $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$subtext17[$lang]."</span><br />\n".$subtext19[$lang]."\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['task-list-for-user-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-have-no-write-permission'][$lang]."\n";
           }
           else
           {
@@ -6811,7 +6779,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
                 oncreateuser_post ($login, $user);              
             
               $add_onload = "parent.frames['mainFrame'].location.reload(); window.open('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."','','status=yes,scrollbars=no,resizable=yes,width=500,height=500'); ";
-              $show = "<span class=\"hcmsHeadline\">".$subtext20[$lang]."</span><br />\n".$subtext12[$lang]."<br />\n";              
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-new-user-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-user'][$lang]."<br />\n";              
               $error_switch = "no";
             }
             else
@@ -6827,7 +6795,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
              
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext13[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['user-information-cannot-be-inserted'][$lang]."</span><br />\n";
         }
       }
     }
@@ -6837,7 +6805,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
       unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
     
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$subtext14[$lang]."</span><br />\n".$subtext15[$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-user-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-user-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
   
@@ -6863,13 +6831,9 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
 
 function edituser ($site, $login, $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="", $language="en", $theme="", $email="", $signature="", $usergroup="", $usersite="", $user="sys")
 {
-  global $login_cat, $group,
-         $eventsystem,
-         $lang,
-         $mgmt_config;
+  global $eventsystem, $login_cat, $group, $mgmt_config, $hcms_lang, $lang;
          
-  require ($mgmt_config['abs_path_cms']."language/user_edit.inc.php");
-  
+    
   $add_onload = "";
   $show = "";
   
@@ -6923,7 +6887,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
                 
           $add_onload = "";
-          $show = "<span class=hcmsHeadline>".$text4[$lang]."</span>\n";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-old-password-is-not-valid'][$lang]."</span>\n";
         }
         // check if submitted passwords has at least 8 digits
         elseif (strlen ($password) < 8)
@@ -6932,7 +6896,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
                 
           $add_onload = "";
-          $show = "<span class=hcmsHeadline>".$text6[$lang]."</span><br />".$text7[$lang]."\n";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-password-has-less-than-8-digits'][$lang]."</span><br />".$hcms_lang['please-select-a-password-with-at-least-8-digits'][$lang]."\n";
         }  
         // check if submitted passwords are equal
         elseif ($password != $confirm_password)
@@ -6941,7 +6905,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
                 
           $add_onload = "";
-          $show = "<span class=hcmsHeadline>".$text8[$lang]."</span><br />".$text9[$lang]."\n";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['your-submitted-passwords-are-not-equal'][$lang]."</span><br />".$hcms_lang['please-try-it-again'][$lang]."\n";
         }
         // check for strong password (if enabled)
         elseif ($mgmt_config['strongpassword'] == true && strlen (checkpassword ($password)) > 1)
@@ -6950,7 +6914,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
                   
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$text17[$lang]."</span><br />\n".checkpassword ($password)."\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['password-insufficient'][$lang]."</span><br />\n".checkpassword ($password)."\n";
         }        
         // password is correct
         else
@@ -7115,7 +7079,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
             onsaveuser_post ($login, $user_node, $user);        
         
           $add_onload = "";
-          $show = "<span class=hcmsHeadline>".$text3[$lang]."</span>";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-user-information-was-saved-successfully'][$lang]."</span>";
           
           $error_switch = "no";
         }
@@ -7125,7 +7089,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
           
           $add_onload = "";
-          $show = "<span class=hcmsHeadline>".$text15[$lang]."</span><br />\n".$text16[$lang]."\n";        
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-user-information-cannot-be-saved'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";        
         }
       }
       // error in XML manipulation
@@ -7135,7 +7099,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
         
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$text11[$lang]."</span><br />\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['an-error-occured-in-xml-manipulation'][$lang]."</span><br />\n";
       }
     
       // check if lanuage was changed and register new language
@@ -7152,14 +7116,14 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
     
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$text13[$lang]."</span><br />\n".$text14[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-user-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-user-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
   // required input is missing
   else
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$text13[$lang]."</span><br />\n".$text14[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['the-user-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-user-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
   }
   
   // return results
@@ -7183,10 +7147,9 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
 
 function deleteuser ($site, $login, $user="sys")
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
   
-  require ($mgmt_config['abs_path_cms']."language/user_delete.inc.php");
-
+  
   $add_onload = "";
   $show = "";
   
@@ -7236,7 +7199,7 @@ function deleteuser ($site, $login, $user="sys")
             ondeleteuser_post ($login, $user);      
     
           $add_onload = "parent.frames['mainFrame'].location.reload();";
-          $show = "<span class=hcmsHeadline>".$text5[$lang]."</span>\n";          
+          $show = "<span class=hcmsHeadline>".$hcms_lang['all-user-information-was-removed-successfully'][$lang]."</span>\n";          
           $error_switch = "no";
         }
         else
@@ -7251,7 +7214,7 @@ function deleteuser ($site, $login, $user="sys")
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
         
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$text6[$lang]."</span><br />\n";    
+        $show = "<span class=hcmsHeadline>".$hcms_lang['an-error-occured-in-function-deletecontent'][$lang]."</span><br />\n";    
       }
     }
     else
@@ -7260,14 +7223,14 @@ function deleteuser ($site, $login, $user="sys")
       unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
       
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$text7[$lang]."</span><br />\n".$text8[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-user-information-cant-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-user-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
   // input paramaters missing
   else
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$text0[$lang]."</span><br />".$text1[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['necessary-user-information-is-missing'][$lang]."</span><br />".$hcms_lang['please-go-back-and-select-a-user'][$lang]."\n";
   }  
   
   // return results
@@ -7293,10 +7256,9 @@ function deleteuser ($site, $login, $user="sys")
 
 function creategroup ($site, $group_name, $user="sys")
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
          
-  require ($mgmt_config['abs_path_cms']."language/group_create.inc.php");
-  
+    
   $add_onload = "";
   $show = "";
   
@@ -7304,13 +7266,13 @@ function creategroup ($site, $group_name, $user="sys")
   if (!valid_publicationname ($site) || !valid_objectname ($group_name) || strlen ($group_name) > 100 || !valid_objectname ($user))
   {
     $add_onload = "parent.frames['mainFrame'].location.href='empty.php'); ";
-    $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span><br />\n".$subtext1[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['necessary-group-name-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-enter-a-name'][$lang]."\n";
   }
   // test if group name includes special characters
   elseif (specialchr ($group_name, "-_") == true)
   {
     $add_onload = "parent.frames['mainFrame'].location.href='empty.php'); ";
-    $show = "<span class=hcmsHeadline>".$subtext2[$lang]."</span><br />\n".$subtext3[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
   }
   else
   {
@@ -7334,7 +7296,7 @@ function creategroup ($site, $group_name, $user="sys")
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
             
         $add_onload = "parent.frames['mainFrame'].location.href='empty.php'; ";
-        $show = "<span class=hcmsHeadline>".$subtext4[$lang]."</span><br />\n".$subtext5[$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-group-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-name'][$lang]."\n";
       }
       else
       {
@@ -7361,7 +7323,7 @@ function creategroup ($site, $group_name, $user="sys")
             $usergroupdata = $usergroupdatanew;
             
             $add_onload = "parent.frames['mainFrame'].location.href='group_edit_form.php?site=".url_encode($site)."&preview=no&group_name=".url_encode($group_name)."'; ";
-            $show = "<span class=hcmsHeadline>".$subtext13[$lang]." '".$group_name."' ".$subtext6[$lang]."</span><br />\n".$subtext7[$lang]."<br />\n";            
+            $show = "<span class=hcmsHeadline>".$hcms_lang['group'][$lang]." '".$group_name."' ".$hcms_lang['was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-group'][$lang]."<br />\n";            
             $error_switch = "no";
           }
           else
@@ -7370,7 +7332,7 @@ function creategroup ($site, $group_name, $user="sys")
             unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
             
             $add_onload = "parent.frames['mainFrame'].location.href='empty.php'; ";
-            $show = "<span class=hcmsHeadline>".$subtext11[$lang]."</span><br />\n".$subtext12[$lang]."\n";          
+            $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-cannot-be-saved'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";          
           }
         }
         else
@@ -7379,7 +7341,7 @@ function creategroup ($site, $group_name, $user="sys")
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
           
           $add_onload = "parent.frames['mainFrame'].location.href='empty.php'; ";
-          $show = "<span class=hcmsHeadline>".$subtext8[$lang]."</span>\n";         
+          $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-could-not-be-inserted'][$lang]."</span>\n";         
         }
       }  
     }
@@ -7389,7 +7351,7 @@ function creategroup ($site, $group_name, $user="sys")
       unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
     
       $add_onload = "parent.frames['mainFrame'].location.href='empty.php'; ";
-      $show = "<span class=hcmsHeadline>".$subtext9[$lang]."</span><br />\n".$subtext10[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['group-information-is-missing-or-you-do-not-have-read-permission'][$lang]."\n";
     }
   }
   
@@ -7414,17 +7376,16 @@ function creategroup ($site, $group_name, $user="sys")
 
 function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $user)
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
          
-  require ($mgmt_config['abs_path_cms']."language/group_edit_script.inc.php");
-
+  
   $add_onload = "";
   $show = "";
     // check if sent data is available
   if (!valid_publicationname ($site) || !valid_objectname ($group_name) || !valid_objectname ($user))
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span><br />\n".$subtext1[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['ontext0'][$lang]."</span><br />\n".$hcms_lang['ontext0'][$lang]."\n";
   }
   else
   {
@@ -7621,7 +7582,7 @@ function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $
           onsavegroup_post ($group_name, $groupdata, $user);  
                 
         $add_onload = "parent.location.href='group_edit_form.php?site=".url_encode($site)."&group_name=".url_encode($group_name)."&preview=no'; ";
-        $show = "<span class=hcmsHeadline>".$text1[$lang]."</span>\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['group-settings-were-updated'][$lang]."</span>\n";
         $error_switch = "no";
       }
       else
@@ -7630,7 +7591,7 @@ function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
         
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$text4[$lang]."</span><br />\n".$text5[$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-group-information-cant-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-group-information-is-missing-or-you-have-no-write-permission'][$lang]."\n";
 
       }
     }
@@ -7640,7 +7601,7 @@ function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $
       unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
       
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$text4[$lang]."</span><br />\n".$text3[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-group-information-cant-be-accessed'][$lang]."</span><br />\n".$hcms_lang['an-error-occured-in-function-setcontent'][$lang]."\n";
     }
   }
   
@@ -7665,10 +7626,9 @@ function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $
 
 function deletegroup ($site, $group_name, $user)
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
          
-  require ($mgmt_config['abs_path_cms']."language/group_delete.inc.php");
-  
+    
   $add_onload = "";
   $show = "";
   
@@ -7676,7 +7636,7 @@ function deletegroup ($site, $group_name, $user)
   if (!valid_publicationname ($site) || !valid_objectname ($group_name) || !valid_objectname ($user))
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span><br />\n".$subtext1[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['necessary-group-name-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-select-a-group-to-remove'][$lang]."\n";
   }
   else
   {
@@ -7734,7 +7694,7 @@ function deletegroup ($site, $group_name, $user)
               $usergroupdata = $usergroupdatanew;
             
               $add_onload = "parent.frames['mainFrame'].location.href='empty.php'; ";
-              $show = "<span class=hcmsHeadline>".$subtext5[$lang]."</span><br />\n".$subtext6[$lang]."\n";
+              $show = "<span class=hcmsHeadline>".$hcms_lang['the-group-was-removed'][$lang]."</span><br />\n".$hcms_lang['all-group-information-was-successfully-removed'][$lang]."\n";
               $error_switch = "no";
             }
             else
@@ -7743,7 +7703,7 @@ function deletegroup ($site, $group_name, $user)
               unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");          
             
               $add_onload = "";
-              $show = "<span class=hcmsHeadline>".$subtext7[$lang]."</span><br />\n".$subtext8[$lang]."\n";          
+              $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['group-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";          
             }
           }
           else
@@ -7752,7 +7712,7 @@ function deletegroup ($site, $group_name, $user)
             unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
         
             $add_onload = "";
-            $show = "<span class=hcmsHeadline>".$subtext9[$lang]."</span><br />\n";
+            $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-could-not-be-removed'][$lang]."</span><br />\n";
           }
         } 
         else
@@ -7761,7 +7721,7 @@ function deletegroup ($site, $group_name, $user)
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
         
           $add_onload = "";
-          $show = "<span class=hcmsHeadline>".$subtext10[$lang]."</span><br />\n".$subtext11[$lang]."\n";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['group-information-is-missing-or-you-do-not-have-read-permissions'][$lang]."\n";
         }   
       }
       else
@@ -7770,13 +7730,13 @@ function deletegroup ($site, $group_name, $user)
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
       
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$subtext7[$lang]."</span><br />\n".$subtext8[$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['group-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
       }
     }
     else
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$subtext9[$lang]."</span><br />\n".$subtext12[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-could-not-be-removed'][$lang]."</span><br />\n".$hcms_lang['users-are-still-members-of-this-group'][$lang]."\n";
     }  
   }
 
@@ -7801,7 +7761,7 @@ function deletegroup ($site, $group_name, $user)
 
 function renamegroupfolder ($site, $cat, $folder_curr, $folder_new, $user)
 {
-  global $mgmt_config;
+  global $mgmt_config, $hcms_lang, $lang;
   
   // if database is used the object ID's will be used instead of pathes (since version 5.6.4)
   if ($mgmt_config['db_connect_rdbms'] != "") return true;
@@ -7845,7 +7805,7 @@ function renamegroupfolder ($site, $cat, $folder_curr, $folder_new, $user)
 
 function deletegroupfolder ($site, $cat, $folderpath, $user)
 {
-  global $mgmt_config;
+  global $mgmt_config, $hcms_lang, $lang;
 
   // if database is used the object ID's will be used instead of pathes (since version 5.6.4)
   if ($mgmt_config['db_connect_rdbms'] != "") return true;
@@ -7893,7 +7853,7 @@ function deletegroupfolder ($site, $cat, $folderpath, $user)
 
 function renameworkflowfolder ($site, $cat, $folder_curr, $folder_new, $user)
 {
-  global $mgmt_config;
+  global $mgmt_config, $hcms_lang, $lang;
   
   // if database is used the object ID's will be used instead of pathes (since version 5.6.4)
   if ($mgmt_config['db_connect_rdbms'] != "") return true;
@@ -7934,7 +7894,7 @@ function renameworkflowfolder ($site, $cat, $folder_curr, $folder_new, $user)
 
 function deleteworkflowfolder ($site, $cat, $folderpath, $user)
 {
-  global $mgmt_config;
+  global $mgmt_config, $hcms_lang, $lang;
   
   // if database is used the object ID's will be used instead of pathes (since version 5.6.4)
   if ($mgmt_config['db_connect_rdbms'] != "") return true;
@@ -7988,10 +7948,9 @@ function deleteworkflowfolder ($site, $cat, $folderpath, $user)
 
 function createmediacat ($site, $mediacat_name)
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
     
-  require ($mgmt_config['abs_path_cms']."language/mediacat_create.inc.php");
-  
+    
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
   
@@ -8002,13 +7961,13 @@ function createmediacat ($site, $mediacat_name)
   if (!valid_publicationname ($site) || $mediacat_name == "" || strlen ($mediacat_name) > 100)
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext1[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['please-fill-in-a-category-name'][$lang]."</span>\n";
   }
   // test if folder name includes special characters
   elseif (specialchr ($mediacat_name, " -_") == true)
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span>\n";
   }
   else
   {
@@ -8028,7 +7987,7 @@ function createmediacat ($site, $mediacat_name)
       if ($category == $mediacat_name)
       {
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$subtext3[$lang]."</span><br />\n".$subtext4[$lang]."\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-media-category-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-category-name'][$lang]."\n";
   
         break;
       }
@@ -8056,7 +8015,7 @@ function createmediacat ($site, $mediacat_name)
     if ($savefile != false)
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$subtext5[$lang]."</span><br />\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['media-category-was-created'][$lang]."</span><br />\n";
     }
     else
     {
@@ -8065,7 +8024,7 @@ function createmediacat ($site, $mediacat_name)
   
       // folder could't not be created due to missing write permission
       $add_onload =  "";
-      $show = "<span class=hcmsHeadline>".$subtext6[$lang]."</span><br />\n".$subtext7[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['media-category-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
   else
@@ -8090,10 +8049,9 @@ function createmediacat ($site, $mediacat_name)
 
 function renamemediacat ($site, $mediacat_name_curr, $mediacat_name)
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
     
-  require ($mgmt_config['abs_path_cms']."language/mediacat_rename.inc.php");
-  
+    
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
   
@@ -8104,13 +8062,13 @@ function renamemediacat ($site, $mediacat_name_curr, $mediacat_name)
   if (!valid_publicationname ($site) || $mediacat_name_curr == "" || $mediacat_name == "" || strlen ($mediacat_name) > 100)
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext1[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['please-fill-in-a-category-name'][$lang]."</span>\n";
   }
   // test if folder name includes special characters
   elseif (specialchr ($mediacat_name, " -_") == true)
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span>\n";
   }
   else
   {
@@ -8150,7 +8108,7 @@ function renamemediacat ($site, $mediacat_name_curr, $mediacat_name)
     if ($savefile != false)
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$subtext2[$lang]."</span>\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-media-category-was-successfully-renamed'][$lang]."</span>\n";
     }
     else
     {
@@ -8159,7 +8117,7 @@ function renamemediacat ($site, $mediacat_name_curr, $mediacat_name)
   
       // folder could't not be created due to missing write permission
       $add_onload =  "";
-      $show = "<span class=hcmsHeadline> ".$subtext3[$lang]."</span><br />\n".$subtext4[$lang]."\n";
+      $show = "<span class=hcmsHeadline> ".$hcms_lang['the-media-category-could-not-be-renamed'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
   else
@@ -8184,10 +8142,9 @@ function renamemediacat ($site, $mediacat_name_curr, $mediacat_name)
 
 function deletemediacat ($site, $mediacat_name)
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
     
-  require ($mgmt_config['abs_path_cms']."language/mediacat_delete.inc.php");
-  
+    
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
   
@@ -8198,7 +8155,7 @@ function deletemediacat ($site, $mediacat_name)
   if (!valid_publicationname ($site) || $mediacat_name == "")
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['please-select-a-media-category'][$lang]."</span>\n";
   }
   else
   {
@@ -8239,7 +8196,7 @@ function deletemediacat ($site, $mediacat_name)
     if ($savefile != false)
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$subtext2[$lang]."</span>\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-media-category-was-deleted'][$lang]."</span>\n";
     }
     else
     {
@@ -8248,7 +8205,7 @@ function deletemediacat ($site, $mediacat_name)
   
       // folder could not be deleted due to missing write permission
       $add_onload =  "";
-      $show = "<span class=hcmsHeadline>".$subtext3[$lang]."</span><br />\n".$subtext4[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-media-category-could-not-be-deleted'][$lang]."</span><br />\n".$hcms_lang['you-have-no-write-permission'][$lang]."\n";
     }
   }
   else
@@ -8258,7 +8215,7 @@ function deletemediacat ($site, $mediacat_name)
   
     // folder could not be deleted due to not empty category
     $add_onload =  "";
-    $show = "<span class=hcmsHeadline>".$subtext3[$lang]."</span><br />\n".$subtext5[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['the-media-category-could-not-be-deleted'][$lang]."</span><br />\n".$hcms_lang['the-category-still-holds-files'][$lang]."\n";
   }
   
   $result['add_onload'] = $add_onload;
@@ -8277,10 +8234,9 @@ function deletemediacat ($site, $mediacat_name)
 
 function uploadtomediacat ($site, $mediacat_name, $global_files)
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
     
-  require ($mgmt_config['abs_path_cms']."language/mediafile_upload.inc.php");
-  
+    
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
   
@@ -8309,33 +8265,33 @@ function uploadtomediacat ($site, $mediacat_name, $global_files)
   // error if no file is selected
   if (!valid_publicationname ($site) || !valid_objectname ($mediacat_name) || $global_files['file']['name'] == "")
   {
-    $show = "<span class=hcmsHeadline>".$subtext1[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['no-file-selected-to-upload'][$lang]."</span>\n";
   }
   // test if folder name includes special characters
   elseif (specialchr ($filename_new, ".-_") == true)
   {
-    $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-file-names-are-not-allowed'][$lang]."</span>\n";
   }
   // error if file is to big
   elseif ($sizelim == "yes" && $global_files["file"]["size"] > $size)
   {
-    $show = "<span class=hcmsHeadline>".$subtext3[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-is-too-big'][$lang]."</span>\n";
   }
   // error if file isn't certain type
   elseif ($certtype == "yes" && substr_count ($type, $global_files["file"]["type"]) > 0)
   {
-    $show = "<span class=hcmsHeadline>".$subtext4[$lang]." (".$global_files["file"]["type"].")</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-is-wrong-type'][$lang]." (".$global_files["file"]["type"].")</span>\n";
   }
   // error if file exists
   elseif (@file_exists ($mediadir.$filename_new))
   {
-    $show = "<span class=hcmsHeadline>".$subtext2[$lang]."</span><br />".$subtext11[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]."</span><br />".$hcms_lang['please-note-the-media-file-name-in-the-media-database-must-be-unique'][$lang]."\n";
   }
   // upload file
   else
   {
     // upload file
-    @move_uploaded_file ($global_files['file']['tmp_name'], $mediadir.$filename_new) or $show = "<span class=hcmsHeadline>".$subtext5[$lang]."</span>\n";
+    @move_uploaded_file ($global_files['file']['tmp_name'], $mediadir.$filename_new) or $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
   
     if ($show == "")
     {
@@ -8375,10 +8331,10 @@ function uploadtomediacat ($site, $mediacat_name, $global_files)
         $i++;
       }
     
-      $show = "<span class=\"hcmsHeadline\">".$subtext6[$lang]."</span><br />
-      ".$subtext7[$lang].": <span class=\"hcmsHeadlineTiny\">".$global_files['file']['name']."</span><br />
-      ".$subtext8[$lang].": <span class=\"hcmsHeadlineTiny\">".$global_files['file']['size']." bytes</span><br />
-      ".$subtext9[$lang].": <span class=\"hcmsHeadlineTiny\">".$global_files['file']['type']."</span>\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['uploaded-file'][$lang]."</span><br />
+      ".$hcms_lang['file-name'][$lang].": <span class=\"hcmsHeadlineTiny\">".$global_files['file']['name']."</span><br />
+      ".$hcms_lang['file-size'][$lang].": <span class=\"hcmsHeadlineTiny\">".$global_files['file']['size']." bytes</span><br />
+      ".$hcms_lang['file-type'][$lang].": <span class=\"hcmsHeadlineTiny\">".$global_files['file']['type']."</span>\n";
     }
   }
   
@@ -8398,10 +8354,9 @@ function uploadtomediacat ($site, $mediacat_name, $global_files)
 
 function deletefrommediacat ($site, $mediafile)
 {
-  global $eventsystem, $lang, $mgmt_config;
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
          
-  require ($mgmt_config['abs_path_cms']."language/media_delete.inc.php");
-  
+    
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();          
 
@@ -8435,7 +8390,7 @@ function deletefrommediacat ($site, $mediafile)
   
         $show = "<table width=\"400\" border=0 cellspacing=1 cellpadding=3 class=\"hcmsMessage\">
         <tr>
-         <td><span class=hcmsHeadline>".$text2[$lang]."</span></td>
+         <td><span class=hcmsHeadline>".$hcms_lang['the-selected-media-file-was-removed'][$lang]."</span></td>
         </tr>
       </table>\n";      
       }  
@@ -8447,7 +8402,7 @@ function deletefrommediacat ($site, $mediafile)
     
         $show = "<table width=\"400\" border=0 cellspacing=1 cellpadding=3 class=\"hcmsMessage\">
         <tr>
-         <td><span class=hcmsHeadline>".$text3[$lang]."</span></td>
+         <td><span class=hcmsHeadline>".$hcms_lang['the-selected-media-file-could-not-be-removed'][$lang]."</span></td>
         </tr>
       </table>\n";    
       }
@@ -8458,7 +8413,7 @@ function deletefrommediacat ($site, $mediafile)
   
       $show = "<table width=\"400\" border=0 cellspacing=1 cellpadding=3 class=\"hcmsMessage\">
       <tr>
-       <td><span class=hcmsHeadline>".$text3[$lang]."</span></td>
+       <td><span class=hcmsHeadline>".$hcms_lang['the-selected-media-file-could-not-be-removed'][$lang]."</span></td>
       </tr>
       </table>
       </td>
@@ -8472,7 +8427,7 @@ function deletefrommediacat ($site, $mediafile)
 
     $show = "<table width=\"400\" border=0 cellspacing=1 cellpadding=3 class=\"hcmsMessage\">
     <tr>
-     <td><span class=hcmsHeadline>".$text2[$lang]." '".$mediafile."' ".$text3[$lang]."</span></td>
+     <td><span class=hcmsHeadline>".$hcms_lang['the-selected-media-file-was-removed'][$lang]." '".$mediafile."' ".$hcms_lang['the-selected-media-file-could-not-be-removed'][$lang]."</span></td>
     </tr>
     </table>
     </td>
@@ -8498,13 +8453,9 @@ function deletefrommediacat ($site, $mediafile)
 
 function createfolder ($site, $location, $foldernew, $user)
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat;
+  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
 
-  require ($mgmt_config['abs_path_cms']."language/folder_create.inc.php");
-
+  
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
   $add_onload = "";
@@ -8545,7 +8496,7 @@ function createfolder ($site, $location, $foldernew, $user)
     if (@is_dir ($location.$foldernew))
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$subtext2[$lang]."</span><br />\n".$subtext3[$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-folder-name'][$lang]."\n";
     }
     // check if folder can be created
     elseif (@is_dir ($location))
@@ -8564,7 +8515,7 @@ function createfolder ($site, $location, $foldernew, $user)
         if ($folderfile['result'] != false)
         {
           $add_onload = "parent.frames['mainFrame'].location.reload(); ";
-          $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-was-created'][$lang]."</span><br />\n";
           
           // add origin folder name as file parameter
           $filedata = loadfile ($location.$foldernew, ".folder");
@@ -8594,14 +8545,14 @@ function createfolder ($site, $location, $foldernew, $user)
       else
       {
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$subtext5[$lang]."</span><br />\n".$subtext6[$lang]."\n";  
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";  
       }
     }
     // location is not a valid directory
     else
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$subtext5[$lang]."</span><br />\n".$subtext6[$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
     }
     
     // eventsystem
@@ -8611,7 +8562,7 @@ function createfolder ($site, $location, $foldernew, $user)
   else
   {
     $add_onload = "";
-    $show = "<span class=\"hcmsHeadline\">".$subtext5[$lang]."</span><br />\n".$subtext3[$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['please-try-another-folder-name'][$lang]."\n";
   } 
   
   // save log
@@ -8646,17 +8597,13 @@ function createfolder ($site, $location, $foldernew, $user)
 
 function createfolders ($site, $location, $foldernew, $user)
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat;
+  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
 
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($foldernew) && accessgeneral ($site, $location, $cat) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {        
-    require ($mgmt_config['abs_path_cms']."language/folder_create.inc.php");
-    
+        
     // publication management config
     if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
     
@@ -8693,7 +8640,7 @@ function createfolders ($site, $location, $foldernew, $user)
 // help function to create the collection of folders
 function collectfolders ($site, $location, $folder)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
        
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && is_dir ($location.$folder))  
   {   
@@ -8730,7 +8677,7 @@ function collectfolders ($site, $location, $folder)
 
 function copyfolders ($site, $location, $locationnew, $folder, $user)
 {   
-  global $mgmt_config, $cat;
+  global $mgmt_config, $cat, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && valid_locationname ($location) && $locationnew != "" && $folder != "")
   {  
@@ -8833,18 +8780,14 @@ function copyfolders ($site, $location, $locationnew, $folder, $user)
 
 function deletefolder ($site, $location, $folder, $user)
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat;
+  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
          
   $add_onload = "";
   $show = "";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, $cat) && $user != "")
   {  
-    require ($mgmt_config['abs_path_cms']."language/folder_edit_delete.inc.php");
-
+    
     // publication management config
     if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
     
@@ -8907,7 +8850,7 @@ function deletefolder ($site, $location, $folder, $user)
         remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $folder, "");
  
         $add_onload = "parent.frames['mainFrame'].location.reload(); ";
-        $show = "<span class=\"hcmsHeadline\">".$subtext1[$lang]."</span><br />\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-was-removed'][$lang]."</span><br />\n";
     
         $error_switch = "no";
       
@@ -8918,14 +8861,14 @@ function deletefolder ($site, $location, $folder, $user)
       else
       {
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$subtext2[$lang]."</span><br />".$subtext3[$lang]."\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-removed'][$lang]."</span><br />".$hcms_lang['the-folder-still-holds-items-please-delete-these-items'][$lang]."\n";
       }
     }
     // folder doesn't exist and/or write permission is missing
     else
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />".$subtext5[$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-doesnt-exist'][$lang]."</span><br />".$hcms_lang['or-you-have-no-write-permission'][$lang]."\n";
     }
   
     // eventsystem
@@ -8963,10 +8906,7 @@ function deletefolder ($site, $location, $folder, $user)
 
 function renamefolder ($site, $location, $folder, $foldernew, $user)
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat;
+  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
   
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
@@ -8976,8 +8916,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && valid_objectname ($foldernew) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
-    require ($mgmt_config['abs_path_cms']."language/folder_edit_rename.inc.php");
-
+    
     // publication management config
     if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
   
@@ -9007,19 +8946,19 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
     if (!is_dir ($location.$folder))
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$subtext15[$lang]."</span><br />\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-does-not-exist'][$lang]."</span><br />\n";
     }
     // folder with the new name exists already
     elseif (is_dir ($location.$foldernew))
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$subtext0[$lang]."</span><br />\n".$subtext1[$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['a-folder-with-the-same-name-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-expression'][$lang]."\n";
     }    
     // folder is not writeable
     elseif (@rename ($location.$folder, $location.$foldernew) == false)
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$subtext14[$lang]."</span><br />\n";  
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-write-permissions-for-the-folder'][$lang]."</span><br />\n";  
     }
     else
     {
@@ -9085,7 +9024,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
               if ($test == false)
               {
                 $add_onload = "";
-                $show = "<span class=\"hcmsHeadline\">".$subtext2[$lang]."</span><br />\n".$subtext3[$lang]."\n";
+                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-write-data-into-content-container-or-link-index'][$lang]."</span><br />\n".$hcms_lang['content-container-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
                 
                 // log error
                 $errcode = "20815";
@@ -9110,7 +9049,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
             link_db_close ($site, $user);          
           
             $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$subtext7[$lang]."</span><br />\n".$subtext8[$lang]."\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['link-management-error'][$lang]."</span><br />\n".$hcms_lang['an-error-occured-while-writing-data-to-the-database'][$lang]."\n";
           }
         }
         elseif ($link_db == false)
@@ -9119,7 +9058,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
           link_db_close ($site, $user);     
         
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext6[$lang]."</span><br />\n".$subtext9[$lang]."\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-load-link-management-database'][$lang]."</span><br />\n".$hcms_lang['link-management-database-is-missing-or-you-do-not-have-read-permissions'][$lang]."\n";
         }
       
         if ($show == "")
@@ -9131,7 +9070,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
           if ($test == false)
           {           
             $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$subtext11[$lang]."</span><br />\n".$subtext12[$lang]."\n";            
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-renamed'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions-on-user-groups-settings'][$lang]."\n";            
           }
           
           // ----------------------------------------- workflow folders --------------------------------------  
@@ -9141,7 +9080,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
           if ($test == false)
           {
             $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$subtext11[$lang]."</span><br />\n".$subtext16[$lang]."\n";               
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-renamed'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings'][$lang]."\n";               
           } 
         }
         
@@ -9159,7 +9098,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
               link_db_close ($site, $user);   
       
               $add_onload = "";
-              $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />\n".$subtext5[$lang]."\n";
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-save-link-management-database'][$lang]."</span><br />\n".$hcms_lang['link-management-database-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
             }
           } 
         }  
@@ -9196,7 +9135,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
           $folder = $foldernew;
       
           $add_onload = "parent.frames['mainFrame'].location.reload(); ";
-          $show = "<span class=\"hcmsHeadline\">".$subtext13[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-was-renamed'][$lang]."</span><br />\n";
           
           $error_switch = "no";
         }
@@ -9242,11 +9181,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
 
 function createobject ($site, $location, $page, $template, $user)
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config;
-         
-  require ($mgmt_config['abs_path_cms']."language/page_create.inc.php");
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
@@ -9278,7 +9213,7 @@ function createobject ($site, $location, $page, $template, $user)
     if (!is_dir ($location))
     {
       $add_onload = "parent.frames['objFrame'].location.href='empty.php'; ";
-      $show = "<span class=\"hcmsHeadline\">".$subtext14[$lang]."</span><br />\n".$subtext23[$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-item'][$lang]."</span><br />\n".$hcms_lang['the-location-holding-the-new-object-does-not-exist'][$lang]."\n";
     }      
     
     if ($show == "")
@@ -9403,7 +9338,7 @@ function createobject ($site, $location, $page, $template, $user)
               unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
               
               $add_onload = "parent.frames['objFrame'].location.href='empty.php'; ";
-              $show = "<span class=\"hcmsHeadline\">".$subtext12[$lang]."</span><br />\n".$subtext13[$lang]."\n";
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['contentcount-failure'][$lang]."\n";
             }  
           }
           else
@@ -9412,13 +9347,13 @@ function createobject ($site, $location, $page, $template, $user)
             unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
        
             $add_onload = "parent.frames['objFrame'].location.href='empty.php'; ";
-            $show = "<span class=\"hcmsHeadline\">".$subtext12[$lang]."</span><br />\n".$subtext13[$lang]."\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['contentcount-failure'][$lang]."\n";
           }
         }
         else
         {
             $add_onload = "parent.frames['objFrame'].location.href='empty.php'; ";
-            $show = "<span class=\"hcmsHeadline\">".$subtext8[$lang]."</span><br />\n".$subtext9[$lang]."\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-name'][$lang]."\n";
         }
         
         if ($show == "")
@@ -9514,7 +9449,7 @@ function createobject ($site, $location, $page, $template, $user)
           else
           {
             $add_onload = "parent.frames['objFrame'].location.href='empty.php'; ";
-            $show = "<span class=\"hcmsHeadline\">".$subtext12[$lang]."</span><br />\n".$subtext21[$lang]."\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['could-not-create-new-content-container'][$lang]."\n";
           }            
     
           // ------------------------ add record in link management file --------------------------------
@@ -9549,7 +9484,7 @@ function createobject ($site, $location, $page, $template, $user)
                 $mailer->Body = "Link index is locked!\nhyperCMS Host: ".$_SERVER['SERVER_NAME']."\n";
                 $mailer->Send();
                 
-                $result['message'] = $text1[$lang];
+                $result['message'] = $hcms_lang['rsionsubtext0'][$lang];
                 $auth = false;
               }
         
@@ -9564,7 +9499,7 @@ function createobject ($site, $location, $page, $template, $user)
             if ($link_db_append == false)
             {
               $add_onload = "parent.frames['objFrame'].location.href='empty.php'; ";
-              $show = "<span class=\"hcmsHeadline\">".$subtext10[$lang]."</span><br />\n".$subtext11[$lang]."\n";
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-insert-into-link-management'][$lang]."</span><br />\n".$hcms_lang['link-management-file-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
             }
           }
           else $link_db_append = true;
@@ -9635,7 +9570,7 @@ function createobject ($site, $location, $page, $template, $user)
               if ($savefile == false)
               {
                 $add_onload = "parent.frames['objFrame'].location.href='empty.php'; ";
-                $show = "<span class=\"hcmsHeadline\">".$subtext14[$lang]."</span><br />\n".$subtext15[$lang]."\n";
+                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-item'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
               }
               // on success
               else
@@ -9649,7 +9584,7 @@ function createobject ($site, $location, $page, $template, $user)
                 $page = $pagefile;
       
                 $add_onload = "parent.frames['objFrame'].location.href='page_view.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&pagename=".url_encode($page_orig)."'; ";
-                $show = "<span class=\"hcmsHeadline\">".$subtext16[$lang]."</span><br />\n".$subtext17[$lang]."\n";
+                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-content'][$lang]."\n";
                 
                 // remote client
                 remoteclient ("save", "abs_path_".$cat, $site, $location, "", $pagefile, "");                 
@@ -9667,28 +9602,28 @@ function createobject ($site, $location, $page, $template, $user)
             else
             {
               $add_onload = "parent.frames['objFrame'].location.href='empty.php'; ";
-              $show = "<span class=\"hcmsHeadline\">".$subtext21[$lang]."</span><br />\n".$subtext19[$lang]."\n";            
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-content-container'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";            
             }
           }
           // if user has no access to the workflow or link management failed
           else
           {
             $add_onload = "parent.frames['objFrame'].location.href='empty.php'; ";
-            $show = "<span class=\"hcmsHeadline\">".$subtext14[$lang]."</span><br />\n".$subtext20[$lang]."\n";        
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-item'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-workflow-access-permissions'][$lang]."\n";        
           } 
         }     
       }
       else
       {
         $add_onload = "parent.frames['objFrame'].location.href='empty.php'; ";
-        $show = "<span class=\"hcmsHeadline\">".$subtext6[$lang]."</span><br />\n".$subtext7[$lang]."\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-selected-no-template'][$lang]."</span><br />\n".$hcms_lang['please-select-a-template'][$lang]."\n";
       }      
     }
   }
   else
   {
     $add_onload = "parent.frames['objFrame'].location.href='empty.php'; ";
-    $show = "<span class=\"hcmsHeadline\">".$subtext2[$lang]."</span><br />\n".$subtext3[$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-fill-in-a-name'][$lang]."\n";
   }   
   
   // save log
@@ -9727,11 +9662,10 @@ function createobject ($site, $location, $page, $template, $user)
 
 function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_update=false, $createthumbnail=0, $page="", $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $versioning=false)
 {
-  global $mgmt_config, $mgmt_uncompress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_parser, $lang, $eventsystem,
-         $pageaccess, $compaccess, $hiddenfolder, $localpermission;
+  global $mgmt_config, $mgmt_uncompress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_parser, $eventsystem,
+         $pageaccess, $compaccess, $hiddenfolder, $localpermission, $hcms_lang, $lang;
   
-  require ($mgmt_config['abs_path_cms']."language/popup_upload.inc.php");
-
+  
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
   
@@ -9759,7 +9693,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     if ($setlocalpermission['root'] != 1 || $setlocalpermission['upload'] != 1)
     {
       $result['header'] = "HTTP/1.1 500 Internal Server Error";
-      $result['message'] = $text13[$lang];
+      $result['message'] = $hcms_lang['you-dont-have-permissions-to-use-this-function'][$lang];
       return $result;
     }
     
@@ -9795,7 +9729,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
       else
       {
         $result['header'] = "HTTP/1.1 501 Internal Server Error";
-        $result['message'] = $text33[$lang];
+        $result['message'] = $hcms_lang['file-could-not-be-downloaded'][$lang];
         return $result;
       }
     }
@@ -9807,7 +9741,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     if ($global_files['Filedata']['error'] != UPLOAD_ERR_OK)
     {
       $result['header'] = "HTTP/1.1 501 Internal Server Error";
-      $result['message'] = $text10[$lang];
+      $result['message'] = $hcms_lang['file-could-not-be-saved-or-only-partialy-saved'][$lang];
       return $result;
     }
   
@@ -9815,7 +9749,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     if ($global_files['Filedata']['name'] == "")
     {
       $result['header'] = "HTTP/1.1 502 Internal Server Error";
-      $result['message'] = $text22[$lang];
+      $result['message'] = $hcms_lang['no-file-selected-to-upload'][$lang];
       return $result;
     }
     
@@ -9825,7 +9759,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     if (strlen ($global_files['Filedata']['name']) > $mgmt_config['max_digits_filename'])
     {
       $result['header'] = "HTTP/1.1 503 Internal Server Error";
-      $result['message'] = str_replace ("%maxdigits%", $mgmt_config['max_digits_filename'], $text20[$lang]);
+      $result['message'] = str_replace ("%maxdigits%", $mgmt_config['max_digits_filename'], $hcms_lang['the-file-name-has-more-than-maxdigits-digits'][$lang]);
       return $result;
     }    
     
@@ -9843,7 +9777,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     if ($media_update == "" && @file_exists ($location.$file_renamed))
     {
       $result['header'] = "HTTP/1.1 504 Internal Server Error";
-      $result['message'] = $text23[$lang];
+      $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang];
       return $result;
     }
   
@@ -9853,7 +9787,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
       if (filesize ($global_files['Filedata']['tmp_name']) > $size)
       {
         $result['header'] = "HTTP/1.1 505 Internal Server Error";
-        $result['message'] = $text24[$lang];
+        $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-is-too-big'][$lang];
         return $result;
       }
     }
@@ -9865,7 +9799,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
       if (substr_count ($mgmt_config['exclude_files'], substr($global_files['Filedata']['name'], strrpos($global_files['Filedata']['name'], '.'))) > 0)
       {
         $result['header'] = "HTTP/1.1 506 Internal Server Error";
-        $result['message'] = $text25[$lang];
+        $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-is-of-wrong-type'][$lang];
         return $result;
       }
     }
@@ -9893,7 +9827,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
         if (sizeof ($links) > 0)
         {
           $result['header'] = "HTTP/1.1 510 Internal Server Error";
-          $result['message'] = str_replace ('%files%', implode(", ", $links), $text35[$lang]);
+          $result['message'] = str_replace ('%files%', implode(", ", $links), $hcms_lang['there-are-files-with-the-same-content-files'][$lang]);
   
           return $result;
         }
@@ -9928,7 +9862,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
       if ($result_unzip == false)
       {
         $result['header'] = "HTTP/1.1 507 Internal Server Error";
-        $result['message'] = $text11[$lang];
+        $result['message'] = $hcms_lang['file-could-not-be-extracted'][$lang];
         return $result;
       }
     }
@@ -10017,7 +9951,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
           if ($mediafile != "" && $mediafile != $media_update)
           {
             $result['header'] = "HTTP/1.1 508 Internal Server Error";
-            $result['message'] = $text19[$lang];
+            $result['message'] = $hcms_lang['the-request-holds-invalid-parameters'][$lang];
             return $result;
           }
         }
@@ -10025,7 +9959,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
         {
           // given object file doesnt exist
           $result['header'] = "HTTP/1.1 508 Internal Server Error";
-          $result['message'] = $text19[$lang];
+          $result['message'] = $hcms_lang['the-request-holds-invalid-parameters'][$lang];
           return $result;
         }
         
@@ -10051,11 +9985,11 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
               // copy to temporary directory
               if ($is_url)
               {
-                $result_upload = @rename ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.".jpg") or $show = "<span class=hcmsHeadline>".$text26[$lang]."</span>\n";
+                $result_upload = @rename ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.".jpg") or $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
               }
               else
               {
-                $result_upload = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.".jpg") or $show = "<span class=hcmsHeadline>".$text26[$lang]."</span>\n";
+                $result_upload = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.".jpg") or $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
               }
               
               if ($result_upload == true)
@@ -10236,7 +10170,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
               // on error
               else
               {
-                $show = $text18[$lang]."\n";
+                $show = $hcms_lang['the-file-could-not-be-renamed'][$lang]."\n";
               }
             }
           }
@@ -10258,7 +10192,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     }
     
     // define message on success
-    if ($show == "") $show = $text27[$lang];
+    if ($show == "") $show = $hcms_lang['uploaded-file-successfully'][$lang];
   
     // return message and command to flash object
     $result['header'] = "HTTP/1.1 200 OK";
@@ -10269,7 +10203,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
   else
   {
     $result['header'] = "HTTP/1.1 509 Internal Server Error";
-    $result['message'] = $text12[$lang];
+    $result['message'] = $hcms_lang['invalid-input-parameters'][$lang];
     return $result;  
   }
 }
@@ -10286,7 +10220,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
 
 function indexcontent ($site, $location, $file, $container="", $container_content="", $user)
 {
-  global $mgmt_config, $mgmt_parser, $mgmt_uncompress;
+  global $mgmt_config, $mgmt_parser, $mgmt_uncompress, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($user))
   {
@@ -10766,7 +10700,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
 function unindexcontent ($site, $location, $file, $container, $container_content, $user)
 {
-  global $mgmt_config, $mgmt_parser;
+  global $mgmt_config, $mgmt_parser, $hcms_lang, $lang;
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($container))
   {    
@@ -10817,7 +10751,7 @@ function unindexcontent ($site, $location, $file, $container, $container_content
 
 function createmediaobject ($site, $location, $file, $path_source_file, $user)
 {
-  global $lang, $mgmt_config, $eventsystem;      
+  global $mgmt_config, $eventsystem, $hcms_lang, $lang;     
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && accessgeneral ($site, $location, "comp") && $path_source_file != "")
   {
@@ -10934,7 +10868,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user)
 
 function createmediaobjects ($site, $location_source, $location_destination, $user)
 {
-  global $lang, $mgmt_config, $eventsystem;
+  global $mgmt_config, $eventsystem, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_destination))
   {
@@ -11009,10 +10943,10 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
 {
   global $eventsystem,
-         $lang,
          $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions,
          $pageaccess, $compaccess, $hiddenfolder,     
-         $cat, $temp_clipboard;
+         $cat, $temp_clipboard, 
+         $hcms_lang, $lang;
          
   // default values for action = paste before loading the clipboard
   $error_switch = "";
@@ -11029,8 +10963,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
  
   if (valid_publicationname ($site) && valid_locationname ($location) && accessgeneral ($site, $location, $cat) && valid_objectname ($user) && $action != "")
   {
-    require ($mgmt_config['abs_path_cms']."language/page_edit_various.inc.php");
-    require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+        require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
  
     // publication management config
     if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
@@ -11133,21 +11066,21 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             if ($cat_source != $cat) 
             {
                $add_onload = "";
-               $show = "<span class=\"hcmsHeadline\">".$subtext0[$lang]."</span><br />\n";
+               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['it-is-not-possible-to-paste-the-objects-here'][$lang]."</span><br />\n";
             }
             else
             {       
               if ($method == "cut" && $location == $location_source)
               {
                 $add_onload = "";
-                $show = "<span class=\"hcmsHeadline\">".$subtext38[$lang]."</span><br />\n";         
+                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['it-is-not-possible-to-cut-and-paste-objects-in-the-same-destination'][$lang]."</span><br />\n";         
               }
             }
           }  
           else
           {
             $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$subtext39[$lang]."</span><br />\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-permissions-to-paste-objects-from-the-other-publication-in-this-publication'][$lang]."</span><br />\n";
           }           
           
           // get file info
@@ -11178,13 +11111,13 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         else
         {
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext31[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['clipboard-is-empty'][$lang]."</span><br />\n";
         }
       }
       else
       {
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$subtext19[$lang]."</span><br />\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['please-select-an-item-first'][$lang]."</span><br />\n";
       }
     }
     
@@ -11284,19 +11217,19 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           if (!is_file ($location.$page))
           {
             $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$subtext17[$lang]."</span><br />\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-doesnt-exist-or-you-do-not-have-write-permissions'][$lang]."</span><br />\n";
           }
           // if new file name exists already
           elseif (@is_file ($location.$pagenew) && strtolower ($location.$page) != strtolower ($location.$pagenew))
           {
             $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$subtext21[$lang]."</span><br />\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n";
           }        
         }
         else 
         {
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext40[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-new-name-must-not-be-empty'][$lang]."</span><br />\n";
         }
       }  
       elseif ($action == "page_paste" && ($method == "copy" || $method == "linkcopy"))
@@ -11306,7 +11239,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         {
           // no access permission
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext28[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-permissions-to-paste-items-in-the-current-location'][$lang]."</span><br />\n";
         }
         else
         {
@@ -11348,7 +11281,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
               else
               {
                 $add_onload = "";
-                $show = "<span class=\"hcmsHeadline\">".$subtext21[$lang]."</span><br />\n";              
+                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n";              
               }
             }
           }
@@ -11361,7 +11294,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         {
           // no access permission
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext28[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-permissions-to-paste-items-in-the-current-location'][$lang]."</span><br />\n";
         }
         else
         {
@@ -11372,18 +11305,19 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           if ($location_source == $location)
           {
             $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$subtext20[$lang]."</span><br />\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-cannot-cut-and-paste-an-item-in-the-same-location'][$lang]."</span><br />\n";
           }
           elseif (@file_exists ($location.$page))
           {
             $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$subtext21[$lang]."</span><br />\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n";
           }
         }
       }
       
       // get content container id
-      $contentfile_id = substr ($contentfile_self, 0, strpos ($contentfile_self, ".xml")); 
+      if (!empty ($contentfile_self)) $contentfile_id = substr ($contentfile_self, 0, strpos ($contentfile_self, ".xml"));
+      else $contentfile_id = "";
            
       // --------------------------------- convert location and define object paths ---------------------------------
       if (isset ($location)) $location_esc = convertpath ($site, $location, $cat);     
@@ -11502,7 +11436,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                       }
       
                       // set message
-                      $message = $subtext5[$lang];
+                      $message = $hcms_lang['there-is-a-new-task-due-to-broken-link'][$lang];
                        
                       // get objects
                       $page_path_array = link_db_getobject ($link_db_record['object']);
@@ -11584,7 +11518,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                   $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|link_db_save failed for $site.link.dat";
       
                   $add_onload = "";
-                  $show = "<span class=\"hcmsHeadline\">".$subtext25[$lang]."</span><br />".$subtext8[$lang]."\n";
+                  $show = "<span class=\"hcmsHeadline\">".$hcms_lang['link-management-error'][$lang]."</span><br />".$hcms_lang['link-management-database-could-not-be-saved'][$lang]."\n";
                 }
               }
               else
@@ -11595,7 +11529,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                 $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|link_db is not array and failed for $site.link.dat";
         
                 $add_onload = "";
-                $show = "<span class=\"hcmsHeadline\">".$subtext25[$lang]."</span><br />".$subtext32[$lang]."\n";        
+                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['link-management-error'][$lang]."</span><br />".$hcms_lang['an-error-occured-while-writing-data-to-the-link-management-database'][$lang]."\n";        
               }
             }
             elseif ($link_db == false)
@@ -11607,7 +11541,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
               $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|link_db_load failed for ".$site;              
       
               $add_onload = "";
-              $show = "<span class=\"hcmsHeadline\">".$subtext25[$lang]."</span><br />".$subtext9[$lang]."\n";
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['link-management-error'][$lang]."</span><br />".$hcms_lang['link-management-database-could-not-be-loaded'][$lang]."\n";
             }
           }
         }
@@ -11615,7 +11549,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
       elseif ($show == "")
       {
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$subtext17[$lang]."</span><br />\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-doesnt-exist-or-you-do-not-have-write-permissions'][$lang]."</span><br />\n";
       }
     } 
     
@@ -12024,7 +11958,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         if ($test != false)
         {
           $add_onload = "if (eval (opener.parent.frames['mainFrame'])) {opener.parent.frames['controlFrame'].location.href='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; opener.parent.frames['mainFrame'].location.reload();} else if (eval (opener.parent.frames['objFrame'])) {opener.parent.frames['controlFrame'].location.href='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; opener.parent.frames['objFrame'].location.href='empty.php';}";
-          $show = "<span class=\"hcmsHeadline\">".$subtext11[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-deleted'][$lang]."</span><br />\n";
   
           // log delete
           $errcode = "00111";
@@ -12038,7 +11972,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         else
         {  
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext16[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]."</span><br />\n";
         }
       }
   
@@ -12089,14 +12023,14 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           $pagename_orig = $pagenewname_orig;
           
           $add_onload = "if (eval (parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload(); else if (eval (parent.frames['objFrame'])) parent.frames['objFrame'].location.href='page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."'; ";
-          $show = "<span class=\"hcmsHeadline\">".$subtext12[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-renamed'][$lang]."</span><br />\n";
           
           $error_switch = "no";
         }
         else
         {
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext16[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]."</span><br />\n";
           
           $errcode = "10201";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|rename failed for ".$location_esc.$page;
@@ -12153,14 +12087,14 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           $pagename = $pagenewname;
   
           $add_onload = "opener.parent.frames['controlFrame'].location.reload(); if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload();";
-          $show = "<span class=\"hcmsHeadline\">".$subtext13[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-unpublished'][$lang]."</span><br />\n";
         
           $error_switch = "no";
         }
         else
         {
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext16[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]."</span><br />\n";
           
           $errcode = "10202";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savefile or rename failed for ".$location.$page;            
@@ -12221,14 +12155,14 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         if ($test != false)
         {
           $add_onload = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload(); ";
-          $show = "<span class=\"hcmsHeadline\">".$subtext14[$lang]."</span><br />\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-cut-and-pasted'][$lang]."</span><br />\n";
           
           $error_switch = "no";
         }
         else
         {
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext16[$lang]."</span><br />\n";           
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]."</span><br />\n";           
         }
       }
       
@@ -12252,7 +12186,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         elseif ($link_db == false)
         {
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext25[$lang]."</span><br />\n".$subtext24[$lang]."\n";          
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['link-management-error'][$lang]."</span><br />\n".$hcms_lang['link-management-database-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";          
         }
         
         // update container and execute action if link database returned a valid result
@@ -12308,7 +12242,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             if ($test != false)
             {
               $add_onload = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload(); ";
-              $show = "<span class=\"hcmsHeadline\">".$subtext15[$lang]."</span><br />\n";              
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-copied-and-pasted'][$lang]."</span><br />\n";              
               $page = $page_sec;
               
               $error_switch = "no";
@@ -12316,13 +12250,13 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             else
             {
               $add_onload = "";
-              $show = "<span class=\"hcmsHeadline\">".$subtext16[$lang]."</span><br />\n";
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]."</span><br />\n";
             }
           }
           else
           {
             $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$subtext25[$lang]."</span><br />\n".$subtext32[$lang]."\n";          
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['link-management-error'][$lang]."</span><br />\n".$hcms_lang['an-error-occured-while-writing-data-to-the-link-management-database'][$lang]."\n";          
           }
         }           
       }      
@@ -12438,7 +12372,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
               link_db_close ($site, $user);
   
               $add_onload = "";
-              $show = "<span class=\"hcmsHeadline\">".$subtext23[$lang]."</span><br />".$subtext24[$lang]."\n";
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-write-link-management-data'][$lang]."</span><br />".$hcms_lang['link-management-database-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
             }
           }
           // error loading link database
@@ -12448,7 +12382,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             link_db_close ($site, $user);
   
             $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$subtext25[$lang]."</span><br />".$subtext26[$lang]."\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['link-management-error'][$lang]."</span><br />".$hcms_lang['new-record-for-link-management-is-missing'][$lang]."\n";
           }
           
           // update container and execute action if link database returned a valid result
@@ -12601,7 +12535,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             if ($test != false)
             {
               $add_onload = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload(); ";
-              $show = "<span class=\"hcmsHeadline\">".$subtext15[$lang]."</span><br />\n";
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-copied-and-pasted'][$lang]."</span><br />\n";
   
               $page = $page_sec;
               $pagename = $pagename_sec;
@@ -12611,7 +12545,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             else
             {
               $add_onload = "";
-              $show = "<span class=\"hcmsHeadline\">".$subtext16[$lang]."</span><br />\n";
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]."</span><br />\n";
 
               $errcode = "10208";
               $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savefile failed for ".$location_esc.$page_sec;                             
@@ -12630,7 +12564,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             remoteclient ("copy", "abs_path_".$cat, $site, $location_source, $location, $page, $page_sec);             
           
             $add_onload = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload(); ";
-            $show = "<span class=\"hcmsHeadline\">".$subtext15[$lang]."</span><br />\n";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-copied-and-pasted'][$lang]."</span><br />\n";
             
             $page = $page_sec;
             
@@ -12639,7 +12573,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           else
           {
             $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$subtext16[$lang]."</span><br />\n";    
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]."</span><br />\n";    
             
             $errcode = "10207";
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|copy failed for ".$location_source.$page;                      
@@ -12690,10 +12624,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
 
 function deleteobject ($site, $location, $page, $user)
 {      
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat;
+  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -12732,10 +12663,7 @@ function deleteobject ($site, $location, $page, $user)
 
 function renameobject ($site, $location, $page, $pagenew, $user)
 {      
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat;
+  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
   
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
@@ -12778,10 +12706,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
 
 function renamefile ($site, $location, $page, $pagenew, $user)
 {      
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat;
+  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
 
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
@@ -12819,10 +12744,7 @@ function renamefile ($site, $location, $page, $pagenew, $user)
 
 function cutobject ($site, $location, $page, $user, $clipboard_add=false)
 {      
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat, $temp_clipboard;
+  global $eventsystem, $mgmt_config, $cat, $temp_clipboard, $hcms_lang, $lang;
          
   $add_onload = "";
   $show = "";
@@ -12831,8 +12753,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false)
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
-    require ($mgmt_config['abs_path_cms']."language/page_edit_cutcopy.inc.php");
-    
+        
     // get clipboard entries
     if ($clipboard_add == true)
     {
@@ -12880,14 +12801,14 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false)
       $_SESSION['hcms_temp_clipboard'] = $clipboard;
 
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$subtext3[$lang]."</span><br />";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
         
       $error_switch = "no";    
     }
     else
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$subtext7[$lang]."</span><br />\n";  
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />\n";  
     }
     
     // eventsystem
@@ -12920,10 +12841,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false)
 
 function copyobject ($site, $location, $page, $user, $clipboard_add=false)
 {      
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat, $temp_clipboard;
+  global $eventsystem, $mgmt_config, $cat, $temp_clipboard, $hcms_lang, $lang;
  
   $add_onload = "";
   $show = "";
@@ -12932,8 +12850,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false)
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
-    require ($mgmt_config['abs_path_cms']."language/page_edit_cutcopy.inc.php");
-    
+        
     // get clipboard entries
     if ($clipboard_add == true)
     {
@@ -12984,14 +12901,14 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false)
         $_SESSION['hcms_temp_clipboard'] = $clipboard;
 
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$subtext3[$lang]."</span><br />";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
           
         $error_switch = "no";   
       }
       else
       {
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$subtext7[$lang]."</span><br />\n";  
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />\n";  
       }  
           
       // eventsystem
@@ -13026,10 +12943,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false)
 
 function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=false)
 {      
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat, $temp_clipboard;  
+  global $eventsystem, $mgmt_config, $cat, $temp_clipboard, $hcms_lang, $lang;  
 
   $add_onload = "";
   $show = "";
@@ -13038,8 +12952,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {        
-    require ($mgmt_config['abs_path_cms']."language/page_edit_cutcopy.inc.php");
-    
+        
     // get clipboard entries
     if ($clipboard_add == true)
     {
@@ -13090,14 +13003,14 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
         $_SESSION['hcms_temp_clipboard'] = $clipboard;
 
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$subtext3[$lang]."</span><br />";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
           
         $error_switch = "no";     
       }
       else
       {
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$subtext7[$lang]."</span><br />\n";  
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-selected-item-does-not-exist'][$lang]."</span><br />\n";  
       }
       
       // eventsystem
@@ -13132,10 +13045,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
 
 function pasteobject ($site, $location, $user)
 {      
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat;
+  global $eventsystem, $mgmt_config, $cat, $temp_clipboard, $hcms_lang, $lang;
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($user))
   {  
@@ -13173,10 +13083,7 @@ function pasteobject ($site, $location, $user)
 
 function lockobject ($site, $location, $page, $user)
 {      
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat;
+  global $eventsystem, $mgmt_config, $cat, $temp_clipboard, $hcms_lang, $lang;
          
   $add_onload = "";
   $show = "";
@@ -13186,8 +13093,7 @@ function lockobject ($site, $location, $page, $user)
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
-    require ($mgmt_config['abs_path_cms']."language/page_lock.inc.php");
-    
+        
     // publication management config
     if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
     
@@ -13263,7 +13169,7 @@ function lockobject ($site, $location, $page, $user)
         $usedby = $user;
       
         $add_onload = "parent.frames['objFrame'].location.reload();";
-        $show = "<span class=\"hcmsHeadline\">".$subtext3[$lang]."</span><br />";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-is-checked-out'][$lang]."</span><br />";
         
         $usedby = $user;
         $error_switch = "no";
@@ -13271,7 +13177,7 @@ function lockobject ($site, $location, $page, $user)
       else
       { 
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />\n".$subtext5[$lang]."\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['object-could-not-be-checked-out'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       }         
     
       // eventsystem
@@ -13307,10 +13213,7 @@ function lockobject ($site, $location, $page, $user)
 
 function unlockobject ($site, $location, $page, $user)
 {      
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat;
+  global $eventsystem, $mgmt_config, $cat, $temp_clipboard, $hcms_lang, $lang;
          
   $add_onload = "";
   $show = "";
@@ -13320,8 +13223,7 @@ function unlockobject ($site, $location, $page, $user)
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
-    require ($mgmt_config['abs_path_cms']."language/page_lock.inc.php");
-    
+        
     // publication management config
     if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
     
@@ -13391,7 +13293,7 @@ function unlockobject ($site, $location, $page, $user)
         $add_onload = "if (eval(opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload();
         if (eval(parent.frames['objFrame'])) parent.frames['objFrame'].location.reload();
         if (eval(parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload();";
-        $show = "<span class=\"hcmsHeadline\">".$subtext2[$lang]."</span><br />";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-is-checked-in'][$lang]."</span><br />";
         
         $usedby = "";
         $error_switch = "no";
@@ -13399,7 +13301,7 @@ function unlockobject ($site, $location, $page, $user)
       else
       {  
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />\n".$subtext5[$lang]."\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['object-could-not-be-checked-out'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       } 
       
       // eventsystem
@@ -13435,10 +13337,7 @@ function unlockobject ($site, $location, $page, $user)
 
 function publishobject ($site, $location, $page, $user)
 {      
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat, $ctrlreload;
+  global $eventsystem, $mgmt_config, $cat, $ctrlreload, $hcms_lang, $lang;
          
   $buffer_site = "";
   $buffer_location = "";
@@ -13449,8 +13348,7 @@ function publishobject ($site, $location, $page, $user)
    
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
-    require ($mgmt_config['abs_path_cms']."language/page_edit_publish.inc.php");
-    // load template engine (is not included by API and needs to be loaded seperately!)
+        // load template engine (is not included by API and needs to be loaded seperately!)
     require_once ($mgmt_config['abs_path_cms']."function/hypercms_tplengine.inc.php");
   
     // publication management config
@@ -13513,8 +13411,8 @@ function publishobject ($site, $location, $page, $user)
         if ($object_array == false)
         {    
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-          ".$subtext9[$lang]."\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+          ".$hcms_lang['information-about-connected-items-of-the-container-is-missing'][$lang]."\n";
       
           $errcode = "20877";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|object reference in link management is missing for container $container used by $location$page";     
@@ -13591,7 +13489,7 @@ function publishobject ($site, $location, $page, $user)
                   $viewstore = false;
                   $release = false;
                   $add_onload = "";
-                  $show = $subtext7[$lang];
+                  $show = $hcms_lang['an-error-occured-in-building-the-view'][$lang];
                 } 
 
                 // -------------------------------- publish page -------------------------------
@@ -13666,8 +13564,8 @@ function publishobject ($site, $location, $page, $user)
                   else
                   {
                     $add_onload = "";
-                    $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-                    ".$subtext5[$lang]."\n";
+                    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+                    ".$hcms_lang['you-do-not-have-write-permissions-for-the-item'][$lang]."\n";
                     
                     break;
                   }               
@@ -13794,22 +13692,22 @@ function publishobject ($site, $location, $page, $user)
                   
                   // show message
                   $add_onload = "opener.parent.frames['controlFrame'].location.reload(); if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload();";
-                  $show = "<span class=\"hcmsHeadline\">".$subtext2[$lang]."</span><br />\n";
+                  $show = "<span class=\"hcmsHeadline\">".$hcms_lang['published-item-successfully'][$lang]."</span><br />\n";
                     
                   $error_switch = "no";
                 }
                 else
                 {
                   $add_onload = "";
-                  $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-                  ".$subtext7[$lang]."\n";
+                  $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+                  ".$hcms_lang['an-error-occured-in-building-the-view'][$lang]."\n";
                 }
               }
               else
               {
                 $add_onload = "";
-                $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-                ".$subtext3[$lang]."\n";
+                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+                ".$hcms_lang['item-is-not-managed-by-hypercms'][$lang]."\n";
                 
                 $error_switch = "no";
               }  
@@ -13821,8 +13719,8 @@ function publishobject ($site, $location, $page, $user)
             else
             {
               $add_onload = "";
-              $show = "<span class=\"hcmsHeadline\"".$subtext4[$lang]."</span><br />
-              ".$subtext8[$lang]."\n";
+              $show = "<span class=\"hcmsHeadline\"".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+              ".$hcms_lang['you-do-not-have-permissions-to-publish-the-item'][$lang]."\n";
             }            
           }             
         }
@@ -13848,8 +13746,8 @@ function publishobject ($site, $location, $page, $user)
           onpublishobject_post ($site, $cat, $location, $page, $container, $contentdata, $template, "", "", $user);    
   
         $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-        ".$subtext3[$lang]."\n";
+        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+        ".$hcms_lang['item-is-not-managed-by-hypercms'][$lang]."\n";
    
         $error_switch = "no";
       }
@@ -13876,7 +13774,7 @@ function publishobject ($site, $location, $page, $user)
         if ($contentdata != false)
         {   
           // save working xml content container file
-          $test = savecontainer ($container, "work", $contentdata, $user);
+          $test = savecontainer ($container, "work", $contentdata, $user, true);
           
           if ($test == false)
           {
@@ -13885,7 +13783,7 @@ function publishobject ($site, $location, $page, $user)
           }            
           
           // save published xml content container file     
-          $test = savecontainer ($container, "published", $contentdata, $user);
+          $test = savecontainer ($container, "published", $contentdata, $user, true);
 
           if ($test == false)
           {
@@ -13898,8 +13796,8 @@ function publishobject ($site, $location, $page, $user)
         if ($test == false)
         {
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-          ".$subtext6[$lang]."\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+          ".$hcms_lang['you-do-not-have-write-permissions-for-the-container'][$lang]."\n";
           
           $error_switch = "yes";
         }
@@ -13909,16 +13807,16 @@ function publishobject ($site, $location, $page, $user)
     else
     {
       $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$subtext5[$lang]."</span><br />
-      ".$subtext10[$lang]."\n";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-write-permissions-for-the-item'][$lang]."</span><br />
+      ".$hcms_lang['the-parameters-for-publishing-are-missing'][$lang]."\n";
     }             
   }
   // input is not valid
   else
   {
     $add_onload = "";
-    $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-    ".$subtext10[$lang]."\n";
+    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+    ".$hcms_lang['the-parameters-for-publishing-are-missing'][$lang]."\n";
   }
   
   // save log
@@ -13944,9 +13842,7 @@ function publishobject ($site, $location, $page, $user)
 
 function processobjects ($action, $site, $location, $file, $published_only="0", $user)
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config;
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   if ($action != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($user))
   {
@@ -14036,13 +13932,9 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
 
 function publishlinkedobject ($site, $location, $page, $user)
 {      
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat, $ctrlreload;
+  global $eventsystem, $mgmt_config, $cat, $ctrlreload, $hcms_lang, $lang;
 
-  require ($mgmt_config['abs_path_cms']."language/page_edit_publish.inc.php");
-  
+    
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {  
     // define category if undefined
@@ -14077,8 +13969,8 @@ function publishlinkedobject ($site, $location, $page, $user)
             {
               $result['result'] = true;
               $result['add_onload'] = "";
-              $result['message'] = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-              ".$subtext13[$lang]."\n";               
+              $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+              ".$hcms_lang['the-page-which-uses-this-component-doesnt-need-to-be-republished'][$lang]."\n";               
             }  
           }        
         }
@@ -14087,8 +13979,8 @@ function publishlinkedobject ($site, $location, $page, $user)
       {
         $result['result'] = true;
         $result['add_onload'] = "";
-        $result['message'] = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-        ".$subtext11[$lang]."\n";    
+        $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+        ".$hcms_lang['found-no-items-using-the-component'][$lang]."\n";    
       }
     }
     else
@@ -14096,16 +13988,16 @@ function publishlinkedobject ($site, $location, $page, $user)
       $result['result'] = true;
       $result['add_onload'] = "";
 
-      $result['message'] = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-      ".$subtext12[$lang]."\n";    
+      $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+      ".$hcms_lang['the-selected-item-is-a-page'][$lang]."\n";    
     }      
   }
   else
   {
     $result['result'] = false;
     $result['add_onload'] = "";
-    $result['message'] = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-    ".$subtext10[$lang]."\n";    
+    $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+    ".$hcms_lang['the-parameters-for-publishing-are-missing'][$lang]."\n";    
   }  
   
   // return result 
@@ -14122,13 +14014,9 @@ function publishlinkedobject ($site, $location, $page, $user)
 
 function unpublishobject ($site, $location, $page, $user)
 {      
-  global $eventsystem,
-         $lang,
-         $mgmt_config,
-         $cat, $ctrlreload;    
+  global $eventsystem, $mgmt_config, $cat, $ctrlreload, $hcms_lang, $lang;   
 
-  require ($mgmt_config['abs_path_cms']."language/page_edit_publish.inc.php");
-      
+        
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     // publication management config
@@ -14174,8 +14062,8 @@ function unpublishobject ($site, $location, $page, $user)
         if ($object_array == false)
         {    
           $add_onload = "";
-          $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-          ".$subtext9[$lang]."\n";
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+          ".$hcms_lang['information-about-connected-items-of-the-container-is-missing'][$lang]."\n";
       
           $errcode = "20897";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|object reference in link management is missing for container $container used by ".$location_esc.$page;     
@@ -14246,8 +14134,8 @@ function unpublishobject ($site, $location, $page, $user)
                 else
                 {
                   $add_onload = "";
-                  $show = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-                  ".$subtext5[$lang]."\n";
+                  $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+                  ".$hcms_lang['you-do-not-have-write-permissions-for-the-item'][$lang]."\n";
                   
                   break;
                 }
@@ -14259,8 +14147,8 @@ function unpublishobject ($site, $location, $page, $user)
         {
           $result['result'] = false; 
           $result['add_onload'] = "";
-          $result['message'] = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-          ".$subtext9[$lang]."\n";
+          $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+          ".$hcms_lang['information-about-connected-items-of-the-container-is-missing'][$lang]."\n";
       
           $errcode = "20878";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|object reference in link management is missing for container $container used by ".convertpath ($site, $location, $cat).$page;     
@@ -14270,7 +14158,7 @@ function unpublishobject ($site, $location, $page, $user)
       {
         $result['result'] = true; 
         $result['add_onload'] = "";
-        $result['message'] = "<span class=\"hcmsHeadline\">".$subtext2[$lang]."</span>";
+        $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['published-item-successfully'][$lang]."</span>";
       } 
       
       // eventsystem
@@ -14282,8 +14170,8 @@ function unpublishobject ($site, $location, $page, $user)
     {
       $result['result'] = false;
       $result['add_onload'] = "";
-      $result['message'] = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-      ".$subtext5[$lang]."\n";    
+      $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+      ".$hcms_lang['you-do-not-have-write-permissions-for-the-item'][$lang]."\n";    
     } 
   }
   // input parameters are invalid
@@ -14291,8 +14179,8 @@ function unpublishobject ($site, $location, $page, $user)
   {
     $result['result'] = false;
     $result['add_onload'] = "";
-    $result['message'] = "<span class=\"hcmsHeadline\">".$subtext4[$lang]."</span><br />
-    ".$subtext10[$lang]."\n";    
+    $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
+    ".$hcms_lang['the-parameters-for-publishing-are-missing'][$lang]."\n";    
   }                
          
   // return results 
@@ -14314,7 +14202,7 @@ function unpublishobject ($site, $location, $page, $user)
 // help function used to create a list of all objects inside a folder
 function collectobjects ($root_id, $site, $cat, $location, $published_only="0")
 {     
-  global $pageaccess, $compaccess, $mgmt_config, $hiddenfolder;
+  global $user, $pageaccess, $compaccess, $mgmt_config, $hiddenfolder, $hcms_lang, $lang;
  
   // if selected file is a directory
   if (isset ($root_id) && valid_publicationname ($site) && $cat != "" && valid_locationname ($location))
@@ -14375,14 +14263,9 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only="0")
 // main function
 function manipulateallobjects ($action, $objectpath_array, $method, $force, $published_only, $user, $tempfile="")
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config, 
-         $pageaccess, $compaccess, $hiddenfolder,
-         $cat;      
+  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $cat, $hcms_lang, $lang;;      
   
-  require ($mgmt_config['abs_path_cms']."language/page_edit_various.inc.php");
-
+  
   // get object pathes from the session if is not set      
   if (!is_array ($objectpath_array) && (isset ($_SESSION['clipboard_multiobject']) && is_array ($_SESSION['clipboard_multiobject']))) $objectpath_array = $_SESSION['clipboard_multiobject'];
   if ((!isset ($rootpathdelete_array) || !is_array ($rootpathdelete_array)) && (isset ($_SESSION['clipboard_rootpathdelete']) && is_array ($_SESSION['clipboard_rootpathdelete']))) $rootpathdelete_array = $_SESSION['clipboard_rootpathdelete'];
@@ -14511,7 +14394,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
                     else
                     {
                       $result['result'] = false;
-                      $result['message'] = $subtext0[$lang];
+                      $result['message'] = $hcms_lang['it-is-not-possible-to-paste-the-objects-here'][$lang];
                       return $result;
                     } 
                   }
@@ -14519,7 +14402,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
                   else
                   {
                     $result['result'] = false;
-                    $result['message'] = $subtext36[$lang];
+                    $result['message'] = $hcms_lang['it-is-not-possible-to-cut-copy-and-paste-objects-across-different-publications'][$lang];
                     return $result;
                   }
                 }
@@ -14992,7 +14875,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
 
 function remoteclient ($action, $root, $site, $location, $locationnew, $page, $pagenew)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   if (!empty($mgmt_config[$site]['remoteclient']))
   {
@@ -15299,9 +15182,7 @@ function HTTP_Get ($URL, $data, $contenttype, $charset)
 
 function savelog ($error, $logfile="event")
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config;
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
          
   if (is_array ($error) && sizeof ($error) > 0 && $logfile != "")
   {  
@@ -15329,12 +15210,9 @@ function savelog ($error, $logfile="event")
 
 function deletelog ()
 {
-  global $eventsystem,
-         $lang,
-         $mgmt_config;
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
   
-  require ($mgmt_config['abs_path_cms']."language/log_delete.inc.php");
-  
+    
   // file name of event log
   $logfile = "event.log";
   
@@ -15345,18 +15223,18 @@ function deletelog ()
     if ($test == true)
     {
       $add_onload = "parent.frames['mainFrame'].location.href='log_list.php'; ";
-      $show = "<span class=hcmsHeadline>".$subtext0[$lang]."</span>\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['cleared-all-events-from-list'][$lang]."</span>\n";
     }
     else
     {
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$subtext1[$lang]."</span><br />\n".$subtext2[$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['events-list-could-not-be-cleared'][$lang]."</span><br />\n".$hcms_lang['event-log-does-not-exist-or-you-do-not-have-write-permissions'][$lang]."\n";
     }  
   }
   else
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$subtext1[$lang]."</span><br />\n".$subtext2[$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['events-list-could-not-be-cleared'][$lang]."</span><br />\n".$hcms_lang['event-log-does-not-exist-or-you-do-not-have-write-permissions'][$lang]."\n";
   }
   
   $result = array();
@@ -15377,7 +15255,7 @@ function deletelog ()
 
 function debuglog ($code)
 {
-  global $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang, $lang;
   
   // save log
   if ($code != "")
@@ -15401,11 +15279,9 @@ function debuglog ($code)
 
 function notifyusers ($site, $location, $object, $event, $user_from)
 {
-  global $lang_codepage,
-         $mgmt_config;
+  global $user, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
   
-  require ($mgmt_config['abs_path_cms']."language/notifyusers.inc.php");
-  // include hypermailer class
+    // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
   
   if ($event != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($user_from))
@@ -15454,48 +15330,48 @@ function notifyusers ($site, $location, $object, $event, $user_from)
               // text options
               if ($event == "oncreate")
               {
-                $text_opt = $text1[$lang];
+                $text_opt = $hcms_lang['user-user-createduploaded-the-following-object'][$lang];
                 $object_name = getlocationname ($site, $location_esc.$object, $cat);
                 $accesslink = createaccesslink ($site, $location_esc, $object, $cat, "", $notify['user'], "al");
               }
               elseif ($event == "onedit")
               {
-                $text_opt = $text2[$lang];
+                $text_opt = $hcms_lang['user-user-edited-the-following-object'][$lang];
                 $object_name = getlocationname ($site, $location_esc.$object, $cat);
                 $accesslink = createaccesslink ($site, $location_esc, $object, $cat, "", $notify['user'], "al");
               }
               elseif ($event == "onmove")
               {
-                $text_opt = $text3[$lang];
+                $text_opt = $hcms_lang['user-user-moved-the-following-object'][$lang];
                 $object_name = getlocationname ($site, $location_esc.$object, $cat);
                 $accesslink = createaccesslink ($site, $location_esc, $object, $cat, "", $notify['user'], "al");
               }
               elseif ($event == "ondelete")
               {
-                $text_opt = $text4[$lang];
+                $text_opt = $hcms_lang['user-user-deleted-the-following-object'][$lang];
                 $object_name = getlocationname ($site, $location_esc.$object, $cat);
                 $accesslink = "";
               }
             
               // mail notification
-              $mail_title = $text0[$lang];
+              $mail_title = $hcms_lang['hypercms-notification'][$lang];
               $mail_fullbody = str_replace ("%user%", $user_from, $text_opt)."\n";
               $mail_fullbody .= $mgmt_config['today']." ";
-              if ($cat == "comp") $mail_fullbody .= $text6[$lang];
-              elseif ($cat == "page") $mail_fullbody .= $text7[$lang];
+              if ($cat == "comp") $mail_fullbody .= $hcms_lang['in-assets'][$lang];
+              elseif ($cat == "page") $mail_fullbody .= $hcms_lang['in-pages'][$lang];
               $mail_fullbody .= ": ".$object_name;
               if ($accesslink != "") $mail_fullbody .=  " (".$accesslink.")";          
-              $mail_fullbody .= "\n\n".$text5[$lang];
+              $mail_fullbody .= "\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang];
              
               $mailer = new HyperMailer();
              
               // if the mailserver config entry is empty, the email address of the user will be used for FROM
-              $mailer->CharSet = $lang_codepage[$lang]; 
+              $mailer->CharSet = $hcms_lang_codepage[$lang]; 
               $mailer->From = "automailer@".$mgmt_config[$site]['mailserver'];
               $mailer->FromName = "hyperCMS Automailer";
               $mailer->AddAddress ($email_to);
-              $mailer->Subject = html_decode ($mail_title, $lang_codepage[$lang]);
-              $mailer->Body = html_decode ($mail_fullbody, $lang_codepage[$lang]);
+              $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang]);
+              $mailer->Body = html_decode ($mail_fullbody, $hcms_lang_codepage[$lang]);
              
               // send mail
               if ($mailer->Send())
@@ -15531,11 +15407,8 @@ function notifyusers ($site, $location, $object, $event, $user_from)
 
 function licensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $date_end, $user, $format="%Y-%m-%d")
 {
-  global $eventsystem,
-         $lang_codepage,
-         $mgmt_config;
+  global $eventsystem, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
   
-  require ($mgmt_config['abs_path_cms']."language/licensenotification.inc.php");
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
   
@@ -15581,8 +15454,8 @@ function licensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $
             if ($email_to != "")
             {
               // mail notification
-              $mail_title = $text0[$lang];
-              $mail_fullbody = $text1[$lang]."\n";
+              $mail_title = $hcms_lang['hypercms-warning-regarding-copyrights'][$lang];
+              $mail_fullbody = $hcms_lang['the-following-copyrights-are-due-shortly'][$lang]."\n";
               
               foreach ($result_array as $result)
               { 
@@ -15590,17 +15463,17 @@ function licensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $
                 $mail_fullbody .= $result['date'].": ".$result['link']."\n";
               }
               
-              $mail_fullbody .= "\n".$text2[$lang];
+              $mail_fullbody .= "\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang];
              
               $mailer = new HyperMailer();
              
               // if the mailserver config entry is empty, the email address of the user will be used for FROM
-              $mailer->CharSet = $lang_codepage[$lang]; 
+              $mailer->CharSet = $hcms_lang_codepage[$lang]; 
               $mailer->From = "automailer@".$mgmt_config[$site]['mailserver'];
               $mailer->FromName = "hyperCMS Automailer";
               $mailer->AddAddress ($email_to);
-              $mailer->Subject = html_decode ($mail_title, $lang_codepage[$lang]);
-              $mailer->Body = html_decode ($mail_fullbody, $lang_codepage[$lang]);
+              $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang]);
+              $mailer->Body = html_decode ($mail_fullbody, $hcms_lang_codepage[$lang]);
              
               // send mail
               if ($mailer->Send())

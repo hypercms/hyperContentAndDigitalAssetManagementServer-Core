@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/template_info.inc.php");
 
 
 // input parameters
@@ -41,7 +39,7 @@ checkusersession ($user, false);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -77,10 +75,10 @@ if ($template != "")
     $pagecomp = "meta data template";
   }  
 
-  echo "<tr><td>".$text0[$lang].": </td><td class=\"hcmsHeadlineTiny\">".$tpl_name."</td></tr>\n";
-  echo "<tr><td>".$text2[$lang].": </td><td class=\"hcmsHeadlineTiny\">".$pagecomp."</td></tr>\n";
-  echo "<tr><td>".$text3[$lang].": </td><td class=\"hcmsHeadlineTiny\">".date ("Y-m-d H:i", filemtime ($mgmt_config['abs_path_template'].$site."/".$template))."</td></tr>\n";
-  echo "<tr><td>".$text4[$lang].": </td><td class=\"hcmsHeadlineTiny\">".filesize ($mgmt_config['abs_path_template'].$site."/".$template)." bytes</td></tr>\n";
+  echo "<tr><td>".$hcms_lang['template'][$lang].": </td><td class=\"hcmsHeadlineTiny\">".$tpl_name."</td></tr>\n";
+  echo "<tr><td>".$hcms_lang['category'][$lang].": </td><td class=\"hcmsHeadlineTiny\">".$pagecomp."</td></tr>\n";
+  echo "<tr><td>".$hcms_lang['last-updated'][$lang].": </td><td class=\"hcmsHeadlineTiny\">".date ("Y-m-d H:i", filemtime ($mgmt_config['abs_path_template'].$site."/".$template))."</td></tr>\n";
+  echo "<tr><td>".$hcms_lang['file-size'][$lang].": </td><td class=\"hcmsHeadlineTiny\">".filesize ($mgmt_config['abs_path_template'].$site."/".$template)." bytes</td></tr>\n";
 }
 ?>
 </table>

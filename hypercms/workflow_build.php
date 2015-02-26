@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/workflow_build.inc.php");
 
 
 // input parameters
@@ -136,18 +134,18 @@ else $savefile = false;
 
 if ($savefile == false)
 {
-  $show = "<p class=hcmsHeadline>".$text0[$lang]."</p>\n".$text1[$lang]."\n";
+  $show = "<p class=hcmsHeadline>".$hcms_lang['workflow-could-not-be-saved'][$lang]."</p>\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
 }
 else
 {
-  $show = "<p class=hcmsHeadline>".$text2[$lang]."</p>\n".$text3[$lang]."\n";
+  $show = "<p class=hcmsHeadline>".$hcms_lang['saved-workflow'][$lang]."</p>\n".$hcms_lang['loading-'][$lang]."\n";
 }
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <?php 
 if ($savefile != false) echo "<meta http-equiv=\"refresh\" content=\"0; URL=".$mgmt_config['url_path_cms']."workflow_manager.php?site=".url_encode($site)."&wf_name=".url_encode($wf_name)."\">"; 
 ?>

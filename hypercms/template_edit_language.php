@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/template_edit_metainfo.inc.php");
 
 
 // input parameters
@@ -36,7 +34,7 @@ checkusersession ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/click.js" type="text/javascript"></script>
 <script language="JavaScript">
@@ -64,14 +62,14 @@ function applylanguage ()
   
   <table border="0" cellspacing="2">
     <tr align="left" valign="top"> 
-      <td colspan="2" nowrap="nowrap" class=hcmsHeadline><?php echo $text9[$lang]; ?></td>
+      <td colspan="2" nowrap="nowrap" class=hcmsHeadline><?php echo $hcms_lang['assign-language-information'][$lang]; ?></td>
     </tr>
     <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo $text10[$lang]; ?>:</td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['session-variable-name'][$lang]; ?>:</td>
       <td><input name="language_sessionvar" type="text" value="" /></td>
     </tr>  
     <tr align="left" valign="top">
-      <td nowrap="nowrap"><?php echo $text11[$lang]; ?>:<br /><?php echo $text12[$lang]; ?></td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['language-values'][$lang]; ?>:<br /><?php echo $hcms_lang['use-as-seperator'][$lang]; ?></td>
       <td><input name="language_sessionvalues" type="text" value="" /></td>
     </tr>
     <tr align="left" valign="top"> 
@@ -80,8 +78,8 @@ function applylanguage ()
     <tr align="left" valign="top">
       <td nowrap="nowrap">&nbsp;</td>
       <td nowrap="nowrap">
-        <input name="language_values" type="button" id="apply" value="<?php echo $text7[$lang]; ?>" onClick="applylanguage();" />
-        <input name="cancel" type="button" id="cancel" value="<?php echo $text8[$lang]; ?>" onClick="self.close();" />
+        <input name="language_values" type="button" id="apply" value="<?php echo $hcms_lang['apply'][$lang]; ?>" onClick="applylanguage();" />
+        <input name="cancel" type="button" id="cancel" value="<?php echo $hcms_lang['cancel'][$lang]; ?>" onClick="self.close();" />
       </td>
     </tr>      
   </table>

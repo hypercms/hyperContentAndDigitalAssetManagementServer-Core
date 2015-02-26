@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/top.inc.php");
 
 
 // input parameters
@@ -35,7 +33,7 @@ toggleview ($view);
 <html> 
 <head> 
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=0;"></meta>
 <link rel="stylesheet" href="javascript/jquery-ui/jquery.mobile-1.3.1.min.css" />
 <!-- 57 x 57 Android and iPhone 3 icon -->
@@ -79,7 +77,7 @@ $(document).ready(function()
   <div id="topbar" class="ui-header ui-bar-b" data-role="header">
     <a href="#navigator">Navigator</a>
     <h1>hyperCMS <?php echo ucfirst ($hcms_themename); ?></h1>
-    <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?><a href="#chat"><?php echo $text5[$lang]; ?></a><?php } ?>
+    <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?><a href="#chat"><?php echo $hcms_lang['chat'][$lang]; ?></a><?php } ?>
   </div> 
 
   <!-- navigator panel -->
@@ -93,7 +91,7 @@ $(document).ready(function()
         <table style="padding:0; margin:0; width:100%;">
           <tr>
             <td>
-              <input type="text" name="search_expression" data-mini="true" maxlength="60" value="" placeholder="<?php echo $text3[$lang]; ?>" />
+              <input type="text" name="search_expression" data-mini="true" maxlength="60" value="" placeholder="<?php echo $hcms_lang['search-expression'][$lang]; ?>" />
             </td>
             <td>
               <button id="SearchButton" data-mini="true" style="width:40px;" onclick="document.forms['searchform_general'].submit();">OK</button>

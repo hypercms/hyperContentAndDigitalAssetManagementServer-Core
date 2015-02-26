@@ -401,6 +401,7 @@ function rdbms_setcontent ($container_id, $text_array="", $user="")
             if ($num_rows > 0)
             {      
               $text = strip_tags ($text);
+              $text = html_decode ($text, "UTF-8");
 
               $text = $db->escape_string($text);
 
@@ -414,6 +415,7 @@ function rdbms_setcontent ($container_id, $text_array="", $user="")
             elseif ($num_rows == 0)
             {
               $text = strip_tags ($text);
+              $text = html_decode ($text, "UTF-8");
 
               $text = $db->escape_string ($text);  
 

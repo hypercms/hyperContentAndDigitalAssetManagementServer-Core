@@ -17,8 +17,6 @@ require ("function/hypercms_api.inc.php");
 require ("function/hypercms_ui.inc.php");
 // mailer class
 require ("function/hypermailer.class.php");
-// language file
-require_once ("language/user_sendlink.inc.php");
 
 
 // input parameters
@@ -243,7 +241,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
 				}
         
 				$mailer = new HyperMailer();
-        $mailer->CharSet = $lang_codepage[$lang];
+        $mailer->CharSet = $hcms_lang_codepage[$lang];
         
 				// if the mailserver config entry is empty, the email address of the user will be used for FROM
 				if ($email_from != "" && $mgmt_config[$site]['mailserver'] == "")
@@ -332,14 +330,14 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                   {
     								if ($include_metadata == "yes")
                     {
-    									$metadata = $text11[$lang].":\n".getmetadata ($locationTemp, $pageTemp);
+    									$metadata = $hcms_lang['meta-data'][$lang].":\n".getmetadata ($locationTemp, $pageTemp);
     								}
                     else
                     {
     									$metadata = "";
     								}
                   }
-                  else $link = $text42[$lang].$multiobject_entry;
+                  else $link = $hcms_lang['error-object-id-is-missing-for-'][$lang].$multiobject_entry;
                   
   								// links to send
   								$mail_link .= $link."\n\n".$metadata."\n\n";
@@ -372,14 +370,14 @@ if ($intention == "sendmail" && checktoken ($token, $user))
               {
 								if ($include_metadata == "yes")
                 {
-									$metadata = $text11[$lang].":\n".getmetadata ($locationTemp, $page);
+									$metadata = $hcms_lang['meta-data'][$lang].":\n".getmetadata ($locationTemp, $page);
 								}
                 else
                 {
 									$metadata = "";
 								}
               }
-              else $link = $text42[$lang].convertpath ($site, $locationTemp, $cat).$page;
+              else $link = $hcms_lang['error-object-id-is-missing-for-'][$lang].convertpath ($site, $locationTemp, $cat).$page;
               
 							// links to send
 							$mail_link .= $link."\n\n".$metadata."\n\n";
@@ -419,7 +417,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
    
   											if ($include_metadata == "yes")
                         {
-  												$metadata_str .= specialchr_decode ($pageTemp)."\n-------------------\n".$text11[$lang].":\n".getmetadata ($locationTemp, $pageTemp)."\n\n";
+  												$metadata_str .= specialchr_decode ($pageTemp)."\n-------------------\n".$hcms_lang['meta-data'][$lang].":\n".getmetadata ($locationTemp, $pageTemp)."\n\n";
   											}
   										}
   									}
@@ -439,7 +437,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                 
 								if ($include_metadata == "yes")
                 {
-									$metadata_str .= specialchr_decode ($page)."\n-------------------\n".$text11[$lang].":\n".getmetadata ($location, $page)."\n\n";
+									$metadata_str .= specialchr_decode ($page)."\n-------------------\n".$hcms_lang['meta-data'][$lang].":\n".getmetadata ($location, $page)."\n\n";
 								}
 							}
 						}
@@ -456,14 +454,14 @@ if ($intention == "sendmail" && checktoken ($token, $user))
         
 				if ($mail_link != "")
         {
-					$mail_fullbody .= $text16[$language].":\n".$mail_link."\n\n";
+					$mail_fullbody .= $hcms_lang['please-click-the-links-below-to-access-the-files'][$language].":\n".$mail_link."\n\n";
 				}
         
         $mail_fullbody .= $mail_signature;
 
         // subject and body
-    		$mailer->Subject = html_decode ($mail_title, $lang_codepage[$lang]);
-    		$mailer->Body = html_decode ($mail_fullbody, $lang_codepage[$lang]);        
+    		$mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang]);
+    		$mailer->Body = html_decode ($mail_fullbody, $hcms_lang_codepage[$lang]);        
         
 				foreach ($email_to as $mail_address)
         {
@@ -578,7 +576,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
 						}
             else
             {
-							$general_error[] = sprintf ($text37[$lang], $realname_to);
+							$general_error[] = sprintf ($hcms_lang['e-mail-address-of-user-s-is-missing'][$lang], $realname_to);
 						}
             
 						// language
@@ -596,7 +594,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
           
 					// send mail to receiver
 					$mailer = new HyperMailer();
-          $mailer->CharSet = $lang_codepage[$lang];
+          $mailer->CharSet = $hcms_lang_codepage[$lang];
           
 					$metadata = "";
 					$mail_link = "";
@@ -639,14 +637,14 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                       {
         								if ($include_metadata == "yes")
                         {
-        									$metadata = $text11[$lang].":\n".getmetadata ($locationTemp, $pageTemp);
+        									$metadata = $hcms_lang['meta-data'][$lang].":\n".getmetadata ($locationTemp, $pageTemp);
         								}
                         else
                         {
         									$metadata = "";
         								}
                       }
-                      else $link = $text42[$lang].$multiobject_entry;
+                      else $link = $hcms_lang['error-object-id-is-missing-for-'][$lang].$multiobject_entry;
                       
   										// links to send
   										$mail_link .= $link."\n\n".$metadata."\n\n";
@@ -680,14 +678,14 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                   {
     								if ($include_metadata == "yes")
                     {
-    									$metadata = $text11[$lang].":\n".getmetadata ($locationTemp, $page);
+    									$metadata = $hcms_lang['meta-data'][$lang].":\n".getmetadata ($locationTemp, $page);
     								}
                     else
                     {
     									$metadata = "";
     								}
                   }
-                  else $link = $text42[$lang].convertpath ($site, $locationTemp, $cat).$page;
+                  else $link = $hcms_lang['error-object-id-is-missing-for-'][$lang].convertpath ($site, $locationTemp, $cat).$page;
                   
 									// links to send
 									$mail_link .= $link."\n\n".$metadata."\n\n";
@@ -720,7 +718,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                         
   											if ($include_metadata == "yes")
                         {
-  												$metadata_str .= specialchr_decode ($pageTemp)."\n-------------------\n".$text11[$lang].":\n".getmetadata ($locationTemp, $pageTemp)."\n\n";
+  												$metadata_str .= specialchr_decode ($pageTemp)."\n-------------------\n".$hcms_lang['meta-data'][$lang].":\n".getmetadata ($locationTemp, $pageTemp)."\n\n";
   											}
   										}
                     }
@@ -738,7 +736,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                     
 										if ($include_metadata == "yes")
                     {
-											$metadata_str .= specialchr_decode ($page)."\n-------------------\n".$text11[$lang].":\n".getmetadata ($location, $page)."\n\n";
+											$metadata_str .= specialchr_decode ($page)."\n-------------------\n".$hcms_lang['meta-data'][$lang].":\n".getmetadata ($location, $page)."\n\n";
 										}
 									}
 								}
@@ -755,7 +753,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
             
 						if ($mail_link != "")
             {
-							$mail_fullbody .= $text16[$user_lang].":\n".$mail_link."\n\n";
+							$mail_fullbody .= $hcms_lang['please-click-the-links-below-to-access-the-files'][$user_lang].":\n".$mail_link."\n\n";
 						}
             
 						$mail_fullbody .= $mail_signature;
@@ -812,8 +810,8 @@ if ($intention == "sendmail" && checktoken ($token, $user))
 						}
 						
             // subject and body
-						$mailer->Subject = html_decode ($mail_title, $lang_codepage[$lang]);
-						$mailer->Body = html_decode ($mail_fullbody, $lang_codepage[$lang]);
+						$mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang]);
+						$mailer->Body = html_decode ($mail_fullbody, $hcms_lang_codepage[$lang]);
             
             // create email recipient array
 						$email_to_array = splitstring ($email_to);
@@ -839,7 +837,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
 	}
   else
   {
-		$general_error = $text9[$lang];
+		$general_error = $hcms_lang['object-is-not-defined'][$lang];
 	}
   
   // ------------ save recipients and create new task for user on success --------------
@@ -908,7 +906,7 @@ $token_new = createtoken ($user);
 <html>
 	<head>
 		<title>hyperCMS</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+		<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
     <meta name="viewport" content="width=580; initial-scale=0.9; maximum-scale=1.0; user-scalable=1;" />
 		<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 		<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css">
@@ -928,14 +926,14 @@ $token_new = createtoken ($user);
 			{  
 				if ($("div#emails div").length < 1 && $("#group_login").val() == "")
         {
-					alert (hcms_entity_decode("<?php echo $text34[$lang]; ?>"));
+					alert (hcms_entity_decode("<?php echo $hcms_lang['add-at-least-one-user-or-email'][$lang]; ?>"));
 					$('input#selector').focus();
 					return false;
 				}
         
 				if (document.getElementById("mail_title").value == "")
         {
-					alert (hcms_entity_decode("<?php echo $text12[$lang]; ?>"));
+					alert (hcms_entity_decode("<?php echo $hcms_lang['please-define-a-mail-subject'][$lang]; ?>"));
 					$("input#mail_title").focus();
 					return false;
 				}
@@ -947,7 +945,7 @@ $token_new = createtoken ($user);
           
 					if (isIntegerValue(valid_days) == false || isIntegerValue(valid_hours) == false)
           {
-            alert (hcms_entity_decode("<?php echo $text52[$lang]; ?>"));
+            alert (hcms_entity_decode("<?php echo $hcms_lang['period-of-validity-is-not-correct'][$lang]; ?>"));
 					  document.getElementById("valid_days").focus();
 					  return false;
           }
@@ -1019,7 +1017,7 @@ $token_new = createtoken ($user);
 					$idspecial = "-99999999";
 				?>
 
-				var noneFound = { id: "<?php echo $idspecial; ?>", label: hcms_entity_decode("<?php echo $text33[$lang]; ?>") };
+				var noneFound = { id: "<?php echo $idspecial; ?>", label: hcms_entity_decode("<?php echo $hcms_lang['add-as-recipient'][$lang]; ?>") };
 				
 				$("input#selector").autocomplete(
 					{ 
@@ -1057,7 +1055,7 @@ $token_new = createtoken ($user);
 									if (emailReg.test(inputval))
                   {
 										var pre = "";
-										var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.gif\',1);" title="<?php echo $text30[$lang]; ?>" alt="<?php echo $text30[$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_close.gif" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
+										var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.gif\',1);" title="<?php echo $hcms_lang['delete-recipient'][$lang]; ?>" alt="<?php echo $hcms_lang['delete-recipient'][$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_close.gif" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
 										var input = '<input type="hidden" name="email_to[]" id="'+inputid+'" value="'+inputval+'"/>';
 										var divtext =  '<div id="'+divtextid+'"style="float:left">'+inputval+'&nbsp;</div>';
 										$("div#emails").append("<div id=\""+mainname+"\" style=\"width:355px; height:16px;\">"+input+divtext+img+"</br></div>");
@@ -1066,12 +1064,12 @@ $token_new = createtoken ($user);
 									}
                   else
                   {
-										alert (hcms_entity_decode("<?php echo $text8[$lang]; ?>"));
+										alert (hcms_entity_decode("<?php echo $hcms_lang['please-insert-a-valid-e-mail-adress'][$lang]; ?>"));
 									}
 								} 
 								else
 								{
-									alert (hcms_entity_decode("<?php echo $text31[$lang]; ?>"));
+									alert (hcms_entity_decode("<?php echo $hcms_lang['recipient-already-added'][$lang]; ?>"));
 									$(this).val("");
 								}
 							}
@@ -1086,14 +1084,14 @@ $token_new = createtoken ($user);
 								if (!$('#'+mainname).length)
 								{
 									var pre = "";
-									var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.gif\',1);" title="<?php echo $text30[$lang]; ?>" alt="<?php echo $text30[$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_close.gif" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
+									var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.gif\',1);" title="<?php echo $hcms_lang['delete-recipient'][$lang]; ?>" alt="<?php echo $hcms_lang['delete-recipient'][$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_close.gif" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
 									var input = '<input type="hidden" name="user_login[]" id="'+inputid+'" value="'+ui.item.loginname+'"/>';
 									var divtext =  '<div id="'+divtextid+'" style="float:left" title="'+ui.item.email+'">'+ui.item.username+'&nbsp;</div>';
 									$("div#emails").append("<div id=\""+mainname+"\" style=\"width:355px; height:16px;\">"+input+divtext+img+"</br></div>");
 								} 
 								else
 								{
-									alert (hcms_entity_decode("<?php echo $text31[$lang]; ?>"));
+									alert (hcms_entity_decode("<?php echo $hcms_lang['recipient-already-added'][$lang]; ?>"));
 								}
 								$(this).val("");
 							}
@@ -1137,10 +1135,10 @@ $token_new = createtoken ($user);
   
     <!-- top bar -->
     <?php
-  	if (isset ($multiobject_array) && is_array ($multiobject_array)) $title = sizeof ($multiobject_array) . $text22[$lang];
+  	if (isset ($multiobject_array) && is_array ($multiobject_array)) $title = sizeof ($multiobject_array) . $hcms_lang['-files-selected'][$lang];
     else $title = $pagename;
                 
-    echo showtopbar ($text0[$lang].": ".$title, $lang);
+    echo showtopbar ($hcms_lang['selected-object'][$lang].": ".$title, $lang);
     ?>
   
 		<form id="userform" name="userform" action="" method="post">
@@ -1162,13 +1160,13 @@ $token_new = createtoken ($user);
         // success message
         if (!empty ($mail_success))
         {
-					$show .= "<strong>".$text35[$lang]."</strong><br />\n".implode (", ", html_encode ($mail_success))."<br />\n";
+					$show .= "<strong>".$hcms_lang['e-mail-was-sent-successfully-to-'][$lang]."</strong><br />\n".implode (", ", html_encode ($mail_success))."<br />\n";
   			}
               
         // mail error message
   			if (!empty ($mail_error))
         {
-  			  $show .= "<strong>".$text36[$lang]."</strong><br />\n".implode ("<br />", html_encode ($mail_error))."<br />\n";
+  			  $show .= "<strong>".$hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang]."</strong><br />\n".implode ("<br />", html_encode ($mail_error))."<br />\n";
   			}
               
         // general error message
@@ -1197,16 +1195,16 @@ $token_new = createtoken ($user);
   	    	<tr align="left" valign="top">
   	    		<td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:19px; border:0;" /></td>
             <td align="left" valign="top" class="hcmsTab">
-  	    			&nbsp;<a id="menu-Recipient" href="#" onClick="showHideLayers('LayerRecipient','show','line_Recipient','visible','LayerGroup','hide','line_Group','invisible','LayerSettings','hide','line_Settings','invisible'); close_selector();"><?php echo $text29[$lang]; ?></a>
+  	    			&nbsp;<a id="menu-Recipient" href="#" onClick="showHideLayers('LayerRecipient','show','line_Recipient','visible','LayerGroup','hide','line_Group','invisible','LayerSettings','hide','line_Settings','invisible'); close_selector();"><?php echo $hcms_lang['recipients'][$lang]; ?></a>
   	    		</td>
   	    		<td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:19px; border:0;" /></td>
             <td align="left" valign="top" class="hcmsTab">
-  	    			&nbsp;<a id="menu-Group" href="#" onClick="showHideLayers('LayerRecipient','hide','line_Recipient','invisible','LayerGroup','show','line_Group','visible','LayerSettings','hide','line_Settings','invisible'); close_selector();"><?php echo $text20[$lang]; ?></a>
+  	    			&nbsp;<a id="menu-Group" href="#" onClick="showHideLayers('LayerRecipient','hide','line_Recipient','invisible','LayerGroup','show','line_Group','visible','LayerSettings','hide','line_Settings','invisible'); close_selector();"><?php echo $hcms_lang['user-group'][$lang]; ?></a>
   	    		</td>
   	    		<td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:19px; border:0;" /></td>
   	    		<td>
             <td align="left" valign="top" class="hcmsTab">
-  	    			&nbsp;<a id="menu-Settings" href="#" onClick="showHideLayers('LayerRecipient','hide','line_Recipient','invisible','LayerGroup','hide','line_Group','invisible','LayerSettings','show','line_Settings','visible'); close_selector();"><?php echo $text32[$lang]; ?><span id="attention_settings" style="color:red; visibility:hidden;">!</span></a>
+  	    			&nbsp;<a id="menu-Settings" href="#" onClick="showHideLayers('LayerRecipient','hide','line_Recipient','invisible','LayerGroup','hide','line_Group','invisible','LayerSettings','show','line_Settings','visible'); close_selector();"><?php echo $hcms_lang['settings'][$lang]; ?><span id="attention_settings" style="color:red; visibility:hidden;">!</span></a>
   	    		</td>
       		</tr>
       	</table>
@@ -1221,13 +1219,13 @@ $token_new = createtoken ($user);
 					<div id="LayerRecipient">
 						<table width="100%" border="0" cellspacing="0" cellpadding="3">
 							<tr>
-							  <td width="180" align="left" valign="top" nowrap="nowrap"><?php echo $text1[$lang]; ?>:</td>
+							  <td width="180" align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['send-e-mail-to'][$lang]; ?>:</td>
 							  <td id="selectbox" align="left" valign="top">
 								  <input type="text" value="" style="width:350px;" name="selector" id="selector" />
 							  </td>
 							<tr>
 								<td align="left" valign="top" nowrap="nowrap">
-									<?php echo $text29[$lang]; ?>:
+									<?php echo $hcms_lang['recipients'][$lang]; ?>:
 								</td>
 								<td align="left" valign="top">
 									<div style="overflow:auto; max-height:120px;" id="emails">
@@ -1240,19 +1238,19 @@ $token_new = createtoken ($user);
 						<table width="100%" border="0" cellspacing="0" cellpadding="3">
 							<tr>
 								<td width="180" align="left" valign="top" nowrap="nowrap">
-									<?php echo $text38[$lang]; ?>:
+									<?php echo $hcms_lang['attention'][$lang]; ?>:
 								</td>
 								<td align="left" valign="top">
-									<?php echo $text39[$lang]; ?>
+									<?php echo $hcms_lang['the-message-will-be-sent-to-all-members-of-the-selected-group'][$lang]; ?>
 								</td>
 							</tr>
 							<tr>
 								<td width="180" align="left" valign="top" nowrap="nowrap">
-									<?php echo $text20[$lang]; ?>:
+									<?php echo $hcms_lang['user-group'][$lang]; ?>:
 								</td>
 								<td align="left" valign="top">
 									<select name="group_login" id="group_login" style="width:350px;">
-										<option value="" selected="selected">--- <?php echo $text21[$lang]; ?> ---</option>
+										<option value="" selected="selected">--- <?php echo $hcms_lang['select'][$lang]; ?> ---</option>
 										<?php 
 										if ($allgroup_array != false && sizeof ($allgroup_array) > 0)
                     {
@@ -1274,26 +1272,26 @@ $token_new = createtoken ($user);
 						<table width="100%" border="0" cellspacing="0" cellpadding="3">
 							<tr>
 								<td width="180" align="left" valign="top" nowrap="nowrap">
-									<?php echo $text38[$lang]; ?>:
+									<?php echo $hcms_lang['attention'][$lang]; ?>:
 								</td>
 								<td align="left" valign="top">
-									<?php echo $text40[$lang]; ?>
+									<?php echo $hcms_lang['these-are-the-settings-which-will-only-be-assigned-to-new-users'][$lang]; ?>
 								</td>
 							</tr>
 							<tr>
-								<td align="left" valign="top" nowrap="nowrap"><?php echo $text19[$lang]; ?>: </td>
+								<td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['language-setting'][$lang]; ?>: </td>
 								<td align="left" valign="top">
 									<select name="language" style="width:350px;">
 									<?php
-									foreach ($lang_shortcut as $lang_opt)
+									foreach ($hcms_lang_shortcut as $lang_opt)
                   {
 										if ($language == $lang_opt)
                     {
-											echo "<option value=\"".$lang_opt."\" selected=\"selected\">".$lang_name[$lang_opt]."</option>\n";
+											echo "<option value=\"".$lang_opt."\" selected=\"selected\">".$hcms_lang_name[$lang_opt]."</option>\n";
 										}
                     else
                     {
-											echo "<option value=\"".$lang_opt."\">".$lang_name[$lang_opt]."</option>\n";
+											echo "<option value=\"".$lang_opt."\">".$hcms_lang_name[$lang_opt]."</option>\n";
 										}
 									}
 									?>
@@ -1301,7 +1299,7 @@ $token_new = createtoken ($user);
 								</td>
 							</tr>
 							<tr>
-								<td align="left" valign="top" nowrap="nowrap"><?php echo $text10[$lang]; ?>: </td>
+								<td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['member-of-user-group'][$lang]; ?>: </td>
 								<td align="left" valign="top">
 								<?php
 									if ($allgroup_array != false && sizeof ($allgroup_array) > 0)
@@ -1369,13 +1367,13 @@ $token_new = createtoken ($user);
 					</tr>
 					<!-- CC, BCC -->
 					<tr>
-						<td width="180" align="left" valign="top" nowrap="nowrap"><?php echo $text17[$lang]; ?>: </td>
+						<td width="180" align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['cc-e-mail'][$lang]; ?>: </td>
 						<td align="left" valign="top">
 							<input type="text" name="email_cc" style="width:350px;" value="<?php echo $email_cc; ?>" />
 						</td>
 					</tr>
 					<tr>
-						<td align="left" valign="top" nowrap="nowrap"><?php echo $text18[$lang]; ?>: </td>
+						<td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['bcc-e-mail'][$lang]; ?>: </td>
 						<td align="left" valign="top">
 							<input type="text" name="email_bcc" style="width:350px;" value="<?php echo $email_bcc; ?>" />
 						</td>
@@ -1387,13 +1385,13 @@ $token_new = createtoken ($user);
 					</tr>
 					<!-- TITLE and MESSAGE -->
 					<tr>
-						<td align="left" valign="top" nowrap="nowrap"><?php echo $text15[$lang]; ?>:</td>
+						<td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['subject'][$lang]; ?>:</td>
 						<td align="left" valign="top">
 							<input type="text" id="mail_title" name="mail_title" style="width:350px;" value="<?php echo $mail_title; ?>" />
 						</td>
 					</tr>
 					<tr>
-						<td align="left" valign="top" nowrap="nowrap"><?php echo $text7[$lang]; ?>:</td>
+						<td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['message'][$lang]; ?>:</td>
 						<td align="left" valign="top">
 							<textarea id="mail_body" name="mail_body" rows="6" style="width:350px;"><?php
                                       
@@ -1405,7 +1403,7 @@ $token_new = createtoken ($user);
 
               if (is_array ($queue) && !empty ($queue[0]['date']))
               {
-                $message = str_replace ("%date%", substr ($queue[0]['date'], 0, -3), $text53[$lang]);
+                $message = str_replace ("%date%", substr ($queue[0]['date'], 0, -3), $hcms_lang['the-link-will-be-active-till-date'][$lang]);
               
                 if (substr_count ($mail_body, $message) == 0)
                 {                
@@ -1483,41 +1481,41 @@ $token_new = createtoken ($user);
             else $allow_attachment = false;          
 					?>
 					<tr>
-						<td align="left" valign="top" nowrap="nowrap"><?php echo $text26[$lang]; ?>:</td>
+						<td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['send-files-as'][$lang]; ?>:</td>
 						<td align="left" valign="top">
               <?php if ($allow_download) { ?>
-              <input type="radio" name="attachment_type" id="type_download" onclick="document.getElementById('valid_active').disabled=false; if (document.getElementById('valid_active').checked==true) { document.getElementById('valid_days').disabled=false; document.getElementById('valid_hours').disabled=false; }" value="download" <?php if ($mgmt_config['maillink'] == "download" || $mgmt_config['maillink'] == "") echo "checked=\"checked\""; ?> /> <?php echo $text41[$lang]; ?><br />
+              <input type="radio" name="attachment_type" id="type_download" onclick="document.getElementById('valid_active').disabled=false; if (document.getElementById('valid_active').checked==true) { document.getElementById('valid_days').disabled=false; document.getElementById('valid_hours').disabled=false; }" value="download" <?php if ($mgmt_config['maillink'] == "download" || $mgmt_config['maillink'] == "") echo "checked=\"checked\""; ?> /> <?php echo $hcms_lang['download-link'][$lang]; ?><br />
               <?php } ?>
-              <input type="radio" name="attachment_type" id="type_link" onclick="document.getElementById('valid_active').disabled=false; if (document.getElementById('valid_active').checked==true) { document.getElementById('valid_days').disabled=false; document.getElementById('valid_hours').disabled=false; }" value="link" <?php if ($mgmt_config['maillink'] == "access") echo "checked=\"checked\""; ?> /> <?php echo $text24[$lang]; ?><br />
+              <input type="radio" name="attachment_type" id="type_link" onclick="document.getElementById('valid_active').disabled=false; if (document.getElementById('valid_active').checked==true) { document.getElementById('valid_days').disabled=false; document.getElementById('valid_hours').disabled=false; }" value="link" <?php if ($mgmt_config['maillink'] == "access") echo "checked=\"checked\""; ?> /> <?php echo $hcms_lang['access-link'][$lang]; ?><br />
               <?php if ($allow_attachment) { ?>
-							<input type="radio" name="attachment_type" id="type_attachment" onclick="document.getElementById('valid_active').checked=false; document.getElementById('valid_active').disabled=true; document.getElementById('valid_days').disabled=true; document.getElementById('valid_hours').disabled=true;" value="attachment" /> <?php echo $text25[$lang]; ?>
+							<input type="radio" name="attachment_type" id="type_attachment" onclick="document.getElementById('valid_active').checked=false; document.getElementById('valid_active').disabled=true; document.getElementById('valid_days').disabled=true; document.getElementById('valid_hours').disabled=true;" value="attachment" /> <?php echo $hcms_lang['attachment'][$lang]; ?>
 						  <?php } ?>
 						</td>
 					</tr>
 					<tr>
-						<td align="left" valign="top" nowrap="nowrap"><?php echo $text48[$lang]; ?>:</td>
+						<td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['period-of-validity'][$lang]; ?>:</td>
 						<td align="left" valign="top">
-              <input type="checkbox" name="valid_active" id="valid_active" value="yes" onclick="if (this.checked==true) { document.getElementById('valid_days').disabled=false; document.getElementById('valid_hours').disabled=false; } else { document.getElementById('valid_days').disabled=true; document.getElementById('valid_hours').disabled=true; }" /> <?php echo $text51[$lang]; ?>
-							<input type="text" name="valid_days" id="valid_days" value="" style="width:40px;" disabled="disabled" /> <?php echo $text49[$lang]; ?>&nbsp;
-              <input type="text" name="valid_hours" id="valid_hours" value="" style="width:40px;" disabled="disabled" /> <?php echo $text50[$lang]; ?>
+              <input type="checkbox" name="valid_active" id="valid_active" value="yes" onclick="if (this.checked==true) { document.getElementById('valid_days').disabled=false; document.getElementById('valid_hours').disabled=false; } else { document.getElementById('valid_days').disabled=true; document.getElementById('valid_hours').disabled=true; }" /> <?php echo $hcms_lang['valid-for'][$lang]; ?>
+							<input type="text" name="valid_days" id="valid_days" value="" style="width:40px;" disabled="disabled" /> <?php echo $hcms_lang['days-and'][$lang]; ?>&nbsp;
+              <input type="text" name="valid_hours" id="valid_hours" value="" style="width:40px;" disabled="disabled" /> <?php echo $hcms_lang['hours'][$lang]; ?>
 						</td>
 					</tr>          
 					<tr>
-						<td align="left" valign="top" nowrap="nowrap"><?php echo $text23[$lang]; ?>:</td>
+						<td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['meta-data'][$lang]; ?>:</td>
 						<td align="left" valign="top">
 							<input type="checkbox" name="include_metadata" value="yes" <?php if ($include_metadata == "yes") echo "checked=\"checked\""; ?>/> 
-							<?php echo $text28[$lang]; ?>
+							<?php echo $hcms_lang['include-in-message'][$lang]; ?>
 						</td>
 					</tr>
 					<tr>
-						<td align="left" valign="top" nowrap="nowrap"><?php echo $text43[$lang]; ?>:</td>
+						<td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['create-new-task'][$lang]; ?>:</td>
 						<td align="left" valign="top">
 							<input type="checkbox" name="create_task" value="yes" onclick="document.getElementById('type_link').checked=true;" <?php if ($create_task == "yes") echo "checked=\"checked\""; ?>/> 
-							<?php echo $text44[$lang]; ?>
+							<?php echo $hcms_lang['for-the-recipients-with-priority'][$lang]; ?>
               <select name="priority">
-                <option value="low" selected="selected"><?php echo $text45[$lang]; ?></option>
-                <option value="medium"><?php echo $text46[$lang]; ?></option>
-                <option value="high"><?php echo $text47[$lang]; ?></option>
+                <option value="low" selected="selected"><?php echo $hcms_lang['low'][$lang]; ?></option>
+                <option value="medium"><?php echo $hcms_lang['medium'][$lang]; ?></option>
+                <option value="high"><?php echo $hcms_lang['high'][$lang]; ?></option>
               </select>
 						</td>
 					</tr>          
@@ -1525,7 +1523,7 @@ $token_new = createtoken ($user);
 					} 
 					?>
 					<tr>
-						<td align="left" valign="top" nowrap="nowrap"><?php echo $text4[$lang]; ?>: </td>
+						<td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['send-e-mail'][$lang]; ?>: </td>
 						<td align="left" valign="top">
 							<img name="ButtonSubmit" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onClick="if (checkForm()) document.forms['userform'].submit();" onMouseOver="hcms_swapImage('ButtonSubmit','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" onMouseOut="hcms_swapImgRestore()" style="border:0; cursor:pointer;" align="absmiddle" title="OK" alt="OK" />
 						</td>

@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/workflow_script_form.inc.php");
 
 
 // input parameters
@@ -105,10 +103,10 @@ if ($save == "yes" && $wf_file != "" && checktoken ($token, $user))
      // save pers file
     $savefile = savefile ($mgmt_config['abs_path_data']."workflow_master/", $wf_file, $wfscript_data_save);
   
-    if ($savefile == false) $show = "<span class=hcmsHeadline>".$text3[$lang]."</span><br />".$text4[$lang];
-    else $show = "<span class=hcmsHeadline>".$text5[$lang]."</span>";
+    if ($savefile == false) $show = "<span class=hcmsHeadline>".$hcms_lang['workflow-script-could-not-be-saved'][$lang]."</span><br />".$hcms_lang['write-permissions-is-missing'][$lang];
+    else $show = "<span class=hcmsHeadline>".$hcms_lang['workflow-script-was-saved-successfully'][$lang]."</span>";
   }
-  else $show = "<span class=hcmsHeadline>".$text3[$lang]."</span><br />\n".$text6[$lang].": <span style=\"color:red;\">".$wfscript_data_check['found']."</span>";
+  else $show = "<span class=hcmsHeadline>".$hcms_lang['workflow-script-could-not-be-saved'][$lang]."</span><br />\n".$hcms_lang['there-are-forbidden-functions-in-the-code'][$lang].": <span style=\"color:red;\">".$wfscript_data_check['found']."</span>";
 }
 // load workflow
 elseif (isset ($wf_file) && file_exists ($mgmt_config['abs_path_data']."workflow_master/".$wf_file))
@@ -148,7 +146,7 @@ $token_new = createtoken ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script language="JavaScript">
@@ -170,7 +168,7 @@ function openHelp ()
 echo showmessage ($show, 500, 70, $lang, "position:fixed; left:15px; top:100px;")
 ?>
 
-<p class="hcmsHeadline"><?php echo $text1[$lang]; ?>: <?php echo $wf_name; ?></p>
+<p class="hcmsHeadline"><?php echo $hcms_lang['workflow-script'][$lang]; ?>: <?php echo $wf_name; ?></p>
 <form name="editor" method="post" action="<?php echo $action; ?>" />
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
@@ -182,11 +180,11 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:15px; top:100px;"
   <table cellspacing="0" cellpadding="0" style="border:1px solid #000000; margin:2px;">
     <tr>
       <td align="left">
-        <?php if ($preview == "no") echo "<img onclick=\"document.forms['editor'].submit();\" name=\"Button\" src=\"".getthemelocation()."img/button_save.gif\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".$text2[$lang]."\" title=\"".$text2[$lang]."\" />"; ?>
+        <?php if ($preview == "no") echo "<img onclick=\"document.forms['editor'].submit();\" name=\"Button\" src=\"".getthemelocation()."img/button_save.gif\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".$hcms_lang['save'][$lang]."\" title=\"".$hcms_lang['save'][$lang]."\" />"; ?>
       </td>
       <td width="26" align="right">
         <a href=# onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('pic_obj_help','','<?php echo getthemelocation(); ?>img/button_help_over.gif',1);" onClick="openHelp();">
-          <img name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.gif" class="hcmsButtonBlank hcmsButtonSizeSquare" alt="<?php echo $text7[$lang]; ?>" title="<?php echo $text7[$lang]; ?>" />
+          <img name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.gif" class="hcmsButtonBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['help'][$lang]; ?>" title="<?php echo $hcms_lang['help'][$lang]; ?>" />
         </a>
       </td>
     </tr>

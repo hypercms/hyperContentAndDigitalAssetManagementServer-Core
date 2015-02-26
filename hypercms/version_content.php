@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/version_content.inc.php");
 
 
 // input parameters
@@ -57,7 +55,7 @@ $media = getfilename ($pagestore, "media");
 
 if ($contentfile == false)
 {
-  $show = "<p class=hcmsHeadline>".$text3[$lang]."</p>".$text4[$lang]."\n";
+  $show = "<p class=hcmsHeadline>".$hcms_lang['item-is-not-managed-by-hypercms'][$lang]."</p>".$hcms_lang['no-versions-available'][$lang]."\n";
 }
 elseif (valid_objectname ($contentfile))
 {
@@ -78,7 +76,7 @@ $token_new = createtoken ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -88,7 +86,7 @@ function warning_versions_update()
 {
   var form = document.forms['versionform'];
   
-  check = confirm (hcms_entity_decode("<?php echo $text1[$lang]." ".$text2[$lang]; ?>"));
+  check = confirm (hcms_entity_decode("<?php echo $hcms_lang['are-you-sure-you-want-to-to-switch-to-a-previous-content-version'][$lang]." ".$hcms_lang['andor-delete-the-selected-versions'][$lang]; ?>"));
   if (check == true) form.submit();
   return check;
 }
@@ -123,7 +121,7 @@ function compare_select (version)
     }     
     else
     {
-      alert (hcms_entity_decode("<?php echo $text17[$lang]; ?>"));
+      alert (hcms_entity_decode("<?php echo $hcms_lang['only-two-versions-can-be-compared'][$lang]; ?>"));
       return false;
     }
   }
@@ -144,7 +142,7 @@ function compare_submit ()
   }
   else
   {
-    alert (hcms_entity_decode("<?php echo $text16[$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo $hcms_lang['two-versions-need-to-be-selected-for-comparison'][$lang]; ?>"));
     return false; 
   }
 }
@@ -169,12 +167,12 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
   
   <table border="0" cellspacing="2" cellpadding="3" width="99%">
     <tr>
-     <td width="30%" nowrap="nowrap" class="hcmsHeadline"><?php echo $text5[$lang]; ?></td>
-     <td width="30%" nowrap="nowrap" class="hcmsHeadline"><?php echo $text14[$lang]; ?></td>
-     <td width="30%" nowrap="nowrap" class="hcmsHeadline"><?php echo $text7[$lang]; ?></td>
-     <td nowrap="nowrap" class="hcmsHeadline"><?php echo $text6[$lang]; ?></td>
-     <td nowrap="nowrap" class="hcmsHeadline"><?php echo $text8[$lang]; ?></td>
-     <td nowrap="nowrap" class="hcmsHeadline"><?php echo $text9[$lang]; ?></td>
+     <td width="30%" nowrap="nowrap" class="hcmsHeadline"><?php echo $hcms_lang['version-date'][$lang]; ?></td>
+     <td width="30%" nowrap="nowrap" class="hcmsHeadline"><?php echo $hcms_lang['name'][$lang]; ?></td>
+     <td width="30%" nowrap="nowrap" class="hcmsHeadline"><?php echo $hcms_lang['container'][$lang]; ?></td>
+     <td nowrap="nowrap" class="hcmsHeadline"><?php echo $hcms_lang['compare'][$lang]; ?></td>
+     <td nowrap="nowrap" class="hcmsHeadline"><?php echo $hcms_lang['current'][$lang]; ?></td>
+     <td nowrap="nowrap" class="hcmsHeadline"><?php echo $hcms_lang['delete'][$lang]; ?></td>
     </tr>
     <?php    
     // change to version
@@ -247,9 +245,9 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
           $error[] = $mgmt_config['today']."|version_content.php|error|$errcode|savecontainer failed for container ".$contentfile_wrk;           
         }      
 
-        if ($rename_2 == false || $copy_2 == false) echo "<p class=hcmsHeadline>".$text10[$lang]."</p>\n".$text11[$lang]."<br /><br />\n";
+        if ($rename_2 == false || $copy_2 == false) echo "<p class=hcmsHeadline>".$hcms_lang['could-not-change-version'][$lang]."</p>\n".$hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang]."<br /><br />\n";
       }
-      else echo "<p class=hcmsHeadline>".$text10[$lang]."</p>\n".$text11[$lang]."<br /><br />\n";
+      else echo "<p class=hcmsHeadline>".$hcms_lang['could-not-change-version'][$lang]."</p>\n".$hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang]."<br /><br />\n";
     }
 
     // delete versions
@@ -356,7 +354,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
     }
     
     echo "<tr class=\"hcmsRowHead2\">
-      <td nowrap=\"nowrap\">".$text12[$lang]."</td>
+      <td nowrap=\"nowrap\">".$hcms_lang['current-version'][$lang]."</td>
       <td nowrap=\"nowrap\"><a href=\"#\" onClick=\"hcms_openWindow('page_preview.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."','preview','scrollbars=yes,resizable=yes','800','600')\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" width=16 height=16 border=0 align=\"absmiddle\" />&nbsp; ".$pagename."</a></td>
       <td nowrap=\"nowrap\"><a href=\"#\" onClick=\"hcms_openWindow('container_source.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."','preview','scrollbars=yes,resizable=yes','800','600')\">XML</a></td>
       <td align=\"middle\" valign=\"middle\"><input type=\"checkbox\" name=\"dummy\" value=\"\" onclick=\"if (compare_select('".$contentfile."')) this.checked=true; else this.checked=false;\" /></td>
@@ -368,7 +366,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
     savelog (@$error);     
     ?>
   </table><br />
-  <div style="width:300px; float:left;"><?php echo $text13[$lang]; ?> :</div>
+  <div style="width:300px; float:left;"><?php echo $hcms_lang['submit-changes-to-versions'][$lang]; ?> :</div>
   <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_versions_update();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /><br />
 </form>
 
@@ -382,7 +380,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
   <input type="hidden" name="compare_2" value="" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <div style="width:300px; float:left;"><?php echo $text18[$lang]; ?> :</div>
+  <div style="width:300px; float:left;"><?php echo $hcms_lang['compare-selected-versions'][$lang]; ?> :</div>
   <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="compare_submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
 </form>
 </div>

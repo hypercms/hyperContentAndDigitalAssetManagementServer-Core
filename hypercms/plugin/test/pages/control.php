@@ -21,6 +21,9 @@ require_once ("../lang/control.inc.php");
 $plugin = getrequest_esc ("plugin");
 $page = getrequest_esc ("page", "locationname");
 
+// only german and english is supported
+if ($lang != "en" || $lang != "de") $lang = "en";
+
 // ------------------------------ permission section --------------------------------
 
 // check session of user
@@ -30,7 +33,7 @@ checkusersession ($user, false);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="../../../javascript/click.js" type="text/javascript"></script>
 <script src="../../../javascript/main.js" type="text/javascript"></script>

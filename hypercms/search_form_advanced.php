@@ -17,8 +17,6 @@ require ("function/hypercms_api.inc.php");
 require ("function/hypercms_ui.inc.php");
 // template engine
 require ("function/hypercms_tplengine.inc.php");
-// language file
-require_once ("language/page_view.inc.php");
 
 
 // input parameters
@@ -69,8 +67,8 @@ if ($site != "" && $template != "")
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-    echo "<p class=hcmsHeadline>".$text5[$lang]."</p>\n";
-    echo $text6[$lang]."\n";
+    echo "<p class=hcmsHeadline>".$hcms_lang['could-not-create-view-of-the-object'][$lang]."</p>\n";
+    echo $hcms_lang['an-error-occured-while-creating-the-view'][$lang]."\n";
     echo "</body>\n";
     echo "</html>";
   }

@@ -15,8 +15,8 @@ require ("../config.inc.php");
 require ("../function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("../function/hypercms_ui.inc.php");
-// language file
-require_once ("../language/image_rendering.inc.php");
+// file formats extensions
+require ("../include/format_ext.inc.php");
 
 
 // input parameters
@@ -95,17 +95,17 @@ $media_root_source = getmedialocation ($site, $mediafile_info['file'], "abs_path
 $media_root_target = $mgmt_config['abs_path_cms'].'temp/';
 $mediafile_orig = $mediafile;
 
-// if RAW image use equivalent JPEG image
+// if RAW image, use equivalent JPEG image
 if (substr_count ($hcms_ext['rawimage'].".", $mediafile_info['ext'].".") > 0 && is_file ($media_root_source.$mediafile_info['filename'].".jpg"))
 {
   // create temp file if file is encrypted
-  $temp = createtempfile ($media_root_source, $mediafile_info['filename'].".jpg");
+  $temp_source = createtempfile ($media_root_source, $mediafile_info['filename'].".jpg");
   $mediafile = $mediafile_info['filename'].".jpg";
 }
 else
 {
   // create temp file if file is encrypted
-  $temp = createtempfile ($media_root_source, $mediafile);
+  $temp_source = createtempfile ($media_root_source, $mediafile);
 }
 
 // get file information of new original media file
@@ -128,9 +128,9 @@ $available_colorspaces['Transparent'] = 'Transparent';
 $available_colorspaces['XYZ'] = 'XYZ';
 
 $available_flip = array();
-$available_flip['-fv'] = $text36[$lang];
-$available_flip['-fh'] = $text37[$lang];
-$available_flip['-fv -fh'] = $text38[$lang];
+$available_flip['-fv'] = $hcms_lang['vertical'][$lang];
+$available_flip['-fh'] = $hcms_lang['horizontal'][$lang];
+$available_flip['-fv -fh'] = $hcms_lang['both'][$lang];
 
 $show = "";
 $result = false;
@@ -295,12 +295,12 @@ if ($media_size != false && valid_publicationname ($site))
     }
     else
     {
-      $show = $text1[$lang];
+      $show = $hcms_lang['the-file-could-not-be-processed'][$lang];
     }
   }
   else
   {
-    $show = $text28[$lang];
+    $show = $hcms_lang['required-parameters-are-missing'][$lang];
   }
 }
 
@@ -337,7 +337,7 @@ else
 {
   $output->success = false;
   
-  if (empty ($show)) $output->message = $text32[$lang];
+  if (empty ($show)) $output->message = $hcms_lang['error-during-conversion'][$lang];
   else $output->message = $show;
 }
 echo json_encode ($output);

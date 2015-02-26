@@ -19,8 +19,6 @@ require ("function/hypercms_ui.inc.php");
 require ("function/hypercms_tplengine.inc.php");
 // version info
 require ("version.inc.php");
-// language file
-require_once ("language/home.inc.php");
 
 // ------------------------------ permission section --------------------------------
 
@@ -33,7 +31,7 @@ checkusersession ($user, false);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <meta name="viewport" content="width=device-width; initial-scale=0.9; maximum-scale=1.0; user-scalable=0;"></meta>
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
@@ -105,7 +103,7 @@ function hcms_geoposition (position)
       {
         echo "<div id=\"task\" onclick=\"document.location.href='task_list.php';\" class=\"hcmsInfoBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left; cursor:pointer;\">\n";
 
-        echo "<div class=\"hcmsHeadline\" style=\"margin:2px;\">".$text0[$lang]."</div>
+        echo "<div class=\"hcmsHeadline\" style=\"margin:2px;\">".$hcms_lang['my-recent-tasks'][$lang]."</div>
         <table width=\"100%\" border=\"0\" cellspacing=\"2\" cellpadding=\"2\">";
 
         foreach ($task_array as $task_node)
@@ -167,7 +165,7 @@ function hcms_geoposition (position)
     
     echo "
     <div id=\"recent\" class=\"hcmsInfoBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
-      <div class=\"hcmsHeadline\" style=\"margin:2px;\">".$text1[$lang]."</div>";
+      <div class=\"hcmsHeadline\" style=\"margin:2px;\">".$hcms_lang['my-recent-objects'][$lang]."</div>";
     
     array_reverse ($object_array);
     reset ($object_array);
@@ -223,10 +221,10 @@ function hcms_geoposition (position)
   // ---------------------- STATS ---------------------
   if (!$is_mobile && isset ($mgmt_config['home_stats']) && $mgmt_config['home_stats'] == true && isset ($siteaccess) && is_array ($siteaccess))
   {
-    $title = $text2[$lang];
+    $title = $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication'][$lang];
     
     // language file
-    require_once ("language/page_info_stats.inc.php");
+    require_once ("language/".getlanguagefile ($lang));
 
     foreach ($siteaccess as $item_site)
     {
@@ -293,7 +291,7 @@ function hcms_geoposition (position)
               }
               
               // bar text
-              $download_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$download_axis[$i]['value']." ".$text4[$lang]."   \n".$text6[$lang].": ".$download_axis[$i]['text'];
+              $download_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$download_axis[$i]['value']." ".$hcms_lang['downloads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$download_axis[$i]['text'];
             }
             
             // uploads
@@ -319,7 +317,7 @@ function hcms_geoposition (position)
               }
               
               // bar text
-              $upload_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$upload_axis[$i]['value']." ".$text5[$lang]."   \n".$text6[$lang].": ".$upload_axis[$i]['text'];   
+              $upload_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$upload_axis[$i]['value']." ".$hcms_lang['uploads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$upload_axis[$i]['text'];   
             }
           }
             
@@ -332,8 +330,8 @@ function hcms_geoposition (position)
 
         echo '
         <div style="margin:35px 0px 0px 40px;">
-          <div style="height:16px;"><div style="width:16px; height:16px; background:#3577ce; float:left;"></div>&nbsp;'.$text4[$lang].' ('.number_format ($download_total_count, 0, "", ".").' Hits / '.number_format (($download_total_filesize / 1024), 0, "", ".").' MB)</div>
-          <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;'.$text5[$lang]." (".number_format ($upload_total_count, 0, "", ".").' Hits / '.number_format (($upload_total_filesize / 1024), 0, "", ".").' MB)</div>
+          <div style="height:16px;"><div style="width:16px; height:16px; background:#3577ce; float:left;"></div>&nbsp;'.$hcms_lang['downloads'][$lang].' ('.number_format ($download_total_count, 0, "", ".").' Hits / '.number_format (($download_total_filesize / 1024), 0, "", ".").' MB)</div>
+          <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;'.$hcms_lang['uploads'][$lang]." (".number_format ($upload_total_count, 0, "", ".").' Hits / '.number_format (($upload_total_filesize / 1024), 0, "", ".").' MB)</div>
         </div>';
     
         echo "

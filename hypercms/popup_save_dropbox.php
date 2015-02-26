@@ -36,8 +36,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/popup_save_dropbox.inc.php");
 
 
 // input parameters
@@ -103,7 +101,7 @@ if((!empty($multiobject) || !empty($page)) && !empty($location))
 }
 
 //prepare info for topbar
-$title = $text0[$lang];
+$title = $hcms_lang['save-files-to-dropbox-from'][$lang];
 $object_name = getlocationname ($site, $location, $cat, "path");
 
 ?>
@@ -188,13 +186,13 @@ $(function() {
 		?>
 		<div class="hcmsWorkplaceBar" id="progress">
 			<div style="padding: 6px;">
-				<div class="hcmsHeadline" style="float: left; "><?php echo $text1[$lang]; ?></div>
+				<div class="hcmsHeadline" style="float: left; "><?php echo $hcms_lang['saving-files-to-dropbox'][$lang]; ?></div>
 				<div style="float: left; margin-left: 20px; margin-top: 2px;"><img src="/cms_dev/theme/standard/img/loading.gif" /></div>
 			</div>
 		</div>
 		<div class="hcmsWorkplaceBar" id="success">
 			<div style="padding: 6px;">
-				<div class="hcmsHeadline" style="float: left; "><?php echo $text2[$lang]; ?></div>
+				<div class="hcmsHeadline" style="float: left; "><?php echo $hcms_lang['successfully-saved-files-to-dropbox-'][$lang]; ?></div>
 			</div>
 		</div>
 		<div id="content" class="hcmsWorkplaceFrame">
@@ -216,7 +214,7 @@ $(function() {
 			{
 			?>
 				<div class="file file_error">
-					<div class="inline file_name"><?php echo $text5[$lang];; ?></div>
+					<div class="inline file_name"><?php echo $hcms_lang['no-files-selected'][$lang];; ?></div>
 					<div class="inline file_size" style="float: right; width: 80px;">&nbsp;</div>
 				</div>	
 			<?php 	
@@ -228,11 +226,11 @@ $(function() {
 			if (!empty($displayObjects)) 
 			{
 			?>
-				<div id="btnUpload" class="button hcmsButtonBlue" ><?php echo $text3[$lang]; ?></div>
+				<div id="btnUpload" class="button hcmsButtonBlue" ><?php echo $hcms_lang['save'][$lang]; ?></div>
 			<?php 
 			}
 			?>
-				<div id="btnCancel" class="button hcmsButtonOrange" ><?php echo $text4[$lang]; ?></div>
+				<div id="btnCancel" class="button hcmsButtonOrange" ><?php echo $hcms_lang['cancel'][$lang]; ?></div>
 			</div>
 			<br />
 			<br />

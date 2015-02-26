@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/popup_upload.inc.php");
 
 
 // input parameters
@@ -75,7 +73,7 @@ if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0
 
   if ($filesize['filesize'] > ($mgmt_config[$site]['storage'] * 1024))
   {
-    echo showinfopage ($text32[$lang], $lang);
+    echo showinfopage ($hcms_lang['storage-limit-exceeded'][$lang], $lang);
     exit;
   }
 }
@@ -183,15 +181,15 @@ $(function ()
     
     // Button to cancel Download
     var cancel = $('<div>&nbsp;</div>');
-    cancel.prop('title', hcms_entity_decode('<?php echo $text29[$lang]; ?>'))
-          .prop('alt', hcms_entity_decode('<?php echo $text29[$lang]; ?>'))
+    cancel.prop('title', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
+          .prop('alt', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
           .addClass('hcmsButtonBlank hcmsButtonSizeSquare hcmsButtonClose file_cancel')
           .click( { }, function( event ) {
             // If we are sending data we stop it or else we remove the entry completely
             if(data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
             {
               ajax.abort();
-              buildFileMessage( data, '<?php echo $text31[$lang]; ?>', false);
+              buildFileMessage( data, '<?php echo $hcms_lang['upload-cancelled'][$lang]; ?>', false);
             }
             else
             {
@@ -321,7 +319,7 @@ $(function ()
       // File is already in queue we inform the user
       if(found) 
       {
-        alert(hcms_entity_decode('<?php echo $text23[$lang]; ?>'));
+        alert(hcms_entity_decode('<?php echo $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]; ?>'));
         return false;
       }
       
@@ -462,15 +460,15 @@ $(function ()
       
       // Button to cancel Download
       var cancel = $('<div>&nbsp;</div>');
-      cancel.prop('title', hcms_entity_decode('<?php echo $text29[$lang]; ?>'))
-            .prop('alt', hcms_entity_decode('<?php echo $text29[$lang]; ?>'))
+      cancel.prop('title', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
+            .prop('alt', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
             .addClass('hcmsButtonBlank hcmsButtonSizeSquare hcmsButtonClose file_cancel')
             .click( function( event ) {
               // If we are sending data we stop it or else we remove the entry completely
               if(ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
               {
                 ajax.abort();
-                buildDropboxFileMessage( data, '<?php echo $text31[$lang]; ?>', false);
+                buildDropboxFileMessage( data, '<?php echo $hcms_lang['upload-cancelled'][$lang]; ?>', false);
               }
               else
               {
@@ -574,7 +572,7 @@ $(function ()
 				// File is already in queue we inform the user
 				if(found) 
 				{
-					alert(hcms_entity_decode('<?php echo $text23[$lang]; ?>'));
+					alert(hcms_entity_decode('<?php echo $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]; ?>'));
 					break;
 				}
 				var maxItems = hcms_maxItemInQueue;
@@ -614,7 +612,7 @@ $(function ()
     {
 			if(isNaN(percent) || percent < 0 || percent > 200)
 			{
-				alert (hcms_entity_decode('<?php echo $text9[$lang]; ?>'));
+				alert (hcms_entity_decode('<?php echo $hcms_lang['the-resize-value-must-be-between-1-and-200-'][$lang]; ?>'));
 				return false;
 			}
       
@@ -624,7 +622,7 @@ $(function ()
     // check if delete is checked and date is defined
     if($('#deleteobject').prop('checked') && $('#deletedate').val() == "")
     {
-      alert (hcms_entity_decode("<?php echo $text40[$lang]; ?>"));
+      alert (hcms_entity_decode("<?php echo $hcms_lang['please-set-a-delete-date-for-the-files'][$lang]; ?>"));
       return false;
     }
     
@@ -674,7 +672,7 @@ function show_cal (el)
 	cal_obj = new RichCalendar();
 	cal_obj.start_week_day = 1;
 	cal_obj.show_time = true;
-	cal_obj.language = '<?php echo $lang; ?>';
+	cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
 	cal_obj.user_onchange_handler = cal_on_change;
 	cal_obj.user_onautoclose_handler = cal_on_autoclose;
 	cal_obj.parse_date(text_field.value, format);
@@ -705,8 +703,8 @@ function cal_on_autoclose (cal)
 
 <!-- top bar -->
 <?php
-if ($uploadmode == "multi") $title = $text0[$lang];
-else $title = $text1[$lang];
+if ($uploadmode == "multi") $title = $hcms_lang['upload-files-to-location'][$lang];
+else $title = $hcms_lang['upload-new-file-in'][$lang];
 
 if ($uploadmode == "multi")
 {
@@ -732,55 +730,55 @@ echo showtopbar ($title.": ".$object_name, $lang);
     <input type="hidden" name="user" value="<?php echo $user; ?>" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
   	<div id="selectedFiles"></div>
-		<div style="padding:5px;"><span id="status">0</span>&nbsp;<?php echo $text6[$lang]; ?></div>
+		<div style="padding:5px;"><span id="status">0</span>&nbsp;<?php echo $hcms_lang['files-uploaded'][$lang]; ?></div>
     <div>
       <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
       <div class="inline">
-        <input type="checkbox" name="unzip" id="unzip" value="1" /><?php echo $text2[$lang]; ?>
+        <input type="checkbox" name="unzip" id="unzip" value="1" /><?php echo $hcms_lang['uncompress-files'][$lang]; ?>
       </div>
       <br />
       <?php } elseif ($uploadmode == "single") { ?>
         <?php if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) { ?>
       <div class="inline">
-        <input type="checkbox" name="versioning" id="versioning" value="1" /><?php echo $text37[$lang]; ?>
+        <input type="checkbox" name="versioning" id="versioning" value="1" /><?php echo $hcms_lang['keep-existing-file-as-old-version'][$lang]; ?>
       </div>
         <?php } ?> 
       <br /> 
       <div class="inline">
-        <input type="checkbox" name="createthumbnail" id="createthumbnail" value="1" /><?php echo $text3[$lang]; ?>
+        <input type="checkbox" name="createthumbnail" id="createthumbnail" value="1" /><?php echo $hcms_lang['thumbnail-image-jpeg-file'][$lang]; ?>
       </div>
       <br />
       <?php } 
       if ($uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) { ?>
       <div class="inline">
-        <input type="checkbox" name="imageresize" id="imageresize" value="percentage" /><?php echo $text8[$lang]; ?>: <input name="imagepercentage" id="imagepercentage" type="text" size="3" maxlength="3" value="100" disabled="disabled" /> %
+        <input type="checkbox" name="imageresize" id="imageresize" value="percentage" /><?php echo $hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]; ?>: <input name="imagepercentage" id="imagepercentage" type="text" size="3" maxlength="3" value="100" disabled="disabled" /> %
       </div>
       <br />
       <?php } ?> 
       <div class="inline">
-        <input type="checkbox" name="checkduplicates" id="checkduplicates" value="1" <?php if ($mgmt_config['check_duplicates']) echo 'checked="checked"'; ?> /><?php echo $text36[$lang]; ?>
+        <input type="checkbox" name="checkduplicates" id="checkduplicates" value="1" <?php if ($mgmt_config['check_duplicates']) echo 'checked="checked"'; ?> /><?php echo $hcms_lang['check-for-duplicates'][$lang]; ?>
       </div>
       <br />
       <?php if ($uploadmode == "multi") { ?>
       <div class="inline">
-        <input type="checkbox" name="deleteobject" id="deleteobject" value="1" /><?php echo $text38[$lang]; ?>
+        <input type="checkbox" name="deleteobject" id="deleteobject" value="1" /><?php echo $hcms_lang['remove-uploaded-files-on'][$lang]; ?>
         <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
         <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
-        <img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo $text39[$lang]; ?>" title="<?php echo $text39[$lang]; ?>" />
+        <img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['select-date'][$lang]; ?>" title="<?php echo $hcms_lang['select-date'][$lang]; ?>" />
       </div>
       <br />
       <?php } ?>
       <div style="margin-top:10px;">
         <img src="<?php echo getthemelocation(); ?>img/info.gif" align="absmiddle" />
-        <?php echo $text30[$lang]; ?>
+        <?php echo $hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]; ?>
       </div>
       <div>
 			<?php if (is_array ($mgmt_config) && array_key_exists ("dropbox_appkey", $mgmt_config) && !empty ($mgmt_config['dropbox_appkey']) && array_key_exists ("publicdownload", $mgmt_config) && !empty ($mgmt_config['publicdownload'])) { ?>
-				<div id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile" class="inline"><?php echo $text34[$lang]; ?></span></div>
+				<div id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile" class="inline"><?php echo $hcms_lang['dropbox'][$lang]; ?></span></div>
       <?php } ?>
-				<div for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen" ><span id="txtSelectFile" class="inline"><?php echo $text28[$lang]; ?></span><input id="inputSelectFile" type="file" name="Filedata"<?php if ($uploadmode == "multi") echo " multiple"?>/></div>
-				<div id="btnUpload" class="button hcmsButtonBlue" ><?php echo $text4[$lang]; ?></div>
-        <div id="btnCancel" class="button hcmsButtonOrange" ><?php echo $text5[$lang]; ?></div>
+				<div for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen" ><span id="txtSelectFile" class="inline"><?php echo $hcms_lang['select-files'][$lang]; ?></span><input id="inputSelectFile" type="file" name="Filedata"<?php if ($uploadmode == "multi") echo " multiple"?>/></div>
+				<div id="btnUpload" class="button hcmsButtonBlue" ><?php echo $hcms_lang['upload-files'][$lang]; ?></div>
+        <div id="btnCancel" class="button hcmsButtonOrange" ><?php echo $hcms_lang['cancel-all-uploads'][$lang]; ?></div>
         <br /><br />
       </div>
     </div>

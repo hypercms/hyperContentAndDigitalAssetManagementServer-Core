@@ -48,7 +48,7 @@ new features:
 - new hyperCMS Dashboard in WinXP look
 - EasyEdit mode allows browsing through site and editing content
 - un/publishing of folders and all their items
-- cut/copy/paste folders and all thier items
+- cut/copy/paste folders and all their items
 - workflow items can be set to users or usergroups
 - (4.0.4) tamino can be used as integrated search engine
 - (4.0.6) checked out items can be used as private section
@@ -63,7 +63,7 @@ release 11/2003
 version 4.2.0
 release 12/2003
 new features:
-- new Icons and overworked template engine with support of editing multiple
+- new icons and overworked template engine with support of editing multiple
   components directly in EasyEdit, article buttons were changed to clock icon
 - PRE amd POST events in hyperCMS Event System
 - bug fix for double entries for usergroups when creating the same group
@@ -663,8 +663,34 @@ changelog:
 - support for thumbnails of audio files
 - new input parameters for function getgooglesitemap ti show or hide the frequency and priority tags
 - optimized database attributes
+
+version 5.7.3
+release 03/2015
+changelog:
+- add original video files of type MP4, WebM, OGG/OGV to source of HTML5 player
+- bug fix: encryption level for file must be 'strong' in order to be binary-safe
+- bug fix: video start poster could not be defined if the original file was added as source to the HTML5 video player
+- update of HTML5 video player to video.js version 4.11.4
+- bug fix: copy & paste not working, function manipulateobject did not set init-input for function savecontainer
+- function getcontentlocation adds missing zeros to container ID to correct the containers directory name
+- additional check if object exists when publishing it
+- improvements of several functions in hypercms_main
+- bug fix: in order to support older versions, the original source need to be added to the video player, not only in case of an existing config.orig file
+- function rdbms_getobject_hash supports also object ID and container ID as input
+- function createdownloadlink and createwrapperlink supports also object ID and container ID as input
+- change to MP4 format as the standard for video thumbnail files in function createmedia
+- link for the video start poster of the embed code will be converted to a wrapper link if publication is a DAM in order to have access to the image file
+- implementation of RAW image support for formats: arw, cr2, crw, dcr, mrw, nef, orf, uyvy
+- bug fix: remove _original files from media repository created by EXIFTOOL
+- redesign of video player with big play button in center
+- bug fix: ok button of task list was not displayed properly
+- bug fix: function publishobject did not set init for savecontainer to true
+- implementation of a new language management system
+- implementation of new languages. besides English and German the following languages for the UI are now supported: Albanian, Arabic, Bengali, Bulgarian, Chinese (simplified), Czech, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Hungarian, Indonesian, Italian, Japanese, Korean, Malay, Norwegian, Polish, Portoguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Somali, Swedish, Thai, Turkish, Ukrainian, Urdu
+- new help logic to set 'en' as default help/manual
+- implementation of function html_encode with multibyte character set support
 */
 
 // current version
-$version = "Version 5.7.2";
+$version = "Version 5.7.3";
 ?>

@@ -15,8 +15,6 @@ require ("../config.inc.php");
 require ("../function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("../function/hypercms_ui.inc.php");
-// load language file
-require_once ("../language/editorf.inc.php");
 
 
 // input parameters
@@ -75,6 +73,12 @@ if ($contenttype == "")
 else if (strpos ($contenttype, "charset") > 0)
 {
 	$charset = getattribute ($contenttype, "charset");
+}
+
+// if the destination character set is not supported by language set it need to be HTML escaped
+if (strtolower ($charset) != $hcms_lang_codepage[$lang])
+{
+  $hcms_lang = html_encode ($hcms_lang, "ASCII");
 }
 
 // read content using db_connect
@@ -235,13 +239,13 @@ $token = createtoken ($user);
   			<table border="0" cellspacing="2">
   				<tr>
   					<td nowrap="nowrap">
-  						<img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_so');" alt="<?php echo $text48[$lang]; ?>" title="<?php echo $text48[$lang]; ?>" align="absmiddle" />   
-  						<img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_sc');" alt="<?php echo $text45[$lang]; ?>" title="<?php echo $text45[$lang]; ?>" align="absmiddle" />
+  						<img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_so');" alt="<?php echo $hcms_lang['save'][$lang]; ?>" title="<?php echo $hcms_lang['save'][$lang]; ?>" align="absmiddle" />   
+  						<img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_sc');" alt="<?php echo $hcms_lang['save-and-close'][$lang]; ?>" title="<?php echo $hcms_lang['save-and-close'][$lang]; ?>" align="absmiddle" />
   						<?php 
   						if (intval ($mgmt_config['autosave']) > 0) {
   						?>
               <div class="hcmsButton" style="height:22px;">
-  						  <input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" /><label for="autosave">&nbsp;<?php echo $text49[$lang]; ?></label>
+  						  <input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" /><label for="autosave">&nbsp;<?php echo $hcms_lang['autosave'][$lang]; ?></label>
               </div>
   						<?php 
   						} 
@@ -263,7 +267,7 @@ $token = createtoken ($user);
   			<tr>
   				<td align="center" valign="top">
   					<div style="width:100%; height:100%; z-index:10; overflow:auto;">
-  						<?php echo $text49[$lang]; ?>
+  						<?php echo $hcms_lang['autosave'][$lang]; ?>
   					</div>
   				</td>
   			</tr>

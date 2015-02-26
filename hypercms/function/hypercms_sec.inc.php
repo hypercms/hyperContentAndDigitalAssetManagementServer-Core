@@ -739,11 +739,11 @@ function checklocalpermission ($site, $group, $name)
 
 function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_password=false, $locking=true)
 {
-  global $mgmt_config, $eventsystem, $lang, $lang_codepage;
+  global $mgmt_config, $eventsystem, $hcms_lang_codepage, $hcms_lang, $lang;
 
-  require ($mgmt_config['abs_path_cms']."language/userlogin.inc.php");
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
+  
   // set default language
   if (empty ($lang)) $lang = "en";
   
@@ -864,7 +864,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         $mailer->Body = "User directory is locked!\nhyperCMS Host: ".$_SERVER['SERVER_NAME']."\n";
         $mailer->Send();
         
-        $result['message'] = $text1[$lang];
+        $result['message'] = $hcms_lang['the-user-index-is-locked'][$lang];
         $auth = false;
       }
 
@@ -937,7 +937,9 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         if (!empty ($userlanguage[0])) $result['lang'] = $userlanguage[0];
         else $result['lang'] = "en";
         
-        $lang = $result['lang'];
+        // set language of user and load language file
+        $lang = $result['lang'];        
+        require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
         
         // hyperCMS theme
         if (is_mobilebrowser ())
@@ -1288,7 +1290,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         $mailer->Body = "License limit reached by ".$mgmt_config['url_path_cms']." (".getuserip().")\r\nPublications: ".$site_collection."|\n";
         $mailer->Send();
         //deletefile ($mgmt_config['abs_path_data'], "check.dat", 0);
-        $result['message'] = $text2[$lang];
+        $result['message'] = $hcms_lang['your-action-is-not-confirm-to-the-licence-agreement'][$lang]." <a href=\"mailto:support@hypercms.net\">support@hypercms.net</a>";
         $checkresult = false;
 
         // warning
@@ -1303,7 +1305,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       $mailer->Subject = "hyperCMS ALERT";
       $mailer->Body = "hyperCMS alert (check.dat deleted) for ".$mgmt_config['url_path_cms']."\n";
       $mailer->Send();
-      $result['message'] = $text2[$lang];
+      $result['message'] = $hcms_lang['your-action-is-not-confirm-to-the-licence-agreement'][$lang]." <a href=\"mailto:support@hypercms.net\">support@hypercms.net</a>";
       $checkresult = false;
       
       // warning
@@ -1341,7 +1343,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         $_SESSION['temp_ip_counter'][$user] = 1;
       }      
     }
-    else $result['message'] = $text5[$lang];
+    else $result['message'] = $hcms_lang['you-have-been-banned'][$lang];
   }
   
   // auth. result
@@ -1356,8 +1358,8 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
   // message
   if (!$result['message'])
   {
-    if (isset ($result['auth']) && $result['auth'] == true) $result['message'] = $text7[$lang];
-    else $result['message'] = $text6[$lang];
+    if (isset ($result['auth']) && $result['auth'] == true) $result['message'] = $hcms_lang['login-correct'][$lang];
+    else $result['message'] = $hcms_lang['login-incorrect'][$lang];
   }
   
   // calculate checksum of permissions
@@ -1649,30 +1651,30 @@ function checkpassword ($password)
 {
   global $mgmt_config, $lang;
   
-  require ($mgmt_config['abs_path_cms']."language/checkpassword.inc.php"); 
+  require ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang)); 
   
   if ($password != "")
   {
     // must be at least 8 digits long
-    if (strlen ($password) < 8) $error[] = $text1[$lang];
+    if (strlen ($password) < 8) $error[] = $hcms_lang['the-passwords-has-less-than-8-digits'][$lang];
     // must not be longer than 20 gigits
-    if (strlen ($password) > 20)	$error[] = $text2[$lang];
+    if (strlen ($password) > 20)	$error[] = $hcms_lang['the-password-has-more-than-20-digits'][$lang];
     // must contain at least one number
-    if (!preg_match ("#[0-9]+#", $password)) $error[] = $text3[$lang];
+    if (!preg_match ("#[0-9]+#", $password)) $error[] = $hcms_lang['password-must-include-at-least-one-number'][$lang];
     // must contain at least one letter
-    if (!preg_match ("#[a-z]+#", $password))	$error[] = $text4[$lang];
+    if (!preg_match ("#[a-z]+#", $password))	$error[] = $hcms_lang['password-must-include-at-least-one-letter'][$lang];
     // must contain at least one capital letter  
-    if (!preg_match ("#[A-Z]+#", $password)) $error[] = $text5[$lang];
+    if (!preg_match ("#[A-Z]+#", $password)) $error[] = $hcms_lang['password-must-include-at-least-one-capital-letter'][$lang];
     // must contain at least one symbol (optional but not used) 
-    // if (!preg_match ("#\W+#", $password)) $error .= $text6[$lang];    
+    // if (!preg_match ("#\W+#", $password)) $error .= $hcms_lang['password-must-include-at-least-one-symbol'][$lang];    
 
     if ($error)
     {
-      return $text7[$lang].": ".implode (", ", $error);
+      return $hcms_lang['password-validation-failure'][$lang].": ".implode (", ", $error);
     }
     else return true;
   }
-  else return $text0[$lang];
+  else return $hcms_lang['password-is-not-set'][$lang];
 }
 
 // ===================================== SECURITY FUNCTIONS =====================================
@@ -2040,40 +2042,101 @@ function valid_publicationname ($variable)
 
 // ------------------------- html_encode -----------------------------
 // function: html_encode()
-// input: variable as string or array, conversion of all special characters based on given character set (optional), remove characters to avoid JS injection [true,false] (optional)
+// input: variable as string or array, conversion of all special characters based on given character set or to ASCII (optional), remove characters to avoid JS injection [true,false] (optional)
 // output: html encoded value as array or string / false on error
 
 // description:
 // this function encodes certain characters (&, <, >, ", ') into their 
 // HTML character entity equivalents to protect against XSS.
 
-function html_encode ($variable, $charset="", $js_protection=false)
+
+// description:
+// converts a string into the html equivalents (also used for XSS protection).
+// supports multibyte character sets like UTF-8 as well based on the ASCII value of the character.
+
+function html_encode ($expression, $encoding="", $js_protection=false)
 {
-  global $mgmt_config, $lang, $lang_codepage;
-  
-  if ($variable != "")
+  if ($expression != "")
   {
-    if (!is_array ($variable))
-    {
-      // replace special harmful characters with their html euqivalent (XSS protection)
-      // to prevent double encoding decode first
-      if ($charset == "")
+    // input is string
+    if (!is_array ($expression))
+    { 
+      // encode all characters with support multibyte character sets like UTF-8 (htmlentities is not supporting all languages)
+      if (strtolower ($encoding) == "ascii")
       {
-        $variable = str_replace (array ("&", "\"", "'", "<", ">"), array ("&amp;", "&quot;", "&#039;", "&lt;", "&gt;"), html_decode ($variable));
-        if ($js_protection == true) $variable = str_replace (array ("{", "}", "(", ")", ";", "\\n"), array ("", "", "", "", "", ""), html_decode ($variable));
-        return $variable; 
+        $result = "";
+        $offset = 0;
+        
+        // to prevent double encoding decode first
+        $expression = html_decode ($expression);
+        
+        while ($offset >= 0)
+        {
+          $code = ord (substr ($expression, $offset, 1));
+          
+          // otherwise 0xxxxxxx
+          if ($code >= 128)
+          {
+            // 110xxxxx
+            if ($code < 224) $bytesnumber = 2;     
+            // 1110xxxx           
+            else if ($code < 240) $bytesnumber = 3;
+            // 11110xxx
+            else if ($code < 248) $bytesnumber = 4;
+            
+            $codetemp = $code - 192 - ($bytesnumber > 2 ? 32 : 0) - ($bytesnumber > 3 ? 16 : 0);
+            
+            for ($i = 2; $i <= $bytesnumber; $i++)
+            {
+              $offset ++;
+              // 10xxxxxx
+              $code2 = ord (substr ($expression, $offset, 1)) - 128;
+              $codetemp = $codetemp * 64 + $code2;
+            }
+            
+            $code = $codetemp;
+          }
+          
+          // html escape character
+          $result .= "&#".$code.";";
+          
+          $offset += 1;
+          if ($offset >= strlen ($expression)) $offset = -1;
+        }
       }
-      else return htmlentities (html_decode ($variable, $charset), ENT_QUOTES, $charset);
+      // enocode based on character set
+      elseif ($encoding != "")
+      {
+        // to prevent double encoding decode first
+        $result = htmlentities (html_decode ($variable, $charset), ENT_QUOTES, $encoding);
+      }
+      // enocde only a small set of special characters
+      else 
+      {
+        // to prevent double encoding decode first
+        $result = str_replace (array ("&", "\"", "'", "<", ">"), array ("&amp;", "&quot;", "&#039;", "&lt;", "&gt;"), html_decode ($expression));
+      }     
     }
-    elseif (is_array ($variable))
+    // input is array
+    elseif (is_array ($expression))
     {
-      foreach ($variable as &$value)
-      {
-        $value = html_encode ($value, $charset);
-      }
+      $result = $expression;
       
-      return $variable;
+      foreach ($result as &$value)
+      {
+        // convert
+        $value = html_encode ($value, $encoding, $js_protection);
+      }
     }
+    
+    // replace special harmful characters for JS (XSS protection)
+    if ($js_protection == true && !empty ($result))
+    {
+      $result = str_replace (array ("{", "}", "(", ")", ";", "\\n"), array ("", "", "", "", "", ""), html_decode ($result));
+    }
+    
+    if (!empty ($result)) return $result;
+    else return false;      
   }
   else return false;
 }
@@ -2086,23 +2149,33 @@ function html_encode ($variable, $charset="", $js_protection=false)
 // description:
 // this function decodes all characters which have been converted by html_encode.
 
-function html_decode ($variable, $charset="")
+function html_decode ($expression, $encoding="")
 {
-  global $mgmt_config, $lang, $lang_codepage;
-  
-  if (!is_array ($variable))
-  {
-    if ($charset == "") return htmlspecialchars_decode ($variable, ENT_QUOTES);
-    else return html_entity_decode ($variable, ENT_QUOTES, $charset);
-  }
-  elseif (is_array ($variable))
-  {
-    foreach ($variable as &$value)
+  if ($expression != "" )
+  {    
+    if (!is_array ($expression))
     {
-      $value = html_decode ($value, $charset);
+      if ($encoding != "")
+      {
+        if (strtolower ($encoding) == "ascii") $encoding = "UTF-8";
+         
+        $expression = html_entity_decode ($expression, ENT_QUOTES, $encoding);
+      }
+      else
+      {
+        $expression = htmlspecialchars_decode ($expression, ENT_QUOTES);
+      } 
+    }
+    elseif (is_array ($expression))
+    {
+      foreach ($expression as &$value)
+      {
+        $value = html_decode ($value, $encoding);
+      }
     }
     
-    return $variable;
+    if (!empty ($expression)) return $expression;
+    else return false;      
   }
   else return false;
 }

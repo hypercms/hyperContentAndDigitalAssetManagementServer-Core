@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/media_playerconfig.inc.php");
 // extension definitions
 include ("include/format_ext.inc.php");
 
@@ -99,7 +97,7 @@ elseif($media_root && file_exists ($media_root.$file_info['filename'].".config.o
 else
 {
   $config = false;
-  $playercode = $text5[$lang];
+  $playercode = $hcms_lang['configuration-not-available'][$lang];
 }
 
 $head = false;
@@ -136,7 +134,7 @@ if ($config && is_array ($config))
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang];?>" />
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang);?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <?php
@@ -165,8 +163,8 @@ function updateCodeSegment()
   var logo = document.getElementById("logo").value;
   <?php } ?>
   
-  var url = "<?php	echo html_encode($url, $lang_codepage[$lang]); ?>";
-  var code = '<?php	echo html_encode($playercode, $lang_codepage[$lang]); ?>';
+  var url = "<?php	echo html_encode($url, $hcms_lang_codepage[$lang]); ?>";
+  var code = '<?php	echo html_encode($playercode, $hcms_lang_codepage[$lang]); ?>';
   
   var newurl = url;
   
@@ -259,7 +257,7 @@ var CKEDITOR = {
 
 <!-- top bar -->
 <?php
-echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
+echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
 ?>
 
 <!-- content -->
@@ -270,8 +268,8 @@ echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.p
   {
   ?>
   <div style="margin-left: 10px;margin-top: 10px;">
-  	<strong><?php echo $text3[$lang];?></strong><br />
-  	<?php echo $text4[$lang];?><br /><br />       
+  	<strong><?php echo $hcms_lang['html-head-segment'][$lang];?></strong><br />
+  	<?php echo $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy'][$lang];?><br /><br />       
   	<textarea id="codesegment" style="height: 150px; width: 98%" wrap="VIRTUAL"><?php
     echo $head;
   	?></textarea>
@@ -286,34 +284,34 @@ echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.p
     <div style="margin-left:10px; margin-top:10px; float:left; width:250px;">
       <?php if (!$audio) { ?>
       <div style="height: 20px">
-        <label for="title"><?php echo $text7[$lang];?>:</label><br/>
+        <label for="title"><?php echo $hcms_lang['title'][$lang];?>:</label><br/>
       </div>
       <?php } ?>
       <div style="height: 20px">
-        <label for="autoplay"><?php echo $text8[$lang];?>:</label>
+        <label for="autoplay"><?php echo $hcms_lang['autoplay'][$lang];?>:</label>
       </div>
       <?php if (!$audio) { ?>
       <div style="height: 20px">
-        <label for="fullscreen"><?php echo $text9[$lang];?>:</label>
+        <label for="fullscreen"><?php echo $hcms_lang['enable-fullscreen'][$lang];?>:</label>
       </div>
       <?php }
        
       if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
       <div style="height: 20px">
-        <label for="keyboard"><?php echo $text10[$lang];?>: </label>
+        <label for="keyboard"><?php echo $hcms_lang['enable-keyboard-input'][$lang];?>: </label>
       </div>
       <div style="height: 20px">
-        <label for="pause"><?php echo $text11[$lang];?>: </label>
+        <label for="pause"><?php echo $hcms_lang['enable-pause'][$lang];?>: </label>
       </div>
       <div style="height: 20px">
-        <label for="seek"><?php echo $text12[$lang];?>: </label>
+        <label for="seek"><?php echo $hcms_lang['enable-seek'][$lang];?>: </label>
       </div>
       <?php }
        
       if (!$audio) {
       ?>
       <div style="height: 20px">
-        <label for="logo"><?php echo $text13[$lang];?>: </label>
+        <label for="logo"><?php echo $hcms_lang['start-image'][$lang];?>: </label>
       </div>
       <?php } ?>
     </div>
@@ -349,7 +347,7 @@ echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.p
       ?>
       <div style="height:20px;">
         <input style="vertical-align: top;" type="text" onchange="updateCodeSegment();" id="logo" />
-        <img class="hcmsButtonTiny hcmsButtonSizeSquare" title="<?php echo $text14[$lang]; ?>" style="cursor: pointer;" src="<?php echo getthemelocation(); ?>img/button_media.gif" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 620, 550);" />
+        <img class="hcmsButtonTiny hcmsButtonSizeSquare" title="<?php echo $hcms_lang['select-image'][$lang]; ?>" style="cursor: pointer;" src="<?php echo getthemelocation(); ?>img/button_media.gif" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 620, 550);" />
       </div>
       <?php } ?>
     </div>
@@ -359,13 +357,13 @@ echo showtopbar ($text6[$lang], $lang, $mgmt_config['url_path_cms']."page_view.p
   }
   ?>
   <div style="margin-left:10px; margin-top:10px;">
-  	<strong><?php echo $text1[$lang];?></strong><br />
-  	<?php echo $text2[$lang];?><br /><br />
-  	<textarea id="codesegment" style="height:80px; width:98%" wrap="VIRTUAL"><?php	echo html_encode($playercode, $lang_codepage[$lang]); ?></textarea>
+  	<strong><?php echo $hcms_lang['html-body-segment'][$lang];?></strong><br />
+  	<?php echo $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy'][$lang];?><br /><br />
+  	<textarea id="codesegment" style="height:80px; width:98%" wrap="VIRTUAL"><?php	echo html_encode($playercode, $hcms_lang_codepage[$lang]); ?></textarea>
   </div>
   <hr>
   <div style="margin-left:10px; margin-top:10px;">
-    <strong><?php echo $text15[$lang];?></strong><br />
+    <strong><?php echo $hcms_lang['preview'][$lang];?></strong><br />
     <?php echo $playercode; ?>
   </div>
 </div>

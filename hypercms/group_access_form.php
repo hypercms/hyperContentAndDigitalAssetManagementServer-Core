@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/group_access_form.inc.php");
 
 
 // input parameters
@@ -42,12 +40,12 @@ checkusersession ($user);
 if ($cat == "page")
 {
   $access_tag = "<pageaccess>";
-  $pagecomp = $text7[$lang];
+  $pagecomp = $hcms_lang['pages'][$lang];
 }
 elseif ($cat == "comp")
 {
   $access_tag = "<compaccess>";
-  $pagecomp = $text8[$lang];
+  $pagecomp = $hcms_lang['assets'][$lang];
 }
 
 // check if login is an attribute of a sent string
@@ -87,7 +85,7 @@ if ($group_name != false && $group_name != "")
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -132,17 +130,17 @@ function insertOption (sent_name, sent_file)
 
       if (sent_name == folder_name)
       {
-        message = message + "<?php echo $text1[$lang]; ?> " + "\r";
+        message = message + "<?php echo $hcms_lang['the-selected-folder-exists-already'][$lang]; ?> " + "\r";
         insert = false;
       }
       else if (sent_name.indexOf (folder_name) != -1)
       {
-        message = message + "<?php echo $text2[$lang]; ?> " + folder_name + "\r";
+        message = message + "<?php echo $hcms_lang['the-selected-folder-is-a-subfolder-of'][$lang]; ?> " + folder_name + "\r";
         insert = false;
       }
       else if (folder_name.indexOf (sent_name) != -1)
       {
-        message = message + "<?php echo $text3[$lang]; ?> " + folder_name + "\r";
+        message = message + "<?php echo $hcms_lang['the-selected-folder-is-a-parentfolder-of'][$lang]; ?> " + folder_name + "\r";
         insert = false;
       }
     }
@@ -209,7 +207,7 @@ function selectAll ()
 <body class="hcmsWorkplaceGeneric" onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif');">
 
 <!-- top bar -->
-<?php echo showtopbar ($pagecomp." ".$text0[$lang].": ".$group_name, $lang, $mgmt_config['url_path_cms']."group_edit_form.php?site=".url_encode($site)."&group_name=".url_encode($group_name)."&preview=no", "_parent"); ?>
+<?php echo showtopbar ($pagecomp." ".$hcms_lang['access-for-group'][$lang].": ".$group_name, $lang, $mgmt_config['url_path_cms']."group_edit_form.php?site=".url_encode($site)."&group_name=".url_encode($group_name)."&preview=no", "_parent"); ?>
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
   <form name="group_access" action="group_edit_script.php" method="post">
@@ -223,7 +221,7 @@ function selectAll ()
     <table border="0" cellspacing="2" cellpadding="0">
       <tr>
         <td colspan="2" nowrap="nowrap">
-          <?php echo $text4[$lang]; ?>:
+          <?php echo $hcms_lang['grant-access-to-selected-folders'][$lang]; ?>:
         </td>
       </tr>
       <tr>
@@ -256,7 +254,7 @@ function selectAll ()
                 </select>
               </td>
               <td align="center" valign="middle">
-                <img onClick="deleteSelected();" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" alt="<?php $text5[$lang]; ?>" />
+                <img onClick="deleteSelected();" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" alt="<?php $hcms_lang['delete'][$lang]; ?>" />
             </td>
             </tr>
           </table>
@@ -267,7 +265,7 @@ function selectAll ()
       </tr>
       <tr>
         <td valign="top" nowrap="nowrap">
-          <?php echo $text6[$lang]; ?>:
+          <?php echo $hcms_lang['save-settings'][$lang]; ?>:
         </td>
         <td>
           <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />

@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/media_preview.inc.php");
 
 
 // input parameters
@@ -36,7 +34,7 @@ checkusersession ($user, false);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 </script>
 </head>
@@ -44,7 +42,7 @@ checkusersession ($user, false);
 <body class="hcmsWorkplaceGeneric">
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
-  <p class=hcmsHeadline><?php echo $text0[$lang]; ?></p>
+  <p class=hcmsHeadline><?php echo $hcms_lang['media-file-view'][$lang]; ?></p>
   
   <form name="media">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
@@ -52,7 +50,7 @@ checkusersession ($user, false);
     
     <table border="0">
       <tr>
-        <td nowrap="nowrap"><?php echo $text1[$lang]; ?>: </td>
+        <td nowrap="nowrap"><?php echo $hcms_lang['selected-media-file'][$lang]; ?>: </td>
         <td>
           <input type="text" style="width:300px" name="mediafile" />
         </td>

@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/user_form.inc.php");
 
 
 // input parameters
@@ -73,18 +71,33 @@ if ($action == "user_save" && ($site == "*Null*" || checkpublicationpermission (
       if ($superadmin != "1") $superadmin = "0";
     }
     else $superadmin = "";
+    
+    // reload GUI
+    $add_onload = "";
+        
+    if ($login_cat == "home" && $login == $user)
+    {
+      // change theme in session if user changed it
+      if (!empty ($theme) && $hcms_themename != $theme)
+      {
+        setsession ('hcms_themename', $theme);
+        $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
+      }
+      // load new language if user changed it
+      elseif (!empty ($language) && $lang != $language)
+      {
+        $lang = $language;
+        
+        // language file
+        require_once ("language/".getlanguagefile ($lang));
+        $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
+      }
+    }
 
     // edit user settings
     $result = edituser ($site, $login, $old_password, $password, $confirm_password, $superadmin, $realname, $language, $theme, $email, $signature, $usergroup, $usersite, $user);
-    $add_onload = "";
+
     $show = $result['message'];
-    
-    // change theme in session if user changed it
-    if ($login_cat == "home" && $login == $user && !empty ($theme) && $hcms_themename != $theme)
-    {
-      setsession ('hcms_themename', $theme);
-      $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
-    }
   }
   else
   {
@@ -92,7 +105,7 @@ if ($action == "user_save" && ($site == "*Null*" || checkpublicationpermission (
     $error[] = $mgmt_config['today']."|user_edit.inc.php|error|$errcode|unauthorized access of user ".$user;
     
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$text17[$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang]."</span>\n";
   }
   
   // save log
@@ -106,7 +119,7 @@ $token_new = createtoken ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <meta name="viewport" content="width=device-width; initial-scale=0.7; maximum-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
@@ -161,7 +174,7 @@ function checkForm_chars (text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert ("<?php echo $text6[$lang]; ?>: "+addText);
+		alert ("<?php echo $hcms_lang['please-do-not-use-the-following-special-characters-in-password'][$lang]; ?>: "+addText);
 		return false;
 	}
   else
@@ -177,7 +190,7 @@ function checkForm ()
   
   if (userform.elements['password'].value != userform.elements['confirm_password'].value)
   {
-    alert (hcms_entity_decode("<?php echo $text7[$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo $hcms_lang['your-submitted-passwords-are-not-equal'][$lang]; ?>"));
     userform.elements['confirm_password'].focus();
     return false;
   }
@@ -192,7 +205,7 @@ function checkForm ()
     
     if (userform.elements['confirm_password'].value == "")
     {
-      alert (hcms_entity_decode("<?php echo $text3[$lang]; ?>"));
+      alert (hcms_entity_decode("<?php echo $hcms_lang['assigned-to-publication'][$lang]; ?>"));
       userform.elements['confirm_password'].focus();
       return false;
     } 
@@ -206,7 +219,7 @@ function checkForm ()
   
   if(userform.elements['email'].value != "" && (userform.elements['email'].value.indexOf('@') == -1 || userform.elements['email'].value.indexOf('.') == -1))
   {
-    alert (hcms_entity_decode("<?php echo $text8[$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo $hcms_lang['please-insert-a-valid-e-mail-adress'][$lang]; ?>"));
     userform.elements['email'].focus();
     return false;
   }
@@ -346,64 +359,78 @@ if ($login != "" && $login != false)
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
   
   <!-- top bar -->
-  <?php echo showtopbar ($text9[$lang].": ".$login, $lang); ?>
+  <?php echo showtopbar ($hcms_lang['settings-for-user'][$lang].": ".$login, $lang); ?>
   
   <table border="0" cellspacing="0" cellpadding="3">
     <?php if ($login_cat == "home" || $login == $user) { ?>
     <tr>
-      <td nowrap="nowrap"><?php echo $text20[$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['old-password'][$lang]; ?>: </td>
       <td align="right">
         <input type="password" name="old_password" style="width:200px;" />
       </td>
     </tr>
     <?php } ?> 
     <tr>
-      <td nowrap="nowrap"><?php echo $text10[$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['change-password'][$lang]; ?>: </td>
       <td align="right">
         <input type="password" name="password" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $text11[$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['confirm-password'][$lang]; ?>: </td>
       <td align="right">
         <input type="password" name="confirm_password" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $text22[$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['hash-for-openapi'][$lang]; ?>: </td>
       <td align="right">
         <input type="text" style="width:200px;" value="<?php echo $hashcode; ?>" readonly="readonly" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $text13[$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['name'][$lang]; ?>: </td>
       <td align="right">
         <input type="text" name="realname" style="width:200px;" value="<?php echo $realname; ?>" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $text14[$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['e-mail'][$lang]; ?>: </td>
       <td align="right">
         <input type="text" name="email" style="width:200px;" value="<?php echo $email; ?>" />
       </td>
     </tr>
     <tr>
-      <td valign="top" nowrap="nowrap"><?php echo $text16[$lang]; ?>: </td>
+      <td valign="top" nowrap="nowrap"><?php echo $hcms_lang['signature'][$lang]; ?>: </td>
       <td align="right" valign="top">
         <textarea name="signature" wrap="VIRTUAL" style="width:200px; height:50px;"><?php echo $signature; ?></textarea>
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $text15[$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['language'][$lang]; ?>: </td>
       <td align="right">
         <select name="language" style="width:200px;">
         <?php
-        foreach ($lang_shortcut as $lang_opt)
+        if (!empty ($mgmt_lang_shortcut) && is_array ($mgmt_lang_shortcut))
         {
-          if ($userlanguage == $lang_opt) $selected = "selected=\"selected\"";
-          else $selected = "";
-          
-          echo "<option value=\"".$lang_opt."\" ".$selected.">".$lang_name[$lang_opt]."</option>\n";
+          foreach ($mgmt_lang_shortcut as $lang_opt)
+          {
+            if ($userlanguage == $lang_opt) $selected = "selected=\"selected\"";
+            else $selected = "";
+            
+            echo "<option value=\"".$lang_opt."\" ".$selected.">".$mgmt_lang_name[$lang_opt]."</option>\n";
+          }
+        }
+        // for older versions before 5.7.3
+        if (!empty ($lang_shortcut) && is_array ($lang_shortcut))
+        {
+          foreach ($lang_shortcut as $lang_opt)
+          {
+            if ($userlanguage == $lang_opt) $selected = "selected=\"selected\"";
+            else $selected = "";
+            
+            echo "<option value=\"".$lang_opt."\" ".$selected.">".$lang_name[$lang_opt]."</option>\n";
+          }
         }
         ?>
         </select>
@@ -416,7 +443,7 @@ if ($login != "" && $login != false)
     if (($site == "*Null*" && empty ($mgmt_config['theme']) && empty ($config_theme)) || ($site != "*Null*" && empty ($mgmt_config['theme']) && empty ($mgmt_config[$site]['theme']))) {
     ?>
     <tr>
-      <td nowrap="nowrap"><?php echo $text21[$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['theme'][$lang]; ?>: </td>
       <td align="right">
         <select name="theme" style="width:200px;">
         <?php
@@ -465,7 +492,7 @@ if ($login != "" && $login != false)
         <table border=0 cellspacing=0 cellpadding=0>
           <tr>
             <td>
-              ".$text0[$lang].":<br /><br />
+              ".$hcms_lang['groups'][$lang].":<br /><br />
               <select multiple size=\"10\" name=\"list1\" style=\"width:200px; height:140px;\">\n";
 
               $groupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
@@ -502,7 +529,7 @@ if ($login != "" && $login != false)
               <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"move(this.form.elements['list1'], this.form.elements['list2'])\" value=\"&gt;&gt;\" />
             </td>
             <td>
-              ".$text12[$lang].":<br /><br />
+              ".$hcms_lang['assigned-to-group'][$lang].":<br /><br />
               <select multiple size=\"10\" name=\"list2\" style=\"width:200px; height:140px;\">\n";
 
               if (is_array ($list2_array) && sizeof ($list2_array) >= 1)
@@ -527,7 +554,7 @@ if ($login != "" && $login != false)
         <table border=0 cellspacing=0 cellpadding=0>
           <tr>
             <td>
-              ".$text2[$lang].":<br /><br />
+              ".$hcms_lang['publications'][$lang].":<br /><br />
               <select multiple size=\"10\" name=\"list1\" style=\"width:200px; height:140px;\">\n";
 
               $inherit_db = inherit_db_read ($user);
@@ -572,7 +599,7 @@ if ($login != "" && $login != false)
               <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"move(this.form.elements['list1'], this.form.elements['list2'])\" value=\"&gt;&gt;\" />
             </td>
             <td>
-              ".$text3[$lang].":<br /><br />
+              ".$hcms_lang['assigned-to-publication'][$lang].":<br /><br />
               <select multiple size=\"10\" name=\"list2\" style=\"width:200px; height:140px;\">\n";
 
               if (is_array ($list2_array) && sizeof ($list2_array) > 0)
@@ -593,14 +620,14 @@ if ($login != "" && $login != false)
     ?>
     <?php if ($site == "*Null*" && checkadminpermission ()) { ?>
     <tr>
-      <td nowrap="nowrap"><?php echo $text18[$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['administration'][$lang]; ?>: </td>
       <td align="left">
-        <input type="checkbox" name="superadmin" value="1" <?php if ($superadmin == "1") echo "checked=\"checked\""; ?>/><?php echo $text19[$lang]; ?>
+        <input type="checkbox" name="superadmin" value="1" <?php if ($superadmin == "1") echo "checked=\"checked\""; ?>/><?php echo $hcms_lang['super-administrator'][$lang]; ?>
       </td>
     </tr>
     <?php } ?>    
     <tr>
-      <td nowrap="nowrap"><?php echo $text1[$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['save-settings'][$lang]; ?>: </td>
       <td>
         <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onclick="checkForm();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
       </td>

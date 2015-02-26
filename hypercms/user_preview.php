@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/user_preview.inc.php");
 
 
 // input parameters
@@ -40,7 +38,7 @@ checkusersession ($user, false);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -50,7 +48,7 @@ function checkForm (form, field)
 {
   if (form.elements[field].value == "")
   {
-    alert (hcms_entity_decode("<?php echo $text5[$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo $hcms_lang['please-select-a-user'][$lang]; ?>"));
     return false;
   }
   else
@@ -116,39 +114,39 @@ if ($login != "" && $login != false)
   <table border="0" cellspacing="0" cellpadding="2">
     <tr>
       <td colspan="2" nowrap="nowrap" class="hcmsHeadline">
-        <?php echo $text0[$lang]; ?>
+        <?php echo $hcms_lang['user-information'][$lang]; ?>
       </td>
     </tr>
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo $text1[$lang]; ?>: </td>
+      <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['user-name'][$lang]; ?>: </td>
       <td align="left" valign="top" class="hcmsHeadlineTiny"><?php echo $login; ?></td>
     </tr>
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo $text3[$lang]; ?>: </td>
+      <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['name'][$lang]; ?>: </td>
       <td align="left" valign="top" class="hcmsHeadlineTiny"><?php echo $realname; ?></td>
     </tr>
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo $text4[$lang]; ?>: </td>
+      <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['e-mail'][$lang]; ?>: </td>
       <td align="left" valign="top" class="hcmsHeadlineTiny"><?php echo $email; ?></td>
     </tr>
     <?php 
     if ($site != "*Null*")
     {
       echo "<tr>
-      <td align=\"left\" valign=\"top\" nowrap=\"nowrap\">".$text2[$lang].": </td>
+      <td align=\"left\" valign=\"top\" nowrap=\"nowrap\">".$hcms_lang['member-of-group'][$lang].": </td>
       <td align=\"left\" valign=\"top\" class=\"hcmsHeadlineTiny\">".$usergroup."</td>
     </tr>\n"; 
     } 
     else
     {
       echo "<tr>
-      <td align=\"left\" valign=\"top\" nowrap=\"nowrap\">".$text7[$lang].": </td>
+      <td align=\"left\" valign=\"top\" nowrap=\"nowrap\">".$hcms_lang['member-of-publication'][$lang].": </td>
       <td align=\"left\" valign=\"top\" class=\"hcmsHeadlineTiny\">".$site_names."</td>
     </tr>\n"; 
     }     
     ?>  
     <tr>
-      <td nowrap="nowrap"><?php echo $text6[$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['remove-user'][$lang]; ?>: </td>
       <td><img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm(document.forms['deleteuser'], 'login');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" /></td>
     </tr>
   </table>

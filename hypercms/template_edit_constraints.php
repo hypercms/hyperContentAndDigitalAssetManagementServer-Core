@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/template_edit_constraints.inc.php");
 
 
 // input parameters
@@ -36,7 +34,7 @@ checkusersession ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/click.js" type="text/javascript"></script>
 <script language="JavaScript">
@@ -79,36 +77,36 @@ function applyconstraints ()
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <table border="0" cellspacing="2">
     <tr align="left" valign="top"> 
-      <td colspan="3" nowrap="nowrap" class="hcmsHeadline"><?php echo $text0[$lang]; ?></td>
+      <td colspan="3" nowrap="nowrap" class="hcmsHeadline"><?php echo $hcms_lang['unformatted-text-constraints'][$lang]; ?></td>
     </tr>
     <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo $text1[$lang]; ?>:</td>
-      <td nowrap="nowrap"><input name="required" type="checkbox" id="required" value="R" />&nbsp;<?php echo $text2[$lang]; ?></td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['value'][$lang]; ?>:</td>
+      <td nowrap="nowrap"><input name="required" type="checkbox" id="required" value="R" />&nbsp;<?php echo $hcms_lang['required'][$lang]; ?></td>
     </tr>
     <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo $text3[$lang]; ?>:</td>
-      <td nowrap="nowrap"><input type="radio" name="accept" value="" checked="checked" />&nbsp;<?php echo $text4[$lang]; ?></td>
-    </tr>
-    <tr align="left" valign="top"> 
-      <td nowrap="nowrap">&nbsp;</td>
-      <td nowrap="nowrap"><input type="radio" name="accept" value="isEmail" />&nbsp;<?php echo $text6[$lang]; ?></td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['accept'][$lang]; ?>:</td>
+      <td nowrap="nowrap"><input type="radio" name="accept" value="" checked="checked" />&nbsp;<?php echo $hcms_lang['anything'][$lang]; ?></td>
     </tr>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap">&nbsp;</td>
-      <td nowrap="nowrap"><input type="radio" name="accept" value="isNum" />&nbsp;<?php echo $text5[$lang]; ?></td>
+      <td nowrap="nowrap"><input type="radio" name="accept" value="isEmail" />&nbsp;<?php echo $hcms_lang['e-mail-address'][$lang]; ?></td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td nowrap="nowrap">&nbsp;</td>
+      <td nowrap="nowrap"><input type="radio" name="accept" value="isNum" />&nbsp;<?php echo $hcms_lang['number'][$lang]; ?></td>
     </tr>  
     <tr align="left" valign="top"> 
       <td nowrap="nowrap">&nbsp;</td>
-      <td nowrap="nowrap"><input type="radio" name="accept" value="inRange" />&nbsp;<?php echo $text7[$lang]; ?> 
-      <input name="min" type="text" id="min" size="8" />&nbsp;<?php echo $text8[$lang]; ?>&nbsp;<input name="max" type="text" id="max" size="8" /></td>
+      <td nowrap="nowrap"><input type="radio" name="accept" value="inRange" />&nbsp;<?php echo $hcms_lang['number-between'][$lang]; ?> 
+      <input name="min" type="text" id="min" size="8" />&nbsp;<?php echo $hcms_lang['and'][$lang]; ?>&nbsp;<input name="max" type="text" id="max" size="8" /></td>
     </tr> 
     <tr align="left" valign="top"> 
       <td colspan="2" nowrap="nowrap">&nbsp;</td>
     </tr>    
     <tr align="left" valign="top">
       <td nowrap="nowrap">&nbsp;</td>
-      <td nowrap="nowrap"><input name="apply" type="button" id="apply" value="<?php echo $text9[$lang]; ?>" onClick="applyconstraints();" />
-      <input name="cancel" type="button" id="cancel" value="<?php echo $text10[$lang]; ?>" onClick="self.close();" /></td>
+      <td nowrap="nowrap"><input name="apply" type="button" id="apply" value="<?php echo $hcms_lang['apply-constraints'][$lang]; ?>" onClick="applyconstraints();" />
+      <input name="cancel" type="button" id="cancel" value="<?php echo $hcms_lang['cancel'][$lang]; ?>" onClick="self.close();" /></td>
     </tr>
   </table>
 </form>

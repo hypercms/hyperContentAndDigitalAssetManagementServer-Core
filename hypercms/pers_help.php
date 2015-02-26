@@ -28,42 +28,40 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 if (!checkglobalpermission ($site, 'pers') || (!checkglobalpermission ($site, 'perstrack') && !checkglobalpermission ($site, 'persprof')) || $mgmt_config[$site]['dam'] == true || !valid_publicationname ($site)) killsession ($user);
 // check session of user
 checkusersession ($user, false);
-// language file
-require_once ("language/pers_help.inc.php");
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 </head>
 
 <body class="hcmsWorkplaceGeneric">
 
 <!-- top bar -->
-<?php echo showtopbar ($text0[$lang], $lang); ?>
+<?php echo showtopbar ($hcms_lang['personalization-scripting'][$lang], $lang); ?>
 
 <!-- content -->
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 <?php
 if ($cat == "tracking")
 {
-  echo "<p class=\"hcmsHeadlineTiny\">".$text1[$lang].":</p>
+  echo "<p class=\"hcmsHeadlineTiny\">".$hcms_lang['define-variables-and-set-their-values-see-example-for-passive-personalization'][$lang].":</p>
   if (!\$customer) \$customer['private']=0; else \$customer['private']++;<br /><br /> 
-  <p class=\"hcmsHeadlineTiny\">".$text4[$lang].":</p>
+  <p class=\"hcmsHeadlineTiny\">".$hcms_lang['register-variables-in-session-see-example'][$lang].":</p>
   \$_SESSION['customer'] = \$customer;<br /> 
   \$_SESSION['product'] = \$product;<br /> 
-  <p class=\"hcmsHeadlineTiny\">".$text2[$lang].":</p>
+  <p class=\"hcmsHeadlineTiny\">".$hcms_lang['define-a-cookie-and-set-its-value-and-an-expiration-time-see-example'][$lang].":</p>
   setcookie ('cookie['user']', \$username, time() + 31536000);
-  <p class=\"hcmsHeadlineTiny\">".$text3[$lang].":</p>
+  <p class=\"hcmsHeadlineTiny\">".$hcms_lang['get-a-cookie-and-read-its-value-see-example'][$lang].":</p>
   \$_COOKIE['cookie'];<br />
   \$username = \$cookie['user'];
-  <p class=\"hcmsHeadlineTiny\">".$text6[$lang]."</p>\n"; 
+  <p class=\"hcmsHeadlineTiny\">".$hcms_lang['please-note-do-not-use-html-code-in-customer-tracking'][$lang]."</p>\n"; 
 }
 elseif ($cat == "profile")
 {
-  echo "<p class=\"hcmsHeadlineTiny\">".$text5[$lang].":</p>
+  echo "<p class=\"hcmsHeadlineTiny\">".$hcms_lang['define-constraints-for-the-display-of-components-see-example'][$lang].":</p>
   (\$customer['private'] > \$customer['business'] AND \$count>=5) OR \$customer==\"business\"<br /><br />\n";
 }
 ?>

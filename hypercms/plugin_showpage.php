@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/plugin_showpage.inc.php");
 
 
 // input parameters
@@ -66,7 +64,7 @@ if (is_array ($mgmt_plugin) && array_key_exists ($plugin, $mgmt_plugin) && is_ar
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>" />
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=800; initial-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
@@ -104,7 +102,7 @@ else
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -112,7 +110,7 @@ else
 
 <body class="hcmsWorkplaceGeneric">
   <?php 
-  echo showmessage ($text0[$lang], 500, 40, $lang, "position:fixed; left:15px; top:40px;");
+  echo showmessage ($hcms_lang['couldnt-find-the-requested-page-in-this-plugin'][$lang], 500, 40, $lang, "position:fixed; left:15px; top:40px;");
   ?>
 </body>
 </html>

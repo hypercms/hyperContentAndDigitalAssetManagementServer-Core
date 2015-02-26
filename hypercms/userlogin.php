@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/userlogin.inc.php");
 // version info
 require ("version.inc.php");
 
@@ -135,7 +133,7 @@ elseif ($user != "" && $hcms_user != "")
 }
 
 // set default language
-if (!isset ($lang) || $lang == false || $lang == "") $lang = $lang_shortcut_default;
+if (!isset ($lang) || $lang == false || $lang == "") $lang = $mgmt_lang_shortcut_default;
 
 // create secure token
 $token_new = createtoken ("sys");
@@ -266,7 +264,7 @@ if (checkuserip (getuserip ()) == true)
       }
     }
     // session info could not be saved
-    else $login_result['message'] = $text8[$lang];    
+    else $login_result['message'] = $hcms_lang['session-information-could-not-be-saved'][$lang];    
   }
 
   // user is logged in
@@ -301,20 +299,20 @@ if (checkuserip (getuserip ()) == true)
           </tr>\n";
           
     if ($mgmt_config['instances']) $show .= "<tr>
-            <td><b>".$text9[$lang].":</b></td>
+            <td><b>".$hcms_lang['instance'][$lang].":</b></td>
             <td>
               <input type=\"text\" name=\"sentinstance\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
             </td>
           </tr>\n";
           
     $show .= "<tr>
-            <td><b>".$text3[$lang].":</b></td>
+            <td><b>".$hcms_lang['user'][$lang].":</b></td>
             <td>
               <input type=\"text\" name=\"sentuser\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
             </td>
           </tr>
           <tr>
-            <td><b>".$text4[$lang].":</b></td>
+            <td><b>".$hcms_lang['password'][$lang].":</b></td>
             <td>
               <input type=\"password\" name=\"sentpasswd\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
             </td>
@@ -340,7 +338,7 @@ if (checkuserip (getuserip ()) == true)
 // client ip is banned
 else
 {
-  $show .= "<p class=\"hcmsTextOrange\">".str_replace ("%timeout%", $mgmt_config['logon_timeout'], $text5[$lang])."</p>\n";
+  $show .= "<p class=\"hcmsTextOrange\">".str_replace ("%timeout%", $mgmt_config['logon_timeout'], $hcms_lang['you-have-been-banned'][$lang])."</p>\n";
 }
 ?>
 <!DOCTYPE html>

@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/control_queue_menu.inc.php");
 
 
 // input parameters
@@ -88,7 +86,7 @@ if ($action == "delete" && checktoken ($token, $user) &&
       
       if ($result == true)
       {
-        $show = "<span class=hcmsHeadline>".$text3[$lang]."</span>";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-items-were-successfully-removed-from-the-queue'][$lang]."</span>";
         $add_onload = "parent.frames['mainFrame'].location.reload();";
         $page = "";
         $multiobject = "";
@@ -96,7 +94,7 @@ if ($action == "delete" && checktoken ($token, $user) &&
       }
       else
       {
-        $show = "<span class=hcmsHeadline>".$text4[$lang]."</span>";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['an-error-occured-removing-the-items-from-the-queue'][$lang]."</span>";
         $add_onload = "";
       }      
     }
@@ -110,7 +108,7 @@ $token_new = createtoken ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
@@ -118,7 +116,7 @@ $token_new = createtoken ($user);
 <!--
 function warning_delete()
 {
-  check = confirm (hcms_entity_decode("<?php echo $text21[$lang]; ?>"));
+  check = confirm (hcms_entity_decode("<?php echo $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue'][$lang]; ?>"));
   
   return check;
 }
@@ -174,7 +172,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 <div class="hcmsLocationBar">
   <table border=0 cellspacing=0 cellpadding=0>
     <tr>
-      <td class="hcmsHeadline"><?php echo $text0[$lang]; ?></td>
+      <td class="hcmsHeadline"><?php echo $hcms_lang['publishing-queue-management'][$lang]; ?></td>
     </tr>
     <tr>
       <td>
@@ -185,20 +183,20 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
           // define object category name and check directory and component access rights of user
           if ($filetype == "Page")
           {
-            echo $text7[$lang];
+            echo $hcms_lang['page'][$lang];
             $media = "";
           }
           elseif ($filetype == "Component")
           {
-            echo $text8[$lang];
+            echo $hcms_lang['component'][$lang];
             $media = "";
           }
           elseif ($page == ".folder")
           {
-            echo $text9[$lang];
+            echo $hcms_lang['folder'][$lang];
             $media = "media";
           }
-          else echo $text10[$lang];
+          else echo $hcms_lang['file'][$lang];
           
           echo ":";
         }
@@ -214,7 +212,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
           
           if ($multiobject_count >= 1)
           {
-            echo $multiobject_count." ".$text11[$lang];
+            echo $multiobject_count." ".$hcms_lang['items-selected'][$lang];
           }
           elseif ($queue_id != "")
           {
@@ -241,7 +239,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         "class=\"hcmsButton hcmsButtonSizeSquare\" ".
         "onClick=\"if (warning_delete()==true) ".
         "submitTo('control_queue_menu.php', 'delete', 'controlFrame'); \" ".
-        "name=\"media_delete\" src=\"".getthemelocation()."img/button_file_delete.gif\" alt=\"".$text12[$lang]."\" title=\"".$text12[$lang]."\" />\n";
+        "name=\"media_delete\" src=\"".getthemelocation()."img/button_file_delete.gif\" alt=\"".$hcms_lang['remove-items'][$lang]."\" title=\"".$hcms_lang['remove-items'][$lang]."\" />\n";
     }    
     else
     {
@@ -257,7 +255,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
              "onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."','','status=yes,scrollbars=no,resizable=yes', '800', '600');\" ".
-             "name=\"media_edit\" src=\"".getthemelocation()."img/button_file_edit.gif\" alt=\"".$text13[$lang]."\" title=\"".$text13[$lang]."\" />\n";
+             "name=\"media_edit\" src=\"".getthemelocation()."img/button_file_edit.gif\" alt=\"".$hcms_lang['edit-object'][$lang]."\" title=\"".$hcms_lang['edit-object'][$lang]."\" />\n";
     }    
     else
     {
@@ -268,15 +266,15 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".$text18[$lang]."\" title=\"".$text18[$lang]."\" />\n";
+    echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".$hcms_lang['refresh'][$lang]."\" title=\"".$hcms_lang['refresh'][$lang]."\" />\n";
     ?>
     
   </div>
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;"> 
-      <?php echo $text1[$lang]; ?>:
+      <?php echo $hcms_lang['publication'][$lang]; ?>:
       <select name="site" onChange="jumpTo('parent.frames[\'mainFrame\']')">
-        <option value=""><?php echo $text5[$lang]; ?></option>
+        <option value=""><?php echo $hcms_lang['all-publications'][$lang]; ?></option>
         <?php
           // select publication
           $inherit_db = inherit_db_read ($user);
@@ -313,9 +311,9 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   </div>
   <div class="hcmsToolbarBlock">    
     <div style="padding:3px; float:left;">
-      <?php echo $text2[$lang]; ?>:
+      <?php echo $hcms_lang['user'][$lang]; ?>:
       <select name="queueuser" onChange="jumpTo('parent.frames[\'mainFrame\']')">
-        <option value=""><?php echo $text6[$lang]; ?></option>
+        <option value=""><?php echo $hcms_lang['all-users'][$lang]; ?></option>
         <?php
         // select user
         $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");  
@@ -346,8 +344,10 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   </div>
   <div class="hcmsToolbarBlock">  
     <?php
-    if (!$is_mobile && file_exists ("help/adminguide_".$lang_shortcut[$lang].".pdf") && (checkrootpermission ('user') || checkglobalpermission ($site, 'user')))
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_".$lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$text50[$lang]."\" title=\"".$text50[$lang]."\" /></a>\n";}
+    if (!$is_mobile && file_exists ("help/adminguide_".$hcms_lang_shortcut[$lang].".pdf") && (checkrootpermission ('user') || checkglobalpermission ($site, 'user')))
+    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>\n";}
+    elseif (!$is_mobile && file_exists ("help/adminguide_en.pdf") && (checkrootpermission ('user') || checkglobalpermission ($site, 'user')))
+    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_en.pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>\n";}
     ?>      
   </div>
   </form>

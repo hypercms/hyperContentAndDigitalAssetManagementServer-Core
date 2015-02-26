@@ -1740,6 +1740,9 @@ function iptc_writefile ($file, $iptc, $keep_data=true)
   
   if (is_file ($file) && is_array ($iptc))
   {
+    $iptc = array();
+    $encoding = "UTF-8";
+
     // get file info
     $file_info = getfileinfo ("", $file, "comp");
     
@@ -1767,7 +1770,6 @@ function iptc_writefile ($file, $iptc, $keep_data=true)
         
         // get charset info contained in tag 1:90.
         if (isset ($iptc_old["1#090"][0])) $encoding = iptc_getcharset (trim ($iptc_old["1#090"][0]));
-        else $encoding = "UTF-8";
         
         // compare old and new information to keep existing data
         if ($keep_data == true || $keep_data == 1)
@@ -1786,16 +1788,6 @@ function iptc_writefile ($file, $iptc, $keep_data=true)
             }
           }
         }
-      }
-  
-      // convert the IPTC tags into binary code
-      $data = "";
-      
-      foreach ($iptc as $tag => $value)
-      {
-        $record = substr ($tag, 0, 1);
-        $tag = substr ($tag, 2);  
-        $data .= iptc_maketag ($record, $tag, html_decode ($value, $encoding)); 
       }
   
       // remove IPTC data from file before embedding IPTC
@@ -1820,6 +1812,19 @@ function iptc_writefile ($file, $iptc, $keep_data=true)
               $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed for file: ".getobject($file);
             }
           }
+        }
+      }
+
+      // convert the IPTC tags into binary code
+      $data = "";
+      
+      if (sizeof ($iptc) > 0)
+      {
+        foreach ($iptc as $tag => $value)
+        {
+          $record = substr ($tag, 0, 1);
+          $tag = substr ($tag, 2);  
+          $data .= iptc_maketag ($record, $tag, html_decode ($value, $encoding)); 
         }
       }
   

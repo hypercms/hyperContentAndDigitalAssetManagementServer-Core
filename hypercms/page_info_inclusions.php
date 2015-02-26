@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/page_info_inclusions.inc.php");
 
 
 // input parameters
@@ -54,7 +52,7 @@ $pagename = $fileinfo['name'];
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -64,7 +62,7 @@ $pagename = $fileinfo['name'];
 
 <!-- top bar -->
 <?php
-echo showtopbar ($pagename." ".$text1[$lang], $lang, $mgmt_config['url_path_cms']."page_info.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
+echo showtopbar ($pagename." ".$hcms_lang['is-used-by'][$lang], $lang, $mgmt_config['url_path_cms']."page_info.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
 ?>
 
 <!-- content -->
@@ -74,9 +72,9 @@ $site_buffer = $site;
 
 echo "<table border=\"0\" cellspacing=\"2\" cellpadding=\"3\" width=\"99%\">
 <tr>
-  <td class=\"hcmsHeadline\" width=\"15%\" nowrap=\"nowrap\">".$text2[$lang]."</td>
-  <td class=\"hcmsHeadline\">".$text3[$lang]."</td>
-  <td class=\"hcmsHeadline\" width=\"15%\" nowrap=\"nowrap\">".$text9[$lang]."</td>
+  <td class=\"hcmsHeadline\" width=\"15%\" nowrap=\"nowrap\">".$hcms_lang['name'][$lang]."</td>
+  <td class=\"hcmsHeadline\">".$hcms_lang['location'][$lang]."</td>
+  <td class=\"hcmsHeadline\" width=\"15%\" nowrap=\"nowrap\">".$hcms_lang['publication'][$lang]."</td>
 </tr>";
 // ---------------------------- analyze links ------------------------------
 // get linked objects
@@ -159,7 +157,7 @@ elseif ($result_array == true)
 } 
 
 // if no items were found  
-if ($found == false) echo "<tr class=\"hcmsRowData1\"><td colspan=\"4\">".$text7[$lang]." ".$addtext."</td></tr>\n";
+if ($found == false) echo "<tr class=\"hcmsRowData1\"><td colspan=\"4\">".$hcms_lang['no-items-were-found'][$lang]." ".$addtext."</td></tr>\n";
 
 echo "</table>\n";
 

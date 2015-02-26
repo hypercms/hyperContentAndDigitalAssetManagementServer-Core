@@ -17,8 +17,6 @@ require ("function/hypercms_api.inc.php");
 require ("function/hypercms_ui.inc.php");
 // format definitions
 require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-// language file
-require_once ("language/page_preview.inc.php");
 
 
 // input parameters
@@ -71,6 +69,12 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   $charset = getcharset ($site, $contentdata);  
   $name = convertchars ($file_info['name'], "UTF-8", $charset['charset']);
   
+  // if the destination character set is not supported by language set it need to be HTML escaped
+  if (strtolower ($charset['charset']) != $hcms_lang_codepage[$lang])
+  {
+    $hcms_lang = html_encode ($hcms_lang, "ASCII");
+  }
+  
   // media preview
   if (is_array ($object_info) && $object_info['media'] != "")
   {
@@ -104,7 +108,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 }
 
 // set content-type if not set
-if (empty ($charset['contenttype'])) $charset['contenttype'] = $lang_codepage[$lang];
+if (empty ($charset['contenttype'])) $charset['contenttype'] = getcodepage ($lang);
 ?>
 <!DOCTYPE html>
 <html>
@@ -121,7 +125,7 @@ if (empty ($charset['contenttype'])) $charset['contenttype'] = $lang_codepage[$l
 <body class="hcmsWorkplaceGeneric">
 
 <!-- top bar -->
-<?php echo showtopbar ($text5[$lang], $lang); ?>
+<?php echo showtopbar ($hcms_lang['preview'][$lang], $lang); ?>
 
 <!-- content -->
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">

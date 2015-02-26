@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/template_edit_metainfo.inc.php");
 
 
 // input parameters
@@ -36,7 +34,7 @@ checkusersession ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/click.js" type="text/javascript"></script>
 <script language="JavaScript">
@@ -61,17 +59,17 @@ function applyconstraints ()
   
   <table border="0" cellspacing="2">
     <tr align="left" valign="top"> 
-      <td colspan="3" nowrap="nowrap" class=hcmsHeadline><?php echo $text0[$lang]; ?></td>
+      <td colspan="3" nowrap="nowrap" class=hcmsHeadline><?php echo $hcms_lang['assign-meta-information'][$lang]; ?></td>
     </tr>
     <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo $text1[$lang]; ?>:</td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['select-meta-information'][$lang]; ?>:</td>
       <td>
         <select name="metainfo">
-          <option value="pageauthor"><?php echo $text2[$lang]; ?></option>
-          <option value="pagekeywords"><?php echo $text3[$lang]; ?></option>
-          <option value="pagedescription"><?php echo $text4[$lang]; ?></option>
-          <option value="pagelanguage"><?php echo $text5[$lang]; ?></option>
-          <option value="pagecontenttype"><?php echo $text6[$lang]; ?></option>
+          <option value="pageauthor"><?php echo $hcms_lang['page-author'][$lang]; ?></option>
+          <option value="pagekeywords"><?php echo $hcms_lang['page-keywords'][$lang]; ?></option>
+          <option value="pagedescription"><?php echo $hcms_lang['page-description'][$lang]; ?></option>
+          <option value="pagelanguage"><?php echo $hcms_lang['language'][$lang]; ?></option>
+          <option value="pagecontenttype"><?php echo $hcms_lang['content-type'][$lang]; ?></option>
         </select>
       </td>
     </tr>
@@ -80,8 +78,8 @@ function applyconstraints ()
     </tr>    
     <tr align="left" valign="top">
       <td nowrap="nowrap">&nbsp;</td>
-      <td nowrap="nowrap"><input name="apply" type="button" id="apply" value="<?php echo $text7[$lang]; ?>" onClick="applyconstraints();">
-      <input name="cancel" type="button" id="cancel" value="<?php echo $text8[$lang]; ?>" onClick="self.close();"></td>
+      <td nowrap="nowrap"><input name="apply" type="button" id="apply" value="<?php echo $hcms_lang['apply'][$lang]; ?>" onClick="applyconstraints();">
+      <input name="cancel" type="button" id="cancel" value="<?php echo $hcms_lang['cancel'][$lang]; ?>" onClick="self.close();"></td>
     </tr>  
   </table>
   

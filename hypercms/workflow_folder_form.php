@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/workflow_folder_form.inc.php");
 
 
 // input parameters
@@ -48,9 +46,9 @@ if ($save == "yes" && valid_publicationname ($site) && in_array ($cat, array("pa
   
   if ($test == false)   
   {  
-    $show = "<p class=hcmsHeadline>".$text2[$lang]."</p>\n".$text3[$lang];
+    $show = "<p class=hcmsHeadline>".$hcms_lang['workflow-settings-could-not-be-saved'][$lang]."</p>\n".$hcms_lang['write-permission-is-missing'][$lang];
   }
-  else $show = $text9[$lang];
+  else $show = $hcms_lang['workflow-settings-were-saved-successfully'][$lang];
 }
 
 // create secure token
@@ -60,7 +58,7 @@ $token_new = createtoken ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -128,7 +126,7 @@ function insertOption (sent_name, sent_file)
 
         if (sent_name == folder_name)
         {
-          message = message + "<?php echo $text1[$lang]; ?> " + "\n";
+          message = message + "<?php echo $hcms_lang['the-selected-folder-exists-already'][$lang]; ?> " + "\n";
           insert = false;
         }
       }
@@ -149,7 +147,7 @@ function insertOption (sent_name, sent_file)
   }
   else 
   {
-    alert (hcms_entity_decode("<?php echo $text8[$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo $hcms_lang['no-workflow-defined'][$lang]; ?>"));
     return false;
   }
 }
@@ -199,7 +197,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
-<p class=hcmsHeadline><?php echo $text0[$lang]; ?></p>
+<p class=hcmsHeadline><?php echo $hcms_lang['apply-workflow-on-selected-folder'][$lang]; ?></p>
 
 <form name="workflow_area" action="workflow_folder_form.php" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
@@ -210,7 +208,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
     
   <table border="0" cellspacing="2" cellpadding="0">   
     <tr>
-      <td  colspan="2" nowrap="nowrap"><?php echo $text7[$lang]; ?>:</td>
+      <td  colspan="2" nowrap="nowrap"><?php echo $hcms_lang['select-workflow'][$lang]; ?>:</td>
     </tr>
     <tr> 
       <td>
@@ -242,7 +240,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
       </td>
     </tr>   
     <tr>
-      <td  colspan="2" nowrap="nowrap"><?php echo $text4[$lang]; ?>:</td>          
+      <td  colspan="2" nowrap="nowrap"><?php echo $hcms_lang['applied-workflows-on-selected-folders'][$lang]; ?>:</td>          
     </tr>     
     <tr>
       <td colspan="2">
@@ -287,7 +285,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
               </select>
             </td>
             <td align="center" valign="middle">
-              <img onClick="deleteSelected(document.forms['workflow_area'].elements['folder']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" title="<?php echo $text5[$lang]; ?>" alt="<?php echo $text5[$lang]; ?>" />
+              <img onClick="deleteSelected(document.forms['workflow_area'].elements['folder']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" title="<?php echo $hcms_lang['delete'][$lang]; ?>" alt="<?php echo $hcms_lang['delete'][$lang]; ?>" />
           </td>
           </tr>
         </table>
@@ -297,7 +295,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
       <td>&nbsp;</td>
     </tr>
     <tr>
-      <td valign="top" colspan="2" nowrap="nowrap"><?php echo $text6[$lang]; ?>:
+      <td valign="top" colspan="2" nowrap="nowrap"><?php echo $hcms_lang['save-settings'][$lang]; ?>:
         <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll('workflow_area', 'folder', 'result');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
       </td>
     </tr>

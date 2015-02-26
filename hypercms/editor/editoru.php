@@ -15,8 +15,6 @@ require ("../config.inc.php");
 require ("../function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("../function/hypercms_ui.inc.php");
-// load language file
-require_once ("../language/editoru.inc.php");
 
 
 // input parameters
@@ -70,6 +68,12 @@ if ($contenttype == "")
   $charset = $mgmt_config[$site]['default_codepage'];
 }
 elseif (strpos ($contenttype, "charset") > 0) $charset = getattribute ($contenttype, "charset");
+
+// if the destination character set is not supported by language set it need to be HTML escaped
+if (strtolower ($charset) != $hcms_lang_codepage[$lang])
+{
+  $hcms_lang = html_encode ($hcms_lang, "ASCII");
+}
 
 // define constraint
 if ($constraint != "") $add_constraint = "check = validateForm('".$tagname."_".$id."','','".$constraint."');\n";
@@ -156,12 +160,12 @@ function validateForm()
         if (test.indexOf('isEmail')!=-1) 
         { 
           p=val.indexOf('@');
-          if (p<1 || p==(val.length-1)) errors+='<?php echo $text3[$lang]; ?>.\n';
+          if (p<1 || p==(val.length-1)) errors+='<?php echo $hcms_lang['value-must-contain-an-e-mail-address'][$lang]; ?>.\n';
         } 
         else if (test!='R') 
         { 
           num = parseFloat(val);
-          if (isNaN(val)) errors+='<?php echo $text4[$lang]; ?>.\n';
+          if (isNaN(val)) errors+='<?php echo $hcms_lang['value-must-contain-a-number'][$lang]; ?>.\n';
           if (test.indexOf('inRange') != -1) 
           { 
             p=test.indexOf(':');
@@ -171,17 +175,17 @@ function validateForm()
               min=test.substring(7,p); 
             }
             max=test.substring(p+1);
-            if (num<min || max<num) errors+='<?php echo $text5[$lang]; ?> '+min+' - '+max+'.\n';
+            if (num<min || max<num) errors+='<?php echo $hcms_lang['value-must-contain-a-number-between'][$lang]; ?> '+min+' - '+max+'.\n';
           } 
         } 
       } 
-      else if (test.charAt(0) == 'R') errors += '<?php echo $text6[$lang]; ?>.\n'; 
+      else if (test.charAt(0) == 'R') errors += '<?php echo $hcms_lang['a-value-is-required'][$lang]; ?>.\n'; 
     }
   } 
   
   if (errors) 
   {
-    alert(hcms_entity_decode('<?php echo $text7[$lang]; ?>:\n'+errors));
+    alert(hcms_entity_decode('<?php echo $hcms_lang['the-input-is-not-valid'][$lang]; ?>:\n'+errors));
     return false;
   }  
   else return true;
@@ -273,11 +277,11 @@ setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>
       <table border="0" cellspacing="2">
         <tr>
           <td nowrap="nowrap">
-          <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editoru_so');" alt="<?php echo $text1[$lang]; ?>" title="<?php echo $text1[$lang]; ?>" align="absmiddle" />   
-          <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editoru_sc');" alt="<?php echo $text2[$lang]; ?>" title="<?php echo $text2[$lang]; ?>" align="absmiddle" /> 
+          <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editoru_so');" alt="<?php echo $hcms_lang['save'][$lang]; ?>" title="<?php echo $hcms_lang['save'][$lang]; ?>" align="absmiddle" />   
+          <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editoru_sc');" alt="<?php echo $hcms_lang['save-and-close'][$lang]; ?>" title="<?php echo $hcms_lang['save-and-close'][$lang]; ?>" align="absmiddle" /> 
           <?php if (intval ($mgmt_config['autosave']) > 0) { ?>
             <div class="hcmsButton" style="height:22px;">
-    		      <input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" /><label for="autosave">&nbsp;<?php echo $text8[$lang]; ?></label>
+    		      <input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" /><label for="autosave">&nbsp;<?php echo $hcms_lang['autosave'][$lang]; ?></label>
             </div>        
           <?php } ?>
           </td>
@@ -298,7 +302,7 @@ setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>
       <tr>
         <td align="center" valign="top">
           <div style="width:100%; height:100%; z-index:10; overflow:auto;">
-          <?php echo $text8[$lang]; ?>
+          <?php echo $hcms_lang['autosave'][$lang]; ?>
           </div>
         </td>
       </tr>

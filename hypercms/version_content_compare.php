@@ -17,8 +17,6 @@ require ("function/hypercms_api.inc.php");
 require ("function/hypercms_ui.inc.php");
 // load template engine
 require ("function/hypercms_tplengine.inc.php");
-// language file
-require_once ("language/version_content.inc.php");
 
 
 // input parameters
@@ -87,7 +85,7 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
       $time = str_replace ("-", ":", $time);
       $date_array[$i] = $date." ".$time;
     }
-    else $date_array[$i] = $text12[$lang];
+    else $date_array[$i] = $hcms_lang['current-version'][$lang];
     
     // load container
     $contentdata = loadcontainer ($container, "version", $user);
@@ -175,12 +173,12 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
 <body class="hcmsWorkplaceGeneric">
 
 <!-- top bar -->
-<?php echo showtopbar ($text21[$lang].": ".$location_name.$pagename, $lang); ?>
+<?php echo showtopbar ($hcms_lang['location'][$lang].": ".$location_name.$pagename, $lang); ?>
 
 <!-- content -->
 <div class="hcmsWorkplaceFrame">
 <?php
-if (is_array ($date_array)) echo "<p style=\"margin:2px; padding:2px;\">".$text19[$lang].": ".$date_array[0]." / ".$date_array[1]."</p>\n";
+if (is_array ($date_array)) echo "<p style=\"margin:2px; padding:2px;\">".$hcms_lang['comparison-of-versions'][$lang].": ".$date_array[0]." / ".$date_array[1]."</p>\n";
 
 if (is_array ($content_array))
 {  
@@ -204,7 +202,7 @@ if (is_array ($content_array))
     foreach ($result as $print) echo $print;
   }
 }
-else showmessage ($text20[$lang], 600, 70, $lang, "position:fixed; left:5px; top:100px;");
+else showmessage ($hcms_lang['error-occured-no-text-based-content-could-be-found'][$lang], 600, 70, $lang, "position:fixed; left:5px; top:100px;");
 ?>
 </div>
 

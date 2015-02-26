@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/page_info_recipients.inc.php");
 
 
 // input parameters
@@ -55,7 +53,7 @@ $pagename = $fileinfo['name'];
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -65,7 +63,7 @@ function warning_recipients_delete()
 {
   var form = document.forms['recipientform'];
   
-  check = confirm (hcms_entity_decode("<?php echo $text7[$lang]; ?>"));
+  check = confirm (hcms_entity_decode("<?php echo $hcms_lang['are-you-sure-you-want-to-delete-the-selected-entries'][$lang]; ?>"));
   if (check == true) form.submit();
   return check;
 }
@@ -77,7 +75,7 @@ function warning_recipients_delete()
 
 <!-- top bar -->
 <?php
-echo showtopbar ($pagename." ".$text0[$lang], $lang, $mgmt_config['url_path_cms']."page_info.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
+echo showtopbar ($pagename." ".$hcms_lang['was-send-to'][$lang], $lang, $mgmt_config['url_path_cms']."page_info.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
 ?>
 
 <!-- content -->
@@ -100,12 +98,12 @@ if (is_array ($delete_id) && @sizeof ($delete_id) > 0 && $setlocalpermission['de
   
   <table border="0" celspacing="2" cellpadding="1" width="99%">
     <tr>
-      <td class="hcmsHeadline" width="150" nowrap="nowrap"><?php echo $text1[$lang]; ?></td>
-      <td class="hcmsHeadline" width="160" nowrap="nowrap"><?php echo $text10[$lang]; ?></td>
-      <td class="hcmsHeadline" width="160" nowrap="nowrap"><?php echo $text2[$lang]; ?></td>
-      <td class="hcmsHeadline" nowrap="nowrap"><?php echo $text6[$lang]; ?></td>
-      <td class="hcmsHeadline" width="120" nowrap="nowrap"><?php echo $text9[$lang]; ?></td>
-      <td class="hcmsHeadline" width="100" nowrap="nowrap"><?php echo $text4[$lang]; ?></td>
+      <td class="hcmsHeadline" width="150" nowrap="nowrap"><?php echo $hcms_lang['date'][$lang]; ?></td>
+      <td class="hcmsHeadline" width="160" nowrap="nowrap"><?php echo $hcms_lang['sender'][$lang]; ?></td>
+      <td class="hcmsHeadline" width="160" nowrap="nowrap"><?php echo $hcms_lang['recipient'][$lang]; ?></td>
+      <td class="hcmsHeadline" nowrap="nowrap"><?php echo $hcms_lang['e-mail'][$lang]; ?></td>
+      <td class="hcmsHeadline" width="120" nowrap="nowrap"><?php echo $hcms_lang['picked-up-on'][$lang]; ?></td>
+      <td class="hcmsHeadline" width="100" nowrap="nowrap"><?php echo $hcms_lang['delete'][$lang]; ?></td>
     </tr>
 <?php
 // get recipients
@@ -174,7 +172,7 @@ if ($result_array != false && sizeof ($result_array) > 0)
     </tr>
     <tr>
       <td colspan=\"3\" nowrap=\"nowrap\">
-        ".$text5[$lang].":
+        ".$hcms_lang['delete-selected-recipients'][$lang].":
         <img name=\"Button\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onclick=\"warning_recipients_delete();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />
       </td>
     </tr>";  
@@ -183,7 +181,7 @@ if ($result_array != false && sizeof ($result_array) > 0)
 else
 {
   echo "<tr class=\"hcmsRowData1\">
-        <td colspan=\"6\">".$text8[$lang]."</td>
+        <td colspan=\"6\">".$hcms_lang['no-users-were-found'][$lang]."</td>
       </tr>\n";
 }
 ?>

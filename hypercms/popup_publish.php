@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/popup_publish.inc.php");
 
 
 // input parameters
@@ -63,7 +61,7 @@ $message = "";
 // show info if access is not allowed
 if (!$access_allowed)
 {
-  echo showinfopage ($text9[$lang], $lang);
+  echo showinfopage ($hcms_lang['you-do-not-have-access-permissions-to-this-object'][$lang], $lang);
   exit;
 }
 
@@ -105,10 +103,10 @@ if ($action != "" && valid_publicationname ($site) && $cat != "" && valid_locati
         }
       }
       
-      if ($result == false) $message = $text4[$lang];
+      if ($result == false) $message = $hcms_lang['the-publishing-queue-could-not-be-saved'][$lang];
       else $message = "<script language=\"JavaScript\" type=\"text/javascript\"> window.close(); </script>";
     }
-    else $message = $text5[$lang];
+    else $message = $hcms_lang['no-objects-to-publish'][$lang];
   }
 }
 ?>
@@ -117,7 +115,7 @@ if ($action != "" && valid_publicationname ($site) && $cat != "" && valid_locati
 <head>
 <title>hyperCMS</title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;">
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 
@@ -141,7 +139,7 @@ function show_cal (el)
 	cal_obj = new RichCalendar();
 	cal_obj.start_week_day = 1;
 	cal_obj.show_time = true;
-	cal_obj.language = '<?php echo $lang; ?>';
+	cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
 	cal_obj.user_onchange_handler = cal_on_change;
 	cal_obj.user_onautoclose_handler = cal_on_autoclose;
 	cal_obj.parse_date(text_field.value, format);
@@ -177,7 +175,7 @@ function submitform ()
   {
     if (document.forms['publish'].elements['publishdate'].value == "")
     {
-      alert(hcms_entity_decode("<?php echo $text6[$lang]; ?>"));
+      alert(hcms_entity_decode("<?php echo $hcms_lang['please-set-a-date-for-publishing'][$lang]; ?>"));
     }
     else
     {
@@ -194,8 +192,8 @@ function submitform ()
 
 <!-- top bar -->
 <?php
-if ($action == "publish") echo $headline = $text0[$lang];
-elseif ($action == "unpublish") echo $headline = $text8[$lang];
+if ($action == "publish") echo $headline = $hcms_lang['publish-content'][$lang];
+elseif ($action == "unpublish") echo $headline = $hcms_lang['unpublish-content'][$lang];
 
 echo showtopbar ($headline, $lang);
 ?>
@@ -216,21 +214,21 @@ echo showtopbar ($headline, $lang);
   <table width="100%" border=0 cellpadding="3" cellspacing="0">
     <tr> 
       <td align="left">
-        <input name="publish" type="radio" value="now" checked="checked" /> <?php echo $text1[$lang]; ?>
+        <input name="publish" type="radio" value="now" checked="checked" /> <?php echo $hcms_lang['now'][$lang]; ?>
 	    </td>
     </tr>
     <tr> 
       <td align="left">		
-        <input name="publish" type="radio" value="later" /> <?php echo $text2[$lang]; ?> 
+        <input name="publish" type="radio" value="later" /> <?php echo $hcms_lang['on-date'][$lang]; ?> 
         <input type="hidden" name="publishdate" id="publishdate" value="<?php echo $publishdate; ?>" />
         <input type="text" id="text_field" value="<?php echo $publishdate; ?>" disabled="disabled" />
-        <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo $text7[$lang]; ?>" title="<?php echo $text7[$lang]; ?>" />
+        <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['select-date'][$lang]; ?>" title="<?php echo $hcms_lang['select-date'][$lang]; ?>" />
 	    </td>
     </tr>
     <?php if ($action == "publish") { ?>
     <tr> 
       <td align="left">
-        <input type="checkbox" name="published_only" value="1" /> <?php echo $text3[$lang]; ?>
+        <input type="checkbox" name="published_only" value="1" /> <?php echo $hcms_lang['only-already-published-content'][$lang]; ?>
 	    </td>
     </tr>
     <?php } ?>

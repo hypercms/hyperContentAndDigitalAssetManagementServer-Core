@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/component_edit_page_single.inc.php");
 
 
 // input parameters
@@ -80,7 +78,7 @@ if ($label == "") $label = $id;
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -135,10 +133,10 @@ function openBrWindowComp(winName,features, type)
         popup.moveTo(screen.width/2-800/2, screen.height/2-600/2);
         popup.focus();
       }
-      else alert(hcms_entity_decode('<?php echo $text4[$lang]; ?>'));
+      else alert(hcms_entity_decode('<?php echo $hcms_lang['this-is-an-external-component-link'][$lang]; ?>'));
     }
   }
-  else alert(hcms_entity_decode('<?php echo $text2[$lang]; ?>'));  
+  else alert(hcms_entity_decode('<?php echo $hcms_lang['no-component-selected'][$lang]; ?>'));  
 }
 
 function deleteEntry(select)
@@ -179,14 +177,14 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <table border="0" cellspacing="2" cellpadding="0">
     <tr>
-      <td nowrap="nowrap" colspan="2" class="hcmsHeadlineTiny"><?php echo $text0[$lang]; ?></td>
+      <td nowrap="nowrap" colspan="2" class="hcmsHeadlineTiny"><?php echo $hcms_lang['single-component'][$lang]; ?></td>
     </tr>   
     <tr>
-      <td nowrap="nowrap"><?php echo $text1[$lang]; ?>:</td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['selected-component'][$lang]; ?>:</td>
       <td>
         <input type="text" name="comp_name" style="width:265px;" value="<?php echo $component_name; ?>" disabled="disabled" />
-        <img onClick="openBrWindowComp('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" align="absmiddle" alt="<?php echo $text9[$lang]; ?>" title="<?php echo $text9[$lang]; ?>" />                          
-        <img onClick="deleteEntry(document.forms['component']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" align="absmiddle" alt="<?php echo $text6[$lang]; ?>" title="<?php echo $text6[$lang]; ?>" />
+        <img onClick="openBrWindowComp('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" align="absmiddle" alt="<?php echo $hcms_lang['select'][$lang]; ?>" title="<?php echo $hcms_lang['select'][$lang]; ?>" />                          
+        <img onClick="deleteEntry(document.forms['component']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" align="absmiddle" alt="<?php echo $hcms_lang['delete'][$lang]; ?>" title="<?php echo $hcms_lang['delete'][$lang]; ?>" />
         <img onclick="submitSingleComp(document.forms['component']);" name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1);" align="absmiddle" alt="OK" title="OK" />    
       </td>
     </tr>
@@ -194,13 +192,13 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
       <td nowrap="nowrap" colspan="2">&nbsp;</td>
     </tr>
     <tr>
-      <td nowrap="nowrap" class="hcmsHeadlineTiny" colspan="2"><?php echo $text7[$lang]; ?></td>
+      <td nowrap="nowrap" class="hcmsHeadlineTiny" colspan="2"><?php echo $hcms_lang['condition-for-personalization'][$lang]; ?></td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $text8[$lang]; ?>:</td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['customer-profile'][$lang]; ?>:</td>
       <td>
         <select name="condition" style="width:265px;">
-          <option value="">--- <?php echo $text9[$lang]; ?> ---</option>
+          <option value="">--- <?php echo $hcms_lang['select'][$lang]; ?> ---</option>
           <?php
           $dir_item = @dir ($mgmt_config['abs_path_data']."customer/".$site."/");
 

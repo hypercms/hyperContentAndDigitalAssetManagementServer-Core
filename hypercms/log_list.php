@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/log_list.inc.php");
 
 
 // ------------------------------ permission section --------------------------------
@@ -36,7 +34,7 @@ $logfile = "event.log";
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
@@ -48,20 +46,20 @@ $logfile = "event.log";
   <table cellpadding="0" cellspacing="0" cols="5" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
       <td width="120" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $text0[$lang]; ?>
+        &nbsp; <?php echo $hcms_lang['type'][$lang]; ?>
       </td>
       <td width="120" onClick="hcms_sortTable(1);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $text1[$lang]; ?>
+        &nbsp; <?php echo $hcms_lang['datetime'][$lang]; ?>
       </td>
       <?php if (!$is_mobile) { ?>
       <td width="140" onClick="hcms_sortTable(2);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $text2[$lang]; ?>
+        &nbsp; <?php echo $hcms_lang['source'][$lang]; ?>
       </td>
       <td width="80" onClick="hcms_sortTable(3);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $text3[$lang]; ?>
+        &nbsp; <?php echo $hcms_lang['code'][$lang]; ?>
       </td>    
       <td onClick="hcms_sortTable(4);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $text4[$lang]; ?>
+        &nbsp; <?php echo $hcms_lang['description'][$lang]; ?>
       </td>
       <td width="16" class="hcmsTableHeader">
         &nbsp;
@@ -99,17 +97,17 @@ if (@file_exists ($mgmt_config['abs_path_data']."log/".$logfile))
       // define event type name
       if ($type == "error")
       {
-        $type_name = $text5[$lang];
+        $type_name = $hcms_lang['error'][$lang];
         $icon = "log_alert.gif";
       }
       elseif ($type == "warning")
       {
-        $type_name = $text6[$lang];
+        $type_name = $hcms_lang['warning'][$lang];
         $icon = "log_warning.gif";
       }
       elseif ($type == "information")
       {
-        $type_name = $text7[$lang];
+        $type_name = $hcms_lang['information'][$lang];
         $icon = "log_info.gif";
       }
 

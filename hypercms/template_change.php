@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/template_change.inc.php");
 
 
 // input parameters
@@ -115,7 +113,7 @@ $token_new = createtoken ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -135,11 +133,11 @@ $token_new = createtoken ($user);
     
     <table border="0" cellspacing="2" cellpadding="0">
       <tr>
-        <td nowrap="nowrap"><?php echo $text0[$lang]; ?>:</td>
+        <td nowrap="nowrap"><?php echo $hcms_lang['template-in-use'][$lang]; ?>:</td>
         <td nowrap="nowrap" class="hcmsHeadlineTiny"><?php echo $tpl_name; ?></td>
       </tr>
       <tr>
-        <td nowrap="nowrap"><?php echo $text1[$lang]; ?>:</td>
+        <td nowrap="nowrap"><?php echo $hcms_lang['change-template'][$lang]; ?>:</td>
         <td>
           <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame2\']',this,0)">
             <?php

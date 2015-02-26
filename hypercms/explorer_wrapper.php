@@ -17,8 +17,6 @@ require ("function/hypercms_api.inc.php");
 require ("function/hypercms_ui.inc.php");
 // format file extensions
 require ("include/format_ext.inc.php");  
-// language file
-require_once ("language/page_view.inc.php");
 
 
 // input parameters
@@ -75,7 +73,7 @@ elseif ($hcms_id_token != "")
   else
   {
     header ('HTTP/1.0 403 Forbidden', true, 403);
-    echo showinfopage ($text8[$lang], $lang);
+    echo showinfopage ($hcms_lang['the-provided-link-is-expired'][$lang], $lang);
     exit;
   }
 }
@@ -97,7 +95,7 @@ elseif ($hcms_objid != "" && substr ($hcms_token, 0, 1) == "_")
     else
     {
       header ('HTTP/1.0 403 Forbidden', true, 403);
-      echo showinfopage ($text8[$lang], $lang);
+      echo showinfopage ($hcms_lang['the-provided-link-is-expired'][$lang], $lang);
       exit;
     }
   }
@@ -193,7 +191,7 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
   if ($user == "" && !allowuserip ($site))
   {
     header ('HTTP/1.0 403 Forbidden', true, 403);
-    echo showinfopage ($text14[$lang], $lang);
+    echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
     exit;
   }
 
@@ -272,7 +270,7 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
     if (is_array ($media_info) && substr_count ($hcms_ext['cms'].".", $media_info['ext'].".") > 0)
     {
       header ('HTTP/1.0 403 Forbidden', true, 403);
-      echo showinfopage ($text11[$lang]."<br />".$text12[$lang], $lang);
+      echo showinfopage ($hcms_lang['the-live-view-of-the-file-is-not-allowed'][$lang]."<br />".$hcms_lang['please-download-the-file-in-order-to-view-its-content'][$lang], $lang);
       exit;
     }
   
@@ -315,6 +313,6 @@ elseif ($objectpath_esc != "" && is_file ($location.$object))
 else
 {
   header ("HTTP/1.1 400 Invalid Request", true, 400);
-  //echo showinfopage ($text14[$lang], $lang);
+  //echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
 }
 ?>

@@ -17,8 +17,6 @@ require ("function/hypercms_api.inc.php");
 require ("function/hypercms_ui.inc.php");
 // template engine
 require ("function/hypercms_tplengine.inc.php");
-// language file
-require_once ("language/template_view.inc.php");
 
 
 // input parameters
@@ -68,14 +66,14 @@ if ($templatedata == false || $templatedata == "")
   echo "<html>\n";
   echo "<head>\n";
   echo "<title>hyperCMS</title>\n";
-  echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".$lang_codepage[$lang]."\">\n";
+  echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
   echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
   echo "<script src=\"javascript/click.js\" type=\"text/javascript\">\n";
   echo "</script>\n";
   echo "</head>\n";
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-  echo "<p class=hcmsHeadline>".$text0[$lang]."</p>\n";
-  echo $text1[$lang]."\n";
+  echo "<p class=hcmsHeadline>".$hcms_lang['could-not-create-view-of-template'][$lang]."</p>\n";
+  echo $hcms_lang['the-template-holds-no-information'][$lang]."\n";
   echo "</body>\n</html>";
 }
 // check if an error occured during inclusions
@@ -85,14 +83,14 @@ elseif ($viewstore == false)
   echo "<html>\n";
   echo "<head>\n";
   echo "<title>hyperCMS</title>\n";
-  echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".$lang_codepage[$lang]."\">\n";
+  echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
   echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
   echo "<script src=\"javascript/click.js\" type=\"text/javascript\">\n";
   echo "</script>\n";
   echo "</head>\n";
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-  echo "<p class=hcmsHeadline>".$text0[$lang]."</p>\n";
-  echo $text2[$lang]."\n";
+  echo "<p class=hcmsHeadline>".$hcms_lang['could-not-create-view-of-template'][$lang]."</p>\n";
+  echo $hcms_lang['an-error-occured-during-inclusion-of-a-template-component'][$lang]."\n";
   echo "</body>\n</html>";
 }
 else echo $viewstore;

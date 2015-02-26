@@ -17,8 +17,6 @@ require ("function/hypercms_api.inc.php");
 require ("function/hypercms_ui.inc.php");
 // template engine
 require ("function/hypercms_tplengine.inc.php");
-// language file
-require_once ("language/page_view.inc.php");
 
 
 // input parameters
@@ -140,13 +138,13 @@ if (@substr_count ($follow, "://") > 0 || @substr_count (strtolower ($follow), "
   echo "<html>\n";
   echo "<head>\n";
   echo "<title>hyperCMS</title>\n";
-  echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".$lang_codepage[$lang]."\">\n";
+  echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
   echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
   echo "<script src=\"javascript/click.js\" type=\"text/javascript\">\n";
   echo "</script>\n";
   echo "</head>\n";
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-  echo "<span class=hcmsHeadline>".$text13[$lang].":</span>".$follow."<br \>\n";
+  echo "<span class=hcmsHeadline>".$hcms_lang['you-will-be-forwarded-to'][$lang].":</span>".$follow."<br \>\n";
   echo $add_code;
   echo "</body>\n</html>";
   exit;
@@ -177,14 +175,14 @@ else
         echo "<html>\n";
         echo "<head>\n";
         echo "<title>hyperCMS</title>\n";
-        echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".$lang_codepage[$lang]."\">\n";
+        echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
         echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
         echo "<script src=\"javascript/click.js\" type=\"text/javascript\">\n";
         echo "</script>\n";
         echo "</head>\n";
         echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
-        echo "<p class=hcmsHeadline>".$text1[$lang]."</p>\n";
-        echo $text2[$lang].": '".$templatefile."'\n";
+        echo "<p class=hcmsHeadline>".$hcms_lang['could-not-create-view-due-to-empty-template-'][$lang]."</p>\n";
+        echo $hcms_lang['the-template-holds-no-information'][$lang].": '".$templatefile."'\n";
         echo "</body>\n</html>";
         exit;
       }
@@ -196,15 +194,15 @@ else
         echo "<html>\n";
         echo "<head>\n";
         echo "<title>hyperCMS</title>\n";
-        echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".$lang_codepage[$lang]."\">\n";
+        echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
         echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
         echo "<script src=\"javascript/click.js\" type=\"text/javascript\">\n";
         echo "</script>\n";
         echo "</head>\n";    
         echo "</head>\n";
         echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
-        echo "<p class=hcmsHeadline>".$text3[$lang]."</p>\n";
-        echo $text4[$lang].": '".$contentfile."'\n";
+        echo "<p class=hcmsHeadline>".$hcms_lang['could-not-create-view-due-to-empty-content-container'][$lang]."</p>\n";
+        echo $hcms_lang['the-content-container-holds-no-information'][$lang].": '".$contentfile."'\n";
         echo "</body>\n</html>";
         exit;
       }
@@ -216,12 +214,12 @@ else
         echo "<html>\n";
         echo "<head>\n";
         echo "<title>hyperCMS</title>\n";
-        echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".$lang_codepage[$lang]."\">\n";
+        echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
         echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
         echo "</head>\n";
         echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
-        echo "<p class=hcmsHeadline>".$text5[$lang]."</p>\n";
-        echo $text6[$lang]."\n";
+        echo "<p class=hcmsHeadline>".$hcms_lang['could-not-create-view-of-the-object'][$lang]."</p>\n";
+        echo $hcms_lang['an-error-occured-while-creating-the-view'][$lang]."\n";
         echo "</body>\n";
         echo "</html>";
         exit;
@@ -252,11 +250,11 @@ else
       echo "<html>\n";
       echo "<head>\n";
       echo "<title>hyperCMS</title>\n";
-      echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".$lang_codepage[$lang]."\">\n";
+      echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
       echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n"; 
       echo "</head>\n";
       echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
-      echo "<p class=hcmsHeadline>".$text7[$lang]."</p><br /><br />\n";
+      echo "<p class=hcmsHeadline>".$hcms_lang['this-object-is-not-managed-by-hypercms-or-you-dont-have-access-to-it'][$lang]."</p><br /><br />\n";
       echo "</body>\n";
       echo "</html>\n";
       exit;    
@@ -268,11 +266,11 @@ else
     echo "<html>\n";
     echo "<head>\n";
     echo "<title>hyperCMS</title>\n";
-    echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".$lang_codepage[$lang]."\">\n";
+    echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\" style=\"padding:3px;\">\n";
-    echo "<p class=hcmsHeadline>".$text10[$lang]."</p>\n";
+    echo "<p class=hcmsHeadline>".$hcms_lang['the-object-does-not-exist'][$lang]."</p>\n";
     echo "</body>\n";
     echo "</html>";
     exit;

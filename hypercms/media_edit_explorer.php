@@ -17,8 +17,6 @@ require ("function/hypercms_api.inc.php");
 require ("function/hypercms_ui.inc.php");
 // load formats/file extensions
 require_once ("include/format_ext.inc.php");
-// language file
-require_once ("language/media_edit_explorer.inc.php");
 
 
 // input parameters
@@ -68,7 +66,7 @@ if (trim ($mediacat_data) != "")
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -100,7 +98,7 @@ function goToURL()
 <table border="0" cellspacing="0" cellpadding="2" width="100%">
   <tr align="left">
     <td class=hcmsHeadline>
-      <?php echo $text0[$lang]; ?>
+      <?php echo $hcms_lang['select-media-files'][$lang]; ?>
       <form name="imagesearch" method="post" action="">
         <input type="hidden" name="site" value="<?php echo $site; ?>" />
         <input type="hidden" name="mediacat" value="<?php echo $mediacat; ?>" />
@@ -109,12 +107,12 @@ function goToURL()
       
         <table border="0" cellspacing="2" cellpadding="0">
           <tr>
-            <td class="hcmsTextSmall"><?php echo $text1[$lang]; ?>:</td>
+            <td class="hcmsTextSmall"><?php echo $hcms_lang['select-media-category'][$lang]; ?>:</td>
           </tr>
           <tr>
             <td>
             <select name="mediacat_name" style="width:200px;">
-              <option value=""><?php echo $text2[$lang]; ?></option>
+              <option value=""><?php echo $hcms_lang['all-categories'][$lang]; ?></option>
               <?php
               if (is_array ($mediacat_array) && sizeof ($mediacat_array) > 0)
               {
@@ -129,23 +127,23 @@ function goToURL()
             </td>
           </tr>
           <tr>
-            <td class="hcmsTextSmall"><?php echo $text3[$lang]; ?>:</td>
+            <td class="hcmsTextSmall"><?php echo $hcms_lang['select-file-format'][$lang]; ?>:</td>
           </tr>
           <tr>
             <td>
             <select name="mediaformat" style="width:200px;">
-              <option value=""><?php echo $text4[$lang]; ?></option>
-              <option value="audio" <?php if ($mediatype == "audio") echo "selected=\"selected\""; ?>><?php echo $text5[$lang]; ?></option>
-              <option value="compressed" <?php if ($mediatype == "compressed") echo "selected=\"selected\""; ?>><?php echo $text6[$lang]; ?></option>
-              <option value="flash" <?php if ($mediatype == "flash") echo "selected=\"selected\""; ?>><?php echo $text7[$lang]; ?></option>
-              <option value="image" <?php if ($mediatype == "image") echo "selected=\"selected\""; ?>><?php echo $text8[$lang]; ?></option>
-              <option value="text" <?php if ($mediatype == "text") echo "selected=\"selected\""; ?>><?php echo $text9[$lang]; ?></option>
-              <option value="video" <?php if ($mediatype == "video") echo "selected=\"selected\""; ?>><?php echo $text10[$lang]; ?></option>
+              <option value=""><?php echo $hcms_lang['all-formats'][$lang]; ?></option>
+              <option value="audio" <?php if ($mediatype == "audio") echo "selected=\"selected\""; ?>><?php echo $hcms_lang['audio'][$lang]; ?></option>
+              <option value="compressed" <?php if ($mediatype == "compressed") echo "selected=\"selected\""; ?>><?php echo $hcms_lang['compressed'][$lang]; ?></option>
+              <option value="flash" <?php if ($mediatype == "flash") echo "selected=\"selected\""; ?>><?php echo $hcms_lang['flash'][$lang]; ?></option>
+              <option value="image" <?php if ($mediatype == "image") echo "selected=\"selected\""; ?>><?php echo $hcms_lang['media'][$lang]; ?></option>
+              <option value="text" <?php if ($mediatype == "text") echo "selected=\"selected\""; ?>><?php echo $hcms_lang['text'][$lang]; ?></option>
+              <option value="video" <?php if ($mediatype == "video") echo "selected=\"selected\""; ?>><?php echo $hcms_lang['video'][$lang]; ?></option>
             </select>
             </td>
           </tr>
           <tr>
-            <td class="hcmsTextSmall"><?php echo $text11[$lang]; ?>:</td>
+            <td class="hcmsTextSmall"><?php echo $hcms_lang['search'][$lang]; ?>:</td>
           </tr>
           <tr>
             <td>
@@ -220,7 +218,7 @@ if ($sender == "search")
     elseif ($mediaformat == "compressed") $format_ext = strtolower ($hcms_ext['compressed']);
   }
 
-  echo "<span class=\"hcmsHeadlineTiny\">".$text12[$lang]."</span><br />\n";
+  echo "<span class=\"hcmsHeadlineTiny\">".$hcms_lang['found-media-files'][$lang]."</span><br />\n";
 
   // files in actual directory
   if (isset ($files) && $files != false && $files != "")
@@ -255,7 +253,7 @@ if ($sender == "search")
 
   if ($c == 0)
   {
-    echo "<b>".$text13[$lang]."</b><br />\n";
+    echo "<b>".$hcms_lang['no-results-available'][$lang]."</b><br />\n";
   }
 }
 ?>

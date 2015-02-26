@@ -15,8 +15,6 @@ require ("../config.inc.php");
 require ("../function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("../function/hypercms_ui.inc.php");
-// load language file
-require_once ("../language/editorl.inc.php");
 
 
 // input parameters
@@ -66,6 +64,12 @@ if ($contenttype == "")
   $charset = $mgmt_config[$site]['default_codepage'];
 }
 elseif (strpos ($contenttype, "charset") > 0) $charset = getattribute ($contenttype, "charset");
+
+// if the destination character set is not supported by language set it need to be HTML escaped
+if (strtolower ($charset) != $hcms_lang_codepage[$lang])
+{
+  $hcms_lang = html_encode ($hcms_lang, "ASCII");
+}
 
 // create secure token
 $token = createtoken ($user);
@@ -151,8 +155,8 @@ $list_array = explode ("|", $list);
     <table border="0" cellspacing="2">
       <tr>
         <td>
-        <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorl_so');" alt="<?php echo $text1[$lang]; ?>" title="<?php echo $text1[$lang]; ?>" />    
-        <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorl_sc');" alt="<?php echo $text2[$lang]; ?>" title="<?php echo $text2[$lang]; ?>" />
+        <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorl_so');" alt="<?php echo $hcms_lang['save'][$lang]; ?>" title="<?php echo $hcms_lang['save'][$lang]; ?>" />    
+        <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorl_sc');" alt="<?php echo $hcms_lang['save-and-close'][$lang]; ?>" title="<?php echo $hcms_lang['save-and-close'][$lang]; ?>" />
         <br />
         <select name="<?php echo $tagname."[".$id."]"; ?>">
         <?php

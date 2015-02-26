@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // disk key
 require ("include/diskkey.inc.php");
-// language file
-require_once ("language/explorer.inc.php");
 
 // plugin file
 if (file_exists ($mgmt_config['abs_path_data']."config/plugin.conf.php"))
@@ -490,13 +488,13 @@ else
 
   // create main Menu points
   // ----------------------------------------- logout ---------------------------------------------- 
-  $point = new hcms_menupoint ($text0[$lang], '#', 'logout.gif');
+  $point = new hcms_menupoint ($hcms_lang['logout'][$lang], '#', 'logout.gif');
   $point->setOnClick('javascript:top.location.href="userlogout.php"');
   $point->setOnMouseOver('hcms_resetContext();');
   $maintree .= $point->generateHTML();
 
   // ----------------------------------------- home ---------------------------------------------- 
-  $point = new hcms_menupoint ($text42[$lang], 'home.php', 'home.gif');
+  $point = new hcms_menupoint ($hcms_lang['home'][$lang], 'home.php', 'home.gif');
   $point->setOnClick('changeSelection(this)');
   $point->setTarget('workplFrame');
   $point->setOnMouseOver('hcms_resetContext();');
@@ -505,7 +503,7 @@ else
   // ----------------------------------------- chat ---------------------------------------------- 
   if (!$is_mobile && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true)
   {
-    $point = new hcms_menupoint ($text43[$lang], '#', 'chat.gif');
+    $point = new hcms_menupoint ($hcms_lang['chat'][$lang], '#', 'chat.gif');
     $point->setOnClick('changeSelection(this); hcms_openChat();');
     $point->setOnMouseOver('hcms_resetContext();');
     $maintree .= $point->generateHTML();
@@ -514,13 +512,13 @@ else
   // ----------------------------------------- desktop ---------------------------------------------- 
   if (!isset ($hcms_linking['location']) && checkrootpermission ('desktop'))
   {
-    $point = new hcms_menupoint($text27[$lang], '#desktop', 'desk.gif', 'desktop');
+    $point = new hcms_menupoint($hcms_lang['desktop'][$lang], '#desktop', 'desk.gif', 'desktop');
     $point->setOnClick('hcms_jstree_toggle_preventDefault("desktop", event);');
     $point->setOnMouseOver('hcms_resetContext();');
     
     if (checkrootpermission ('desktopsetting')) 
     {
-      $subpoint = new hcms_menupoint($text1[$lang], "user_edit.php?site=*Null*&login=".$user."&login_cat=home", 'userhome.gif');
+      $subpoint = new hcms_menupoint($hcms_lang['personal-settings'][$lang], "user_edit.php?site=*Null*&login=".$user."&login_cat=home", 'userhome.gif');
       $subpoint->setOnClick('changeSelection(this)');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -529,7 +527,7 @@ else
     
     if (checkrootpermission ('desktoptaskmgmt'))
     {
-      $subpoint = new hcms_menupoint($text2[$lang], "task_list.php?site=*Null*", 'task.gif');
+      $subpoint = new hcms_menupoint($hcms_lang['task-management'][$lang], "task_list.php?site=*Null*", 'task.gif');
       $subpoint->setOnClick('changeSelection(this)');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -538,7 +536,7 @@ else
     
     if (checkrootpermission ('desktopcheckedout'))
     {
-      $subpoint = new hcms_menupoint($text13[$lang], "frameset_objectlist.php?virtual=1&action=checkedout", 'file_locked.gif');
+      $subpoint = new hcms_menupoint($hcms_lang['checked-out-items'][$lang], "frameset_objectlist.php?virtual=1&action=checkedout", 'file_locked.gif');
       $subpoint->setOnClick('changeSelection(this)');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -547,7 +545,7 @@ else
     
     if ($mgmt_config['db_connect_rdbms'])
     {
-      $subpoint = new hcms_menupoint($text33[$lang], "frameset_queue.php?queueuser=".$user, 'queue.gif');
+      $subpoint = new hcms_menupoint($hcms_lang['publishing-queue'][$lang], "frameset_queue.php?queueuser=".$user, 'queue.gif');
       $subpoint->setOnClick('changeSelection(this)');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -556,7 +554,7 @@ else
     
     if (checkrootpermission ('desktoptimetravel'))
     {
-      $subpoint = new hcms_menupoint($text31[$lang], "history.php", 'history.gif');
+      $subpoint = new hcms_menupoint($hcms_lang['travel-through-time'][$lang], "history.php", 'history.gif');
       $subpoint->setOnClick('changeSelection(this)');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -620,13 +618,13 @@ else
       
         if ((checkrootpermission ('site') || checkrootpermission ('user')) && strtolower ($diskkey) == "server")
         {
-          $point = new hcms_menupoint($text3[$lang], '#main', 'admin.gif', 'main');
+          $point = new hcms_menupoint($hcms_lang['administration'][$lang], '#main', 'admin.gif', 'main');
           $point->setOnClick('hcms_jstree_toggle_preventDefault("main", event);');
           $point->setOnMouseOver('hcms_resetContext();');
           
           if ($mgmt_config['instances'] && checkadminpermission () && checkrootpermission ('site') && is_file ($mgmt_config['abs_path_cms']."connector/instance/frameset_instance.php"))
           {
-            $subpoint = new hcms_menupoint($text41[$lang], "connector/instance/frameset_instance.php?site=*Null*", 'instance.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['instance-management'][$lang], "connector/instance/frameset_instance.php?site=*Null*", 'instance.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -635,7 +633,7 @@ else
           
           if (checkrootpermission ('site'))
           {
-            $subpoint = new hcms_menupoint($text4[$lang], "frameset_site.php?site=*Null*", 'site.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['publication-management'][$lang], "frameset_site.php?site=*Null*", 'site.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -644,7 +642,7 @@ else
           
           if (checkrootpermission ('user'))
           {
-            $subpoint = new hcms_menupoint($text5[$lang], "frameset_user.php?site=*Null*", 'user.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['user-management'][$lang], "frameset_user.php?site=*Null*", 'user.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -653,7 +651,7 @@ else
           
           if (checkrootpermission ('site'))
           {
-            $subpoint = new hcms_menupoint($text14[$lang], "frameset_log.php?site=*Null*", 'event.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php?site=*Null*", 'event.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -662,7 +660,7 @@ else
           
           if (checkrootpermission ('site'))
           {
-            $subpoint = new hcms_menupoint($text33[$lang], "frameset_queue.php", 'queue.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['publishing-queue'][$lang], "frameset_queue.php", 'queue.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -671,7 +669,7 @@ else
           
           if ($site != "hcms_empty" && checkrootpermission ('site') && is_file ($mgmt_config['abs_path_cms']."connector/imexport/frameset_imexport.php"))
           {
-            $subpoint = new hcms_menupoint($text39[$lang], "connector/imexport/frameset_imexport.php?site=*Null*", 'imexport.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['importexport'][$lang], "connector/imexport/frameset_imexport.php?site=*Null*", 'imexport.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -680,7 +678,7 @@ else
           
           if (checkrootpermission ('site'))
           {
-            $subpoint = new hcms_menupoint($text36[$lang], "plugin_management.php", 'plugin.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['plugins'][$lang], "plugin_management.php", 'plugin.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -701,13 +699,13 @@ else
         // -------------------------------------------- administration ------------------------------------------------
         if (!isset ($hcms_linking['location']) && (checkglobalpermission ($site, 'user') || checkglobalpermission ($site, 'group')))
         {
-          $point = new hcms_menupoint($text3[$lang], '#admin_'.$site, 'admin.gif', 'admin_'.$site);
+          $point = new hcms_menupoint($hcms_lang['administration'][$lang], '#admin_'.$site, 'admin.gif', 'admin_'.$site);
           $point->setOnMouseOver('hcms_resetContext();');
           $point->setOnClick('hcms_jstree_toggle_preventDefault("admin_'.$site.'", event);');
             
           if (checkglobalpermission ($site, 'user'))
           {
-            $subpoint = new hcms_menupoint($text5[$lang], "frameset_user.php?site=".url_encode($site), 'user.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['user-management'][$lang], "frameset_user.php?site=".url_encode($site), 'user.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -716,7 +714,7 @@ else
           
           if (checkglobalpermission ($site, 'group'))
           {
-            $subpoint = new hcms_menupoint($text6[$lang], "frameset_group.php?site=".url_encode($site), 'usergroup.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['group-management'][$lang], "frameset_group.php?site=".url_encode($site), 'usergroup.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -725,7 +723,7 @@ else
           
           if (strtolower($diskkey) != "server")
           {
-            $subpoint = new hcms_menupoint($text14[$lang], "frameset_log.php?site=".url_encode($site), 'event.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php?site=".url_encode($site), 'event.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -738,12 +736,12 @@ else
         // ------------------------------------------ personalization -------------------------------------------------
         if (!isset ($hcms_linking['location']) && checkglobalpermission ($site, 'pers') && $mgmt_config[$site]['dam'] == false)
         {
-          $point = new hcms_menupoint($text7[$lang], '#pers_'.$site, 'pers_registration.gif', 'pers_'.$site);
+          $point = new hcms_menupoint($hcms_lang['personalization'][$lang], '#pers_'.$site, 'pers_registration.gif', 'pers_'.$site);
           $point->setOnClick('hcms_jstree_toggle_preventDefault("pers_'.$site.'", event);');
             
           if (checkglobalpermission ($site, 'perstrack'))
           {
-            $subpoint = new hcms_menupoint($text8[$lang], "frameset_pers.php?site=".url_encode($site)."&cat=tracking", 'pers_registration.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['customer-tracking'][$lang], "frameset_pers.php?site=".url_encode($site)."&cat=tracking", 'pers_registration.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -752,7 +750,7 @@ else
           
           if (checkglobalpermission ($site, 'persprof'))
           {
-            $subpoint = new hcms_menupoint($text9[$lang], "frameset_pers.php?site=".url_encode($site)."&cat=profile", 'pers_profile.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['customer-profiles'][$lang], "frameset_pers.php?site=".url_encode($site)."&cat=profile", 'pers_profile.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -765,12 +763,12 @@ else
         // --------------------------------------------- workflow -----------------------------------------------------
         if (!$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'workflow'))
         {
-          $point = new hcms_menupoint($text10[$lang], '#wrkflw_'.$site, 'workflow.gif', 'wrkflw_'.$site);
+          $point = new hcms_menupoint($hcms_lang['workflow'][$lang], '#wrkflw_'.$site, 'workflow.gif', 'wrkflw_'.$site);
           $point->setOnClick('hcms_jstree_toggle_preventDefault("wrkflw_'.$site.'", event);');
             
           if (checkglobalpermission ($site, 'workflowproc'))
           {
-            $subpoint = new hcms_menupoint($text11[$lang], "frameset_workflow.php?site=".url_encode($site)."&cat=man", 'workflow.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['workflow-management'][$lang], "frameset_workflow.php?site=".url_encode($site)."&cat=man", 'workflow.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -779,7 +777,7 @@ else
           
           if (checkglobalpermission ($site, 'workflowscript'))
           {
-            $subpoint = new hcms_menupoint($text12[$lang], "frameset_workflow.php?site=".url_encode($site)."&cat=script", 'workflowscript.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['workflow-scripts'][$lang], "frameset_workflow.php?site=".url_encode($site)."&cat=script", 'workflowscript.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -792,13 +790,13 @@ else
         // --------------------------------------------- template ---------------------------------------------------
         if (!isset ($hcms_linking['location']) && checkglobalpermission ($site, 'template'))
         {
-          $point = new hcms_menupoint($text15[$lang], '#template_'.$site, 'template.gif', 'template_'.$site);
+          $point = new hcms_menupoint($hcms_lang['templates'][$lang], '#template_'.$site, 'template.gif', 'template_'.$site);
           $point->setOnMouseOver('hcms_resetContext();');
           $point->setOnClick('hcms_jstree_toggle_preventDefault("template_'.$site.'", event);');
             
           if (checkglobalpermission ($site, 'tpl') && $mgmt_config[$site]['dam'] == false)
           {
-            $subpoint = new hcms_menupoint($text16[$lang], "frameset_template.php?site=".url_encode($site)."&cat=page", 'template_page.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['page-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=page", 'template_page.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -807,7 +805,7 @@ else
           
           if (checkglobalpermission ($site, 'tpl') && $mgmt_config[$site]['dam'] == false)
           {
-            $subpoint = new hcms_menupoint($text17[$lang], "frameset_template.php?site=".url_encode($site)."&cat=comp", 'template_comp.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['component-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=comp", 'template_comp.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -816,7 +814,7 @@ else
           
           if (checkglobalpermission ($site, 'tpl') && $mgmt_config[$site]['dam'] == false)
           {
-            $subpoint = new hcms_menupoint($text40[$lang], "frameset_template.php?site=".url_encode($site)."&cat=inc", 'template_inc.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['template-includes'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=inc", 'template_inc.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -825,7 +823,7 @@ else
           
           if (checkglobalpermission ($site, 'tpl'))
           {
-            $subpoint = new hcms_menupoint($text32[$lang], "frameset_template.php?site=".url_encode($site)."&cat=meta", 'template_media.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['meta-data-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=meta", 'template_media.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -834,7 +832,7 @@ else
           
           if (checkglobalpermission ($site, 'tplmedia') && $mgmt_config[$site]['dam'] == false)
           {
-            $subpoint = new hcms_menupoint($text20[$lang], "frameset_media.php?site=".url_encode($site)."&mediacat=tpl", 'media.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['template-media'][$lang], "frameset_media.php?site=".url_encode($site)."&mediacat=tpl", 'media.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -884,12 +882,12 @@ else
           // use component root
           else $location_root = "%comp%/".$site."/";
   
-          $point = new hcms_menupoint($text21[$lang], "frameset_objectlist.php?site=".url_encode($site)."&cat=comp&location=".url_encode($location_root)."&virtual=1", 'folder_comp.gif', 'comp_'.$site);
+          $point = new hcms_menupoint($hcms_lang['assets'][$lang], "frameset_objectlist.php?site=".url_encode($site)."&cat=comp&location=".url_encode($location_root)."&virtual=1", 'folder_comp.gif', 'comp_'.$site);
           $point->setOnClick('hcms_jstree_open("comp_'.$site.'", event);');
           $point->setTarget('workplFrame');
           $point->setNodeCSSClass('jstree-closed jstree-reload');
           $point->setAjaxData($location_root);
-          $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "comp", "'.getlocation($location_root).'", ".folder", "'.$text21[$lang].'", "Folder", "", "'.getobject($location_root).'", "comp_'.$site.'", $("#context_token").text());');
+          $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "comp", "'.getlocation($location_root).'", ".folder", "'.$hcms_lang['assets'][$lang].'", "Folder", "", "'.getobject($location_root).'", "comp_'.$site.'", $("#context_token").text());');
           $point->setOnMouseOut('hcms_resetContext();');
           $publication->addSubPoint($point);
         }
@@ -919,12 +917,12 @@ else
           // use page root
           else $location_root = "%page%/".$site."/";
           
-          $point = new hcms_menupoint($text22[$lang], "frameset_objectlist.php?site=".url_encode($site)."&cat=page&location=".url_encode($location_root)."&virtual=1", 'folder_page.gif', 'page_'.$site);
+          $point = new hcms_menupoint($hcms_lang['pages'][$lang], "frameset_objectlist.php?site=".url_encode($site)."&cat=page&location=".url_encode($location_root)."&virtual=1", 'folder_page.gif', 'page_'.$site);
           $point->setOnClick('hcms_jstree_open("page_'.$site.'", event);');
           $point->setTarget('workplFrame');
           $point->setNodeCSSClass('jstree-closed jstree-reload');
           $point->setAjaxData($location_root);
-          $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "page", "'.getlocation($location_root).'", ".folder", "'.$text22[$lang].'", "Folder", "", "'.getobject($location_root).'", "comp_'.$site.'", $("#context_token").text());');
+          $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "page", "'.getlocation($location_root).'", ".folder", "'.$hcms_lang['pages'][$lang].'", "Folder", "", "'.getobject($location_root).'", "comp_'.$site.'", $("#context_token").text());');
           $point->setOnMouseOut('hcms_resetContext();');
           $publication->addSubPoint($point);
         }
@@ -938,7 +936,7 @@ else
 <html>
   <head>
     <title>hyperCMS</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
     <meta name="viewport" content="width=260; initial-scale=1.0; user-scalable=0;">
     <script type="text/javascript" src="javascript/jquery/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.cookie.js"></script>
@@ -1058,8 +1056,8 @@ else
   
   <?php if (!$is_mobile) { ?>
   <div style="position:fixed; right:0; top:45%; margin:0; padding:0;">
-    <img onclick="parent.minNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $text34[$lang]; ?>" title="<?php echo $text34[$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
-    <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $text35[$lang]; ?>" title="<?php echo $text35[$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
+    <img onclick="parent.minNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['collapse'][$lang]; ?>" title="<?php echo $hcms_lang['collapse'][$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
+    <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['expand'][$lang]; ?>" title="<?php echo $hcms_lang['expand'][$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
   </div>
   <?php } ?>
   
@@ -1088,15 +1086,15 @@ else
       <table width="150px" cellspacing="0" cellpadding="3" class="hcmsContextMenu">
         <tr>
           <td>
-            <a href=# onClick="parent.location.href='userlogout.php';"><img src="<?php echo getthemelocation(); ?>img/button_logout.gif" align="absmiddle" border=0 />&nbsp;<?php echo $text0[$lang]; ?></a>
+            <a href=# onClick="parent.location.href='userlogout.php';"><img src="<?php echo getthemelocation(); ?>img/button_logout.gif" align="absmiddle" border=0 />&nbsp;<?php echo $hcms_lang['logout'][$lang]; ?></a>
             <hr/>
-            <a href=# id="href_cmsview" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" id="img_cmsview" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $text37[$lang]; ?></a><br />
-            <a href=# id="_href_notify" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="_img_notify" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo $text38[$lang]; ?></a><br />   
+            <a href=# id="href_cmsview" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" id="img_cmsview" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $hcms_lang['edit'][$lang]; ?></a><br />
+            <a href=# id="_href_notify" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="_img_notify" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo $hcms_lang['notify-me'][$lang]; ?></a><br />   
             <hr/>
-            <a href=# onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('publish');"><img id="img_publish" src="<?php echo getthemelocation(); ?>img/button_file_publish.gif" align="absmiddle" border=0 />&nbsp;<?php echo $text29[$lang]; ?></a><br />  
-            <a href=# onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('unpublish');"><img id="img_unpublish" src="<?php echo getthemelocation(); ?>img/button_file_unpublish.gif" align="absmiddle" border=0 />&nbsp;<?php echo $text30[$lang]; ?></a><br />        
+            <a href=# onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('publish');"><img id="img_publish" src="<?php echo getthemelocation(); ?>img/button_file_publish.gif" align="absmiddle" border=0 />&nbsp;<?php echo $hcms_lang['publish'][$lang]; ?></a><br />  
+            <a href=# onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('unpublish');"><img id="img_unpublish" src="<?php echo getthemelocation(); ?>img/button_file_unpublish.gif" align="absmiddle" border=0 />&nbsp;<?php echo $hcms_lang['unpublish'][$lang]; ?></a><br />        
             <hr/>
-            <a href=# onClick="document.location.href='explorer.php?refresh=1';"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.gif" align="absmiddle" border=0 />&nbsp;<?php echo $text24[$lang]; ?></a>
+            <a href=# onClick="document.location.href='explorer.php?refresh=1';"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.gif" align="absmiddle" border=0 />&nbsp;<?php echo $hcms_lang['refresh'][$lang]; ?></a>
           </td>
         </tr>    
       </table>

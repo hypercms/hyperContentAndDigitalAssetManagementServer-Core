@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("function/hypercms_ui.inc.php");
-// language file
-require_once ("language/popup_notify.inc.php");
 
 
 // input parameters
@@ -62,7 +60,7 @@ $message = "";
 // show info if access is not allowed
 if (!$access_allowed)
 {
-  echo showinfopage ($text9[$lang], $lang);
+  echo showinfopage ($hcms_lang['you-do-not-have-access-permissions-to-this-object'][$lang], $lang);
   exit;
 }
 
@@ -104,10 +102,10 @@ if ($action == "save" && checktoken ($token, $user) && valid_publicationname ($s
       }
     }
     
-    if ($result == false) $message = $text7[$lang];
+    if ($result == false) $message = $hcms_lang['the-notification-setting-could-not-be-saved'][$lang];
     else $message = "<script language=\"JavaScript\" type=\"text/javascript\"> window.close(); </script>";
   }
-  else $message = $text8[$lang];
+  else $message = $hcms_lang['no-objects-found'][$lang];
 }
 // remove notifications
 elseif ($action == "delete" && checktoken ($token, $user) && is_array ($notify_id))
@@ -117,7 +115,7 @@ elseif ($action == "delete" && checktoken ($token, $user) && is_array ($notify_i
     $result = rdbms_deletenotification ($id);
   }
   
-  if ($result == false) $message = $text7[$lang];
+  if ($result == false) $message = $hcms_lang['the-notification-setting-could-not-be-saved'][$lang];
 }
 ?>
 <!DOCTYPE html>
@@ -125,7 +123,7 @@ elseif ($action == "delete" && checktoken ($token, $user) && is_array ($notify_i
 <head>
 <title>hyperCMS</title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;">
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang_codepage[$lang]; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 
@@ -144,7 +142,7 @@ function submitform ()
       document.forms['notify'].elements['ondelete'].checked == false
   )
   {
-    alert(hcms_entity_decode("<?php echo $text6[$lang]; ?>"));
+    alert(hcms_entity_decode("<?php echo $hcms_lang['please-activate-an-event'][$lang]; ?>"));
   }
   else
   { 
@@ -159,7 +157,7 @@ function submitform ()
 
 <!-- top bar -->
 <?php
-echo showtopbar ($text0[$lang], $lang);
+echo showtopbar ($hcms_lang['notify-me-on-these-events'][$lang], $lang);
 ?>
 
 <?php echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px;"); ?>
@@ -175,15 +173,15 @@ echo showtopbar ($text0[$lang], $lang);
   <table width="100%" border=0 cellpadding="3" cellspacing="0">
     <tr> 
       <td align="left">
-        <input type="checkbox" name="oncreate" value="1"/> <?php echo $text1[$lang]; ?><br />
-        <input type="checkbox" name="onedit"  value="1" /> <?php echo $text2[$lang]; ?><br />
-        <input type="checkbox" name="onmove" value="1" /> <?php echo $text3[$lang]; ?><br />
-        <input type="checkbox" name="ondelete" value="1" /> <?php echo $text4[$lang]; ?><br />
+        <input type="checkbox" name="oncreate" value="1"/> <?php echo $hcms_lang['on-createupload'][$lang]; ?><br />
+        <input type="checkbox" name="onedit"  value="1" /> <?php echo $hcms_lang['on-edit'][$lang]; ?><br />
+        <input type="checkbox" name="onmove" value="1" /> <?php echo $hcms_lang['on-move'][$lang]; ?><br />
+        <input type="checkbox" name="ondelete" value="1" /> <?php echo $hcms_lang['on-delete'][$lang]; ?><br />
 	    </td>
     </tr>
     <tr>  
       <td align="left">  
-        &nbsp;<?php echo $text5[$lang]; ?>: <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+        &nbsp;<?php echo $hcms_lang['save-settings'][$lang]; ?>: <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
       </td>
     </tr>
   </table>
@@ -205,11 +203,11 @@ if (is_array ($notify_array))
   <div style=\"width:550px; margin:10px 4px 0px 4px;\">
   <table width=\"100%\" border=\"0\" cellpadding=\"2\" cellspacing=\"0\">
     <tr>
-      <td><strong>".$text10[$lang]."</strong></td>
-      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_new.gif\" align=\"absmiddle\" title=\"".$text1[$lang]."\" /></td>
-      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_edit.gif\" align=\"absmiddle\" title=\"".$text2[$lang]."\" /></td>
-      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_cut.gif\" align=\"absmiddle\" title=\"".$text3[$lang]."\" /></td>
-      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_delete.gif\" align=\"absmiddle\" title=\"".$text4[$lang]."\" /></td>
+      <td><strong>".$hcms_lang['you-are-watching-these-objects'][$lang]."</strong></td>
+      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_new.gif\" align=\"absmiddle\" title=\"".$hcms_lang['on-createupload'][$lang]."\" /></td>
+      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_edit.gif\" align=\"absmiddle\" title=\"".$hcms_lang['on-edit'][$lang]."\" /></td>
+      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_cut.gif\" align=\"absmiddle\" title=\"".$hcms_lang['on-move'][$lang]."\" /></td>
+      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_delete.gif\" align=\"absmiddle\" title=\"".$hcms_lang['on-delete'][$lang]."\" /></td>
     </tr>
   </table>
   </div>
@@ -239,7 +237,7 @@ if (is_array ($notify_array))
   </form>\n";
 }
 
-if (is_array ($notify_array)) echo "&nbsp;".$text11[$lang].": <img name=\"Button2\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"document.forms['delete'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button2','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />\n";
+if (is_array ($notify_array)) echo "&nbsp;".$hcms_lang['remove-selected-notifications'][$lang].": <img name=\"Button2\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"document.forms['delete'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button2','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />\n";
 ?>
 
 </body>
