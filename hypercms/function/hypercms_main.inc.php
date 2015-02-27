@@ -2299,7 +2299,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     
     // if browser is IE then we need to encode it (does not detect IE 11)
     if (isset ($user_client['msie']) && $user_client['msie'] > 0) $name = rawurlencode ($name);     
-
+savelog (array("$location, $media -> "), "aaa");
     // read file without headers
     if ($force == "noheader")
     {
@@ -2740,7 +2740,7 @@ function is_mobilebrowser ()
 
 function createtask ($site, $from_user, $from_email, $to_user, $to_email, $category, $object, $message, $sendmail, $priority="low")
 {
-  global $mgmt_config, $lang, $hcms_lang_codepage;
+  global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
   
     // include hypermailer class
   if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");  
@@ -3481,7 +3481,7 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
 
 function workflowaccept ($site, $location, $object, $workflow, $item_id, $user, $message, $sendmail=true, $priority="medium")
 {
-  global $mgmt_config, $hcms_lang, $lang;
+  global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $workflow != "" && $item_id != "" && in_array ($priority, array("high","medium","low")))
   {
@@ -3776,7 +3776,7 @@ function workflowaccept ($site, $location, $object, $workflow, $item_id, $user, 
 
 function acceptobject ($site, $location, $object, $item_id, $user, $message, $sendmail, $priority="medium")
 {
-  global $mgmt_config, $lang, $contentfile;
+  global $mgmt_config, $contentfile, $hcms_lang_codepage, $hcms_lang, $lang;
 
   $add_onload = "";
   $show = "";

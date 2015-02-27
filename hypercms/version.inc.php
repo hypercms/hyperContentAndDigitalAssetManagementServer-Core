@@ -686,9 +686,12 @@ changelog:
 - bug fix: ok button of task list was not displayed properly
 - bug fix: function publishobject did not set init for savecontainer to true
 - implementation of a new language management system
-- implementation of new languages. besides English and German the following languages for the UI are now supported: Albanian, Arabic, Bengali, Bulgarian, Chinese (simplified), Czech, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Hungarian, Indonesian, Italian, Japanese, Korean, Malay, Norwegian, Polish, Portoguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Somali, Swedish, Thai, Turkish, Ukrainian, Urdu
+- implementation of new languages. besides English and German the following languages for the UI are now supported: Albanian, Arabic, Bengali, Bulgarian, Chinese (simplified), Czech, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Hungarian, Indonesian, Italian, Japanese, Korean, Malay, Norwegian, Polish, Portuguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Somali, Swedish, Thai, Turkish, Ukrainian, Urdu
 - new help logic to set 'en' as default help/manual
 - implementation of function html_encode with multibyte character set support
+- bug fix: user_sendlink mixed up languages in e-mail message
+- implementation of new 'flat' design theme
+- minor changes in other design themes
 */
 
 // current version

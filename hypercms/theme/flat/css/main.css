@@ -10,11 +10,10 @@
 
 .hcmsStartScreen
 {
-  background-image: url('../img/backgrd_start.png');
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center; 
-  background-color: #CFD4DD;
+  background-color: #B2CDFA;
   font-size: medium;
   text-align: center;
   padding: 0;
@@ -24,14 +23,11 @@
 .hcmsLogonScreen
 {
   width: 260px;
-  background-color: #CFD4DD;
+  background-color: #D5E6FF;
   border: 1px solid #FFFFFF;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
-  box-shadow: 3px 3px 12px #000000;
-  -webkit-box-shadow: 3px 3px 12px #000000;
-  -moz-box-shadow: 3px 3px 12px #000000;
   margin: auto;
   padding: 20px 20px 20px 20px; 
   text-align: left; 
@@ -39,19 +35,18 @@
 
 .hcmsWorkplaceTop
 {
-  background-color: #1E2738;
-  background-image: url('../img/backgrd_top.png');
+  background-color: #6D9FFD;
   background-repeat: repeat;
 }
 
 .hcmsWorkplaceBar
 {
-  background-color: #9AA1A7;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#DCDEE0', endColorstr='#9AA1A7');
-  background-image: linear-gradient(#DCDEE0 0%, #9AA1A7 100%);
-  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #DCDEE0), color-stop(1, #9AA1A7) );
-  background: -moz-linear-gradient( center top, #DCDEE0 5%, #9AA1A7 100% );
-  border-bottom: 1px solid #FB841C;
+  background-color: #A2C5F9;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#A2C5F9');
+  background-image: linear-gradient(#C8DCFF 0%, #A2C5F9 100%);
+  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #A2C5F9) );
+  background: -moz-linear-gradient( center top, #C8DCFF 5%, #A2C5F9 100% );
+  border-bottom: 1px solid #5AAD5A;
   position: fixed;
   top: 0;
   left: 0;
@@ -75,10 +70,6 @@
 {
   border: 1px solid #000000;
   background-color: #FFFFFF;
-  box-shadow: 3px 3px 12px #000000;
-  -webkit-box-shadow: 3px 3px 12px #000000;
-  -moz-box-shadow: 3px 3px 12px #000000;
-  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
 }
 
 .hcmsChatBar
@@ -95,25 +86,24 @@
   border: 1px solid #808080;
   background-color: #FFFFFF;
   margin-bottom: 4px;
-  box-shadow: 2px 2px 3px #000000;
-  -webkit-box-shadow: 2px 2px 3px #000000;
-  -moz-box-shadow: 2px 2px 3px #000000;
-  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='4');
+  box-shadow: 0px 3px 3px #000000;
+  -webkit-box-shadow: 0px 3px 3px #000000;
+  -moz-box-shadow: 0px 3px 3px #000000;
+  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='180',strength='4');
 }
 
 .hcmsWorkplaceControl
 {
   margin: 0;
   padding: 0;
-  background-color: #93959b;
+  background-color: #90BEFB;
 }
 
 .hcmsWorkplaceControlWallpaper
 {
   margin: 0;
   padding: 0;
-  background-color: #93959b;
-  background-image: url('../img/backgrd_control.jpg');
+  background-color: #90BEFB;
   background-repeat: no-repeat;
 }
 
@@ -122,8 +112,8 @@
   width: 100%;
   height: 26px;
   padding: 2px;
-  border-top: 1px solid #D8DADC;
-  border-bottom: 1px solid #D8DADC; 
+  border-top: 1px solid #ABD0F9;
+  border-bottom: 1px solid #ABD0F9; 
   display: block;
 }
 
@@ -132,32 +122,31 @@
   float: left;
   padding-right: 1px;
   margin-right: 1px;
-  border-right: 1px solid #D8DADC; 
+  border-right: 1px solid #ABD0F9; 
 }
 
 .hcmsWorkplaceExplorer
 {
   margin: 0;
   padding: 0;
-  background-color: #B6BCC5;
+  background-color: #A2C5F9;
 }
 
 .hcmsWorkplaceObjectlist
 {
-  background-color: #D8DADC;
+  background-color: #D7E6FE;
 }
 
 .hcmsWorkplaceWorkflow
 {
-  background-color: #B7C3D4;
+  background-color: #7BB5FF;
 }
 
 .hcmsWorkplaceGeneric
 {
-  background-image: url('../img/backgrd_workplace.png');
   background-repeat: no-repeat;
   background-attachment: fixed;
-  background-color: #e3e4ec;
+  background-color: #C8DCFF;
   margin: 0; 
   padding: 0;  
   width: 100%;
@@ -168,17 +157,12 @@
 .hcmsWorkplaceFrame
 {
   border: 0;
-  margin: 0; 
   padding: 4px;
 }
 
 .hcmsMediaRendering
 {
-  background-color: #EAEFF4;
-  box-shadow: 2px 2px 3px #000000;
-  -webkit-box-shadow: 2px 2px 3px #000000;
-  -moz-box-shadow: 2px 2px 3px #000000;
-  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='4');
+  background-color: #ECF3F9;
 }
 
 .hcmsTemplateField
@@ -189,22 +173,22 @@
 
 .hcmsRowHead1
 {
-  background-color: #86D391;
+  background-color: #42B551;
 }
 
 .hcmsRowHead2
 {
-  background-color: #AFCBB3;
+  background-color: #94CE9C;
 }
 
 .hcmsRowData1
 {
-  background-color: #DADDE2;
+  background-color: #B7CFF4;
 }
 
 .hcmsRowData2
 {
-  background-color: #D2D2D2;
+  background-color: #C7D9F5;
 }
 
 .hcmsPriorityHigh
@@ -225,15 +209,11 @@
 .hcmsMessage
 {
   vertical-align: middle;
-  border: 2px solid #788290;
+  border: 2px solid #4294FF;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
-  background-color: #D5DDE7;
-  box-shadow: 3px 3px 12px #000000;
-  -webkit-box-shadow: 3px 3px 12px #000000;
-  -moz-box-shadow: 3px 3px 12px #000000;
-  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+  background-color: #ABD0FF;
 }
 
 .hcmsInfoBox
@@ -242,15 +222,11 @@
   padding: 5px;
   filter: alpha(opacity=90); -moz-opacity: 0.9; opacity: 0.9;
   vertical-align: middle;
-  border: 1px solid #FBAD04;
+  border: 1px solid #4294FF;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
   background-color: #EFF6FF;
-  box-shadow: 3px 3px 12px #000000;
-  -webkit-box-shadow: 3px 3px 12px #000000;
-  -moz-box-shadow: 3px 3px 12px #000000;
-  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
 }
 
 .hcmsButton
@@ -370,7 +346,7 @@
 .hcmsButtonMenu
 {
   height: 22px;
-	border-right: 1px solid #C0C0C0;
+	border-right: 1px solid #CEE0FE;
 	float: left;
 	padding: 6px 10px 0px 10px;
   margin: 0;
@@ -379,10 +355,10 @@
 }
 .hcmsButtonMenu:hover
 {
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #DCDEE0), color-stop(1, #86888A) );
-	background: -moz-linear-gradient( center top, #DCDEE0 5%, #86888A 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#DCDEE0', endColorstr='#86888A');
-  background-color: #9AA1A7;
+	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #6A9FEF) );
+	background: -moz-linear-gradient( center top, #C8DCFF 5%, #6A9FEF 100% );
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#6A9FEF');
+  background-color: #A2C5F9;
 }
 .hcmsButtonMenu:active
 {
@@ -392,9 +368,6 @@
 
 .hcmsButtonBlue
 {
-	-moz-box-shadow: inset 0px 1px 0px 0px #cae3fc;
-	-webkit-box-shadow: inset 0px 1px 0px 0px #cae3fc;
-	box-shadow: inset 0px 1px 0px 0px #cae3fc;
 	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #79bbff), color-stop(1, #4197ee) );
 	background: -moz-linear-gradient( center top, #79bbff 5%, #4197ee 100% );
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#79bbff', endColorstr='#4197ee');
@@ -423,9 +396,6 @@
 
 .hcmsButtonGreen
 {
-	-moz-box-shadow: inset 0px 1px 0px 0px #caefab;
-	-webkit-box-shadow: inset 0px 1px 0px 0px #caefab;
-	box-shadow: inset 0px 1px 0px 0px #caefab;
 	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #77d42a), color-stop(1, #5cb811) );
 	background: -moz-linear-gradient( center top, #77d42a 5%, #5cb811 100% );
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#77d42a', endColorstr='#5cb811');
@@ -454,9 +424,6 @@
 
 .hcmsButtonOrange
 {
-	-moz-box-shadow: inset 0px 1px 0px 0px #FCE2C1;
-	-webkit-box-shadow: inset 0px 1px 0px 0px #FCE2C1;
-	box-shadow: inset 0px 1px 0px 0px #FCE2C1;
 	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
 	background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
@@ -496,10 +463,6 @@
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
-  box-shadow: 3px 3px 12px #000000;
-  -webkit-box-shadow: 3px 3px 12px #000000;
-  -moz-box-shadow: 3px 3px 12px #000000;
-  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
 }
 
 .hcmsSelectorItem
@@ -532,7 +495,7 @@
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 12px; 
   font-weight: normal; 
-  color: #58524D; 
+  color: #000080; 
   text-decoration: none;
 }
 
@@ -573,7 +536,7 @@
 	display: none;
 	width: 100%;
 	height: 100%;
-	background: url("../img/loading.gif") no-repeat center center #e3e4ec;
+	background: url("../img/loading.gif") no-repeat center center #C8DCFF;
 	position: fixed;
 	opacity: 0.7;
 }
@@ -680,5 +643,5 @@ hr
   height: 1px;
   border-width :0;
   color: #0ACA03;
-  background-color: #C0C0C0;
+  background-color: #8EA9EC;
 }

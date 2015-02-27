@@ -1707,7 +1707,7 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
     if (valid_publicationname ($site) && !is_array ($publ_config)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
     
     // transform language code for editor
-    if ($lang = "zh-s") $lang = "zh";
+    if ($lang == "zh-s") $lang = "zh";
     
     //initialize scaling factor 
     $scalingfactor = 1;
