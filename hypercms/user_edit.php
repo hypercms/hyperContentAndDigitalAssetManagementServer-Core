@@ -77,19 +77,20 @@ if ($action == "user_save" && ($site == "*Null*" || checkpublicationpermission (
         
     if ($login_cat == "home" && $login == $user)
     {
-      // change theme in session if user changed it
-      if (!empty ($theme) && $hcms_themename != $theme)
-      {
-        setsession ('hcms_themename', $theme);
-        $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
-      }
       // load new language if user changed it
-      elseif (!empty ($language) && $lang != $language)
+      if (!empty ($language) && $lang != $language)
       {
         $lang = $language;
         
         // language file
         require_once ("language/".getlanguagefile ($lang));
+        $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
+      }
+      
+      // change theme in session if user changed it
+      if (!empty ($theme) && $hcms_themename != $theme)
+      {
+        setsession ('hcms_themename', $theme);
         $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
       }
     }

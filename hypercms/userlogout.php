@@ -50,8 +50,8 @@ else
 ?>
 
 <div class="hcmsStartBar">
-  <div style="margin:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation(); ?>img/logo.gif" alt="hyperCMS" /></div>
-  <div style="position:absolute; top:50px; right:10px; text-align:right;"><?php echo $version; ?></div>
+  <div style="position:absolute; top:10px; left:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation(); ?>img/logo.png" alt="hyperCMS" /></div>
+  <div style="position:absolute; top:48px; right:10px; text-align:right;"><?php echo $version; ?></div>
 </div>
 
 <p class="hcmsTextGreen">

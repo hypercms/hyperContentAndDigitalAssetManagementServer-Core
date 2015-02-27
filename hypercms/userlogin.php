@@ -389,8 +389,8 @@ function html5support()
 <body class="hcmsStartScreen" onLoad="focusform(); is_mobilebrowser(); is_iphone(); html5support();">
 
 <div class="hcmsStartBar">
-  <div style="margin:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation(); ?>img/logo.gif" alt="hyperCMS" /></div>
-  <div style="position:absolute; top:50px; right:10px; text-align:right;"><?php echo $version; ?></div>
+  <div style="position:absolute; top:10px; left:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation(); ?>img/logo.png" alt="hyperCMS" /></div>
+  <div style="position:absolute; top:48px; right:10px; text-align:right;"><?php echo $version; ?></div>
 </div>
 
 <div class="hcmsLogonScreen">

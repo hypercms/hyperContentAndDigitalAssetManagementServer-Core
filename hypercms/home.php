@@ -67,11 +67,11 @@ function hcms_geoposition (position)
 <div style="width:100%; height:100%; overflow:auto; display:block;">
 
   <div id="logo" style="position:fixed; top:10px; left:10px; display:block;">
-    <img src="<?php echo getthemelocation(); ?>img/logo_welcome.gif" style="width:<?php if ($is_mobile) echo "260px"; else echo "320px"; ?>" />
-    <div id="version" style="position:fixed; top:45px; left:240px;"><?php echo $version; ?></div>
+    <img src="<?php echo getthemelocation(); ?>img/logo_server.png" style="width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>" />
+    <div id="version" style="position:fixed; top:30px; left:12px;"><?php echo $version; ?></div>
   </div>
   
-  <div id="spacer" style="width:94%; height:70px; display:block;"></div>
+  <div id="spacer" style="width:94%; height:44px; display:block;"></div>
 
   <?php
   // ---------------------- NEWS / WELCOME BOX ---------------------
