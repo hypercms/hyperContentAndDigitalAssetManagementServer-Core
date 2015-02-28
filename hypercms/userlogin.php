@@ -49,6 +49,13 @@ $hcms_id_token = getrequest ("hcms_id_token");
 // input parameters (unique hash is used for access-link)
 $al = getrequest ("al");
 
+// detect browser and set theme
+if (is_mobilebrowser () || $is_mobile == "yes")
+{
+  $themename = "mobile";
+}
+else $themename = "";
+
 // access link since version 5.6.2
 $ignore_password = false;
 
@@ -348,14 +355,14 @@ else
 <meta name="viewport" content="width=380; initial-scale=0.9; maximum-scale=1.0; user-scalable=0;" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css">
+<link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/main.css" type="text/css">
 
 <!-- Standard icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/favicon.ico"> 
 <!-- 57 x 57 Android and iPhone 3 icon -->
-<link rel="apple-touch-icon" media="screen and (resolution: 163dpi)" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
+<link rel="apple-touch-icon" media="screen and (resolution: 163dpi)" href="<?php echo getthemelocation($themename); ?>img/mobile_icon57.png" />
 <!-- 114 x 114 iPhone 4 icon -->
-<link rel="apple-touch-icon" media="screen and (resolution: 326dpi)" href="<?php echo getthemelocation(); ?>img/mobile_icon114.png" />
+<link rel="apple-touch-icon" media="screen and (resolution: 326dpi)" href="<?php echo getthemelocation($themename); ?>img/mobile_icon114.png" />
 <!-- 57 x 57 Nokia icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
 
@@ -389,7 +396,7 @@ function html5support()
 <body class="hcmsStartScreen" onLoad="focusform(); is_mobilebrowser(); is_iphone(); html5support();">
 
 <div class="hcmsStartBar">
-  <div style="position:absolute; top:10px; left:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation(); ?>img/logo.png" alt="hyperCMS" /></div>
+  <div style="position:absolute; top:10px; left:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" alt="hyperCMS" /></div>
   <div style="position:absolute; top:48px; right:10px; text-align:right;"><?php echo $version; ?></div>
 </div>
 

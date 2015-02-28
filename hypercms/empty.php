@@ -34,7 +34,7 @@ checkusersession ($user, false);
 <table width="100%" height="100%">
   <tr>
     <td align="middle" valign="middle">
-      <img src="<?php echo getthemelocation(); ?>img/logo_welcome.gif" />
+      <img src="<?php echo getthemelocation(); ?>img/logo_server.png" />
     </td>
   </tr>
 </table>
