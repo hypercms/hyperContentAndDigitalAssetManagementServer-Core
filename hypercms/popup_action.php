@@ -69,6 +69,7 @@ if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
   if ($action == "delete" && (($page != "" && $setlocalpermission['delete'] == 1) || ($folder != "" && $setlocalpermission['folderdelete'] == 1))) $authorized = true;
   elseif (($action == "cut" || $action == "copy") && (($page != "" && $setlocalpermission['rename'] == 1) || ($folder != "" && $setlocalpermission['folderrename'] == 1))) $authorized = true;
   elseif ($action == "linkcopy" && (($page != "" && $setlocalpermission['rename'] == 1 && $setlocalpermission['create'] == 1) || ($folder != "" && $setlocalpermission['folderrename'] == 1 && $setlocalpermission['foldercreate'] == 1))) $authorized = true;
+  elseif ($action == "page_favorites_delete" && $setlocalpermission['create'] == 1) $authorized = true;
   elseif ($action == "page_unlock" && $setlocalpermission['create'] == 1) $authorized = true;
   elseif ($action == "paste" && ($setlocalpermission['rename'] == 1 || $setlocalpermission['folderrename'] == 1)) $authorized = true;
   elseif (($action == "publish" || $action == "unpublish") && $setlocalpermission['publish'] == 1) $authorized = true;
@@ -259,6 +260,58 @@ if ($authorized == true)
       $show = $result['message'];      
     }
   }
+  // delete objects from favorites
+  elseif ($action == "page_favorites_delete" && $setlocalpermission['root'] == 1)
+  {
+    if ($multiobject != "")
+    {
+      $multiobject_array = link_db_getobject ($multiobject);
+      
+      if (is_array ($multiobject_array))
+      {
+        $result['result'] = true;
+        
+        foreach ($multiobject_array as $multiobject_item)
+        {
+          if ($multiobject_item != "" && $result['result'] == true)
+          {
+            $site = getpublication ($multiobject_item);
+            $page = getobject ($multiobject_item);
+            $location = getlocation ($multiobject_item);
+            $location = deconvertpath ($location, "file");
+  
+            $result['result'] = deletefavorite ($site, $location, $page, "", $user);
+          }
+        }   
+      } 
+    }
+    elseif ($folder != "" && is_dir ($location.$folder))
+    {
+      $result['result'] = deletefavorite ($site, $location.$folder."/", ".folder", "", $user);
+    }
+    elseif ($page != "" && $page != ".folder" && is_file ($location.$page))
+    {
+      $result['result'] = deletefavorite ($site, $location, $page, "", $user);
+    }
+  
+    // check result
+    if ($result['result'] == false) 
+    {
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['error-occured'][$lang]."</span>";
+      $add_onload = "";
+    }
+    else 
+    {
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-data-was-saved-successfully'][$lang]."</span>";
+      $add_onload = "if (eval(opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload();
+if (eval(parent.frames['objFrame'])) parent.frames['objFrame'].location.reload();
+if (eval(parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload();";
+      $location = "";
+      $page = "";
+      $pagename = "";  
+      $multiobject = "";
+    }
+  }  
   // check-in / unlock objects
   elseif ($action == "page_unlock" && $setlocalpermission['root'] == 1)
   {
@@ -279,7 +332,6 @@ if ($authorized == true)
             $location = getlocation ($multiobject_item);
             $location = deconvertpath ($location, "file");
   
-            // check-in content container
             $result = unlockobject ($site, $location, $page, $user);
           }
         }   

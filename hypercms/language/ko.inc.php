@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['ko'] = "상속";
 $hcms_lang['the-object-was-removed']['ko'] = "오브젝트 제거되었";
 $hcms_lang['the-object-could-not-be-removed']['ko'] = "객체가 제거되지 않았";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ko'] = "오브젝트가 존재하지 않거나 권한이 없";
+$hcms_lang['add-to-favorites']['ko'] = "즐겨찾기에 추가";
+$hcms_lang['delete-favorite']['ko'] = "삭제 즐겨찾기";
+$hcms_lang['favorites']['ko'] = "즐겨찾기";
 ?>

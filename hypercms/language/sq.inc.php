@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['sq'] = "Trashëgimi";
 $hcms_lang['the-object-was-removed']['sq'] = "Objekti u hoq";
 $hcms_lang['the-object-could-not-be-removed']['sq'] = "Objekti nuk mund të hiqen";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['sq'] = "Objekti nuk ekziston ose ju nuk keni leje ndertimi";
+$hcms_lang['add-to-favorites']['sq'] = "Shtoni në të preferuarat";
+$hcms_lang['delete-favorite']['sq'] = "Fshi favorite";
+$hcms_lang['favorites']['sq'] = "favorites";
 ?>

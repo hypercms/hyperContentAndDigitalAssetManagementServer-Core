@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['ro'] = "Mostenire";
 $hcms_lang['the-object-was-removed']['ro'] = "Obiectul a fost demontat";
 $hcms_lang['the-object-could-not-be-removed']['ro'] = "Obiectul nu a putut fi îndepărtat";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ro'] = "Obiectul nu există sau nu deţineţi permisiunile";
+$hcms_lang['add-to-favorites']['ro'] = "Adăugare la favorite";
+$hcms_lang['delete-favorite']['ro'] = "Ştergere preferinţă";
+$hcms_lang['favorites']['ro'] = "Preferinţe";
 ?>

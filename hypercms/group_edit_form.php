@@ -129,7 +129,8 @@ if ($group_name != "" && $group_name != false)
     $desktopsetting = 0;
     $desktoptaskmgmt = 0;
     $desktopcheckedout = 0; 
-    $desktoptimetravel = 0;      
+    $desktoptimetravel = 0;
+    $desktopfavorites = 0; // added in version 5.7.4
     // site permissions
     $siteglobal = 0;
     $sitecreate = 0;
@@ -209,6 +210,7 @@ if ($group_name != "" && $group_name != false)
     if (!empty ($desktoppermlist[2])) $desktoptaskmgmt = $desktoppermlist[2];
     if (!empty ($desktoppermlist[3])) $desktopcheckedout = $desktoppermlist[3];
     if (!empty ($desktoppermlist[4])) $desktoptimetravel = $desktoppermlist[4];
+    if (!empty ($desktoppermlist[5])) $desktopfavorites = $desktoppermlist[5];
     // site permissions
     if (!empty ($sitepermlist[0])) $siteglobal = $sitepermlist[0];
     if (!empty ($sitepermlist[1])) $sitecreate = $sitepermlist[1];
@@ -337,11 +339,15 @@ elseif ($preview == "yes")
       <td> <input type="checkbox" name="permission[desktoptaskmgmt]" value="1" <?php if ($desktoptaskmgmt==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr class="hcmsRowData1"> 
+      <td nowrap="nowrap"><?php echo $hcms_lang['favorites'][$lang]; ?>:</td>
+      <td> <input type="checkbox" name="permission[desktopfavorites]" value="1" <?php if ($desktopfavorites==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
+    </tr>
+    <tr> 
       <td nowrap="nowrap"><?php echo $hcms_lang['checked-out-items'][$lang]; ?>:</td>
       <td> <input type="checkbox" name="permission[desktopcheckedout]" value="1" <?php if ($desktopcheckedout==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <?php if (!$mgmt_config[$site]['dam']) { ?>   
-    <tr> 
+    <tr class="hcmsRowData1"> 
       <td nowrap="nowrap"><?php echo $hcms_lang['travel-though-time'][$lang]; ?>:</td>
       <td> <input type="checkbox" name="permission[desktoptimetravel]" value="1" <?php if ($desktoptimetravel==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>

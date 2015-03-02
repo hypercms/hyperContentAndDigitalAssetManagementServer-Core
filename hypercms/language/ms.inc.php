@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['ms'] = "Warisan";
 $hcms_lang['the-object-was-removed']['ms'] = "Objek dibuang";
 $hcms_lang['the-object-could-not-be-removed']['ms'] = "Objek tidak dapat dibuang";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ms'] = "Objek tidak wujud atau anda tidak mempunyai keizinan";
+$hcms_lang['add-to-favorites']['ms'] = "Tambah ke kegemaran";
+$hcms_lang['delete-favorite']['ms'] = "Hapuskan kegemaran";
+$hcms_lang['favorites']['ms'] = "QShortcut";
 ?>

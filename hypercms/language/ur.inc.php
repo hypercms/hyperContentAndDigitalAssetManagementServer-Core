@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['ur'] = "بپوتی";
 $hcms_lang['the-object-was-removed']['ur'] = "اس محقر نکال دیا";
 $hcms_lang['the-object-could-not-be-removed']['ur'] = "اس اعتراض کو خارج نہیں کیا جا سکتا";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ur'] = "نائن الیون کے محقر یا اپ کے پاس permissions";
+$hcms_lang['add-to-favorites']['ur'] = "سامان فیورٹ";
+$hcms_lang['delete-favorite']['ur'] = "چھیلنا پسندیدہ";
+$hcms_lang['favorites']['ur'] = "فیورٹ";
 ?>

@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['sr'] = "Nasleđivanje.";
 $hcms_lang['the-object-was-removed']['sr'] = "Predmet je uklonjen sa dužnosti";
 $hcms_lang['the-object-could-not-be-removed']['sr'] = "Predmet nije mogao da bude uklonjen";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['sr'] = "U stvari ne postoje ili ne dozvole";
+$hcms_lang['add-to-favorites']['sr'] = "Dodati u favorite";
+$hcms_lang['delete-favorite']['sr'] = "Izbrisati omiljene";
+$hcms_lang['favorites']['sr'] = "Favoriti";
 ?>

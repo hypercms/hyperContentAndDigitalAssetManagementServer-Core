@@ -65,6 +65,7 @@ checkusersession ($user);
 $show = "";
 $add_onload = "";
 $usedby = "";
+$is_favorite = false;
 $wf_id = "";
 $wf_role = "";
 $contentfile = "";
@@ -97,6 +98,10 @@ if ($action != "page_create")
   }
 }
 
+// get object ID (requires for favorites)
+if ($folder != "") $object_id = rdbms_getobject_id ($location_esc.$folder);
+else $object_id = rdbms_getobject_id ($location_esc.$page);
+
 // define message if object is checked out by another user
 if (!empty ($contentfile))
 {
@@ -122,6 +127,22 @@ if ($action != "" && checktoken ($token, $user))
     $page = $result['object'];
     $pagename = $result['name'];
   }
+  // add to favorites
+  elseif ($setlocalpermission['root'] == 1 && $action == "page_favorite_add") 
+  {
+    $is_favorite = createfavorite ("", "", "", $object_id, $user);
+
+    $show = "";
+  }
+  // delete from favorites
+  elseif ($setlocalpermission['root'] == 1 && $action == "page_favorite_delete") 
+  {
+    $result = deletefavorite ("", "", "", $object_id, $user);
+    
+    if ($result) $is_favorite = false;
+
+    $show = "";
+  } 
   // lock object
   elseif ($setlocalpermission['root'] == 1 && $action == "page_lock") 
   {
@@ -132,7 +153,7 @@ if ($action != "" && checktoken ($token, $user))
     $page = $result['object'];
     $usedby = $result['usedby'];
     $pagename = $result['name'];
-  }
+  }  
   // unlock object
   elseif ($setlocalpermission['root'] == 1 && $action == "page_unlock") 
   {
@@ -151,6 +172,14 @@ if ($action != "" && checktoken ($token, $user))
     $usedby = $result['usedby'];
     $pagename = $result['name'];
   }
+}
+
+// check if in favorites
+$favs_id_array = getfavorites ($user, "id");
+
+if (is_array ($favs_id_array) && in_array ($object_id, $favs_id_array))
+{
+  $is_favorite = true;
 }
 
 // get file info
@@ -606,18 +635,33 @@ else
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    if ($usedby == "" && $page != "" && $wf_role == 5 && (($media == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || (!empty ($media) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
-    {echo "<img onClick=\"if (locklayer == false) location.href='control_content_menu.php?action=page_lock&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_lock\" src=\"".getthemelocation()."img/button_file_lock.gif\" alt=\"".$hcms_lang['check-out'][$lang]."\" title=\"".$hcms_lang['check-out'][$lang]."\" />\n";}
-    else
-    {echo "<img src=\"".getthemelocation()."img/button_file_lock.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">\n";}   
-    if ($usedby == $user && $page != "" && $wf_role == 5 && (($media == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || (!empty ($media) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
-    {echo "<img onClick=\"if (locklayer == false) location.href='control_content_menu.php?action=page_unlock&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_unlock\" src=\"".getthemelocation()."img/button_file_unlock.gif\" alt=\"".$hcms_lang['check-in'][$lang]."\" title=\"".$hcms_lang['check-in'][$lang]."\" />\n";}
-    else
-    {echo "<img src=\"".getthemelocation()."img/button_file_unlock.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}         
+    // Favorite Button
+    if ($page != "" && checkrootpermission ('desktopfavorites') && $setlocalpermission['root'] == 1)
+    {
+      if (!$is_favorite)
+      {echo "<img onClick=\"if (locklayer == false) location.href='control_content_menu.php?action=page_favorite_add&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_lock\" src=\"".getthemelocation()."img/button_favorites_delete.gif\" alt=\"".$hcms_lang['add-to-favorites'][$lang]."\" title=\"".$hcms_lang['add-to-favorites'][$lang]."\" />\n";}
+      else
+      {echo "<img onClick=\"if (locklayer == false) location.href='control_content_menu.php?action=page_favorite_delete&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_unlock\" src=\"".getthemelocation()."img/button_favorites_new.gif\" alt=\"".$hcms_lang['delete-favorite'][$lang]."\" title=\"".$hcms_lang['delete-favorite'][$lang]."\" />\n";}
+    }
     ?>    
   </div>
   <div class="hcmsToolbarBlock">
     <?php
+    // Checked out Button
+    if ($page != "" && $wf_role == 5 && checkrootpermission ('desktopcheckedout') && (($media == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || (!empty ($media) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
+    {
+      if ($usedby == "")
+      {echo "<img onClick=\"if (locklayer == false) location.href='control_content_menu.php?action=page_lock&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_lock\" src=\"".getthemelocation()."img/button_file_unlock.gif\" alt=\"".$hcms_lang['check-out'][$lang]."\" title=\"".$hcms_lang['check-out'][$lang]."\" />\n";}
+      elseif ($usedby == $user)
+      {echo "<img onClick=\"if (locklayer == false) location.href='control_content_menu.php?action=page_unlock&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_unlock\" src=\"".getthemelocation()."img/button_file_lock.gif\" alt=\"".$hcms_lang['check-in'][$lang]."\" title=\"".$hcms_lang['check-in'][$lang]."\" />\n";}
+      else
+      {echo "<img src=\"".getthemelocation()."img/button_file_lock.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">\n";}
+    }
+    ?>    
+  </div>
+  <div class="hcmsToolbarBlock">
+    <?php
+    // Workflow Buttons
     if ($usedby == "" && ($wf_role >= 1 && $wf_role <= 4) && $page != "" && $setlocalpermission['root'] == 1)
     {echo "<img onClick=\"if (locklayer == false) hcms_openWindow('popup_message.php?action=accept&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."','popup_workflow','scrollbars=no,resizable=no','400','200');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_accept\" src=\"".getthemelocation()."img/button_workflow_accept.gif\" alt=\"".$hcms_lang['accept-and-forward'][$lang]."\" title=\"".$hcms_lang['accept-and-forward'][$lang]."\" />\n";}
     else
@@ -631,8 +675,7 @@ else
   </div>
   <div class="hcmsToolbarBlock">  
     <?php
-    // un/publish
-	
+    // Un/Publish	Buttons
     if ($page != "")
     {
       if (($usedby == "" || $usedby == $user) && $filetype != "" && $wf_role >= 3 && $setlocalpermission['root'] == 1 && $setlocalpermission['publish'] == 1)
@@ -659,7 +702,6 @@ else
         echo "<img src=\"".getthemelocation()."img/button_file_unpublish.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
       }
     }
-    // deactivate buttons
     else
     {
       echo "<img src=\"".getthemelocation()."img/button_file_publish.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
@@ -669,6 +711,7 @@ else
   </div>
   <div class="hcmsToolbarBlock">    
     <?php
+    // Reload button
     echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"if (locklayer == false) parent.frames['objFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".$hcms_lang['refresh'][$lang]."\" title=\"".$hcms_lang['refresh'][$lang]."\" />\n";
     ?>    
   </div>

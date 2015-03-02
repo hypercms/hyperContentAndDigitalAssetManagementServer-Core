@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['fi'] = "Periytyminen";
 $hcms_lang['the-object-was-removed']['fi'] = "Laite on irrotettu";
 $hcms_lang['the-object-could-not-be-removed']['fi'] = "Kohdetta ei voitu poistaa";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['fi'] = "Kohde ei ole tai sinulla ei ole oikeuksia";
+$hcms_lang['add-to-favorites']['fi'] = "Lisää suosikkeihin";
+$hcms_lang['delete-favorite']['fi'] = "Poista suosikit";
+$hcms_lang['favorites']['fi'] = "Suosikit";
 ?>

@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['he'] = "ירושה";
 $hcms_lang['the-object-was-removed']['he'] = "האובייקט הוסר";
 $hcms_lang['the-object-could-not-be-removed']['he'] = "לא ניתן להסיר את אובייקט";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['he'] = "את האובייקט אינו קיים, או שאין לך הרשאות";
+$hcms_lang['add-to-favorites']['he'] = "הוסף למועדפים";
+$hcms_lang['delete-favorite']['he'] = "מחיקת מועדפים";
+$hcms_lang['favorites']['he'] = "מועדפים";
 ?>

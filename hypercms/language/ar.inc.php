@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['ar'] = "الميراث";
 $hcms_lang['the-object-was-removed']['ar'] = "وأوضح أن الهدف من ذلك هو إزالة";
 $hcms_lang['the-object-could-not-be-removed']['ar'] = "موضوع لا يمكن إزالتها";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ar'] = "موضوع غير موجود أو أنك لا تملك الأذونات";
+$hcms_lang['add-to-favorites']['ar'] = "إضافة إلى المفضلة";
+$hcms_lang['delete-favorite']['ar'] = "حذف المفضلة";
+$hcms_lang['favorites']['ar'] = "المفضلة";
 ?>

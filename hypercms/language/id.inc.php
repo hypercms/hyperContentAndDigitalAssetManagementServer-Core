@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['id'] = "Warisan";
 $hcms_lang['the-object-was-removed']['id'] = "Objek ini telah disingkirkan";
 $hcms_lang['the-object-could-not-be-removed']['id'] = "Objek tidak dapat dihapus";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['id'] = "Objek tidak ada atau anda tidak memiliki izin";
+$hcms_lang['add-to-favorites']['id'] = "Tambahkan ke favorit";
+$hcms_lang['delete-favorite']['id'] = "Menghapus favorit";
+$hcms_lang['favorites']['id'] = "Favorit";
 ?>

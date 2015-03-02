@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['ru'] = "Наследование";
 $hcms_lang['the-object-was-removed']['ru'] = "Объект был снят";
 $hcms_lang['the-object-could-not-be-removed']['ru'] = "Объект не мог быть удален";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ru'] = "Объект не существует, или у вас нет разрешения";
+$hcms_lang['add-to-favorites']['ru'] = "Добавить в "Избранное"";
+$hcms_lang['delete-favorite']['ru'] = "Удалить избранное";
+$hcms_lang['favorites']['ru'] = "Папки "Избранное"";
 ?>

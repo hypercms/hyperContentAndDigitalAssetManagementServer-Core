@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['pl'] = "Dziedzictwo";
 $hcms_lang['the-object-was-removed']['pl'] = "Obiekt został usunięty";
 $hcms_lang['the-object-could-not-be-removed']['pl'] = "Obiekt nie mógł być usunięty";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['pl'] = "Obiekt nie istnieje lub nie masz uprawnień";
+$hcms_lang['add-to-favorites']['pl'] = "Dodaj do ulubionych";
+$hcms_lang['delete-favorite']['pl'] = "Usuń ulubione";
+$hcms_lang['favorites']['pl'] = "Ulubione";
 ?>

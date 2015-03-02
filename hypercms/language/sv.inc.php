@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['sv'] = "Arv";
 $hcms_lang['the-object-was-removed']['sv'] = "Objektet har tagits bort";
 $hcms_lang['the-object-could-not-be-removed']['sv'] = "Objektet kan inte tas bort";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['sv'] = "Objektet finns inte eller så har du inte behörighet";
+$hcms_lang['add-to-favorites']['sv'] = "Lägg till i favoriter";
+$hcms_lang['delete-favorite']['sv'] = "Ta bort favorit";
+$hcms_lang['favorites']['sv'] = "Favoriter";
 ?>

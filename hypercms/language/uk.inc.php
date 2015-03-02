@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['uk'] = "Спадок";
 $hcms_lang['the-object-was-removed']['uk'] = "Об'єкт був видалений";
 $hcms_lang['the-object-could-not-be-removed']['uk'] = "Об'єкт не може бути видалений";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['uk'] = "Об'єкт не існує або ви не має дозволів";
+$hcms_lang['add-to-favorites']['uk'] = "Додати у вибране";
+$hcms_lang['delete-favorite']['uk'] = "Видалити зі списку вибраного";
+$hcms_lang['favorites']['uk'] = "Вибране";
 ?>

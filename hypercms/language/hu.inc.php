@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['hu'] = "Öröklés";
 $hcms_lang['the-object-was-removed']['hu'] = "A cél el lett távolítva";
 $hcms_lang['the-object-could-not-be-removed']['hu'] = "Az objektum nem távolítható el";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['hu'] = "Az objektum nem létezik, vagy Önnek nincs jogosultsága";
+$hcms_lang['add-to-favorites']['hu'] = "Hozzáadás a kedvencekhez";
+$hcms_lang['delete-favorite']['hu'] = "Kedvenc törlése";
+$hcms_lang['favorites']['hu'] = "Kedvencek";
 ?>

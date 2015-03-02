@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['tr'] = "Kalıtım";
 $hcms_lang['the-object-was-removed']['tr'] = "Sökülen nesne";
 $hcms_lang['the-object-could-not-be-removed']['tr'] = "Bu nesne kaldırılamadı";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['tr'] = "Bu nesne yok veya izniniz yok";
+$hcms_lang['add-to-favorites']['tr'] = "Sık kullanılanlara ekle";
+$hcms_lang['delete-favorite']['tr'] = "Sık Kullanılanları Sil";
+$hcms_lang['favorites']['tr'] = "Sık Kullanılanlar";
 ?>

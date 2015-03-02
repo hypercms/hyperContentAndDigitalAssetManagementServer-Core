@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['sk'] = "Dedičstvo";
 $hcms_lang['the-object-was-removed']['sk'] = "Objekt bol odstránený";
 $hcms_lang['the-object-could-not-be-removed']['sk'] = "Objekt sa nedá odstrániť";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['sk'] = "Objekt nie je prítomný alebo nemáte oprávnenie";
+$hcms_lang['add-to-favorites']['sk'] = "Pridať do obľúbených";
+$hcms_lang['delete-favorite']['sk'] = "Vymazať obľúbenú";
+$hcms_lang['favorites']['sk'] = "Obľúbené";
 ?>

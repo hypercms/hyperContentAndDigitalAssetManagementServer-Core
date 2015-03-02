@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['so'] = "Ku Dhaxal Waayey";
 $hcms_lang['the-object-was-removed']['so'] = "Waxa ayaa xilka laga";
 $hcms_lang['the-object-could-not-be-removed']['so'] = "Waxa aan laga";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['so'] = "Waxa aan jirin sida iyagoo jira ama aan lahayn permissions";
+$hcms_lang['add-to-favorites']['so'] = "Ku Dar Intaa ku gaboodfalay";
+$hcms_lang['delete-favorite']['so'] = "Dalbanayo u xilo";
+$hcms_lang['favorites']['so'] = "Ku Gaboodfal";
 ?>

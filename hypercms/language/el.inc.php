@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['el'] = "Κληρονομιάς";
 $hcms_lang['the-object-was-removed']['el'] = "Το αντικείμενο αφαιρέθηκε";
 $hcms_lang['the-object-could-not-be-removed']['el'] = "Το αντικείμενο δεν μπορεί να αφαιρεθεί";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['el'] = "Το αντικείμενο δεν υπάρχει, ή εσείς δεν έχετε τα κατάλληλα δικαιώματα";
+$hcms_lang['add-to-favorites']['el'] = "Προσθήκη στα αγαπημένα";
+$hcms_lang['delete-favorite']['el'] = "Διαγραφή αγαπημένου";
+$hcms_lang['favorites']['el'] = "Αγαπημένα";
 ?>

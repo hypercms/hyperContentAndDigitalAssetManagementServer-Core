@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['es'] = "Herencia";
 $hcms_lang['the-object-was-removed']['es'] = "El objeto se ha eliminado";
 $hcms_lang['the-object-could-not-be-removed']['es'] = "El objeto no se ha podido eliminar";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['es'] = "El objeto no existe o no tiene permisos";
+$hcms_lang['add-to-favorites']['es'] = "Agregar a favoritos";
+$hcms_lang['delete-favorite']['es'] = "Eliminar favorito";
+$hcms_lang['favorites']['es'] = "Favoritos";
 ?>

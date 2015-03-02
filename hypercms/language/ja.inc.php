@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['ja'] = "継承";
 $hcms_lang['the-object-was-removed']['ja'] = "は、オブジェクトが削除された";
 $hcms_lang['the-object-could-not-be-removed']['ja'] = "オブジェクトを削除できませんでした";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ja'] = "オブジェクトが存在しないか'アクセス権がない";
+$hcms_lang['add-to-favorites']['ja'] = "お気に入りに追加";
+$hcms_lang['delete-favorite']['ja'] = "お気に入りの削除";
+$hcms_lang['favorites']['ja'] = "[お気に入り]";
 ?>

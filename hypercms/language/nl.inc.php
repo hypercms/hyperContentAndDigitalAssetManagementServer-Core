@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['nl'] = "Erfenis";
 $hcms_lang['the-object-was-removed']['nl'] = "Het object is verwijderd";
 $hcms_lang['the-object-could-not-be-removed']['nl'] = "Het object kan niet worden verwijderd";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['nl'] = "Het object bestaat niet of u hebt niet de toestemmingen";
+$hcms_lang['add-to-favorites']['nl'] = "Voeg toe aan uw favorieten";
+$hcms_lang['delete-favorite']['nl'] = "Wis favoriet";
+$hcms_lang['favorites']['nl'] = "Favorieten";
 ?>

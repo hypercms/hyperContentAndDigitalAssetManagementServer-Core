@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['bn'] = "উত্তরাধিকার";
 $hcms_lang['the-object-was-removed']['bn'] = "গালাপেকই ভােলাবাসেত দূর হয়";
 $hcms_lang['the-object-could-not-be-removed']['bn'] = "গালাপেকই ভােলাবাসেত দূর হবে না";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['bn'] = "উদ্দেশ্য নেই বা দুই তৃতীয়াংশের বেশী প্রতিনিধির অনুমোদন দরকার হবে না";
+$hcms_lang['add-to-favorites']['bn'] = "বাড়াতে পছন্দেরগুলো";
+$hcms_lang['delete-favorite']['bn'] = "প্রিয় কাছে ইন্টারলিনকেজ ছিন্ন করে";
+$hcms_lang['favorites']['bn'] = "পছন্দেরগুলো";
 ?>

@@ -692,6 +692,19 @@ changelog:
 - bug fix: user_sendlink mixed up languages in e-mail message
 - implementation of new 'flat' design theme
 - minor changes in other design themes
+
+
+version 5.7.4
+release 04/2015
+changelog:
+- implementation of favorites feature (create and manage favorites)
+- function rdbms_getobject_id supports object path and hash as input
+- implementation of new functions createfavorite, getfavorites and deletefavorite
+- new permission for favorites management
+- change of checked out button behaviour in control_content
+- implementation of new function getlockedobjects for checked out objects
+- removed file page_checkdout
+- implementation of natural case sort for function getlockedobjects and getfavorites
 */
 
 // current version

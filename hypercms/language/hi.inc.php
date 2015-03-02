@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['hi'] = "वरासत";
 $hcms_lang['the-object-was-removed']['hi'] = "इस उद्देश्य को हटाया गया था।";
 $hcms_lang['the-object-could-not-be-removed']['hi'] = "नहीं हटाया जाना जा सकता का उद्देश् य";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['hi'] = "यह उद्देश्य मौजूद नहीं है या आपको अनुमति नहीं है";
+$hcms_lang['add-to-favorites']['hi'] = "पसंदीदा को जोड़ें";
+$hcms_lang['delete-favorite']['hi'] = "पसंदीदा को हटाएं";
+$hcms_lang['favorites']['hi'] = "पसंदीदा";
 ?>

@@ -1300,4 +1300,7 @@ $hcms_lang['inheritance']['zh-s'] = "继承";
 $hcms_lang['the-object-was-removed']['zh-s'] = "对象已删除";
 $hcms_lang['the-object-could-not-be-removed']['zh-s'] = "该对象不能被删除";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['zh-s'] = "该对象不存在,或者您没有权限。";
+$hcms_lang['add-to-favorites']['zh-s'] = "添加到“收藏夹”";
+$hcms_lang['delete-favorite']['zh-s'] = "删除我的最爱";
+$hcms_lang['favorites']['zh-s'] = "“收藏夹”";
 ?>

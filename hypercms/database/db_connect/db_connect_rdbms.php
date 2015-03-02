@@ -1543,7 +1543,7 @@ function rdbms_getobject_id ($object)
 {
   global $mgmt_config;
 
-  if ($object != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0))
+  if ($object != "")
   {
     // correct object name 
     // if unpublished object
@@ -1560,10 +1560,20 @@ function rdbms_getobject_id ($object)
       
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    $object = $db->escape_string ($object);  
-    $object = str_replace ("%", "*", $object);
+    $object = $db->escape_string ($object);
+    
+    // object path
+    if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0)
+    { 
+      $object = str_replace ("%", "*", $object);
 
-    $sql = 'SELECT object_id FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
+      $sql = 'SELECT object_id FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
+    }
+    // object hash
+    else
+    {
+      $sql = 'SELECT object_id FROM object WHERE hash=_utf8"'.$object.'" COLLATE utf8_bin';
+    }
     
     $errcode = "50026";
     $done = $db->query ($sql, $errcode, $mgmt_config['today']);

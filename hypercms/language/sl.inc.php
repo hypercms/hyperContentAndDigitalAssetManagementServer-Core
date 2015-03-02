@@ -1299,4 +1299,7 @@ $hcms_lang['inheritance']['sl'] = "Dedovanje";
 $hcms_lang['the-object-was-removed']['sl'] = "Predmet je bil odstranjen";
 $hcms_lang['the-object-could-not-be-removed']['sl'] = "Predmet ni bilo mogoče odstraniti";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['sl'] = "Predmet ne obstaja ali nimate dovoljenja";
+$hcms_lang['add-to-favorites']['sl'] = "Dodaj med priljubljene";
+$hcms_lang['delete-favorite']['sl'] = "Izbriši priljubljene";
+$hcms_lang['favorites']['sl'] = "Med priljubljene";
 ?>

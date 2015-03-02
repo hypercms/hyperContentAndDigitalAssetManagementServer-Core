@@ -76,6 +76,8 @@ $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
 if (
      ($action != "base_search") && 
+     ($action != "favorites") && 
+     ($action != "checkedout") && 
      ($action != "user_files" && $object_id == "" && $container_id == "") && 
      (!valid_publicationname ($site) || !valid_locationname ($search_dir))
    ) killsession ($user);
@@ -99,6 +101,16 @@ $token = createtoken ($user);
 if ($action == "user_files" && $login != "" && $site != "" && (($site == "*Null*" && checkrootpermission ('user')) || checkglobalpermission ($site, 'user')))
 {
   $object_array = rdbms_searchuser ($site, $login, 500); 
+}
+// favorites of user
+elseif ($action == "favorites" && $user != "")
+{
+  $object_array = getfavorites ($user);
+}
+// checked out objects of user
+elseif ($action == "checkedout" && $user != "")
+{
+  $object_array = getlockedobjects ($user);
 }
 // search for object ID or link ID
 elseif ($object_id != "")
@@ -715,7 +727,15 @@ parent.frames['controlFrame'].location.href='control_objectlist_menu.php?virtual
     
     <table width="150px" cellspacing="0" cellpadding="3" class="hcmsContextMenu">
       <tr>
-        <td>  
+        <td>
+          <?php if ($action == "favorites") { ?>
+          <a href=# id="href_fav_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('favorites_delete');"><img src="<?php echo getthemelocation(); ?>img/button_favorites_new.gif" id="img_fav_delete" align="absmiddle" border=0 />&nbsp;<?php echo $hcms_lang['delete-favorite'][$lang]; ?></a><br />        
+          <hr />
+          <?php } ?>  
+          <?php if ($action == "checkedout") { ?>
+          <a href=# id="href_unlock" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('checkin');"><img src="<?php echo getthemelocation(); ?>img/button_file_unlock.gif" id="img_unlock" align="absmiddle" border=0 />&nbsp;<?php echo $hcms_lang['check-in'][$lang]; ?></a><br />        
+          <hr />
+          <?php } ?>  
           <a href=# id="href_preview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('preview');"><img src="<?php echo getthemelocation(); ?>img/button_file_preview.gif" id="img_preview" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $hcms_lang['preview'][$lang]; ?></a><br />  
           <a href=# id="href_cmsview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" id="img_cmsview" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $hcms_lang['edit'][$lang]; ?></a><br />
           <a href=# id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="img_notify" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo $hcms_lang['notify-me'][$lang]; ?></a><br />
@@ -731,7 +751,7 @@ parent.frames['controlFrame'].location.href='control_objectlist_menu.php?virtual
           <hr />
           <a href=# id="href_publish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('publish');"><img src="<?php echo getthemelocation(); ?>img/button_file_publish.gif" id="img_publish" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $hcms_lang['publish'][$lang]; ?></a><br />  
           <a href=# id="href_unpublish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('unpublish');"><img src="<?php echo getthemelocation(); ?>img/button_file_unpublish.gif" id="img_unpublish" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $hcms_lang['unpublish'][$lang]; ?></a><br />
-          <hr />      
+          <hr />
           <a href=# id="href_print" onClick="hcms_hideContextmenu(); window.print();"><img src="<?php echo getthemelocation(); ?>img/button_print.gif" id="img_print" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $hcms_lang['access-to-link-management-failed-record-or-database-is-locked-or-missing'][$lang]; ?></a><br />     
           <a href=# id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.gif" id="img_refresh" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $hcms_lang['refresh'][$lang]; ?></a>
         </td>

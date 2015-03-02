@@ -500,7 +500,7 @@ else
   $point->setOnMouseOver('hcms_resetContext();');
   $maintree .= $point->generateHTML();
   
-  // ----------------------------------------- chat ---------------------------------------------- 
+  // ----------------------------------------- chat ----------------------------------------------
   if (!$is_mobile && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true)
   {
     $point = new hcms_menupoint ($hcms_lang['chat'][$lang], '#', 'chat.gif');
@@ -528,6 +528,15 @@ else
     if (checkrootpermission ('desktoptaskmgmt'))
     {
       $subpoint = new hcms_menupoint($hcms_lang['task-management'][$lang], "task_list.php?site=*Null*", 'task.gif');
+      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setTarget('workplFrame');
+      $subpoint->setOnMouseOver('hcms_resetContext();');
+      $point->addSubPoint($subpoint);
+    }
+    
+    if (checkrootpermission ('desktopfavorites'))
+    {
+      $subpoint = new hcms_menupoint($hcms_lang['favorites'][$lang], "frameset_objectlist.php?virtual=1&action=favorites", 'favorites.gif');
       $subpoint->setOnClick('changeSelection(this)');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
