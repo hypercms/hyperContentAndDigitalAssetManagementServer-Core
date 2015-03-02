@@ -93,20 +93,26 @@ elseif ($mediaobject != "")
 if (substr_count ($tagname, "art") == 1) $art = "art";
 else $art = "";
 
-// get character set 
-$charset = getcharset ($site, $contenttype);
-
-// if the destination character set is not supported by language set it need to be HTML escaped
-if (strtolower ($charset['charset']) != $hcms_lang_codepage[$lang])
+// set content-type if not set
+if (empty ($contenttype))
 {
-  $hcms_lang = html_encode ($hcms_lang, "ASCII");
+  $contenttype = "text/html; charset=".$mgmt_config[$site]['default_codepage'];
+  $charset = $mgmt_config[$site]['default_codepage'];
+}
+else
+{
+  // get character set from content-type
+  $charset_array = getcharset ($site, $contenttype); 
+
+  // set character set if not set
+  if (!empty ($charset_array['charset'])) $charset = $charset_array['charset'];
+  else $charset = $mgmt_config[$site]['default_codepage'];
 }
 
 // create secure token
 $token = createtoken ($user);
 
 if ($label == "") $label = $id;
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -158,7 +164,7 @@ function checkType()
       
       if (allowedext.indexOf(mediaext) < 0) 
       {
-        alert (hcms_entity_decode("<?php echo $hcms_lang['file-is-of-wrong-media-type-required-type'][$lang]." ".$mediatype; ?>"));
+        alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['file-is-of-wrong-media-type-required-type'][$lang], $charset, $lang)." ".$mediatype; ?>"));
         return false;
       }
       else return true;   
@@ -187,11 +193,11 @@ function validateForm()
         {
           p=val.indexOf('@');
 
-          if (p<1 || p==(val.length-1)) errors+='- '+nm+' <?php echo $hcms_lang['must-contain-an-e-mail-address'][$lang]; ?>.\n';
+          if (p<1 || p==(val.length-1)) errors+='- '+nm+' <?php echo getescapedtext ($hcms_lang['must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>.\n';
         }
         else if (test!='R')
         {
-          if (isNaN(val)) errors+='- '+nm+' <?php echo $hcms_lang['must-contain-a-number'][$lang]; ?>.\n';
+          if (isNaN(val)) errors+='- '+nm+' <?php echo getescapedtext ($hcms_lang['must-contain-a-number'][$lang], $charset, $lang); ?>.\n';
 
           if (test.indexOf('inRange') != -1)
           {
@@ -199,15 +205,15 @@ function validateForm()
             min=test.substring(8,p);
             max=test.substring(p+1);
 
-            if (val<min || max<val) errors+='- '+nm+' <?php echo $hcms_lang['must-contain-a-number-between'][$lang]; ?> '+min+' <?php echo $hcms_lang['and'][$lang]; ?> '+max+'.\n';
+            if (val<min || max<val) errors+='- '+nm+' <?php echo getescapedtext ($hcms_lang['must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' <?php echo getescapedtext ($hcms_lang['and'][$lang], $charset, $lang); ?> '+max+'.\n';
           }
         }
       }
-      else if (test.charAt(0) == 'R') errors += '- '+nm+' <?php echo $hcms_lang['is-required'][$lang]; ?>.\n';
+      else if (test.charAt(0) == 'R') errors += '- '+nm+' <?php echo getescapedtext ($hcms_lang['is-required'][$lang], $charset, $lang); ?>.\n';
     }
   }
 
-  if (errors) alert(hcms_entity_decode('<?php echo $hcms_lang['the-following-errors-occurred'][$lang]; ?>:\n'+errors));
+  if (errors) alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-errors-occurred'][$lang], $charset, $lang); ?>:\n'+errors));
   document.returnValue = (errors == '');
 }
 
@@ -282,10 +288,10 @@ function openBrWindowMedia(winName, features, type)
         popup.moveTo(screen.width/2-800/2, screen.height/2-600/2);
         popup.focus();
       }
-      else alert (hcms_entity_decode('<?php echo $hcms_lang['this-is-an-external-link'][$lang]; ?>'));
+      else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['this-is-an-external-link'][$lang], $charset, $lang); ?>'));
     }
   }
-  else alert (hcms_entity_decode('<?php echo $hcms_lang['no-file-selected'][$lang]; ?>'));  
+  else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-file-selected'][$lang], $charset, $lang); ?>'));  
 }
 //-->
 </script>
@@ -323,14 +329,14 @@ else $onsubmit = "submitMediaType();";
 
   <table border="0" cellspacing="3" cellpadding="0">
     <tr>
-      <td colspan=2 class="hcmsHeadlineTiny" nowrap="nowrap"><?php echo $hcms_lang['media-file'][$lang]; ?></td>
+      <td colspan=2 class="hcmsHeadlineTiny" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang); ?></td>
     </tr>
     <tr>
-      <td valign="top" nowrap="nowrap"><?php echo $hcms_lang['selected-media-file'][$lang]; ?>: </td>
+      <td valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang], $charset, $lang); ?>: </td>
       <td valign="top">
-        <input type="text" name="mediafile" value="<?php echo convertchars (getlocationname ($site, $mediafile, "comp"), $hcms_lang_codepage[$lang], $charset['charset']); ?>" style="width:300px;" />
-        <img onClick="openBrWindowMedia('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" align="absmiddle" alt="<?php echo $hcms_lang['edit'][$lang]; ?>" title="<?php echo $hcms_lang['edit'][$lang]; ?>" />
-        <img onClick="deleteEntry(document.forms['media'].elements['mediafile']); deleteEntry(document.forms['media'].elements['mediaobject']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" align="absmiddle" alt="<?php echo $hcms_lang['delete'][$lang]; ?>" title="<?php echo $hcms_lang['delete'][$lang]; ?>" />
+        <input type="text" name="mediafile" value="<?php echo convertchars (getlocationname ($site, $mediafile, "comp"), $hcms_lang_codepage[$lang], $charset); ?>" style="width:300px;" />
+        <img onClick="openBrWindowMedia('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
+        <img onClick="deleteEntry(document.forms['media'].elements['mediafile']); deleteEntry(document.forms['media'].elements['mediaobject']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" />
         <img onClick="<?php echo $onsubmit; ?>" name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
     </tr>
@@ -339,9 +345,9 @@ else $onsubmit = "submitMediaType();";
   if ($mediaalttext != "*Null*")
   {
     echo "<tr>\n";
-    echo "  <td nowrap=\"nowrap\">".$hcms_lang['alternative-text'][$lang].": </td>\n";
+    echo "  <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alternative-text'][$lang], $charset, $lang).": </td>\n";
     echo "  <td>\n";
-    echo "    <input type=\"text\" name=\"mediaalttext\" value=\"".convertchars ($mediaalttext, $hcms_lang_codepage[$lang], $charset['charset'])."\" style=\"width:300px;\" />\n";
+    echo "    <input type=\"text\" name=\"mediaalttext\" value=\"".convertchars ($mediaalttext, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:300px;\" />\n";
     echo "  </td>\n";
     echo "</tr>\n";
   }
@@ -349,7 +355,7 @@ else $onsubmit = "submitMediaType();";
   if ($mediaalign != "*Null*")
   {
     echo "<tr>\n";
-    echo "  <td valign=\"top\" nowrap=\"nowrap\">".$hcms_lang['alignment'][$lang].": </td>\n";
+    echo "  <td valign=\"top\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang).": </td>\n";
     echo "  <td valign=\"top\">\n";
     echo "    <select name=\"mediaalign\" style=\"width:300px;\">\n";
           $alignstandard = "";
@@ -389,13 +395,13 @@ else $onsubmit = "submitMediaType();";
             $alignright="selected=\"selected\"";
           }
 
-          echo "<option value=\"\" ".$alignstandard.">".$hcms_lang['standard'][$lang]."</option>\n";
-          echo "<option value=\"top\" ".$aligntop.">".$hcms_lang['top'][$lang]."</option>\n";
-          echo "<option value=\"middle\" ".$alignmiddle.">".$hcms_lang['middle'][$lang]."</option>\n";
-          echo "<option value=\"absmiddle\" ".$alignabsmiddle.">".$hcms_lang['absolute-middle'][$lang]."</option>\n";
-          echo "<option value=\"bottom\" ".$alignbottom.">".$hcms_lang['bottom'][$lang]."</option>\n";
-          echo "<option value=\"left\" ".$alignleft.">".$hcms_lang['left'][$lang]."</option>\n";
-          echo "<option value=\"right\" ".$alignright.">".$hcms_lang['right'][$lang]."</option>\n";
+          echo "<option value=\"\" ".$alignstandard.">".getescapedtext ($hcms_lang['standard'][$lang], $charset, $lang)."</option>\n";
+          echo "<option value=\"top\" ".$aligntop.">".getescapedtext ($hcms_lang['top'][$lang], $charset, $lang)."</option>\n";
+          echo "<option value=\"middle\" ".$alignmiddle.">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>\n";
+          echo "<option value=\"absmiddle\" ".$alignabsmiddle.">".getescapedtext ($hcms_lang['absolute-middle'][$lang], $charset, $lang)."</option>\n";
+          echo "<option value=\"bottom\" ".$alignbottom.">".getescapedtext ($hcms_lang['bottom'][$lang], $charset, $lang)."</option>\n";
+          echo "<option value=\"left\" ".$alignleft.">".getescapedtext ($hcms_lang['left'][$lang], $charset, $lang)."</option>\n";
+          echo "<option value=\"right\" ".$alignright.">".getescapedtext ($hcms_lang['right'][$lang], $charset, $lang)."</option>\n";
     echo "    </select>\n";
     echo "  </td>\n";
     echo "</tr>\n";
@@ -423,12 +429,12 @@ else $onsubmit = "submitMediaType();";
   
     echo "<tr>\n";
     echo "  <td valign=\"top\">\n";
-    echo "    ".$hcms_lang['media-size'][$lang].": </td>\n";
+    echo "    ".getescapedtext ($hcms_lang['media-size'][$lang], $charset, $lang).": </td>\n";
     echo "  <td valign=\"top\" class=\"hcmsHeadlineTiny\">\n";
-    if ($mediawidth != "*Null*") echo "    ".$hcms_lang['width'][$lang].": <input type=\"text\" name=\"mediawidth\" value=\"".$mediawidth."\" size=4 />\n";
-    else  echo "    ".$hcms_lang['width'][$lang].": <input type=\"text\" name=\"mediawidth\" value=\"\" size=4 disabled=\"disabled\" />\n";
-    if ($mediaheight != "*Null*") echo "    ".$hcms_lang['height'][$lang].": <input type=\"text\" name=\"mediaheight\" value=\"".$mediaheight."\" size=4 />\n";
-    else echo "    ".$hcms_lang['height'][$lang].": <input type=\"text\" name=\"mediaheight\" value=\"\" size=4 disabled=\"disabled\" />\n";
+    if ($mediawidth != "*Null*") echo "    ".getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediawidth\" value=\"".$mediawidth."\" size=4 />\n";
+    else  echo "    ".getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediawidth\" value=\"\" size=4 disabled=\"disabled\" />\n";
+    if ($mediaheight != "*Null*") echo "    ".getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediaheight\" value=\"".$mediaheight."\" size=4 />\n";
+    else echo "    ".getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediaheight\" value=\"\" size=4 disabled=\"disabled\" />\n";
     echo "  </td>\n";
     echo "</tr>\n";
   }

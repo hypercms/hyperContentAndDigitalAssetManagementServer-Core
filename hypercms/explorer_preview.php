@@ -65,16 +65,17 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   // load container
   $contentdata = loadcontainer ($object_info['content'], "work", "sys");
   
-  // get content-type
-  $charset = getcharset ($site, $contentdata);  
-  $name = convertchars ($file_info['name'], "UTF-8", $charset['charset']);
+  // get character set and content-type
+  $charset_array = getcharset ($site, $contentdata);
   
-  // if the destination character set is not supported by language set it need to be HTML escaped
-  if (strtolower ($charset['charset']) != $hcms_lang_codepage[$lang])
-  {
-    $hcms_lang = html_encode ($hcms_lang, "ASCII");
-  }
+  // set character set if not set
+  if (!empty ($charset_array['charset'])) $charset = $charset_array['charset'];
+  else $charset = $mgmt_config[$site]['default_codepage'];
   
+  $hcms_charset = $charset;
+  
+  $name = convertchars ($file_info['name'], "UTF-8", $charset);
+
   // media preview
   if (is_array ($object_info) && $object_info['media'] != "")
   {
@@ -106,15 +107,12 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     if ($rows != "") $metadata = "<hr /><table>\n".str_replace ("<td>", "<td style=\"width:140px; vertical-align:top;\">", $rows)."</table>\n";
   }
 }
-
-// set content-type if not set
-if (empty ($charset['contenttype'])) $charset['contenttype'] = getcodepage ($lang);
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="<?php echo $charset['contenttype']; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -125,7 +123,7 @@ if (empty ($charset['contenttype'])) $charset['contenttype'] = getcodepage ($lan
 <body class="hcmsWorkplaceGeneric">
 
 <!-- top bar -->
-<?php echo showtopbar ($hcms_lang['preview'][$lang], $lang); ?>
+<?php echo showtopbar (getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang), $lang); ?>
 
 <!-- content -->
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">

@@ -2299,7 +2299,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     
     // if browser is IE then we need to encode it (does not detect IE 11)
     if (isset ($user_client['msie']) && $user_client['msie'] > 0) $name = rawurlencode ($name);     
-savelog (array("$location, $media -> "), "aaa");
+
     // read file without headers
     if ($force == "noheader")
     {
@@ -7409,9 +7409,10 @@ function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $
       if (!isset ($permission['desktopsetting']) || $permission['desktopsetting'] != 1) {$permission['desktopsetting'] = 0;}
       if (!isset ($permission['desktoptaskmgmt']) || $permission['desktoptaskmgmt'] != 1) {$permission['desktoptaskmgmt'] = 0;}
       if (!isset ($permission['desktopcheckedout']) || $permission['desktopcheckedout'] != 1) {$permission['desktopcheckedout'] = 0;}
-      if (!isset ($permission['desktoptimetravel']) || $permission['desktoptimetravel'] != 1) {$permission['desktoptimetravel'] = 0;} 
+      if (!isset ($permission['desktoptimetravel']) || $permission['desktoptimetravel'] != 1) {$permission['desktoptimetravel'] = 0;}
+      if (!isset ($permission['desktopfavorites']) || $permission['desktopfavorites'] != 1) {$permission['desktopfavorites'] = 0;} 
       
-      $desktoppermissions = "desktop=".$permission['desktopglobal'].$permission['desktopsetting'].$permission['desktoptaskmgmt'].$permission['desktopcheckedout'].$permission['desktoptimetravel'];      
+      $desktoppermissions = "desktop=".$permission['desktopglobal'].$permission['desktopsetting'].$permission['desktoptaskmgmt'].$permission['desktopcheckedout'].$permission['desktoptimetravel'].$permission['desktopfavorites'];      
 
       // user permissions
       if (!isset ($permission['userglobal']) || $permission['userglobal'] != 1) {$permission['userglobal'] = 0;}
@@ -13093,7 +13094,9 @@ function lockobject ($site, $location, $page, $user)
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
-        
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".dat";
+    
     // publication management config
     if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
     
@@ -13152,11 +13155,11 @@ function lockobject ($site, $location, $page, $user)
           {
             if (@is_file ($mgmt_config['abs_path_data']."checkout/".$user.".dat"))
             {
-              $test = appendfile ($mgmt_config['abs_path_data']."checkout/", $user.".dat", $object);
+              $test = appendfile ($dir, $file, $object);
             }
             else
             {
-              $test = savefile ($mgmt_config['abs_path_data']."checkout/", $user.".dat", $object);
+              $test = savefile ($dir, $file, $object);
             }
           } 
         }
@@ -13203,6 +13206,101 @@ function lockobject ($site, $location, $page, $user)
   return $result;
 } 
 
+// ---------------------------------------- getlockobjects --------------------------------------------
+// function: getlockobjects()
+// input: user name
+// output: object path array / false
+
+function getlockedobjects ($user)
+{      
+  global $mgmt_config;
+  
+  if (valid_objectname ($user))
+  {
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".dat";
+    
+    $save = false;
+    
+    // get checked out objects of user
+    $data = loadfile ($dir, $file);
+    
+    if ($data != "")
+    {
+      $checkedout_array = explode ("\n", $data);
+      
+      if (is_array ($checkedout_array))
+      {
+        $object_array = array();
+        
+        foreach ($checkedout_array as $checkedout_rec)
+        {
+          if (substr_count ($checkedout_rec, "|") > 0)
+          {
+            // get container name            
+            list ($site, $cat, $container) = explode ("|", trim ($checkedout_rec));
+  
+            // if no corresponding siteaccess for this user
+            if (!checkpublicationpermission ($site))
+            {
+              // get container id
+              $container_id = substr ($container, 0, strpos ($container, ".xml"));
+      
+              // check-in content container
+              $test = unlockfile ($user, getcontentlocation ($container_id, 'abs_path_content'), $container.".wrk");
+            
+              // remove entry from list
+              if ($test == true)
+              {
+                $data = str_replace ($checkedout_rec."\n", "", $data);              
+                $save = true;
+              }
+            }
+            // user has access
+            else
+            {
+              // find corresponding objects in link management database
+              $result_array = getconnectedobject ($container);
+              
+              if ($result_array != false)
+              {  
+                foreach ($result_array as $result)
+                {
+                  $location = $result['convertedlocation'];
+                  $page = $result['object'];
+                  $page = correctfile ($location, $page, $user);
+                  
+                  // check if file exists
+                  if ($page != false)
+                  {
+                    $object_array[] = $location.$page;
+                  }
+                }
+              }
+            }
+          }
+        }
+        
+        // update checked out list if necessary
+        if ($save)
+        {
+          savefile ($dir, $file, $data);
+        }
+        
+        if (sizeof ($object_array) > 0)
+        {
+          natcasesort ($object_array);
+          return $object_array;
+        }
+        else return false;
+      }
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
 // ---------------------------------------- unlockobject --------------------------------------------
 // function: unlockobject()
 // input: site, location, object, user
@@ -13223,7 +13321,9 @@ function unlockobject ($site, $location, $page, $user)
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
-        
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".dat";
+      
     // publication management config
     if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
     
@@ -13276,13 +13376,13 @@ function unlockobject ($site, $location, $page, $user)
         $test = unlockfile ($user, getcontentlocation ($container_id, 'abs_path_content'), $container.".wrk");
         
         // add new checked out object to list
-        if ($test && @is_file ($mgmt_config['abs_path_data']."checkout/".$user.".dat"))
+        if ($test && @is_file ($dir.$file))
         {
-          $checkout_data = loadfile ($mgmt_config['abs_path_data']."checkout/", $user.".dat");
+          $checkout_data = loadfile ($dir, $file);
           
           $checkout_data = str_replace ($unlock_entry, "", $checkout_data);
           
-          $test = savefile ($mgmt_config['abs_path_data']."checkout/", $user.".dat", $checkout_data);
+          $test = savefile ($dir, $file, $checkout_data);
         }
         else $test = true;      
       }
@@ -13291,8 +13391,8 @@ function unlockobject ($site, $location, $page, $user)
       if ($test != false)
       {
         $add_onload = "if (eval(opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload();
-        if (eval(parent.frames['objFrame'])) parent.frames['objFrame'].location.reload();
-        if (eval(parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload();";
+if (eval(parent.frames['objFrame'])) parent.frames['objFrame'].location.reload();
+if (eval(parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload();";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-is-checked-in'][$lang]."</span><br />";
         
         $usedby = "";
@@ -15593,5 +15693,176 @@ function html_diff ($old, $new)
   }
   
   return $result;
+}
+
+// ====================================== FAVORITES =========================================
+
+// --------------------------------------- createfavorite -------------------------------------------
+// function: createfavorite ()
+// input: publication name (optional), location (optional), object name (optional), identifier (object ID, object hash) (optional), user name
+// output: true / false
+
+function createfavorite ($site="", $location="", $page="", $id="", $user)
+{
+  global $mgmt_config;
+  
+  if (valid_objectname ($user))
+  {
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".fav"; 
+    
+    if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
+    {
+      // define category if undefined
+      if ($cat == "") $cat = getcategory ($site, $location);
+      
+      // add slash if not present at the end of the location string
+      if (substr ($location, -1) != "/") $location = $location."/";  
+      
+      if (substr_count ($location, "%page%") != 1 && substr_count ($location, "%comp%") != 1) $location = convertpath ($site, $location, $cat);
+      
+      $object_id = rdbms_getobject_id ($location.$page);
+    }
+    // object ID or hash
+    elseif ($id != "")
+    {
+      // object ID
+      if (is_numeric ($id)) $object_id = $id;
+      // object path or hash
+      else $object_id = rdbms_getobject_id ($id);
+    }
+    
+    // save object id in favorite file
+    if ($object_id > 0)
+    {
+      if (is_file ($dir.$file))
+      {
+        $data = loadfile ($dir, $file);
+        
+        if ($data != false && trim ($data) != "") $data = str_replace ("|".$object_id."|", "|", $data).$object_id."|";
+        else $data = "|".$id."|";
+        
+        return savefile ($dir, $file, $data);
+      }
+      else
+      {
+        return savefile ($dir, $file, "|".$object_id."|");
+      }
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// --------------------------------------- getfavorites -------------------------------------------
+// function: getfavorites ()
+// input: user name, output [path,id] (optional)
+// output: object path or id array of users favorites / false
+
+function getfavorites ($user, $output="path")
+{
+  global $mgmt_config;
+  
+  if (valid_objectname ($user))
+  {
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".fav";
+    
+    if (is_file ($dir.$file))
+    {
+      $data = loadfile ($dir, $file);
+      
+      if ($data != false && trim ($data) != "")
+      {
+        $object_id_array = explode ("|", $data);
+        
+        if (is_array ($object_id_array))
+        {
+          if (strtolower ($output) == "id")
+          {
+            sort ($object_id_array);
+            return $object_id_array;
+          }
+          else
+          {
+            $object_path_array = array();
+            
+            foreach ($object_id_array as $object_id)
+            {
+              if ($object_id != "")
+              {
+                $object_path = rdbms_getobject ($object_id);
+                if (!empty ($object_path)) $object_path_array[] = $object_path;
+              }
+            }
+            
+            if (sizeof ($object_path_array) > 0)
+            {
+              natcasesort ($object_path_array);
+              return $object_path_array;
+            }
+            else return false;
+          }
+        }
+        else return false;
+      }
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// --------------------------------------- deletefavorite -------------------------------------------
+// function: deletefavorite ()
+// input: publication name (optional), location (optional), object name (optional), identifier (object ID, object hash) (optional), user name
+// output: true / false
+
+function deletefavorite ($site="", $location="", $page="", $id="", $user)
+{
+  global $mgmt_config;
+  
+  if (valid_objectname ($user))
+  {
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".fav"; 
+    
+    if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
+    {
+      // define category if undefined
+      $cat = getcategory ($site, $location);
+      
+      // add slash if not present at the end of the location string
+      if (substr ($location, -1) != "/") $location = $location."/";  
+      
+      if (substr_count ($location, "%page%") != 1 && substr_count ($location, "%comp%") != 1) $location = convertpath ($site, $location, $cat);
+      
+      $object_id = rdbms_getobject_id ($location.$page);
+    }
+    // object ID or hash
+    elseif ($id != "")
+    {
+      // object ID
+      if (is_numeric ($id)) $object_id = $id;
+      // object path or hash
+      else $object_id = rdbms_getobject_id ($id);
+    }
+    
+    // remove object id from favorite file
+    if ($object_id > 0)
+    {
+      if (is_file ($dir.$file))
+      {
+        $data = loadfile ($dir, $file);
+        
+        if ($data != false && trim ($data) != "") $data = str_replace ("|".$object_id."|", "|", $data);
+
+        return savefile ($dir, $file, $data);
+      }
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
 }
 ?>

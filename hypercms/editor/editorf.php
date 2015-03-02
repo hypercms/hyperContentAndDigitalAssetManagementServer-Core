@@ -70,16 +70,11 @@ if ($contenttype == "")
   $contenttype = "text/html; charset=".$mgmt_config[$site]['default_codepage'];
   $charset = $mgmt_config[$site]['default_codepage'];
 }
-else if (strpos ($contenttype, "charset") > 0)
+elseif (strpos ($contenttype, "charset") > 0)
 {
 	$charset = getattribute ($contenttype, "charset");
 }
-
-// if the destination character set is not supported by language set it need to be HTML escaped
-if (strtolower ($charset) != $hcms_lang_codepage[$lang])
-{
-  $hcms_lang = html_encode ($hcms_lang, "ASCII");
-}
+else $charset = $mgmt_config[$site]['default_codepage'];
 
 // read content using db_connect
 if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect))
@@ -154,7 +149,7 @@ $token = createtoken ($user);
 <html>
 	<head>
 		<title>hyperCMS</title>
-		<meta http-equiv="Content-Type" content="<?php echo $contenttype; ?>"/>
+		<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
 		<meta name="robots" content="noindex, nofollow">
 		<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css"/>
 		<script src="../javascript/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
@@ -239,13 +234,13 @@ $token = createtoken ($user);
   			<table border="0" cellspacing="2">
   				<tr>
   					<td nowrap="nowrap">
-  						<img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_so');" alt="<?php echo $hcms_lang['save'][$lang]; ?>" title="<?php echo $hcms_lang['save'][$lang]; ?>" align="absmiddle" />   
-  						<img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_sc');" alt="<?php echo $hcms_lang['save-and-close'][$lang]; ?>" title="<?php echo $hcms_lang['save-and-close'][$lang]; ?>" align="absmiddle" />
+  						<img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" align="absmiddle" />   
+  						<img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" />
   						<?php 
   						if (intval ($mgmt_config['autosave']) > 0) {
   						?>
               <div class="hcmsButton" style="height:22px;">
-  						  <input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" /><label for="autosave">&nbsp;<?php echo $hcms_lang['autosave'][$lang]; ?></label>
+  						  <input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" /><label for="autosave">&nbsp;<?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?></label>
               </div>
   						<?php 
   						} 
@@ -267,7 +262,7 @@ $token = createtoken ($user);
   			<tr>
   				<td align="center" valign="top">
   					<div style="width:100%; height:100%; z-index:10; overflow:auto;">
-  						<?php echo $hcms_lang['autosave'][$lang]; ?>
+  						<?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?>
   					</div>
   				</td>
   			</tr>

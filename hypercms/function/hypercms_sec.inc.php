@@ -33,7 +33,8 @@ function rootpermission ($site_name, $site_admin, $permission_str)
     if (!isset ($rootpermission['desktopsetting'])) $rootpermission['desktopsetting'] = 0;
     if (!isset ($rootpermission['desktoptaskmgmt'])) $rootpermission['desktoptaskmgmt'] = 0;
     if (!isset ($rootpermission['desktopcheckedout'])) $rootpermission['desktopcheckedout'] = 0; 
-    if (!isset ($rootpermission['desktoptimetravel'])) $rootpermission['desktoptimetravel'] = 0;      
+    if (!isset ($rootpermission['desktoptimetravel'])) $rootpermission['desktoptimetravel'] = 0;
+    if (!isset ($rootpermission['desktopfavorites'])) $rootpermission['desktopfavorites'] = 0;     
       
     if (!isset ($rootpermission['site'])) $rootpermission['site'] = 0;
     if (!isset ($rootpermission['sitecreate'])) $rootpermission['sitecreate'] = 0;
@@ -59,7 +60,8 @@ function rootpermission ($site_name, $site_admin, $permission_str)
         if ($rootpermission['desktopsetting'] == 0 && $desktop[1] == 1) $rootpermission['desktopsetting'] = 1;
         if ($rootpermission['desktoptaskmgmt'] == 0 && $desktop[2] == 1) $rootpermission['desktoptaskmgmt'] = 1;
         if ($rootpermission['desktopcheckedout'] == 0 && $desktop[3] == 1) $rootpermission['desktopcheckedout'] = 1;       
-        if ($rootpermission['desktoptimetravel'] == 0 && $desktop[4] == 1) $rootpermission['desktoptimetravel'] = 1;     
+        if ($rootpermission['desktoptimetravel'] == 0 && $desktop[4] == 1) $rootpermission['desktoptimetravel'] = 1;
+        if ($rootpermission['desktopfavorites'] == 0 && $desktop[5] == 1) $rootpermission['desktopfavorites'] = 1;    
 
         if ($site_admin == true)
         {
@@ -969,7 +971,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
           $inherit_db = inherit_db_read ();
 
           // set permissions and group name
-          if ($user != "hcms_download") $permission_str_admin = "desktop=11111&site=1111&user=1111&group=1111&pers=111111111&workflow=1111111111&template=11111&media=111111&component=11111111111&page=111111111";
+          if ($user != "hcms_download") $permission_str_admin = "desktop=111111&site=1111&user=1111&group=1111&pers=111111111&workflow=1111111111&template=11111&media=111111&component=11111111111&page=111111111";
           else $permission_str_admin = "desktop=00000&site=0000&user=0000&group=0000&pers=000000000&workflow=0000000000&template=00000&media=000000&component=10100000000&page=000000000";
           
           if ($user != "hcms_download")
@@ -2059,7 +2061,7 @@ function html_encode ($expression, $encoding="", $js_protection=false)
   if ($expression != "")
   {
     // input is string
-    if (!is_array ($expression))
+    if (!is_array ($expression) && strlen ($expression) > 0)
     { 
       // encode all characters with support multibyte character sets like UTF-8 (htmlentities is not supporting all languages)
       if (strtolower ($encoding) == "ascii")
@@ -2068,47 +2070,53 @@ function html_encode ($expression, $encoding="", $js_protection=false)
         $offset = 0;
         
         // to prevent double encoding decode first
-        $expression = html_decode ($expression);
+        $expression = html_decode ($expression, "UTF-8");
         
-        while ($offset >= 0)
+        if (substr_count ($expression, "&#") == 0 && strlen ($expression) > 0)
         {
-          $code = ord (substr ($expression, $offset, 1));
-          
-          // otherwise 0xxxxxxx
-          if ($code >= 128)
+          while ($offset < strlen ($expression))
           {
-            // 110xxxxx
-            if ($code < 224) $bytesnumber = 2;     
-            // 1110xxxx           
-            else if ($code < 240) $bytesnumber = 3;
-            // 11110xxx
-            else if ($code < 248) $bytesnumber = 4;
+            // get ord of each single character
+            $code = ord (substr ($expression, $offset, 1));
             
-            $codetemp = $code - 192 - ($bytesnumber > 2 ? 32 : 0) - ($bytesnumber > 3 ? 16 : 0);
-            
-            for ($i = 2; $i <= $bytesnumber; $i++)
+            // if ord is greater than 128 it must be a multibyte character (otherwise 0xxxxxxx)
+            if ($code >= 128)
             {
-              $offset ++;
-              // 10xxxxxx
-              $code2 = ord (substr ($expression, $offset, 1)) - 128;
-              $codetemp = $codetemp * 64 + $code2;
+              // 110xxxxx
+              if ($code < 224) $bytesnumber = 2;     
+              // 1110xxxx           
+              else if ($code < 240) $bytesnumber = 3;
+              // 11110xxx
+              else if ($code < 248) $bytesnumber = 4;
+              
+              $codetemp = $code - 192 - ($bytesnumber > 2 ? 32 : 0) - ($bytesnumber > 3 ? 16 : 0);
+              
+              for ($i = 2; $i <= $bytesnumber; $i++)
+              {
+                $offset++;
+                // 10xxxxxx
+                $code2 = ord (substr ($expression, $offset, 1)) - 128;
+                $codetemp = $codetemp * 64 + $code2;
+              }
+              
+              $code = $codetemp;
             }
             
-            $code = $codetemp;
+            $offset += 1;
+            
+            // html escape character
+            $result .= "&#".$code.";";
+
+            // if end of string -> end loop
+            if ($offset >= strlen ($expression)) break;
           }
-          
-          // html escape character
-          $result .= "&#".$code.";";
-          
-          $offset += 1;
-          if ($offset >= strlen ($expression)) $offset = -1;
         }
       }
       // enocode based on character set
       elseif ($encoding != "")
       {
         // to prevent double encoding decode first
-        $result = htmlentities (html_decode ($variable, $charset), ENT_QUOTES, $encoding);
+        $result = htmlentities (html_decode ($variable, $encoding), ENT_QUOTES, $encoding);
       }
       // enocde only a small set of special characters
       else 

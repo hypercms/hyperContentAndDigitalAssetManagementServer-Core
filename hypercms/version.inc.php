@@ -693,7 +693,6 @@ changelog:
 - implementation of new 'flat' design theme
 - minor changes in other design themes
 
-
 version 5.7.4
 release 04/2015
 changelog:
@@ -705,6 +704,9 @@ changelog:
 - implementation of new function getlockedobjects for checked out objects
 - removed file page_checkdout
 - implementation of natural case sort for function getlockedobjects and getfavorites
+- new function getescapetext to HTML encode specific texts from the language files (needed when presentation uses other character set than the language file)
+- implementation of escapetext in template engine and UI instead of converting all texts of a language file
+- bug fix: html_encode was double encoding if ASCII was selected as encoding
 */
 
 // current version

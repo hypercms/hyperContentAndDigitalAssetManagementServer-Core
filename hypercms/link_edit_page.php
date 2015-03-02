@@ -83,13 +83,20 @@ $file_info = getfileinfo ($site, $location.$page, $cat);
 if (substr_count ($tagname, "art") == 1) $art = "art";
 else $art = "";
 
-// get character set 
-$charset = getcharset ($site, $contenttype);
-
-// if the destination character set is not supported by language set it need to be HTML escaped
-if (strtolower ($charset['charset']) != $hcms_lang_codepage[$lang])
+// set content-type if not set
+if (empty ($contenttype))
 {
-  $hcms_lang = html_encode ($hcms_lang, "ASCII");
+  $contenttype = "text/html; charset=".$mgmt_config[$site]['default_codepage'];
+  $charset = $mgmt_config[$site]['default_codepage'];
+}
+else
+{
+  // get character set from content-type
+  $charset_array = getcharset ($site, $contenttype); 
+
+  // set character set if not set
+  if (!empty ($charset_array['charset'])) $charset = $charset_array['charset'];
+  else $charset = $mgmt_config[$site]['default_codepage'];
 }
 
 // create secure token
@@ -180,7 +187,7 @@ function geturl (type)
       }
       else
       {
-        alert(hcms_entity_decode('<?php echo $hcms_lang['this-is-an-external-page-link'][$lang]; ?>'));
+        alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['this-is-an-external-page-link'][$lang], $charset, $lang); ?>'));
         return "";
       }
     }
@@ -205,7 +212,7 @@ function openBrWindowLink (winName, features, type)
     }
     return false;
   }
-  else alert(hcms_entity_decode('<?php echo $hcms_lang['no-link-selected'][$lang]; ?>'));
+  else alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-link-selected'][$lang], $charset, $lang); ?>'));
 }
 
 function checkForm()
@@ -306,15 +313,15 @@ function refreshPreview ()
   
   <table border="0" cellspacing="3" cellpadding="0">
     <tr>
-      <td nowrap colspan="2" class="hcmsHeadlineTiny"><?php echo $hcms_lang['link'][$lang]; ?></td>
+      <td nowrap colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['link'][$lang], $charset, $lang); ?></td>
     </tr>      
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['selected-linkurl'][$lang]; ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-linkurl'][$lang], $charset, $lang); ?>:</td>
       <td>
-        <input type="text" name="link_name" value="<?php echo convertchars (getlocationname ($site, $linkhref, "page", "path"), $hcms_lang_codepage[$lang], $charset['charset']); ?>" style="width:220px;" />
-        <img onClick="openBrWindowLink('preview','scrollbars=yes,resizable=yes,width=800,height=600', 'preview')" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonView" src="<?php echo getthemelocation(); ?>img/button_file_liveview.gif" align="absmiddle" alt="<?php echo $hcms_lang['preview'][$lang]; ?>" title="<?php echo $hcms_lang['preview'][$lang]; ?>" />
-        <img onClick="openBrWindowLink('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" align="absmiddle" alt="<?php echo $hcms_lang['edit'][$lang]; ?>" title="<?php echo $hcms_lang['edit'][$lang]; ?>" />
-        <img onClick="deleteEntry(document.link.linkhref); deleteEntry(document.link.link_name);" class="hcmsButtonTiny hcmsButtonSizeSquare" border=0 name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" align="absmiddle" alt="<?php echo $hcms_lang['delete'][$lang]; ?>" title="<?php echo $hcms_lang['delete'][$lang]; ?>" />
+        <input type="text" name="link_name" value="<?php echo convertchars (getlocationname ($site, $linkhref, "page", "path"), $hcms_lang_codepage[$lang], $charset); ?>" style="width:220px;" />
+        <img onClick="openBrWindowLink('preview','scrollbars=yes,resizable=yes,width=800,height=600', 'preview')" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonView" src="<?php echo getthemelocation(); ?>img/button_file_liveview.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" />
+        <img onClick="openBrWindowLink('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
+        <img onClick="deleteEntry(document.link.linkhref); deleteEntry(document.link.link_name);" class="hcmsButtonTiny hcmsButtonSizeSquare" border=0 name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" />
         <img onClick="checkForm();" border=0 name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
     </tr>
@@ -322,7 +329,7 @@ function refreshPreview ()
   if ($linktarget != "*Null*")
   {
     echo "<tr>\n";
-    echo "  <td>".$hcms_lang['open-link'][$lang].":</td>\n";
+    echo "  <td>".getescapedtext ($hcms_lang['open-link'][$lang], $charset, $lang).":</td>\n";
     echo "  <td>\n";
     echo "    <select name=\"linktarget\" style=\"width:220px;\">\n";
 
@@ -337,10 +344,10 @@ function refreshPreview ()
       }
     }
     
-    echo "<option value=\"_self\""; if ($linktarget == "_self") echo " selected=\"selected\""; echo ">".$hcms_lang['in-same-frame'][$lang]."</option>\n";
-    echo "<option value=\"_parent\""; if ($linktarget == "_parent") echo " selected=\"selected\""; echo ">".$hcms_lang['in-parent-frame'][$lang]."</option>\n";
-    echo "<option value=\"_top\""; if ($linktarget == "_top") echo " selected=\"selected\""; echo ">".$hcms_lang['in-same-browser-window'][$lang]."</option>\n";
-    echo "<option value=\"_blank\""; if ($linktarget == "_blank") echo " selected=\"selected\""; echo ">".$hcms_lang['in-new-browser-window'][$lang]."</option>\n";
+    echo "<option value=\"_self\""; if ($linktarget == "_self") echo " selected=\"selected\""; echo ">".getescapedtext ($hcms_lang['in-same-frame'][$lang], $charset, $lang)."</option>\n";
+    echo "<option value=\"_parent\""; if ($linktarget == "_parent") echo " selected=\"selected\""; echo ">".getescapedtext ($hcms_lang['in-parent-frame'][$lang], $charset, $lang)."</option>\n";
+    echo "<option value=\"_top\""; if ($linktarget == "_top") echo " selected=\"selected\""; echo ">".getescapedtext ($hcms_lang['in-same-browser-window'][$lang], $charset, $lang)."</option>\n";
+    echo "<option value=\"_blank\""; if ($linktarget == "_blank") echo " selected=\"selected\""; echo ">".getescapedtext ($hcms_lang['in-new-browser-window'][$lang], $charset, $lang)."</option>\n";
     echo "    </select>\n";
     echo "  </td>\n";
     echo "</tr>\n";
@@ -349,9 +356,9 @@ function refreshPreview ()
   if ($linktext != "*Null*")
   {
     echo "<tr>\n";
-    echo "  <td>".$hcms_lang['link-text'][$lang].":</td>\n";
+    echo "  <td>".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang).":</td>\n";
     echo "  <td>\n";
-    echo "    <input type=\"text\" name=\"linktext\" value=\"".convertchars ($linktext, $hcms_lang_codepage[$lang], $charset['charset'])."\" style=\"width:220px;\" />\n";
+    echo "    <input type=\"text\" name=\"linktext\" value=\"".convertchars ($linktext, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:220px;\" />\n";
     echo "  </td>\n";
     echo "</tr>\n";
   }

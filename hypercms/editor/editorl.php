@@ -63,13 +63,11 @@ if ($contenttype == "")
   $contenttype = "text/html; charset=".$mgmt_config[$site]['default_codepage'];
   $charset = $mgmt_config[$site]['default_codepage'];
 }
-elseif (strpos ($contenttype, "charset") > 0) $charset = getattribute ($contenttype, "charset");
-
-// if the destination character set is not supported by language set it need to be HTML escaped
-if (strtolower ($charset) != $hcms_lang_codepage[$lang])
+elseif (strpos ($contenttype, "charset") > 0)
 {
-  $hcms_lang = html_encode ($hcms_lang, "ASCII");
+  $charset = getattribute ($contenttype, "charset");
 }
+else $charset = $mgmt_config[$site]['default_codepage'];
 
 // create secure token
 $token = createtoken ($user);
@@ -80,7 +78,7 @@ if ($label == "") $label = $id;
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="<?php echo $contenttype; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="../javascript/main.js" type="text/javascript">
 </script>
@@ -155,8 +153,8 @@ $list_array = explode ("|", $list);
     <table border="0" cellspacing="2">
       <tr>
         <td>
-        <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorl_so');" alt="<?php echo $hcms_lang['save'][$lang]; ?>" title="<?php echo $hcms_lang['save'][$lang]; ?>" />    
-        <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorl_sc');" alt="<?php echo $hcms_lang['save-and-close'][$lang]; ?>" title="<?php echo $hcms_lang['save-and-close'][$lang]; ?>" />
+        <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorl_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />    
+        <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorl_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" />
         <br />
         <select name="<?php echo $tagname."[".$id."]"; ?>">
         <?php

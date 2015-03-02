@@ -127,7 +127,7 @@ function getlanguagefile ($lang="en")
 // ----------------------------------------- getcodepage ------------------------------------------
 // function: getcodepage()
 // input: language code (optional)
-// output: code page/character set
+// output: code page (character set)
 
 function getcodepage ($lang="en")
 {
@@ -139,7 +139,7 @@ function getcodepage ($lang="en")
   }
   elseif ($lang != "" && empty ($hcms_lang_codepage[$lang]) && !empty ($mgmt_config['abs_path_cms']))
   {
-    // try to include langauge file
+    // try to include language file
     if (is_file ($mgmt_config['abs_path_cms']."language/".$lang.".inc.php")) require_once ($mgmt_config['abs_path_cms']."language/".$lang.".inc.php");
     
     if (!empty ($hcms_lang_codepage[$lang])) return $hcms_lang_codepage[$lang];
@@ -168,6 +168,31 @@ function getcalendarlang ($lang="en")
     else return "en";
   }
   else return "en";
+}
+
+// ----------------------------------------- getescapedtext ------------------------------------------
+// function: getescapedtext()
+// input: text as string, character set of text (optional), language code
+// output: HTML escaped text
+
+// description: if the destination character set is not supported by language set the text need to be HTML escaped.
+
+function getescapedtext ($text, $charset="UTF-8", $lang)
+{
+  global $mgmt_config, $hcms_lang_codepage, $hcms_lang;
+  
+  if ($text != "" && $charset != "" && $lang != "")
+  {
+    if (strtolower ($charset) != strtolower ($hcms_lang_codepage[$lang]))
+    {
+      $text_encoded = html_encode ($text, "ASCII");
+      
+      if (!empty ($text_encoded )) return $text_encoded;
+      else return $text;
+    }
+    else return $text;
+  }
+  else return $text;
 }
 
  // ========================================= LOAD CONTENT ============================================
