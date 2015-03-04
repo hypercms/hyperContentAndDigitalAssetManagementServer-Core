@@ -206,7 +206,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
 <?php } ?>
 
 <div id="searchtab_general" style="position:absolute; width:520px; height:360px; z-index:2; left:5px; top:57px; visibility:visible;"> 
-  <form name="searchform_general" method="post" action="search_script_rdbms.php" target="_parent">
+  <form name="searchform_general" method="post" action="search_objectlist.php" target="_parent">
     <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
      
     <table border=0 cellspacing=1 cellpadding=2 width="100%" height="100%" bgcolor="#000000">
@@ -474,7 +474,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
 </div>
 
 <div id="searchtab_advanced" style="position:absolute; width:520px; height:360px; z-index:3; left:5px; top:57px; visibility:hidden;"> 
-  <form name="searchform_advanced" method="post" action="search_script_rdbms.php" target="_parent">
+  <form name="searchform_advanced" method="post" action="search_objectlist.php" target="_parent">
     <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" /> 
     
     <table border=0 cellspacing=1 cellpadding=2 width="100%" height="100%" bgcolor="#000000">
@@ -651,7 +651,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
 
 <?php if ($setlocalpermission['create'] == 1) { ?>
 <div id="searchtab_replace" style="position:absolute; width:520px; height:360px; z-index:4; left:5px; top:57px; visibility:hidden;"> 
-  <form name="searchform_replace" method="post" action="search_script_rdbms.php" target="_parent">
+  <form name="searchform_replace" method="post" action="search_objectlist.php" target="_parent">
     <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
      
     <table border=0 cellspacing=1 cellpadding=2 width="100%" height="100%" bgcolor="#000000">
@@ -743,7 +743,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
 
 <?php if ($cat == "comp") { ?>
 <div id="searchtab_images" style="position:absolute; width:520px; height:360px; z-index:2; left:5px; top:57px; visibility:hidden;"> 
-  <form name="searchform_images" method="post" action="search_script_rdbms.php" target="_parent">
+  <form name="searchform_images" method="post" action="search_objectlist.php" target="_parent">
     <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
      
     <table border=0 cellspacing=1 cellpadding=2 width="100%" height="100%" bgcolor="#000000">

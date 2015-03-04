@@ -84,8 +84,8 @@ if ($label == "") $label = $artid;
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 
@@ -219,7 +219,7 @@ function submitform ()
   
   if (artdatetocheck < artdatefromcheck)
   {
-    alert(hcms_entity_decode('<?php getescapedtext (echo $hcms_lang['the-end-date-is-before-the-start-date-of-the-article'][$lang], $charset, $lang); ?>'));
+    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-end-date-is-before-the-start-date-of-the-article'][$lang], $charset, $lang); ?>'));
     return false;
   }
   else

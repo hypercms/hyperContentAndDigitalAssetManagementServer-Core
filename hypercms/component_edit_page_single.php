@@ -202,10 +202,11 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
           <?php
           $dir_item = @dir ($mgmt_config['abs_path_data']."customer/".$site."/");
 
-          $i = 0;
-
           if ($dir_item != false)
           {
+            $i = 0;
+            $item_files = array();
+          
             while ($entry = $dir_item->read())
             {
               if ($entry != "." && $entry != ".." && !is_dir ($entry))

@@ -389,7 +389,9 @@ if ($object_array != false && @sizeof ($object_array) > 0)
           $setlocalpermission = setlocalpermission ($item_site, $ownergroup, $item_cat);
 
           if ($ownergroup != false && $setlocalpermission['root'] == 1 && valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object))
-          {           
+          {
+            $metadata = "";
+                    
             // page
             if ($item_info['type'] == "Page") $item_type = $hcms_lang['object-page'][$lang];
             // component
@@ -432,7 +434,6 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               
               // read meta data of media file
               if (!$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
-              else $metadata = "";
               
               // link for copy & paste of download links
               if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)

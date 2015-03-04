@@ -362,20 +362,6 @@ function imgConvert (type, config)
   else return false; 
 }
 
-function switchselector (id)
-{
-  if (eval (id))
-  {
-    var selector = document.getElementById(id);
-    
-    if (selector.style.visibility == 'hidden') selector.style.visibility = 'visible';
-    else selector.style.visibility = 'hidden';
-    
-    return true;
-  }
-  else return false;
-}
-
 function escapevalue (value)
 {
   if (value != "")
@@ -546,7 +532,7 @@ else
     
     if ($perm_rendering && $lock_rendering && $page != "" && !empty ($media) && ($doc_rendering || $img_rendering || $dropbox_rendering))
     {
-      echo "<div class=\"hcmsButton hcmsButtonSizeWide\" onClick=\"switchselector ('select_obj_convert');\"><img src=\"".getthemelocation()."img/button_file_download.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" id=\"pic_obj_convert\" name=\"pic_obj_convert\" alt=\"".$hcms_lang['download-file'][$lang]."\" title=\"".$hcms_lang['download-file'][$lang]."\" /><img src=\"".getthemelocation()."img/pointer_select.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeNarrow\" alt=\"".$hcms_lang['download-file'][$lang]."\" title=\"".$hcms_lang['download-file'][$lang]."\" /></div>
+      echo "<div class=\"hcmsButton hcmsButtonSizeWide\" onClick=\"hcms_switchSelector('select_obj_convert');\"><img src=\"".getthemelocation()."img/button_file_download.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" id=\"pic_obj_convert\" name=\"pic_obj_convert\" alt=\"".$hcms_lang['download-file'][$lang]."\" title=\"".$hcms_lang['download-file'][$lang]."\" /><img src=\"".getthemelocation()."img/pointer_select.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeNarrow\" alt=\"".$hcms_lang['download-file'][$lang]."\" title=\"".$hcms_lang['download-file'][$lang]."\" /></div>
         <div id=\"select_obj_convert\" class=\"hcmsSelector\" style=\"position:absolute; top:5px; left:".$left."; visibility:hidden; z-index:999; max-height:80px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">\n
         <div class=\"hcmsSelectorItem\" onclick=\"submitToSelf('download');\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" style=\"border:0; margin:0; padding:0;\" align=\"absmiddle\" />".$hcms_lang['original'][$lang]."&nbsp;</div>\n";
         

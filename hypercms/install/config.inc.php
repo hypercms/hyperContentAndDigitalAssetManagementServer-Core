@@ -104,25 +104,33 @@ $mgmt_config['videoplayer'] = "";
 // "inlineview": view of page based on template, includes hyperCMS specific code (buttons) and inline text editing
 $mgmt_config['objectview'] = "inlineview";
 
-// Define standard view for explorer object list ("detail" = detail view; "small", "medium" = thumbnail gallery view)
+// Define standard view for explorer object list ("detail" = detail view; "small", "medium", "large" = thumbnail gallery view)
 $mgmt_config['explorerview'] = "detail";
 
-// Define if sidebar for object preview should be enabled (true) or disabled (false)
+// Define if sidebar for object preview should be displayed (true) by default or not (false)
 $mgmt_config['sidebar'] = true;
+
+// Define if chat should be enabled (true) or disabled (false)
+$mgmt_config['chat'] = true;
 
 // Define standard mail link type ("access" = access-link; "download" = download-link)
 $mgmt_config['maillink'] = "download";
 
 // Define name of the theme/design for the UI 
-$mgmt_config['theme'] = "standard";
+// Themes are located in directory hypercms/theme/
+$mgmt_config['theme'] = "";
 
 // Define alternative logo (image file name) for top frame. the file must be in cms/images.
 $mgmt_config['logo_top'] = "";
 
-// Show (true) or hide (false) information boxes to provide usage information to th user.
+// Show (true) or hide (false) information boxes to provide additional information to the user.
 $mgmt_config['showinfobox'] = true;
 
-// Define URL to show in welcome page
+// Define home boxes to show for each user if no indiviual selection has been made (use ; as seperarator)
+// Home boxes are located in directory hypercms/box/
+$mgmt_config['homeboxes'] = "news;tasks;recent_objects;up_and_downloads;recent_downloads;recent_uploads";
+
+// Define URL to show in welcome/news home box
 $mgmt_config['welcome'] = "https://cms.hypercms.net/home/update_info_en.xhtml";
 
 // ------------------------------------------------------------------------
@@ -284,11 +292,9 @@ $mgmt_lang_shortcut['sv'] = "sv";
 $mgmt_lang_name['uk'] = "Ukrainian";
 $mgmt_lang_shortcut['uk'] = "uk";
 
-
 // Urdu
 $mgmt_lang_name['ur'] = "Urdu";
 $mgmt_lang_shortcut['ur'] = "ur";
-
 
 // Default Language
 $mgmt_lang_shortcut_default = "en";

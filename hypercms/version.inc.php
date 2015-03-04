@@ -350,7 +350,7 @@ changelog:
 - bug fix: clipboard was set to false on cut/copyobject, only one object was copied if more where selected
 - new parameter in buildview to execute the script code in templates
 - public download setting enables/disables download and wrapper links in info-tab, if disabled only mail-links (access/dwonload) can be used
-- bug fix: view/download buttons in search_objetclist had wrong style-class
+- bug fix: view/download buttons in search_objectlist had wrong style-class
 - bug fix: general search when access via mail-link was not working due to error in framest_objectlist
 - unpublished objects are greyed out, locked objects use the locked icon
 - create all videos for video player at once
@@ -461,7 +461,7 @@ changelog:
 - bug fix: template engine issue with language session variable
 - improvements in compare content versions, multimedia content from files will be compared as well as meta data (taken from content container)
 - seperation of template includes (new expression) from page and component templates in the GUI
-- bug fix: search_script_rdbms.php used wrong input parameter for function rdbms_searchcontent
+- bug fix: search_objectlist.php used wrong input parameter for function rdbms_searchcontent
 - bug fix: object name was missing in event log when removing objects 
 - bug fix: the template of folders (should be meta) was set to the wrong category
 - bug fix: edittemplate did not trim the file extension which could lead to white spaces after the file name end that can hardly be recognized
@@ -707,8 +707,13 @@ changelog:
 - new function getescapetext to HTML encode specific texts from the language files (needed when presentation uses other character set than the language file)
 - implementation of escapetext in template engine and UI instead of converting all texts of a language file
 - bug fix: html_encode was double encoding if ASCII was selected as encoding
+- bug fix: content-type has not been set to provided input and not to html for various input forms
+- implementation of management of home boxes for each user on home screen
+- implementation of new function setboxex and getboxes
+- implementation of JS function hcms_switchSelector in main.js
+- implementation of new homboxes for recent downloads and uploads of a user
 */
 
 // current version
-$version = "Version 5.7.3";
+$version = "Version 5.7.4";
 ?>

@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['bn'] = "
 $hcms_lang['add-to-favorites']['bn'] = "বাড়াতে পছন্দেরগুলো";
 $hcms_lang['delete-favorite']['bn'] = "প্রিয় কাছে ইন্টারলিনকেজ ছিন্ন করে";
 $hcms_lang['favorites']['bn'] = "পছন্দেরগুলো";
+$hcms_lang['my-recent-downloads']['bn'] = "আমার সাম্প্রতিক বছরগুলোতে-master";
+$hcms_lang['my-recent-uploads']['bn'] = "আমার সাম্প্রতিক বছরগুলোতে uploads";
 ?>

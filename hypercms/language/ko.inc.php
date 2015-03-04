@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ko'] = "
 $hcms_lang['add-to-favorites']['ko'] = "즐겨찾기에 추가";
 $hcms_lang['delete-favorite']['ko'] = "삭제 즐겨찾기";
 $hcms_lang['favorites']['ko'] = "즐겨찾기";
+$hcms_lang['my-recent-downloads']['ko'] = "내 최근 다운로드";
+$hcms_lang['my-recent-uploads']['ko'] = "내 최근 업로드";
 ?>

@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['bg'] = "
 $hcms_lang['add-to-favorites']['bg'] = "Добави към "Предпочитани"";
 $hcms_lang['delete-favorite']['bg'] = "Изтриване на любими места";
 $hcms_lang['favorites']['bg'] = "Предпочитани";
+$hcms_lang['my-recent-downloads']['bg'] = "Моят последните изтегляния";
+$hcms_lang['my-recent-uploads']['bg'] = "Моят последните качване";
 ?>

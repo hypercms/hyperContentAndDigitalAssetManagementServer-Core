@@ -15774,6 +15774,7 @@ function getfavorites ($user, $output="path")
       
       if ($data != false && trim ($data) != "")
       {
+        $data = trim ($data, "|");
         $object_id_array = explode ("|", $data);
         
         if (is_array ($object_id_array))
@@ -15860,6 +15861,94 @@ function deletefavorite ($site="", $location="", $page="", $id="", $user)
         return savefile ($dir, $file, $data);
       }
       else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// ====================================== HOME BOXES =========================================
+
+// --------------------------------------- setboxes -------------------------------------------
+// function: setboxes ()
+// input: home box names as array or string, user name
+// output: true / false
+
+function setboxes ($name_array, $user)
+{
+  global $mgmt_config;
+  
+  if (valid_objectname ($user))
+  {
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".home.dat";
+    
+    // set input as array if it is string and not empty
+    if (!is_array ($name_array))
+    {
+      $name_array = trim ($name_array, "|");
+      
+      // provided input has seperators
+      if (substr_count ($name_array, "|") > 0)
+      {
+        $name_array = explode ("|", $name_array);
+      }
+      // provided input is single value as string
+      else
+      {
+        $temp = $name_array;      
+        $name_array = array();
+        $name_array[0] = $temp;
+      }
+    }
+    
+    $data = "|";
+
+    // save box in file
+    foreach ($name_array as $name)
+    {
+      if (valid_objectname ($name) && is_file ($mgmt_config['abs_path_cms']."box/".$name.".inc.php"))
+      {
+        $data .= $name."|";
+      }
+    }
+    
+    // save file
+    return savefile ($dir, $file, $data);
+  }
+  else return false;
+}
+
+// --------------------------------------- getboxes -------------------------------------------
+// function: getboxes ()
+// input: user name
+// output: selected home box names of user as array / false
+
+function getboxes ($user)
+{
+  global $mgmt_config;
+  
+  if (valid_objectname ($user))
+  {
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".home.dat";
+    
+    if (is_file ($dir.$file))
+    {
+      $data = loadfile ($dir, $file);
+      
+      if ($data != false && trim ($data) != "")
+      {
+        $data = trim ($data, "|");
+        $name_array = explode ("|", $data);
+        
+        if (is_array ($name_array) && sizeof ($name_array) > 0)
+        {
+          return $name_array;
+        }
+        else return array();
+      }
+      else return array();
     }
     else return false;
   }

@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ja'] = "
 $hcms_lang['add-to-favorites']['ja'] = "お気に入りに追加";
 $hcms_lang['delete-favorite']['ja'] = "お気に入りの削除";
 $hcms_lang['favorites']['ja'] = "[お気に入り]";
+$hcms_lang['my-recent-downloads']['ja'] = "私の最近のダウンロード";
+$hcms_lang['my-recent-uploads']['ja'] = "私の最近のアップロード";
 ?>

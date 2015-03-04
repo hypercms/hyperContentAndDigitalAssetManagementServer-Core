@@ -85,13 +85,13 @@ function correctnames ()
   return true;
 }
 
-function insertOption(newtext, newvalue)
+function insertOption (newtext, newvalue)
 {
   newentry = new Option (newtext, newvalue, false, true);
   selectbox = document.forms['component'].elements['component_array'];
   var i;
   
-  if(selectbox.length > 0)
+  if (selectbox.length > 0)
   {  
     var position = -1;
     
@@ -119,7 +119,8 @@ function insertOption(newtext, newvalue)
 
 function moveSelected (select, down)
 {
-  if (select.selectedIndex != -1) {
+  if (select.selectedIndex != -1)
+  {
     if (down)
     {
       if (select.selectedIndex != select.options.length - 1)
@@ -140,14 +141,13 @@ function moveSelected (select, down)
     swapOption.text = select.options[select.selectedIndex].text;
     swapOption.value = select.options[select.selectedIndex].value;
     swapOption.selected = select.options[select.selectedIndex].selected;
-    // would not work in FireFox: swapOption.defaultSelected = select.options[select.selectedIndex].defaultSelected;
 
     for (var property in swapOption) select.options[select.selectedIndex][property] = select.options[i][property];
     for (var property in swapOption) select.options[i][property] = swapOption[property];
   }
 }
 
-function deleteSelected(select)
+function deleteSelected (select)
 {
   if (select.length > 0)
   {
@@ -169,11 +169,7 @@ function submitMultiComp(select)
       component = component + select.options[i].value + "|";
     }
   }
-  else
-  {
-    component = "";
-  }
-
+  
   document.forms['component'].elements['component'].value = component;
   correctnames ();
   document.forms['component'].submit();

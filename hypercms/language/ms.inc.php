@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ms'] = "
 $hcms_lang['add-to-favorites']['ms'] = "Tambah ke kegemaran";
 $hcms_lang['delete-favorite']['ms'] = "Hapuskan kegemaran";
 $hcms_lang['favorites']['ms'] = "QShortcut";
+$hcms_lang['my-recent-downloads']['ms'] = "Saya terkini Muatturun";
+$hcms_lang['my-recent-uploads']['ms'] = "Terbaru saya Penjejak Waktu Peribadi";
 ?>

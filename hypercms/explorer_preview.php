@@ -34,6 +34,9 @@ $cat = getcategory ($site, $location);
 $location = deconvertpath ($location, "file");
 $location_esc = convertpath ($site, $location, $cat);
 
+// set dafault character set if no object is provided
+$charset = $hcms_lang_codepage[$lang];
+
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
@@ -68,12 +71,13 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   // get character set and content-type
   $charset_array = getcharset ($site, $contentdata);
   
-  // set character set if not set
+  // set character set
   if (!empty ($charset_array['charset'])) $charset = $charset_array['charset'];
   else $charset = $mgmt_config[$site]['default_codepage'];
   
   $hcms_charset = $charset;
   
+  // convert object name
   $name = convertchars ($file_info['name'], "UTF-8", $charset);
 
   // media preview

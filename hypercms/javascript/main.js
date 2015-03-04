@@ -136,6 +136,20 @@ function hcms_openWindow (theURL,winName,features,width,height)
   popup.focus();
 }
 
+function hcms_switchSelector (id)
+{
+  if (eval (id))
+  {
+    var selector = document.getElementById(id);
+    
+    if (selector.style.visibility == 'hidden') selector.style.visibility = 'visible';
+    else selector.style.visibility = 'hidden';
+    
+    return true;
+  }
+  else return false;
+}
+
 function hcms_openChat ()
 {
   // standard browser (open/close chat)
@@ -252,8 +266,8 @@ function hcms_getProp (obj, prop)
 }
 
 // Activates dragging of moveelem when elem is dragged. Also disables any default behaviour on elem.
-function hcms_drag (elem, moveelem) {
-
+function hcms_drag (elem, moveelem)
+{
   // Setting up needed variables
   document.hcms_move = {};
   elem.hcms_move = {}

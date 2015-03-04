@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['hi'] = "
 $hcms_lang['add-to-favorites']['hi'] = "पसंदीदा को जोड़ें";
 $hcms_lang['delete-favorite']['hi'] = "पसंदीदा को हटाएं";
 $hcms_lang['favorites']['hi'] = "पसंदीदा";
+$hcms_lang['my-recent-downloads']['hi'] = "हाल में डाउनलोड करता हूं";
+$hcms_lang['my-recent-uploads']['hi'] = "हाल ही मेरे अपलोड प्रगति पर है";
 ?>

@@ -116,20 +116,6 @@ function invite (inviteuser)
   }
 }
 
-function switchselector (id)
-{
-  if (eval (id))
-  {
-    var selector = document.getElementById(id);
-    
-    if (selector.style.visibility == 'hidden') selector.style.visibility = 'visible';
-    else selector.style.visibility = 'hidden';
-    
-    return true;
-  }
-  else return false;
-}
-
 function adjust_height ()
 {
   var height = hcms_getDocHeight();  
@@ -147,7 +133,7 @@ $users_online = getusersonline ();
 
 if (is_array ($users_online) && sizeof ($users_online) > 1)
 {
-  $users_online_button = "<button class=\"hcmsButtonOrange\" style=\"heigth:20px; margin:0; white-space:nowrap;\" onClick=\"switchselector ('select_user');\">".$hcms_lang['invite-online-user'][$lang]."</button>
+  $users_online_button = "<button class=\"hcmsButtonOrange\" style=\"heigth:20px; margin:0; white-space:nowrap;\" onClick=\"hcms_switchSelector('select_user');\">".$hcms_lang['invite-online-user'][$lang]."</button>
   <div id=\"select_user\" class=\"hcmsSelector\" style=\"position:fixed; top:26px; right:8px; visibility:hidden; z-index:999; max-height:300px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">\n";
 
   foreach ($users_online as $user_online) if ($user_online != $user) $users_online_button .= "    <div class=\"hcmsSelectorItem\" style=\"text-align:left\" onclick=\"invite('".$user_online."');\"><img src=\"".getthemelocation()."img/user.gif\" style=\"border:0; margin:0; padding:0;\" align=\"absmiddle\" />".$user_online."&nbsp;</div>\n";

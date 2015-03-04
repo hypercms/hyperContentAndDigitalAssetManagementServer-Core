@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['da'] = "
 $hcms_lang['add-to-favorites']['da'] = "Føj til favoritter";
 $hcms_lang['delete-favorite']['da'] = "Slet favorit";
 $hcms_lang['favorites']['da'] = "Favoritter";
+$hcms_lang['my-recent-downloads']['da'] = "Min seneste downloads";
+$hcms_lang['my-recent-uploads']['da'] = "Min seneste uploads";
 ?>

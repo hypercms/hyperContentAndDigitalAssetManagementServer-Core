@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['th'] = "
 $hcms_lang['add-to-favorites']['th'] = "เพิ่มลงในรายการที่ใช้ประจำ";
 $hcms_lang['delete-favorite']['th'] = "ลบรายการที่ใช้ประจำ";
 $hcms_lang['favorites']['th'] = "รายการที่ใช้ประจำ";
+$hcms_lang['my-recent-downloads']['th'] = "การดาวน์โหลดของผมเมื่อไม่นานมานี้";
+$hcms_lang['my-recent-uploads']['th'] = "การอัปโหลดของผมเมื่อไม่นานมานี้";
 ?>

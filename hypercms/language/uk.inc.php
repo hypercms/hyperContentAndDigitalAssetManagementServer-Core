@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['uk'] = "
 $hcms_lang['add-to-favorites']['uk'] = "Додати у вибране";
 $hcms_lang['delete-favorite']['uk'] = "Видалити зі списку вибраного";
 $hcms_lang['favorites']['uk'] = "Вибране";
+$hcms_lang['my-recent-downloads']['uk'] = "Мої останні завантаження";
+$hcms_lang['my-recent-uploads']['uk'] = "Мої останні завантаження";
 ?>

@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['hu'] = "
 $hcms_lang['add-to-favorites']['hu'] = "Hozzáadás a kedvencekhez";
 $hcms_lang['delete-favorite']['hu'] = "Kedvenc törlése";
 $hcms_lang['favorites']['hu'] = "Kedvencek";
+$hcms_lang['my-recent-downloads']['hu'] = "A legutóbbi letöltések";
+$hcms_lang['my-recent-uploads']['hu'] = "Az én legutóbbi feltöltések";
 ?>

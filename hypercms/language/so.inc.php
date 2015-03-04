@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['so'] = "
 $hcms_lang['add-to-favorites']['so'] = "Ku Dar Intaa ku gaboodfalay";
 $hcms_lang['delete-favorite']['so'] = "Dalbanayo u xilo";
 $hcms_lang['favorites']['so'] = "Ku Gaboodfal";
+$hcms_lang['my-recent-downloads']['so'] = "Aan dhawaan downloads";
+$hcms_lang['my-recent-uploads']['so'] = "Aan dhawaan uploads";
 ?>

@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['zh-s'] =
 $hcms_lang['add-to-favorites']['zh-s'] = "添加到“收藏夹”";
 $hcms_lang['delete-favorite']['zh-s'] = "删除我的最爱";
 $hcms_lang['favorites']['zh-s'] = "“收藏夹”";
+$hcms_lang['my-recent-downloads']['zh-s'] = "我最近下载";
+$hcms_lang['my-recent-uploads']['zh-s'] = "我最近上传";
 ?>

@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['nl'] = "
 $hcms_lang['add-to-favorites']['nl'] = "Voeg toe aan uw favorieten";
 $hcms_lang['delete-favorite']['nl'] = "Wis favoriet";
 $hcms_lang['favorites']['nl'] = "Favorieten";
+$hcms_lang['my-recent-downloads']['nl'] = "Mijn recente downloads";
+$hcms_lang['my-recent-uploads']['nl'] = "Mijn recente uploads";
 ?>

@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['sq'] = "
 $hcms_lang['add-to-favorites']['sq'] = "Shtoni në të preferuarat";
 $hcms_lang['delete-favorite']['sq'] = "Fshi favorite";
 $hcms_lang['favorites']['sq'] = "favorites";
+$hcms_lang['my-recent-downloads']['sq'] = "tim të fundit shkarkimet";
+$hcms_lang['my-recent-uploads']['sq'] = "ngarkimet sime të fundit";
 ?>

@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['sk'] = "
 $hcms_lang['add-to-favorites']['sk'] = "Pridať do obľúbených";
 $hcms_lang['delete-favorite']['sk'] = "Vymazať obľúbenú";
 $hcms_lang['favorites']['sk'] = "Obľúbené";
+$hcms_lang['my-recent-downloads']['sk'] = "Moja nedávna na stiahnutie";
+$hcms_lang['my-recent-uploads']['sk'] = "Moja nedávna nahrávanie";
 ?>

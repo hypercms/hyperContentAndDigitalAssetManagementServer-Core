@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['fi'] = "
 $hcms_lang['add-to-favorites']['fi'] = "Lisää suosikkeihin";
 $hcms_lang['delete-favorite']['fi'] = "Poista suosikit";
 $hcms_lang['favorites']['fi'] = "Suosikit";
+$hcms_lang['my-recent-downloads']['fi'] = "Viimeisimmät lataukset";
+$hcms_lang['my-recent-uploads']['fi'] = "Viimeisimmät lataukset";
 ?>

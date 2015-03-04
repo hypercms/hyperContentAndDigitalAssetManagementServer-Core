@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['sr'] = "
 $hcms_lang['add-to-favorites']['sr'] = "Dodati u favorite";
 $hcms_lang['delete-favorite']['sr'] = "Izbrisati omiljene";
 $hcms_lang['favorites']['sr'] = "Favoriti";
+$hcms_lang['my-recent-downloads']['sr'] = "Moj nedavni preuzimanje datoteka";
+$hcms_lang['my-recent-uploads']['sr'] = "Moj nedavni uploads";
 ?>

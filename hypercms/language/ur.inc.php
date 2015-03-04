@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ur'] = "
 $hcms_lang['add-to-favorites']['ur'] = "سامان فیورٹ";
 $hcms_lang['delete-favorite']['ur'] = "چھیلنا پسندیدہ";
 $hcms_lang['favorites']['ur'] = "فیورٹ";
+$hcms_lang['my-recent-downloads']['ur'] = "میری حالیہ downloads";
+$hcms_lang['my-recent-uploads']['ur'] = "میری حالیہ uploads";
 ?>

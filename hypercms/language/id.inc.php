@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['id'] = "
 $hcms_lang['add-to-favorites']['id'] = "Tambahkan ke favorit";
 $hcms_lang['delete-favorite']['id'] = "Menghapus favorit";
 $hcms_lang['favorites']['id'] = "Favorit";
+$hcms_lang['my-recent-downloads']['id'] = "Download terakhir Saya";
+$hcms_lang['my-recent-uploads']['id'] = "Terakhir Saya upload";
 ?>

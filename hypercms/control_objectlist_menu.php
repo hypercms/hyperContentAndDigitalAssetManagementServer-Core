@@ -549,20 +549,6 @@ function switchview (view)
   else return false;
 }
 
-function switchselector (id)
-{
-  if (eval (id))
-  {
-    var selector = document.getElementById(id);
-    
-    if (selector.style.visibility == 'hidden') selector.style.visibility = 'visible';
-    else selector.style.visibility = 'hidden';
-    
-    return true;
-  }
-  else return false;
-}
-
 function switchsidebar ()
 {  
   if (!sidebar) view = true;
@@ -766,7 +752,7 @@ else
       <form name=\"memory\" style=\"display:none;\">
         <input name=\"view\" type=\"hidden\" value=\"".$temp_explorerview."\" />
       </form>
-      <div onClick=\"switchselector('select_obj_view');\" class=\"hcmsButton hcmsButtonSizeWide\"><img src=\"".getthemelocation()."img/button_view_gallery_".$temp_explorerview.".gif\" style=\"padding:2px; width:18px; height:18px;\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".$hcms_lang['thumbnail-gallery'][$lang]."\" title=\"".$hcms_lang['thumbnail-gallery'][$lang]."\" /><img src=\"".getthemelocation()."img/pointer_select.gif\" class=\" hcmsButtonSizeNarrow\" alt=\"".$hcms_lang['thumbnail-gallery'][$lang]."\" title=\"".$hcms_lang['thumbnail-gallery'][$lang]."\" /></div>
+      <div onClick=\"hcms_switchSelector('select_obj_view');\" class=\"hcmsButton hcmsButtonSizeWide\"><img src=\"".getthemelocation()."img/button_view_gallery_".$temp_explorerview.".gif\" style=\"padding:2px; width:18px; height:18px;\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".$hcms_lang['thumbnail-gallery'][$lang]."\" title=\"".$hcms_lang['thumbnail-gallery'][$lang]."\" /><img src=\"".getthemelocation()."img/pointer_select.gif\" class=\" hcmsButtonSizeNarrow\" alt=\"".$hcms_lang['thumbnail-gallery'][$lang]."\" title=\"".$hcms_lang['thumbnail-gallery'][$lang]."\" /></div>
       <div id=\"select_obj_view\" class=\"hcmsSelector\" style=\"position:absolute; top:5px; left:".$left."; visibility:hidden; z-index:999; max-height:80px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">
         <div class=\"hcmsSelectorItem\" onclick=\"switchview ('large');\"><img src=\"".getthemelocation()."img/button_view_gallery_large.gif\" style=\"border:0; margin:0; padding:1px;\" align=\"absmiddle\" />".$hcms_lang['large-thumbnails'][$lang]."&nbsp;</div>
         <div class=\"hcmsSelectorItem\" onclick=\"switchview ('medium');\"><img src=\"".getthemelocation()."img/button_view_gallery_medium.gif\" style=\"border:0; padding:1px;\" align=\"absmiddle\" />".$hcms_lang['medium-thumbnails'][$lang]."&nbsp;</div>

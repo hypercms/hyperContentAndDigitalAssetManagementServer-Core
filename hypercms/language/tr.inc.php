@@ -1303,4 +1303,6 @@ $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['tr'] = "
 $hcms_lang['add-to-favorites']['tr'] = "Sık kullanılanlara ekle";
 $hcms_lang['delete-favorite']['tr'] = "Sık Kullanılanları Sil";
 $hcms_lang['favorites']['tr'] = "Sık Kullanılanlar";
+$hcms_lang['my-recent-downloads']['tr'] = "My son yüklemeler";
+$hcms_lang['my-recent-uploads']['tr'] = "My son yüklemeleri";
 ?>
