@@ -2116,7 +2116,7 @@ function html_encode ($expression, $encoding="", $js_protection=false)
       elseif ($encoding != "")
       {
         // to prevent double encoding decode first
-        $result = htmlentities (html_decode ($variable, $encoding), ENT_QUOTES, $encoding);
+        $result = htmlentities (html_decode ($expression, $encoding), ENT_QUOTES, $encoding);
       }
       // enocde only a small set of special characters
       else 

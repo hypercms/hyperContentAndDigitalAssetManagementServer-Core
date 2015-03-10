@@ -1,4 +1,4 @@
-var text = new Array();
+Ôªøvar text = new Array();
 
 text['today'] = 'Heute';
 text['time'] = 'Zeit';
@@ -40,7 +40,7 @@ text['monthNamesShort'] = new Array(
 text['monthNames'] = new Array(
 'Januar',
 'Februar',
-'M‰rz',
+'M√§rz',
 'April',
 'Mai',
 'Juni',
@@ -55,13 +55,13 @@ text['monthNames'] = new Array(
 
 text['footerDateFormat'] = '%D, %F %j %Y',
 text['dateFormat'] = '%n-%j-%Y',
-text['footerDefaultText'] = 'Datum w‰hlen',
+text['footerDefaultText'] = 'Datum w√§hlen',
 
 text['clear'] = 'Datum entfernen',
 text['prev_year'] = 'Voriges Jahr',
 text['prev_month'] = 'Voriges Monat',
-text['next_month'] = 'N‰chstes Monat',
-text['next_year'] = 'N‰chstes Jahr',
+text['next_month'] = 'N√§chstes Monat',
+text['next_year'] = 'N√§chstes Jahr',
 text['close'] = 'Schliessen',
 
 

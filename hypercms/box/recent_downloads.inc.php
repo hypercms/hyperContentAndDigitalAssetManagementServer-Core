@@ -34,13 +34,12 @@ if (is_array ($stats_array) && sizeof ($stats_array) > 0)
 
   if ($is_mobile) $width = "92%";
   else $width = "320px";
-  
+
+if (is_array ($object_array) && sizeof ($object_array) > 0)
+{
   echo "
   <div id=\"recent_downloads\" class=\"hcmsInfoBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
     <div class=\"hcmsHeadline\" style=\"margin:2px;\">".$hcms_lang['my-recent-downloads'][$lang]."</div>";
-
-if (is_array ($object_array) && sizeof ($object_array) > 0)
-{ 
   
   reset ($object_array);
   $i = 0;

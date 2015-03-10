@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 	Contributed by Carlos Nunes, cmanunes@gmail.com, 26.01.2008
 */
 
@@ -14,16 +14,16 @@ text['dayNamesShort'] = new Array(
 'Qua',
 'Qui',
 'Sex',
-'Sáb'
+'SÃ¡b'
 );
 text['dayNames'] = new Array(
 'Domingo',
 'Segunda',
-'Terça',
+'TerÃ§a',
 'Quarta',
 'Quinta',
 'Sexta',
-'Sábado'
+'SÃ¡bado'
 );
 
 text['monthNamesShort'] = new Array(
@@ -63,15 +63,15 @@ text['footerDefaultText'] = 'Seleccionar data',
 
 text['clear'] = 'Limpar Data',
 text['prev_year'] = 'Ano anterior',
-text['prev_month'] = 'Mês anterior',
-text['next_month'] = 'Próximo mês',
-text['next_year'] = 'Próximo ano',
+text['prev_month'] = 'MÃªs anterior',
+text['next_month'] = 'PrÃ³ximo mÃªs',
+text['next_year'] = 'PrÃ³ximo ano',
 text['close'] = 'Fechar',
 
 
 // weekend days (0 - sunday, ... 6 - saturday)
 text['weekend'] = "0,6";
-text['make_first'] = "Começa com %s";
+text['make_first'] = "ComeÃ§a com %s";
 
 
 RichCalendar.rc_lang_data['pt'] = text;
