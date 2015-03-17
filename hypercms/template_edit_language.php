@@ -69,7 +69,7 @@ function applylanguage ()
       <td><input name="language_sessionvar" type="text" value="" /></td>
     </tr>  
     <tr align="left" valign="top">
-      <td nowrap="nowrap"><?php echo $hcms_lang['language-values'][$lang]; ?>:<br /><?php echo $hcms_lang['use-as-seperator'][$lang]; ?></td>
+      <td nowrap="nowrap"><?php echo $hcms_lang['language-values'][$lang]; ?>:<br />(<?php echo $hcms_lang['use-as-delimiter'][$lang]; ?>)</td>
       <td><input name="language_sessionvalues" type="text" value="" /></td>
     </tr>
     <tr align="left" valign="top"> 

@@ -162,7 +162,7 @@ function submitSingleComp(select)
 echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
 ?>
 
-<form name="component" action="page_save.php" target="_parent" method="post">
+<form name="component" action="service/savecontent.php" target="_parent" method="post">
   <input type="hidden" name="view" value="<?php echo $view; ?>" />
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />

@@ -11,12 +11,12 @@
 
 // ------------------------- setsession -----------------------------
 // function: setsession()
-// input: temporary hyperCMS variable name, value (optional)
+// input: temporary hyperCMS variable name or array, value as string or array (optional)
 // output: true / false on error
 
 function setsession ($variable, $content="")
 {
-  if ($variable != "" && session_id() != "")
+  if ($variable != "" && !is_array ($variable) && session_id() != "")
   {
     // define variable name (prefix hcms_ is required)
     if (strpos ("_".$variable, "hcms_") == 0) $variable = "hcms_".$variable;

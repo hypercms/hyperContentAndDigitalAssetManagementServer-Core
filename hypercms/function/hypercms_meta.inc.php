@@ -665,7 +665,7 @@ function id3_getdata ($file)
     $file_info = getfileinfo ("", $file, "comp");
     
     // check file extension
-    if (substr_count ($hcms_ext['audio'].".", $file_info['ext'].".") == 0) return false;
+    if (substr_count (strtolower ($hcms_ext['audio']).".", $file_info['ext'].".") == 0) return false;
     
     set_time_limit (30);
     $file = realpath ($file);
@@ -780,7 +780,7 @@ function id3_writefile ($file, $id3, $keep_data=true)
     $file_info = getfileinfo ("", $file, "comp");
     
     // check file extension
-    if (substr_count ($hcms_ext['audio'].".", $file_info['ext'].".") == 0) return false;
+    if (substr_count (strtolower ($hcms_ext['audio']).".", $file_info['ext'].".") == 0) return false;
     
     // get location and media file name
     $location = getlocation ($file);
@@ -942,7 +942,7 @@ function xmp_getdata ($file)
     $file_info = getfileinfo ("", $file, "comp");
     
     // check file extension
-    if (substr_count ($hcms_ext['image'].".", $file_info['ext'].".") == 0) return false;
+    if (substr_count (strtolower ($hcms_ext['image']).".", $file_info['ext'].".") == 0) return false;
   
     // get location and media file name
     $location = getlocation ($file);
@@ -1237,7 +1237,7 @@ function exif_getdata ($file)
     $file_info = getfileinfo ("", $file, "comp");
     
     // check file extension
-    if (substr_count ($hcms_ext['image'].".", $file_info['ext'].".") == 0) return false;
+    if (substr_count (strtolower ($hcms_ext['image']).".", $file_info['ext'].".") == 0) return false;
     
     // get location and media file name
     $location = getlocation ($file);
@@ -1493,7 +1493,7 @@ function iptc_getdata ($file)
     $file_info = getfileinfo ("", $file, "comp");
     
     // check file extension
-    if (substr_count ($hcms_ext['image'].".", $file_info['ext'].".") == 0) return false;
+    if (substr_count (strtolower ($hcms_ext['image']).".", $file_info['ext'].".") == 0) return false;
   
     // get location and media file name
     $location = getlocation ($file);
@@ -2353,7 +2353,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
     $mediafile_ext = strtolower (@strrchr ($mediafile, "."));
 
     // check file extension
-    if (substr_count ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video'].".", $mediafile_ext.".") > 0)
+    if (substr_count (strtolower ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video']).".", $mediafile_ext.".") > 0)
     {
       // media location
       $medialocation = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";

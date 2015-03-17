@@ -497,19 +497,19 @@ else
       else $doc_rendering = false;
     }
     
-    $doc_rendering = $doc_rendering && is_array($mgmt_docconvert) && array_key_exists($media_info['ext'], $mgmt_docconvert);
+    $doc_rendering = $doc_rendering && is_array ($mgmt_docconvert) && array_key_exists ($media_info['ext'], $mgmt_docconvert);
     
     foreach ($mgmt_imagepreview as $imgpreview_ext => $imgpreview)
     {
       // check file extension
-      if (substr_count ($imgpreview_ext.".", $media_info['ext'].".") > 0 )
+      if (substr_count (strtolower ($imgpreview_ext).".", $media_info['ext'].".") > 0 )
   		{
   			// check if there are more options for providing the image in other formats
-  			if (is_array ($mgmt_imageoptions) && !empty($mgmt_imageoptions))
+  			if (is_array ($mgmt_imageoptions) && !empty ($mgmt_imageoptions))
   			{	
   				foreach ($mgmt_imageoptions as $config_fileext => $config_array) 
   				{
-  					foreach ($config_array as $config_name => $config_parameter) 
+  					foreach ($config_array as $config_name => $value) 
   					{
   						if ($config_name != "thumbnail" && $config_name != "original") 
   						{
@@ -533,39 +533,49 @@ else
     if ($perm_rendering && $lock_rendering && $page != "" && !empty ($media) && ($doc_rendering || $img_rendering || $dropbox_rendering))
     {
       echo "<div class=\"hcmsButton hcmsButtonSizeWide\" onClick=\"hcms_switchSelector('select_obj_convert');\"><img src=\"".getthemelocation()."img/button_file_download.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" id=\"pic_obj_convert\" name=\"pic_obj_convert\" alt=\"".$hcms_lang['download-file'][$lang]."\" title=\"".$hcms_lang['download-file'][$lang]."\" /><img src=\"".getthemelocation()."img/pointer_select.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeNarrow\" alt=\"".$hcms_lang['download-file'][$lang]."\" title=\"".$hcms_lang['download-file'][$lang]."\" /></div>
-        <div id=\"select_obj_convert\" class=\"hcmsSelector\" style=\"position:absolute; top:5px; left:".$left."; visibility:hidden; z-index:999; max-height:80px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">\n
-        <div class=\"hcmsSelectorItem\" onclick=\"submitToSelf('download');\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" style=\"border:0; margin:0; padding:0;\" align=\"absmiddle\" />".$hcms_lang['original'][$lang]."&nbsp;</div>\n";
-        
+        <div id=\"select_obj_convert\" class=\"hcmsSelector\" style=\"position:absolute; top:5px; left:".$left."; visibility:hidden; z-index:999; max-height:80px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">\n";
+      
+      // original file
+      if (empty ($downloadformats) || (is_document ($media_info['ext']) && !empty ($downloadformats['document']['original'])) || (is_image ($media_info['ext']) && !empty ($downloadformats['image']['original'])))
+      {
+        echo "        <div class=\"hcmsSelectorItem\" onclick=\"submitToSelf('download');\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" style=\"border:0; margin:0; padding:1px;\" align=\"absmiddle\" />".$hcms_lang['original'][$lang]."&nbsp;</div>\n";
+      }
+
       // document download options
       if ($doc_rendering)
       {
-        if (!empty ($mgmt_docoptions['.pdf']) && in_array('.pdf', $mgmt_docconvert[$media_info['ext']])) echo "        <div class=\"hcmsSelectorItem\" onclick=\"docConvert ('pdf');\"><img src=\"".getthemelocation()."img/file_pdf.gif\" style=\"border:0; margin:0; padding:1px;\" align=\"absmiddle\" />".$hcms_lang['pdf'][$lang]."&nbsp;</div>\n";
-        if (!empty ($mgmt_docoptions['.doc']) && in_array('.doc', $mgmt_docconvert[$media_info['ext']])) echo "        <div class=\"hcmsSelectorItem\" onclick=\"docConvert ('doc');\"><img src=\"".getthemelocation()."img/file_doc.gif\" style=\"border:0; padding:1px;\" align=\"absmiddle\" />".$hcms_lang['word'][$lang]."&nbsp;</div>\n";
-        if (!empty ($mgmt_docoptions['.csv']) && in_array('.csv', $mgmt_docconvert[$media_info['ext']])) echo "        <div class=\"hcmsSelectorItem\" onclick=\"docConvert ('csv');\"><img src=\"".getthemelocation()."img/file_csv.gif\" style=\"border:0; padding:1px;\" align=\"absmiddle\" />".$hcms_lang['csv'][$lang]."&nbsp;</div>\n";
-        if (!empty ($mgmt_docoptions['.xls']) && in_array('.xls', $mgmt_docconvert[$media_info['ext']])) echo "        <div class=\"hcmsSelectorItem\" onclick=\"docConvert ('xls');\"><img src=\"".getthemelocation()."img/file_xls.gif\" style=\"border:0; padding:1px;\" align=\"absmiddle\" />".$hcms_lang['excel'][$lang]."&nbsp;</div>\n";
-        if (!empty ($mgmt_docoptions['.ppt']) && in_array('.ppt', $mgmt_docconvert[$media_info['ext']])) echo "        <div class=\"hcmsSelectorItem\" onclick=\"docConvert ('ppt');\"><img src=\"".getthemelocation()."img/file_ppt.gif\" style=\"border:0; padding:1px;\" align=\"absmiddle\" />".$hcms_lang['power-point'][$lang]."&nbsp;</div>\n";
-        if (!empty ($mgmt_docoptions['.html']) && in_array('.html', $mgmt_docconvert[$media_info['ext']])) echo "        <div class=\"hcmsSelectorItem\" onclick=\"docConvert ('html');\"><img src=\"".getthemelocation()."img/file_htm.gif\" style=\"border:0; padding:1px;\" align=\"absmiddle\" />".$hcms_lang['webpage'][$lang]."&nbsp;</div>\n";
-        if (!empty ($mgmt_docoptions['.odt']) && in_array('.odt', $mgmt_docconvert[$media_info['ext']])) echo "        <div class=\"hcmsSelectorItem\" onclick=\"docConvert ('odt');\"><img src=\"".getthemelocation()."img/file_odt.gif\" style=\"border:0; padding:1px;\" align=\"absmiddle\" />".$hcms_lang['open-office-text'][$lang]."&nbsp;</div>\n";
-        if (!empty ($mgmt_docoptions['.ods']) && in_array('.ods', $mgmt_docconvert[$media_info['ext']])) echo "        <div class=\"hcmsSelectorItem\" onclick=\"docConvert ('ods');\"><img src=\"".getthemelocation()."img/file_ods.gif\" style=\"border:0; padding:1px;\" align=\"absmiddle\" />".$hcms_lang['open-office-spreadsheet'][$lang]."&nbsp;</div>\n";
-        if (!empty ($mgmt_docoptions['.odp']) && in_array('.odp', $mgmt_docconvert[$media_info['ext']])) echo "        <div class=\"hcmsSelectorItem\" onclick=\"docConvert ('odp');\"><img src=\"".getthemelocation()."img/file_odp.gif\" style=\"border:0; padding:1px;\" align=\"absmiddle\" />".$hcms_lang['open-office-presentation'][$lang]."&nbsp;</div>\n";
+        foreach ($mgmt_docoptions as $ext => $value)
+        {
+          if ($ext != "" && $value != "")
+          {
+            $ext_array = explode (".", trim ($ext, "."));
+            $doc_type = $ext_array[0];          
+            $doc_info = getfileinfo ($site, "file".$ext, "comp");
+
+            if ((empty ($downloadformats) || !empty ($downloadformats['document'][$doc_type])) && in_array ($ext, $mgmt_docconvert[$media_info['ext']]))
+            {
+              echo "        <div class=\"hcmsSelectorItem\" onclick=\"docConvert ('".$doc_type."');\"><img src=\"".getthemelocation()."img/".$doc_info['icon']."\" style=\"border:0; margin:0; padding:1px;\" align=\"absmiddle\" />".$doc_info['type']." (".strtoupper($doc_type).")&nbsp;</div>\n";
+            }
+          }
+        }
       }
       
       // image download options
       if ($img_rendering)
       {
-        foreach ($mgmt_imageoptions as $config_fileext => $config_array) 
+        foreach ($mgmt_imageoptions as $ext => $config_array) 
         {
           if (is_array ($config_array)) 
           {
-            $tmpname = explode (".", $config_fileext);
-            $showname = strtoupper ($tmpname[1]);
-            $img_info = getfileinfo ($site, $media_info['filename'].".".$tmpname[1], $cat);
+            $ext_array = explode (".", trim ($ext, "."));
+            $image_type = $ext_array[0];
+            $img_info = getfileinfo ($site, $media_info['filename'].".".$image_type, $cat);
             
             foreach ($config_array as $config_name => $config_parameter) 
             {
-              if ($config_name != "thumbnail" && $config_name != "original") 
+              if ((empty ($downloadformats) || !empty ($downloadformats['image'][$image_type][$config_name])) && $config_name != "thumbnail" && $config_name != "original") 
               {
-                echo "        <div class=\"hcmsSelectorItem\" onclick=\"imgConvert ('".$tmpname[1]."', '".$config_name."');\"><img src=\"".getthemelocation()."img/".$img_info['icon']."\" style=\"border:0; margin:0; padding:1px;\" align=\"absmiddle\" />".$showname." ".$config_name."&nbsp;</div>\n";
+                echo "        <div class=\"hcmsSelectorItem\" onclick=\"imgConvert ('".$image_type."', '".$config_name."');\"><img src=\"".getthemelocation()."img/".$img_info['icon']."\" style=\"border:0; margin:0; padding:1px;\" align=\"absmiddle\" />".strtoupper($image_type)." ".$config_name."&nbsp;</div>\n";
               }
             }
           }
@@ -614,7 +624,7 @@ else
     else $popup_upload = "popup_upload_swf.php";
     
     if (($usedby == "" || $usedby == $user) && $cat != "page" && !empty ($media) && $application != "generator" && $page != ".folder" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_openWindow('".$popup_upload."?uploadmode=single&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."','','status=yes,scrollbars=no,resizable=yes','600','400');\" name=\"pic_obj_upload\" src=\"".getthemelocation()."img/button_file_upload.gif\" alt=\"".$hcms_lang['upload-file'][$lang]."\" title=\"".$hcms_lang['upload-file'][$lang]."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_openWindow('".$popup_upload."?uploadmode=single&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."','','status=yes,scrollbars=no,resizable=yes','600','430');\" name=\"pic_obj_upload\" src=\"".getthemelocation()."img/button_file_upload.gif\" alt=\"".$hcms_lang['upload-file'][$lang]."\" title=\"".$hcms_lang['upload-file'][$lang]."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_file_upload.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>    
@@ -669,7 +679,7 @@ else
         echo "<img onClick=\"if (locklayer == false) hcms_openWindow('";
         if ($mgmt_config['db_connect_rdbms'] != "") echo "popup_publish.php";
         else echo "popup_action.php";
-        echo "?action=publish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."','','scrollbars=no,resizable=no','400','320');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_publish\" src=\"".getthemelocation()."img/button_file_publish.gif\" alt=\"".$hcms_lang['publish'][$lang]."\" title=\"".$hcms_lang['publish'][$lang]."\" />\n";
+        echo "?action=publish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."','','scrollbars=no,resizable=no','400','370');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_publish\" src=\"".getthemelocation()."img/button_file_publish.gif\" alt=\"".$hcms_lang['publish'][$lang]."\" title=\"".$hcms_lang['publish'][$lang]."\" />\n";
       }
       else
       {
@@ -681,7 +691,7 @@ else
         echo "<img onClick=\"if (locklayer == false) hcms_openWindow('";
         if ($mgmt_config['db_connect_rdbms'] != "") echo "popup_publish.php";
         else echo "popup_action.php";        
-        echo "?action=unpublish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."','','scrollbars=no,resizable=no','400','320');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_unpublish\" src=\"".getthemelocation()."img/button_file_unpublish.gif\" alt=\"".$hcms_lang['unpublish'][$lang]."\" title=\"".$hcms_lang['unpublish'][$lang]."\" />\n";
+        echo "?action=unpublish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."','','scrollbars=no,resizable=no','400','370');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_unpublish\" src=\"".getthemelocation()."img/button_file_unpublish.gif\" alt=\"".$hcms_lang['unpublish'][$lang]."\" title=\"".$hcms_lang['unpublish'][$lang]."\" />\n";
       }
       else
       {
@@ -741,7 +751,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table border="0" cellspacing="2" cellpadding="0">
     <tr>
       <td>
-        <?php echo $hcms_lang['new-object'][$lang]." ".$hcms_lang['name-without-ext'][$lang]; ?>:
+        <?php echo $hcms_lang['new-object'][$lang]." (".$hcms_lang['name-without-ext'][$lang].")"; ?>:
       </td>
       <td>
         <input type="text" name="page" maxlength="<?php if (!is_int ($mgmt_config['max_digits_filename'])) echo $mgmt_config['max_digits_filename']; else echo "200"; ?>" style="width:220px;" />

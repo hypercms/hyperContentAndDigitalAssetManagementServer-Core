@@ -181,12 +181,12 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     </tr>
     <tr align="left" valign="top"> 
       <td><?php echo $hcms_lang['folders-to-exclude'][$lang]; ?>: <br />
-        <?php echo $hcms_lang['use-ÂÂ-as-delimiter'][$lang]; ?></td>
+        (<?php echo $hcms_lang['use-as-delimiter'][$lang]; ?>)</td>
       <td nowrap="nowrap"> <textarea name="setting[exclude_folders]" style="width:350px;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> rows="3"><?php echo $mgmt_config[$site_name]['exclude_folders']; ?></textarea></td>
     </tr>
     <tr align="left" valign="top"> 
       <td><?php echo $hcms_lang['allow-access-to-assets-only-for-certain-ip-addresses'][$lang]; ?>: <br />
-        <?php echo $hcms_lang['use-ÂÂ-as-delimiter'][$lang]; ?></td>
+        (<?php echo $hcms_lang['use-as-delimiter'][$lang]; ?>)</td>
       <td nowrap="nowrap"> <textarea name="setting[allow_ip]" style="width:350px;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> rows="3"><?php echo $mgmt_config[$site_name]['allow_ip']; ?></textarea></td>
     </tr>
     <?php if (is_dir ($mgmt_config['abs_path_cms']."webdav")) { ?>

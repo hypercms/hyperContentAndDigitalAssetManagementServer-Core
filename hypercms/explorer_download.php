@@ -51,10 +51,41 @@ $media_approved = false;
 
 // ------------------------------- define objectpath --------------------------------
 // if download link hash is provided (since version 5.6.2)
-if ($dl != "" && $mgmt_config['db_connect_rdbms'] != "")
+if ($dl != "" && !empty ($mgmt_config['db_connect_rdbms']))
 {
-  $objectpath_esc = rdbms_getobject ($dl);
-  $object_id = rdbms_getobject_id ($objectpath_esc);
+  $result_dl = rdbms_getaccessinfo ($dl);
+  
+  // if download link using access hash
+  if (!empty ($result_dl['object_id']))
+  {
+    $object_id = $result_dl['object_id'];
+    $objectpath_esc = rdbms_getobject ($object_id);
+    
+    // get download formats
+    if (!empty ($result_dl['formats']))
+    {
+      $hcms_objformats = json_decode ($result_dl['formats'], true);
+
+      if (is_document ($objectpath_esc))
+      {
+        // get first element in document array   
+        $type = getfirstkey ($hcms_objformats['document']);
+        $media_config = "";
+      }
+      elseif (is_image ($objectpath_esc))
+      {
+        // get first element in document array    
+        $type = getfirstkey ($hcms_objformats['image']);
+        $media_config = getfirstkey ($hcms_objformats['image'][$type]);
+      }
+    }
+  }
+  // standard download link using object hash
+  else
+  {
+    $objectpath_esc = rdbms_getobject ($dl);
+    $object_id = rdbms_getobject_id ($objectpath_esc);
+  }
 }
 // get object ID
 // if id-token is provided (since version 5.5.13 support of id-token holding encrypted id and time)
@@ -246,29 +277,9 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
     {
       // target path for the temporary file
       $media_target = $mgmt_config['abs_path_cms'].'temp/';
-      $media_old = $site."/".getobject ($media);
-      
-      // information needed to extract the file name only
-      $media_info_original = getfileinfo ($site, getobject ($media), "comp");
-      
-      // predicting the name the file will get by createmedia
-      $newname = $media_info_original['filename'].'.'.$media_config.'.'.$type;
-      
-      // convert-config is empty when we are using unoconv
-      if ($media_config == "")
-      {
-        $result_conv = createdocument ($site, $media_root.$site."/", $media_target, getobject ($media), $type, true);
-      }
-      else 
-      {
-        // generate new file only if necessary
-        if (!is_file ($media_target.$newname) || @filemtime ($media_root.$media_old) > @filemtime ($media_target.$newname)) 
-        {
-          $result_conv = createmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config, true);
-        }
-        // use the existing file
-        else $result_conv = $newname;
-      }
+
+      // convert file
+      $result_conv = convertmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config, true);
       
       // if new file has been converted successfully, set new media root path and new media file name
       if ($result_conv != "")

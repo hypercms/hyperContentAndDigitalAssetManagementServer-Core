@@ -181,7 +181,7 @@ $token = createtoken ($user);
 					$("#savetype").val('auto');
           
 					$.post(
-						"<?php echo $mgmt_config['url_path_cms']; ?>page_save.php", 
+						"<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php", 
 						$("#hcms_formview").serialize(), 
 						function(data)
             {
@@ -216,7 +216,7 @@ $token = createtoken ($user);
 
     <!-- form for content -->
     <div style="padding:0; width:100%; z-index:1;">
-  		<form action="<?php echo $mgmt_config['url_path_cms']; ?>page_save.php" method="post" name="hcms_formview" id="hcms_formview">
+  		<form action="<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php" method="post" name="hcms_formview" id="hcms_formview">
   			<input type="hidden" name="contenttype" value="<?php echo $contenttype; ?>"> 
   			<input type="hidden" name="site" value="<?php echo $site; ?>"> 
   			<input type="hidden" name="cat" value="<?php echo $cat; ?>"> 

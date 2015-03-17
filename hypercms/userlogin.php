@@ -71,7 +71,13 @@ if ($al != "")
     $hcms_objcode = hcms_crypt ($hcms_objref);
     $ignore_password = true;
     
-    // if type is download link
+    // get download formats
+    if (!empty ($result_al['formats']))
+    {
+      $hcms_objformats = json_decode ($result_al['formats'], true);
+    }
+    
+    // if type is download link forward to file download
     if ($result_al['type'] == "dl") header ("Location: explorer_download.php?dl=".url_encode($al));
   }
 }
@@ -217,6 +223,9 @@ if (checkuserip (getuserip ()) == true)
     setsession ('hcms_lang', $login_result['lang']);
     setsession ('hcms_hiddenfolder', $login_result['hiddenfolder']);
     
+    // register download formats in case of an access link
+    if (!empty ($hcms_objformats)) setsession ('hcms_downloadformats', $hcms_objformats);
+    
     // reset mobile settings by values of client side browser detection (JavaScript)
     if ($is_mobile == "1" || $is_mobile == "yes")
     {
@@ -306,20 +315,20 @@ if (checkuserip (getuserip ()) == true)
           </tr>\n";
           
     if ($mgmt_config['instances']) $show .= "<tr>
-            <td><b>".$hcms_lang['instance'][$lang].":</b></td>
+            <td><b>".$hcms_lang['instance'][$lang]."</b></td>
             <td>
               <input type=\"text\" name=\"sentinstance\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
             </td>
           </tr>\n";
           
     $show .= "<tr>
-            <td><b>".$hcms_lang['user'][$lang].":</b></td>
+            <td><b>".$hcms_lang['user'][$lang]."</b></td>
             <td>
               <input type=\"text\" name=\"sentuser\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
             </td>
           </tr>
           <tr>
-            <td><b>".$hcms_lang['password'][$lang].":</b></td>
+            <td><b>".$hcms_lang['password'][$lang]."</b></td>
             <td>
               <input type=\"password\" name=\"sentpasswd\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
             </td>

@@ -181,7 +181,7 @@ if ($label == "") $label = $id;
 
 <!-- form for content -->
 <div style="padding:0; width:100%; z-index:1;">
-  <form name="editor" method="post" action="<?php echo $mgmt_config['url_path_cms']; ?>page_save.php">
+  <form name="editor" method="post" action="<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php">
     <input type="hidden" name="contenttype" value="<?php echo $contenttype; ?>">
     <input type="hidden" name="site" value="<?php echo $site; ?>">
     <input type="hidden" name="cat" value="<?php echo $cat; ?>">

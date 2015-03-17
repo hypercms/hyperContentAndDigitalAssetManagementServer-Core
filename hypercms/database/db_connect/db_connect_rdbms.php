@@ -1587,7 +1587,7 @@ function rdbms_getobject_id ($object)
     savelog ($db->getError ());
     $db->close();
       
-    if ($object_id != "")
+    if (!empty ($object_id))
     {
       return $object_id;
     }
@@ -1818,6 +1818,7 @@ function rdbms_createaccesslink ($hash, $object_id, $type="al", $user="", $lifet
     $type = $db->escape_string ($type);
     if ($user != "") $user = $db->escape_string ($user);
     if ($lifetime != "") $lifetime = $db->escape_string ($lifetime);
+    if ($formats != "") $formats = $db->escape_string ($formats);
     
     // date
     $date = date ("Y-m-d H:i", time());
@@ -2026,11 +2027,11 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only=0, $us
 {
   global $mgmt_config;
 
-  if ($action != "" && $object != "" && $date != "" && $user != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0))
+  if ($action != "" && $object != "" && is_date ($date, "Y-m-d H:i") && $user != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0))
   {
     // correct object name 
     if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
-      
+ 
     $object_id = rdbms_getobject_id ($object);
     
     if ($object_id != false)

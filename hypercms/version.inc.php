@@ -640,19 +640,19 @@ changelog:
 - bug fix: impementation of binary-safe encryption and decryption to en/decrypt binary files
 - bug fix: popup_action did not hide loading layer if an error occured after unzip
 - 2 new input parameters (object_id, objectpath) for function rdbms_getqeueentries
-- implementation of information regarding the automatic removement of files/objects in mail form, info tab of objects and sidebar object viewer
+- implementation of information regarding the auto-remove of files/objects in mail form, info tab of objects and sidebar object viewer
 - function getcontainername supports container ID or container name as input
 - improved implementations of functions hcms_encrypt and hcms_decrypt for standard and strong en/decryption
 - function showmedia provides additional information about owner, last published date and date of deletion
 - implementation of file caching to reduce I/O for action chains that would save data in each step
 - bug fix: checked out file for user has not been created and deleted in function createuser and deleteuser
-- page_checkedout creates checked out file if it does not exist
+- improvement of page_checkedout that creates checked out user file if it does not exist
 - using database media information as primary source for all media displays
 - bug fix: sidebar on checkout objects list was not displayed properly
 - freegeoip.net stopped providing it's service, changed to API of ip-api.com
 - linkengine is automatically disabled in the publication management for DAM configurations
 - function showmedia support new type "preview_download", which only enables the download in media previews
-- videos can be downloaded and embeded in video editor
+- videos can be downloaded and embedded in video editor as well
 - function getvideoinfo extracts audio information as well
 - new column createdate in table container, change of column date in table container to type datetime (requires update script)
 - function rdbms_getmedia provides extended media information
@@ -661,7 +661,7 @@ changelog:
 - new function id3_getdata, id3_create and id3_writefile to support ID3 tags of audio files (e.g. mp files)
 - support for ID3 tags of audio files in mapping
 - support for thumbnails of audio files
-- new input parameters for function getgooglesitemap ti show or hide the frequency and priority tags
+- new input parameters for function getgooglesitemap to show or hide the frequency and priority tags
 - optimized database attributes
 
 version 5.7.3
@@ -712,8 +712,43 @@ changelog:
 - implementation of new function setboxex and getboxes
 - implementation of JS function hcms_switchSelector in main.js
 - implementation of new homboxes for recent downloads and uploads of a user
+
+version 5.7.5
+release 05/2015
+changelog:
+- bug fix: bulgarian language file used double quote in string
+- bug fix: html_encode used wrong variable name
+- implementation of media preview for select of multiple objects
+- select, edit/render and save multiple images and videos
+- implementation of new services renderimage and rendervideo replace old media rendering logic 
+- implementation of new service savecontent 
+- bug fix: richcalender language files needed to be converted to UTF-8
+- bug fix: function manipultaobject did not check if both page states (published and unpublished) exists already in the same location on rename
+- bug fix: undefined variable in function rdbms_getobject_id
+- bug fix: text of JS prompt messages in template_edit was not html decoded
+- template editor supports include-, script-, workflow-tags for meta data templates
+- meta data templates for media files will be assigned to the application 'media'
+- implementation of hyperCMS scripts for multimedia objects
+- bug fix: correct undefined characters in key names and eliminate double expressions in all language files
+- new uploadfile service that replaces upload_multi
+- improvements in design themes (CSS)
+- implementation of transcoding for video files to audio files
+- implementation of a new hyperCMS connect API for FTP support
+- implementation of file download from FTP servers
+- implementation of new function is_date
+- implementation of date validation in function rdbms_createqueueentry
+- bug fix: function getmimetype did not return proper mime-type for object/file versions
+- implementation of object versions support for function getfileinfo
+- bug fix: diplay proper file icons in versions tab
+- bug fix: pop_status failed to authorize the action when publishing the root folder of pages
+- update of TCPDF to version 6.2.6
+- implementation of download formats for download/access links and attachments
+- implementation of new function convertmedia (wrapper for createdocument and createmedia)
+- bug fix: source location input parameter of function createimage was not verified
+- implementation of new functions is_document, is_image, is_rawimage, is_video, is_audio
+- bug fix: function unlockfile, lockfile, savelockfile, loadlockfile used global variable user which overwrites the input variable
 */
 
 // current version
-$version = "Version 5.7.4";
+$version = "Version 5.7.5";
 ?>

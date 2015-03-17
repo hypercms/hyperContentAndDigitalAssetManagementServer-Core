@@ -263,7 +263,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
       </td>        
     </tr>  
     <tr>
-      <td nowrap="nowrap"><?php echo $pagecomp; ?><font size="1">(<?php echo $hcms_lang['name-without-ÂextÂ'][$lang]; ?>)</font>: </td>
+      <td nowrap="nowrap"><?php echo $pagecomp; ?><font size="1">(<?php echo $hcms_lang['name-without-ext'][$lang]; ?>)</font>: </td>
       <td>
         <input type="text" name="template" maxlength="60" style="width:220px;" />
         <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_tpl_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />

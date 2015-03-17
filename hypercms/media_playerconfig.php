@@ -64,7 +64,7 @@ if ($type != "")
 {
   $type = strtolower ($type);
 }
-elseif (substr_count ($hcms_ext['audio'].'.', $file_info['ext'].'.') > 0)
+elseif (is_audio ($file_info['ext']))
 {
   $type = "audio";
   $audio = true;
@@ -88,7 +88,7 @@ elseif($media_root && file_exists ($media_root.$file_info['filename'].".config.o
     list ($test, $duh) = explode (";", reset($config['mediafiles']));
     $testfinfo = getfileinfo ($site, $test, $cat);
     
-    if (substr_count ($hcms_ext['audio'].'.', $testfinfo['ext'].'.') > 0)
+    if (is_audio ($testfinfo['ext']))
     {
       $audio = true;
     }

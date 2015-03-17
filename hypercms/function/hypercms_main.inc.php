@@ -261,24 +261,322 @@ function splitstring ($string)
 
 // -------------------------------- is_supported --------------------------------
 // function: is_supported()
-// input: preview array holding the supported file extensions as key and references to executables as value, file extension of file
+// input: preview array holding the supported file extensions as key and references to executables as value, file name or file extension
 // output: true / false
 
 // description:
 // this function determines if a certain file type by its extension is supported by the systems media conversion.
 
-function is_supported ($preview_array, $file_ext)
+function is_supported ($preview_array, $file)
 {
-  if (is_array ($preview_array) && $file_ext != "")
+  if (is_array ($preview_array) && $file != "")
   {
+    // get file extension
+    if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
+    else $ext = $file;
+    
     foreach ($preview_array as $preview_ext => $preview_exec)
     {
       // check file extension
-      if (substr_count ($preview_ext.".", $file_ext.".") > 0 && trim ($preview_exec) != "") return true;
+      if (substr_count ($preview_ext.".", ".".$ext.".") > 0 && trim ($preview_exec) != "") return true;
     }
     
     return false;
   }
+}
+
+// -------------------------------- is_date --------------------------------
+// function: is_date()
+// input: date as string, date format (optional)
+// output: true / false
+
+// description:
+// this function determines if a certain string represents a valid date format
+
+function is_date ($date, $format="Y-m-d")
+{
+  if ($date != "" && $format != "")
+  {
+    $date_check = DateTime::createFromFormat ($format, $date);
+    
+    if ($date_check && $date_check->format($format) == $date) return true;
+    else return false;
+  }
+  else return false;
+}
+
+// -------------------------------------- is_tempfile -------------------------------------------
+// function: is_tempfile()
+// input: file name or path [string]
+// output: if file is a temp file true / false on error
+
+// description:
+// this functions checks if a given file name of path is a temporary file
+
+function is_tempfile ($path)
+{
+  global $user, $mgmt_config, $hcms_lang, $lang;
+  
+  @require ($mgmt_config['abs_path_cms']."include/tempfilepatterns.inc.php");
+
+  if ($path != "" && is_array ($tempfile_patterns))
+  {
+    // extract the file name
+    $object = getobject ($path);
+
+    foreach ($tempfile_patterns as $pattern)
+    {
+      if (preg_match ($pattern, $object)) return true;
+    }
+  
+    return false;
+  }
+  else return false;
+}
+
+// -------------------------------------- is_thumbnail -------------------------------------------
+// function: is_thumbnail()
+// input: file name or path [string], only thumbnail images should be considered as thumbnail [true,false]
+// output: if file is a thumbnail file true / false on error
+
+// description:
+// this functions checks if a given file name is a thumbnail file
+
+function is_thumbnail ($media, $images_only=true)
+{
+  global $user, $mgmt_config, $hcms_lang, $lang;
+  
+  if ($media != "")
+  {
+    $container_id = getmediacontainerid ($media);
+    
+    if ($container_id != "")
+    {
+      if ($images_only == true && substr_count ($media, "hcm".$container_id.".thumb.jpg") > 0) return true;
+      elseif ($images_only == false && substr_count ($media, "hcm".$container_id.".thumb.") > 0) return true;
+      elseif ($images_only == false && substr_count($media, "hcm".$container_id.".orig.") > 0) return true;
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// -------------------------------------- is_config -------------------------------------------
+// function: is_config()
+// input: file name or path [string]
+// output: if file is a config file true / false if not
+
+// description:
+// this functions checks if a given file name is a config file
+
+function is_config ($media)
+{
+  global $user, $mgmt_config, $hcms_lang, $lang;
+  
+  if ($media != "")
+  {
+    $container_id = getmediacontainerid ($media);
+    
+    if ($container_id != "")
+    {
+      if (substr_count($media, "hcm".$container_id.".config.") > 0) return true;
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// ---------------------- is_encryptedfile -----------------------------
+// function: is_encryptedfile()
+// input: path to file [string], file name [string]
+// output: true / false
+
+// description:
+// this functions checks if a given file name is encrypted
+
+function is_encryptedfile ($location, $file)
+{
+  global $user, $mgmt_config, $hcms_lang, $lang;
+  
+  if (valid_locationname ($location) && valid_objectname ($file))
+  {
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
+    // load media file header
+    if (is_file ($location.$file))
+    {
+      $data = loadfile_header ($location, $file);
+
+      // encrypt data if media file is not encypted
+      if (strpos ("_".$data, "<!-- hyperCMS:encrypted -->") > 0) return true;
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// -------------------------------- is_document --------------------------------
+// function: is_document()
+// input: file name or file extension
+// output: true / false
+
+// description:
+// this function determines if a certain file is a document (binary and text based)
+
+function is_document ($file)
+{
+  global $mgmt_config, $hcms_ext;
+  
+  if ($file != "")
+  {
+    // load file extensions
+    if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+    
+    // get file extension
+    if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
+    else $ext = $file;
+    
+    if (substr_count (strtolower ($hcms_ext['cleartxt'].$hcms_ext['bintxt']).".", ".".$ext.".") > 0) return true;
+    else return false;
+  }
+  else return false;
+}
+
+// -------------------------------- is_image --------------------------------
+// function: is_image()
+// input: file name or file extension
+// output: true / false
+
+// description:
+// this function determines if a certain file is an image
+
+function is_image ($file)
+{
+  global $mgmt_config, $hcms_ext;
+  
+  if ($file != "")
+  {
+    // load file extensions
+    if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+    
+    // get file extension
+    if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
+    else $ext = $file;
+    
+    if (substr_count (strtolower ($hcms_ext['image']).".", ".".$ext.".") > 0) return true;
+    else return false;
+  }
+  else return false;
+}
+
+// -------------------------------- is_rawimage --------------------------------
+// function: is_rawimage()
+// input: file name or file extension
+// output: true / false
+
+// description:
+// this function determines if a certain file is a raw image
+
+function is_rawimage ($file)
+{
+  global $mgmt_config, $hcms_ext;
+  
+  if ($file != "")
+  {
+    // load file extensions
+    if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+    
+    // get file extension
+    if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
+    else $ext = $file;
+    
+    if (substr_count (strtolower ($hcms_ext['rawimage']).".", ".".$ext.".") > 0) return true;
+    else return false;
+  }
+  else return false;
+}
+
+// -------------------------------- is_video --------------------------------
+// function: is_video()
+// input: file name or file extension
+// output: true / false
+
+// description:
+// this function determines if a certain file is a video
+
+function is_video ($file)
+{
+  global $mgmt_config, $hcms_ext;
+  
+  if ($file != "")
+  {
+    // load file extensions
+    if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+    
+    // get file extension
+    if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
+    else $ext = $file;
+    
+    if (substr_count (strtolower ($hcms_ext['video']).".", ".".$ext.".") > 0) return true;
+    else return false;
+  }
+  else return false;
+}
+
+// -------------------------------- is_audio --------------------------------
+// function: is_audio()
+// input: file name or file extension
+// output: true / false
+
+// description:
+// this function determines if a certain file is an audio file
+
+function is_audio ($file)
+{
+  global $mgmt_config, $hcms_ext;
+  
+  if ($file != "")
+  {
+    // load file extensions
+    if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+    
+    // get file extension
+    if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
+    else $ext = $file;
+    
+    if (substr_count (strtolower ($hcms_ext['audio']).".", ".".$ext.".") > 0) return true;
+    else return false;
+  }
+  else return false;
+}
+
+// ---------------------- is_mobilebrowser -----------------------------
+// function: is_mobilebrowser()
+// input: %
+// output: true / false
+
+// description:
+// detects is a mobile browser is used.
+
+function is_mobilebrowser ()
+{
+  global $user, $mgmt_config, $hcms_lang, $lang;
+  
+  if ($_SERVER['HTTP_USER_AGENT'])
+  {
+    $useragent = $_SERVER['HTTP_USER_AGENT'];
+    
+    if (preg_match ('/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i',$useragent)||preg_match('/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i', substr ($useragent,0,4)))
+    {
+      return true;
+    }
+    else return false;
+  }
+  else return false;
 }
 
 // -------------------------------- copyrecursive --------------------------------
@@ -1057,7 +1355,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
 
 function cleandomain ($path)
 {
-  global $user, $mgmt_config, $hcms_lang, $lang;
+  global $mgmt_config, $hcms_lang, $lang;
   
   if ($path != "")
   {
@@ -1331,9 +1629,9 @@ function loadfile ($abs_path, $filename)
 // input: user, path to file, file name, force unlock of file after x seconds [integer]
 // output: file content
 
-function loadlockfile ($user, $abs_path, $filename, $force_unlock=0)
+function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
 {
-  global $user, $mgmt_config, $hcms_lang, $lang;
+  global $mgmt_config, $hcms_lang, $lang;
   
   $filedata = false;
 
@@ -1352,7 +1650,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=0)
     if (substr_count ($filename, ".@".$user) == 1) $filename = str_replace (".@".$user, "", $filename);
     $filename_unlocked = $filename;
     $filename = correctfile ($abs_path, $filename, $user);
-          
+    
     // if file exists
     if ($filename != false)
     {
@@ -1444,7 +1742,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=0)
       if ($force_unlock > 0)
       {
         $file_info = getlockedfileinfo ($abs_path, $filename_unlocked);
-        
+
         if (is_array ($file_info))
         {
           // unlock file
@@ -1514,7 +1812,7 @@ function savefile ($abs_path, $filename, $filedata)
 
 function savelockfile ($user, $abs_path, $filename, $filedata)
 {
-  global $user, $mgmt_config, $hcms_lang, $lang;
+  global $mgmt_config, $hcms_lang, $lang;
   
   if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -1570,7 +1868,7 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
 // lockfile requires the file to be opened by loadlockfile before
 function lockfile ($user, $abs_path, $filename)
 {
-  global $user, $mgmt_config, $hcms_lang, $lang;
+  global $mgmt_config, $hcms_lang, $lang;
   
   if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -1584,12 +1882,15 @@ function lockfile ($user, $abs_path, $filename)
     }
     
     // check and correct file name
-    if (substr_count ($filename, ".@".$user) == 1) $filename = str_replace (".@".$user, "", $filename);    
+    if (strpos ($filename, ".@") > 0) $filename = substr ($filename, 0, strpos ($filename, ".@"));
     
     // file is already locked by same user
-    if (@is_file ($abs_path.$filename.".@".$user)) return true;
+    if (is_file ($abs_path.$filename.".@".$user))
+    {
+      return true;
+    }
     // lock file
-    elseif (@is_file ($abs_path.$filename))
+    elseif (is_file ($abs_path.$filename))
     {
       return @rename ($abs_path.$filename, $abs_path.$filename.".@".$user);
     }
@@ -1607,7 +1908,7 @@ function lockfile ($user, $abs_path, $filename)
 // unlockfile requires the file to be opened by loadlockfile before
 function unlockfile ($user, $abs_path, $filename)
 {
-  global $user, $mgmt_config, $hcms_lang, $lang;
+  global $mgmt_config, $hcms_lang, $lang;
   
   if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -1621,12 +1922,15 @@ function unlockfile ($user, $abs_path, $filename)
     }
     
     // check and correct file name
-    if (substr_count ($filename, ".@".$user) == 1) $filename = str_replace (".@".$user, "", $filename);       
-    
+    if (strpos ($filename, ".@") > 0) $filename = substr ($filename, 0, strpos ($filename, ".@"));    
+
     // file is already unlocked
-    if (@is_file ($abs_path.$filename)) return true;
+    if (is_file ($abs_path.$filename))
+    {
+      return true;
+    }
     // unlock file
-    elseif (@is_file ($abs_path.$filename.".@".$user))
+    elseif (is_file ($abs_path.$filename.".@".$user))
     {
       return @rename ($abs_path.$filename.".@".$user, $abs_path.$filename);
     }
@@ -2073,120 +2377,6 @@ function fileversion ($file)
   else return false;
 }
 
-// -------------------------------------- is_tempfile -------------------------------------------
-// function: is_tempfile()
-// input: file name or path [string]
-// output: if file is a temp file true / false on error
-
-// description:
-// this functions checks if a given file name of path is a temporary file
-
-function is_tempfile ($path)
-{
-  global $user, $mgmt_config, $hcms_lang, $lang;
-  
-  @require ($mgmt_config['abs_path_cms']."include/tempfilepatterns.inc.php");
-
-  if ($path != "" && is_array ($tempfile_patterns))
-  {
-    // extract the file name
-    $object = getobject ($path);
-
-    foreach ($tempfile_patterns as $pattern)
-    {
-      if (preg_match ($pattern, $object)) return true;
-    }
-  
-    return false;
-  }
-  else return false;
-}
-
-// -------------------------------------- is_thumbnail -------------------------------------------
-// function: is_thumbnail()
-// input: file name or path [string], only thumbnail images should be considered as thumbnail [true,false]
-// output: if file is a thumbnail file true / false on error
-
-// description:
-// this functions checks if a given file name is a thumbnail file
-
-function is_thumbnail ($media, $images_only=true)
-{
-  global $user, $mgmt_config, $hcms_lang, $lang;
-  
-  if ($media != "")
-  {
-    $container_id = getmediacontainerid ($media);
-    
-    if ($container_id != "")
-    {
-      if ($images_only == true && substr_count ($media, "hcm".$container_id.".thumb.jpg") > 0) return true;
-      elseif ($images_only == false && substr_count ($media, "hcm".$container_id.".thumb.") > 0) return true;
-      elseif ($images_only == false && substr_count($media, "hcm".$container_id.".orig.") > 0) return true;
-      else return false;
-    }
-    else return false;
-  }
-  else return false;
-}
-
-// -------------------------------------- is_config -------------------------------------------
-// function: is_config()
-// input: file name or path [string]
-// output: if file is a config file true / false if not
-
-// description:
-// this functions checks if a given file name is a config file
-
-function is_config ($media)
-{
-  global $user, $mgmt_config, $hcms_lang, $lang;
-  
-  if ($media != "")
-  {
-    $container_id = getmediacontainerid ($media);
-    
-    if ($container_id != "")
-    {
-      if (substr_count($media, "hcm".$container_id.".config.") > 0) return true;
-      else return false;
-    }
-    else return false;
-  }
-  else return false;
-}
-
-// ---------------------- is_encryptedfile -----------------------------
-// function: is_encryptedfile()
-// input: path to file [string], file name [string]
-// output: true / false
-
-// description:
-// this functions checks if a given file name is encrypted
-
-function is_encryptedfile ($location, $file)
-{
-  global $user, $mgmt_config, $hcms_lang, $lang;
-  
-  if (valid_locationname ($location) && valid_objectname ($file))
-  {
-    // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
-    
-    // load media file header
-    if (is_file ($location.$file))
-    {
-      $data = loadfile_header ($location, $file);
-
-      // encrypt data if media file is not encypted
-      if (strpos ("_".$data, "<!-- hyperCMS:encrypted -->") > 0) return true;
-      else return false;
-    }
-    else return false;
-  }
-  else return false;
-}
-
 // -------------------------------------- substr_in_array -------------------------------------------
 // function: substr_in_array()
 // input: search-string, array
@@ -2395,8 +2585,10 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
         {
           // bad request - start is greater than end
           header ("HTTP/1.1 416 Requested range not satisfiable", true, 416);
-          $errcode = 60000;
+          
+          $errcode = 20600;
           $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile() -> Range not satisfiable: '.$start.' - '.$end.' ('.$fstat['size'].')';
+          
           // write log
           savelog (@$error);
           exit;
@@ -2422,7 +2614,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
           {
             // if we can't read the file
             header ("HTTP/1.1 500 Internal Server Error", true, 500);
-            $errcode = 60001;
+            $errcode = 20601;
             $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$location.$media.')';
             // write log
             savelog (@$error);
@@ -2436,7 +2628,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
             if ($result == -1)
             {
               header ("HTTP/1.1 500 Internal Server Error", true, 500);
-              $errcode = 60002;
+              $errcode = 20602;
               $error[] = $mgmt_config['today'].'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not seek '.$location.$media.')';
               // write log
               savelog (@$error);
@@ -2699,33 +2891,6 @@ function savecontainer ($container, $type="work", $data, $user, $init=false)
   else return false;
 }
 
-// ===================================== MOBILE =========================================
-
-// ---------------------- is_mobilebrowser -----------------------------
-// function: is_mobilebrowser()
-// input: %
-// output: true / false
-
-// description:
-// detects is a mobile browser is used.
-
-function is_mobilebrowser ()
-{
-  global $user, $mgmt_config, $hcms_lang, $lang;
-  
-  if ($_SERVER['HTTP_USER_AGENT'])
-  {
-    $useragent = $_SERVER['HTTP_USER_AGENT'];
-    
-    if (preg_match ('/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i',$useragent)||preg_match('/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i', substr ($useragent,0,4)))
-    {
-      return true;
-    }
-    else return false;
-  }
-  else return false;
-}
-
 // ========================================= TASKMANAGEMENT ============================================
 
 // ---------------------------------------------- createtask ----------------------------------------------
@@ -2956,6 +3121,9 @@ function createworkflow ($site, $wf_name, $cat, $usermax=2, $scriptmax=0)
   $add_onload = "";
   $show = "";
   
+  // set default language
+  if ($lang == "") $lang = "en";
+  
   if (!valid_publicationname ($site) || !valid_objectname ($wf_name) || strlen ($wf_name) > 100 || $cat == "")
   {
     $add_onload = "";
@@ -3049,9 +3217,11 @@ function deleteworkflow ($site, $wf_name, $cat)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  
   $add_onload = "";
   $show = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   if (!valid_publicationname ($site) || !valid_objectname ($wf_name) || $cat == "")
   {
@@ -3482,7 +3652,10 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
 function workflowaccept ($site, $location, $object, $workflow, $item_id, $user, $message, $sendmail=true, $priority="medium")
 {
   global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
- 
+  
+  // set default language
+  if ($lang == "") $lang = "en";
+  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $workflow != "" && $item_id != "" && in_array ($priority, array("high","medium","low")))
   {
     // reset workflow is start user accepts and forwards 
@@ -3781,6 +3954,9 @@ function acceptobject ($site, $location, $object, $item_id, $user, $message, $se
   $add_onload = "";
   $show = "";
   
+  // set default language
+  if ($lang == "") $lang = "en";
+  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $item_id != "" && in_array ($priority, array("high","medium","low")))
   {  
         
@@ -3845,6 +4021,9 @@ function acceptobject ($site, $location, $object, $item_id, $user, $message, $se
 function workflowreject ($site, $location, $object, $workflow, $item_id, $user, $message, $sendmail, $priority="medium")
 {
   global $mgmt_config, $hcms_lang, $lang;
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $workflow != "" && $item_id != "" && in_array ($priority, array("high","medium","low")))
   {  
@@ -4020,6 +4199,9 @@ function rejectobject ($site, $location, $object, $item_id, $user, $message, $se
   $add_onload = "";
   $show = "";
  
+  // set default language
+  if ($lang == "") $lang = "en";
+  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $item_id != "" && in_array ($priority, array("high","medium","low")))
   {  
         
@@ -4426,8 +4608,7 @@ function getconfigvalue ($config, $in_key="")
 function createinstance ($instance_name, $settings, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
-         
-    
+  
   // eventsystem
   if ($eventsystem['oncreateinstance_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
     oncreateinstance_pre ($instance_name, $settings, $user); 
@@ -4435,6 +4616,9 @@ function createinstance ($instance_name, $settings, $user="sys")
   $result_ok = false;
   $add_onload = "";  
   $show = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // check if input data is available
   if (
@@ -4694,8 +4878,7 @@ function createinstance ($instance_name, $settings, $user="sys")
 function editinstance ($instance_name, $content, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
-         
-    
+  
   // eventsystem
   if ($eventsystem['onsaveinstance_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
     onsaveinstance_pre ($instance_name, $content, $user); 
@@ -4703,6 +4886,9 @@ function editinstance ($instance_name, $content, $user="sys")
   $result_ok = false;
   $add_onload = "";  
   $show = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // check if input data is available
   // check if sent data is available
@@ -4762,8 +4948,7 @@ function editinstance ($instance_name, $content, $user="sys")
 function deleteinstance ($instance_name, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
-         
-    
+
   // eventsystem
   if ($eventsystem['ondeleteinstance_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
     ondeleteinstance_pre ($instance_name, $user); 
@@ -4771,6 +4956,9 @@ function deleteinstance ($instance_name, $user="sys")
   $result_ok = false;
   $add_onload = "";  
   $show = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // check if file name is an attribute of a sent string
   if (strpos ($instance_name, ".php?") > 0)
@@ -4909,13 +5097,15 @@ function deleteinstance ($instance_name, $user="sys")
 function createpublication ($site_name, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
-         
-    
+
   // eventsystem
   if ($eventsystem['oncreatepublication_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
     oncreatepublication_pre ($site_name, $user); 
     
-  $result_ok = false;   
+  $result_ok = false;
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // check if sent data is available
   if (!valid_publicationname ($site_name) || strlen ($site_name) > 100 || !valid_objectname ($user))
@@ -5286,10 +5476,12 @@ function createpublication ($site_name, $user="sys")
 function editpublication ($site_name, $setting, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
-         
-    
+
   $result_ok = false;
   $exclude_folders_new = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   if (valid_publicationname ($site_name) && is_array ($setting) && valid_objectname ($user))
   {
@@ -5757,9 +5949,11 @@ allow_ip = ".$allow_ip_new;
 function deletepublication ($site_name, $user="sys")
 {
   global $mgmt_config, $eventsystem, $hcms_lang, $lang;
-         
-    
+
   $result_ok = false;
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // check if login is an attribute of a sent string
   if (strpos ($site_name, ".php?") > 0)
@@ -6061,8 +6255,13 @@ function createpersonalization ($site, $pers_name, $cat)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-    
   $result_ok = false;
+  
+  // set default language
+  if ($lang == "") $lang = "en";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   if (valid_publicationname ($site) && valid_objectname ($pers_name) && strlen ($pers_name) <= 100 && ($cat == "tracking" || $cat == "profile"))
   {
@@ -6128,9 +6327,14 @@ function createpersonalization ($site, $pers_name, $cat)
 function deletepersonalization ($site, $pers_name, $cat)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
-
-    
+ 
   $result_ok = false;
+  
+  // set default language
+  if ($lang == "") $lang = "en";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   if (valid_publicationname ($site) && valid_objectname ($pers_name) && ($cat == "tracking" || $cat == "profile"))
   {
@@ -6215,9 +6419,11 @@ function createtemplate ($site, $template, $cat)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-    
   $result_ok = false;
   
+  // set default language
+  if ($lang == "") $lang = "en";
+
   if (valid_publicationname ($site) && valid_objectname ($template) && strlen ($template) <= 60 && in_array ($cat, array("page","comp","inc","meta")))
   {
     // check if file is page template (.tpl), page component template (.comp.tpl) or template component (.inc.tpl),
@@ -6308,6 +6514,9 @@ function gettemplates ($site, $cat)
   global $user, $mgmt_config, $hcms_lang, $lang;
   
   $result = array();
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   if (valid_publicationname ($site) && ($cat == "page" || $cat == "comp" || $cat == "meta"))
   {
@@ -6447,11 +6656,13 @@ function loadtemplate ($site, $template)
 function edittemplate ($site, $template, $cat, $user, $content="", $extension="", $application="")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
-
-    
+ 
   $result_save = false;
   $add_onload = "";
   $show = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   if (valid_publicationname ($site) && valid_objectname ($template) && in_array ($cat, array("page","comp","inc","meta")) && valid_objectname ($user))
   { 
@@ -6488,7 +6699,7 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
       
       if ($extension != "") $templatedata = setcontent ($templatedata, "", "<extension>", strtolower ($extension), "", "");
             
-      if (in_array ($application, array("asp","aspx","htm","jsp","php","xml","generator"))) $templatedata = setcontent ($templatedata, "", "<application>", $application, "", "");
+      if (in_array ($application, array("asp","aspx","htm","jsp","php","xml","generator","media"))) $templatedata = setcontent ($templatedata, "", "<application>", $application, "", "");
       
       $templatedata = setcontent ($templatedata, "", "<content>", $contentfield_save, "", "");
     }
@@ -6536,9 +6747,11 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
 function deletetemplate ($site, $template, $cat)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
-
-    
+ 
   $result_ok = false;
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   if (valid_publicationname ($site) && valid_objectname ($template) && in_array ($cat, array("page","comp","inc","meta")))
   {  
@@ -6620,10 +6833,12 @@ function deletetemplate ($site, $template, $cat)
 function createuser ($site, $login, $password, $confirm_password, $user="sys")
 {
   global $eventsystem, $mgmt_config, $mgmt_lang_shortcut_default, $hcms_lang, $lang;
-
-    
+ 
   $add_onload = "";
   $show = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // default theme
   if ($mgmt_config['theme'] != "") $theme = $mgmt_config['theme'];
@@ -6832,10 +7047,12 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
 function edituser ($site, $login, $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="", $language="en", $theme="", $email="", $signature="", $usergroup="", $usersite="", $user="sys")
 {
   global $eventsystem, $login_cat, $group, $mgmt_config, $hcms_lang, $lang;
-         
-    
+
   $add_onload = "";
   $show = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   if (valid_objectname ($login) && valid_objectname ($user))
   { 
@@ -7148,10 +7365,12 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
 function deleteuser ($site, $login, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
-  
-  
+
   $add_onload = "";
   $show = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // site can be *Null*, which is naot a valid publication name
   if ($site != "" && valid_objectname ($login) && valid_objectname ($user))
@@ -7257,10 +7476,12 @@ function deleteuser ($site, $login, $user="sys")
 function creategroup ($site, $group_name, $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
-         
-    
+
   $add_onload = "";
   $show = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // check if sent data is available
   if (!valid_publicationname ($site) || !valid_objectname ($group_name) || strlen ($group_name) > 100 || !valid_objectname ($user))
@@ -7377,10 +7598,13 @@ function creategroup ($site, $group_name, $user="sys")
 function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $user)
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
-         
-  
+
   $add_onload = "";
   $show = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
+  
     // check if sent data is available
   if (!valid_publicationname ($site) || !valid_objectname ($group_name) || !valid_objectname ($user))
   {
@@ -7628,10 +7852,12 @@ function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $
 function deletegroup ($site, $group_name, $user)
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
-         
-    
+
   $add_onload = "";
   $show = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // check if sent data is available
   if (!valid_publicationname ($site) || !valid_objectname ($group_name) || !valid_objectname ($user))
@@ -7950,13 +8176,15 @@ function deleteworkflowfolder ($site, $cat, $folderpath, $user)
 function createmediacat ($site, $mediacat_name)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
-    
-    
+
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
   
   $show = "";
   $add_onload = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // check if folder exists already
   if (!valid_publicationname ($site) || $mediacat_name == "" || strlen ($mediacat_name) > 100)
@@ -8051,13 +8279,15 @@ function createmediacat ($site, $mediacat_name)
 function renamemediacat ($site, $mediacat_name_curr, $mediacat_name)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
-    
-    
+
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
   
   $show = "";
   $add_onload = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
 
   // check if folder exists already
   if (!valid_publicationname ($site) || $mediacat_name_curr == "" || $mediacat_name == "" || strlen ($mediacat_name) > 100)
@@ -8144,13 +8374,15 @@ function renamemediacat ($site, $mediacat_name_curr, $mediacat_name)
 function deletemediacat ($site, $mediacat_name)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
-    
-    
+
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
   
   $show = "";
   $add_onload = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // check if mediacat was sent
   if (!valid_publicationname ($site) || $mediacat_name == "")
@@ -8236,10 +8468,12 @@ function deletemediacat ($site, $mediacat_name)
 function uploadtomediacat ($site, $mediacat_name, $global_files)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
-    
-    
+
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // define variables
   $sizelim = "yes"; //do you want size limitations yes or no
@@ -8356,10 +8590,12 @@ function uploadtomediacat ($site, $mediacat_name, $global_files)
 function deletefrommediacat ($site, $mediafile)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
-         
-    
+
   if (session_id() != "") $session_id = session_id();
-  else $session_id = createuniquetoken ();          
+  else $session_id = createuniquetoken ();  
+  
+  // set default language
+  if ($lang == "") $lang = "en";        
 
   if (valid_publicationname ($site) && valid_objectname ($mediafile))
   {
@@ -8455,7 +8691,6 @@ function deletefrommediacat ($site, $mediafile)
 function createfolder ($site, $location, $foldernew, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
-
   
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
@@ -8465,6 +8700,9 @@ function createfolder ($site, $location, $foldernew, $user)
   $contentfile = "";
   $container_id = "";
   $page_box_xml = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($foldernew) && accessgeneral ($site, $location, "") && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
@@ -8785,6 +9023,9 @@ function deletefolder ($site, $location, $folder, $user)
          
   $add_onload = "";
   $show = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, $cat) && $user != "")
   {  
@@ -8913,7 +9154,10 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
   
   $add_onload = "";
   $show = "";
-  $foldernew_orig = ""; 
+  $foldernew_orig = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && valid_objectname ($foldernew) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
@@ -9187,6 +9431,7 @@ function createobject ($site, $location, $page, $template, $user)
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
   $show = "";
+  $add_onload = "";
   $cat = "";
   $page_orig = "";
   $filetype = "";
@@ -9194,6 +9439,9 @@ function createobject ($site, $location, $page, $template, $user)
   $contentfile = "";
   $container_id = "";
   $page_box_xml = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && accessgeneral ($site, $location, "") && strlen ($page) <= $mgmt_config['max_digits_filename'] && valid_objectname ($template) && valid_objectname ($user))
   {
@@ -9461,8 +9709,8 @@ function createobject ($site, $location, $page, $template, $user)
             $object = convertpath ($site, $location.$pagename, $cat)."|";
             
             $link_db_record = "\n".$contentfile.":|".$object.":|";
-          
-            // insert new record into link management file
+
+            // append new record into link management file
             $link_db_append = appendfile ($mgmt_config['abs_path_data']."link/", $site.".link.dat", $link_db_record);
             
             // user file could not be loaded (might be locked by a user)
@@ -9470,8 +9718,8 @@ function createobject ($site, $location, $page, $template, $user)
             {
               // get locked file info
               $result_locked = getlockedfileinfo ($mgmt_config['abs_path_data']."link/", $site.".link.dat");
-              
-              if (is_array ($result_locked) && $result_locked['user'] != "")
+
+              if (!empty ($result_locked['user']))
               {
                 // unlock file
                 $result_unlock = unlockfile ($result_locked['user'], $mgmt_config['abs_path_data']."link/", $site.".link.dat");
@@ -9485,7 +9733,8 @@ function createobject ($site, $location, $page, $template, $user)
                 $mailer->Body = "Link index is locked!\nhyperCMS Host: ".$_SERVER['SERVER_NAME']."\n";
                 $mailer->Send();
                 
-                $result['message'] = $hcms_lang['rsionsubtext0'][$lang];
+                $result_unlock = false;
+                $result['message'] = $hcms_lang['could-not-insert-into-link-management'][$lang];
                 $auth = false;
               }
         
@@ -9665,14 +9914,16 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
 {
   global $mgmt_config, $mgmt_uncompress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_parser, $eventsystem,
          $pageaccess, $compaccess, $hiddenfolder, $localpermission, $hcms_lang, $lang;
-  
-  
+
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
   
   $show = "";
   $show_command = "";
   $result = array();
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   if (valid_publicationname ($site) && valid_locationname ($location) && $cat != "" && accessgeneral ($site, $location, $cat) && is_array ($global_files) && valid_objectname ($user))
   {
@@ -9711,26 +9962,81 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     $updir = $location; //absolute path to where files are uploaded, no trailing slash
     $size = $mgmt_config['maxfilesize'] * 1024 * 1024; // size limited in bytes
     
-    // check if global_files contains an url as source and download file temporarily
-    $is_url = false;
+    // check if global_files contains an URL or FTP-link as source and download file temporarily
+    $is_remote_file = false;
     
+    // define path of temp file
+    $temp_file = $mgmt_config['abs_path_cms'].'temp/'.uniqid();
+
+    // remote HTTP file
     if (substr ($global_files['Filedata']['tmp_name'], 0, 4) == "http")
-    {			
-      $tmpPath = $mgmt_config['abs_path_cms'].'temp/'.uniqid();
-      $file = file_get_contents ($global_files['Filedata']['tmp_name']);
+    {
+      // get remote file
+      $filedata = file_get_contents ($global_files['Filedata']['tmp_name']);
       
-      if ($file && file_put_contents ($tmpPath, $file) && is_file ($tmpPath))
+      if ($filedata && file_put_contents ($temp_file, $filedata) && is_file ($temp_file))
       {
         $global_files['Filedata']['error'] = UPLOAD_ERR_OK;
-        $global_files['Filedata']['tmp_name'] = $tmpPath;
-        $global_files['Filedata']['type'] = mime_content_type ($tmpPath);
-        $global_files['Filedata']['size'] = filesize($tmpPath);
-        $is_url = true;
+        $global_files['Filedata']['tmp_name'] = $temp_file;
+        $global_files['Filedata']['type'] = mime_content_type ($temp_file);
+        $global_files['Filedata']['size'] = filesize ($temp_file);
+        $is_remote_file = true;
       }
       else
       {
         $result['header'] = "HTTP/1.1 501 Internal Server Error";
         $result['message'] = $hcms_lang['file-could-not-be-downloaded'][$lang];
+        
+        return $result;
+      }
+    }
+    // remote FTP file
+    elseif (substr ($global_files['Filedata']['tmp_name'], 0, 3) == "ftp")
+    {
+      $filedata = false;
+      
+      // get FTP server name
+      $ftp_info = parse_url ($global_files['Filedata']['tmp_name']);
+      $ftp_server = $ftp_info['host'];
+
+      // check for existing FTP connection data
+      if ($ftp_server != "")
+      {
+        $ftp_array = getsession ($ftp_server);
+        
+        // set FTP logon data
+        $sentserver = $ftp_server;
+        if (!empty ($ftp_array['ftp_user'])) $sentuser = $ftp_array['ftp_user'];
+        if (!empty ($ftp_array['ftp_password'])) $sentpasswd = $ftp_array['ftp_password'];
+        if (!empty ($ftp_array['ftp_ssl'])) $ssl = $ftp_array['ftp_ssl'];
+        
+        if (!empty ($sentserver) && !empty ($sentuser) && !empty ($sentpasswd))
+        {
+          if (!empty ($ssl)) $ssl = true;
+          else $ssl = false;
+          
+          $conn_id = ftp_userlogon ($sentserver, $sentuser, $sentpasswd, $ssl);
+          
+          $remote_file = cleandomain ($global_files['Filedata']['tmp_name']);
+
+          // get remote file
+          $ftp_getfile = ftp_getfile ($conn_id, $remote_file, $temp_file);
+        }
+      }
+      
+      if ($ftp_getfile && is_file ($temp_file))
+      {
+        $global_files['Filedata']['error'] = UPLOAD_ERR_OK;
+        $global_files['Filedata']['tmp_name'] = $temp_file;
+        $global_files['Filedata']['type'] = mime_content_type ($temp_file);
+        $global_files['Filedata']['size'] = filesize ($temp_file);
+        $is_remote_file = true;
+      }
+      else
+      {
+        $result['header'] = "HTTP/1.1 501 Internal Server Error";
+        $result['message'] = $hcms_lang['file-could-not-be-downloaded'][$lang];
+        
         return $result;
       }
     }
@@ -9936,7 +10242,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
             }
           }
         }
-        else $show = $result['message'];
+        else $show = $result_createobject['message'];
       }
       // update existing multimedia object
       elseif ($media_update != "" && valid_objectname ($page))
@@ -9984,7 +10290,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
             if ($test == true)
             {
               // copy to temporary directory
-              if ($is_url)
+              if ($is_remote_file)
               {
                 $result_upload = @rename ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.".jpg") or $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
               }
@@ -10050,6 +10356,8 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
             @unlink (getmedialocation ($site, $media_update, "abs_path_media").$site."/".$media_update);
           }
           
+          // remember original file name
+          $media_orig = $media_update;
           // get file name without extension of the old file
           $file_name_old = strrev (substr (strstr (strrev ($media_update), "."), 1));
           // get the file extension of the old file
@@ -10069,14 +10377,14 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
           if (!empty ($media_root))
           {
             // move uploaded file
-            if (!$is_url)
+            if (!$is_remote_file)
             {
               $test = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update);
             }
             else $test = false;
             
             // save file from URL or if file has already been saved in the temp directory (WebDAV saves files in temp directory)
-            if ($is_url || $test == false)
+            if ($is_remote_file || $test == false)
             {
                $test = @rename ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update); 
             }
@@ -10134,6 +10442,13 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
             
             // create preview (thumbnail for images, previews for video/audio files)
             createmedia ($site, getmedialocation ($site, $media_update, "abs_path_media").$site."/", getmedialocation ($site, $media_update, "abs_path_media").$site."/", $media_update, "", "origthumb");
+            
+            // remove indexed content if file extension has changed
+            if ($file_ext_old != $file_ext_new)
+            {
+              unindexcontent ($site, getmedialocation ($site, $media_orig, "abs_path_media").$site."/", $media_orig, $contentfile, "", $user);
+            }
+            
             // index content of readable documents
             indexcontent ($site, getmedialocation ($site, $media_update, "abs_path_media").$site."/", $media_update, $contentfile, "", $user);
           }
@@ -10165,8 +10480,6 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
                 $page = $pagename = $page_nameonly.$file_ext_new;
                 // define new page
                 $show_command = "[".specialchr_encode($page)."]";
-                // remove indexed content
-                unindexcontent ($site, getmedialocation ($site, $media, "abs_path_media").$site."/", $media, $contentfile, "", $user);
               }
               // on error
               else
@@ -10194,6 +10507,9 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     
     // define message on success
     if ($show == "") $show = $hcms_lang['uploaded-file-successfully'][$lang];
+    
+    // remove temp file downloaded from Dropbox or FTP server
+    if (is_file ($temp_file)) unlink ($temp_file);
   
     // return message and command to flash object
     $result['header'] = "HTTP/1.1 200 OK";
@@ -10221,13 +10537,14 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
 
 function indexcontent ($site, $location, $file, $container="", $container_content="", $user)
 {
-  global $mgmt_config, $mgmt_parser, $mgmt_uncompress, $hcms_lang, $lang;
+  global $mgmt_config, $mgmt_parser, $mgmt_uncompress, $hcms_ext, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($user))
   {
     $usedby = "";
     
-    require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php"); 
+    // load file extensions
+    if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";            
@@ -10538,7 +10855,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       }
       // ------------------------ TEXT -----------------------    
       // get file content from readable formats
-      elseif ($file_ext != "" && substr_count ($hcms_ext['cleartxt'].".", $file_ext.".") > 0)
+      elseif ($file_ext != "" && substr_count (strtolower ($hcms_ext['cleartxt']).".", $file_ext.".") > 0)
       {
         $file_content = loadfile_fast ($location, $file);
         
@@ -10554,7 +10871,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       }
       // --------------------- HTML/SCRIPTS --------------------    
       // get file content from html/script formats
-      elseif ($file_ext != "" && substr_count ($hcms_ext['cms'].".", $file_ext.".") > 0)
+      elseif ($file_ext != "" && substr_count (strtolower ($hcms_ext['cms']).".", $file_ext.".") > 0)
       {
         $file_content = loadfile_fast ($location, $file);
         
@@ -10571,7 +10888,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       // ------------------------ AUDIO, IMAGES, VIDEOS -----------------------   
       // SPECIAL CASE: the meta data attributes found in the file will be saved using a mapping.
       // get file content from image formats holding meta data using setmetadata
-      elseif ($file_ext != "" && substr_count ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video'].".", $file_ext.".") > 0)
+      elseif ($file_ext != "" && substr_count (strtolower ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video']).".", $file_ext.".") > 0)
       {
         $injected = setmetadata ($site, "", "", $file, "", $user);
       } 
@@ -10931,6 +11248,138 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
   else return false;
 }
 
+// ---------------------- editmediaobject -----------------------------
+// function: editmediaobject()
+// input: publication, locationr, object name, format (file extension w/o dot) (optional), 
+//        type of image/video/audio file [thumbnail,origthumb(thumbail made from original video/audio),original,any other string present in $mgmt_imageoptions] (optional)
+// output: result array / false on error (saves original or thumbnail media file of an object, for thumbnail only jpeg format is supported as output), user name
+
+// description: editmediaobject mainly uses function createmedia to render the objects media
+
+function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbnail", $user)
+{
+  global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $hcms_lang, $lang;
+
+  $processresult = false;
+  $show = "";
+  $add_onload = "";
+  $cat = "";
+  $mediafile_new = "";
+  $container = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
+  
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
+  {
+    $cat = getcategory ($site, $location);
+    $location_esc = convertpath ($site, $location, $cat);
+    
+    $pagefile_info = getfileinfo ($site, $page, $cat);
+    $pageobject_info = getobjectinfo ($site, $location, $page);
+    $container_id = $pageobject_info['container_id'];
+    $container = $container_id.".xml";
+    $mediafile_orig = $pageobject_info['media'];
+    $mediafile_location = getmedialocation ($site, $mediafile_orig, "abs_path_media").$site."/";
+    
+    // render media file of object
+    $mediafile_new = createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_orig, $format, $type);
+
+    // if successful
+    if ($mediafile_new)
+    {
+      $processresult = true;
+            
+      // create new thumbnail
+      createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_new, "jpg", "thumbnail");
+      
+      // get the file extension of the old file      
+      $file_ext_old = strtolower (strrchr ($mediafile_orig, "."));
+      // get the file extension of the new file
+      $file_ext_new = strtolower (strrchr ($mediafile_new, "."));
+      // get file name without extension of the old file
+      $mediafile_nameonly = strrev (substr (strstr (strrev ($mediafile_orig), "."), 1));
+      // get object name without extension
+      $page_nameonly = strrev (substr (strstr (strrev ($pagefile_info['name']), "."), 1));
+
+      // rename object file extension if file extension has changed due to coversion
+      if ($file_ext_old != $file_ext_new)
+      {
+        // reset result
+        $processresult = false;
+        
+        // write new media reference in object file
+        $filedata = $filedata_orig = loadfile ($location, $page);
+        if ($filedata != false) $filedata = setfilename ($filedata, "media", getobject ($mediafile_nameonly).$file_ext_new); 
+        
+        if ($filedata != false)
+        {
+          $savepage = savefile ($location, $page, $filedata);
+          // remote client
+          remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");                
+        }
+        else $savepage = false;
+
+        // on success
+        if ($savepage == true)
+        { 
+          // rename media object after file extension has changed  
+          $rename = renameobject ($site, $location, $page, $page_nameonly, $user);
+
+          if ($rename['result'] == true)
+          {
+            $processresult = true;
+          
+            // set new page name and media file name
+            $page = $rename['object'];
+            $mediafile = $mediafile_nameonly.$file_ext_new;
+
+            // remote client
+            remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");
+            
+            $show = $hcms_lang['the-file-was-processed-successfully'][$lang];
+            
+            // add onload
+            $add_onload = "parent.frames['controlFrame'].location.href='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\n";
+          }
+          // on error
+          else
+          {
+            // revert changes back
+            savefile ($location, $page, $filedata_orig);
+            $show = $hcms_lang['a-value-is-required'][$lang]."\n";         
+          }           
+        }
+        // on error
+        else
+        {
+          $show = $hcms_lang['file-could-not-be-saved-or-only-partialy-saved'][$lang]."\n";         
+        }
+      }
+    }
+    // media file could not be created
+    else
+    {
+      $show = $hcms_lang['an-error-occured-in-the-data-manipulation'][$lang]."\n"; 
+    }
+  }
+  
+  // return results
+  $result = array();
+  $result['result'] = $processresult;
+  $result['add_onload'] = $add_onload;  
+  $result['message'] = $show;
+  $result['publication'] = $site;
+  $result['location'] = $location;
+  $result['cat'] = $cat;
+  $result['object'] = $page;
+  $result['mediafile'] = $mediafile_new;
+  $result['container'] = $container;
+  $result['container_id'] = $container;
+  
+  return $result;
+}
+
 // ---------------------------------------- manipulateobject --------------------------------------------
 // function: manipulateobject()
 // input: site, location, object name, new object name (exkl. extension except for action "file_rename"), user, 
@@ -10944,7 +11393,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
 {
   global $eventsystem,
-         $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions,
+         $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext,
          $pageaccess, $compaccess, $hiddenfolder,     
          $cat, $temp_clipboard, 
          $hcms_lang, $lang;
@@ -10964,7 +11413,8 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
  
   if (valid_publicationname ($site) && valid_locationname ($location) && accessgeneral ($site, $location, $cat) && valid_objectname ($user) && $action != "")
   {
-        require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+    // load file extensions
+    if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
  
     // publication management config
     if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
@@ -11212,16 +11662,28 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
 
             // if object is unpublished
             if ($fileinfo['published'] == false) $pagenew = $pagenew.".off"; 
-          }           
-
+          }
+          
+          // check both names (published or unpublished)
+          if (substr ($pagenew, -4) == ".off")
+          {
+            $pagenew_unpub = $pagenew;
+            $pagenew_pub = substr ($pagenew, 0, -3);
+          }
+          else
+          {
+            $pagenew_unpub = $pagenew.".off";
+            $pagenew_pub = $pagenew;
+          }
+          
           // if file doesn't exist
           if (!is_file ($location.$page))
           {
             $add_onload = "";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-doesnt-exist-or-you-do-not-have-write-permissions'][$lang]."</span><br />\n";
           }
-          // if new file name exists already
-          elseif (@is_file ($location.$pagenew) && strtolower ($location.$page) != strtolower ($location.$pagenew))
+          // if new object exists already (published or unpublished)
+          elseif ((is_file ($location.$pagenew_pub) || is_file ($location.$pagenew_unpub)) && strtolower ($location.$page) != strtolower ($location.$pagenew))
           {
             $add_onload = "";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n";
@@ -12626,7 +13088,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
 function deleteobject ($site, $location, $page, $user)
 {      
   global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
-  
+
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     // publication management config
@@ -12750,11 +13212,13 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false)
   $add_onload = "";
   $show = "";
   $filetype = ""; 
-  $clipboard = ""; 
+  $clipboard = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
-  {
-        
+  { 
     // get clipboard entries
     if ($clipboard_add == true)
     {
@@ -12849,9 +13313,11 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false)
   $filetype = "";
   $clipboard = "";
   
+  // set default language
+  if ($lang == "") $lang = "en";
+  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
-        
     // get clipboard entries
     if ($clipboard_add == true)
     {
@@ -12951,9 +13417,11 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
   $filetype = "";
   $clipboard = "";
   
+  // set default language
+  if ($lang == "") $lang = "en";
+  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
-  {        
-        
+  {
     // get clipboard entries
     if ($clipboard_add == true)
     {
@@ -13091,6 +13559,9 @@ function lockobject ($site, $location, $page, $user)
   $pagename = "";
   $usedby = "";
   $filetype = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -13318,6 +13789,9 @@ function unlockobject ($site, $location, $page, $user)
   $pagename = "";
   $usedby = "";
   $filetype = "";
+  
+  // set default language
+  if ($lang == "") $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -13444,11 +13918,14 @@ function publishobject ($site, $location, $page, $user)
   $buffer_page = "";
   $show = "";
   $add_onload = "";
-  $release = false; 
-   
+  $release = false;
+  
+  // set default language
+  if ($lang == "") $lang = "en";
+
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
-        // load template engine (is not included by API and needs to be loaded seperately!)
+    // load template engine (is not included by API and needs to be loaded seperately!)
     require_once ($mgmt_config['abs_path_cms']."function/hypercms_tplengine.inc.php");
   
     // publication management config
@@ -13493,16 +13970,16 @@ function publishobject ($site, $location, $page, $user)
         }
       }
       
-      // execute eventsystem for multimedia components and folders
-      if ($container != "" && (($media != false && $application != "generator") || $page == ".folder")) 
-      {
-        $contentdata = loadcontainer ($container_id, "work", $user);
-      
-        if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
-          onpublishobject_pre ($site, $cat, $location, $page, $container, $contentdata, $template, "", "", $user);
-      }      
+      // execute eventsystem for multimedia components and folders (deprected since version 5.7.5)
+      // if ($container != "" && (($media != false && $application != "generator") || $page == ".folder")) 
+      // {
+      //  $contentdata = loadcontainer ($container_id, "work", $user);
+      //
+      //  if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      //    onpublishobject_pre ($site, $cat, $location, $page, $container, $contentdata, $template, "", "", $user);
+      // }      
       // if object is not a multimedia file or folder
-      elseif ($container != false && $template != false && $application != false && ($media == false || $application == "generator") && $page != ".folder") 
+      if ($container != false && $template != false && $application != false) 
       {
         // get connected objects 
         $object_array = getconnectedobject ($container);
@@ -13516,7 +13993,6 @@ function publishobject ($site, $location, $page, $user)
       
           $errcode = "20877";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|object reference in link management is missing for container $container used by $location$page";     
-        
 
           // define current object for publishing
           $object_array[0]['publication'] = $site;
@@ -13594,7 +14070,8 @@ function publishobject ($site, $location, $page, $user)
 
                 // -------------------------------- publish page -------------------------------
                 // if user has the workflow permission to publish or no workflow is attached
-                if ($release >= 3 && ($viewstore != "" || $application == "generator"))
+                // for media files the object file will not be touched
+                if ($release >= 3 && $application != "media" && ($viewstore != "" || $application == "generator"))
                 {
                   // eventsystem
                   if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
@@ -13681,7 +14158,7 @@ function publishobject ($site, $location, $page, $user)
             }
   
             // ------------------------------- generate link index and update container ------------------------------
-            if ($release >= 3 && ($viewstore != "" || $application == "generator") && $result_save == true)
+            if ($release >= 3 && $application != "media"  && ($viewstore != "" || $application == "generator") && $result_save == true)
             {
               if ($container != false && $template != false)
               {   
@@ -13816,6 +14293,14 @@ function publishobject ($site, $location, $page, $user)
               if ($eventsystem['onpublishobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $error_switch == "no") 
                 onpublishobject_post ($site, $cat, $location, $page_new, $contentfile, $contentdata, $templatefile, $templatedata, $viewstore, $user);          
             }
+            // if we publish a media file we dont use the link management
+            elseif ($application == "media")
+            {
+              $add_onload = "";
+              $show = "<span class=\"hcmsHeadline\"".$hcms_lang['published-item-successfully'][$lang]."</span><br />\n";
+              
+              $error_switch = "no";
+            }   
             else
             {
               $add_onload = "";
@@ -13838,7 +14323,7 @@ function publishobject ($site, $location, $page, $user)
           else link_db_close ($site, $user);
         }
       }
-      // object has no container, template or application (is not managed by hyperCMS) or is a multimedia object or folder object
+      // object has no container, template or application (is not managed by hyperCMS)
       else
       {
         // execute eventsystem for multimedia components
@@ -14034,7 +14519,9 @@ function publishlinkedobject ($site, $location, $page, $user)
 {      
   global $eventsystem, $mgmt_config, $cat, $ctrlreload, $hcms_lang, $lang;
 
-    
+  // set default language
+  if ($lang == "") $lang = "en";
+  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {  
     // define category if undefined
@@ -14116,7 +14603,9 @@ function unpublishobject ($site, $location, $page, $user)
 {      
   global $eventsystem, $mgmt_config, $cat, $ctrlreload, $hcms_lang, $lang;   
 
-        
+  // set default language
+  if ($lang == "") $lang = "en";
+  
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     // publication management config
@@ -14363,8 +14852,10 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only="0")
 // main function
 function manipulateallobjects ($action, $objectpath_array, $method, $force, $published_only, $user, $tempfile="")
 {
-  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $cat, $hcms_lang, $lang;;      
-  
+  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $cat, $hcms_lang, $lang;
+      
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // get object pathes from the session if is not set      
   if (!is_array ($objectpath_array) && (isset ($_SESSION['clipboard_multiobject']) && is_array ($_SESSION['clipboard_multiobject']))) $objectpath_array = $_SESSION['clipboard_multiobject'];
@@ -15311,8 +15802,10 @@ function savelog ($error, $logfile="event")
 function deletelog ()
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
+
+  // set default language
+  if ($lang == "") $lang = "en";
   
-    
   // file name of event log
   $logfile = "event.log";
   
@@ -15381,7 +15874,10 @@ function notifyusers ($site, $location, $object, $event, $user_from)
 {
   global $user, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
   
-    // include hypermailer class
+  // set default language
+  if ($lang == "") $lang = "en";
+  
+  // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
   
   if ($event != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($user_from))
@@ -15508,6 +16004,9 @@ function notifyusers ($site, $location, $object, $event, $user_from)
 function licensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $date_end, $user, $format="%Y-%m-%d")
 {
   global $eventsystem, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
+  
+  // set default language
+  if ($lang == "") $lang = "en";
   
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");

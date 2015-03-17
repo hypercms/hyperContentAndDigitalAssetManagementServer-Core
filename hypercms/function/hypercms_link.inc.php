@@ -176,8 +176,8 @@ function link_db_load ($site, $user)
     // if link management is enabled
   if ($mgmt_config[$site]['linkengine'] == true && valid_publicationname ($site) && valid_objectname ($user))
   {
-    $link_db_data = loadlockfile ($user, $mgmt_config['abs_path_data']."link/", $site.".link.dat", 10);
-    
+    $link_db_data = loadlockfile ($user, $mgmt_config['abs_path_data']."link/", $site.".link.dat", 5);
+
     if ($link_db_data != false)
     {
       $link_db_array = explode ("\n", $link_db_data);

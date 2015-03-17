@@ -1467,11 +1467,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       }
     }
     
-    // if media file or folder is set in object
-    if ((isset ($mediafile) && $mediafile != false && $mediafile != "" && $application != "generator") || $page == ".folder")
+    // if media file or folder is set in an object
+    if ((!empty ($mediafile) && $application != "generator") || $page == ".folder")
     {
-      if ($buildview == "cmsview" || $buildview == 'inlineview' || $buildview == "formmeta") $buildview = "formedit";
-      elseif ($buildview == "preview" || $buildview == "template" || $buildview == "publish") $buildview = "formlock";
+      if ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "formmeta") $buildview = "formedit";
+      elseif ($buildview == "preview" || $buildview == "template") $buildview = "formlock";
     }
     
     // disable form fields
@@ -1582,7 +1582,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     } 
 
     // ================================= XML-document in template view ===================================        
-    if ($application == "xml" && ($buildview == "template" || $buildview == "cmsview" || $buildview == 'inlineview') && @substr_count (strtolower($viewstore), "[hypercms:scriptbegin") == 0)
+    if ($application == "xml" && ($buildview == "template" || $buildview == "cmsview" || $buildview == "inlineview") && @substr_count (strtolower($viewstore), "[hypercms:scriptbegin") == 0)
     {         
       // if template is a XML-document escape all < and > and add <br />
       $viewstore = str_replace ("<![CDATA[", "&lt;![CDATA[", $viewstore);
@@ -2773,7 +2773,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           if ($tmpuser[0] == $user || checkadminpermission () || checkglobalpermission ($site, 'user'))
                           {
                             if ($buildview == "formedit" || $buildview == "formmeta") $contentcomment .= "<span style=\"float:right;\"><input id=\"textf_".$tmpid[0]."\" type=\"hidden\" name=\"textf[".$tmpid[0]."]\" DISABLED/><input id='delete_".$tmpid[0]."' type='checkbox' onclick=\"deleteComment(document.getElementById('textf_".$tmpid[0]."'), !this.checked);\"/><label for=\"delete_".$tmpid[0]."\">".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."</label></span>\n";
-                            elseif ($buildview == "cmsview" || $buildview == "inlineview") $contentcomment .= "<span style=\"float:right;\"><a hypercms_href=\"".$mgmt_config['url_path_cms']."page_save.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&textf[".$tmpid[0]."]=&token=".$token."\" /><img src=\"".getthemelocation()."img/button_delete.gif\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a></span>\n";
+                            elseif ($buildview == "cmsview" || $buildview == "inlineview") $contentcomment .= "<span style=\"float:right;\"><a hypercms_href=\"".$mgmt_config['url_path_cms']."service/savecontent.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&textf[".$tmpid[0]."]=&token=".$token."\" /><img src=\"".getthemelocation()."img/button_delete.gif\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a></span>\n";
                           }
 
                           $contentcomment .= "</div>\n";
@@ -4925,7 +4925,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     if ($searchtag == "component")
                     {                   
                       // create tag link for editor
-                      if (!empty ($contentbot)) $compeditlink = "<img onClick=\"hcms_openWindowComp('', 'scrollbars=yes,resizable=yes,width=800,height=600,status=yes', '".str_replace ("%comp%", "", $contentbot)."');\" src=\"".getthemelocation()."img/button_file_edit.gif\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\"  style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /><a hypercms_href=\"".$mgmt_config['url_path_cms']."page_save.php?site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr[".$id."]=".url_encode($contentbot)."&component[".$id."]=&condition[".$id."]=".url_encode($condbot)."&token=".$token."\" /><img src=\"".getthemelocation()."img/button_delete.gif\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a>";
+                      if (!empty ($contentbot)) $compeditlink = "<img onClick=\"hcms_openWindowComp('', 'scrollbars=yes,resizable=yes,width=800,height=600,status=yes', '".str_replace ("%comp%", "", $contentbot)."');\" src=\"".getthemelocation()."img/button_file_edit.gif\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\"  style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /><a hypercms_href=\"".$mgmt_config['url_path_cms']."service/savecontent.php?site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr[".$id."]=".url_encode($contentbot)."&component[".$id."]=&condition[".$id."]=".url_encode($condbot)."&token=".$token."\" /><img src=\"".getthemelocation()."img/button_delete.gif\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a>";
                       else $compeditlink = "";
                       
                       if ($buildview == "cmsview" || $buildview == 'inlineview')
@@ -5946,7 +5946,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           // form for multiple component manipulation in cmsview
           if ($buildview != "preview") $bodytagnew = $bodytagnew."        
   <div style=\"display:none;\">
-  <form name=\"hcms_result\" action=\"".$mgmt_config['url_path_cms']."page_save.php\" method=\"post\">
+  <form name=\"hcms_result\" action=\"".$mgmt_config['url_path_cms']."service/savecontent.php\" method=\"post\">
     <input type=\"hidden\" name=\"site\" value=\"".$site."\" />
     <input type=\"hidden\" name=\"cat\" value=\"".$cat."\" />
     <input type=\"hidden\" name=\"compcat\" value=\"multi\" />
@@ -6047,7 +6047,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         }
       }
       
-      document.forms['hcms_result'].attributes['action'].value = 'page_save.php';
+      document.forms['hcms_result'].attributes['action'].value = 'service/savecontent.php';
     }
     else if (type == 'send') 
     {
@@ -6111,7 +6111,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         }           
                 
         // ======================================== add header information =============================================
-        if ($buildview == "publish")
+        if ($buildview == "publish" && $application != "media")
         {          
           // define template and content file pointer
           $sourcefiles = "\n<!-- hyperCMS:template file=\"".$templatefile."\" -->\n<!-- hyperCMS:content file=\"".$contentfile."\" -->\n";
@@ -6267,12 +6267,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
      
       if (mediaext.length > 2)
       {
-        if (mediatype == 'audio') allowedext = '".$hcms_ext['audio']."';
-        else if (mediatype == 'compressed') allowedext = '".$hcms_ext['compressed']."';
-        else if (mediatype == 'flash') allowedext = '".$hcms_ext['flash']."';
-        else if (mediatype == 'image') allowedext = '".$hcms_ext['image']."';
-        else if (mediatype == 'text') allowedext = '".$hcms_ext['cms'].$hcms_ext['bintxt']."';
-        else if (mediatype == 'video') allowedext = '".$hcms_ext['video']."';
+        if (mediatype == 'audio') allowedext = '".strtolower ($hcms_ext['audio'])."';
+        else if (mediatype == 'compressed') allowedext = '".strtolower ($hcms_ext['compressed'])."';
+        else if (mediatype == 'flash') allowedext = '".strtolower ($hcms_ext['flash'])."';
+        else if (mediatype == 'image') allowedext = '".strtolower ($hcms_ext['image'])."';
+        else if (mediatype == 'text') allowedext = '".strtolower ($hcms_ext['cms'].$hcms_ext['bintxt'])."';
+        else if (mediatype == 'video') allowedext = '".strtolower ($hcms_ext['video'])."';
         
         if (allowedext.indexOf(mediaext) < 0) 
         {
@@ -6688,7 +6688,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       	$(\"#savetype\").val('auto');
             
         $.post(
-          \"".$mgmt_config['url_path_cms']."page_save.php\", 
+          \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
           $(\"#hcms_formview\").serialize(), 
           function(data)
           {
@@ -6727,7 +6727,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   </div>";
   
   if ($buildview != "formlock") $viewstore .= "
-  <form action=\"".$mgmt_config['url_path_cms']."page_save.php\" method=\"post\" name=\"hcms_formview\" id=\"hcms_formview\" accept-charset=\"".$charset."\" enctype=\"application/x-www-form-urlencoded\">
+  <form action=\"".$mgmt_config['url_path_cms']."service/savecontent.php\" method=\"post\" name=\"hcms_formview\" id=\"hcms_formview\" accept-charset=\"".$charset."\" enctype=\"application/x-www-form-urlencoded\">
     <input type=\"hidden\" name=\"view\" value=\"".$buildview."\" />
     <input type=\"hidden\" name=\"contenttype\" value=\"".$contenttype."\" />
     <input type=\"hidden\" name=\"site\" value=\"".$site."\" />

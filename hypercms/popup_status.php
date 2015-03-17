@@ -30,13 +30,15 @@ $published_only = getrequest ("published_only");
 $tempfile = getrequest_esc ("tempfile", "locationname");
 $token = getrequest ("token");
 
-// set current location
-if ($action == "publish" || $action == "unpublish") $location_curr = $location.$folder."/";
-else $location_curr = $location;
+// set current location (for action = paste the folder is not part of the location to paste)
+if ($folder != "" && $action != "paste")
+{
+  $location = $location.$folder."/";
+}
 
 // get publication and category
-$site = getpublication ($location_curr);
-$cat = getcategory ($site, $location_curr);
+$site = getpublication ($location);
+$cat = getcategory ($site, $location);
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -48,8 +50,9 @@ $location_esc = convertpath ($site, $location, $cat);
 // ------------------------------ permission section --------------------------------
 
 // check access permissions
-$ownergroup = accesspermission ($site, $location_curr, $cat);
-$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);  
+$ownergroup = accesspermission ($site, $location, $cat);
+$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
 if ($ownergroup == false || $setlocalpermission['root'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location)) killsession ($user);
 
 // check session of user
@@ -59,16 +62,6 @@ checkusersession ($user, false);
 
 $add_javascript = "";
 $count = 0;
-
-// correct location for access permission
-if ($folder != "")
-{
-  $location_ACCESS = $location.$folder."/";
-}
-else
-{
-  $location_ACCESS = $location;
-}
 
 // check authorization of requested action
 $authorized = false;
@@ -82,9 +75,9 @@ if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
   // check if folder or object exists
   if ($force == "start" && $action != "paste")
   {
-    if ($location_ACCESS != "" && $page != "" && !is_file ($location_ACCESS.correctfile ($location_ACCESS, $page, $user))) $authorized = false;
-    elseif ($location_ACCESS != "" && $folder != "" && !is_file ($location_ACCESS.".folder")) $authorized = false;
-    elseif ($location_ACCESS != "" && $page == "" && $folder == "") $authorized = false;
+    if ($location != "" && $page != "" && !is_file ($location.correctfile ($location, $page, $user))) $authorized = false;
+    elseif ($location != "" && $folder != "" && !is_file ($location.".folder")) $authorized = false;
+    elseif ($location != "" && $page == "" && $folder == "") $authorized = false;
   }
 }
 
@@ -103,10 +96,9 @@ if ($authorized == true || $force == "stop")
         $multiobject_array = link_db_getobject ($multiobject);
       }
       elseif ($site != "" && $location != "")
-      {    
-        // for action = paste the folder is not part of the location to paste 
-        if ($folder != "" && $action != "paste") $multiobject_array[0] = convertpath ($site, $location.$folder."/.folder", $cat); 
-        else $multiobject_array[0] = convertpath ($site, $location.$page, $cat);
+      {
+        if ($folder != "") $multiobject_array[0] = convertpath ($site, $location.".folder", $cat); 
+        $multiobject_array[0] = convertpath ($site, $location.$page, $cat);
       }
     }
     else $multiobject_array = Null;

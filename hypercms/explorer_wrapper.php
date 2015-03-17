@@ -54,7 +54,7 @@ $media_approved = false;
 // ------------------------------- define objectpath --------------------------------
 // get object ID
 // if wrapper link hash is provided (since version 5.6.2)
-if ($wl != "" && $mgmt_config['db_connect_rdbms'] != "")
+if ($wl != "" && !empty ($mgmt_config['db_connect_rdbms']))
 {
   $objectpath_esc = rdbms_getobject ($wl);
   $object_id = rdbms_getobject_id ($objectpath_esc);
@@ -223,30 +223,11 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
     {
       // target path for the temporary file
       $media_target = $mgmt_config['abs_path_cms'].'temp/';
-      $media_old = $site."/".getobject ($media);
+
+      // convert file
+      $result_conv = convertmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config, true);
       
-      // information needed to extract the file name only
-      $media_info_original = getfileinfo ($site, getobject ($media), "comp");
-      
-      // Predicting the name the file will get by createmedia
-      $newname = $media_info_original['filename'].'.'.$media_config.'.'.$type;
-      
-      // convert-config is empty when we are using unoconv
-      if ($media_config == "")
-      {
-        $result_conv = createdocument ($site, $media_root.$site."/", $media_target, getobject ($media), $type, true);
-      }
-      else 
-      {
-        // generate new file only if necessary
-        if (!is_file ($media_target.$newname) || @filemtime ($media_root.$media_old) > @filemtime ($media_target.$newname)) 
-        {
-          $result_conv = createmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config, true);
-        }
-        // use the existing file
-        else $result_conv = $newname;
-      }
-      
+      // if new file has been converted successfully, set new media root path and new media file name
       if ($result_conv != "") 
       { 
         $media_new = $media = $result_conv;
@@ -263,11 +244,11 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
       }
       else $media = "";
     }  
-  
+
     // don't show HTML-files directly in browser since JS-code can be embedded in the file 
     $media_info = getfileinfo ($site, $media_root.$media, "comp");
     
-    if (is_array ($media_info) && substr_count ($hcms_ext['cms'].".", $media_info['ext'].".") > 0)
+    if (is_array ($media_info) && substr_count (strtolower ($hcms_ext['cms']).".", $media_info['ext'].".") > 0)
     {
       header ('HTTP/1.0 403 Forbidden', true, 403);
       echo showinfopage ($hcms_lang['the-live-view-of-the-file-is-not-allowed'][$lang]."<br />".$hcms_lang['please-download-the-file-in-order-to-view-its-content'][$lang], $lang);

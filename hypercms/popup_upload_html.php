@@ -39,7 +39,8 @@ $location_esc = convertpath ($site, $location, $cat);
 
 // check access permissions
 $ownergroup = accesspermission ($site, $location, $cat);
-$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);  
+$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
 if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['upload'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location)) killsession ($user);
 
 // check session of user
@@ -106,51 +107,49 @@ if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0
 <!-- File Upload Code -->
 <script type="text/javascript">
   
-$(function ()
+// when document is ready
+$(document).ready(function ()
 {
   // Uploaded files count
   var filecount = 0;
   // Selected files count
   var selectcount = 0;
-	// Time until an item is removed from the queue
-	// After it is successfully transmitted
-	// In Miliseconds
-	var hcms_waitTillRemove = 5*1000;
-	// Time after which the window is closed
-	// Currently only applies to single uploads
-	// In Miliseconds
-	var hcms_waitTillClose =  5*1000;
-	// Number of Items which can be in the queue at the same time
-	// negative value or NaN values mean unlimited
-	var hcms_maxItemInQueue = <?php echo $maximumQueueItems; ?>;
-	//parameter indicating unzip
-	var unzip = false;
-	//parameter indicating resize
-  var resize = false;
-	// percentage of resize
+  // Time until an item is removed from the queue
+  // After it is successfully transmitted
+  // In Miliseconds
+  var hcms_waitTillRemove = 5*1000;
+  // Time after which the window is closed in miliseconds
+  // Currently only applies to single uploads
+  var hcms_waitTillClose =  5*1000;
+  // Number of Items which can be in the queue at the same time
+  // negative value or NaN values mean unlimited
+  var hcms_maxItemInQueue = <?php echo $maximumQueueItems; ?>;
+  //parameter indicating unzip
+  var unzip = "";
+  //parameter indicating resize
+  var resize = "";
+  // percentage of resize
   var percent = 100;
   // shall duplicates be checked
-  var checkduplicates = false;
+  var checkduplicates = "";
   // shall versioning be enabled
-  var versioning = false;
+  var versioning = "";
   // delete objects on given date
-  var deletedate = false;
+  var deletedate = "";
   
-  // Function fetched from the world wide web by 
-  // http://codeaid.net/javascript/convert-size-in-bytes-to-human-readable-format-%28javascript%29
-  // Ben Timby
+  // Function to convert the file size in bytes
   function bytesToSize (bytes)
   {
     var sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-    if (bytes == 0) return 'n/a';
-    var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+    
+    if (bytes == 0) return 'n/a';    
+    var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));    
     return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[[i]];
   };
     
   // Function that generate a jquery span field containing the name of the file
   function getFileNameSpan (name)
   {
-    
     var maxLen = 49;
     var moreThanMaxLen = '...';
     
@@ -165,7 +164,6 @@ $(function ()
   function buildButtons (data)
   {
     // Build the Submit Button
-    // Is hidden from users view atm
     var submit = $('<div>&nbsp;</div>');
     submit.hide()
           .addClass('file_submit')
@@ -300,7 +298,7 @@ $(function ()
     dataType: 'html',
     // Limits how much simultaneous request can be made
     limitConcurrentUpload: 3,
-    url: 'upload_multi.php',
+    url: 'service/uploadfile.php',
     cache: false,
     // Our script only works when singleFileUploads are true
     singleFileUploads: true,
@@ -317,7 +315,7 @@ $(function ()
       });
       
       // File is already in queue we inform the user
-      if(found) 
+      if (found) 
       {
         alert(hcms_entity_decode('<?php echo $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]; ?>'));
         return false;
@@ -389,103 +387,232 @@ $(function ()
     elem.css('width', progress+'%')
         .html('&nbsp;');        
   });
-	
-	//-------------------------- DROPBOX CHOOSE BEGIN --------------------------
   
-	//build buttons for dropbox elements
-	function buildDropboxButtons (data)
+  //-------------------------- DROPBOX --------------------------
+  
+  //build buttons for dropbox elements
+  function buildDropboxButtons (data)
   {
     // need ajax var for aborting process
-		var ajax;
+    var ajax;
     // Build the Submit Button
     // Is hidden from users view atm
     var submit = $('<div>&nbsp;</div>');
-					
-      submit.hide()
-            .addClass('file_submit')
-            .click( function( event ) {
-              if(ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT) 
-                return;
-						//start progress
-						buildDropboxFileUpload(data);
-						ajax = 	$.ajax({
-											type: "POST",
-											url: "<?php echo $mgmt_config['url_path_cms']?>upload_multi.php",
-											"data": {
-                            "location": "<?php echo $location_esc; ?>", 
-                            "token": "<?php echo $token ?>", 
-                            "user": "<?php echo $user ?>", 
-                            "dropbox_file": data.files[0].file, 
-                            "imageresize": resize, 
-                            "imagepercentage": percent, 
-                            "unzip": unzip,
-                            "checkduplicates": checkduplicates,
-                            "versioning": versioning,
-                            "deletedate": deletedate,
-													  "media_update": "<?php echo $media ?>",
-													  "page": "<?php echo $object ?>"
-                        },
-											success: function(response)
-											{
-												var file = "";
-												text = ajax.responseText;
-												if(text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1) {
-													file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
-													text = text.substr (0, filepos1);
-												}
-												buildDropboxFileMessage( data, text, true);
-												
-												// Update the total count of uploaded files
-												filecount++;
-												$('#status').text(filecount);
-												
-												frameReload(file, hcms_waitTillClose);
-												
-												// Remove the div after 10 seconds
-												setTimeout( function() {
-													data.context.remove();
-													selectcount--;
-												}, hcms_waitTillRemove);
-											},
-											error: function(response) 
-											{
-												// Put out message if possible
-												if(ajax && ajax.readyState != ajax.UNSENT)
-												{
-													buildDropboxFileMessage( data, ajax.responseText, false);
-												}
-											}
-										});
-            });
-      
-      // Button to cancel Download
-      var cancel = $('<div>&nbsp;</div>');
-      cancel.prop('title', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
-            .prop('alt', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
-            .addClass('hcmsButtonBlank hcmsButtonSizeSquare hcmsButtonClose file_cancel')
-            .click( function( event ) {
-              // If we are sending data we stop it or else we remove the entry completely
-              if(ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
-              {
-                ajax.abort();
-                buildDropboxFileMessage( data, '<?php echo $hcms_lang['upload-cancelled'][$lang]; ?>', false);
-              }
-              else
-              {
-                data.context.remove();
-                selectcount--;
-              }
-            });
+          
+    submit.hide()
+      .addClass ('file_submit')
+      .click (function (event)
+      {
+        if (ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT) return;
+        
+        //start progress
+        buildDropboxFileUpload (data);
+        
+        ajax = 	$.ajax({
+          type: "POST",
+          url: "<?php echo $mgmt_config['url_path_cms']?>service/uploadfile.php",
+          "data": {
+            "location": "<?php echo $location_esc; ?>", 
+            "token": "<?php echo $token ?>", 
+            "user": "<?php echo $user ?>", 
+            "dropbox_file": data.files[0].file, 
+            "imageresize": resize, 
+            "imagepercentage": percent, 
+            "unzip": unzip,
+            "checkduplicates": checkduplicates,
+            "versioning": versioning,
+            "deletedate": deletedate,
+            "media_update": "<?php echo $media ?>",
+            "page": "<?php echo $object ?>"
+          },
+          success: function(response)
+          {
+            var file = "";
+            text = ajax.responseText;
+                  
+            if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
+            {
+              file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
+              text = text.substr (0, filepos1);
+            }
+                  
+            buildDropboxFileMessage (data, text, true);
             
-      // Div containing from Buttons
-      var buttons = $('<div></div>');
-      buttons.addClass('inline file_buttons')
-             .append(submit)
-             .append(cancel);
-             
-      return buttons;
+            // Update the total count of uploaded files
+            filecount++;
+            $('#status').text(filecount);
+            
+            frameReload(file, hcms_waitTillClose);
+            
+            // Remove the div after 10 seconds
+            setTimeout( function()
+            {
+              data.context.remove();
+              selectcount--;
+            }, hcms_waitTillRemove);
+          },
+          error: function(response) 
+          {
+            // Put out message if possible
+            if (ajax && ajax.readyState != ajax.UNSENT)
+            {
+              buildDropboxFileMessage( data, ajax.responseText, false);
+            }
+          }
+        });
+      });
+      
+    // Button to cancel Download
+    var cancel = $('<div>&nbsp;</div>');
+    
+    cancel.prop ('title', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
+          .prop ('alt', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
+          .addClass ('hcmsButtonBlank hcmsButtonSizeSquare hcmsButtonClose file_cancel')
+          .click (function(event)
+          {
+            // If we are sending data we stop it or else we remove the entry completely
+            if(ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
+            {
+              ajax.abort();
+              buildDropboxFileMessage (data, '<?php echo $hcms_lang['upload-cancelled'][$lang]; ?>', false);
+            }
+            else
+            {
+              data.context.remove();
+              selectcount--;
+            }
+          });
+          
+    // Div containing from Buttons
+    var buttons = $('<div></div>');
+    buttons.addClass ('inline file_buttons')
+           .append (submit)
+           .append (cancel);
+           
+    return buttons;
   }
-	
+  
+  // Function that makes the div contain a message instead of file informations
+  function buildDropboxFileMessage (data, text, success)
+  {
+    // Empty the div before
+    data.context.empty();
+    
+    // apply the correct css for this div
+    data.context.removeClass('file_normal')
+    if(success)
+      data.context.addClass('file_success');
+    else
+      data.context.addClass('file_error');
+    
+    // Build name field and buttons
+    var name = getFileNameSpan(data.files[0].name);
+    var buttons = buildDropboxButtons( data );
+    
+    // Build message field
+    msg = $('<div></div>');
+    msg.html(hcms_entity_decode(text))
+       .addClass('inline file_message');
+       
+    // Add everything to the context
+    data.context.append(name)
+                .append(msg)
+                .append(buttons);
+  }
+ 
+  // Function that make the div contain file information
+  function buildDropboxFileUpload (data)
+  {
+    var div = data.context;
+    var file = data.files[0];
+    
+    // Empty the div before
+    div.empty();
+               
+    // Name field
+    var name = getFileNameSpan(file.name);
+        
+    // Size field
+    var size = $('<div></div>');
+    size.text(bytesToSize(file.size))
+        .addClass('inline file_size');
+    
+    // Build the buttons
+    var buttons = buildDropboxButtons(data);    
+    
+    // Build the progress bar
+    var progress = $('<div></div>');
+    progress.addClass('inline progress');
+
+    // Main Div                
+    div.append(name)
+       .append(size)
+       .append(progress)
+       .append(buttons)
+       .removeClass('file_error file_success')
+       .addClass('file file_normal');
+  }
+  
+  // Dropbox chooser options
+  var dropboxOptions = {
+    // Required: called when a user selects an item in the Chooser
+    success: function(files)
+    {
+      var length = files.length,
+          file = null;
+          
+      // iterate over chosen files
+      for (var i = 0; i < length; i++)
+      {
+        file = files[i];
+        var context = $('<div></div>');
+        var data = {"files": [{"name": file.name, "size": file.bytes, "file": file}], "context": context};
+        
+        var found = false;
+        
+        // Search if the file is already in our queue
+        $('#selectedFiles .file_name').each(function( index, element) {
+          element = $(element);
+          
+          // We use the title because there is always the full name stored
+          if (element.prop('title') == data.files[0].name)
+          {
+            found = true;
+          }
+        });
+        
+        // File is already in queue we inform the user
+        if (found) 
+        {
+          alert(hcms_entity_decode('<?php echo $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]; ?>'));
+          break;
+        }
+        
+        var maxItems = hcms_maxItemInQueue;
+        
+        // Check if we reached the maximum number of items in the queue
+        if (maxItems && !isNaN(maxItems) && maxItems > 0 && selectcount >= maxItems)
+        {
+          break;
+        }
+        
+        buildDropboxFileUpload(data);
+        
+        $('#selectedFiles').append(data.context);
+        selectcount++;
+      }
+    },
+    //fetch direct links
+    linkType: "direct",
+    //enable multi select
+    multiselect: <?php if ($uploadmode == "multi") echo "true"; else echo "false"; ?>
+  };
+  
+  // btnDropboxChoose click event to trigger choosing
+  $('#btnDropboxChoose').click(function() {
+      Dropbox.choose(dropboxOptions);
+  });
+  
   // Function that makes the div contain a message instead of file informations
   function buildDropboxFileMessage (data, text, success)
   {
@@ -535,7 +662,7 @@ $(function ()
     var buttons = buildDropboxButtons(data);    
     
     // Build the progress bar
-    var progress = $('<div><img src="<?php echo getthemelocation(); ?>img/loading.gif"/></div>');
+    var progress = $('<div></div>');
     progress.addClass('inline progress');
 
     // Main Div                
@@ -546,110 +673,318 @@ $(function ()
        .removeClass('file_error file_success')
        .addClass('file file_normal');
   }
-	
-	// dropbox chooser options
-	var dropboxOptions = {
-		// Required. Called when a user selects an item in the Chooser.
-		success: function(files) {
-			var length = files.length,
-					file = null;
-			//iterate over chosen files
-			for (var i = 0; i < length; i++) {
-				file = files[i];
-				var context = $('<div></div>');
-				var data = {"files": [{"name": file.name, "size": file.bytes, "file": file}], "context": context};
-				
-				var found = false;
-				// Search if the file is already in our queue
-				$('#selectedFiles .file_name').each(function( index, element) {
-					element = $(element);
-					// We use the title because there is always the full name stored
-					if(element.prop('title') == data.files[0].name) {
-						found = true;
-					}
-				});
-				
-				// File is already in queue we inform the user
-				if(found) 
-				{
-					alert(hcms_entity_decode('<?php echo $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]; ?>'));
-					break;
-				}
-				var maxItems = hcms_maxItemInQueue;
-				// Check if we reached the maximum number of items in the queue
-				if(maxItems && !isNaN(maxItems) && maxItems > 0 && selectcount >= maxItems) {
-					break;
-				}
-				
-				buildDropboxFileUpload(data);
-        
-				$('#selectedFiles').append(data.context);
-				selectcount++;
-			}
-		},
-		//fetch direct links
-		linkType: "direct",
-		//enable multi select
-		multiselect: <?php if ($uploadmode == "multi") echo "true"; else echo "false"; ?>
-	};
+
+  //-------------------------- FTP --------------------------
   
-	//btnDropboxChoose click event to trigger choosing
-	$('#btnDropboxChoose').click(function() {
-      Dropbox.choose(dropboxOptions);
-    });
-    
-	//-------------------------- DROPBOX CHOOSE END --------------------------
-    
-    $('#btnUpload').click(function() {
-		//check if unzip is checked
-		if($('#unzip').prop('checked'))
-			unzip = $('#unzip').val();
+  //build buttons for dropbox elements
+  function buildFTPButtons (data)
+  {
+    // need ajax var for aborting process
+    var ajax;
+    // Build the Submit Button
+    // Is hidden from users view atm
+    var submit = $('<div>&nbsp;</div>');
+          
+    submit.hide()
+      .addClass ('file_submit')
+      .click (function (event)
+      {
+        if (ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT) return;
+        
+        //start progress
+        buildFTPFileUpload (data);
+        
+        ajax = 	$.ajax({
+          type: "POST",
+          url: "<?php echo $mgmt_config['url_path_cms']?>service/uploadfile.php",
+          "data": {
+            "location": "<?php echo $location_esc; ?>", 
+            "token": "<?php echo $token ?>", 
+            "user": "<?php echo $user ?>", 
+            "ftp_file": data.files[0].file, 
+            "imageresize": resize, 
+            "imagepercentage": percent, 
+            "unzip": unzip,
+            "checkduplicates": checkduplicates,
+            "versioning": versioning,
+            "deletedate": deletedate,
+            "media_update": "<?php echo $media ?>",
+            "page": "<?php echo $object ?>"
+          },
+          success: function(response)
+          {
+            var file = "";
+            text = ajax.responseText;
+                  
+            if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
+            {
+              file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
+              text = text.substr (0, filepos1);
+            }
+                  
+            buildFTPFileMessage (data, text, true);
+            
+            // Update the total count of uploaded files
+            filecount++;
+            $('#status').text(filecount);
+            
+            frameReload(file, hcms_waitTillClose);
+            
+            // Remove the div after 10 seconds
+            setTimeout( function()
+            {
+              data.context.remove();
+              selectcount--;
+            }, hcms_waitTillRemove);
+          },
+          error: function(response) 
+          {
+            // Put out message if possible
+            if (ajax && ajax.readyState != ajax.UNSENT)
+            {
+              buildFTPFileMessage( data, ajax.responseText, false);
+            }
+          }
+        });
+      });
       
-		// check if resize is checked and validate percentage	
+    // Button to cancel Download
+    var cancel = $('<div>&nbsp;</div>');
+    
+    cancel.prop ('title', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
+          .prop ('alt', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
+          .addClass ('hcmsButtonBlank hcmsButtonSizeSquare hcmsButtonClose file_cancel')
+          .click (function(event)
+          {
+            // If we are sending data we stop it or else we remove the entry completely
+            if (ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
+            {
+              ajax.abort();
+              buildFTPFileMessage (data, '<?php echo $hcms_lang['upload-cancelled'][$lang]; ?>', false);
+            }
+            else
+            {
+              data.context.remove();
+              selectcount--;
+            }
+          });
+          
+    // Div containing from Buttons
+    var buttons = $('<div></div>');
+    buttons.addClass ('inline file_buttons')
+           .append (submit)
+           .append (cancel);
+           
+    return buttons;
+  }
+  
+  // Function that makes the div contain a message instead of file informations
+  function buildFTPFileMessage (data, text, success)
+  {
+    // Empty the div before
+    data.context.empty();
+    
+    // apply the correct css for this div
+    data.context.removeClass('file_normal')
+    if(success)
+      data.context.addClass('file_success');
+    else
+      data.context.addClass('file_error');
+    
+    // Build name field and buttons
+    var name = getFileNameSpan(data.files[0].name);
+    var buttons = buildFTPButtons( data );
+    
+    // Build message field
+    msg = $('<div></div>');
+    msg.html(hcms_entity_decode(text))
+       .addClass('inline file_message');
+       
+    // Add everything to the context
+    data.context.append(name)
+                .append(msg)
+                .append(buttons);
+  }
+  
+  // FTP global chooser function (called when a user submits the selected files from the FTP chooser window)
+  window.insertFTPFile = function (name, size, link)
+  {
+    if (file != "" && size != "" && link != "")
+    {
+      // Check if we reached the maximum number of items in the queue
+      if (maxItems && !isNaN(maxItems) && maxItems > 0 && (selectcount + 1) >= maxItems)
+      {
+        return;
+      }
+    
+      var context = $('<div></div>');
+      var file = { "name": name, "size": size, "link": link }
+      var data = {"files": [{"name": name, "size": size, "file": file}], "context": context};
+      
+      var found = false;
+
+      // Search if the file is already in our queue
+      $('#selectedFiles .file_name').each(function( index, element) {
+        element = $(element);
+
+        // We use the title because there is always the full name stored
+        if (element.prop('title') == data.files[0].name)
+        {
+          found = true;
+        }
+      });
+      
+      // File is already in queue
+      if (found) 
+      {
+        alert(hcms_entity_decode('<?php echo $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]; ?>'));
+        return;
+      }
+      
+      var maxItems = hcms_maxItemInQueue;
+
+      buildFTPFileUpload(data);
+      
+      $('#selectedFiles').append(data.context);
+      selectcount++;
+    }
+  }
+
+  // Function that makes the div contain a message instead of file informations
+  function buildFTPFileMessage (data, text, success)
+  {
+    // Empty the div before
+    data.context.empty();
+    
+    // apply the correct css for this div
+    data.context.removeClass('file_normal')
+    if(success)
+      data.context.addClass('file_success');
+    else
+      data.context.addClass('file_error');
+    
+    // Build name field and buttons
+    var name = getFileNameSpan(data.files[0].name);
+    var buttons = buildFTPButtons( data );
+    
+    // Build message field
+    msg = $('<div></div>');
+    msg.html(hcms_entity_decode(text))
+       .addClass('inline file_message');
+       
+    // Add everything to the context
+    data.context.append(name)
+                .append(msg)
+                .append(buttons);
+  }
+ 
+  // Function that make the div contain file informations
+  function buildFTPFileUpload (data)
+  {
+    var div = data.context;
+    var file = data.files[0];
+
+    // Empty the div before
+    div.empty();
+               
+    // Name field
+    var name = getFileNameSpan(file.name);
+        
+    // Size field
+    var size = $('<div></div>');
+    size.text(bytesToSize(file.size))
+        .addClass('inline file_size');
+    
+    // Build the buttons
+    var buttons = buildFTPButtons(data);    
+    
+    // Build the progress bar
+    var progress = $('<div></div>');
+    progress.addClass('inline progress');
+
+    // Main Div                
+    div.append(name)
+       .append(size)
+       .append(progress)
+       .append(buttons)
+       .removeClass('file_error file_success')
+       .addClass('file file_normal');
+  }
+
+  //-------------------------- BUTTON ACTIONS --------------------------
+  
+  // Upload
+  $('#btnUpload').click(function()
+  {
+    // check if unzip is checked
+    if ($('#unzip').prop('checked')) unzip = $('#unzip').val();
+    
+    // check if resize is checked and validate percentage	
     percent = parseInt($('#imagepercentage').val(), 10);
     
-    if($('#imageresize').prop('checked'))
+    if ($('#imageresize').prop('checked'))
     {
-			if(isNaN(percent) || percent < 0 || percent > 200)
-			{
-				alert (hcms_entity_decode('<?php echo $hcms_lang['the-resize-value-must-be-between-1-and-200-'][$lang]; ?>'));
-				return false;
-			}
+      if (isNaN(percent) || percent < 0 || percent > 200)
+      {
+        alert (hcms_entity_decode('<?php echo $hcms_lang['the-resize-value-must-be-between-1-and-200-'][$lang]; ?>'));
+        return false;
+      }
       
-			resize = $('#imageresize').val();
+      resize = $('#imageresize').val();
     }
     
     // check if delete is checked and date is defined
-    if($('#deleteobject').prop('checked') && $('#deletedate').val() == "")
+    if ($('#deleteobject').prop('checked') && $('#deletedate').val() == "")
     {
       alert (hcms_entity_decode("<?php echo $hcms_lang['please-set-a-delete-date-for-the-files'][$lang]; ?>"));
       return false;
     }
+    else if ($('#deleteobject').prop('checked'))
+    {
+      deletedate = $('#deletedate').val();
+    }
     
-    if($('#checkduplicates').prop('checked'))
+    // versioning
+    if ($('#versioning').prop('checked'))
+    {
+      versioning = $('#versioning').val();
+    }
+    
+    // thumbnail
+    if ($('#createthumbnail').prop('checked'))
+    {
+      createthumbnail = $('#createthumbnail').val();
+    }
+
+    // check for duplicates
+    if ($('#checkduplicates').prop('checked'))
     {
       checkduplicates = $('#checkduplicates').val();
     }
-		else
-		{
-			checkduplicates = 0;
-		}
 
+    // submit
     $('#selectedFiles').find('.file_submit').click();
   });
   
-  $('#btnCancel').click(function() {
+  // Cancel
+  $('#btnCancel').click(function()
+  {
     $('#selectedFiles').find('.file_cancel').click();
   });
   
-  $('#imageresize').click(function () {
+  // Image resize
+  $('#imageresize').click(function ()
+  {
     $('#imagepercentage').prop('disabled', !($(this).prop('checked')));
   });
   
-  $('#deleteobject').click(function () {
+  // Delete object
+  $('#deleteobject').click(function ()
+  {
     $('#deletedate').prop('disabled', !($(this).prop('checked')));
   });
 });
+
 </script>
 
 <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css">
@@ -665,36 +1000,36 @@ var format = '%Y-%m-%d %H:%i';
 // show calendar
 function show_cal (el)
 {
-	if (cal_obj) return;
+  if (cal_obj) return;
 
   var text_field = document.getElementById("text_field");
 
-	cal_obj = new RichCalendar();
-	cal_obj.start_week_day = 1;
-	cal_obj.show_time = true;
-	cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
-	cal_obj.user_onchange_handler = cal_on_change;
-	cal_obj.user_onautoclose_handler = cal_on_autoclose;
-	cal_obj.parse_date(text_field.value, format);
-	cal_obj.show_at_element(text_field, "adj_left-bottom");
+  cal_obj = new RichCalendar();
+  cal_obj.start_week_day = 1;
+  cal_obj.show_time = true;
+  cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
+  cal_obj.user_onchange_handler = cal_on_change;
+  cal_obj.user_onautoclose_handler = cal_on_autoclose;
+  cal_obj.parse_date(text_field.value, format);
+  cal_obj.show_at_element(text_field, "adj_left-bottom");
 }
 
 // user defined onchange handler
 function cal_on_change (cal, object_code)
 {
-	if (object_code == 'day')
-	{
-		document.getElementById("text_field").value = cal.get_formatted_date(format);
-		document.getElementById("deletedate").value = cal.get_formatted_date(format);
-		cal.hide();
-		cal_obj = null;
-	}
+  if (object_code == 'day')
+  {
+    document.getElementById("text_field").value = cal.get_formatted_date(format);
+    document.getElementById("deletedate").value = cal.get_formatted_date(format);
+    cal.hide();
+    cal_obj = null;
+  }
 }
 
 // user defined onautoclose handler
 function cal_on_autoclose (cal)
 {
-	cal_obj = null;
+  cal_obj = null;
 }
 </script>
 </head>
@@ -720,7 +1055,7 @@ echo showtopbar ($title.": ".$object_name, $lang);
 ?>
 
 <div id="content" class="hcmsWorkplaceFrame">
-	<form name="upload" id="upload" enctype="multipart/form-data">
+  <form name="upload" id="upload" enctype="multipart/form-data">
     <input type="hidden" name="PHPSESSID" value="<?php echo session_id(); ?>" />
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
@@ -729,8 +1064,11 @@ echo showtopbar ($title.": ".$object_name, $lang);
     <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
     <input type="hidden" name="user" value="<?php echo $user; ?>" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
-  	<div id="selectedFiles"></div>
-		<div style="padding:5px;"><span id="status">0</span>&nbsp;<?php echo $hcms_lang['files-uploaded'][$lang]; ?></div>
+    
+    <div id="selectedFiles"></div>
+    
+    <div style="padding:5px;"><span id="status">0</span>&nbsp;<?php echo $hcms_lang['files-uploaded'][$lang]; ?></div>
+    
     <div>
       <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
       <div class="inline">
@@ -773,17 +1111,20 @@ echo showtopbar ($title.": ".$object_name, $lang);
         <?php echo $hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]; ?>
       </div>
       <div>
-			<?php if (is_array ($mgmt_config) && array_key_exists ("dropbox_appkey", $mgmt_config) && !empty ($mgmt_config['dropbox_appkey']) && array_key_exists ("publicdownload", $mgmt_config) && !empty ($mgmt_config['publicdownload'])) { ?>
-				<div id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile" class="inline"><?php echo $hcms_lang['dropbox'][$lang]; ?></span></div>
-      <?php } ?>
-				<div for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen" ><span id="txtSelectFile" class="inline"><?php echo $hcms_lang['select-files'][$lang]; ?></span><input id="inputSelectFile" type="file" name="Filedata"<?php if ($uploadmode == "multi") echo " multiple"?>/></div>
-				<div id="btnUpload" class="button hcmsButtonBlue" ><?php echo $hcms_lang['upload-files'][$lang]; ?></div>
+        <div for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen" ><span id="txtSelectFile" class="inline"><?php echo $hcms_lang['select-files'][$lang]; ?></span><input id="inputSelectFile" type="file" name="Filedata" <?php if ($uploadmode == "multi") echo "multiple"; ?>/></div>
+        <?php if (!empty ($mgmt_config['dropbox_appkey']) && !empty ($mgmt_config['publicdownload'])) { ?>
+        <div id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile" class="inline"><?php echo $hcms_lang['dropbox'][$lang]; ?></span></div>
+        <?php } ?>
+        <?php if (!empty ($mgmt_config['ftp_download'])) { ?>
+        <div id="btnFTP" class="button hcmsButtonGreen" onclick="hcms_openWindow('popup_ftp.php?site=<?php echo url_encode($site); ?>&multi=<?php if ($uploadmode == "multi") echo "true"; else echo "false"; ?>', 'ftp', 'scrollbars=yes,resizable=yes', '600', '400');"><?php echo $hcms_lang['ftp'][$lang]; ?></div>
+        <?php } ?>
+        <div id="btnUpload" class="button hcmsButtonBlue" ><?php echo $hcms_lang['upload-files'][$lang]; ?></div>
         <div id="btnCancel" class="button hcmsButtonOrange" ><?php echo $hcms_lang['cancel-all-uploads'][$lang]; ?></div>
-        <br /><br />
+        <br />
       </div>
     </div>
 
-	</form>
+  </form>
 </div>
 </body>
 </html>

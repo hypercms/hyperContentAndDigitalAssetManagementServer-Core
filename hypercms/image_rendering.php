@@ -104,7 +104,7 @@ $media_root = getmedialocation ($site, $mediafile_info['name'], "abs_path_media"
 $pagefile_info = getfileinfo ($site, $location.$page, $cat);
 
 // if RAW image use equivalent JPEG image to get image size
-if (substr_count ($hcms_ext['rawimage'].".", $mediafile_info['ext'].".") > 0 && is_file ($media_root.$mediafile_info['filename'].".jpg"))
+if (is_rawimage ($mediafile_info['ext']) && is_file ($media_root.$mediafile_info['filename'].".jpg"))
 {
   // create temp file if file is encrypted
   $temp = createtempfile ($media_root, $mediafile_info['filename'].".jpg");
@@ -160,264 +160,7 @@ $available_flip['-fv'] = $hcms_lang['vertical'][$lang];
 $available_flip['-fh'] = $hcms_lang['horizontal'][$lang];
 $available_flip['-fv -fh'] = $hcms_lang['both'][$lang];
 
-// render image
-if ($action == 'rendermedia' && checktoken ($token, $user) && $media_size != false && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
-{
-  $search = deconvertpath ($location).$pagefile_info['filename'].".".strtolower ($imageformat);
-  
-  if (!file_exists ($search) && !file_exists ($search."off") || $pagefile_info['ext'] == ".".$imageformat)
-  {
-    ini_set ("max_execution_time", "300"); // sets the maximum execution time of this script to 300 sec.
-    
-    if ($imageresize == "percentage")
-    {
-      $imagewidth = round ($media_size[0] * $imagepercentage / 100, 0);
-      $imageheight = round ($media_size[1] * $imagepercentage / 100, 0);
-    }
-    elseif ($imageresize == "imagewidth")
-    {
-      $imageratio = $media_size[0] / $media_size[1];
-      $imagewidth = round ($imagewidth, 0);
-      $imageheight = round ($imagewidth / $imageratio, 0);
-    }
-    elseif ($imageresize == "imageheight")
-    {
-      $imageratio = $media_size[0] / $media_size[1];
-      $imageheight = round ($imageheight, 0);
-      $imagewidth = round ($imageheight * $imageratio, 0);
-    } 
-
-    // get new rendering settings and set image options
-    if (
-        $imageformat != "" &&
-        (
-          (in_array ($imageresize, array("percentage", "imagewidth", "imageheight")) && $imagewidth != "" && $imageheight != "") || 
-          ($imageresize == "crop" && $imagecropwidth != "" && $imagecropheight != "") ||
-          ($rotate == "rotate" && $angle != "" && $imageformat != "" && array_key_exists(0, $media_size) && array_key_exists(1, $media_size)) ||
-          ($use_brightness == 1 && $imageformat != "" && $brightness != 0) ||
-          ($use_contrast == 1 && $imageformat != "" && $contrast != 0) ||
-          ($colorspace == 1 && is_array($available_colorspaces) && array_key_exists( $imagecolorspace, $available_colorspaces )) ||
-          ($rotate == "flip" && array_key_exists($flip, $available_flip)) ||
-          ($effect == "sepia" && $sepia_treshold > 0 && $sepia_treshold <= 99.9) ||
-          ($effect == "blur" && $blur_sigma >= 0.1 && $blur_sigma <= 3 && $blur_radius !== NULL ) ||
-          ($effect == "sharpen" && $sharpen_sigma >= 0.1 && $sharpen_sigma <= 3 && $sharpen_radius !== NULL) ||
-          ($effect == "sketch" && $sketch_sigma !== NULL && $sketch_radius !== NULL && $sketch_angle !== NULL) ||
-          ($effect == "paint" && $paintvalue !== NULL)
-        )
-       )
-    {
-      $formats = "";
-
-      // We need to reset here
-      reset ($mgmt_imageoptions);
-      
-      while (list ($formatstring, $settingstring) = each ($mgmt_imageoptions))
-      {
-        if (substr_count ($formatstring.".", ".".$imageformat.".") > 0)
-        {
-          $formats = $formatstring;
-        }
-      }
-      
-      if ($formats != "")
-      {
-        // convert the image file
-        // Options:
-        // -s ... output size in width x height in pixel (WxH)
-        // -f ... output format (file extension without dot [jpg, png, gif])
-        // -c ... cropy size
-        // -r ... rotate image
-        // -b ... image brightness
-        // -k .... image contrast
-        // -cs ... color space of image, e.g. RGB, CMYK, gray
-        // -flip ... flip image in the vertical direction
-        // -flop ... flop image in the horizontal direction
-        // -sharpen ... sharpen image, e.g. one pixel size sharpen: -sharpen 0x1.0
-        // -sketch ... skecthes an image, e.g. -sketch 0x20+120
-        // -sepia-tone ... apply -sepia-tone on image, e.g. -sepia-tone 80%
-        // -monochrome ... transform image to black and white
-        // -wm ... watermark in watermark image->positioning->geometry, e.g. image.png->topleft->+30
-        
-        $mgmt_imageoptions[$formats]['original'] = "";
-        
-        if ($imageresize == "crop")
-        {
-          $mgmt_imageoptions[$formats]['original'] .= " -s ".$imagecropwidth."x".$imagecropheight." -c ".$imagex."x".$imagey;
-        } 
-        elseif (in_array ($imageresize, array("percentage", "imagewidth", "imageheight")))
-        {
-          $mgmt_imageoptions[$formats]['original'] .= " -s ".$imagewidth."x".$imageheight;
-        }
-        
-        if ($rotate == "rotate") 
-        {
-          $mgmt_imageoptions[$formats]['original'] .= " -r ".$angle;
-        }
-        elseif ($rotate == "flip")
-        {
-           $mgmt_imageoptions[$formats]['original'] .= " ".$flip;
-        }
-        
-        if ($use_brightness == 1)
-        {
-          $mgmt_imageoptions[$formats]['original'] .= " -b ".$brightness;
-        } 
-        
-        if ($use_contrast == 1)
-        {
-          $mgmt_imageoptions[$formats]['original'] .= " -k ".$contrast;
-        }
-
-        if ($colorspace == 1) 
-        {
-          $mgmt_imageoptions[$formats]['original'] .= " -cs ".$imagecolorspace;
-        }
-        
-        if ($effect == "sepia") 
-        {
-          $mgmt_imageoptions[$formats]['original'] .= " -sep ".$sepia_treshold."%";
-        }
-        elseif ($effect == "blur") 
-        {
-          $mgmt_imageoptions[$formats]['original'] .= " -bl ".$blur_radius."x".$blur_sigma;
-        }
-        elseif ($effect == "sharpen") 
-        {
-          $mgmt_imageoptions[$formats]['original'] .= " -sh ".$sharpen_radius."x".$sharpen_sigma;
-        }
-        elseif ($effect == "sketch") 
-        {
-          if ($sketch_angle > -1)
-          {
-            $sketch_angle = "+".$sketch_angle;
-          }
-          
-          $mgmt_imageoptions[$formats]['original'] .= " -sk ".$sketch_radius."x".$sketch_sigma.$sketch_angle;
-        }
-        elseif ($effect == "paint") 
-        {
-          $mgmt_imageoptions[$formats]['original'] .= " -pa ".$paintvalue;
-        }
-        
-        // watermarking     
-        if (!empty ($mgmt_config[$site]['watermark_image'])) 
-        {
-          $watermarking = getoption ($mgmt_config[$site]['watermark_image'], "-wm");
-          
-          if (trim ($watermarking) != "")
-          {
-            // parameters:
-            // watermark ... reference to watermark PNG image
-            // -gravity ... sets where in the image the watermark should be added
-            // -geometry ... Can be used to modify the size of the watermark being passed in, and also the positioning of the watermark (relative to the gravity placement). 
-            //               It is specified in the form width x height +/- horizontal offset +/- vertical offset (<width>x<height>{+-}<xoffset>{+-}<yoffset>).
-            // -composite ... parameter, which tells ImageMagick to add the watermark image we’ve just specified to the image. 
-            list ($watermark, $gravity, $geometry) = explode ("->", $watermarking);
-            
-            if ($gravity == "topleft") $gravity = "northwest";
-            elseif ($gravity == "topright") $gravity = "northeast";
-            elseif ($gravity == "bottomleft") $gravity = "southwest";
-            elseif ($gravity == "bottomleft") $gravity = "southeast";
-            
-            if ($watermark != "" && $gravity != "" && $geometry != "")
-            {
-              $mgmt_imageoptions[$formats]['original'] .= " ".shellcmd_encode(trim($watermark))." -gravity ".$gravity." -geometry ".shellcmd_encode(trim($geometry))." -composite";
-            }
-          }                  
-        }
-        
-        // add mandatory format
-        $mgmt_imageoptions[$formats]['original'] .= " -f ".$imageformat;
-
-        $result = createmedia ($site, $media_root, $media_root, $mediafile_orig, $imageformat, 'original');
-      }
-      else
-      {
-        $show = $hcms_lang['the-file-could-not-be-processed'][$lang];
-        $result = false;
-      }
-    }
-    else
-    {
-      $show = $hcms_lang['required-parameters-are-missing'][$lang];
-      $result = false;
-    }
-
-    // if successful
-    if ($result)
-    {
-      // get the file extension of the old file      
-      $file_ext_old = strtolower (strrchr ($mediafile_orig, "."));
-      // get the file extension of the new file
-      $file_ext_new = ".".$imageformat;
-      // get file name without extension of the old file
-      $mediafile_nameonly = strrev (substr (strstr (strrev ($mediafile_orig), "."), 1));
-      // get object name without extension
-      $page_nameonly = strrev (substr (strstr (strrev ($pagefile_info['name']), "."), 1));
-      
-      $add_onload = "";
-
-      // rename object file extension if file extension has changed due to coversion
-      if ($file_ext_old != $file_ext_new)
-      {
-        // write new reference in object file
-        $filedata = $filedata_orig = loadfile ($location, $page);
-        if ($filedata != false) $filedata = setfilename ($filedata, "media", getobject ($mediafile_nameonly).$file_ext_new); 
-        
-        if ($filedata != false)
-        {
-          $test = savefile ($location, $page, $filedata);
-          // remote client
-          remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");                
-        }
-        else $test = false;     
-
-        // on success
-        if ($test == true)
-        { 
-          // rename media object after file extension has changed  
-          $test = renameobject ($site, $location, $page, $page_nameonly, $user);
-                 
-          if ($test['result'] == true)
-          {
-            // remote client
-            remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");                       
-          
-            // set new page name and media file name 
-            $page = $test['object'];
-            $mediafile = $mediafile_nameonly.$file_ext_new;
-
-            // add onload
-            $add_onload = "parent.frames['controlFrame'].location.href='control_content_menu.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\n";
-          }
-          // on error
-          else
-          {
-            // revert changes back
-            $test = savefile ($location, $page, $filedata_orig);
-            $show = $hcms_lang['a-value-is-required'][$lang]."\n";         
-          }           
-        }
-        // on error
-        else
-        {
-          $show = $hcms_lang['file-could-not-be-loaded'][$lang]."\n";         
-        }
-      }
-
-      // create new thumbnail
-      createmedia ($site, $media_root, $media_root, $mediafile_orig, $imageformat, "thumbnail");
-
-      $show = $hcms_lang['the-file-was-processed-successfully'][$lang];
-    }
-  }
-  else
-  {
-    $show = $hcms_lang['the-object-exists-already'][$lang];
-  }
-}
-
-// get file information of component file in case it was renamed due to a new file extension
+// get object file information in case it was renamed due to a new file extension
 $pagefile_info = getfileinfo ($site, $location.$page, $cat);
 
 // get file information of the new generated original media file
@@ -455,6 +198,7 @@ if (!empty ($media_size[0]) && !empty ($media_size[1]))
   }
 }
 
+// generate preview of media for image editor
 $mediaview = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_no_rendering", "cropbox", $thumb_size[0], $thumb_size[1], "");
 
 // security token
@@ -473,6 +217,44 @@ $token_new = createtoken ($user);
 <script src="javascript/jcrop/jquery.Jcrop.min.js"></script>
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css" />
 <link rel="stylesheet" href="javascript/jcrop/jquery.Jcrop.css" type="text/css" />
+
+<style>
+.row
+{
+  margin-top: 1px;
+}
+
+.row *
+{
+  vertical-align: middle;
+}
+
+.row input[type="radio"]
+{
+  margin: 0px;
+  padding: 0px;
+}
+
+.cell
+{
+  vertical-align: top;
+  display: inline-block;
+  margin-left: 10px;
+  margin-top: 10px;
+  width: 230px;
+}
+
+.cellButton
+{
+  vertical-align: middle;
+  padding: 0px 2px;
+}
+
+.cell *
+{
+  font-size: 11px;
+}
+</style>
 
 <script language="Javascript">
 <!--
@@ -697,7 +479,7 @@ function submitform (check)
   if (result == true)
   {
     hcms_showHideLayers('savelayer','','show');
-    document.mediaconfig.submit();
+    document.forms['mediaconfig'].submit();
   }
   else return false;
 }
@@ -1126,7 +908,7 @@ function showPreview ()
   
   hcms_showHideLayers('savelayer','','show');
   
-  var link = "<?php echo $mgmt_config['url_path_cms']; ?>service/generate_image_preview.php?site=<?php echo url_encode ($site); ?>&media=<?php echo url_encode ($mediafile); ?>&cat=<?php echo url_encode ($cat); ?>&location=<?php echo $location_esc; ?>";
+  var link = "<?php echo $mgmt_config['url_path_cms']; ?>service/renderimage.php?site=<?php echo url_encode ($site); ?>&media=<?php echo url_encode ($mediafile); ?>&cat=<?php echo url_encode ($cat); ?>&location=<?php echo url_encode ($location_esc); ?>&token=<?php echo $token_new; ?>";
     
   var changed = false;
   
@@ -1337,43 +1119,6 @@ $(window).load( function()
 <?php echo $add_onload; ?>
 -->
 </script>
-<style>
-.row
-{
-  margin-top: 1px;
-}
-
-.row *
-{
-  vertical-align: middle;
-}
-
-.row input[type="radio"]
-{
-  margin: 0px;
-  padding: 0px;
-}
-
-.cell
-{
-  vertical-align: top;
-  display: inline-block;
-  margin-left: 10px;
-  margin-top: 10px;
-  width: 230px;
-}
-
-.cellButton
-{
-  vertical-align: middle;
-  padding: 0px 2px;
-}
-
-.cell *
-{
-  font-size: 11px;
-}
-</style>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
@@ -1399,8 +1144,9 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
 <!-- rendering settings -->
 <div id="renderOptions" style="padding:10px; width:730px; display:none; vertical-align:top; z-index:1; margin-left:10px" class="hcmsMediaRendering">    
   <!-- start edit image -->
-  <form name="mediaconfig" id="mediaconfig" action="" method="post">
+  <form name="mediaconfig" id="mediaconfig" action="service/renderimage.php" method="post">
     <input type="hidden" id="action" name="action" value="rendermedia">
+    <input type="hidden" name="savetype" value="editor_so">
     <input type="hidden" name="site" value="<?php echo $site; ?>">
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>">
     <input type="hidden" name="cat" value="<?php echo $cat; ?>">

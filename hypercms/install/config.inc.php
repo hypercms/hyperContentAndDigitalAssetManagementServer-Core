@@ -352,6 +352,10 @@ $mgmt_config['contentversions'] = true;
 // This setting must be enabled if users want to provide wrapper or download links to the public.
 $mgmt_config['publicdownload'] = true;
 
+// FTP Upload
+// Allow FTP file download (true) or not (false).
+$mgmt_config['ftp_download'] = true;
+
 // Document Viewer
 // Allow the view of documents by the doc viewer (true) or not (false).
 $mgmt_config['docviewer'] = true;

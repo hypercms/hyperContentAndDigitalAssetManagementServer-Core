@@ -111,7 +111,7 @@ elseif ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename']
     list ($test, $duh) = explode (";", reset($config['mediafiles']));
     $testfinfo = getfileinfo ($site, $test, 'comp');
     
-    if (substr_count ($hcms_ext['audio'].'.', $testfinfo['ext'].'.') > 0)
+    if (is_audio ($testfinfo['ext']))
     {
       $audio = true;
     }

@@ -173,6 +173,10 @@
 
 .hcmsMediaRendering
 {
+  border: 1px solid #4294FF;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
   background-color: #ECF3F9;
   box-shadow: 2px 2px 3px #000000;
   -webkit-box-shadow: 2px 2px 3px #000000;

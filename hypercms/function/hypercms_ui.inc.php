@@ -131,14 +131,14 @@ function objectfilter ($file)
     
     foreach ($objectfilter as $filter => $value)
     {
-      if ($filter == "comp" && $value == 1) $ext .= $hcms_ext['cms'];
-      elseif ($filter == "image" && $value == 1) $ext .= $hcms_ext['image'];
-      elseif ($filter == "document" && $value == 1) $ext .= $hcms_ext['bintxt'].$hcms_ext['cleartxt'];
-      elseif ($filter == "video" && $value == 1) $ext .= $hcms_ext['video'];
-      elseif ($filter == "audio" && $value == 1) $ext .= $hcms_ext['audio'];
-      elseif ($filter == "flash" && $value == 1) $ext .= $hcms_ext['flash'];
-      elseif ($filter == "compressed" && $value == 1) $ext .= $hcms_ext['compressed'];
-      elseif ($filter == "binary" && $value == 1) $ext .= $hcms_ext['binary'];
+      if ($filter == "comp" && $value == 1) $ext .= strtolower ($hcms_ext['cms']);
+      elseif ($filter == "image" && $value == 1) $ext .= strtolower ($hcms_ext['image']);
+      elseif ($filter == "document" && $value == 1) $ext .= strtolower ($hcms_ext['bintxt'].$hcms_ext['cleartxt']);
+      elseif ($filter == "video" && $value == 1) $ext .= strtolower ($hcms_ext['video']);
+      elseif ($filter == "audio" && $value == 1) $ext .= strtolower ($hcms_ext['audio']);
+      elseif ($filter == "flash" && $value == 1) $ext .= strtolower ($hcms_ext['flash']);
+      elseif ($filter == "compressed" && $value == 1) $ext .= strtolower ($hcms_ext['compressed']);
+      elseif ($filter == "binary" && $value == 1) $ext .= strtolower ($hcms_ext['binary']);
     }
     
     if (@substr_count (strtolower ($ext."."), $file_ext.".") > 0) return true;
@@ -743,7 +743,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "<div style=\"padding:5px 0px 8px 0px; width:".$width."px; text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</div>";
       }
       // ----------- if Image ----------- 
-      elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['image'].".", $file_info['ext'].".") > 0)
+      elseif ($file_info['ext'] != "" && substr_count (strtolower ($hcms_ext['image']).".", $file_info['ext'].".") > 0)
       {
         // media size
         $style = "";
@@ -896,7 +896,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       </table>";
       }
       // ----------- if Audio ----------- 
-      elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['audio'].".", $file_info['ext'].".") > 0)
+      elseif ($file_info['ext'] != "" && substr_count (strtolower ($hcms_ext['audio']).".", $file_info['ext'].".") > 0)
       {
         // media player config file is given
         if (strpos ($mediafile_orig, ".config.") > 0 && is_file ($thumb_root.$mediafile_orig))
@@ -968,7 +968,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "</table>\n";
       }
       // ----------- if Video ----------- 
-      elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['video'].".", $file_info['ext'].".") > 0)
+      elseif ($file_info['ext'] != "" && substr_count (strtolower ($hcms_ext['video']).".", $file_info['ext'].".") > 0)
       {
         // media player config file is given
         if (strpos ($mediafile_orig, ".config.") > 0 && is_file ($thumb_root.$mediafile_orig))
@@ -1080,7 +1080,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "</table>\n";
       }
       // ----------- show clear text based doc ----------- 
-      elseif ($file_info['ext'] != "" && substr_count ($hcms_ext['cleartxt'].$hcms_ext['cms'].".", $file_info['ext'].".") > 0)
+      elseif ($file_info['ext'] != "" && substr_count (strtolower ($hcms_ext['cleartxt'].$hcms_ext['cms']).".", $file_info['ext'].".") > 0)
       {
         if (file_exists ($media_root.$mediafile))
         {
@@ -1165,8 +1165,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       }
     }
 
-    // properties of video files (original and thumbnail files)
-    if (is_array ($mgmt_mediapreview) && $file_info['ext'] != "" && substr_count ($hcms_ext['video'].$hcms_ext['audio'], $file_info['ext']) > 0)
+    // --------------------- properties of video and audio files (original and thumbnail files) --------------------------
+    if (is_array ($mgmt_mediapreview) && $file_info['ext'] != "" && substr_count (strtolower ($hcms_ext['video'].$hcms_ext['audio']).".", $file_info['ext'].".") > 0)
     {
       $dimensions = array();
       $durations = array();
@@ -1179,7 +1179,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       $youtube_uploads = array();
       
       // is file a video
-      if (substr_count ($hcms_ext['video'], $file_info['ext']) > 0) $is_video = true;
+      if (substr_count (strtolower ($hcms_ext['video']), $file_info['ext']) > 0) $is_video = true;
       else $is_video = false;
     
       // original video file
@@ -1224,10 +1224,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       
       if ($viewtype == "preview" || $viewtype == "preview_download")
       {
-        // video thumbnail files
-        if ($is_video) $media_extension_array = explode (".", substr ($hcms_ext['video'], 1));
+        // video and audio thumbnail files
+        if ($is_video) $media_extension_array = explode (".", substr (strtolower ($hcms_ext['video'].$hcms_ext['audio']), 1));
         // audio thumbnail files
-        else $media_extension_array = explode (".", substr ($hcms_ext['audio'], 1));
+        else $media_extension_array = explode (".", substr (strtolower ($hcms_ext['audio']), 1));
         
         foreach ($media_extension_array as $media_extension)
         {
@@ -2066,7 +2066,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               {
                   oldcheck_".$hypertagname."_".$id." = newcheck;
                   jq_inline.post(
-                    \"".$mgmt_config['url_path_cms']."page_save.php\", 
+                    \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
                     jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
                     function(data)
                       {
@@ -2121,7 +2121,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 {  
                     olddate_".$hypertagname."_".$id." = newdate;
                     jq_inline.post(
-                      \"".$mgmt_config['url_path_cms']."page_save.php\", 
+                      \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
                       jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
                       function(data)
                         {
@@ -2259,7 +2259,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               {  
                   oldtext_".$hypertagname."_".$id." = newtext;
                   jq_inline.post(
-                    \"".$mgmt_config['url_path_cms']."page_save.php\", 
+                    \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
                     jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
                     function(data)
                       {
@@ -2328,7 +2328,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               {
                 oldselect_".$hypertagname."_".$id." = newselect;
                 jq_inline.post(
-                  \"".$mgmt_config['url_path_cms']."page_save.php\", 
+                  \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
                   jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
                   function(data)
                     {
@@ -2420,7 +2420,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                       oldtext_".$hypertagname."_".$id." = newtext;
                       jq_inline('#hcms_txtarea_".$hypertagname."_".$id."').val(event.editor.getData());
                       jq_inline.post(
-                        \"".$mgmt_config['url_path_cms']."page_save.php\", 
+                        \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
                         jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
                         function(data)
                           {

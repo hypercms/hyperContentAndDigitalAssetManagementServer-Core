@@ -33,11 +33,10 @@ scriptend]
 elseif ('%view%' != 'template')
 {
 	//include tcpdf lib and language files
-	require_once($mgmt_config['abs_path_cms'].'library/tcpdf/config/lang/eng.php');
 	require_once($mgmt_config['abs_path_cms'].'library/tcpdf/tcpdf.php');
 
 	// create new PDF document 
-	$pdf = new TCPDF($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8',$diskcache=false, $pdfa=false);
+	$pdf = new TCPDF($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8', $diskcache=false, $pdfa=false);
 
 	// set document information
 	$pdf->SetCreator(PDF_CREATOR);

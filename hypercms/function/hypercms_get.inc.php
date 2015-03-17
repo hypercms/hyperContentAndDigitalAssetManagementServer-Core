@@ -798,14 +798,26 @@ function getfileinfo ($site, $file, $cat)
         // if file holds a path
         if (@substr_count ($file, "/") > 0) $file = getobject ($file);
         
+        // object versions
+        if (substr_count ($file, ".") > 0 && substr ($file_ext, 0, 3) == ".v_")
+        {
+          $file_name = substr ($file, 0, strpos ($file, ".v_"));
+          // get file name without extensions
+          $file_nameonly = strrev (substr (strstr (strrev ($file_name), "."), 1));
+          // get file extension of file name minus version extension
+          $file_ext = strtolower (strrchr ($file_name, "."));
+          
+          $file_published = false;
+        }
         // unpublished objects 
-        if ($file_ext == ".off")
+        elseif ($file_ext == ".off")
         {
           $file_name = substr ($file, 0, strlen ($file)-4);
           // get file name without extensions
           $file_nameonly = strrev (substr (strstr (strrev ($file_name), "."), 1));
           // get file extension of file name minus .off
           $file_ext = strtolower (strrchr ($file_name, "."));
+          
           $file_published = false;
         }
         // published objects
@@ -814,6 +826,7 @@ function getfileinfo ($site, $file, $cat)
           $file_name = $file; 
           // get file name without extension
           $file_nameonly = strrev (substr (strstr (strrev ($file), "."), 1));
+          
           $file_published = true;
         }
         
@@ -867,35 +880,35 @@ function getfileinfo ($site, $file, $cat)
           $file_type = "OO Presentation";
         }                      
         // text based documents in proprietary format    
-        elseif (@substr_count ($hcms_ext['bintxt'].".", $file_ext.".") > 0)
+        elseif (@substr_count (strtolower ($hcms_ext['bintxt']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_txt.gif";
           $file_icon_large = "file_txt.png";
           $file_type = "Text";
         }
         // text based documents in clear text  
-        elseif (@substr_count ($hcms_ext['cleartxt'].".", $file_ext.".") > 0)
+        elseif (@substr_count (strtolower ($hcms_ext['cleartxt']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_txt.gif";
           $file_icon_large = "file_txt.png";
           $file_type = "Text";
         }        
         // image files 
-        elseif (@substr_count ($hcms_ext['image'].".", $file_ext.".") > 0)
+        elseif (@substr_count (strtolower ($hcms_ext['image']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_image.gif";
           $file_icon_large = "file_image.png";
           $file_type = "Image";
         }
         // Adobe Flash
-        elseif (@substr_count ($hcms_ext['flash'].".", $file_ext.".") > 0)
+        elseif (@substr_count (strtolower ($hcms_ext['flash']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_flash.gif";
           $file_icon_large = "file_flash.png";
           $file_type = "Macromedia Flash";
         }
         // Audio files
-        elseif (@substr_count ($hcms_ext['audio'].".", $file_ext.".") > 0)
+        elseif (@substr_count (strtolower ($hcms_ext['audio']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_audio.gif";
           $file_icon_large = "file_audio.png";
@@ -909,21 +922,21 @@ function getfileinfo ($site, $file, $cat)
           $file_type = "Quicktime Video";
         }
         // Video files  
-        elseif (@substr_count ($hcms_ext['video'].".", $file_ext.".") > 0)
+        elseif (@substr_count (strtolower ($hcms_ext['video']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_mpg.gif";
           $file_icon_large = "file_mpg.png";
           $file_type = "Video";
         }
         // Compressed files
-        elseif (@substr_count ($hcms_ext['compressed'].".", $file_ext.".") > 0)
+        elseif (@substr_count (strtolower ($hcms_ext['compressed']).".", $file_ext.".") > 0)
         {
           $file_icon = "file_zip.gif";
           $file_icon_large = "file_zip.png";
           $file_type = "compressed";
         }
         // CMS template files
-        elseif (@substr_count ($hcms_ext['template'].".", $file_ext.".") > 0)
+        elseif (@substr_count (strtolower ($hcms_ext['template']).".", $file_ext.".") > 0)
         {
           if (@substr_count ($file, ".page.tpl"))
           {
@@ -953,7 +966,7 @@ function getfileinfo ($site, $file, $cat)
           $file_type = "Template";
         }
         // CMS files
-        elseif (@substr_count ($hcms_ext['cms'].".", $file_ext.".") > 0)
+        elseif (@substr_count (strtolower ($hcms_ext['cms']).".", $file_ext.".") > 0)
         {
           if ($cat == "page")
           {
@@ -1155,9 +1168,9 @@ function getmimetype ($file)
     $file_ext = strtolower (strrchr ($file, "."));
     
     // avoid version file extension
-    if (substr_count ($file_ext, "v_") == 1 && strpos ($file, ".") > 0)
+    if (substr_count ($file, ".") > 0 && substr ($file_ext, 0, 3) == ".v_")
     {
-      $file = substr ($file, 0, strrchr ($file, "."));
+      $file = substr ($file, 0, strpos ($file, ".v_"));
       $file_ext = strtolower (strrchr ($file, "."));
     }
     
@@ -1177,6 +1190,7 @@ function getfiletype ($file_ext)
 {
   global $mgmt_config, $hcms_ext; 
   
+  // load file extensions
   if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
   
   if ($file_ext != "" && is_array ($hcms_ext))
@@ -1186,14 +1200,14 @@ function getfiletype ($file_ext)
     
     $file_ext = strtolower ($file_ext);
     
-    if (substr_count ($hcms_ext['audio'].".", $file_ext.".") > 0) $filetype = "audio";
-    elseif (substr_count ($hcms_ext['bintxt'].$hcms_ext['cleartxt'].".", $file_ext.".") > 0) $filetype = "document";
-    elseif (substr_count ($hcms_ext['cms'].$hcms_ext['cleartxt'], $file_ext.".") > 0) $filetype = "text";
-    elseif (substr_count ($hcms_ext['image'].".", $file_ext.".") > 0) $filetype = "image";
-    elseif (substr_count ($hcms_ext['video'].".", $file_ext.".") > 0) $filetype = "video";
-    elseif (substr_count ($hcms_ext['flash'].".", $file_ext.".") > 0) $filetype = "flash";
-    elseif (substr_count ($hcms_ext['compressed'].".", $file_ext.".") > 0) $filetype = "compressed";
-    elseif (substr_count ($hcms_ext['binary'].".", $file_ext.".") > 0) $filetype = "binary";
+    if (substr_count (strtolower ($hcms_ext['audio']).".", $file_ext.".") > 0) $filetype = "audio";
+    elseif (substr_count (strtolower ($hcms_ext['bintxt'].$hcms_ext['cleartxt']).".", $file_ext.".") > 0) $filetype = "document";
+    elseif (substr_count (strtolower ($hcms_ext['cms'].$hcms_ext['cleartxt']), $file_ext.".") > 0) $filetype = "text";
+    elseif (substr_count (strtolower ($hcms_ext['image']).".", $file_ext.".") > 0) $filetype = "image";
+    elseif (substr_count (strtolower ($hcms_ext['video']).".", $file_ext.".") > 0) $filetype = "video";
+    elseif (substr_count (strtolower ($hcms_ext['flash']).".", $file_ext.".") > 0) $filetype = "flash";
+    elseif (substr_count (strtolower ($hcms_ext['compressed']).".", $file_ext.".") > 0) $filetype = "compressed";
+    elseif (substr_count (strtolower ($hcms_ext['binary']).".", $file_ext.".") > 0) $filetype = "binary";
     else $filetype = "unknown";
     
     return $filetype;
@@ -2468,6 +2482,25 @@ function getelementid ($id)
     else $elementid = false;
   
     return $elementid;
+  }
+  else return false;
+}
+
+// ------------------------------ getfirstkey ----------------------------------
+// function: getfirstkey()
+// input: array
+// output: array key of first element in array if $value is not empty / false on error
+
+function getfirstkey ($array)
+{
+  if (is_array ($array))
+  {
+    reset ($array);        
+    
+    foreach ($array as $key => $value)
+    {
+      if ($key != "" && $value != "") return $key;
+    }
   }
   else return false;
 }

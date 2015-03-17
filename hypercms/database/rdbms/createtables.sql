@@ -21,7 +21,7 @@ CREATE TABLE `accesslink` (
   `type` char(2) DEFAULT NULL,
   `user` char(255) DEFAULT NULL,
   `deathtime` int(11) DEFAULT NULL,
-  `formats` char(255) DEFAULT NULL,
+  `formats` varchar(510) DEFAULT NULL,
   PRIMARY KEY (`hash`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

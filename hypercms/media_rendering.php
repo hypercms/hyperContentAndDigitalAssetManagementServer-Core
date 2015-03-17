@@ -6,11 +6,7 @@
  *
  * You should have received a copy of the License along with hyperCMS.
  */
-
-// start session
-session_name( "hyperCMS" );
-session_start();
-
+ 
 // session parameters
 require ("include/session.inc.php");
 // management configuration
@@ -28,19 +24,25 @@ $action = getrequest_esc ("action");
 $location = getrequest_esc ("location", "locationname");
 $page = getrequest_esc ("page", "objectname");
 $token = getrequest ("token");
+
 // video settings
 $filetype = getrequest ("filetype");
 $format = getrequest ("format");
+// quality
 $bitrate = getrequest ("bitrate");
 $audiobitrate = getrequest ("audiobitrate");
+// size
 $videosize = getrequest ("videosize");
 $width = getrequest ("width", "numeric");
 $height = getrequest ("height", "numeric");
+// cut
 $cut = getrequest ("cut", "numeric", 0);
 $cut_begin = getrequest ("cut_begin");
 $cut_end = getrequest ("cut_end");
+// thumbnail
 $thumb = getrequest ("thumb", "numeric", 0);
 $thumb_frame = getrequest ("thumb_frame");
+// effects
 $sharpen = getrequest ("sharpen");
 $gamma = getrequest ("gamma");
 $brightness = getrequest ("brightness");
@@ -69,56 +71,21 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-function startConversion ($videotype) 
-{
-  // Needed for createmedia
-  global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata;
-  // Used for $mgmt_mediaoptions
-  global $filetype, $cut_add, $sh_add, $gbcs_add, $bitrate, $audiobitrate, $width, $height, $ffmpeg_options;
-  // Used for createmedia
-  global $site, $media_root, $file_info;
-  // Used for createthumbnail_video
-  global $thumb_frame, $thumb;
-   // Used for Output
-  global $text1, $text2, $text30, $text31, $lang;
-    
-  // FFMPEG options
-  $mgmt_mediaoptions['.'.$filetype] = $cut_add.$sh_add.$gbcs_add.str_replace (array('%bitrate%', '%audiobitrate%', '%width%', '%height%'), array($bitrate, $audiobitrate, $width, $height), $ffmpeg_options[$filetype]);
-    
-  // create video
-  if ($videotype == "videoplayer") $videotype = "thumbnail";
-  else $videotype = "video";
-
-  $result = createmedia ($site, $media_root, $media_root, $file_info['file'], $filetype, $videotype);
-
-  if ($result == false)
-  {
-    $show = str_replace ('%filetype%', $filetype, $hcms_lang['the-file-could-not-be-converted-to-filetype'][$lang]);
-  }
-  else
-  {
-    if ($thumb == 0 || ($match1 = preg_match ("/\d{1,2}:\d{1,2}:\d{1,2}(.\d){0,3}/", $thumb_frame)) && ($match2 = createthumbnail_video ($site, $media_root, $media_root, $file_info['file'], $thumb_frame)))
-    {
-      $show = str_replace ('%filetype%', $filetype, $hcms_lang['the-file-was-converted-successfully-to-filetype'][$lang]);
-    } 
-    else
-    {
-      if (!$match1) $show = $hcms_lang['could-not-determine-the-frame-for-the-preview-image-when-'][$lang];
-      else $show = $hcms_lang['could-not-extract-the-preview-image'][$lang];
-    }
-  }
-  
-  return $show;
-}
-
 $show = "";
 
 // load object file and get container and media file
 $objectdata = loadfile ($location, $page);
 $mediafile = getfilename ($objectdata, "media");
 
-// get file information of original component file
+// get object file information
 $pagefile_info = getfileinfo ($site, $page, $cat);
+
+// get media file info
+$media_root = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
+$file_info = getfileinfo ($site, $mediafile, $cat);
+
+// if audio file
+$is_audio = is_audio ($file_info['ext']);
 
 // read supported formats
 $available_extensions = array();
@@ -223,167 +190,7 @@ else $audiobitrate = "64k";
 if ($videosize != "" && array_key_exists ($videosize, $available_videosizes)) $videosize = $videosize;
 else $videosize = "s";
 
-// options for FFMPEG:
-// Audio Options:
-// -ac ... number of audio channels
-// -an ... disable audio
-// -ar ... audio sampling frequency (default = 44100 Hz)
-// -b:a ... audio bitrate (default = 64 kb/s)
-// -c:a ... audio codec (e.g. libmp3lame, libfaac, libvorbis)
-// Video Options:
-// -b:v ... video bitrate in bit/s (default = 200 kb/s)
-// -c:v ... video codec (e.g. libx264)
-// -cmp ... full pel motion estimation compare function (used for mp4)
-// -f ... force file format (like flv, mp4, ogv, webm, mp3)
-// -flags ... specific options for video encoding
-// -mbd ... macroblock decision algorithm (high quality mode)
-// -r ... frame rate in Hz (default = 25)
-// -s:v ... frame size in pixel (WxH)
-// -sh ... sharpness (blur -1 up to 1 sharpen)
-// -gbcs ... gamma, brightness, contrast, saturation (neutral values are 1.0:1:0:0.0:1.0)
-// -wm .... watermark image and watermark positioning (PNG-file-reference->positioning [topleft, topright, bottomleft, bottomright] e.g. image.png->topleft)
-
-$ffmpeg_options['flv'] = "-b:v %bitrate% -s:v %width%x%height% -f flv -c:a libmp3lame -b:a %audiobitrate% -ac 2 -ar 22050";
-$ffmpeg_options['mp4'] = "-b:v %bitrate% -s:v %width%x%height% -f mp4 -c:a libfaac -b:a %audiobitrate% -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
-$ffmpeg_options['ogv'] = "-b:v %bitrate% -s:v %width%x%height% -f ogg -c:a libvorbis -b:a %audiobitrate% -ac 2";
-$ffmpeg_options['webm'] = "-b:v %bitrate% -s:v %width%x%height% -f webm -c:a libvorbis -b:a %audiobitrate% -ac 2";
-$ffmpeg_options['mp3'] = "-f mp3 -c:a libmp3lame -b:a %audiobitrate% -ar 44100";
-
-// get publication and file info
-$media_root = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
-$file_info = getfileinfo ($site, $mediafile, $cat);
-
-$audio = (substr_count ($hcms_ext['audio'].'.', $file_info['ext'].'.') > 0);
-
-// render media
-if ($action == "rendermedia" && checktoken ($token, $user) && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
-{
-	ini_set ("max_execution_time", "3600"); // sets the maximum execution time of this script to 1 hour.
-
-	// HDTV 720p
-	if ($videosize == "xl")
-  {
-    $width = "1280";
-    $height = "720";
-	}
-	// VGA Resolution
-	elseif ($videosize == "l")
-  {
-    $width = "640";
-    if ($format == "fs") $height = "480";
-    elseif ($format == "ws") $height = "360";
-  }
-	// Internet
-  elseif ($videosize == "s")
-  {
-    $width = "320";
-    if ($format == "fs") $height = "240";
-    elseif ($format == "ws") $height = "180";
-	}
-  // Individual
-  else
-  {
-    $width = intval ($width);
-    $height = intval ($height);
-  }
-  
-  // Video montage
-  $cut_add = "";
-  
-  if ($cut == 1 && $cut_begin != "" && $cut_end != "")
-  {
-    $starttime = DateTime::createFromFormat ('H:i:s.u', $cut_begin);
-    $endtime = DateTime::createFromFormat ('H:i:s.u', $cut_end);
-    $duration = $starttime->diff($endtime);
-    
-    // get msec
-    list ($rest, $startmsec) = explode (".", $cut_begin);
-    list ($rest, $endmsec) = explode (".", $cut_end);
-    
-    $durationmsec = $endmsec - $startmsec;
-    
-    if ($durationmsec < 0)
-    {
-      $durationmsec = 1000 + $durationmsec;
-      $duration->s -=1;
-      
-      if ($duration->s < 0)
-      {
-        $duration->i -=1;
-        
-        if ($duration->i < 0)
-        {
-          $duration->h -=1;
-        }
-      }
-    }
-    
-    if ($startmsec < 100) $startmsec = "0".$startmsec;
-    if ($durationmsec < 100) $durationmsec = "0".$durationmsec;
-        
-    $cut_add = '-ss '.$starttime->format('H:i:s').'.'.$startmsec.' -t '.$duration->format('%H:%I:%S').'.'.$durationmsec.' '; 
-  }
-  
-  // sharpen
-  $sh_add = "";
-  
-  if ($sharpen != "")
-  {
-    $sharpen = round (($sharpen / 100), 2);
-            
-    $sh_add = "-sh ".$sharpen." ";
-  }
-  
-  // gamma, brightness, contrast, saturation
-  $gbcs_add = "";
-  
-  if ($gamma != "" || $brightness != "" || $contrast != "" || $saturation != "")
-  {
-    // set default values
-    if ($gamma == "") $gamma = "1";
-    else $gamma = round ((($gamma + 100) / 100), 2);
-    
-    if ($brightness == "") $brightness = "0";
-    else $brightness = round (($brightness / 100), 2);
-    
-    if ($contrast == "") $contrast = "1";
-    else $contrast = round ((($contrast + 100) / 100), 2);
-    
-    if ($saturation == "") $saturation = "1";
-    else $saturation = round ((($saturation + 100) / 100), 2);
-                    
-    $gbcs_add = "-gbcs ".$gamma.":".$brightness.":".$contrast.":".$saturation." ";
-  }
-
-  // check for max video size
-	if ($width > 1920) $width = 1920;
-	if ($height > 1080) $height = 1080;    
-
-  // conversion of videoplayer videos
-  if ($filetype == "videoplayer")
-  {
-    $run = 0;
-    
-    foreach ($available_extensions as $filetype)
-    {
-      $filetype = strtolower ($filetype);
-      
-      // we only convert the most used video formats (FLV, MP4, OGV)
-      if (in_array ($filetype, array('flv', 'mp4', 'ogv')))
-      {
-        // only capture video screen for thumbnail image for the first video
-        if ($run == 1) $thumb = 0;
-          
-        $show .= startConversion ("videoplayer")."<br />\n";
-        $run = 1;
-      }
-    }
-  }
-  // conversion of one video
-  else $show = startConversion ($filetype);
-}
-
-// generate media player config
+// generate media preview (media player)
 if ($hcms_ext['video'] != "" && $hcms_ext['audio'] != "")
 {
   $mediawidth = 0;
@@ -411,7 +218,7 @@ $token_new = createtoken ($user);
 <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js"></script>
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css" />
 <?php 
-if ($audio) echo showaudioplayer_head ();
+if ($is_audio) echo showaudioplayer_head ();
 else echo showvideoplayer_head ($site, false, 'preview'); 
 ?>
 
@@ -432,7 +239,7 @@ function checkCut()
   }
 }
 
-<?php if (!$audio) { ?>
+<?php if (!$is_audio) { ?>
 function checkThumb()
 {
   var area1 = $('#thumb_area');
@@ -447,11 +254,18 @@ function checkThumb()
   }
 }
 <?php } ?>
+
+function submitform ()
+{
+  hcms_showHideLayers('savelayer','','show');
+  document.forms['mediaconfig'].submit();
+}
+
 function updateField (field)
 { 
   <?php
   // if we use the audio player we check other values
-  if ($audio) { ?>
+  if ($is_audio) { ?>
   var player = {};
   
   for (var i = 0; i < audiojs.instanceCount; i++)
@@ -643,7 +457,7 @@ $(window).load( function()
   } 
 });
 
-<?php if (!$audio) { ?>
+<?php if (!$is_audio) { ?>
 $().ready(function() {
   checkCut();
   checkThumb();
@@ -703,7 +517,7 @@ $().ready(function() {
 </div>
 
 <?php
-echo showinfobox ($hcms_lang['use-ÂoptionsÂ-to-edit-the-video'][$lang], $lang, 8, "position:fixed; top:40px; left:10px; width:90%;", "hcms_infoLayer");
+echo showinfobox ($hcms_lang['use-options-to-edit-the-video'][$lang], $lang, 8, "position:fixed; top:40px; left:10px; width:90%;", "hcms_infoLayer");
 echo showmessage ($show, 600 , 80, $lang, "position:fixed; left:50px; top:150px;");
 ?> 
 
@@ -714,8 +528,9 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
 
 <!-- rendering settings -->
 <div id="renderOptions" style="padding:10px; width:730px; vertical-align:top; z-index:1; display: none; margin-left: 10px" class="hcmsMediaRendering">
-  <form name="mediaconfig" action="" method="post">
+  <form name="mediaconfig" action="service/rendervideo.php" method="post">
   	<input type="hidden" name="action" value="rendermedia" />
+    <input type="hidden" name="savetype" value="editor_so">
   	<input type="hidden" name="site" value="<?php echo $site; ?>" />
   	<input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
   	<input type="hidden" name="cat" value="<?php echo $cat; ?>" />
@@ -723,7 +538,7 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
   	<input type="hidden" name="media" value="<?php echo $mediafile; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     
-    <?php if (!$audio) { ?>
+    <?php if (!$is_audio) { ?>
     
     <!-- video screen format -->
   	<div class="cell">
@@ -762,7 +577,7 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
     
     <div class="cell">
     <!-- video cut -->
-      <input type="checkbox" name="cut" id="cut_yes" onclick="checkCut();" value="1"><strong><label for="cut_yes" onclick="checkCut();" /><?php echo ($audio) ? $hcms_lang['audio-montage'][$lang] : $hcms_lang['video-montage'][$lang]; ?></label></strong>
+      <input type="checkbox" name="cut" id="cut_yes" onclick="checkCut();" value="1" /><strong><label for="cut_yes" onclick="checkCut();" /><?php echo ($is_audio) ? $hcms_lang['audio-montage'][$lang] : $hcms_lang['video-montage'][$lang]; ?></label></strong>
       <div id="cut_area" style="display:none;">
         <div class="row">
           <label for="cut_start" style="width: 70px; display:inline-block; vertical-align: middle;"><?php echo $hcms_lang['start'][$lang]; ?></label>
@@ -776,10 +591,10 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
         </div>
       </div>
       
-    <?php if (!$audio) { ?>
+    <?php if (!$is_audio) { ?>
     <!-- video thumbnail -->
       <div class="row"> 
-        <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1"><strong><label for="thumb_yes" onclick="checkThumb();" /><?php echo $hcms_lang['pick-preview-image'][$lang]; ?></label></strong>
+        <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1" /><strong><label for="thumb_yes" onclick="checkThumb();" /><?php echo $hcms_lang['pick-preview-image'][$lang]; ?></label></strong>
         <div id="thumb_area" style="display:none;">
             <label for="thumb_frame_select" style="display:inline-block; vertical-align: middle;"><?php echo $hcms_lang['frame'][$lang]; ?></label>
             <input id="thumb_frame_select" type="button" value="<?php echo $hcms_lang['set'][$lang]; ?>" onclick="updateField(document.getElementById('thumb_frame'));" class="cellButton" />
@@ -799,7 +614,7 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
   		<?php } ?>
   	</div>
     
-    <?php if (!$audio) { ?>
+    <?php if (!$is_audio) { ?>
     <!-- sharpness / gamma / brigthness / contrast / saturation -->
     <div class="cell">
       <div class="row">
@@ -839,7 +654,7 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
   		<label for="filetype"><?php echo $hcms_lang['file-type'][$lang];?></label>
   		<select name="filetype">
         <?php
-        if (!$audio)
+        if (!$is_audio)
         {
         ?>
         <option value="videoplayer" ><?php echo $hcms_lang['for-videoplayer'][$lang]; ?></option>
@@ -848,7 +663,7 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
         
         foreach ($available_extensions as $ext => $name)
         { 
-          if (!$audio || strpos ("_".$hcms_ext['audio'].".", ".".strtolower($name).".") > 0)
+          if (!$is_audio || is_audio (strtolower($name)))
           { 
           ?>
   				<option value="<?php echo $ext; ?>"><?php echo $name; ?></option>
@@ -861,7 +676,7 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
     
     <!-- save button -->
   	<div class="cell" style="vertical-align:bottom;">
-  		<input class="hcmsButtonGreen" type="button" name="save" onclick="hcms_showHideLayers('savelayer','','show'); document.forms['mediaconfig'].submit();" value="<?php echo $hcms_lang['save'][$lang];?>"/>
+  		<input class="hcmsButtonGreen" type="button" name="save" onclick="submitform();" value="<?php echo $hcms_lang['save'][$lang];?>"/>
   	</div>
     
   </form>

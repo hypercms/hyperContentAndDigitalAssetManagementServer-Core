@@ -94,7 +94,7 @@ window.onload = function()
 {
   var settings = {
 				flash_url : "<?php echo $mgmt_config['url_path_cms']; ?>javascript/swfupload/swfupload_f10.swf",
-				upload_url: "<?php echo $mgmt_config['url_path_cms']; ?>upload_multi.php",	// Relative to this file
+				upload_url: "<?php echo $mgmt_config['url_path_cms']; ?>service/uploadfile.php",
 				post_params: {"PHPSESSID" : "<?php echo session_id(); ?>",
           "site" : "<?php echo $site; ?>",
           "location" : "<?php echo $location_esc; ?>",

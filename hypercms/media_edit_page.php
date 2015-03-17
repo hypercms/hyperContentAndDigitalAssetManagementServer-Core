@@ -155,12 +155,12 @@ function checkType()
    
     if (mediaext.length > 2)
     {
-      if (mediatype == "audio") allowedext = "<?php echo $hcms_ext['audio']; ?>";
-      else if (mediatype == "compressed") allowedext = "<?php echo $hcms_ext['compressed']; ?>";
-      else if (mediatype == "flash") allowedext = "<?php echo $hcms_ext['flash']; ?>";
-      else if (mediatype == "image") allowedext = "<?php echo $hcms_ext['image']; ?>";
-      else if (mediatype == "text") allowedext = "<?php echo $hcms_ext['cms'].$hcms_ext['bintxt'].$hcms_ext['cleartxt']; ?>";
-      else if (mediatype == "video") allowedext = "<?php echo $hcms_ext['video']; ?>";
+      if (mediatype == "audio") allowedext = "<?php echo strtolower ($hcms_ext['audio']); ?>";
+      else if (mediatype == "compressed") allowedext = "<?php echo strtolower ($hcms_ext['compressed']); ?>";
+      else if (mediatype == "flash") allowedext = "<?php echo strtolower ($hcms_ext['flash']); ?>";
+      else if (mediatype == "image") allowedext = "<?php echo strtolower ($hcms_ext['image']); ?>";
+      else if (mediatype == "text") allowedext = "<?php echo strtolower ($hcms_ext['cms'].$hcms_ext['bintxt'].$hcms_ext['cleartxt']); ?>";
+      else if (mediatype == "video") allowedext = "<?php echo strtolower ($hcms_ext['video']); ?>";
       
       if (allowedext.indexOf(mediaext) < 0) 
       {
@@ -310,7 +310,7 @@ else $onsubmit = "submitMediaType();";
 <!-- top bar -->
 <?php echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame"); ?>
 
-<form name="media" action="page_save.php" target="_parent" method="post">
+<form name="media" action="service/savecontent.php" target="_parent" method="post">
   <input type="hidden" name="contenttype" value="<?php echo $contenttype; ?>" />
   <input type="hidden" name="view" value="<?php echo $view; ?>" />
   <input type="hidden" name="savetype" value="<?php echo $savetype; ?>" />

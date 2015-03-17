@@ -47,6 +47,8 @@ $globalpermission =  initsession ("hcms_globalpermission");
 $localpermission =  initsession ("hcms_localpermission");
 $adminpermission =  initsession ("hcms_superadmin");
 $hiddenfolder =  initsession ("hcms_hiddenfolder");
+// download formats
+$downloadformats =  initsession ("hcms_downloadformats");
 // mobile browser
 $is_mobile =  initsession ("hcms_mobile");
 $is_iphone =  initsession ("hcms_iphone");

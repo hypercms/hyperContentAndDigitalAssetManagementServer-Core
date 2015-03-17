@@ -222,7 +222,7 @@ function autosave ()
     
     if(check == true) {
       $.post(
-        "<?php echo $mgmt_config['url_path_cms']; ?>page_save.php", 
+        "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php", 
         $("#hcms_formview").serialize(), 
         function(data)
         {
@@ -257,7 +257,7 @@ setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>
 
   <!-- form for content -->
   <div style="padding:0; width:100%; z-index:1;">
-    <form name="hcms_formview" id="hcms_formview" method="post" action="<?php echo $mgmt_config['url_path_cms']; ?>page_save.php">
+    <form name="hcms_formview" id="hcms_formview" method="post" action="<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php">
       <input type="hidden" name="contenttype" value="<?php echo $contenttype; ?>">
       <input type="hidden" name="site" value="<?php echo $site; ?>">
       <input type="hidden" name="cat" value="<?php echo $cat; ?>">

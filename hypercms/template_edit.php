@@ -74,8 +74,8 @@ elseif (strpos ($template, ".meta.tpl") > 0)
 // save template file if save button was pressed
 if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, 'tpledit') && $save == "yes" && checktoken ($token, $user))
 {
-  // set highest cleaning level is not provided
-  if (!isset ($mgmt_config['template_clean_level'])) $mgmt_config['template_clean_level'] = 3;
+  // set highest cleaning level is not provided or meta data template
+  if (!isset ($mgmt_config['template_clean_level']) || $cat == "meta") $mgmt_config['template_clean_level'] = 3;
   
   // check code
   $contentfield_check = scriptcode_clean_functions ($contentfield, $mgmt_config['template_clean_level']);
@@ -177,7 +177,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang); ?>: "+addText);
+		alert(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang); ?>: ")+addText);
 		return false;
 	}
   else
@@ -263,7 +263,6 @@ function insertAtCaret (aTag, eTag)
     }
     else
     {
-      //pos = start + aTag.length + insText.length + eTag.length;
       pos = start + aTag.length + eTag.length;
     }
     
@@ -318,7 +317,7 @@ function format_tag (format)
     constraint = " constraint='" + document.forms['template_edit'].elements['constraints'].value + "'";
   }
   
-  if (format == "textc") constraint = " value='" + prompt("<?php echo getescapedtext ($hcms_lang['enter-value-for-checkbox'][$lang], $charset, $lang); ?>", "") + "'";
+  if (format == "textc") constraint = " value='" + prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['enter-value-for-checkbox'][$lang], $charset, $lang); ?>"), "") + "'";
   
   if (format == "mediafile" && document.forms['template_edit'].elements['constraints'].value != "") 
   {
@@ -363,7 +362,7 @@ function customertracking()
 
 function db_connect()
 {
-  var filename = prompt("<?php echo getescapedtext ($hcms_lang['please-enter-the-file-name-of-the-database-connectivity-eg'][$lang], $charset, $lang); ?>", "");
+  var filename = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-enter-the-file-name-of-the-database-connectivity-eg'][$lang], $charset, $lang); ?>"), "");
   
   if (filename != null) 
   {
@@ -374,7 +373,7 @@ function db_connect()
 
 function workflow()
 {
-  var filename = prompt("<?php echo getescapedtext ($hcms_lang['please-enter-the-name-of-the-master-workflow-eg'][$lang], $charset, $lang); ?>", "");
+  var filename = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-enter-the-name-of-the-master-workflow-eg'][$lang], $charset, $lang); ?>"), "");
   
   if (filename != null)
   {
@@ -409,7 +408,7 @@ function language()
 
 function compcontenttype()
 {
-  var charset = prompt("<?php echo getescapedtext ($hcms_lang['define-character-set'][$lang], $charset, $lang); ?>", "<?php echo $mgmt_config[$site]['default_codepage']; ?>");
+  var charset = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['define-character-set'][$lang], $charset, $lang); ?>"), "<?php echo $mgmt_config[$site]['default_codepage']; ?>");
   
   if (charset != null)
   {
@@ -451,8 +450,8 @@ function script()
 
 function include(format)
 {
-  if (format == "php") {filename = prompt("<?php echo getescapedtext ($hcms_lang['path-to-component-to-be-included-with-ext'][$lang], $charset, $lang); ?>", "");}
-  if (format == "") {filename = prompt("<?php echo getescapedtext ($hcms_lang['name-of-template-component-to-be-included-without-ext-no-path-required'][$lang], $charset, $lang); ?>", "");}
+  if (format == "php") {filename = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['path-to-component-to-be-included-with-ext'][$lang], $charset, $lang); ?>"), "");}
+  if (format == "") {filename = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['name-of-template-component-to-be-included-without-ext-no-path-required'][$lang], $charset, $lang); ?>"), "");}
 
   if (filename != null && format == "php") {code = "[hyperCMS:fileinclude file='"+filename+"']";}
   if (filename != null && format == "") {code = "[hyperCMS:tplinclude file='"+filename+".inc.tpl']";}
@@ -483,8 +482,8 @@ function format_tag_attr(format)
   }
   else
   {    
-    if (format == "textl") list = prompt("<?php echo getescapedtext ($hcms_lang['please-enter-the-text-options-eg'][$lang], $charset, $lang); ?>", "");
-    else if (format == "linktarget") list = prompt("<?php echo getescapedtext ($hcms_lang['enter-frame-names-for-target-specification-eg'][$lang], $charset, $lang); ?>", "");
+    if (format == "textl") list = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-enter-the-text-options-eg'][$lang], $charset, $lang); ?>"), "");
+    else if (format == "linktarget") list = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['enter-frame-names-for-target-specification-eg'][$lang], $charset, $lang); ?>"), "");
   
     list = replace (list, ';', '|');
     list = replace (list, '&', '&amp;');
@@ -595,12 +594,14 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
         <option value="htm"<?php if ($application == "htm") echo " selected=\"selected\""; ?>>Hypertext Markup Language (HTML)</option>
         <option value="jsp"<?php if ($application == "jsp") echo " selected=\"selected\""; ?>>Java Server Pages (JSP)</option>
         <option value="php"<?php if ($application == "php") echo " selected=\"selected\""; ?>>PHP Hypertext Preprocessor (PHP)</option>
-        <?php if( $cat == "comp") { ?>
-          <option value="generator"<?php if ($application == "generator") echo " selected=\"selected\""; ?>>Document Generator</option>
+        <?php if ($cat == "comp") { ?>
+        <option value="generator"<?php if ($application == "generator") echo " selected=\"selected\""; ?>>Document Generator</option>
         <?php } ?>
       </select>
      </td>
     </tr>
+    <?php } elseif ($cat == "meta") { ?>
+    <input type="hidden" name="application" value="media" />
     <?php } ?>
   </table>
   <br />
@@ -633,7 +634,7 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
               </td>
               <td>&nbsp;</td>
             </tr>\n";
-    if ($cat != "meta") echo "<tr>
+    echo "<tr>
               <td wnowrap=\"nowrap\">".getescapedtext ($hcms_lang['hide-content'][$lang], $charset, $lang).":</td>
               <td nowrap=\"nowrap\">
                 <input type=\"checkbox\" name=\"onpublish\" value=\"hidden\" />&nbsp;".getescapedtext ($hcms_lang['on-publish'][$lang], $charset, $lang)."&nbsp;
@@ -703,13 +704,10 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
               echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
             }  
 
-            if ($cat == "page" || $cat == "comp" || $cat == "inc")
+            if ($cat == "page" || $cat == "comp" || $cat == "meta" || $cat == "inc")
             {
-              if ($cat == "page") 
-              {
-                echo "<img onClick=\"db_connect();\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"media40\" src=\"".getthemelocation()."img/button_db_connect.gif\" alt=\"".getescapedtext ($hcms_lang['database-connectivity'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['database-connectivity'][$lang], $charset, $lang)."\" />\n";              
-                echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
-              }  
+              echo "<img onClick=\"db_connect();\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"media40\" src=\"".getthemelocation()."img/button_db_connect.gif\" alt=\"".getescapedtext ($hcms_lang['database-connectivity'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['database-connectivity'][$lang], $charset, $lang)."\" />\n";              
+              echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
               echo "<img onClick=\"workflow();\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"media50\" src=\"".getthemelocation()."img/button_workflowinsert.gif\" alt=\"".getescapedtext ($hcms_lang['workflow'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['workflow'][$lang], $charset, $lang)."\">\n";                              
               echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";     
               echo "<img onClick=\"script();\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"media60\" src=\"".getthemelocation()."img/button_script.gif\" alt=\"".getescapedtext ($hcms_lang['script'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['script'][$lang], $charset, $lang)."\" />\n";                              
