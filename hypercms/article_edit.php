@@ -185,20 +185,20 @@ function cal2_on_autoclose(cal)
 
 function validateForm(select, min, max) 
 {
-  var errors='';
+  var errors = '';
   
   val = select.value;
 
-  if (val<min || max<val) errors+='<?php echo getescapedtext ($hcms_lang['time-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' <?php echo getescapedtext ($hcms_lang['and'][$lang], $charset, $lang); ?> '+max+' <?php echo getescapedtext ($hcms_lang['be'][$lang], $charset, $lang); ?>.\n';
+  if (val<min || max<val) errors += '<?php echo getescapedtext ($hcms_lang['time-must-contain-a-number-between'][$lang], $charset, $lang); ?> ' + min + ' <?php echo getescapedtext ($hcms_lang['and'][$lang], $charset, $lang); ?> ' + max + ' <?php echo getescapedtext ($hcms_lang['be'][$lang], $charset, $lang); ?>.\n';
   
   if (errors) 
   {
     select.focus();    
-    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang], $charset, $lang); ?>:\n'+errors));
+    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang], $charset, $lang); ?>:\n' + errors));
   }
   else
   {
-    if (val.length == 1) select.value = '0'+val;
+    if (val.length == 1) select.value = '0' + val;
     else if (val.length < 1) select.value = '00';
   }
   

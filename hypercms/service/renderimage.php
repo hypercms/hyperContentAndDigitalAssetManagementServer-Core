@@ -51,26 +51,26 @@ $brightness = getrequest ("brightness", "numeric");
 $use_contrast = getrequest("use_contrast", "numeric");
 $contrast = getrequest ("contrast", "numeric");
 // Colorspace
-$colorspace = getrequest( "colorspace" );
-$imagecolorspace = getrequest("imagecolorspace");
+$colorspace = getrequest ("colorspace");
+$imagecolorspace = getrequest ("imagecolorspace");
 // flip
-$flip = getrequest( "flip" );
+$flip = getrequest ("flip");
 // Effects
 $effect = getrequest ("effect");
 // sepia_treshold
-$sepia_treshold = getrequest( "sepia_treshold", "numeric" );
+$sepia_treshold = getrequest ("sepia_treshold", "numeric");
 // blur data
-$blur_radius = getrequest( "blur_radius", "numeric", NULL );
-$blur_sigma = getrequest( "blur_sigma", "numeric", NULL );
+$blur_radius = getrequest ("blur_radius", "numeric", NULL);
+$blur_sigma = getrequest ("blur_sigma", "numeric", NULL);
 // blur data
-$sharpen_radius = getrequest( "sharpen_radius", "numeric", NULL );
-$sharpen_sigma = getrequest( "sharpen_sigma", "numeric", NULL );
+$sharpen_radius = getrequest ("sharpen_radius", "numeric", NULL);
+$sharpen_sigma = getrequest ("sharpen_sigma", "numeric", NULL);
 // sketch data
-$sketch_radius = getrequest( "sketch_radius", "numeric", NULL );
-$sketch_sigma = getrequest( "sketch_sigma", "numeric", NULL );
-$sketch_angle = getrequest( "sketch_angle", "numeric", NULL );
+$sketch_radius = getrequest ("sketch_radius", "numeric", NULL);
+$sketch_sigma = getrequest ("sketch_sigma", "numeric", NULL);
+$sketch_angle = getrequest ("sketch_angle", "numeric", NULL);
 // Paint Value
-$paintvalue = getrequest( "paint_value", "numeric", NULL );
+$paintvalue = getrequest ("paint_value", "numeric", NULL);
 
 // get publication and category
 $site = getpublication ($location);
@@ -155,9 +155,9 @@ if (checktoken ($token, $user))
   $available_colorspaces['XYZ'] = 'XYZ';
   
   $available_flip = array();
-  $available_flip['-fv'] = $hcms_lang['vertical'][$lang];
-  $available_flip['-fh'] = $hcms_lang['horizontal'][$lang];
-  $available_flip['-fv -fh'] = $hcms_lang['both'][$lang];
+  $available_flip['fv'] = $hcms_lang['vertical'][$lang];
+  $available_flip['fh'] = $hcms_lang['horizontal'][$lang];
+  $available_flip['fv fh'] = $hcms_lang['both'][$lang];
   
   $show = "";
   $result = false;
@@ -251,14 +251,25 @@ if (checktoken ($token, $user))
         // rotate
         if ($rotate == "rotate" && $angle !== NULL) 
         {
-          $mgmt_imageoptions[$formats]['preview'] .= " -r ".$angle;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -r ".$angle;
+          $mgmt_imageoptions[$formats]['preview'] .= " -rotate ".$angle;
+          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -rotate ".$angle;
         }
         // flip
         elseif ($rotate == "flip" && array_key_exists ($flip, $available_flip))
         {
-          $mgmt_imageoptions[$formats]['preview'] .= " ".$flip;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -r ".$angle;
+          if (strpos ($flip, " ") > 0)
+          {
+            list ($flip, $flop) = explode (" ", $flip);
+          }
+          
+          $mgmt_imageoptions[$formats]['preview'] .= " -".$flip;
+          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -".$flip;
+          
+          if (!empty ($flop))
+          {
+            $mgmt_imageoptions[$formats]['preview'] .= " -".$flop;
+            $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -".$flop;
+          }
         }
   
         // brightness
@@ -359,10 +370,14 @@ if (checktoken ($token, $user))
 if (!empty ($result)) 
 { 
   $output->success = true;
-  $add_onload = $editmediaobject['add_onload'];
-  $show = $editmediaobject['message'];
-  $page = $editmediaobject['object'];
-  $mediafile = $editmediaobject['mediafile'];
+  
+  if (!empty ($editmediaobject) && is_array ($editmediaobject))
+  {
+    $add_onload = $editmediaobject['add_onload'];
+    $show = $editmediaobject['message'];
+    $page = $editmediaobject['object'];
+    $mediafile = $editmediaobject['mediafile'];
+  }
   
   // add timestamp to ensure the new image will be loaded
   $output->imagelink = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($result)."&token=".hcms_crypt($result)."&ts=".time();

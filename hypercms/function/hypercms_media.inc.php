@@ -411,7 +411,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         }
       }
     }
-    
+
     // ---------------------- if Audio file ------------------------
     // the extracted thumbnail will be used as it is and don't use the image data for table media
     if (is_audio ($file_ext) && ($type == "thumbnail" || $type == "origthumb"))
@@ -508,7 +508,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         }
       }
     }
-    
+
     // -------------- if image conversion software is given -----------------
     if (is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0)
     {
@@ -529,7 +529,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         {
           reset ($mgmt_imageoptions);  
           $i = 1;
-          
+
           // extensions for certain image rendering options
           foreach ($mgmt_imageoptions as $imageoptions_ext => $imageoptions)
           {
@@ -539,7 +539,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
             $check2 = $type != 'thumbnail' && substr_count ($imageoptions_ext.".", ".".$format_set.".") > 0;
             // we also need to check if the type array is present
             $check3 = array_key_exists ($type, $mgmt_imageoptions[$imageoptions_ext]);
-            
+
             // get image rendering options based on given destination format
             if (($check1 || $check2) && $check3)
             {
@@ -547,12 +547,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               // -s ... output size in width x height in pixel (WxH)
               // -f ... output format (file extension without dot [jpg, png, gif])
               // -c ... cropy size
-              // -r ... rotate image
               // -b ... image brightness
               // -k .... image contrast
               // -cs ... color space of image, e.g. RGB, CMYK, gray
-              // -flip ... flip image in the vertical direction
-              // -flop ... flop image in the horizontal direction
+              // -rotate ... rotate image
+              // -fv ... flip image in the vertical direction
+              // -fh ... flop image in the horizontal direction
               // -sharpen ... sharpen image, e.g. one pixel size sharpen: -sharpen 0x1.0
               // -sketch ... skecthes an image, e.g. -sketch 0x20+120
               // -sepia-tone ... apply -sepia-tone on image, e.g. -sepia-tone 80%
@@ -601,9 +601,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               else $imageformat = "jpg";
               
               // image rotation
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-r ") > 0) 
+              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-rotate ") > 0) 
               {
-                $imagerotation = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-r"));
+                $imagerotation = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-rotate"));
                 // ImageMagick rotate parameter
                 $imagerotate = "-rotate ".shellcmd_encode ($imagerotation);
                 
@@ -794,7 +794,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // delete the old file if we overwrite the original file
                   if ($type == "original") @unlink ($location_source.$file);
                 }
-             
+
                 // DOCUMENT: document-based formats
                 if ($file_ext == ".pdf" || $file_ext == ".eps")
                 {
@@ -1247,10 +1247,21 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       // -sh ... sharpness (blur -1 up to 1 sharpen)
       // -gbcs ... gamma, brightness, contrast, saturation (neutral values are 0.0:1:0:0.0:1.0)
       // -wm .... watermark image and watermark positioning (PNG-file-reference->positioning [topleft, topright, bottomleft, bottomright] e.g. image.png->topleft)
+      // -rotate ... rotate video
+      // -fv ... flip video in vertical direction
+      // -fh ... flop video in horizontal direction
       
       // define default option for support of versions before 5.3.4
       // note: audio codec could be "mp3" or in newer ffmpeg versions "libmp3lame"!
-      if ($mgmt_mediaoptions['.mp4'] == "") $mgmt_mediaoptions['.mp4'] = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
+      if (empty ($mgmt_mediaoptions['thumbnail-video']))
+      {
+        $mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
+      }
+      
+      if (empty ($mgmt_mediaoptions['thumbnail-audio']))
+      {
+        $mgmt_mediaoptions['thumbnail-audio'] = "-f mp3 -c:a libmp3lame -b:a 64k -ar 22500";
+      }
       
       // reset type to input value
       $type = $type_memory;
@@ -1258,8 +1269,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       // define format if not set (this defines the file extension and the rendering options)
       if ($format == "")
       {
-        if (is_audio ($file_ext)) $format_set = "mp3";
-        else $format_set = "mp4";
+        if (is_audio ($file_ext))
+        {
+          $format_set = getoption ($mgmt_mediaoptions['thumbnail-audio'], "-f");
+        }
+        else
+        {
+          $format_set = getoption ($mgmt_mediaoptions['thumbnail-video'], "-f");
+        }
       }
       else $format_set = strtolower ($format);
         
@@ -1280,7 +1297,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
           foreach ($mgmt_mediaoptions as $mediaoptions_ext => $mediaoptions)
           {
             // get media rendering options based on given destination format
-            if (substr_count (strtolower ($mediaoptions_ext).".", ".".$format_set.".") > 0)
+            if ($mediaoptions_ext != "thumbnail-video" && $mediaoptions_ext != "thumbnail-audio" && substr_count (strtolower ($mediaoptions_ext).".", ".".$format_set.".") > 0)
             {        
               // media format (media file extension) definition
               if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-f ") > 0)
@@ -1291,32 +1308,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 
                 $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-f ".$videoformat, "-f ".shellcmd_encode (trim($videoformat)), $mgmt_mediaoptions[$mediaoptions_ext]);
               }
-
-              // keep video ratio for original thumbnail video
-              if ($type == "origthumb" && $videoinfo['ratio'] != "" && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0)
-              {
-                // get video size defined by media option 
-                $mediasize = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v");
-                list ($mediawidth, $mediaheight) = explode ("x", $mediasize);
-                
-                // if original video size is smaller than the defined size of the media option
-                if ($videoinfo['width'] > 0 && $videoinfo['height'] > 0 && $videoinfo['width'] < $mediawidth && $videoinfo['height'] < $mediaheight)
-                {
-                  $mediawidth = $videoinfo['width'];
-                  $mediaheight = $videoinfo['height'];
-                  
-                  $mediasize_new = intval($mediawidth)."x".intval($mediaheight);
-                }
-                // use size defined by media option
-                else
-                {
-                  if ($videoinfo['ratio'] > 1) $mediasize_new = intval($mediawidth)."x".round((intval($mediawidth)/$videoinfo['ratio']), 0);
-                  else $mediasize_new = round((intval($mediaheight)*$videoinfo['ratio']), 0)."x".intval($mediaheight);
-                }
-                
-                $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-s:v ".$mediasize, "-s:v ".$mediasize_new, $mgmt_mediaoptions[$mediaoptions_ext]);
-              }
-                             
+         
               // video filters
               $vfilter = array();
               
@@ -1353,12 +1345,54 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // remove from options string since it will be added later as a video filter
                 $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-sh ".$sharpness, "", $mgmt_mediaoptions[$mediaoptions_ext]);
               }
+              
+              // rotate (using video filters)
+              if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-rotate ") > 0)
+              {
+                // get degrees defined by media option 
+                $rotate = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-rotate");
+                
+                // usage: transpose=1
+                // for the transpose parameter you can pass:
+                // 0 = 90CounterCLockwise and Vertical Flip (default)
+                // 1 = 90Clockwise
+                // 2 = 90CounterClockwise
+                // 3 = 90Clockwise and Vertical Flip
+                
+                if ($rotate == "90") $vfilter[] = "transpose=1";
+                elseif ($rotate == "180") $vfilter[] = "hflip,vflip";
+                elseif ($rotate == "-90") $vfilter[] = "transpose=2";
+                
+                // remove from options string since it will be added later as a video filter
+                $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-rotate ".$rotate, "", $mgmt_mediaoptions[$mediaoptions_ext]);
+              }
+              
+              // flip vertically (using video filters)
+              if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-fv ") > 0)
+              {
+                // usage: hlfip (means horizontal direction = vertical flip)
+                $vfilter[] = "hflip";
+                
+                // remove from options string since it will be added later as a video filter
+                $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-fv ", "", $mgmt_mediaoptions[$mediaoptions_ext]);
+              }
+              
+              // flip horizontally (using video filters)
+              if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-fh ") > 0)
+              {
+                // usage: vlfip (means vertical direction = horizontal flip)
+                $vfilter[] = "vflip";
+                
+                // remove from options string since it will be added later as a video filter
+                $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-fh ", "", $mgmt_mediaoptions[$mediaoptions_ext]);
+              }
 
               // gamma, brigntness, contrast, saturation, red-, green-, blue-gamm (using video filters)
               if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-gbcs ") > 0)
               {
                 // get sharpness defined by media option 
                 $gbcs = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-gbcs");
+                
                 // Values for EQ2 filter
                 // gamma:contrast:brightness:saturation:rg:gg:bg:weight
                 // (note that the FFMPEG docs show this incorrectly as gamma, brightness, contrast)
@@ -1373,6 +1407,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // The weight parameter can be used to reduce the effect of a high gamma value on bright image areas, e.g. keep them from getting overamplified and just plain white.
                 // A value of 0.0 turns the gamma correction all the way down while 1.0 leaves it at its full strength (default: 1.0).
                 // Weight is not supported by hyperCMS.
+                
                 list ($gamma, $brightness, $contrast, $saturation) = explode (":", $gbcs);
                 
                 if ($gamma < 0 || $gamma > 2) $gamma = "1";
@@ -1392,6 +1427,76 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 $mgmt_mediaoptions[$mediaoptions_ext] = " -vf \"".implode (" ", $vfilter)."\" ".$mgmt_mediaoptions[$mediaoptions_ext];
               }
               
+              // video size
+              if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0)
+              {
+                // get video size defined by media option 
+                $mediasize = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v");
+                list ($mediawidth, $mediaheight) = explode ("x", $mediasize);
+
+                // if valid size is provided
+                if ($mediawidth > 0 && $mediaheight > 0)
+                {
+                  // keep video ratio for original thumbnail video
+                  if ($type == "origthumb" && $videoinfo['ratio'] != "")
+                  {
+                    // if original video size is smaller than the defined size, the size will be reduced to the original size
+                    if ($videoinfo['width'] > 0 && $videoinfo['height'] > 0 && $videoinfo['width'] < $mediawidth && $videoinfo['height'] < $mediaheight)
+                    {
+                      $mediawidth = $videoinfo['width'];
+                      $mediaheight = $videoinfo['height'];
+                    }
+                    // use input size defined by media option
+                    else
+                    {
+                      // use mediawidth and calculate height
+                      if ($videoinfo['ratio'] > 1)
+                      {
+                        $mediaheight = round((intval($mediawidth)/$videoinfo['ratio']), 0);
+                      }
+                      // use mediaheight and calculate width
+                      else
+                      {
+                        $mediawidth = round((intval($mediaheight) * $videoinfo['ratio']), 0);
+                      }
+                    }
+                  }                  
+                  // else we use provided size (without keeping the original aspect ratio)
+                  
+                  // switch width and height for video rotation
+                  if (!empty ($rotate) && ($rotate == "90" || $rotate == "-90"))
+                  {
+                    $temp = $mediawidth;
+                    $mediawidth = $mediaheight;
+                    $mediaheight = $temp;
+                  }
+                
+                  $mediasize_new = intval($mediawidth)."x".intval($mediaheight);
+                  
+                  $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-s:v ".$mediasize, "-s:v ".$mediasize_new, $mgmt_mediaoptions[$mediaoptions_ext]);
+                }
+                // remove mediasize option and keep original video size
+                else
+                {
+                  $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-s:v ".$mediasize, "", $mgmt_mediaoptions[$mediaoptions_ext]);
+                  
+                  // set the video size for the video config file
+                  if ($videoinfo['width'] > 0 && $videoinfo['height'] > 0)
+                  {
+                    if (!empty ($rotate) && ($rotate == "90" || $rotate == "-90"))
+                    {
+                      $mediawidth = $videoinfo['height'];
+                      $mediaheight = $videoinfo['width'];
+                    }
+                    else
+                    {
+                      $mediawidth = $videoinfo['width'];
+                      $mediaheight = $videoinfo['height'];
+                    }
+                  }
+                }  
+              }
+              
               // new file name
               if ($type == "thumbnail") $newfile = $file_name.".thumb.".$format_set;
               elseif ($type == "origthumb") $newfile = $file_name.".orig.".$format_set;
@@ -1399,6 +1504,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
             
               $tmpfile = $file_name.".tmp.".$format_set;
             
+              // render video
               $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" ".$mgmt_mediaoptions[$mediaoptions_ext]." \"".shellcmd_encode ($location_dest.$tmpfile)."\"";
 
               @exec ($cmd, $buffer, $errorCode);
@@ -1430,6 +1536,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // apply watermark as video filter
                 if (!empty ($vfilter_wm))
                 {
+                  // render video with watermark
                   $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_dest.$tmpfile)."\" -vf \"".$vfilter_wm."\" \"".shellcmd_encode ($location_dest.$tmpfile2)."\"";
                 
                   @exec ($cmd, $buffer, $errorCode);
@@ -1458,6 +1565,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 if ($mgmt_mediametadata['.flv'] != "" && $format_set == "flv")
                 {
                   $tmpfile2 = $file_name.".tmp2.".$format_set;
+                  
+                  // inject meta data
                   $cmd = $mgmt_mediametadata['.flv']." -i \"".shellcmd_encode ($location_dest.$tmpfile)."\" -o \"".shellcmd_encode ($location_dest.$tmpfile2)."\"";
                   
                   @exec ($cmd, $buffer, $errorCode);
@@ -1486,18 +1595,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 {
                   if (@is_file ($location_dest.$newfile)) @unlink ($location_dest.$newfile);
                   @rename ($location_dest.$tmpfile, $location_dest.$newfile);
-                }
-                
-                // video width and height
-                if (strpos ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0)
-                {
-                  $mediasize = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v");
-                  list ($mediawidth, $mediaheight) = explode ("x", $mediasize);
-                }
-                else
-                {
-                  $mediawidth = "";
-                  $mediaheight = "";
                 }
 
                 // generate video player config code for all video formates (thumbnails)
@@ -1541,6 +1638,13 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                           
                 // new video info (only if it is not the thumbnail file of the original file)
                 if ($type != "origthumb") $videoinfo = getvideoinfo ($location_dest.$newfile);
+                
+                // set media width and height to empty string
+                if ($mediawidth < 1 || $mediaheight < 1)
+                {
+                  $mediawidth = "";
+                  $mediaheight = "";
+                }
 
                 // save config
                 savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $mediawidth, $mediaheight, $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels']);

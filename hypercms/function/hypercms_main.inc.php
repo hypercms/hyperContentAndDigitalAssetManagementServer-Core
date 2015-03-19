@@ -2360,7 +2360,7 @@ function movetempfile ($location, $file, $delete=false, $force_encrypt=false, $k
 // output: versioned file name [string] / false on error
 
 // description:
-// create a version file name out of a given file name
+// creates a version file name
 
 function fileversion ($file)
 {
@@ -2373,6 +2373,95 @@ function fileversion ($file)
     $file_v = $file.".v_".$versiondate;
   
     return $file_v;
+  }
+  else return false;
+}
+
+// -------------------------------------- createversion -------------------------------------------
+// function: createversion()
+// input: publication name, file name
+// output: true / false
+
+// description:
+// creates a new version of a multimedia file and container
+
+function createversion ($site, $file)
+{
+  global $mgmt_config;
+
+  if (valid_objectname ($file))
+  {
+    // create version of previous content file and media file (not for thumbnails)
+    if ((empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) && !is_thumbnail ($file, false))
+    {
+      // try to get container ID from multimedia file
+      if ($container_id = getmediacontainerid ($file))
+      {
+        $file_info = getfileinfo ($site, $file, "comp");
+        
+        // create new version of file name
+        $file_v = fileversion ($file);
+        
+        // get the file extension of the version file
+        $ext_v = strrchr ($file_v, ".");
+          
+        // thumbnail
+        $thumb = $file_info['filename'].".thumb.jpg";
+        $thumb_v = $thumb.$ext_v;
+        
+        // create new version of thumbnail file
+        $media_root = getmedialocation ($site, $file, "abs_path_media").$site."/";
+          
+        // move thumbnail (important!)  
+        if (is_file ($media_root.$thumb) && filesize ($media_root.$thumb) > 0)
+        {
+          @rename ($media_root.$thumb, $media_root.$thumb_v);
+        }
+            
+        // create new version of media file and keep source file as well
+        if (is_file ($media_root.$file) && filesize ($media_root.$file) > 0)
+        {
+          @copy ($media_root.$file, $media_root.$file_v);
+        }
+            
+        // create new version of container and keep source container file as well
+        $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
+
+        if (@is_file ($contentlocation.$container_id.".xml.wrk") && filesize ($contentlocation.$container_id.".xml.wrk") > 0)
+        {
+          return @copy ($contentlocation.$container_id.".xml.wrk", $contentlocation.$file_v);
+        }
+        else return false;
+      }
+      // try container
+      elseif ($file > 0 || strpos ($file, ".xml") > 0)
+      {
+        // get container ID
+        if (strpos ($file, ".xml") > 0)
+        {
+          $container_id = substr ($file, 0, strpos ($file, ".xml"));
+        }
+        else
+        {
+          $container_id = $file;
+        }
+
+        // create new version of file name
+        $file_v = fileversion ($container_id.".xml.wrk");
+
+        // create new version of container
+        $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
+
+        if (@is_file ($contentlocation.$container_id.".xml.wrk") && filesize ($contentlocation.$container_id.".xml.wrk") > 0)
+        {
+          return @copy ($contentlocation.$container_id.".xml.wrk", $contentlocation.$file_v);
+        }
+        else return false;
+      }
+      else return false;
+    }
+    // versioning is disabled
+    else return true;
   }
   else return false;
 }
@@ -10176,7 +10265,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     // standard multimedia file upload
     else
     {
-      // create new multimedia object
+      // ---------------- create new multimedia object ------------------
       if ($media_update == "")
       {
         $result_createobject = createmediaobject ($site, $location, $global_files['Filedata']['name'], $global_files['Filedata']['tmp_name'], $user);
@@ -10244,7 +10333,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
         }
         else $show = $result_createobject['message'];
       }
-      // update existing multimedia object
+      // -------------- update existing multimedia object -----------------
       elseif ($media_update != "" && valid_objectname ($page))
       {
         // read media file from object file and regenerate and check media_update
@@ -10328,70 +10417,54 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
           $container_id = getmediacontainerid ($media_update);
           $contentfile = $container_id.".xml";
          
-          // create version of previous content file and media file (not for thumbnails)
-          if ((empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) && $versioning == true && !is_thumbnail ($media_update, false))
-          {
-            // create new version of file name
-            $media_update_v = fileversion ($media_update);
-            
-            // create new version of media file
-            $media_root = getmedialocation ($site, $media_update, "abs_path_media").$site."/";
-            
-            if (is_file ($media_root.$media_update) && filesize ($media_root.$media_update) > 0)
-            {
-              @rename ($media_root.$media_update, $media_root.$media_update_v);
-            }
-            
-            // create new version of container
-            $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
+          // create version of previous content and media file
+          if ($versioning == true) $createversion = createversion ($site, $media_update);
+          else $createversion = true;
 
-            if (@is_file ($contentlocation.$contentfile.".wrk") && filesize ($contentlocation.$contentfile.".wrk") > 0)
-            {
-              @copy ($contentlocation.$contentfile.".wrk", $contentlocation.$media_update_v);
-            }
-          }
-          // delete old file
-          else
+          // if versioning was successful
+          $result_save = false;
+          
+          if ($createversion)
           {
+            // delete old file
             @unlink (getmedialocation ($site, $media_update, "abs_path_media").$site."/".$media_update);
-          }
           
-          // remember original file name
-          $media_orig = $media_update;
-          // get file name without extension of the old file
-          $file_name_old = strrev (substr (strstr (strrev ($media_update), "."), 1));
-          // get the file extension of the old file
-          $file_ext_old = strtolower (strrchr ($media_update, "."));
-          // get the file extension of the new file
-          $file_ext_new = strtolower (strrchr ($global_files['Filedata']['name'], "."));
-          // define new file name
-          $media_update = $file_name_old.$file_ext_new;
-          // get object name without extension
-          $page_nameonly = specialchr_decode (strrev (substr (strstr (strrev ($page), "."), 1)));
-          // get converted location
-          $location_conv = convertpath ($site, $location, $cat);
-          // get media root directory
-          $media_root = getmedialocation ($site, $media_update, "abs_path_media");
-          
-          // save new multimedia file
-          if (!empty ($media_root))
-          {
-            // move uploaded file
-            if (!$is_remote_file)
-            {
-              $test = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update);
-            }
-            else $test = false;
+            // remember original file name
+            $media_orig = $media_update;
+            // get file name without extension of the old file
+            $file_name_old = strrev (substr (strstr (strrev ($media_update), "."), 1));
+            // get the file extension of the old file
+            $file_ext_old = strtolower (strrchr ($media_update, "."));
+            // get the file extension of the new file
+            $file_ext_new = strtolower (strrchr ($global_files['Filedata']['name'], "."));
+            // define new file name
+            $media_update = $file_name_old.$file_ext_new;
+            // get object name without extension
+            $page_nameonly = specialchr_decode (strrev (substr (strstr (strrev ($page), "."), 1)));
+            // get converted location
+            $location_conv = convertpath ($site, $location, $cat);
+            // get media root directory
+            $media_root = getmedialocation ($site, $media_update, "abs_path_media");
             
-            // save file from URL or if file has already been saved in the temp directory (WebDAV saves files in temp directory)
-            if ($is_remote_file || $test == false)
+            // save new multimedia file
+            if (!empty ($media_root))
             {
-               $test = @rename ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update); 
+              // move uploaded file
+              if (!$is_remote_file)
+              {
+                $result_save = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update);
+              }
+              else $result_save = false;
+              
+              // save file from URL or if file has already been saved in the temp directory (WebDAV saves files in temp directory)
+              if ($is_remote_file || $result_save == false)
+              {
+                $result_save = @rename ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update);
+              }
             }
           }
-          else $test = false;
 
-          if ($test == true)
+          if ($result_save == true)
           {
             // write stats for upload
             if ($container_id != "" && !is_thumbnail ($media_update, false))
@@ -10438,23 +10511,23 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
             }
 
             // remote client for uploaded original image
-            remoteclient ("save", "abs_path_media", $site, getmedialocation ($site, $media_update, "abs_path_media").$site."/", "", $media_update, "");
+            remoteclient ("save", "abs_path_media", $site, $media_root.$site."/", "", $media_update, "");
             
             // create preview (thumbnail for images, previews for video/audio files)
-            createmedia ($site, getmedialocation ($site, $media_update, "abs_path_media").$site."/", getmedialocation ($site, $media_update, "abs_path_media").$site."/", $media_update, "", "origthumb");
-            
+            $createmedia = createmedia ($site, $media_root.$site."/", $media_root.$site."/", $media_update, "", "origthumb");
+
             // remove indexed content if file extension has changed
             if ($file_ext_old != $file_ext_new)
             {
-              unindexcontent ($site, getmedialocation ($site, $media_orig, "abs_path_media").$site."/", $media_orig, $contentfile, "", $user);
+              unindexcontent ($site, $media_root.$site."/", $media_orig, $contentfile, "", $user);
             }
             
             // index content of readable documents
-            indexcontent ($site, getmedialocation ($site, $media_update, "abs_path_media").$site."/", $media_update, $contentfile, "", $user);
+            indexcontent ($site, $media_root.$site."/", $media_update, $contentfile, "", $user);
           }
 
           // rename object file extension if file extension has changed
-          if ($test == true && $file_ext_old != $file_ext_new)
+          if ($result_save == true && $file_ext_old != $file_ext_new)
           {
             // write new reference in object file
             $filedata = loadfile ($location, $page);
@@ -10462,19 +10535,19 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
 
             if ($filedata != false)
             {
-              $test = savefile ($location, $page, $filedata);
+              $result_save = savefile ($location, $page, $filedata);
               // remote client
               remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");
             }
-            else $test = false;
+            else $result_save = false;
 
             // on success
-            if ($test == true)
+            if ($result_save == true)
             {
               // rename media object after file extension has changed
-              $test = renameobject ($site, $location, $page, $page_nameonly, $user);
+              $result_rename = renameobject ($site, $location, $page, $page_nameonly, $user);
 
-              if ($test['result'] == true)
+              if ($result_rename['result'] == true)
               {
                 // set new page name
                 $page = $pagename = $page_nameonly.$file_ext_new;
@@ -11281,12 +11354,16 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
     $container = $container_id.".xml";
     $mediafile_orig = $pageobject_info['media'];
     $mediafile_location = getmedialocation ($site, $mediafile_orig, "abs_path_media").$site."/";
+
+    // create new version
+    $createversion = createversion ($site, $mediafile_orig);
     
     // render media file of object
-    $mediafile_new = createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_orig, $format, $type);
+    if ($createversion) $mediafile_new = createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_orig, $format, $type);
+    else $mediafile_new = false;
 
     // if successful
-    if ($mediafile_new)
+    if ($mediafile_new && $createversion)
     {
       $processresult = true;
             
@@ -12326,7 +12403,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                 {
                   if ($entry != "." && $entry != ".." && $contentfile_self != "" && (substr_count ($entry, $contentfile_self.".v_") == 1 || substr_count ($entry, "_hcm".$contentfile_id) == 1))
                   {
-                    // container versions
+                    // container version
                     if (@is_file ($dir_version.$entry))
                     {
                       $test_temp = deletefile ($dir_version, $entry, 0);
@@ -12338,7 +12415,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                       }
                     }
                     
-                    // media file versions
+                    // media file version
                     if (@is_file ($medialocation.$site."/".$entry))
                     {
                       $test_temp = deletefile ($medialocation.$site."/", $entry, 0);
@@ -12348,7 +12425,22 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                         $errcode = "10107";
                         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$medialocation.$site."/".$entry;
                       }
-                    }              
+                    }
+                    
+                    // thumbnail file version
+                    $entry_info = getfileinfo ($site, $entry, $cat);
+                    $entry_thumb = $entry_info['filename'].".thumb.jpg".strtolower (strrchr ($entry, "."));
+                    
+                    if (@is_file ($medialocation.$site."/".$entry_thumb))
+                    {
+                      $test_temp = deletefile ($medialocation.$site."/", $entry_thumb, 0);
+          
+                      if ($test_temp == false)
+                      {
+                        $errcode = "10291";
+                        $error[] = $mgmt_config['today']."|version_content.php|error|$errcode|deletefile failed for ".$medialocation.$site."/".$entry_thumb;          
+                      }
+                    }     
                   }
                 }
                 

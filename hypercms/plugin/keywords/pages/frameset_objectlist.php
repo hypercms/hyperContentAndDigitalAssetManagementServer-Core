@@ -72,7 +72,7 @@ if ($action == "keyword_search")
     foreach ($search_textnode as $key=>$value) $search_textnode_str .= "&search_textnode[".$key."]=".urlencode($value);
   }
   
-  echo "<iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"NO\" src=\"../../../search_script_rdbms.php?site=".$site."&action=".$action."&search_dir=".$search_dir.$search_textnode_str."&maxhits=".$maxhits."\" border=\"0\" style=\"width:".$objectlist_width."%; height:100%; border:0; margin:0; padding:0; float:left;\"></iframe>\n";
+  echo "<iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"NO\" src=\"../../../search_objectlist.php?site=".$site."&action=".$action."&search_dir=".$search_dir.$search_textnode_str."&maxhits=".$maxhits."\" border=\"0\" style=\"width:".$objectlist_width."%; height:100%; border:0; margin:0; padding:0; float:left;\"></iframe>\n";
   // sidebar
   if (!$is_mobile) echo "<iframe id=\"sidebarFrame\" scrolling=\"auto\" name=\"sidebarFrame\" src=\"../../../explorer_preview.php\" border=\"0\" style=\"width:".(100 - $objectlist_width)."%; height:100%; border:0; margin:0; padding:0; float:left;\"></iframe>\n";
 }

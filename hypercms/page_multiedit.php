@@ -155,129 +155,6 @@ function gettagdata ($tag_array)
   return $return;
 }
 
-// read all possible formats to convert to from the mediaoptions
-$convert_formats = array();
-
-if (isset ($mgmt_imageoptions) && is_array ($mgmt_imageoptions) && !empty ($mgmt_imageoptions))
-{
-  foreach ($mgmt_imageoptions as $format => $configs)
-  {
-    if (array_key_exists ('original', $configs))
-    {
-      $tmp = explode (".", $format);
-      $convert_formats[] = $tmp[1];
-    }
-  }
-}
-
-// ------------------ image parameters ------------------------
-// add gif, jpg and png because these are our default conversion
-if (!in_array ('gif', $convert_formats)) $convert_formats[] = 'gif';  
-if (!in_array ('jpg', $convert_formats) && !in_array ('jpeg', $convert_formats)) $convert_formats[] = 'jpg';
-if (!in_array ('png', $convert_formats)) $convert_formats[] = 'png';
-
-$available_colorspaces = array();
-$available_colorspaces['CMYK'] = 'CMYK';
-$available_colorspaces['GRAY'] = 'GRAY';
-$available_colorspaces['CMY'] = 'CMY';
-$available_colorspaces['RGB'] = 'RGB';
-$available_colorspaces['sRGB'] = 'sRGB';
-$available_colorspaces['Transparent'] = 'Transparent';
-$available_colorspaces['XYZ'] = 'XYZ';
-
-$available_flip = array();
-$available_flip['-fv'] = $hcms_lang['vertical'][$lang];
-$available_flip['-fh'] = $hcms_lang['horizontal'][$lang];
-$available_flip['-fv -fh'] = $hcms_lang['both'][$lang];
-
-// ------------------ video/audio parameters ------------------------
-// read supported formats
-$available_extensions = array();
-
-foreach ($mgmt_mediaoptions as $ext => $options)
-{
-	// remove the dot
-	$name = strtolower (substr ($ext, 1));
-
-	$available_extensions[$name] = strtoupper ($name);
-}
-
-// availbale formats
-$available_formats = array();
-
-$available_formats['fs'] = array(
-	'name'					 => $hcms_lang['standard-video-43'][$lang],
-	'checked'				 => false
-);
-
-$available_formats['ws'] = array(
-	'name'					 => $hcms_lang['widescreen-video-169'][$lang],
-	'checked'				 => true
-);
-
-// available bitrates
-$available_bitrates = array();
-
-$available_bitrates['200k'] = array(
-	'name'					=> $hcms_lang['low'][$lang].' (200k)',
-	'checked'				=> false
-);
-
-$available_bitrates['768k'] = array(
-	'name'					=> $hcms_lang['medium'][$lang].' (768k)',
-	'checked'				=> true
-);
-
-$available_bitrates['1856k'] = array(
-	'name'		 => $hcms_lang['high'][$lang].' (1856k)',
-	'checked'	 => false
-);
-
-// availbale video sizes
-$available_videosizes = array();
-
-$available_videosizes['s'] = array(
-	'name'					=> $hcms_lang['low-resolution-of-320-pixel-width'][$lang],
-	'checked'				=> false,
-	'individual'		=> false
-);
-
-$available_videosizes['l'] = array(
-	'name'					=> $hcms_lang['medium-resolution-of-640-pixel-width'][$lang],
-	'checked'				=> true,
-	'individual'		=> false
-);
-
-$available_videosizes['xl'] = array(
-	'name'					=> $hcms_lang['high-resoltion-of-1280x720-pixel'][$lang],
-	'checked'				=> false,
-	'individual'		=> false
-);
-
-$available_videosizes['i'] = array(
-	'name'		 => $hcms_lang['individual-of-'][$lang],
-	'checked'	 => false,
-	'individual' => true
-);
-
-//available bitrates for the audio
-$available_audiobitrates = array();
-
-$available_audiobitrates['64k'] = array(
-  'name'    => $hcms_lang['low'][$lang].' (64 kb/s)',
-  'checked' => true
-);
-
-$available_audiobitrates['128k'] = array(
-  'name'    => $hcms_lang['medium'][$lang].' (128 kb/s)',
-  'checked' => false
-);
-
-$available_audiobitrates['192k'] = array(
-  'name'    => $hcms_lang['high'][$lang].' (192 kb/s)',
-  'checked' => false
-);
-
 
 // get multiple objects
 $multiobject_array = explode ("|", $multiobject);
@@ -567,6 +444,147 @@ if ($add_constraint != "") $add_constraint = "checkcontent = validateForm(".$add
 checkusersession ($user);
 
 $token = createtoken ($user);
+
+// ------------------ image parameters ------------------------
+if ($is_image)
+{
+  // read all possible formats to convert to from the mediaoptions
+  $convert_formats = array();
+  
+  if (isset ($mgmt_imageoptions) && is_array ($mgmt_imageoptions) && !empty ($mgmt_imageoptions))
+  {
+    foreach ($mgmt_imageoptions as $format => $configs)
+    {
+      if (array_key_exists ('original', $configs))
+      {
+        $tmp = explode (".", $format);
+        $convert_formats[] = $tmp[1];
+      }
+    }
+  }
+  
+  // add gif, jpg and png because these are our default conversions
+  if (!in_array ('gif', $convert_formats)) $convert_formats[] = 'gif';  
+  if (!in_array ('jpg', $convert_formats) && !in_array ('jpeg', $convert_formats)) $convert_formats[] = 'jpg';
+  if (!in_array ('png', $convert_formats)) $convert_formats[] = 'png';
+  
+  $available_colorspaces = array();
+  $available_colorspaces['CMYK'] = 'CMYK';
+  $available_colorspaces['GRAY'] = 'GRAY';
+  $available_colorspaces['CMY'] = 'CMY';
+  $available_colorspaces['RGB'] = 'RGB';
+  $available_colorspaces['sRGB'] = 'sRGB';
+  $available_colorspaces['Transparent'] = 'Transparent';
+  $available_colorspaces['XYZ'] = 'XYZ';
+  
+  $available_flip = array();
+  $available_flip['-fv'] = $hcms_lang['vertical'][$lang];
+  $available_flip['-fh'] = $hcms_lang['horizontal'][$lang];
+  $available_flip['-fv -fh'] = $hcms_lang['both'][$lang];
+}
+// ------------------ video/audio parameters ------------------------
+elseif ($is_video || $is_audio)
+{
+  // read supported formats
+  $available_extensions = array();
+  
+  foreach ($mgmt_mediaoptions as $ext => $options)
+  {
+    if ($ext != "thumbnail-video" && $ext != "thumbnail-audio")
+    {
+    	// remove the dot
+    	$name = strtolower (trim ($ext, "."));    
+    	$available_extensions[$name] = strtoupper ($name);
+    }
+  }
+  
+  // availbale formats
+  $available_formats = array();
+  
+  $available_formats['fs'] = array(
+  	'name'					 => $hcms_lang['standard-video-43'][$lang],
+  	'checked'				 => false
+  );
+  
+  $available_formats['ws'] = array(
+  	'name'					 => $hcms_lang['widescreen-video-169'][$lang],
+  	'checked'				 => true
+  );
+  
+  // available bitrates
+  $available_bitrates = array();
+  
+  $available_bitrates['200k'] = array(
+  	'name'					=> $hcms_lang['low'][$lang].' (200k)',
+  	'checked'				=> false
+  );
+  
+  $available_bitrates['768k'] = array(
+  	'name'					=> $hcms_lang['medium'][$lang].' (768k)',
+  	'checked'				=> true
+  );
+  
+  $available_bitrates['1856k'] = array(
+  	'name'		 => $hcms_lang['high'][$lang].' (1856k)',
+  	'checked'	 => false
+  );
+  
+  // availbale video sizes
+  $available_videosizes = array();
+  
+  $available_videosizes['o'] = array(
+  	'name'					=> $hcms_lang['original'][$lang],
+  	'checked'				=> true,
+  	'individual'		=> false
+  );
+  
+  $available_videosizes['s'] = array(
+  	'name'					=> $hcms_lang['low-resolution-of-320-pixel-width'][$lang],
+  	'checked'				=> false,
+  	'individual'		=> false
+  );
+  
+  $available_videosizes['l'] = array(
+  	'name'					=> $hcms_lang['medium-resolution-of-640-pixel-width'][$lang],
+  	'checked'				=> false,
+  	'individual'		=> false
+  );
+  
+  $available_videosizes['xl'] = array(
+  	'name'					=> $hcms_lang['high-resoltion-of-1280x720-pixel'][$lang],
+  	'checked'				=> false,
+  	'individual'		=> false
+  );
+  
+  $available_videosizes['i'] = array(
+  	'name'		 => $hcms_lang['individual-of-'][$lang],
+  	'checked'	 => false,
+  	'individual' => true
+  );
+  
+  // available audio bitrates
+  $available_audiobitrates = array();
+  
+  $available_audiobitrates['64k'] = array(
+    'name'    => $hcms_lang['low'][$lang].' (64 kb/s)',
+    'checked' => false
+  );
+  
+  $available_audiobitrates['128k'] = array(
+    'name'    => $hcms_lang['medium'][$lang].' (128 kb/s)',
+    'checked' => true
+  );
+  
+  $available_audiobitrates['192k'] = array(
+    'name'    => $hcms_lang['high'][$lang].' (192 kb/s)',
+    'checked' => false
+  );
+  
+  // flip
+  $available_flip = array();
+  $available_flip['fv'] = $hcms_lang['vertical'][$lang];
+  $available_flip['fh'] = $hcms_lang['horizontal'][$lang];
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -644,19 +662,15 @@ $token = createtoken ($user);
     function save (reload)
     {
       var checkcontent = true;
-        
+      var checkimage = false;
+      var checkvideo = false;
+      
       <?php echo $add_constraint; ?>
       
       <?php if ($is_image) { ?>
-      var checkimage = false;
-      var checkvideo = false;
-      
-      if (checkcontent == true) checkimage = checkImageForm();
-      <?php } elseif ($is_video) { ?>
-      var checkimage = false;
-      var checkvideo = false;
-      
-      if (checkcontent == true) checkvideo = checkVideoForm();
+      if (checkcontent == true) checkcontent = checkimage = checkImageForm();
+      <?php } elseif ($is_video) { ?>     
+      if (checkcontent == true) checkcontent = checkvideo = checkVideoForm();
       <?php } ?>
     
       if (checkcontent == true)
@@ -1474,9 +1488,35 @@ $token = createtoken ($user);
     function checkVideoForm()
     {
       var result = true;
- 
+      
       if ($('#rendervideo').prop('checked'))
       {
+        var errors = '';
+              
+        if (document.getElementById('cut_yes').checked == true)
+        {
+          if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang].": ".$hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+          if (document.getElementById('cut_end').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['end'][$lang].": ".$hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+        }
+        
+        if (document.getElementById('thumb_yes').checked == true)
+        {
+          if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang].": ".$hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+        }
+        
+        if (document.getElementById('videosize_i').checked == true)
+        {
+          if (document.getElementById('width_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['width'][$lang].": ".$hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+          if (document.getElementById('height_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['height'][$lang].": ".$hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+        }
+        
+        if (errors) 
+        { 
+          alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang], $charset, $lang); ?>:\n' + errors));
+          
+          result = false;
+        }
+        
         video_checked = true;
       }
       
@@ -1615,6 +1655,47 @@ $token = createtoken ($user);
       }
     }
     
+    function toggle_rotate () 
+    {
+      var rotate = $('#rotate');
+      var chbxflip = $('#chbx_flip');
+      var degree = $('#degree');
+      
+      if(rotate.prop('checked')) 
+      {
+        chbxflip.prop('checked', false);
+        degree.prop('disabled', false);
+        
+        toggle_flip();   
+      }
+      else
+      {
+        degree.prop('disabled', true);
+      }
+    }
+    
+    function toggle_flip () 
+    {
+      var rotate = $('#rotate');
+      var chbxflip = $('#chbx_flip');
+      var flip = $('#flip');
+      var crop = $('#crop');
+      
+      if (chbxflip.prop('checked')) 
+      {
+        rotate.prop('checked', false);
+        flip.prop('disabled', false);
+        crop.prop('checked', false);
+        
+        toggle_rotate();
+        toggle_crop();
+      }
+      else
+      {
+        flip.prop('disabled', true);
+      }
+    }
+    
     function activate ()
     {
       toggle_sharpen();
@@ -1622,6 +1703,8 @@ $token = createtoken ($user);
       toggle_brightness();
       toggle_contrast();
       toggle_saturation();
+      toggle_flip();
+      toggle_rotate();
     }
     
     $(window).load( function()
@@ -1682,7 +1765,7 @@ $token = createtoken ($user);
     
     
     <!-- rendering settings -->
-    <div id="renderOptions" style="padding:10px; width:730px; display:none; vertical-align:top; z-index:1; margin-top:34px; margin-left:10px" class="hcmsMediaRendering">
+    <div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; display:none; vertical-align:top; z-index:1; margin-top:34px; margin-left:10px" class="hcmsMediaRendering">
     
       <?php if ($is_image) { ?>
       <!-- start edit image -->
@@ -1756,11 +1839,8 @@ $token = createtoken ($user);
           <!-- rotate -->
           <div class="row">
             <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
-            <strong><label for="rotate"><?php echo getescapedtext ($hcms_lang['rotate'][$lang], $charset, $lang); ?></label></strong>
-          </div>
-          <div style="margin-left:20px">
-            <label for="degree"><?php echo getescapedtext ($hcms_lang['degree'][$lang], $charset, $lang); ?></label>
-            <select name="degree" id="degree">
+            <strong><label for="rotate" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo $hcms_lang['rotate'][$lang]; ?></label></strong>
+            <select name="degree" id="degree" style="margin-left:20px">
               <option value="90" selected="selected" >90&deg;</option>
               <option value="180" >180&deg;</option>
               <option value="-90" title="-90&deg;">270&deg;</option>
@@ -1771,15 +1851,13 @@ $token = createtoken ($user);
           <!-- flip flop -->
           <div class="row">
             <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
-            <strong><label for="chbx_flip"><?php echo getescapedtext ($hcms_lang['flip'][$lang], $charset, $lang); ?></label></strong>
-          </div>
-          <div style="margin-left:20px">
-            <select name="flip" id="flip">
+            <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo $hcms_lang['flip'][$lang]; ?></label></strong>
+            <select name="flip" id="flip" style="margin-left:20px">
               <?php 
                 foreach ($available_flip as $value => $name)
                 {
                 ?>
-                <option value="<?php echo $value; ?>"><?php echo getescapedtext ($name, $charset, $lang); ?></option>
+                <option value="<?php echo $value; ?>"><?php echo $name ?></option>
                 <?php
                 }
               ?>
@@ -1858,112 +1936,151 @@ $token = createtoken ($user);
       <!-- start edit video/audio -->
       <form name="videooptions" action="" method="post">
       	<input type="hidden" id="action" name="action" value="rendermedia">
-        
+            
         <?php if (!$is_audio) { ?>
-        
-        <!-- video screen format -->
-      	<div class="cell">
-      		<strong><?php echo getescapedtext ($hcms_lang['type'][$lang], $charset, $lang); ?></strong><br />
+        <div class="cell" style="width:260px;">
+          <!-- video screen format -->
+          <div class="row">
+        		<strong><?php echo $hcms_lang['formats'][$lang]; ?></strong>
+          </row>
       		<?php foreach ($available_formats as $format => $data) { ?>
             <div class="row">
-              <input type="radio" id="format_<?php echo $format; ?>" name="format" value="<?php echo $format; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="format_<?php echo $format; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label>
+              <input type="radio" id="format_<?php echo $format; ?>" name="format" value="<?php echo $format; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> />
+              <label for="format_<?php echo $format; ?>"><?php echo $data['name']; ?></label>
             </div>
       		<?php } ?>
-      	</div>
+      	  </div>
         
-        <!-- video bitrate -->
-      	<div class="cell">
-      		<strong><?php echo getescapedtext ($hcms_lang['video-quality'][$lang], $charset, $lang); ?></strong><br />
-      		<?php foreach ($available_bitrates as $bitrate => $data) { ?>
-          <div class="row">
-      			<input type="radio" id="bitrate_<?php echo $bitrate; ?>" name="bitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="bitrate_<?php echo $bitrate; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label><br />
+          <!-- video size -->
+        	<div class="row">
+        		<strong><?php echo $hcms_lang['video-size'][$lang]; ?></strong>
           </div>
-      		<?php } ?>
-      	</div>
-        
-        <!-- video size -->
-      	<div class="cell" style="width:260px;">
-      		<strong><?php echo getescapedtext ($hcms_lang['video-size'][$lang], $charset, $lang); ?></strong><br />
       		<?php foreach ($available_videosizes as $videosize => $data) { ?>
           <div class="row">
-      			<input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>"<?php if ($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label>
+      			<input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>"<?php if($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo $data['name']; ?></label>
       			<?php if ($data['individual']) { ?>
-      				<input type="text" name="width" size=4 maxlength=4 id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" size="4" maxlength=4 id="height_<?php echo $videosize;?>" value="" /><span> <?php echo getescapedtext ($hcms_lang['pixel'][$lang], $charset, $lang); ?></span>
+      		  <input type="text" name="width" size=4 maxlength=4 id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" size="4" maxlength=4 id="height_<?php echo $videosize;?>" value="" /><span> px</span>
       			<?php }	?>
       		</div>
       		<?php }	?>
       	</div>
-        
         <?php } ?>
-        
-        <div class="cell">
-        <!-- video cut -->
-          <input type="checkbox" name="cut" id="cut_yes" onclick="checkCut();" value="1" /><strong><label for="cut_yes" onclick="checkCut();" /><?php echo ($is_audio) ? getescapedtext ($hcms_lang['audio-montage'][$lang], $charset, $lang) : getescapedtext ($hcms_lang['video-montage'][$lang], $charset, $lang); ?></label></strong>
-          <div id="cut_area" style="display:none;">
-            <div class="row">
-              <label for="cut_start" style="width: 70px; display:inline-block; vertical-align: middle;"><?php echo getescapedtext ($hcms_lang['start'][$lang], $charset, $lang); ?></label>
-              <input type="text" name="cut_begin" id="cut_begin" value="00:00:00.00" style="width:70px; text-align:center; vertical-align:middle;" />
-            </div>
-            <div class="row">
-              <label for="cut_stop" style="width: 70px; display:inline-block; vertical-align: middle;"><?php echo getescapedtext ($hcms_lang['end'][$lang], $charset, $lang); ?></label>
-              <input type="text" name="cut_end" id="cut_end" value="00:00:00.00" style="width:70px; text-align:center; vertical-align:middle;" />
-            </div>
-          </div>
-          
-        <?php if (!$is_audio) { ?>
-        <!-- video thumbnail -->
-          <div class="row"> 
-            <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1" /><strong><label for="thumb_yes" onclick="checkThumb();" /><?php echo getescapedtext ($hcms_lang['pick-preview-image'][$lang], $charset, $lang); ?></label></strong>
-            <div id="thumb_area" style="display:none;">
-                <label for="thumb_frame_select" style="display:inline-block; vertical-align: middle;"><?php echo getescapedtext ($hcms_lang['frame'][$lang], $charset, $lang); ?></label>
-                <input type="text" name="thumb_frame" id="thumb_frame" value="00:00:00.00" style="width:70px; text-align:center; vertical-align:middle;" />
-            </div>
-          </div>
-        <?php } ?>
-        </div>
     
-        <!-- audio bitrate -->
-        <div class="cell">
-      		<strong><?php echo getescapedtext ($hcms_lang['audio-quality'][$lang], $charset, $lang); ?></strong><br />
-      		<?php foreach ($available_audiobitrates as $bitrate => $data) { ?>
-          <div class="row">
-      			<input type="radio" id="audiobitrate_<?php echo $bitrate; ?>" name="audiobitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="audiobitrate_<?php echo $bitrate; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label><br />
-          </div>
-      		<?php } ?>
-      	</div>
-        
         <?php if (!$is_audio) { ?>
         <!-- sharpness / gamma / brigthness / contrast / saturation -->
         <div class="cell">
           <div class="row">
-            <strong><?php echo getescapedtext ($hcms_lang['adjust'][$lang], $charset, $lang); ?></strong>
+            <strong><?php echo $hcms_lang['adjust'][$lang]; ?></strong>
           </div>
           <div>
             <input type="checkbox" id="chbx_sharpen" name="use_sharpen" value="1" onclick="toggle_sharpen();" />
-            <label style="width:70px; display:inline-block;" for="chbx_sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang], $charset, $lang); ?></label>
+            <label style="width:70px; display:inline-block;" for="chbx_sharpen"><?php echo $hcms_lang['sharpen'][$lang]; ?></label>
             <input name="sharpen" type="text" id="sharpen" size="4" value="0" />
           </div>
           <div>
             <input type="checkbox" id="chbx_gamma" name="use_gamma" value="1" onclick="toggle_gamma();" />
-            <label style="width:70px; display:inline-block;" for="chbx_gamma"><?php echo getescapedtext ($hcms_lang['gamma'][$lang], $charset, $lang); ?></label>
+            <label style="width:70px; display:inline-block;" for="chbx_gamma"><?php echo $hcms_lang['gamma'][$lang]; ?></label>
             <input name="gamma" type="text" id="gamma" size="4" value="0" />
           </div>
           <div>
             <input type="checkbox" id="chbx_brightness" name="use_brightness" value="0" onclick="toggle_brightness();" />
-            <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang], $charset, $lang); ?></label>
+            <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo $hcms_lang['brightness'][$lang]; ?></label>
             <input name="brightness" type="text" id="brightness" size="4" value="0" />
           </div>
           <div>
              <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
-            <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang], $charset, $lang); ?></label>
+            <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo $hcms_lang['contrast'][$lang]; ?></label>
             <input name="contrast" type="text" id="contrast" size="4" value="0" />
           </div>
           <div>
             <input type="checkbox" id="chbx_saturation" name="use_saturation" value="1" onclick="toggle_saturation();" />
-            <label style="width:70px; display:inline-block;" for="chbx_saturation"><?php echo getescapedtext ($hcms_lang['saturation'][$lang], $charset, $lang); ?></label>
+            <label style="width:70px; display:inline-block;" for="chbx_saturation"><?php echo $hcms_lang['saturation'][$lang]; ?></label>
             <input name="saturation" type="text" id="saturation" size="4" value="0" />
           </div>
         </div>
+        <?php }	?>
+        
+        <div class="cell">
+          <!-- video cut -->
+          <div class="row">
+            <input type="checkbox" name="cut" id="cut_yes" onclick="checkCut();" value="1" />
+            <strong><label for="cut_yes" onclick="checkCut();" /><?php echo ($is_audio) ? $hcms_lang['audio-montage'][$lang] : $hcms_lang['video-montage'][$lang]; ?></label></strong>
+          </div>
+          <div id="cut_area" style="display:none;">
+            <div class="row">
+              <label for="cut_begin" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo $hcms_lang['start'][$lang]; ?></label>
+              <input type="text" name="cut_begin" id="cut_begin" value="00:00:00.00" style="width:70px; text-align:center; vertical-align:middle;" />
+            </div>
+            <div class="row">
+              <label for="cut_end" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo $hcms_lang['end'][$lang]; ?></label>
+              <input type="text" name="cut_end" id="cut_end" value="00:00:00.00" style="width:70px; text-align:center; vertical-align:middle;" />
+            </div>
+          </div>
+          
+          <?php if (!$is_audio) { ?>
+          <!-- video thumbnail -->
+          <div class="row"> 
+            <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1" />
+            <strong><label for="thumb_yes" onclick="checkThumb();" /><?php echo $hcms_lang['pick-preview-image'][$lang]; ?></label></strong>
+          </div>
+          <div id="thumb_area" style="display:none;">
+              <label for="thumb_frame" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo $hcms_lang['frame'][$lang]; ?></label>
+              <input type="text" name="thumb_frame" id="thumb_frame" value="00:00:00.00" style="width:70px; text-align:center; vertical-align:middle;" />
+          </div>
+           
+          <!-- rotate -->
+          <div class="row">
+            <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
+            <strong><label for="rotate" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo $hcms_lang['rotate'][$lang]; ?></label></strong>
+            <select name="degree" id="degree" style="margin-left:20px">
+              <option value="90" selected="selected" >90&deg;</option>
+              <option value="180" >180&deg;</option>
+              <option value="-90" title="-90&deg;">270&deg;</option>
+            </select>
+          </div>
+    
+          <!-- vflip hflip -->
+          <div class="row">
+            <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
+            <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo $hcms_lang['flip'][$lang]; ?></label></strong>
+            <select name="flip" id="flip" style="margin-left:20px">
+              <?php 
+                foreach ($available_flip as $value => $name)
+                {
+                ?>
+                <option value="<?php echo $value; ?>"><?php echo $name ?></option>
+                <?php
+                }
+              ?>
+            </select>
+          </div>
+          <?php } ?>
+        </div>
+        
+        <?php if (!$is_audio) { ?>    
+        <!-- video bitrate -->
+      	<div class="cell" style="width:260px;">
+          <div class="row">
+      		  <strong><?php echo $hcms_lang['video-quality'][$lang]; ?></strong>
+          </div>
+      		<?php foreach ($available_bitrates as $bitrate => $data) { ?>
+          <div class="row">
+      			<input type="radio" id="bitrate_<?php echo $bitrate; ?>" name="bitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="bitrate_<?php echo $bitrate; ?>"><?php echo $data['name']; ?></label><br />
+          </div>
+      		<?php } ?>
+      	</div>
+        
+        <!-- audio bitrate -->
+        <div class="cell">
+          <div class="row">
+      		  <strong><?php echo $hcms_lang['audio-quality'][$lang]; ?></strong>
+          </div>
+      		<?php foreach ($available_audiobitrates as $bitrate => $data) { ?>
+          <div class="row">
+      			<input type="radio" id="audiobitrate_<?php echo $bitrate; ?>" name="audiobitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="audiobitrate_<?php echo $bitrate; ?>"><?php echo $data['name']; ?></label><br />
+          </div>
+      		<?php } ?>
+      	</div>
         <?php } ?>
         
         <!-- save as video format -->
@@ -1992,6 +2109,7 @@ $token = createtoken ($user);
             ?>
       		</select>
       	</div>
+        
       </form>
       <!-- end edit video/audio -->
       <?php } ?>

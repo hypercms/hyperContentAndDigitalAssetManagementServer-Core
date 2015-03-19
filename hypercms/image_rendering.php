@@ -156,9 +156,9 @@ $available_colorspaces['Transparent'] = 'Transparent';
 $available_colorspaces['XYZ'] = 'XYZ';
 
 $available_flip = array();
-$available_flip['-fv'] = $hcms_lang['vertical'][$lang];
-$available_flip['-fh'] = $hcms_lang['horizontal'][$lang];
-$available_flip['-fv -fh'] = $hcms_lang['both'][$lang];
+$available_flip['fv'] = $hcms_lang['vertical'][$lang];
+$available_flip['fh'] = $hcms_lang['horizontal'][$lang];
+$available_flip['fv fh'] = $hcms_lang['both'][$lang];
 
 // get object file information in case it was renamed due to a new file extension
 $pagefile_info = getfileinfo ($site, $location.$page, $cat);
@@ -1142,7 +1142,7 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
 ?>
 
 <!-- rendering settings -->
-<div id="renderOptions" style="padding:10px; width:730px; display:none; vertical-align:top; z-index:1; margin-left:10px" class="hcmsMediaRendering">    
+<div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; display:none; vertical-align:top; z-index:1; margin-left:10px" class="hcmsMediaRendering">    
   <!-- start edit image -->
   <form name="mediaconfig" id="mediaconfig" action="service/renderimage.php" method="post">
     <input type="hidden" id="action" name="action" value="rendermedia">
@@ -1242,14 +1242,10 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
     <?php } ?>
     
     <div class="cell">    
-      <!-- rotate -->
       <div class="row">
         <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
-        <strong><label for="rotate"><?php echo $hcms_lang['rotate'][$lang]; ?></label></strong>
-      </div>
-      <div style="margin-left:20px">
-        <label for="degree"><?php echo $hcms_lang['degree'][$lang]; ?></label>
-        <select name="degree" id="degree">
+        <strong><label for="rotate" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo $hcms_lang['rotate'][$lang]; ?></label></strong>
+        <select name="degree" id="degree" style="margin-left:20px">
           <option value="90" selected="selected" >90&deg;</option>
           <option value="180" >180&deg;</option>
           <option value="-90" title="-90&deg;">270&deg;</option>
@@ -1260,10 +1256,8 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
       <!-- flip flop -->
       <div class="row">
         <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
-        <strong><label for="chbx_flip"><?php echo $hcms_lang['flip'][$lang]; ?></label></strong>
-      </div>
-      <div style="margin-left:20px">
-        <select name="flip" id="flip">
+        <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo $hcms_lang['flip'][$lang]; ?></label></strong>
+        <select name="flip" id="flip" style="margin-left:20px">
           <?php 
             foreach ($available_flip as $value => $name)
             {

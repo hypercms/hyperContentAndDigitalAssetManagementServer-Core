@@ -734,7 +734,7 @@ function getmediacontainerid ($file)
   
 // ---------------------- getfileinfo -----------------------------
 // function: getfileinfo()
-// input: publication, file name incl. extension, category [page,comp]
+// input: publication name (optional), file name incl. extension, category [page,comp] (optional)
 // output: array/false
 
 // description:
@@ -748,7 +748,7 @@ function getmediacontainerid ($file)
 //    $result['ext']: file extension incl. dot in lower case
 //    $result['published']: if file published = true else = false
 
-function getfileinfo ($site, $file, $cat)
+function getfileinfo ($site, $file, $cat="comp")
 {
   global $mgmt_config;
   
@@ -1262,8 +1262,11 @@ function getvideoinfo ($mediafile)
     if ($filesize < 1) $filesize = "<1 MB";
     
     // file extension
-    $file_ext = strtolower (strrchr ($mediafile, ".")); 
-  
+    $file_info = getfileinfo ("", $mediafile, "comp");
+    
+    if (!empty ($file_info['ext'])) $file_ext = $file_info['ext'];
+    else $file_ext = "";
+
     foreach ($mgmt_mediapreview as $mediapreview_ext => $mediapreview)
     {
       // check file extension

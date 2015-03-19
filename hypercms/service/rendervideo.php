@@ -25,7 +25,6 @@ $token = getrequest ("token");
 $site = getrequest ("site", "publicationname");
 $location = getrequest ("location", "locationname");
 $page = getrequest ("page", "objectname");
-
 // video settings
 $filetype = getrequest ("filetype");
 $format = getrequest ("format");
@@ -43,6 +42,11 @@ $cut_end = getrequest ("cut_end");
 // thumbnail
 $thumb = getrequest ("thumb", "numeric", 0);
 $thumb_frame = getrequest ("thumb_frame");
+// rotate
+$rotate = getrequest("rotate");
+$angle = getrequest ("degree", "numeric");
+// flip
+$flip = getrequest ("flip");
 // effects
 $sharpen = getrequest ("sharpen");
 $gamma = getrequest ("gamma");
@@ -87,7 +91,7 @@ function startConversion ($videotype)
   // Needed for createmedia
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata;
   // Used for $mgmt_mediaoptions
-  global $filetype, $cut_add, $sh_add, $gbcs_add, $bitrate, $audiobitrate, $width, $height, $ffmpeg_options;
+  global $filetype, $cut_add, $sh_add, $rotate_add, $gbcs_add, $bitrate, $audiobitrate, $width, $height;
   // Used for createmedia
   global $site, $media_root, $file_info;
   // Used for createthumbnail_video
@@ -97,8 +101,8 @@ function startConversion ($videotype)
   
   $success = false;
     
-  // FFMPEG options
-  $mgmt_mediaoptions['.'.$filetype] = $cut_add.$sh_add.$gbcs_add.str_replace (array('%bitrate%', '%audiobitrate%', '%width%', '%height%'), array($bitrate, $audiobitrate, $width, $height), $ffmpeg_options[$filetype]);
+  // define FFMPEG options
+  $mgmt_mediaoptions['.'.$filetype] = $cut_add.$sh_add.$rotate_add.$gbcs_add.str_replace (array('%bitrate%', '%audiobitrate%', '%width%', '%height%'), array($bitrate, $audiobitrate, $width, $height), $mgmt_mediaoptions['.'.$filetype]);
     
   // create video
   if ($videotype == "videoplayer") $videotype = "thumbnail";
@@ -147,10 +151,12 @@ $available_extensions = array();
 
 foreach ($mgmt_mediaoptions as $ext => $options)
 {
-	// remove the dot
-	$name = strtolower (substr ($ext, 1));
-
-	$available_extensions[$name] = strtoupper ($name);
+  if ($ext != "thumbnail-video" && $ext != "thumbnail-audio")
+  {
+  	// remove the dot
+  	$name = strtolower (trim ($ext, "."));    
+  	$available_extensions[$name] = strtoupper ($name);
+  }
 }
 
 // availbale formats
@@ -186,6 +192,12 @@ $available_bitrates['1856k'] = array(
 
 // availbale video sizes
 $available_videosizes = array();
+
+$available_videosizes['o'] = array(
+	'name'					=> $hcms_lang['original'][$lang],
+	'checked'				=> true,
+	'individual'		=> false
+);
 
 $available_videosizes['s'] = array(
 	'name'					=> $hcms_lang['low-resolution-of-320-pixel-width'][$lang],
@@ -229,6 +241,11 @@ $available_audiobitrates['192k'] = array(
   'checked' => false
 );
 
+// flip
+$available_flip = array();
+$available_flip['fv'] = $hcms_lang['vertical'][$lang];
+$available_flip['fh'] = $hcms_lang['horizontal'][$lang];
+
 // check input paramters and define video settings
 if ($filetype != "" && (array_key_exists ($filetype, $available_extensions) || strtolower ($filetype) == 'videoplayer')) $filetype = strtolower ($filetype);
 else $filetype = "videoplayer";
@@ -243,7 +260,7 @@ if ($audiobitrate != "" && array_key_exists ($audiobitrate, $available_audiobitr
 else $audiobitrate = "64k";
 
 if ($videosize != "" && array_key_exists ($videosize, $available_videosizes)) $videosize = $videosize;
-else $videosize = "s";
+else $videosize = "o";
 
 // options for FFMPEG:
 // Audio Options:
@@ -264,12 +281,6 @@ else $videosize = "s";
 // -sh ... sharpness (blur -1 up to 1 sharpen)
 // -gbcs ... gamma, brightness, contrast, saturation (neutral values are 1.0:1:0:0.0:1.0)
 // -wm .... watermark image and watermark positioning (PNG-file-reference->positioning [topleft, topright, bottomleft, bottomright] e.g. image.png->topleft)
-
-$ffmpeg_options['flv'] = "-b:v %bitrate% -s:v %width%x%height% -f flv -c:a libmp3lame -b:a %audiobitrate% -ac 2 -ar 22050";
-$ffmpeg_options['mp4'] = "-b:v %bitrate% -s:v %width%x%height% -f mp4 -c:a libfaac -b:a %audiobitrate% -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
-$ffmpeg_options['ogv'] = "-b:v %bitrate% -s:v %width%x%height% -f ogg -c:a libvorbis -b:a %audiobitrate% -ac 2";
-$ffmpeg_options['webm'] = "-b:v %bitrate% -s:v %width%x%height% -f webm -c:a libvorbis -b:a %audiobitrate% -ac 2";
-$ffmpeg_options['mp3'] = "-f mp3 -c:a libmp3lame -b:a %audiobitrate% -ar 44100";
 
 // get publication and file info
 $media_root = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
@@ -301,10 +312,16 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
     elseif ($format == "ws") $height = "180";
 	}
   // Individual
-  else
+  elseif ($videosize == "i")
   {
     $width = intval ($width);
     $height = intval ($height);
+  }
+  // Original
+  else
+  {
+    $width = "0";
+    $height = "0";
   }
   
   // Video montage
@@ -314,6 +331,7 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
   {
     $starttime = DateTime::createFromFormat ('H:i:s.u', $cut_begin);
     $endtime = DateTime::createFromFormat ('H:i:s.u', $cut_end);
+    
     $duration = $starttime->diff($endtime);
     
     // get msec
@@ -342,6 +360,17 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
     if ($durationmsec < 100) $durationmsec = "0".$durationmsec;
         
     $cut_add = '-ss '.$starttime->format('H:i:s').'.'.$startmsec.' -t '.$duration->format('%H:%I:%S').'.'.$durationmsec.' '; 
+  }
+  
+  // rotate
+  if ($rotate == "rotate" && $angle != "")
+  {
+    $rotate_add = "-rotate ".$angle." ";
+  }
+  // flip
+  elseif ($rotate == "flip" && array_key_exists ($flip, $available_flip))
+  {
+    $rotate_add = "-".$flip." ";
   }
   
   // sharpen

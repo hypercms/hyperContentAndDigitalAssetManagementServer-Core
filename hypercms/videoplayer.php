@@ -132,10 +132,10 @@ elseif (is_file ($media_dir.$site."/".$file_info['file']))
 }
 
 // set width of video player
-if ($width == 0) $width = $config['width'];
+if ($width < 1 && !empty ($config['width'])) $width = $config['width'];
 
 // set height of video player
-if ($height == 0) $height = $config['height'];
+if ($height < 1 && !empty ($config['height'])) $height = $config['height'];
 
 // get video player code
 if (is_array ($config))

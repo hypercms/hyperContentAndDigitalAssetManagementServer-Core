@@ -747,6 +747,13 @@ changelog:
 - bug fix: source location input parameter of function createimage was not verified
 - implementation of new functions is_document, is_image, is_rawimage, is_video, is_audio
 - bug fix: function unlockfile, lockfile, savelockfile, loadlockfile used global variable user which overwrites the input variable
+- bug fix: simple keywords plugin refered to old search objectlist location
+- implementation of new function createversion
+- support for versioning of thumbnail files
+- bug fix: saving multiple media files was not working when media files are not of same type
+- implementation of delete for thumbnail file versions in function manipulateobject and version_content
+- implementation of video rotation and video flip for video editing
+- improvements in video editor
 */
 
 // current version

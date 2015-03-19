@@ -260,6 +260,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
           // container version
           if (is_file ($versiondir.$file_v_del))
           {
+            // delete media file
             $test = deletefile ($versiondir, $file_v_del, 0);
 
             if ($test == false)
@@ -278,6 +279,21 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
             {
               $errcode = "10292";
               $error[] = $mgmt_config['today']."|version_content.php|error|$errcode|deletefile failed for ".$mediadir.$file_v_del;           
+            }
+          }
+          
+          // delete thumbnail file
+          $file_info_v = getfileinfo ($site, $file_v_del, $cat);
+          $thumb_v_del = $file_info_v['filename'].".thumb.jpg".strrchr ($file_v_del, ".");
+            
+          if (is_file ($mediadir.$thumb_v_del))
+          {
+            $test = deletefile ($mediadir, $thumb_v_del, 0);
+
+            if ($test == false)
+            {
+              $errcode = "10291";
+              $error[] = $mgmt_config['today']."|version_content.php|error|$errcode|deletefile failed for ".$versiondir.$thumb_v_del;           
             }
           }
         }
