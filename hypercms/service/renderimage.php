@@ -19,6 +19,7 @@ require ("../include/format_ext.inc.php");
 
 // input parameters
 $savetype = getrequest ("savetype");
+$wf_token = getrequest_esc ("wf_token");
 $token = getrequest ("token");
 
 // object
@@ -161,7 +162,7 @@ if (checktoken ($token, $user))
   
   $show = "";
   $result = false;
-  
+
   // render image
   if ($media_size != false && valid_publicationname ($site))
   { 
@@ -188,23 +189,7 @@ if (checktoken ($token, $user))
     }
 
     // get new rendering settings and set image options
-    if (
-        $imageformat != "" &&
-        (
-          (in_array ($imageresize, array("percentage", "imagewidth", "imageheight")) && $imagewidth > 0 && $imageheight > 0) || 
-          ($imageresize == "crop" && $imagecropwidth != "" && $imagecropheight != "") ||
-          ($rotate == "rotate" && $angle != "") || 
-          ($use_brightness == 1 && $imageformat != "" && $brightness != 0) ||
-          ($use_contrast == 1 && $imageformat != "" && $contrast != 0) ||
-          ($colorspace == 1 && array_key_exists ($imagecolorspace, $available_colorspaces)) ||
-          ($rotate == "flip" && array_key_exists ($flip, $available_flip)) ||
-          ($effect == "sepia" && $sepia_treshold > 0 && $sepia_treshold <= 99.9) ||
-          ($effect == "blur" && $blur_sigma >= 0.1 && $blur_sigma <= 3 && $blur_radius !== NULL) ||
-          ($effect == "sharpen" && $sharpen_sigma >= 0.1 && $sharpen_sigma <= 3 && $sharpen_radius !== NULL) ||
-          ($effect == "sketch" && $sketch_sigma !== NULL && $sketch_radius !== NULL && $sketch_angle !== NULL) ||
-          ($effect == "paint" && $paintvalue !== NULL)
-        )
-       )
+    if ($imageformat != "")
     {
       $formats = "";
       $thumbformat = "";
@@ -235,12 +220,12 @@ if (checktoken ($token, $user))
         $mgmt_imageoptions[$formats]['preview'] = "";
         $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] = "";
          
-        // resize
+        // crop image
         if ($imageresize == "crop" && $imagecropwidth > 0 && $imagecropheight > 0 && $imagex >= 0 && $imagey >= 0)
         {
           $mgmt_imageoptions[$formats]['preview'] .= " -s ".$imagecropwidth."x".$imagecropheight." -c ".$imagex."x".$imagey;
         }
-        // crop
+        // resize image
         elseif (in_array($imageresize, array("percentage", "imagewidth", "imageheight")) && $imagewidth > 0 && $imageheight > 0)
         {
           $mgmt_imageoptions[$formats]['preview'] .= " -s ".$imagewidth."x".$imageheight;
@@ -331,7 +316,7 @@ if (checktoken ($token, $user))
           $mgmt_imageoptions[$formats]['original'] = $mgmt_imageoptions[$formats]['preview'];
 
           $editmediaobject = editmediaobject ($site, $location, $page, $imageformat, "original", $user);
-          
+
           if ($editmediaobject['result']) $result = $editmediaobject['mediafile'];
           else $result = false;
         }
@@ -340,7 +325,7 @@ if (checktoken ($token, $user))
         {
           // preview image in original size
           $result = createmedia ($site, $media_root_source, $media_root_target, $mediafile_info['file'], $imageformat, 'preview', true);
-    
+
           if ($result)
           {
             list ($output->imagewidth, $output->imageheight) = getimagesize ($media_root_target.$result);
@@ -377,6 +362,8 @@ if (!empty ($result))
     $show = $editmediaobject['message'];
     $page = $editmediaobject['object'];
     $mediafile = $editmediaobject['mediafile'];
+    
+    $output->object = $location_esc.$page;
   }
   
   // add timestamp to ensure the new image will be loaded
@@ -430,7 +417,7 @@ if ($savetype == "auto" || $savetype == "")
 // refresh after save and open
 elseif ($savetype == "editor_so")
 {
-  $add_onload .=  "document.location.href='".$mgmt_config['url_path_cms']."image_rendering.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\n";
+  $add_onload .=  "document.location.href='".$mgmt_config['url_path_cms']."image_rendering.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
 ?>
 <!DOCTYPE html>
 <html>

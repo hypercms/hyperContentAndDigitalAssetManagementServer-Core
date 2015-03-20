@@ -396,12 +396,6 @@ function openerReload ()
     opener.parent.frames['mainFrame'].location.reload();
   }
   
-  // reload object frame
-  if (opener != null && eval (opener.parent.frames['objFrame']))
-  { 
-    opener.parent.frames['objFrame'].location.href='page_view.php?ctrlreload=yes&site=<?php echo url_encode ($site); ?>&cat=<?php echo url_encode ($cat); ?>&location=<?php echo url_encode ($location_esc); ?>&page=<?php echo url_encode ($page); ?>';
-  }
-  
   return true;
 }
 

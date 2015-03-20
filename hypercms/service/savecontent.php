@@ -151,6 +151,7 @@ if (isset ($_REQUEST['pagelanguage'])) $pagelanguage = getrequest ("pagelanguage
 if (isset ($_REQUEST['pagerevisit'])) $pagerevisit = getrequest ("pagerevisit");
 if (isset ($_REQUEST['pagetracking'])) $pagetracking = getrequest ("pagetracking");
 
+$wf_token = getrequest_esc ("wf_token");
 $token = getrequest ("token");
 
 // convert location
@@ -426,28 +427,28 @@ if ($usedby == "" || $usedby == $user)
          	}
           elseif ($savetype == "editord_so")
          	{
-            $add_onload =  "document.location.href='".$mgmt_config['url_path_cms']."editor/editord.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&format=".url_encode($format)."&contenttype=".url_encode($contenttype)."';\n";
+            $add_onload =  "document.location.href='".$mgmt_config['url_path_cms']."editor/editord.php?site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&tagname=".url_encode($tagname)."&id=".url_encode($id)."&format=".url_encode($format)."&contenttype=".url_encode($contenttype)."&wf_token=".url_encode($wf_token)."';\n";
          	}        
           elseif ($savetype == "form_so")
          	{
-            if ($forward == "") $add_onload =  "document.location.href='".$mgmt_config['url_path_cms']."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\n";
+            if ($forward == "") $add_onload =  "document.location.href='".$mgmt_config['url_path_cms']."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
             else $add_onload = "document.location.href='".$forward."';\n";
          	}
          	elseif ($savetype == "form_sc")
          	{
-            $add_onload =  "document.location.href='".$mgmt_config['url_path_cms']."page_view.php?view=cmsview&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\n";
+            $add_onload =  "document.location.href='".$mgmt_config['url_path_cms']."page_view.php?view=cmsview&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
          	}
          	elseif ($savetype == "imagerendering_so")
          	{
-            $add_onload =  "document.location.href='".$mgmt_config['url_path_cms']."image_rendering.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat))."&page=".url_encode($page)."';\n";
+            $add_onload =  "document.location.href='".$mgmt_config['url_path_cms']."image_rendering.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat))."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
          	}
          	elseif ($savetype == "mediarendering_so")
          	{
-            $add_onload =  "document.location.href='".$mgmt_config['url_path_cms']."media_rendering.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat))."&page=".url_encode($page)."';\n";
+            $add_onload =  "document.location.href='".$mgmt_config['url_path_cms']."media_rendering.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat))."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
          	}
          	elseif ($savetype == "mediaplayerconfig_so")
          	{
-            $add_onload =  "document.location.href='".$mgmt_config['url_path_cms']."media_playerconfig.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat)).'&page='.url_encode($page)."';\n";
+            $add_onload =  "document.location.href='".$mgmt_config['url_path_cms']."media_playerconfig.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode(convertpath($site, $location, $cat)).'&page='.url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
          	}                   
           else
          	{

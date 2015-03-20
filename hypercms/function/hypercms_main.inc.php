@@ -2022,6 +2022,148 @@ function deletefile ($abs_path, $filename, $recursive=0)
   else return false;
 }
 
+// ------------------------------------------ deletemediafiles --------------------------------------------
+// function: deletemediafiles()
+// input: publication name, mediafile name
+// output: true/false
+
+// description: deletes all media file derivates of a specific media file ressource
+
+function deletemediafiles ($site, $mediafile)
+{
+  global $user, $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext, $hcms_lang, $lang;
+  
+  if (valid_publicationname ($site) && valid_objectname ($mediafile) && !empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_rep']))
+  {
+    // define media location 
+    $medialocation = getmedialocation ($site, $mediafile, "abs_path_media");
+    
+    // image thumbnail file
+    $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb.jpg";
+    
+    if (@is_file ($medialocation.$site."/".$mediafile_thumb))
+    {
+      deletefile ($medialocation.$site."/", $mediafile_thumb, 0);                
+      // remote client
+      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");               
+    }
+
+    // image file from RAW image
+    if (is_rawimage ($mediafile))
+    {
+      $mediafile_raw = substr ($mediafile, 0, strrpos ($mediafile, ".")).".jpg";
+      
+      if (@is_file ($medialocation.$site."/".$mediafile_raw))
+      {
+        deletefile ($medialocation.$site."/", $mediafile_raw, 0);            
+      }
+    }
+    
+    // document thumbnail files
+    if (is_array ($mgmt_docoptions))
+    {
+      foreach ($mgmt_docoptions as $docoptions_ext => $docoptions)
+      {
+        if ($docoptions_ext != "")
+        {
+          // document thumbnail file
+          $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb".$docoptions_ext;             
+          
+          if (@is_file ($medialocation.$site."/".$mediafile_thumb))
+          {
+            deletefile ($medialocation.$site."/", $mediafile_thumb, 0);           
+            // remote client
+            remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
+          }
+        }
+      }
+    }
+    
+    // video thumbnail files (original, media player thumbs, individual video files and configs) 
+    if (is_array ($mgmt_mediaoptions))
+    {
+      foreach ($mgmt_mediaoptions as $mediaoptions_ext => $mediaoptions)
+      {
+        if ($mediaoptions_ext != "" && $mediaoptions_ext != "thumbnail-video" && $mediaoptions_ext != "thumbnail-audio")
+        {
+          // original thumbnail video file
+          $mediafile_orig = substr ($mediafile, 0, strrpos ($mediafile, ".")).".orig".$mediaoptions_ext;
+          
+          if (@is_file ($medialocation.$site."/".$mediafile_orig))
+          {
+            deletefile ($medialocation.$site."/", $mediafile_orig, 0);           
+            // remote client
+            remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_orig, "");
+          }
+          
+          // video thumbnail files
+          $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb".$mediaoptions_ext;
+          
+          if (@is_file ($medialocation.$site."/".$mediafile_thumb))
+          {
+            deletefile ($medialocation.$site."/", $mediafile_thumb, 0);         
+            // remote client
+            remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
+          }
+          
+          // video individual files
+          $mediafile_video = substr ($mediafile, 0, strrpos ($mediafile, ".")).".media".$mediaoptions_ext;
+          
+          if (@is_file ($medialocation.$site."/".$mediafile_video))
+          {
+            deletefile ($medialocation.$site."/", $mediafile_video, 0);         
+            // remote client
+            remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_video, "");
+          }
+          
+          // media player config file
+          $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config".$mediaoptions_ext;                
+          
+          if (@is_file ($medialocation.$site."/".$mediafile_config))
+          {
+            deletefile ($medialocation.$site."/", $mediafile_config, 0);              
+            // remote client
+            remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
+          }
+        }
+      }       
+    }
+    
+    // delete original media player config
+    $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.orig";  
+                  
+    if (@is_file ($medialocation.$site."/".$mediafile_config))
+    {
+      deletefile ($medialocation.$site."/", $mediafile_config, 0);
+      // remote client
+      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
+    }
+    
+    // delete general audio player config
+    $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.audio";  
+                  
+    if (@is_file ($medialocation.$site."/".$mediafile_config))
+    {
+      deletefile ($medialocation.$site."/", $mediafile_config, 0);
+      // remote client
+      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
+    }
+    
+    // delete general video player config
+    $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.video";  
+                  
+    if (@is_file ($medialocation.$site."/".$mediafile_config))
+    {
+      deletefile ($medialocation.$site."/", $mediafile_config, 0);
+      // remote client
+      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
+    }
+    
+    return true;
+  }
+  else return false;             
+} 
+
 // -------------------------------------- appendfile -----------------------------------------
 // function: appendfile()
 // input: path to file, file name, file content 
@@ -2379,7 +2521,7 @@ function fileversion ($file)
 
 // -------------------------------------- createversion -------------------------------------------
 // function: createversion()
-// input: publication name, file name
+// input: publication name, media file name
 // output: true / false
 
 // description:
@@ -2387,9 +2529,9 @@ function fileversion ($file)
 
 function createversion ($site, $file)
 {
-  global $mgmt_config;
+  global $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext;
 
-  if (valid_objectname ($file))
+  if (valid_publicationname ($site) && valid_objectname ($file))
   {
     // create version of previous content file and media file (not for thumbnails)
     if ((empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) && !is_thumbnail ($file, false))
@@ -2412,17 +2554,20 @@ function createversion ($site, $file)
         // create new version of thumbnail file
         $media_root = getmedialocation ($site, $file, "abs_path_media").$site."/";
           
-        // move thumbnail (important!)  
+        // move thumbnail (important for versioing!)  
         if (is_file ($media_root.$thumb) && filesize ($media_root.$thumb) > 0)
         {
           @rename ($media_root.$thumb, $media_root.$thumb_v);
         }
             
-        // create new version of media file and keep source file as well
+        // copy media file (important for image editing!)
         if (is_file ($media_root.$file) && filesize ($media_root.$file) > 0)
         {
           @copy ($media_root.$file, $media_root.$file_v);
         }
+        
+        // delete all other media file derivatives (individual or videplayer thumbnail files)
+        deletemediafiles ($site, $file);
             
         // create new version of container and keep source container file as well
         $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
@@ -11331,7 +11476,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 
 function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbnail", $user)
 {
-  global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $hcms_lang, $lang;
+  global $wf_token, $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $hcms_lang, $lang;
 
   $processresult = false;
   $show = "";
@@ -11417,7 +11562,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
             $show = $hcms_lang['the-file-was-processed-successfully'][$lang];
             
             // add onload
-            $add_onload = "parent.frames['controlFrame'].location.href='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\n";
+            $add_onload = "parent.frames['controlFrame'].location.href='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
           }
           // on error
           else
@@ -11469,7 +11614,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
 
 function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
 {
-  global $eventsystem,
+  global $wf_token, $eventsystem,
          $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext,
          $pageaccess, $compaccess, $hiddenfolder,     
          $cat, $temp_clipboard, 
@@ -12199,150 +12344,24 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           if ($test != false)
           {
             // remote client
-            remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $page, "");           
+            remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $page, "");
             
-            // delete media files
-            if ($mediafile_self != false)
+            if (!empty ($mediafile_self))
             {
-              // define media location 
               $medialocation = getmedialocation ($site, $mediafile_self, "abs_path_media");
               
               // media file
               deletefile ($medialocation.$site."/", $mediafile_self, 0);
+              
               // delete media file in temp/view as well (copied by 360 viewer)
               if (is_file ($mgmt_config['abs_path_cms']."temp/view/".$mediafile_self)) deletefile ($mgmt_config['abs_path_cms']."temp/view/", $mediafile_self, 0);
               
               // remote client
               remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_self, ""); 
-              
-              // image thumbnail file  
-              $mediafile_thumb = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".thumb.jpg";
-              
-              if (@is_file ($medialocation.$site."/".$mediafile_thumb))
-              {
-                deletefile ($medialocation.$site."/", $mediafile_thumb, 0);                
-                // remote client
-                remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");               
-              }
-
-              // image file from RAW image  
-              $mediafile_raw = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".jpg";
-              
-              if (@is_file ($medialocation.$site."/".$mediafile_raw))
-              {
-                deletefile ($medialocation.$site."/", $mediafile_raw, 0);            
-              }
-              
-              // document thumbnail files
-              if (is_array ($mgmt_docoptions))
-              {
-                foreach ($mgmt_docoptions as $docoptions_ext => $docoptions)
-                {
-                  if ($docoptions_ext != "")
-                  {
-                    // document thumbnail file
-                    $mediafile_thumb = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".thumb".$docoptions_ext;             
-                    
-                    if (@is_file ($medialocation.$site."/".$mediafile_thumb))
-                    {
-                      deletefile ($medialocation.$site."/", $mediafile_thumb, 0);           
-                      // remote client
-                      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
-                    }
-                  }
-                }
-              }
-              
-              // video thumbnail files (original, media player thumbs, individual video files and configs) 
-              if (is_array ($mgmt_mediaoptions))
-              {
-                foreach ($mgmt_mediaoptions as $mediaoptions_ext => $mediaoptions)
-                {
-                  if ($mediaoptions_ext != "")
-                  {
-                    // original thumbnail video file
-                    $mediafile_orig = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".orig".$mediaoptions_ext;
-                    
-                    if (@is_file ($medialocation.$site."/".$mediafile_orig))
-                    {
-                      deletefile ($medialocation.$site."/", $mediafile_orig, 0);           
-                      // remote client
-                      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_orig, "");
-                    }
-                    
-                    // video thumbnail files
-                    $mediafile_thumb = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".thumb".$mediaoptions_ext;
-                    
-                    if (@is_file ($medialocation.$site."/".$mediafile_thumb))
-                    {
-                      deletefile ($medialocation.$site."/", $mediafile_thumb, 0);         
-                      // remote client
-                      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
-                    }
-                    
-                    // video individual files
-                    $mediafile_video = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".media".$mediaoptions_ext;
-                    
-                    if (@is_file ($medialocation.$site."/".$mediafile_video))
-                    {
-                      deletefile ($medialocation.$site."/", $mediafile_video, 0);         
-                      // remote client
-                      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_video, "");
-                    }
-                    
-                    // media player config file
-                    $mediafile_config = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".config".$mediaoptions_ext;                
-                    
-                    if (@is_file ($medialocation.$site."/".$mediafile_config))
-                    {
-                      deletefile ($medialocation.$site."/", $mediafile_config, 0);              
-                      // remote client
-                      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
-                    }
-                  }
-                }       
-              }
-              
-              // delete thumbnail video image file
-              $mediafile_orig = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".thumb.jpg";
-              
-              if (@is_file ($medialocation.$site."/".$mediafile_orig))
-              {
-                deletefile ($medialocation.$site."/", $mediafile_orig, 0);           
-                // remote client
-                remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_orig, "");
-              }
-              
-              // delete original media player config
-              $mediafile_config = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".config.orig";  
-                            
-              if (@is_file ($medialocation.$site."/".$mediafile_config))
-              {
-                deletefile ($medialocation.$site."/", $mediafile_config, 0);
-                // remote client
-                remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
-              }
-              
-              // delete general audio player config
-              $mediafile_config = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".config.audio";  
-                            
-              if (@is_file ($medialocation.$site."/".$mediafile_config))
-              {
-                deletefile ($medialocation.$site."/", $mediafile_config, 0);
-                // remote client
-                remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
-              }
-              
-              // delete general video player config
-              $mediafile_config = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".config.video";  
-                            
-              if (@is_file ($medialocation.$site."/".$mediafile_config))
-              {
-                deletefile ($medialocation.$site."/", $mediafile_config, 0);
-                // remote client
-                remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
-              }              
-            } 
+                      
+              // delete media file derivates
+              deletemediafiles ($site, $mediafile_self);
+            }
              
             // delete thumbnail file (versions before 5.0)
             $object_thumb = substr ($page, 0, strrpos ($page, ".")).".thumb".substr ($page, strrpos ($page, "."));
@@ -12390,7 +12409,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
               }
             }                     
           
-            // delete all content version files
+            // delete all content and media version files
             $dir_version = $contentlocation;
 
             if ($dir_version != false)
@@ -12416,7 +12435,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                     }
                     
                     // media file version
-                    if (@is_file ($medialocation.$site."/".$entry))
+                    if (!empty ($medialocation) && @is_file ($medialocation.$site."/".$entry))
                     {
                       $test_temp = deletefile ($medialocation.$site."/", $entry, 0);
                       
@@ -12512,7 +12531,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
   
         if ($test != false)
         {
-          $add_onload = "if (eval (opener.parent.frames['mainFrame'])) {opener.parent.frames['controlFrame'].location.href='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; opener.parent.frames['mainFrame'].location.reload();} else if (eval (opener.parent.frames['objFrame'])) {opener.parent.frames['controlFrame'].location.href='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; opener.parent.frames['objFrame'].location.href='empty.php';}";
+          $add_onload = "if (eval (opener.parent.frames['mainFrame'])) {opener.parent.frames['controlFrame'].location.href='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; opener.parent.frames['mainFrame'].location.reload();} else if (eval (opener.parent.frames['objFrame'])) {opener.parent.frames['controlFrame'].location.href='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&wf_token=".url_encode($wf_token)."'; opener.parent.frames['objFrame'].location.href='empty.php';}";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-deleted'][$lang]."</span><br />\n";
   
           // log delete
@@ -13035,40 +13054,43 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                 {
                   foreach ($mgmt_mediaoptions as $video_ext => $value)
                   {
-                    // thumbnail video files
-                    $mediafile_self_thumb = $mediafile_self_name.".thumb".$video_ext;
-                    $mediafile_new_thumb = $mediafile_new_name.".thumb".$video_ext;
-
-                    if (@is_file (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb))
+                    if ($video_ext != "" && $video_ext != "thumbnail-video" && $video_ext != "thumbnail-audio")
                     {
-                      @copy (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb, getmedialocation ($site, $mediafile_new_thumb, "abs_path_media").$site."/".$mediafile_new_thumb);
+                      // thumbnail video files
+                      $mediafile_self_thumb = $mediafile_self_name.".thumb".$video_ext;
+                      $mediafile_new_thumb = $mediafile_new_name.".thumb".$video_ext;
+  
+                      if (@is_file (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb))
+                      {
+                        @copy (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb, getmedialocation ($site, $mediafile_new_thumb, "abs_path_media").$site."/".$mediafile_new_thumb);
+                        
+                        // remote client
+                        remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/", "", $mediafile_self_thumb, $mediafile_new_thumb);                     
+                      }
                       
-                      // remote client
-                      remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/", "", $mediafile_self_thumb, $mediafile_new_thumb);                     
-                    }
-                    
-                    // individiual video files
-                    $mediafile_self_video = $mediafile_self_name.".video".$video_ext;
-                    $mediafile_new_video = $mediafile_new_name.".video".$video_ext;
-                    
-                    if (@is_file (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video))
-                    {
-                      @copy (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video, getmedialocation ($site, $mediafile_new_video, "abs_path_media").$site."/".$mediafile_new_video);
+                      // individiual video files
+                      $mediafile_self_video = $mediafile_self_name.".video".$video_ext;
+                      $mediafile_new_video = $mediafile_new_name.".video".$video_ext;
                       
-                      // remote client
-                      remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/", "", $mediafile_self_video, $mediafile_new_video);                     
-                    }
-                    
-                    // individiual video config files
-                    $mediafile_self_video = $mediafile_self_name.".config".$video_ext;
-                    $mediafile_new_video = $mediafile_new_name.".config".$video_ext;
-                    
-                    if (@is_file (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video))
-                    {
-                      @copy (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video, getmedialocation ($site, $mediafile_new_video, "abs_path_media").$site."/".$mediafile_new_video);
+                      if (@is_file (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video))
+                      {
+                        @copy (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video, getmedialocation ($site, $mediafile_new_video, "abs_path_media").$site."/".$mediafile_new_video);
+                        
+                        // remote client
+                        remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/", "", $mediafile_self_video, $mediafile_new_video);                     
+                      }
                       
-                      // remote client
-                      remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/", "", $mediafile_self_video, $mediafile_new_video);                     
+                      // individiual video config files
+                      $mediafile_self_video = $mediafile_self_name.".config".$video_ext;
+                      $mediafile_new_video = $mediafile_new_name.".config".$video_ext;
+                      
+                      if (@is_file (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video))
+                      {
+                        @copy (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video, getmedialocation ($site, $mediafile_new_video, "abs_path_media").$site."/".$mediafile_new_video);
+                        
+                        // remote client
+                        remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/", "", $mediafile_self_video, $mediafile_new_video);                     
+                      }
                     }
                   }
                 }

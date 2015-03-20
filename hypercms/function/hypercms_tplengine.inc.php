@@ -1952,7 +1952,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           if ($role == "r") 
           {
             // correct view only if cmsview is set and set workflow permission
-            if ($buildview == "cmsview" || $buildview == 'inlineview') $buildview = "preview";
+            if ($buildview == "cmsview" || $buildview == "inlineview") $buildview = "preview";
             elseif ($buildview == "formedit" || $buildview == "formmeta") $buildview = "formlock";
             $wf_role = 1;       
           }
@@ -1974,16 +1974,16 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         // if user is not a member of the workflow
         else
         {
-          if ($buildview == "cmsview" || $buildview == 'inlineview') $buildview = "preview";
+          if ($buildview == "cmsview" || $buildview == "inlineview") $buildview = "preview";
           elseif ($buildview == "formedit" || $buildview == "formmeta") $buildview = "formlock";
 
           $wf_role = 0;
         }       
       }
       // if workflow could not be loaded
-      elseif ($buildview == "cmsview" || $buildview == 'inlineview' || $buildview == "formedit" || $buildview == "formmeta")
+      elseif ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "formedit" || $buildview == "formmeta")
       {
-        if ($buildview == "cmsview" || $buildview == 'inlineview') $buildview = "preview";
+        if ($buildview == "cmsview" || $buildview == "inlineview") $buildview = "preview";
         elseif ($buildview == "formedit" || $buildview == "formmeta") $buildview = "formlock";
 
         $wf_role = 0;
@@ -6738,6 +6738,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     <input type=\"hidden\" name=\"db_connect\" value=\"".$db_connect."\" />
     <input type=\"hidden\" id=\"savetype\" name=\"savetype\" value=\"\" />
     <input type=\"hidden\" name=\"forward\" value=\"\" />
+    <input type=\"hidden\" name=\"wf_token\" value=\"".$wf_token."\">
     <input type=\"hidden\" name=\"token\" value=\"".$token."\">";
     
     $viewstore .= "

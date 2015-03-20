@@ -1041,7 +1041,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
 
         // use config values
-        if (is_array ($config) && $config['width'] > 0 && $config['height'] > 0)
+        if (!empty ($config['width']) && $config['width'] > 0 && !empty ($config['height']) && $config['height'] > 0)
         {
           $mediawidth = $config['width'];
           $mediaheight = $config['height'];
@@ -1081,7 +1081,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
         
         // generate player code
-        $playercode = showvideoplayer ($site, $config['mediafiles'], $mediawidth, $mediaheight, "preview", Null, "cut_video", "", false);
+        $playercode = showvideoplayer ($site, @$config['mediafiles'], $mediawidth, $mediaheight, "preview", Null, "cut_video", "", false, true, true, true, true, false, true);
       
         $mediaview .= "
         <table>
@@ -2528,12 +2528,13 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 // enableKeyBoard (Boolean) Is it possible to use the Keyboard (true)
 // enablePause (Boolean) Is it possible to pause the video (true)
 // enableSeek (Boolean) Is it possible to seek or to skip the video (true)
-// output: String Code for the HTML
+// reload video sources to prevent the browser cache to show the same video even if it has been changed [true,false] (optional)
+// output: HTML code of the video player / false on error
 
 // description:
-// Generates a html segment for the video code we use. False on error.
+// generates a html segment for the video code we use.
 
-function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="publish", $logo_url="", $id="", $title="", $autoplay=true, $enableFullScreen=true, $enableKeyBoard=true, $enablePause=true, $enableSeek=true, $iframe=false)
+function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="publish", $logo_url="", $id="", $title="", $autoplay=true, $enableFullScreen=true, $enableKeyBoard=true, $enablePause=true, $enableSeek=true, $iframe=false, $force_reload=false)
 {
   global $mgmt_config;
 
@@ -2541,6 +2542,10 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
   {
     // prepare video array
     $sources = "";
+    
+    // add timesatmp to force reload of files
+    if ($force_reload) $ts = "&ts=".time();
+    else $ts = "";
     
     foreach ($video_array as $value)
     {
@@ -2555,7 +2560,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
           if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
           else $type = "";
           
-          $url = $mgmt_config['url_path_cms'].$value;
+          $url = $mgmt_config['url_path_cms'].$value.$ts;
         }
         // version 2.0 (only media reference is given, no ; as seperator is used)
         elseif (strpos ($value, ";") < 1)
@@ -2565,7 +2570,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
           if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
           else $type = "";
           
-          $url = $mgmt_config['url_path_cms']."explorer_wrapper.php?media=".$value."&token=".hcms_crypt($value);
+          $url = $mgmt_config['url_path_cms']."explorer_wrapper.php?media=".$value."&token=".hcms_crypt($value).$ts;
         }
         // version 2.1 (media reference and mimetype is given)
         elseif (strpos ($value, ";") > 0)
@@ -2573,7 +2578,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
           list ($media, $type) = explode (";", $value);
            
           $type = "type=\"".$type."\" ";
-          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt($media);
+          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt($media).$ts;
         }
         else $url = "";
       }
@@ -2585,7 +2590,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
         if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
         else $type = "";
         
-        $url = $value;
+        $url = $value.$ts;
       }
 
       if ($url != "") $sources .= "    <source src=\"".$url."\" ".$type."/>\n";
@@ -2642,12 +2647,12 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
 
       if (!empty ($logo_wrapperlink))
       {
-        $logo_url = $logo_wrapperlink;
+        $logo_url = $logo_wrapperlink.$ts;
       }
       else
       {
         $logo_new = str_replace ($mgmt_config['url_path_media'], "", $logo_url);
-        $logo_url = $mgmt_config['url_path_cms'].'explorer_wrapper.php?media='.$logo_new.'&token='.hcms_crypt($logo_new);
+        $logo_url = $mgmt_config['url_path_cms'].'explorer_wrapper.php?media='.$logo_new.'&token='.hcms_crypt($logo_new).$ts;
       }
     }
 

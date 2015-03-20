@@ -21,7 +21,6 @@ require ("function/hypercms_tplengine.inc.php");
 require ("include/format_ext.inc.php");
 
 // input parameters
-$site = getrequest ("site", "publicationname");
 $location = getrequest_esc ("location", "locationname");
 $page = getrequest_esc ("page", "objectname");
 $db_connect = getrequest ("db_connect");
@@ -374,9 +373,14 @@ if (!empty ($result['charset']))
   $charset = $result['charset'];
   $contenttype = $result['contenttype'];
 }
-else
+elseif ($site != "")
 {
   $charset = $mgmt_config[$site]['default_codepage'];
+  $contenttype = "text/html; charset=".$charset;
+}
+else
+{
+  $charset = getcodepage ($lang);
   $contenttype = "text/html; charset=".$charset;
 }
 
@@ -832,6 +836,7 @@ elseif ($is_video || $is_audio)
           // render and save image
           if (image_checked == true)
           {
+            var multiobject = document.forms['reloadform'].elements['multiobject'];
             postdata_image['page'] = postdata_content['page'];
             postdata_image['location'] = postdata_content['location'];
             
@@ -852,6 +857,15 @@ elseif ($is_video || $is_audio)
                   alert('Internal Error');
                 }
               }).success(function(data) {
+                // object name after rendering
+                if (data.object && data.object.length !== 0)
+                {
+                  var multiobject_new = multiobject.value.replace(file, data.object);
+
+                  // update multiobjects
+                  if (multiobject_new != multiobject.value) multiobject.value = multiobject_new;
+                }
+              
                 // server message
                 if (data.success == false && data.message && data.message.length !== 0)
                 {
@@ -985,6 +999,17 @@ elseif ($is_video || $is_audio)
         options.fadeOut(time);
       }
     }
+    
+    function openerReload ()
+    {
+      // reload main frame
+      if (opener != null && eval (opener.parent.frames['mainFrame']))
+      {
+        opener.parent.frames['mainFrame'].location.reload();
+      }
+      
+      return true;
+    } 
 
   <?php if ($is_image) { ?>
     <!-- image -->
@@ -1127,6 +1152,8 @@ elseif ($is_video || $is_audio)
       {
         if (!confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang], $charset, $lang); ?>"))) return false;
       }
+      // set image checked to enable rendering
+      else image_checked = true;
       
       return result;
     }
@@ -1552,24 +1579,7 @@ elseif ($is_video || $is_audio)
       }
     }
     <?php } ?>
-    
-    function openerReload ()
-    {
-      // reload main frame
-      if (opener != null && eval (opener.parent.frames['mainFrame']))
-      {
-        opener.parent.frames['mainFrame'].location.reload();
-      }
-      
-      // reload object frame
-      if (opener != null && eval (opener.parent.frames['objFrame']))
-      { 
-        opener.parent.frames['objFrame'].location.href='<?php echo $mgmt_config['url_path_cms']; ?>page_view.php?ctrlreload=yes&site=<?php echo url_encode ($site); ?>&cat=<?php echo url_encode ($cat); ?>&location=<?php echo url_encode ($location_esc); ?>&page=<?php echo url_encode ($page); ?>';
-      }
-      
-      return true;
-    }
-    
+
     function toggle_sharpen () 
     {
       var chbx = $('#chbx_sharpen');

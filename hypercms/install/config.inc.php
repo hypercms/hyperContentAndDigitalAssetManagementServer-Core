@@ -457,6 +457,7 @@ $mgmt_compress['.zip'] = "%zip%";
 // ATTENTION: The webserver user (e.g. www-data) needs to have write permission in his home directory (e.g. /var/www)!
 // The path to the executable is usually /usr/bin/unoconv.
 $mgmt_docpreview['.bib.doc.docx.dot.ltx.odd.odt.odg.odp.ods.ppt.pptx.pxl.psw.pts.rtf.sda.sdc.sdd.sdw.sxw.txt.htm.html.xhtml.xls.xlsx'] = "%unoconv%";
+// Define the supported target formats for documents:
 $mgmt_docoptions['.pdf'] = "-f pdf";
 $mgmt_docoptions['.doc'] = "-f doc";
 $mgmt_docoptions['.csv'] = "-f csv";
@@ -465,6 +466,7 @@ $mgmt_docoptions['.ppt'] = "-f ppt";
 $mgmt_docoptions['.odt'] = "-f odt";
 $mgmt_docoptions['.ods'] = "-f ods";
 $mgmt_docoptions['.odp'] = "-f odp";
+// Define the mapping of the source and target formats for documents:
 $mgmt_docconvert['.doc'] = array('.pdf', '.odt');
 $mgmt_docconvert['.docx'] = array('.pdf', '.odt');
 $mgmt_docconvert['.xls'] = array('.pdf', '.csv', '.ods');
@@ -476,46 +478,45 @@ $mgmt_docconvert['.ods'] = array('.pdf', '.csv', '.xls');
 $mgmt_docconvert['.odp'] = array('.pdf', '.ppt');
 
 // Define Image Preview using the GD Library or ImageMagick
+
 // Options:
 // -s ... output size in width x height in pixel (WxH)
 // -f ... output format (file extension without dot [jpg, png, gif])
 // -c ... cropy size
-// -r ... rotate image
 // -b ... image brightness
 // -k .... image contrast
 // -cs ... color space of image, e.g. RGB, CMYK, gray
-// -flip ... flip image in the vertical direction
-// -flop ... flop image in the horizontal direction
+// -rotate ... rotate image
+// -fv ... flip image in the vertical direction
+// -fh ... flop image in the horizontal direction
 // -sharpen ... sharpen image, e.g. one pixel size sharpen: -sharpen 0x1.0
 // -sketch ... skecthes an image, e.g. -sketch 0x20+120
 // -sepia-tone ... apply -sepia-tone on image, e.g. -sepia-tone 80%
 // -monochrome ... transform image to black and white
 // -wm ... watermark in watermark image->positioning->geometry, e.g. image.png->topleft->+30
 
-// Define Image Preview using the GD Library and PHP (thumbnail generation)
-// The GD Library only supports jpg, png and gif images, set value to "GD" to use it.
-// Only JPG, PNG and GIF format can be generated as output.
+// Define image preview using the GD Library and PHP (thumbnail generation)
+// The GD Library only supports jpg, png and gif images as output, set value to "GD" to use it.
 // $mgmt_imagepreview['.gif.jpg.jpeg.png'] = "GD";
 
-// Define Image Preview using ImageMagick and GhostScript (thumbnail generation)
-// If an image file is uploaded hyperCMS will try to generate a thumbnail file for preview:
-//   $mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 180x180 -f jpg";
-// To define the supported formats for image editing please use:
-//   $mgmt_imageoptions['.jpg.jpeg']['original'] = "-f jpg";
+// Define image preview using ImageMagick and GhostScript (thumbnail generation)
 // The path to the executable is usually /usr/bin/convert.
-$mgmt_imagepreview['.ai.aai.act.art.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mtv.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.txt.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
-$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 180x180 -f jpg";
-$mgmt_imageoptions['.jpg.jpeg']['original'] = "-f jpg";
-$mgmt_imageoptions['.gif']['original'] = "-f gif";
-$mgmt_imageoptions['.png']['original'] = "-f png";
+$mgmt_imagepreview['.ai.aai.act.art.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mtv.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.txt.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
 
-// define additional download formats besides the original image
+// If an image file is uploaded hyperCMS will try to generate a thumbnail file for preview:
+$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-cs RGB -s 180x180 -f jpg";
+// Define the supported target formats for image editing:
+$mgmt_imageoptions['.jpg.jpeg']['original'] = "-cs RGB -f jpg";
+$mgmt_imageoptions['.gif']['original'] = "-f gif";
+$mgmt_imageoptions['.png']['original'] = "-cs RGB -f png";
+// Define additional download formats besides the original image:
 $mgmt_imageoptions['.jpg.jpeg']['1920x1080px'] = '-s 1920x1080 -f jpg';
 $mgmt_imageoptions['.jpg.jpeg']['1024x768px'] = '-s 1024x768 -f jpg';
 $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -f jpg';
 
-// Define Media Preview using FFMPEG (Audio/Video formats)
-// If a video or audio file is uploaded hyperCMS will try to generate a smaler streaming video file for preview.
+// Define media preview using FFMPEG (Audio/Video formats)
+// If a video or audio file is uploaded, hyperCMS will try to generate a smaler streaming video file for preview.
+
 // Audio Options:
 // -ac ... number of audio channels
 // -an ... disable audio
@@ -532,17 +533,26 @@ $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -f jpg';
 // -r ... frame rate in Hz (default = 25)
 // -s:v ... frame size in pixel (WxH)
 // -sh ... sharpness (blur -1 up to 1 sharpen)
-// -gbcs ... gamma, brightness, contrast, saturation (neutral values are 1.0:1:0:0.0:1.0)
+// -gbcs ... gamma, brightness, contrast, saturation (neutral values are 0.0:1:0:0.0:1.0)
 // -wm .... watermark image and watermark positioning (PNG-file-reference->positioning [topleft, topright, bottomleft, bottomright] e.g. image.png->topleft)
+// -rotate ... rotate video
+// -fv ... flip video in vertical direction
+// -fh ... flop video in horizontal direction
+      
 // The path to the executable is usually /usr/bin/ffmpeg.
 $mgmt_mediapreview['.asf.avi.flv.mpg.mpeg.mp4.m4v.mp4v.m4a.m4b.m4p.m4r.mov.wmv.mp3.ogv.wav.vob.aiff.audio.wav.mp2.mp3.au.mid.flac.la.pac.m4a.apr.oga.rka.wv.wma.aac.mpc.ra.rm.ots.swa.vox.voc.dwd'] = "%ffmpeg%";
-$mgmt_mediaoptions['.flv'] = "-b:v 768k -s:v 480x320 -f flv -c:a libmp3lame -b:a 64k -ac 2 -ar 22050";
-$mgmt_mediaoptions['.mp4'] = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
-$mgmt_mediaoptions['.ogv'] = "-b:v 768k -s:v 480x320 -f ogv -c:a libvorbis -b:a 64k -ac 2";
-$mgmt_mediaoptions['.webm'] = "-b:v 768k -s:v 480x320 -f webm -c:a libvorbis -b:a 64k -ac 2";
-$mgmt_mediaoptions['.mp3'] = "-f mp3 -c:a libmp3lame -b:a 64k -ar 22050";
-$mgmt_mediaoptions['.flac'] = "-f flac -c:a flac -b:a 64k -ar 22050";
-$mgmt_mediaoptions['.wav'] = "-c:a pcm_u8 -b:a 64k -ar 22050";
+
+// If a video or audio file is uploaded hyperCMS will try to generate a thumbnail video/audio file for preview:
+$mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2"; 
+$mgmt_mediaoptions['thumbnail-audio'] = "-f mp3 -c:a libmp3lame -b:a 64k -ar 22500";
+// Define the supported target formats for video/audio editing (please use the variables %videobitrate%, %audiobitrate%, %width%, %height%):
+$mgmt_mediaoptions['.mp4'] = "-b:v %videobitrate% -s:v %width%x%height% -f mp4 -c:a libfaac -b:a %audiobitrate% -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
+$mgmt_mediaoptions['.ogv'] = "-b:v %videobitrate% -s:v %width%x%height% -f ogg -c:a libvorbis -b:a %audiobitrate% -ac 2";
+$mgmt_mediaoptions['.webm'] = "-b:v %videobitrate% -s:v %width%x%height% -f webm -c:a libvorbis -b:a %audiobitrate% -ac 2";
+$mgmt_mediaoptions['.flv'] = "-b:v %videobitrate% -s:v %width%x%height% -f flv -c:a libmp3lame -b:a %audiobitrate% -ac 2 -ar 22050";
+$mgmt_mediaoptions['.mp3'] = "-f mp3 -c:a libmp3lame -b:a %audiobitrate% -ar 22050";
+$mgmt_mediaoptions['.flac'] = "-f flac -c:a flac -b:a %audiobitrate% -ar 22050";
+$mgmt_mediaoptions['.wav'] = "-c:a pcm_u8 -b:a %audiobitrate% -ar 22050";
 
 // Define Metadata Injection
 // YAMDI to inject metadata (play length) into the generated flash video file (FFMPEG discards metadata)

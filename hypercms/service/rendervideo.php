@@ -19,6 +19,7 @@ require ("../include/format_ext.inc.php");
 
 // input parameters
 $savetype = getrequest ("savetype");
+$wf_token = getrequest_esc ("wf_token");
 $token = getrequest ("token");
 
 // object
@@ -102,7 +103,7 @@ function startConversion ($videotype)
   $success = false;
     
   // define FFMPEG options
-  $mgmt_mediaoptions['.'.$filetype] = $cut_add.$sh_add.$rotate_add.$gbcs_add.str_replace (array('%bitrate%', '%audiobitrate%', '%width%', '%height%'), array($bitrate, $audiobitrate, $width, $height), $mgmt_mediaoptions['.'.$filetype]);
+  $mgmt_mediaoptions['.'.$filetype] = $cut_add.$sh_add.$rotate_add.$gbcs_add.str_replace (array('%videobitrate%', '%audiobitrate%', '%width%', '%height%'), array($bitrate, $audiobitrate, $width, $height), $mgmt_mediaoptions['.'.$filetype]);
     
   // create video
   if ($videotype == "videoplayer") $videotype = "thumbnail";
@@ -454,7 +455,7 @@ if ($savetype == "auto" || $savetype == "")
 // refresh after save and open
 elseif ($savetype == "editor_so")
 {
-  $add_onload .=  "document.location.href='".$mgmt_config['url_path_cms']."media_rendering.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\n";
+  $add_onload .=  "document.location.href='".$mgmt_config['url_path_cms']."media_rendering.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
 ?>
 <!DOCTYPE html>
 <html>

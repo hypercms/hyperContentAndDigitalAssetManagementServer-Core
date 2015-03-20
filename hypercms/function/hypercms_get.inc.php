@@ -1067,7 +1067,8 @@ function getobjectinfo ($site, $location, $object, $user="sys")
       $result['template'] = getfilename ($data, "template");
       $result['content'] = getfilename ($data, "content");
       $result['media'] = getfilename ($data, "media");
-      $result['name'] = getfilename ($data, "name");      
+      $result['name'] = specialchr_decode ($object);
+      $result['filename'] = getfilename ($data, "name");      
       $result['container_id'] = substr ($result['content'], 0, strpos ($result['content'], ".xml"));
       
       if (is_array ($result)) return $result;

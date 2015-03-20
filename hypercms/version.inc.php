@@ -753,7 +753,11 @@ changelog:
 - bug fix: saving multiple media files was not working when media files are not of same type
 - implementation of delete for thumbnail file versions in function manipulateobject and version_content
 - implementation of video rotation and video flip for video editing
-- improvements in video editor
+- improvements in video editor layout
+- implementation of force_reload paramter for function showvideoplayer to force reloading the video sources
+- new configuration parameter for default video and audio previev files (type = origthumb)
+- modifications of function createmedia to support new configuration paramaters
+- implementation of new function deletemediafiles (deletes all derivates of a media ressource)
 */
 
 // current version

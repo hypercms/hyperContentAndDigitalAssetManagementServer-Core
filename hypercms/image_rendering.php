@@ -22,6 +22,7 @@ require ("include/format_ext.inc.php");
 $action = getrequest_esc ("action");
 $location = getrequest_esc ("location", "locationname");
 $page = getrequest_esc ("page", "objectname");
+$wf_token = getrequest_esc ("wf_token");
 $token = getrequest ("token");
 // image format
 $imageformat = getrequest ("imageformat");
@@ -391,26 +392,31 @@ function checkform()
     checked = true;
     result = validateForm ('imagepercentage','','RinRange1:200');
   }
+  
   if (result && $('#width').prop('checked'))
   {
     checked = true;
     result = validateForm ('imagewidth','','RisNum');
   }
+  
   if (result && $('#height').prop('checked'))
   {
     checked = true;
     result = validateForm ('imageheight','','RisNum');
   }
+  
   if (result && $('#rotate').prop('checked'))
   {
     checked = true;
     result = true;
   } 
+  
   if (result && $('#crop').prop('checked'))
   {
     checked = true;
     result = validateForm('imagecropwidth', '', 'RisNum', 'imagecropheight', '', 'RisNum', 'imagex', '', 'RisNum', 'imagey', '', 'RisNum');
   }
+  
   if (result && $('#chbx_brightness').prop('checked'))
   {
     checked = true;
@@ -428,40 +434,41 @@ function checkform()
     checked = true;
     result = true;
   }
+  
   if (result && $('#chbx_flip').prop('checked'))
   {
     checked = true;
     result = true;
   }
+  
   if (result && $('#sepia').prop('checked'))
   {
     checked = true;
     result = validateForm('sepia_treshold', '', 'RinRange0:99.9');
   }
-  if(result && $('#blur').prop('checked')) 
+  
+  if (result && $('#blur').prop('checked')) 
   {
     checked = true;
     result = validateForm('blur_radius', '', 'RisNum', 'blur_sigma', '', 'RinRange0.1:3');
   }
-  if(result && $('#sharpen').prop('checked')) 
+  
+  if (result && $('#sharpen').prop('checked')) 
   {
     checked = true;
     result = validateForm('sharpen_radius', '', 'RisNum', 'sharpen_sigma', '', 'RinRange0.1:3');
   }
-  if(result && $('#sketch').prop('checked')) 
+  
+  if (result && $('#sketch').prop('checked')) 
   {
     checked = true;
     result = validateForm('sketch_radius', '', 'RisNum', 'sketch_sigma', '', 'RisNum', 'sketch_angle', '', 'RisNum');
   }
-  if(result && $('#paint').prop('checked')) 
+  
+  if (result && $('#paint').prop('checked')) 
   {
     checked = true;
     result = validateForm('paint_value', '', 'RisNum');
-  }
-  
-  if(!checked) {
-    alert("<?php echo $hcms_lang['you-must-select-at-least-one-conversion-methode'][$lang]; ?>");
-    result = false;
   }
   
   return result;
@@ -490,12 +497,6 @@ function openerReload ()
   if (opener != null && eval (opener.parent.frames['mainFrame']))
   {
     opener.parent.frames['mainFrame'].location.reload();
-  }
-  
-  // reload object frame
-  if (opener != null && eval (opener.parent.frames['objFrame']))
-  { 
-    opener.parent.frames['objFrame'].location.href='page_view.php?ctrlreload=yes&site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&location=<?php echo $location_esc; ?>&page=<?php echo $page; ?>';
   }
   
   return true;
@@ -1045,9 +1046,6 @@ function showPreview ()
   link += '&thumbwidth='+thumbWidth;
   link += '&thumbheight='+thumbHeight;
   
-  if(!changed)
-    return false;
-  
    $.ajax({
     url: link,
     dataType: 'json'
@@ -1152,6 +1150,7 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
     <input type="hidden" name="cat" value="<?php echo $cat; ?>">
     <input type="hidden" name="page" value="<?php echo $page; ?>">
     <input type="hidden" name="media" value="<?php echo $mediafile; ?>">
+    <input type="hidden" name="wf_token" value="<?php echo $wf_token; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     
     <!-- crop -->
@@ -1340,11 +1339,13 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
   </form>
   <!-- end edit image -->
 </div>
+
 <!-- media view -->
 <div style="margin:0; padding:10px; width:380px; height:500px; display:inline-block; z-index:1;">
   <!-- show image -->
   <?php echo $mediaview; ?>
 </div>
+
 </body>
 </html>
 

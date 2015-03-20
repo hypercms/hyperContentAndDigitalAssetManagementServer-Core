@@ -233,8 +233,8 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 
 // ---------------------- createmedia -----------------------------
 // function: createmedia()
-// input: publication, path to source dir, path to destination dir, file name, format (file extension w/o dot) of destination file (optional), 
-//        type of image/video/audio file [thumbnail,origthumb(thumbail made from original video/audio),original,any other string present in $mgmt_imageoptions] (optional),
+// input: publication, path to source dir, path to destination dir, file name, format (file extension w/o dot) of destination file (optional if type is 'thumbnail' or 'origthumb'), 
+//        type of image/video/audio file [thumbnail,origthumb(thumbail made from original video/audio),original,any other string present in $mgmt_imageoptions/$mgmt_mediaoptions] (optional),
 //        force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
 // output: new file name / false on error (saves original or thumbnail media file in destination location, for thumbnail only jpeg format is supported as output)
 
@@ -253,6 +253,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     if (valid_publicationname ($site) && !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     
     $converted = false;
+    
+    // save input type in new variable
+    $type_memory = $type;
     
     // add slash if not present at the end of the location string
     if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
@@ -352,9 +355,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     
     // get file-type
     $filetype_orig = getfiletype ($file_ext);
-    
-    // save input type
-    $type_memory = $type;
     
     // MD5 hash of the original file
     $md5_hash = md5_file ($location_source.$file);
@@ -1253,31 +1253,50 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       
       // define default option for support of versions before 5.3.4
       // note: audio codec could be "mp3" or in newer ffmpeg versions "libmp3lame"!
-      if (empty ($mgmt_mediaoptions['thumbnail-video']))
-      {
-        $mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
-      }
-      
-      if (empty ($mgmt_mediaoptions['thumbnail-audio']))
-      {
-        $mgmt_mediaoptions['thumbnail-audio'] = "-f mp3 -c:a libmp3lame -b:a 64k -ar 22500";
-      }
+      $mgmt_mediaoptions_video = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
+      $mgmt_mediaoptions_audio = "-f mp3 -c:a libmp3lame -b:a 64k -ar 22500";
       
       // reset type to input value
       $type = $type_memory;
       
-      // define format if not set (this defines the file extension and the rendering options)
-      if ($format == "")
+      // define format if not set or 'origthumb' for preview is requested (this defines the file extension and the rendering options)
+      if ($format == "" || $type == "origthumb")
       {
+        // reset media options array
+        $mgmt_mediaoptions = array();
+        
         if (is_audio ($file_ext))
         {
+          // set default options string if no valid one is provided
+          if (empty ($mgmt_mediaoptions['thumbnail-audio']) || strpos ("_".$mgmt_mediaoptions['thumbnail-audio'], "-f ") == 0)
+          {
+            $mgmt_mediaoptions['thumbnail-audio'] = $mgmt_mediaoptions_audio;
+          }
+         
+          // get format from options string
           $format_set = getoption ($mgmt_mediaoptions['thumbnail-audio'], "-f");
+          
+          // set options string
+          if ($format_set != "") $mgmt_mediaoptions['.'.$format_set] = $mgmt_mediaoptions['thumbnail-audio'];
+          else $mgmt_mediaoptions['.mp3'] = $mgmt_mediaoptions_audio;
         }
         else
         {
+          // set default options string if no valid one is provided
+          if (empty ($mgmt_mediaoptions['thumbnail-video']) || strpos ("_".$mgmt_mediaoptions['thumbnail-video'], "-f ") == 0)
+          {
+            $mgmt_mediaoptions['thumbnail-video'] = $mgmt_mediaoptions_video;
+          }
+        
+          // get format from options string
           $format_set = getoption ($mgmt_mediaoptions['thumbnail-video'], "-f");
+          
+          // set options string
+          if ($format_set != "") $mgmt_mediaoptions['.'.$format_set] = $mgmt_mediaoptions['thumbnail-video'];
+          else $mgmt_mediaoptions['.mp4'] = $mgmt_mediaoptions_video;
         }
       }
+      // use provided target format
       else $format_set = strtolower ($format);
         
       // original video info
@@ -1298,7 +1317,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
           {
             // get media rendering options based on given destination format
             if ($mediaoptions_ext != "thumbnail-video" && $mediaoptions_ext != "thumbnail-audio" && substr_count (strtolower ($mediaoptions_ext).".", ".".$format_set.".") > 0)
-            {        
+            {
               // media format (media file extension) definition
               if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-f ") > 0)
               {

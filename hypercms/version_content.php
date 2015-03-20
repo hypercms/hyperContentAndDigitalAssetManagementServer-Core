@@ -152,9 +152,6 @@ function compare_submit ()
 
 <body class="hcmsWorkplaceGeneric" onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif')">
 
-<?php
-echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
-?>
 <div class="hcmsWorkplaceFrame">
 <!-- change versions -->
 <form name="versionform" action="" method="post">
@@ -199,7 +196,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
         // load working container from file system even if it is locked
         $result = getcontainername ($contentfile_recent);
         $contentfile_wrk = $result['container'];
-        $bufferdata = loadcontainer ($container_wrk, "work", $user);  
+        $bufferdata = loadcontainer ($contentfile_wrk, "work", $user);  
 
         // get current objects
         if ($bufferdata != false) $contentobjects = getcontent ($bufferdata, "<contentobjects>");    
@@ -247,7 +244,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
 
         if ($rename_2 == false || $copy_2 == false) echo "<p class=hcmsHeadline>".$hcms_lang['could-not-change-version'][$lang]."</p>\n".$hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang]."<br /><br />\n";
       }
-      else echo "<p class=hcmsHeadline>".$hcms_lang['could-not-change-version'][$lang]."</p>\n".$hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang]."<br /><br />\n";
+      else $show = "<p class=hcmsHeadline>".$hcms_lang['could-not-change-version'][$lang]."</p>\n".$hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang]."<br /><br />\n";
     }
 
     // delete versions
@@ -389,6 +386,10 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
   <div style="width:300px; float:left;"><?php echo $hcms_lang['submit-changes-to-versions'][$lang]; ?> :</div>
   <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_versions_update();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /><br />
 </form>
+
+<?php
+echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
+?>
 
 <!-- compare versions -->
 <form name="compareform" action="version_content_compare.php" method="post">
