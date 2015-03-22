@@ -623,7 +623,7 @@ changelog:
 - bug fix: function deconvertlink removed host name from page links twice. this led to a miss-converted link since the host name has been cut of again without using the function cleandomain.
 
 version 5.7.2
-release 02/2015
+release 01/2015
 changelog:
 - encryption for content containers to secure data an server side
 - new publication setting for container and media file encryption
@@ -665,7 +665,7 @@ changelog:
 - optimized database attributes
 
 version 5.7.3
-release 03/2015
+release 02/2015
 changelog:
 - add original video files of type MP4, WebM, OGG/OGV to source of HTML5 player
 - bug fix: encryption level for file must be 'strong' in order to be binary-safe
@@ -694,7 +694,7 @@ changelog:
 - minor changes in other design themes
 
 version 5.7.4
-release 04/2015
+release 03/2015
 changelog:
 - implementation of favorites feature (create and manage favorites)
 - function rdbms_getobject_id supports object path and hash as input
@@ -714,7 +714,7 @@ changelog:
 - implementation of new homboxes for recent downloads and uploads of a user
 
 version 5.7.5
-release 05/2015
+release 03/2015
 changelog:
 - bug fix: bulgarian language file used double quote in string
 - bug fix: html_encode used wrong variable name
@@ -758,6 +758,7 @@ changelog:
 - new configuration parameter for default video and audio previev files (type = origthumb)
 - modifications of function createmedia to support new configuration paramaters
 - implementation of new function deletemediafiles (deletes all derivates of a media ressource)
+- implementation of new function checkworkflow in hypercms_main used by function buildworkflow
 */
 
 // current version
