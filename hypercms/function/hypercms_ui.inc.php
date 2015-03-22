@@ -504,7 +504,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docconvert, $hcms_charset, $hcms_lang_codepage, $hcms_lang, $lang,
          $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions; // used for image rendering (in case the format requires rename of the object file extension)	 
      
-  $pdfjs_path = $mgmt_config['url_path_cms']."javascript/pdfpreview/build/generic/web/viewer.html?file=";
+  $pdfjs_path = $mgmt_config['url_path_cms']."javascript/pdfpreview/web/viewer.html?file=";
   $gdocs_path = "https://docs.google.com/viewer?url=";
 
   require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");

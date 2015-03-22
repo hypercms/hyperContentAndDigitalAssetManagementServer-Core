@@ -758,7 +758,12 @@ changelog:
 - new configuration parameter for default video and audio previev files (type = origthumb)
 - modifications of function createmedia to support new configuration paramaters
 - implementation of new function deletemediafiles (deletes all derivates of a media ressource)
+
+version 5.7.6
+release 04/2015
+changelog:
 - implementation of new function checkworkflow in hypercms_main used by function buildworkflow
+- update of pdf viewer to version 1.0.1040
 */
 
 // current version
