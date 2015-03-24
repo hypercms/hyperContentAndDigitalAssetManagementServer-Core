@@ -14,6 +14,8 @@ scriptend]
 <!DOCTYPE html> 
 <html>
 	<head>
+    <title>[hyperCMS:textu id='Title' infotype='meta']</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<link rel="stylesheet" hypercms_href="[hyperCMS:scriptbegin echo getthemelocation(); scriptend]css/main.css" />
 	</head>
 	<body class="hcmsWorkplaceGeneric">
