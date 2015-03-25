@@ -74,10 +74,10 @@ $token_new = createtoken ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="template-Type" template="text/html; charset=<?php echo getcodepage ($lang); ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/click.js" type="text/javascript"></script>
+<script src="javascript/fclick.js" type="text/javascript"></script>
 <script language="JavaScript">
 <!--
 function warning_versions_update()

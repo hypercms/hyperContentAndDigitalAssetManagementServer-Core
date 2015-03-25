@@ -118,29 +118,38 @@ if ($mediatype == "image")
 {
 	// scalingfactor is 1 if not given
 	if ($scaling == "") $scaling = 1;
+  
 	// initialize mediaheight and mediawidth
 	$mediawidth = "";
 	$mediaheight = "";
+  
 	// get file information
 	$media_path = getmedialocation ($site, $mediafile, "abs_path_media").$mediafile;
 	$media_size = @getimagesize ($media_path);
 
+  // define width and height
 	if (!empty ($media_size[3]))
   {
 		// scaling images to reach given dpi 
 		$mediawidth = round ($media_size[0] * $scaling);
 		$mediaheight = round ($media_size[1] * $scaling);
-	}
 ?>
 	<script type="text/javascript">
   <!--
-		parent.frames['controlFrame2'].document.forms['media'].elements['mediawidth'].value = '<?php echo $mediawidth; ?>';
-		parent.frames['controlFrame2'].document.forms['media'].elements['mediaheight'].value = '<?php echo $mediaheight; ?>';
+		if (parent.frames['controlFrame2'].document.forms['media'].elements['mediawidth'])
+    {
+      parent.frames['controlFrame2'].document.forms['media'].elements['mediawidth'].value = '<?php echo $mediawidth; ?>';
+    }
+    
+    if (parent.frames['controlFrame2'].document.forms['media'].elements['mediaheight'])
+    {
+		  parent.frames['controlFrame2'].document.forms['media'].elements['mediaheight'].value = '<?php echo $mediaheight; ?>';
+    }
   -->
 	</script>
-<?php		
+<?php
+	}
 }
-
 ?>
 
 </div>

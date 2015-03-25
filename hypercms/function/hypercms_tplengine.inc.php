@@ -1824,9 +1824,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // =================================================== head content ===================================================
              
       $pagetracking = "";
-      $label = Null;
-      $language_info = Null;
-      $headstoremeta = Null;
+      $label = "";
+      $language_info = "";
+      $headstoremeta = "";
       
       // get all hyperCMS tags
       $hypertag_array = gethypertag ($viewstore, "page", 0);
@@ -2137,8 +2137,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
       // =================================================== article settings ===================================================
            
-      $hypertag_array = null;
-      $artid_array = null;
+      $hypertag_array = array();
+      $artid_array = array();
       $artid_array = array();
       $hypertagname_array = array();
      
@@ -2232,15 +2232,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $searchtag_array[0] = "arttext";
       $searchtag_array[1] = "text";
       $searchtag_array[2] = "comment";
-      $infotype = null;
-      $position = null;
-      $onpublish = null;
-      $onedit = null;
-      $constraint = null;
-      $toolbar = null;
-      $label = null;
-      $language_info = null;
-      $add_submittext = null;
+      $infotype = "";
+      $position = "";
+      $onpublish = "";
+      $onedit = "";
+      $constraint = "";
+      $toolbar = "";
+      $label = "";
+      $language_info = "";
+      $add_submittext = "";
       
       foreach ($searchtag_array as $searchtag)
       {
@@ -3164,17 +3164,16 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // create view for media content
       $searchtag_array[0] = "artmedia";
       $searchtag_array[1] = "media";
-      $infotype = null;
-      $position = null;
-      $onpublish_file = null;
-      $onpublish_text = null;
-      $onpublish_align = null;
-      $onpublish_width = null;
-      $onpublish_height = null;
-      $onedit_file = null;
-      $label = null;
-      $language_info = null;
-      $add_submitmedia = null;
+      $infotype = array();
+      $position = array();
+      $onpublish_file = array();
+      $onpublish_text = array();
+      $onpublish_align = array();
+      $onpublish_width = array();
+      $onpublish_height = array();
+      $onedit_file = array();
+      $label = array();
+      $language_info = array();
       
       foreach ($searchtag_array as $searchtag)
       {
@@ -3188,6 +3187,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           $id_array = null;
           $id_array = array ();
           $tagid = 0;
+          
           reset ($hypertag_array); 
           
           // loop for each hyperCMS tag found in template
@@ -3199,13 +3199,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $hypertagname = gethypertagname ($hypertag);  
       
             // get tag id
-            $id = getattribute ($hypertag, "id");  
+            $id = getattribute ($hypertag, "id");
             
             // set default values
-            $hypertagname_align[$id] = "";
-            $hypertagname_text[$id] = "";
-            $hypertagname_width[$id] = "";
-            $hypertagname_height[$id] = "";
+            if (empty ($hypertagname_align[$id])) $hypertagname_align[$id] = "";
+            if (empty ($hypertagname_text[$id])) $hypertagname_text[$id] = "";
+            if (empty ($hypertagname_width[$id])) $hypertagname_width[$id] = "";
+            if (empty ($hypertagname_height[$id])) $hypertagname_height[$id] = "";
             
             // collect unique id's and set position/key of hypertag
             if (!in_array ($id, $id_array))
@@ -3842,17 +3842,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // create view for link content
       $searchtag_array[0] = "artlink";
       $searchtag_array[1] = "link";
-      $hypertagname = null;
-      $infotype = null;
-      $position = null;
-      $onpublish_href = null;
-      $onpublish_target = null;
-      $onpublish_text = null;
-      $onedit_href = null;
-      $label = null;
-      $language_info = null;
-      $add_submitlink = null;
-      $targetlist = null;
+      $hypertagname = array();
+      $infotype = array();
+      $position = array();
+      $onpublish_href = array();
+      $onpublish_target = array();
+      $onpublish_text = array();
+      $onedit_href = array();
+      $label = array();
+      $language_info = array();
+      $add_submitlink = "";
+      $targetlist = array();
       
       foreach ($searchtag_array as $searchtag)
       {  
@@ -3877,9 +3877,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $id = getattribute ($hypertag, "id");
             
             // set default values
-            $hypertagname_href[$id] = "";
-            $hypertagname_text[$id] = "";
-            $hypertagname_target[$id] = "";
+            if (!empty ($hypertagname_href[$id])) $hypertagname_href[$id] = "";
+            if (!empty ($hypertagname_text[$id])) $hypertagname_text[$id] = "";
+            if (!empty ($hypertagname_target[$id])) $hypertagname_target[$id] = "";
       
             // collect unique id's and set position/key of hypertag
             if (!in_array ($id, $id_array))
@@ -4371,13 +4371,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // create view for component content
       $searchtag_array[0] = "component";
       $searchtag_array[1] = "artcomponent";
-      $infotype = null;
-      $position = null;
-      $onpublish = null;
-      $onedit = null; 
-      $include = null;
-      $icon = null;
-      $add_submitcomp = null;
+      $infotype = "";
+      $position = "";
+      $onpublish = "";
+      $onedit = ""; 
+      $include = "";
+      $icon = "";
+      $add_submitcomp = "";
       
       foreach ($searchtag_array as $searchtag)
       {    
@@ -5968,7 +5968,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   
   function getValue(selectname, defaultvalue)
   {
-    if (eval (document.forms['hcms_formview'].elements[selectname]))
+    if (document.forms['hcms_formview'].elements[selectname] && document.forms['hcms_formview'].elements[selectname].value)
     {
       return encodeURIComponent (document.forms['hcms_formview'].elements[selectname].value);
     }
@@ -5977,7 +5977,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   
   function getSelectedOption(selectname, defaultvalue)
   {
-    if (eval (document.forms['hcms_formview'].elements[selectname]))
+    if (document.forms['hcms_formview'].elements[selectname] && document.forms['hcms_formview'].elements[selectname].options)
     {
       var selectbox = document.forms['hcms_formview'].elements[selectname];
       return encodeURIComponent (selectbox.options[selectbox.selectedIndex].value);

@@ -76,6 +76,19 @@ foreach ($variables as $variable)
   $$variable = str_replace ("&amp;", "&", $$variable);
 }
 
+// add %page% if not provided
+if (strpos ("_".$linkhref_curr, "%page%/") == 0)
+{
+  if (is_file (deconvertpath ("%page%".$linkhref_curr, "file"))) $linkhref_curr = "%page%".$linkhref_curr;
+  elseif (is_file (deconvertpath ("%page%/".$linkhref_curr, "file"))) $linkhref_curr = "%page%/".$linkhref_curr;
+}
+// add %page% if not provided
+if (strpos ("_".$linkhref, "%page%/") == 0)
+{
+  if (is_file (deconvertpath ("%page%".$linkhref, "file"))) $linkhref = "%page%".$linkhref;
+  elseif (is_file (deconvertpath ("%page%/".$linkhref, "file"))) $linkhref = "%page%/".$linkhref;
+}
+
 // get file info
 $file_info = getfileinfo ($site, $location.$page, $cat);
 

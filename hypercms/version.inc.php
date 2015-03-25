@@ -764,8 +764,15 @@ release 04/2015
 changelog:
 - implementation of new function checkworkflow in hypercms_main used by function buildworkflow
 - update of pdf viewer to version 1.0.1040
+- bug fix: improved CSS definition using filter for hcmsInfoBox due to issues on home screen
+- bug fix: select media in form view did not work due to missing evaluation of selectbox in JS function getSelectedOption
+- bug fix: media_view did not validate form fields for width and height in control frame
+- bug fix: function buildview of templateengine did reset tag variables for each tag found in the template
+- implementation of media object evaluation in media_edit_page and link object evaluation in link_edit_page
+- improvements in function setmedia by using function loadfile_fast for object loading
+- bug fix: wrong content-type specification in version_template
 */
 
 // current version
-$version = "Version 5.7.5";
+$version = "Version 5.7.6";
 ?>

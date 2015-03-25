@@ -174,14 +174,19 @@ function submitHomeBoxes ()
 
 <body class="hcmsWorkplaceGeneric" style="width:100%; height:100%;" onload="<?php if (empty ($_SESSION['hcms_temp_latitude']) || empty ($_SESSION['hcms_temp_longitude'])) echo "hcms_geolocation();"; ?>">
 
-<div style="width:100%; height:100%; overflow:auto; display:block;">
+<div style="width:100%; height:100%; overflow:auto;">
 
-  <div id="logo" style="position:fixed; top:10px; left:10px; z-index:0;">
+  <!-- logo -->
+  <div id="logo" style="position:fixed; top:10px; left:10px;">
     <img src="<?php echo getthemelocation(); ?>img/logo_server.png" style="width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>" />
     <div id="version" style="position:fixed; top:30px; left:12px;"><?php echo $version; ?></div>
   </div>
+  
+  <!-- plus/minus button -->
   <?php if (!$is_mobile) { ?>
-  <div id="plusminus" style="position:fixed; top:10px; right:30px; z-index:150;"><img id="button_plusminus" onClick="hcms_switchSelector('menubox');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_plusminus.gif" /></div>
+  <div id="plusminus" style="position:fixed; top:10px; right:30px; z-index:200;">
+    <img id="button_plusminus" onClick="hcms_switchSelector('menubox');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_plusminus.gif" />
+  </div>
   <?php } ?>
   
   <!-- add / remove boxes menu -->
@@ -265,6 +270,7 @@ function submitHomeBoxes ()
   
   <div id="spacer" style="width:94%; height:44px; display:block;"></div>
 
+  <!-- show boxes -->
   <?php 
   if (!empty ($box_array) && is_array ($box_array))
   { 

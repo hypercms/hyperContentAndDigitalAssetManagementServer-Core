@@ -54,6 +54,7 @@
 {
   z-index: 100;
   padding: 5px;
+  filter: alpha(opacity=90); -moz-opacity: 0.9; opacity: 0.9;
   vertical-align: middle;
   border: 1px solid #4294FF;
   -moz-border-radius: 5px;

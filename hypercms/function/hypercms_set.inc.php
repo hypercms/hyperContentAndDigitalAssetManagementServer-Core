@@ -473,7 +473,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
     // load xml schema
     $media_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "media.schema.xml.php"));
     $article_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "article.schema.xml.php"));
-    
+
     // load link db
     $link_db = link_db_load ($site, $user);  
     
@@ -529,7 +529,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
         { 
           // load object file
           $location = substr ($mediaobject[$id], 0, strrpos ($mediaobject[$id], "/")+1);
-          $pagedata = loadfile ($location, getobject ($mediaobject[$id]));  
+          $pagedata = loadfile_fast ($location, getobject ($mediaobject[$id]));  
   
           if ($pagedata != false) 
           {
@@ -613,7 +613,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
       //define message to display
       $message = "<span class=hcmsHeadline>".$text8[$lang]."</span><br />\n".$text9[$lang]."<br />\n";
     }
-  
+
     // return container
     if ($contentdatanew != false)
     {

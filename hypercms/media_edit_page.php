@@ -89,6 +89,19 @@ elseif ($mediaobject != "")
   $mediafile = $mediaobject;
 }
 
+// add %comp% if not provided
+if (strpos ("_".$mediaobject_curr, "%comp%/") == 0)
+{
+  if (is_file (deconvertpath ("%comp%".$mediaobject_curr, "file"))) $mediaobject_curr = "%comp%".$mediaobject_curr;
+  elseif (is_file (deconvertpath ("%comp%/".$mediaobject_curr, "file"))) $mediaobject_curr = "%comp%/".$mediaobject_curr;
+}
+// add %comp% if not provided
+if (strpos ("_".$mediaobject, "%comp%/") == 0)
+{
+  if (is_file (deconvertpath ("%comp%".$mediaobject, "file"))) $mediaobject = "%comp%".$mediaobject;
+  elseif (is_file (deconvertpath ("%comp%/".$mediaobject, "file"))) $mediaobject = "%comp%/".$mediaobject;
+}
+
 // article prefix
 if (substr_count ($tagname, "art") == 1) $art = "art";
 else $art = "";
