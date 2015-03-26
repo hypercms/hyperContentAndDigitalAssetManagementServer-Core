@@ -771,6 +771,11 @@ changelog:
 - implementation of media object evaluation in media_edit_page and link object evaluation in link_edit_page
 - improvements in function setmedia by using function loadfile_fast for object loading
 - bug fix: wrong content-type specification in version_template
+- update of HTML5 video player to video.js version 4.12.5
+- bug fix: undefined variables in search_objectlist, hypercms_tplengine, db_connect_rdbms
+- implementation of new hypercms_tcpdf.class.php file with class hcmsPDF to extend standard TCPDF functionality
+- implementation of new function TCPDFdrawCropbox in class hcmsPDF
+- removed deprecated pdfsearch.class.php
 */
 
 // current version

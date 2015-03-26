@@ -306,8 +306,6 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
     // check for location path inside object variable
     if ($objectpath != "" && $items_row < $next_max)
     {
-      $ratio = "";
-      
       // check for location path inside folder variable
       if (substr_count ($objectpath, "/") > 0)
       {
@@ -475,6 +473,9 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
                         <td id=h".$items_row."_3 nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_type."</span></td>\n";
         $listview .= "</tr>\n"; 
         
+        // default value
+        $ratio = "Width";
+            
     	  // if there is a thumb file, display the thumb
       	if ($mediafile != false && $mediadir != "")
         {              
@@ -499,11 +500,6 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
               if ($imgratio >= 1) $ratio = "Width";
               // image width < height
               else $ratio = "Height";
-            }
-            // default value
-            else
-            {
-              $ratio = "Width";
             }
                       
             // galleryview - view option for locked multimedia objects
@@ -541,7 +537,7 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
           if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
           else $class_image = "";
                   
-    		  $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" style=\"border:0;\" ".$class_image." /></div>";
+    		  $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" style=\"border:0;\" ".$class_image." /></div>";
       	}
 
         // if linking is used display download buttons

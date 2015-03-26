@@ -116,39 +116,45 @@ elseif ($mediafile != "")
 // retrieving image metrics to update the height and width field
 if ($mediatype == "image") 
 {
-	// scalingfactor is 1 if not given
-	if ($scaling == "") $scaling = 1;
+  // scalingfactor is 1 if not given
+  if ($scaling == "") $scaling = 1;
   
-	// initialize mediaheight and mediawidth
-	$mediawidth = "";
-	$mediaheight = "";
+  // initialize mediaheight and mediawidth
+  $mediawidth = "";
+  $mediaheight = "";
   
-	// get file information
-	$media_path = getmedialocation ($site, $mediafile, "abs_path_media").$mediafile;
-	$media_size = @getimagesize ($media_path);
+  // get file information
+  $media_path = getmedialocation ($site, $mediafile, "abs_path_media").$mediafile;
+  $media_size = @getimagesize ($media_path);
 
   // define width and height
-	if (!empty ($media_size[3]))
+  if (!empty ($media_size[3]))
   {
-		// scaling images to reach given dpi 
-		$mediawidth = round ($media_size[0] * $scaling);
-		$mediaheight = round ($media_size[1] * $scaling);
+    // scaling images to reach given dpi 
+    $mediawidth = round ($media_size[0] * $scaling);
+    $mediaheight = round ($media_size[1] * $scaling);
 ?>
-	<script type="text/javascript">
+  <script type="text/javascript">
   <!--
-		if (parent.frames['controlFrame2'].document.forms['media'].elements['mediawidth'])
-    {
-      parent.frames['controlFrame2'].document.forms['media'].elements['mediawidth'].value = '<?php echo $mediawidth; ?>';
-    }
+  var inputfield;
+  
+  if (parent.frames['controlFrame2'].document.forms['media'].elements['mediawidth'])
+  {
+    inputfield = parent.frames['controlFrame2'].document.forms['media'].elements['mediawidth'];
     
-    if (parent.frames['controlFrame2'].document.forms['media'].elements['mediaheight'])
-    {
-		  parent.frames['controlFrame2'].document.forms['media'].elements['mediaheight'].value = '<?php echo $mediaheight; ?>';
-    }
+    if (inputfield.value == "") inputfield.value = '<?php echo $mediawidth; ?>';
+  }
+  
+  if (parent.frames['controlFrame2'].document.forms['media'].elements['mediaheight'])
+  {
+    inputfield = parent.frames['controlFrame2'].document.forms['media'].elements['mediaheight'];
+    
+    if (inputfield.value == "") inputfield.value = '<?php echo $mediaheight; ?>';
+  }
   -->
-	</script>
+  </script>
 <?php
-	}
+  }
 }
 ?>
 

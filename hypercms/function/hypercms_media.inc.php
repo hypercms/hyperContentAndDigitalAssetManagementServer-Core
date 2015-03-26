@@ -546,7 +546,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               // Options:
               // -s ... output size in width x height in pixel (WxH)
               // -f ... output format (file extension without dot [jpg, png, gif])
-              // -c ... cropy size
+              // -c ... crop x and y coordinates (XxY)
               // -b ... image brightness
               // -k .... image contrast
               // -cs ... color space of image, e.g. RGB, CMYK, gray
@@ -646,7 +646,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 if ($imagebrightness == 0) $imageBrightnessContrast .= "0x";
                 else $imageBrightnessContrast .= shellcmd_encode ($imagebrightness)."x";
                 
-                if ($imagecontrast == 0) $imageBrightnessContrast .= "0"; 
+                if ($imagecontrast == 0) $imageBrightnessContrast .= "0";
                 else $imageBrightnessContrast .= shellcmd_encode ($imagecontrast);
               }
               

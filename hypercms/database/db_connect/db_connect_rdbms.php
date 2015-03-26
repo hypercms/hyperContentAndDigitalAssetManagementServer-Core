@@ -1974,6 +1974,8 @@ function rdbms_getrecipients ($object)
     if ($done)
     {
       $i = 0;
+      $recipient = array();
+      
       while ($row = $db->getResultRow ('select'))
       {
         $recipient[$i]['recipient_id'] = $row['recipient_id'];
@@ -1981,7 +1983,8 @@ function rdbms_getrecipients ($object)
         $recipient[$i]['date'] = $row['date'];
         $recipient[$i]['sender'] = $row['sender']; 
         $recipient[$i]['user'] = $row['user'];  
-        $recipient[$i]['email'] = $row['email'];        
+        $recipient[$i]['email'] = $row['email'];
+               
         $i++;
       }
     }
@@ -1990,7 +1993,7 @@ function rdbms_getrecipients ($object)
     savelog ($db->getError());    
     $db->close();      
          
-    if (is_array ($recipient)) return $recipient;
+    if (!empty ($recipient) && sizeof ($recipient) > 0) return $recipient;
     else return false;
   }
   else return false;

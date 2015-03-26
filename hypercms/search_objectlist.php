@@ -508,8 +508,11 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                            <td id=h".$items_row."_2 width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_time."</span></td>
                            <td id=h".$items_row."_3 nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$item_site."</span></td>\n";
             $listview .= "</tr>\n";  
-                           
-        	  // if there is a thumb file, display the thumb
+
+            // default value
+            $ratio = "Width";
+            
+            // if there is a thumb file, display the thumb
           	if ($mediafile != false && $mediadir != "")
             {              
               // try to create thumbnail if not available
@@ -533,11 +536,6 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                   if ($imgratio >= 1) $ratio = "Width";
                   // image width < height
                   else $ratio = "Height";
-                }
-                // default value
-                else
-                {
-                  $ratio = "Width";
                 }
                           
                 // galleryview - view option for locked multimedia objects

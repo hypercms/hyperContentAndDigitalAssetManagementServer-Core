@@ -1101,7 +1101,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
          $siteaccess, $adminpermission, $setlocalpermission, $token, 
          $mgmt_lang_shortcut_default, $hcms_charset, $hcms_lang_name, $hcms_lang_shortcut, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang;
   
-  // define default values for the result array     
+  // define default values for the result array
+  $cat = ""; 
   $viewstore = "";
   $wf_role = ""; 
   $wf_token = ""; 
@@ -1671,7 +1672,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
     // ============================================ workflow ================================================
 
-    $result_workflow = checkworkflow ($site, $cat, $contentfile, $contentdata, $buildview, $viewstore, $user);
+    $result_workflow = checkworkflow ($site, $location, $page, $cat, $contentfile, $contentdata, $buildview, $viewstore, $user);
     
     $viewstore = $result_workflow['viewstore'];
     $buildview = $result_workflow['viewname'];
@@ -1882,9 +1883,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           // get group access
           $groupaccess = getattribute ($hypertag, "groups");          
           $groupaccess = checkgroupaccess ($groupaccess, $ownergroup);
-          
-          // set flag for found tag
-          //if (!isset($foundmeta[$hypertagname])) $foundmeta[$hypertagname] = false;
           
           // create head-buttons depending on buildview parameter setting  
           if ($buildview != "template" && (!isset ($editmeta[$hypertagname]) || $editmeta[$hypertagname] != false) && $onedit != "hidden" && $groupaccess == true)
@@ -2343,8 +2341,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $iccprofile = getattribute ($hypertag, "iccprofile");                    
         
             // set flag for edit button or text field           
-            if (!isset ($foundtxt[$id]) && $onedit != "hidden") $foundtxt[$id] = true; 
-            elseif (isset ($foundtxt[$id]) && $foundtxt[$id] == true) $foundtxt[$id] = false;               
+            if (empty ($foundtxt[$id]) && $onedit != "hidden") $foundtxt[$id] = true; 
+            elseif (!empty ($foundtxt[$id])) $foundtxt[$id] = false;               
           
             // check uniqueness      
             $tagu = "hyperCMS:".$searchtag."u id='".$id."'";
@@ -2715,7 +2713,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $_SESSION['contenttype_editor'] = $contenttype;
                         
                         // setting the toolbar
-                        if (!isset ($toolbar) || $toolbar == "") $toolbar = 'Default';
+                        if (empty ($toolbar)) $toolbar = 'Default';
 
                         if ($buildview == "formlock")
                         {
@@ -2748,7 +2746,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $_SESSION['contenttype_editor'] = $contenttype;                                              
                         
                         // setting the toolbar
-                        if (!isset ($toolbar) || $toolbar == "") $toolbar = 'Default';                        
+                        if (empty ($toolbar)) $toolbar = 'Default';                        
 
                         if ($buildview == "formlock")
                         {
@@ -2781,7 +2779,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $_SESSION['contenttype_editor'] = $contenttype;
                         
                         // setting the toolbar
-                        if (!isset ($toolbar) || $toolbar == "") $toolbar = 'Default';
+                        if (empty ($toolbar)) $toolbar = 'Default';
 
                         if ($buildview == "formlock")
                         {
@@ -3201,11 +3199,24 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // get tag id
             $id = getattribute ($hypertag, "id");
             
-            // set default values
-            if (empty ($hypertagname_align[$id])) $hypertagname_align[$id] = "";
-            if (empty ($hypertagname_text[$id])) $hypertagname_text[$id] = "";
-            if (empty ($hypertagname_width[$id])) $hypertagname_width[$id] = "";
-            if (empty ($hypertagname_height[$id])) $hypertagname_height[$id] = "";
+            // set default values if not set
+            if (!isset ($hypertagname_align[$id])) $hypertagname_align[$id] = "";
+            if (!isset ($hypertagname_text[$id])) $hypertagname_text[$id] = "";
+            if (!isset ($hypertagname_width[$id])) $hypertagname_width[$id] = "";
+            if (!isset ($hypertagname_height[$id])) $hypertagname_height[$id] = "";
+            if (!isset ($hypertag_file[$id][$tagid])) $hypertag_file[$id][$tagid] = "";
+            if (!isset ($hypertag_text[$id][$tagid])) $hypertag_text[$id][$tagid] = "";
+            if (!isset ($hypertag_align[$id][$tagid])) $hypertag_align[$id][$tagid] = "";
+            if (!isset ($hypertag_width[$id][$tagid])) $hypertag_width[$id][$tagid] = "";
+            if (!isset ($hypertag_height[$id][$tagid])) $hypertag_height[$id][$tagid] = "";
+            if (!isset ($onpublish_file[$id][$tagid])) $onpublish_file[$id][$tagid] = "";
+            if (!isset ($onpublish_text[$id][$tagid])) $onpublish_text[$id][$tagid] = "";
+            if (!isset ($onpublish_align[$id][$tagid])) $onpublish_align[$id][$tagid] = "";
+            if (!isset ($onpublish_width[$id][$tagid])) $onpublish_width[$id][$tagid] = "";
+            if (!isset ($onpublish_height[$id][$tagid])) $onpublish_height[$id][$tagid] = "";
+            if (!isset ($onedit_file[$id][$tagid])) $onedit_file[$id][$tagid] = "";
+            if (!isset ($hypertag_file[$id][$tagid])) $hypertag_file[$id][$tagid] = "";
+            if (!isset ($language_info[$id])) $language_info[$id] = "";
             
             // collect unique id's and set position/key of hypertag
             if (!in_array ($id, $id_array))
@@ -3220,29 +3231,29 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             if ($buildview != "template")
             {
               // set flag for each found media tag       
-              if ($hypertagname == $searchtag."file" && !isset ($file_found[$id]))
+              if ($hypertagname == $searchtag."file" && empty ($file_found[$id]))
               {                   
                 $file_found[$id] = true; 
               }                       
-              elseif ($hypertagname == $searchtag."alttext" && !isset($text_found[$id]))
+              elseif ($hypertagname == $searchtag."alttext" && empty ($text_found[$id]))
               {
                 $text_found[$id] = true; 
               }
-              elseif ($hypertagname == $searchtag."align" && !isset($align_found[$id]))
+              elseif ($hypertagname == $searchtag."align" && empty ($align_found[$id]))
               {
                 $align_found[$id] = true;
               }
-              elseif ($hypertagname == $searchtag."width" && !isset($width_found[$id]))
+              elseif ($hypertagname == $searchtag."width" && empty ($width_found[$id]))
               {
                 $width_found[$id] = true; 
               }
-              elseif ($hypertagname == $searchtag."height" && !isset($height_found[$id]))
+              elseif ($hypertagname == $searchtag."height" && empty ($height_found[$id]))
               {
                 $height_found[$id] = true;
               }            
             
               // check if media content for id is already set using db_connect
-              if (!isset ($mediabot[$id]) || $mediabot[$id] == "")
+              if (empty ($mediabot[$id]))
               {
                 // read content using db_connect
                 if (isset ($db_connect) && $db_connect != "") 
@@ -3269,14 +3280,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               if ($db_connect_data == false)
               {                  
                 // get the whole media object information of the content container
-                if (!isset ($mediabot[$id]) || $mediabot[$id] == "")
+                if (empty ($mediabot[$id]))
                 {
                   $bufferarray = selectcontent ($contentdata, "<media>", "<media_id>", $id);
                   $mediabot[$id] = $bufferarray[0];         
                 } 
                 
                 // get the media file name and object link from mediabot            
-                if ($hypertagname == $searchtag."file")
+                if ($hypertagname == $searchtag."file" && !isset ($mediafilebot[$id]))
                 {                   
                   $bufferarray = getcontent ($mediabot[$id], "<mediafile>");
                   $mediafilebot[$id] = $bufferarray[0];
@@ -3298,7 +3309,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   }                              
                 }                     
                 // get the media alttext name from mediabot              
-                elseif ($hypertagname == $searchtag."alttext" && !isset($mediaalttextbot[$id]))
+                elseif ($hypertagname == $searchtag."alttext" && !isset ($mediaalttextbot[$id]))
                 {
                   $bufferarray = getcontent ($mediabot[$id], "<mediaalttext>");
                   $mediaalttextbot[$id] = $bufferarray[0]; 
@@ -3306,7 +3317,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $mediaalttextbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaalttextbot[$id]);                  
                 }
                 // get the media alignment name from mediabot  
-                elseif ($hypertagname == $searchtag."align" && !isset($mediaalignbot[$id]))
+                elseif ($hypertagname == $searchtag."align" && !isset ($mediaalignbot[$id]))
                 {
                   $bufferarray = getcontent ($mediabot[$id], "<mediaalign>");
                   $mediaalignbot[$id] = $bufferarray[0];
@@ -3314,7 +3325,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $mediaalignbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaalignbot[$id]);                    
                 }
                 // get the media width name from mediabot  
-                elseif ($hypertagname == $searchtag."width" && !isset($mediawidthbot[$id]))
+                elseif ($hypertagname == $searchtag."width" && !isset ($mediawidthbot[$id]))
                 {
                   $bufferarray = getcontent ($mediabot[$id], "<mediawidth>");
                   $mediawidthbot[$id] = $bufferarray[0];
@@ -3322,7 +3333,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $mediawidthbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediawidthbot[$id]);                    
                 }
                 // get the media height name from mediabot  
-                elseif ($hypertagname == $searchtag."height" && !isset($mediaheightbot[$id]))
+                elseif ($hypertagname == $searchtag."height" && !isset ($mediaheightbot[$id]))
                 {
                   $bufferarray = getcontent ($mediabot[$id], "<mediaheight>");
                   $mediaheightbot[$id] = $bufferarray[0];
@@ -3426,8 +3437,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           
           $tagid_max = $tagid;
           
+          // loop for each tag ID
           foreach ($id_array as $id)
           {
+            // set default values if the tags and therefore their content was not found
+            if (!isset ($mediaalttextbot[$id])) $mediaalttextbot[$id] = "";
+            if (!isset ($mediaalignbot[$id])) $mediaalignbot[$id] = "";
+            if (!isset ($mediawidthbot[$id])) $mediawidthbot[$id] = "";
+            if (!isset ($mediaheightbot[$id])) $mediaheightbot[$id] = "";
+          
             // get position for form item
             $key = $position[$id];
             
@@ -3455,17 +3473,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             }    
             
             // set flag for edit button or text field           
-            if (!isset ($foundimg[$id]) && $onedit != "hidden") $foundimg[$id] = true; 
-            elseif (isset ($foundtimg[$id]) && $foundimg[$id] == true) $foundimg[$id] = false;                
+            if (empty ($foundimg[$id]) && $onedit != "hidden") $foundimg[$id] = true; 
+            elseif (!empty ($foundtimg[$id])) $foundimg[$id] = false;                
             
             // set media bots for non existing hyperCMS tags
             if ($buildview != "template")
             {
-              if (!isset ($file_found[$id])) $mediafilebot[$id] = "*Null*"; 
-              if (!isset ($text_found[$id])) $mediaalttextbot[$id] = "*Null*"; 
-              if (!isset ($align_found[$id])) $mediaalignbot[$id] = "*Null*";  
-              if (!isset ($width_found[$id])) $mediawidthbot[$id] = "*Null*";  
-              if (!isset ($height_found[$id])) $mediaheightbot[$id] = "*Null*";             
+              if (empty ($file_found[$id])) $mediafilebot[$id] = "*Null*"; 
+              if (empty ($text_found[$id])) $mediaalttextbot[$id] = "*Null*"; 
+              if (empty ($align_found[$id])) $mediaalignbot[$id] = "*Null*";  
+              if (empty ($width_found[$id])) $mediawidthbot[$id] = "*Null*";  
+              if (empty ($height_found[$id])) $mediaheightbot[$id] = "*Null*";             
             }
             // for buildview = template
             else
@@ -3521,7 +3539,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 											// check if dpi is valid and than calculate scalingfactor
 											if (!empty ($mediadpi[$id]) && $mediadpi[$id] > 0 && $mediadpi[$id] < 1000) 
 											{
-												$scalingfactor = 72 / $mediadpi[$id]; 
+												$scalingfactor = round ((72 / $mediadpi[$id]), 2); 
 											}
                       else $scalingfactor = "";
 											
@@ -3876,10 +3894,19 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // get tag id
             $id = getattribute ($hypertag, "id");
             
-            // set default values
-            if (!empty ($hypertagname_href[$id])) $hypertagname_href[$id] = "";
-            if (!empty ($hypertagname_text[$id])) $hypertagname_text[$id] = "";
-            if (!empty ($hypertagname_target[$id])) $hypertagname_target[$id] = "";
+            // set default values if not set
+            if (!isset ($hypertagname_href[$id])) $hypertagname_href[$id] = "";
+            if (!isset ($hypertagname_text[$id])) $hypertagname_text[$id] = "";
+            if (!isset ($hypertagname_target[$id])) $hypertagname_target[$id] = "";
+            if (!isset ($hypertag_href[$id][$tagid])) $hypertag_href[$id][$tagid] = "";
+            if (!isset ($hypertag_target[$id][$tagid])) $hypertag_target[$id][$tagid] = "";
+            if (!isset ($hypertag_text[$id][$tagid])) $hypertag_text[$id][$tagid] = "";
+            if (!isset ($onpublish_href[$id][$tagid])) $onpublish_href[$id][$tagid] = "";
+            if (!isset ($onpublish_target[$id][$tagid])) $onpublish_target[$id][$tagid] = "";
+            if (!isset ($onpublish_text[$id][$tagid])) $onpublish_text[$id][$tagid] = "";
+            if (!isset ($onedit_href[$id][$tagid])) $onedit_href[$id][$tagid] = "";
+            if (!isset ($language_info[$id])) $language_info[$id] = "";
+            if (!isset ($targetlist[$id])) $targetlist[$id] = "";
       
             // collect unique id's and set position/key of hypertag
             if (!in_array ($id, $id_array))
@@ -3887,34 +3914,34 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $id_array[] = $id;
               
               // get key (position) of array item
-              $position[$id] = $key;          
+              $position[$id] = $key;
             }         
           
             // get tag name
-            $hypertagname = gethypertagname ($hypertag);  
+            $hypertagname = gethypertagname ($hypertag);
                         
             // collect unique id's
-            if (!in_array ($id, $id_array)) $id_array[] = $id;     
-        
+            if (!in_array ($id, $id_array)) $id_array[] = $id; 
+
             // get link content
             if ($buildview != "template")
             {
-              // set flag for each found link tag           
-              if ($hypertagname == $searchtag."href" && !isset ($href_found[$id]))
+              // set flag for each found link tag
+              if ($hypertagname == $searchtag."href" && empty ($href_found[$id]))
               {
                 $href_found[$id] = true;
               }                       
-              elseif ($hypertagname == $searchtag."target" && !isset ($target_found[$id]))
-              { 
-                $target_found[$id] = true; 
-              }
-              elseif ($hypertagname == $searchtag."text" && !isset ($text_found[$id]))
+              elseif ($hypertagname == $searchtag."target" && empty ($target_found[$id]))
               {
-                $text_found[$id] = true; 
+                $target_found[$id] = true;
+              }
+              elseif ($hypertagname == $searchtag."text" && empty ($text_found[$id]))
+              {
+                $text_found[$id] = true;
               }            
             
               // check if link content for id is already set using db_connect
-              if (!isset ($linkbot[$id]) || $linkbot[$id] == "")
+              if (empty ($linkbot[$id]))
               {            
                 // read content using db_connect
                 if (isset ($db_connect) && $db_connect != "") 
@@ -3938,10 +3965,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               if ($db_connect_data == false)
               {          
                 // get the whole link information of the content container
-                if (!isset ($linkbot[$id]) || $linkbot[$id] == "")
+                if (empty ($linkbot[$id]))
                 {
                   $bufferarray = selectcontent ($contentdata, "<link>", "<link_id>", $id);
-                  $linkbot[$id] = $bufferarray[0];         
+                  $linkbot[$id] = $bufferarray[0];
                 } 
           
                 // get the link file name from linkbot            
@@ -4023,8 +4050,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           
           $tagid_max = $tagid;
           
+          // loop for each tag ID
           foreach ($id_array as $id)
           {
+            // set default values if the tags and therefore their content was not found
+            if (!isset ($linkhrefbot[$id])) $linkhrefbot[$id] = "";
+            if (!isset ($linktargetbot[$id])) $linktargetbot[$id] = "";
+            if (!isset ($linktextbot[$id])) $linktextbot[$id] = "";
+            
             // get position for form item
             $key = $position[$id];          
             
@@ -4054,9 +4087,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // set link bots for non existing hyperCMS tags
             if ($buildview != "template")
             {
-              if (!isset ($href_found[$id])) $linkhrefbot[$id] = "*Null*"; 
-              if (!isset ($target_found[$id])) $linktargetbot[$id] = "*Null*"; 
-              if (!isset ($text_found[$id])) $linktextbot[$id] = "*Null*";         
+              if (empty ($href_found[$id])) $linkhrefbot[$id] = "*Null*"; 
+              if (empty ($target_found[$id])) $linktargetbot[$id] = "*Null*"; 
+              if (empty ($text_found[$id])) $linktextbot[$id] = "*Null*";         
             }
             // for buildview = template set 
             else
@@ -4106,7 +4139,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link
                       if ($buildview == "cmsview" || $buildview == 'inlineview')
                       {
-                        $taglink = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."frameset_edit_link.php?view=".$buildview."&site=".$site."&cat=".$cat."&location=".$location_esc."&page=".$page."&db_connect=".$db_connect."&id=".$id."&label=".urlencode($label[$id])."&tagname=link&linkhref_curr=".urlencode($linkhrefbot[$id])."&linkhref=".urlencode($linkhrefbot[$id])."&linktarget=".urlencode($linktargetbot[$id])."&targetlist=".$targetlist[$id]."&linktext=".urlencode($linktextbot[$id])."&contenttype=".$contenttype."&token=".$token."\"><img src=\"".getthemelocation()."img/button_link.gif\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['set-link'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['set-link'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a>\n";
+                        $taglink = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."frameset_edit_link.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label[$id])."&tagname=link&linkhref_curr=".url_encode($linkhrefbot[$id])."&linkhref=".url_encode($linkhrefbot[$id])."&linktarget=".url_encode($linktargetbot[$id])."&targetlist=".url_encode($targetlist[$id])."&linktext=".url_encode($linktextbot[$id])."&contenttype=".url_encode($contenttype)."&token=".$token."\"><img src=\"".getthemelocation()."img/button_link.gif\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['set-link'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['set-link'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a>\n";
                       }
                       elseif ($buildview == "formedit" || ($buildview == "formmeta" && $infotype[$id] == "meta") || $buildview == "formlock")
                       {  
@@ -4467,8 +4500,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $language_info = getattribute ($hypertag, "language");                
             
             // set flag for edit button            
-            if (!isset ($foundcomp[$id])&& $onedit != "hidden") $foundcomp[$id] = true; 
-            elseif (isset ($foundcomp[$id]) && $foundcomp[$id] == true) $foundcomp[$id] = false;                      
+            if (empty ($foundcomp[$id])&& $onedit != "hidden") $foundcomp[$id] = true; 
+            elseif (!empty ($foundcomp[$id])) $foundcomp[$id] = false;                      
           
             // check uniqueness      
             $tags = "hyperCMS:".$searchtag."s id='".$id."'";
@@ -5423,7 +5456,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // in Generator mode we are saving the viewstore, running it and saving the output to the generated file
             if ($application == "generator")
             {
-              // when we are generating the viewstore will be saved to another file
+              // when we are using the generator the generated viewstore will be saved into a file
               if ($mediafile == "") 
               {
                 $mediafile_info = getfileinfo ($site, $page, "comp");

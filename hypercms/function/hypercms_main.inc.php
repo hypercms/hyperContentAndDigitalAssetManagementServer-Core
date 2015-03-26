@@ -4492,7 +4492,7 @@ function rejectobject ($site, $location, $object, $item_id, $user, $message, $se
 
 // -------------------------------------------- checkworkflow -------------------------------------------
 // function: checkworkflow()
-// input: publication name [string], category [page,comp], container name [string], container [XML string], view name [string], view store [string], user name [string]
+// input: publication name [string], location [string], object name [string], category [page,comp] (optional), container name [string] (optional), container [XML string] (optional), view name [string] (optional), view store [string] (optional), user name [string]
 // output: result array
 // requires: config.inc.php, fileoperation
 
@@ -4500,7 +4500,7 @@ function rejectobject ($site, $location, $object, $item_id, $user, $message, $se
 // help function for function buildview to evaluate the workflow of an object and return the manipulated view store, view name, workflow ID, 
 // workflow role and the encrypted workflow token.
 
-function checkworkflow ($site, $cat, $contentfile, $contentdata, $buildview, $viewstore, $user)
+function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $contentdata="", $buildview="cmsview", $viewstore="", $user)
 {
   global $mgmt_config;
 
@@ -4512,19 +4512,36 @@ function checkworkflow ($site, $cat, $contentfile, $contentdata, $buildview, $vi
   $wf_token = "";
   
   // do not execute for container versions
-  if (valid_publicationname ($site) && ($cat=="page" || $cat == "comp") && valid_objectname ($contentfile) && strpos ("_".strrchr ($contentfile, "."), ".v_") == 0 && $buildview != "" && $viewstore != "" && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && ($contentfile == "" || strpos ("_".strrchr ($contentfile, "."), ".v_") == 0) && $buildview != "" && valid_objectname ($user))
   {
+    // check category
+    if ($cat == "")
+    {
+      $cat = getcategory ($site, $location);
+    }
+    
+    // check contentfile and viewstore
+    if ($contentfile == "" || $viewstore == "")
+    {
+      $objectinfo = getobjectinfo ($site, $location, $page, $user);
+      
+      if (!empty ($objectinfo['container'])) $contentfile = $objectinfo['container'];
+      if (!empty ($objectinfo['template'])) $templatefile = $objectinfo['template'];
+      
+      if ($viewstore == "") $viewstore = loadtemplate ($site, $templatefile);
+    }
+    
     // check contentdata
-    if ($contentdata == "")
+    if ($contentfile != "" && $contentdata == "")
     {
       $contentdata = loadcontainer ($contentfile, "work", $user);
     }
-  
+
     // get all hyperCMS tags
     $hypertag_array = gethypertag ($viewstore, "workflow", 0);
     
     // check view
-    if (in_array ($buildview, array("cmsview","inlineview","publish","formedit","formmeta")))
+    if (in_array ($buildview, array("cmsview","inlineview","publish","formedit","formmeta")) && ($cat == "page" || $cat == "comp") && $contentfile != "" && $contentdata != "" && $viewstore != "")
     {
       // get applied workflows on folders
       if (is_file ($mgmt_config['abs_path_data']."workflow_master/".$site.".".$cat.".folder.dat"))
@@ -4537,7 +4554,7 @@ function checkworkflow ($site, $cat, $contentfile, $contentdata, $buildview, $vi
         
           if (is_array ($wf_array) && sizeof ($wf_array) >= 1)
           {   
-            $folder_current = convertpath ($site, $location, "$cat");
+            $folder_current = convertpath ($site, $location, $cat);
           
             // find workflows that would apply on the current folder
             foreach ($wf_array as $wf_folder)
@@ -14460,7 +14477,7 @@ function publishobject ($site, $location, $page, $user)
         }
       }
       
-      // execute eventsystem for multimedia components and folders (deprected since version 5.7.5)
+      // execute eventsystem for multimedia components and folders (deprecated since version 5.7.5)
       // if ($container != "" && (($media != false && $application != "generator") || $page == ".folder")) 
       // {
       //  $contentdata = loadcontainer ($container_id, "work", $user);
@@ -14564,14 +14581,14 @@ function publishobject ($site, $location, $page, $user)
                 if ($release >= 3 && $application != "media" && ($viewstore != "" || $application == "generator"))
                 {
                   // eventsystem
-                  if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
-                    onpublishobject_pre ($site, $cat, $location, $page, $contentfile, $contentdata, $templatefile, $templatedata, $viewstore, $user);   
+                  if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+                    onpublishobject_pre ($site, $cat, $location, $page, $contentfile, $contentdata, $templatefile, $templatedata, $viewstore, $user);
                   
                   // get the file extension of the object file
-                  $file_info = getfileinfo ($site, $page, $cat);     
+                  $file_info = getfileinfo ($site, $page, $cat);
   
                   // define new object file name
-                  $page_new = $file_info['filename'].".".$templateext;          
+                  $page_new = $file_info['filename'].".".$templateext;
   
                   // rename object file if offline (unpublished)
                   if ($file_info['published'] == false)
@@ -14579,7 +14596,7 @@ function publishobject ($site, $location, $page, $user)
                     $test = rename ($location.$page, $location.$page_new);
                     
                     // remote client
-                    remoteclient ("rename", "abs_path_".$cat, $site, $location, "", $page, $page_new);                  
+                    remoteclient ("rename", "abs_path_".$cat, $site, $location, "", $page, $page_new);
                     
                     if ($test == false)
                     {
@@ -14594,12 +14611,12 @@ function publishobject ($site, $location, $page, $user)
                     $test = renamefile ($site, $location, $page, $page_new, $user);
        
                     // remote client
-                    remoteclient ("rename", "abs_path_".$cat, $site, $location, "", $page, $page_new);                   
+                    remoteclient ("rename", "abs_path_".$cat, $site, $location, "", $page, $page_new);         
                     
                     if ($test['result'] == false)
                     {
                       $errcode = "20111";
-                      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|renamefile failed for ".$location_esc.$page; 
+                      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|renamefile failed for ".$location_esc.$page;
                     }
                     else
                     {
@@ -14608,7 +14625,7 @@ function publishobject ($site, $location, $page, $user)
                   }
                   
                   // save object file
-                  $result_save = savefile ($location, $page_new, $viewstore); 
+                  $result_save = savefile ($location, $page_new, $viewstore);
        
                   // remote client
                   remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page_new, "");
