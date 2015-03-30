@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template>
 <name>PDF-StandardPage</name>
-<user>msertkan</user>
+<user>hypercms</user>
 <category>comp</category>
 <extension>page</extension>
 <application>htm</application>
@@ -55,7 +55,7 @@ if (isset($pdf) && is_object($pdf))
 <div />
 ";
 	// Print text using writeHTMLCell()
-	$pdf->writeHTMLCell($w=160, $h=247, $x=25, $y=25, $html, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+	$pdf->writeHTMLCell($w=160, $h=247, $x=25, $y=25, $html, $border=0, $ln=1, $fill=0, $reset=true, $align='', $autopadding=true);
 	
 	//bookmarking for table of content => don't forget to include PDF-ServiceBookmark in the Page Container
 	bookmark($pdf, "%container%", $text_id = "MainText");
@@ -65,7 +65,7 @@ if (isset($pdf) && is_object($pdf))
 	$pageNo =  $pdf->PageNo() + $pageOffset;
 	//display pageNo
 	$footer = '<span style="font-family:verdana,geneva,sans-serif; font-size: 10px;" >'.$pageNo.'</span>';
-	$pdf->writeHTMLCell($w=10, $h=10, $x=195, $y=282, $footer, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+	$pdf->writeHTMLCell($w=10, $h=10, $x=195, $y=282, $footer, $border=0, $ln=1, $fill=0, $reset=true, $align='', $autopadding=true);
 	
 }
 scriptend]]]></content>

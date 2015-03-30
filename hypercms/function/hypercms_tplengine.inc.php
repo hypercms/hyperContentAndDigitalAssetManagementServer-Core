@@ -2226,7 +2226,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       }      
 
       // =================================================== text content ===================================================
-      
+
       $searchtag_array[0] = "arttext";
       $searchtag_array[1] = "text";
       $searchtag_array[2] = "comment";
@@ -2239,6 +2239,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $label = "";
       $language_info = "";
       $add_submittext = "";
+      $temp_mem_id = array();
       
       foreach ($searchtag_array as $searchtag)
       {
@@ -2491,7 +2492,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $contentbot = str_replace ("<![CDATA[", "", $contentbot);
                   $contentbot = str_replace ("]]>", "", $contentbot);
                 }
-                //replace \r and \n with <br /> (important for non-formatted texts)
+                // replace \r and \n with <br /> (important for non-formatted texts)
                 elseif ($hypertagname == $searchtag."u" && $application != "xml" && $buildview != "formedit" && $buildview != "formmeta" && $buildview != "formlock")
                 {
                   if (@substr_count ($contentbot, "\r\n") >= 1)
@@ -2519,7 +2520,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 }
 								
 								// replace img-src with reference to the newly generated img if a colorspace is given
-								if (!empty ($contentbot) && ($buildview == "publish") && $hypertagname == $searchtag."f" && ($colorspace != "" || $iccprofile != ""))
+								if (!empty ($contentbot) && ($buildview == "publish") && $hypertagname == $searchtag."f" && ($colorspace != "" || $iccprofile != "") && !in_array ($id, $temp_mem_id))
                 {
 									//create new dom object 
 									$dom = new DOMDocument();
@@ -2535,12 +2536,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 										// get abs location of the image
 										$imgdir = getmedialocation ($site, $source, "abs_path_media");
 										$imginfo = getfileinfo ($site, $source, "comp");
+                    // target dir
+                    $viewdir = $mgmt_config['abs_path_cms']."temp/view/";
 										//convert img to cmyk (default)
-										$destination_file = convertimage ($site, $imgdir.$site."/".$imginfo['file'], $imgdir.$site, "jpg", $colorspace, $iccprofile);
-                    // get url location of the image
-                    $imgurl = getmedialocation ($site, $destination_file, "url_path_media");
+										$destination_file = convertimage ($site, $imgdir.$site."/".$imginfo['file'], $viewdir, "jpg", $colorspace, $iccprofile);
                     // define url of converted image
-										$imagelocation['destination'][] = $imgurl.$site."/".$destination_file;
+										$imagelocation['destination'][] = $mgmt_config['url_path_cms']."temp/view/".$destination_file;
 									}
                   
 									// replace the src attributes in the img tags with
@@ -2548,6 +2549,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   {
                     $contentbot = str_replace ($imagelocation['source'], $imagelocation['destination'], $contentbot);
                   }
+                  
+                  // remember ID to avoid double conversion
+                  $temp_mem_id[] = $id;
 								}
                 
                 // replace %variables% with pathes in text content
@@ -3172,6 +3176,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $onedit_file = array();
       $label = array();
       $language_info = array();
+      $temp_mem_id = array();
       
       foreach ($searchtag_array as $searchtag)
       {
@@ -3262,7 +3267,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   
                   if ($db_connect_data != false)
                   {
-                    $mediafilebot[$id] = $db_connect_data['file'];
+                    $mediafilebot[$id][$tagid] = $db_connect_data['file'];
                     $mediaobjectbot[$id] = $db_connect_data['object'];
                     $mediaalttextbot[$id] = $db_connect_data['alttext'];
                     $mediaalignbot[$id] = $db_connect_data['align']; 
@@ -3287,25 +3292,25 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 } 
                 
                 // get the media file name and object link from mediabot            
-                if ($hypertagname == $searchtag."file" && !isset ($mediafilebot[$id]))
+                if ($hypertagname == $searchtag."file" && !isset ($mediafilebot[$id][$tagid]))
                 {                   
                   $bufferarray = getcontent ($mediabot[$id], "<mediafile>");
-                  $mediafilebot[$id] = $bufferarray[0];
+                  $mediafilebot[$id][$tagid] = $bufferarray[0];
                   $bufferarray = getcontent ($mediabot[$id], "<mediaobject>");
                   $mediaobjectbot[$id] = $bufferarray[0];    
                   
                   // check if linked multimedia component exists
-                  if ($mediafilebot[$id] == "")
+                  if (empty ($mediafilebot[$id][$tagid]))
                   {
                     $mediaobjectpath = deconvertpath ($mediaobjectbot[$id], "file");
                     $media_data = loadfile (getlocation ($mediaobjectpath), getobject ($mediaobjectpath));
                     
                     if ($media_data != false)
                     {
-                      $mediafilebot[$id] = $mediasite."/".getfilename ($media_data, "media");
-                      $contentdata = setcontent ($contentdata, "<media>", "<mediafile>", $mediafilebot[$id], "<media_id>", $id);
+                      $mediafilebot[$id][$tagid] = $mediasite."/".getfilename ($media_data, "media");
+                      $contentdata = setcontent ($contentdata, "<media>", "<mediafile>", $mediafilebot[$id][$tagid], "<media_id>", $id);
                     }
-                    else $mediafilebot[$id] = "";  
+                    else $mediafilebot[$id][$tagid] = "";  
                   }                              
                 }                     
                 // get the media alttext name from mediabot              
@@ -3362,8 +3367,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 								// get dpi for scaling
                 $mediadpi[$id] = getattribute ($hypertag, "dpi");
                 // get colorspace and ICC profile
-                $mediacolorspace[$id] = getattribute ($hypertag, "colorspace");
-                $mediaiccprofile[$id] = getattribute ($hypertag, "iccprofile");    	
+                $mediacolorspace[$id][$tagid] = getattribute ($hypertag, "colorspace");
+                $mediaiccprofile[$id][$tagid] = getattribute ($hypertag, "iccprofile");
+                // get path type [file,url,abs]
+                $mediapathtype[$id][$tagid] = getattribute ($hypertag, "pathtype");
               }                  
               elseif ($hypertagname == $searchtag."alttext")
               {
@@ -3394,14 +3401,18 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               if (empty ($language_info[$id])) $language_info[$id] = getattribute ($hypertag, "language");
 
   						// replace image with reference to the newly generated image if a colorspace or ICC profile is given
-  						if (!empty ($mediafilebot[$id]) && $buildview == "publish" && $hypertagname == $searchtag."file" && ($mediacolorspace[$id] != "" || $mediaiccprofile[$id] != ""))
+  						if (!empty ($mediafilebot[$id][$tagid]) && $buildview == "publish" && $hypertagname == $searchtag."file" && (!empty ($mediacolorspace[$id][$tagid]) || !empty ($mediaiccprofile[$id][$tagid])) && !in_array ($id, $temp_mem_id))
               {
   							// get abs location of the image
-  						  $imgdir = getmedialocation ($site, $mediafilebot[$id], "abs_path_media");
+  						  $imgdir = getmedialocation ($site, $mediafilebot[$id][$tagid], "abs_path_media");
+                // target dir
+                $viewdir = $mgmt_config['abs_path_cms']."temp/view/";
   						  // convert image
-  						  $mediafilebot_new = convertimage ($site, $imgdir.$mediafilebot[$id], $imgdir.$site, "jpg", $mediacolorspace[$id], $mediaiccprofile[$id]);
+  						  $mediafilebot_new = convertimage ($site, $imgdir.$mediafilebot[$id][$tagid], $viewdir, "jpg", $mediacolorspace[$id][$tagid], $mediaiccprofile[$id][$tagid]);
   						  // check converted image
-                if ($mediafilebot_new != false) $mediafilebot[$id] = $site."/".$mediafilebot_new;
+                if ($mediafilebot_new != false) $mediafilebot[$id][$tagid] = $mediafilebot_new;
+                // remember ID to avoid double conversion
+                $temp_mem_id[] = $id;
   						}
             }
             // if buildview = template
@@ -3479,7 +3490,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // set media bots for non existing hyperCMS tags
             if ($buildview != "template")
             {
-              if (empty ($file_found[$id])) $mediafilebot[$id] = "*Null*"; 
+              if (empty ($file_found[$id])) $mediafilebot[$id][$tagid] = "*Null*"; 
               if (empty ($text_found[$id])) $mediaalttextbot[$id] = "*Null*"; 
               if (empty ($align_found[$id])) $mediaalignbot[$id] = "*Null*";  
               if (empty ($width_found[$id])) $mediawidthbot[$id] = "*Null*";  
@@ -3488,7 +3499,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // for buildview = template
             else
             {
-              $mediafilebot[$id] = ""; 
+              $mediafilebot[$id][$tagid] = ""; 
               $mediaalttextbot[$id] = ""; 
               $mediaalignbot[$id] = "";  
               $mediawidthbot[$id] = ""; 
@@ -3546,7 +3557,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link 
                       if ($buildview == "cmsview" || $buildview == 'inlineview')
                       {
-                        $taglink = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."frameset_edit_media.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label[$id])."&tagname=media&mediacat=comp&mediafile=".url_encode($mediafilebot[$id])."&mediaobject_curr=".url_encode($mediaobjectbot[$id])."&mediaobject=".url_encode($mediaobjectbot[$id])."&mediaalttext=".url_encode($mediaalttextbot[$id])."&mediaalign=".url_encode($mediaalignbot[$id])."&mediawidth=".url_encode($mediawidthbot[$id])."&mediaheight=".url_encode($mediaheightbot[$id])."&scaling=".url_encode($scalingfactor)."&mediatype=".url_encode($mediatype[$id])."&contenttype=".url_encode($contenttype)."&token=".$token."\"><img src=\"".getthemelocation()."img/button_media.gif\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a>\n";
+                        $taglink = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."frameset_edit_media.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label[$id])."&tagname=media&mediacat=comp&mediafile=".url_encode($mediafilebot[$id][$tagid])."&mediaobject_curr=".url_encode($mediaobjectbot[$id])."&mediaobject=".url_encode($mediaobjectbot[$id])."&mediaalttext=".url_encode($mediaalttextbot[$id])."&mediaalign=".url_encode($mediaalignbot[$id])."&mediawidth=".url_encode($mediawidthbot[$id])."&mediaheight=".url_encode($mediaheightbot[$id])."&scaling=".url_encode($scalingfactor)."&mediatype=".url_encode($mediatype[$id])."&contenttype=".url_encode($contenttype)."&token=".$token."\"><img src=\"".getthemelocation()."img/button_media.gif\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a>\n";
 											}
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -3554,15 +3565,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         {
                           $taglink = " <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['mediaobject[".$id."]'],'','scrollbars=yes,resizable=yes,width=800,height=600', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" align=\"absmiddle\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".$hcms_lang['edit'][$lang]."\" />
                           <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['".$hypertagname_file[$id]."[".$id."]']); deleteEntry(document.forms['hcms_formview'].elements['mediaobject[".$id."]']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" align=\"absmiddle\" alt=\"".$hcms_lang['delete'][$lang]."\" title=\"".$hcms_lang['delete'][$lang]."\" />
-                          <img onClick=\"setSaveType('form_so', '".$mgmt_config['url_path_cms']."frameset_edit_media.php?view=".url_encode($buildview)."&savetype=form_so&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&contentfile=".url_encode($contentfile)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".urlencode($label[$id])."&tagname=media&mediacat=comp&mediafile=".url_encode($mediafilebot[$id])."&mediaobject_curr=".url_encode($mediaobjectbot[$id])."&mediaobject=' + getValue('".$hypertagname_file[$id]."[".$id."]','') + '&mediaalttext=' + getValue('".$hypertagname_text[$id]."[".$id."]','*Null*') + '&mediaalign=' + getSelectedOption('".$hypertagname_align[$id]."[".$id."]','*Null*') + '&mediawidth=' + getValue('".$hypertagname_width[$id]."[".$id."]','*Null*') + '&mediaheight=' + getValue('".$hypertagname_height[$id]."[".$id."]','*Null*') + '&scaling=".url_encode($scalingfactor)."&mediatype=".url_encode($mediatype[$id])."&contenttype=".url_encode($contenttype)."');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" />\n";
+                          <img onClick=\"setSaveType('form_so', '".$mgmt_config['url_path_cms']."frameset_edit_media.php?view=".url_encode($buildview)."&savetype=form_so&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&contentfile=".url_encode($contentfile)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".urlencode($label[$id])."&tagname=media&mediacat=comp&mediafile=".url_encode($mediafilebot[$id][$tagid])."&mediaobject_curr=".url_encode($mediaobjectbot[$id])."&mediaobject=' + getValue('".$hypertagname_file[$id]."[".$id."]','') + '&mediaalttext=' + getValue('".$hypertagname_text[$id]."[".$id."]','*Null*') + '&mediaalign=' + getSelectedOption('".$hypertagname_align[$id]."[".$id."]','*Null*') + '&mediawidth=' + getValue('".$hypertagname_width[$id]."[".$id."]','*Null*') + '&mediaheight=' + getValue('".$hypertagname_height[$id]."[".$id."]','*Null*') + '&scaling=".url_encode($scalingfactor)."&mediatype=".url_encode($mediatype[$id])."&contenttype=".url_encode($contenttype)."');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" />\n";
 												}
                         else $taglink = "";
                         
                         $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td align=left valign=top><table>\n";
 
-                        if ($mediafilebot[$id] != "*Null*")
+                        if ($mediafilebot[$id][$tagid] != "*Null*")
                         {
-                          if (substr_count ($mediafilebot[$id], "Null_media.gif") == 1)
+                          if (substr_count ($mediafilebot[$id][$tagid], "Null_media.gif") == 1)
                           {
                             $mediaobjectname = "";
                           }                        
@@ -3570,11 +3581,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           {
                             $mediaobjectname = getlocationname ($site, $mediaobjectbot[$id], "comp");
                           }
-                          else $mediaobjectname = $mediafilebot[$id];
+                          else $mediaobjectname = $mediafilebot[$id][$tagid];
                           
                           if ($mediatype[$id] != "") $constraint_array[] = "'".$hypertagname_file[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['multimedia-file'][$lang]."', '".$mediatype[$id]."'";
                           
-                          $formitem[$key] .= "<tr><td colspan=2>".showmedia ($mediafilebot[$id], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering")."</td>
+                          $formitem[$key] .= "<tr><td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering")."</td>
                           </tr>
                           <tr>
                             <td width=\"150\">".getescapedtext ($hcms_lang['multimedia-file'][$lang], $charset, $lang).":</td>
@@ -3626,7 +3637,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link
                       if ($buildview == "cmsview" || $buildview == 'inlineview')
                       {
-                        $taglink = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."frameset_edit_media.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label[$id])."&tagname=artmedia&mediacat=comp&mediafile=".url_encode($mediafilebot[$id])."&mediaobject_curr=".url_encode($mediaobjectbot[$id])."&mediaobject=".url_encode($mediaobjectbot[$id])."&mediaalttext=".urlencode($mediaalttextbot[$id])."&mediaalign=".urlencode($mediaalignbot[$id])."&mediawidth=".url_encode($mediawidthbot[$id])."&mediaheight=".url_encode($mediaheightbot[$id])."&mediatype=".url_encode($mediatype[$id])."&contenttype=".url_encode($contenttype)."&token=".$token."\"><img src=\"".getthemelocation()."img/button_media.gif\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a>".$arttaglink[$artid]."\n";
+                        $taglink = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."frameset_edit_media.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label[$id])."&tagname=artmedia&mediacat=comp&mediafile=".url_encode($mediafilebot[$id][$tagid])."&mediaobject_curr=".url_encode($mediaobjectbot[$id])."&mediaobject=".url_encode($mediaobjectbot[$id])."&mediaalttext=".urlencode($mediaalttextbot[$id])."&mediaalign=".urlencode($mediaalignbot[$id])."&mediawidth=".url_encode($mediawidthbot[$id])."&mediaheight=".url_encode($mediaheightbot[$id])."&mediatype=".url_encode($mediatype[$id])."&contenttype=".url_encode($contenttype)."&token=".$token."\"><img src=\"".getthemelocation()."img/button_media.gif\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a>".$arttaglink[$artid]."\n";
                       }
                       elseif ($buildview == "formedit" || ($buildview == "formmeta" && $infotype[$id] == "meta") || $buildview == "formlock")
                       {
@@ -3634,15 +3645,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         {
                           $taglink = " <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['artmediaobject[".$id."]'],'','scrollbars=yes,resizable=yes,width=800,height=600', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" />
                           <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['".$hypertagname_file[$id]."[".$id."]']); deleteEntry(document.forms['hcms_formview'].elements['artmediaobject[".$id."]']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" />
-                          <img onClick=\"setSaveType('form_so', '".$mgmt_config['url_path_cms']."frameset_edit_media.php?view=".url_encode($buildview)."&savetype=form_so&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label[$id])."&tagname=media&mediacat=comp&mediafile=".url_encode($mediafilebot[$id])."&mediaobject_curr=".url_encode($mediaobjectbot[$id])."&mediaobject=' + getValue('".$hypertagname_file[$id]."[".$id."]','') + '&mediaalttext=' + getValue('".$hypertagname_text[$id]."[".$id."]','*Null*') + '&mediaalign=' + getSelectedOption('".$hypertagname_align[$id]."[".$id."]','*Null*') + '&mediawidth=' + getValue('".$hypertagname_width[$id]."[".$id."]','*Null*') + '&mediaheight=' + getValue('".$hypertagname_height[$id]."[".$id."]','*Null*') + '&mediatype=".$mediatype[$id]."&contenttype=".$contenttype."');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" />\n";
+                          <img onClick=\"setSaveType('form_so', '".$mgmt_config['url_path_cms']."frameset_edit_media.php?view=".url_encode($buildview)."&savetype=form_so&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label[$id])."&tagname=media&mediacat=comp&mediafile=".url_encode($mediafilebot[$id][$tagid])."&mediaobject_curr=".url_encode($mediaobjectbot[$id])."&mediaobject=' + getValue('".$hypertagname_file[$id]."[".$id."]','') + '&mediaalttext=' + getValue('".$hypertagname_text[$id]."[".$id."]','*Null*') + '&mediaalign=' + getSelectedOption('".$hypertagname_align[$id]."[".$id."]','*Null*') + '&mediawidth=' + getValue('".$hypertagname_width[$id]."[".$id."]','*Null*') + '&mediaheight=' + getValue('".$hypertagname_height[$id]."[".$id."]','*Null*') + '&mediatype=".$mediatype[$id]."&contenttype=".$contenttype."');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" />\n";
                         }
                         else $taglink = "";
                         
                         $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b> ".$arttaglink[$artid]."</td><td align=left valign=top><table>\n";
 
-                        if ($mediafilebot[$id] != "*Null*")
+                        if ($mediafilebot[$id][$tagid] != "*Null*")
                         {
-                          if (substr_count ($mediafilebot[$id], "Null_media.gif") == 1)
+                          if (substr_count ($mediafilebot[$id][$tagid], "Null_media.gif") == 1)
                           {
                             $mediaobjectname = "";
                           }                        
@@ -3650,11 +3661,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           {
                             $mediaobjectname = getlocationname ($site, $mediaobjectbot[$id], "comp");
                           } 
-                          else $mediaobjectname = $mediafilebot[$id];
+                          else $mediaobjectname = $mediafilebot[$id][$tagid];
                           
                           if ($mediatype[$id] != "") $constraint_array[] = "'".$hypertagname_file[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['multimedia-file'][$lang]."', '".$mediatype[$id]."'";
                                        
-                          $formitem[$key] .= "<tr><td colspan=2>".showmedia ($mediafilebot[$id], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering")."</td>
+                          $formitem[$key] .= "<tr><td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering")."</td>
                           </tr>
                           <tr>
                             <td width=\"150\">".getescapedtext ($hcms_lang['multimedia-file'][$lang], $charset, $lang).":</td>
@@ -3777,7 +3788,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 } 
               
                 // define Null media if mediafilebot is empty and set URL to content media repository 
-                if ($mediafilebot[$id] == "")
+                if ($mediafilebot[$id][$tagid] == "")
                 {
                   // copy Null media to template media directory
                   if (!file_exists ($mgmt_config['abs_path_tplmedia'].$templatesite."/Null_media.gif"))
@@ -3791,28 +3802,55 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // define media file to present
                 else
                 {
+                  // if pathytpe == file (absolute path in filesystem)
+                  if ($mediapathtype[$id][$tagid] == "file") $prefix = "abs";
+                  else $prefix = "url";
+                    
                   // media path settings (overwrite media pathes with the ones of the publication target)
                   if ($buildview == "publish")
-                  {
-                    $url_media = $publ_config['url_publ_media'];
-                    $url_tplmedia = $publ_config['url_publ_tplmedia'];
+                  {                                    
+                    // use generated image and temp view directory
+                    if (!empty ($mediacolorspace[$id][$tagid]) || !empty ($mediaiccprofile[$id][$tagid]) && is_file ($mgmt_config['abs_path_cms']."temp/view/".$mediafilebot[$id][$tagid]))
+                    {
+                      $url_media = $mgmt_config[$prefix.'_path_cms']."temp/view/";
+                    }
+                    else
+                    {
+                      $url_media = $publ_config[$prefix.'_publ_media'];
+                    }
+                    
+                    $url_tplmedia = $publ_config[$prefix.'_publ_tplmedia'];
                   }
                   else
                   {
-                    $url_media = getmedialocation ($site, $mediafilebot[$id], "url_path_media");
-                    $url_tplmedia = $mgmt_config['url_path_tplmedia'];
+                    $url_media = getmedialocation ($site, $mediafilebot[$id][$tagid], $prefix."_path_media");
+                    $url_tplmedia = $mgmt_config[$prefix.'_path_tplmedia'];
+                  }
+                
+                  // if pathytpe == abs (absolute path = URL w/o protocol and domain)
+                  if ($mediapathtype[$id][$tagid] == "abs")
+                  {
+                    $url_media = cleandomain ($url_media);
+                    $url_tplmedia = cleandomain ($url_tplmedia);
                   }
                   
-                  // if thumbnail presentation
+                  // if thumbnail presentation is requested
                   if (!empty ($thumbnail[$id][$tagid]) && ($thumbnail[$id][$tagid] == "1" || strtolower ($thumbnail[$id][$tagid]) == "yes"))
                   {
-                    $file_info = getfileinfo ($site, $mediafilebot[$id], "");
+                    $file_info = getfileinfo ($site, $mediafilebot[$id][$tagid], "");
                     
                     if (file_exists (getmedialocation ($site, $file_info['filename'].".thumb.jpg", "abs_path_media").$site."/".$file_info['filename'].".thumb.jpg")) $file_media = $site."/".$file_info['filename'].".thumb.jpg";
+                    // mp4 original thumbnail video file
+                    elseif (file_exists (getmedialocation ($site, $file_info['filename'].".orig.mp4", "abs_path_media").$site."/".$file_info['filename'].".orig.mp4")) $file_media = $site."/".$file_info['filename'].".thumb.mp4";
+                    // flv original thumbnail video file
+                    elseif (file_exists (getmedialocation ($site, $file_info['filename'].".orig.flv", "abs_path_media").$site."/".$file_info['filename'].".orig.flv")) $file_media = $site."/".$file_info['filename'].".orig.flv";
+                    // for older versions
                     elseif (file_exists (getmedialocation ($site, $file_info['filename'].".thumb.flv", "abs_path_media").$site."/".$file_info['filename'].".thumb.flv")) $file_media = $site."/".$file_info['filename'].".thumb.flv";
-                    else $file_media = $mediafilebot[$id];
+                    // use original file
+                    else $file_media = $mediafilebot[$id][$tagid];
                   }
-                  else $file_media = $mediafilebot[$id];
+                  // use original file
+                  else $file_media = $mediafilebot[$id][$tagid];
                 }                 
               
                 if ($buildview != "formedit" && $buildview != "formmeta" && $buildview != "formlock")
@@ -4025,7 +4063,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               }  
               
               // get language attribute
-              if (empty ($language_info[$id])) $language_info[$id] = getattribute ($hypertag, "language");                                                                       
+              if (empty ($language_info[$id])) $language_info[$id] = getattribute ($hypertag, "language");                                                                    
             }
             // if buildview = template
             else
@@ -5486,7 +5524,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // generation of file was successful, save it to the media repository
                 if ($viewstore == $viewstore_save)
                 {
-                  $result_save = savefile (getmedialocation ($site, $mediafile, "abs_path_media").$site."/", $mediafile, $viewstore);
+                  $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
+                  
+                  // save media file
+                  $result_save = savefile ($mediadir, $mediafile, $viewstore);
+                  
+                  // create thumbnail
+                  createmedia ($site, $mediadir, $mediadir, $mediafile, "", "thumbnail");
+                  
                   // remote client
                   remoteclient ("save", "abs_path_media", $site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", "", $mediafile, "");
                   

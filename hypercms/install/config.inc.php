@@ -482,7 +482,7 @@ $mgmt_docconvert['.odp'] = array('.pdf', '.ppt');
 // Options:
 // -s ... output size in width x height in pixel (WxH)
 // -f ... output format (file extension without dot [jpg, png, gif])
-// -c ... cropy size
+// -c ... crop x and y coordinates (XxY)
 // -b ... image brightness
 // -k .... image contrast
 // -cs ... color space of image, e.g. RGB, CMYK, gray

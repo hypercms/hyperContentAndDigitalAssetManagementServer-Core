@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template>
 <name>PDF-Generator</name>
-<user>admin</user>
+<user>hypercms</user>
 <category>comp</category>
 <extension>pdf</extension>
 <application>generator</application>
@@ -35,10 +35,10 @@ scriptend]
 elseif ('%view%' != 'template')
 {
 	//include tcpdf lib and language files
-	require_once($mgmt_config['abs_path_cms'].'library/tcpdf/tcpdf.php');
+	require_once($mgmt_config['abs_path_cms']."function/hypercms_tcpdf.class.php");
 
 	// create new PDF document 
-	$pdf = new TCPDF($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8', $diskcache=false, $pdfa=false);
+	$pdf = new hcmsPDF($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8', $diskcache=false, $pdfa=false);
 
 	// set document information
 	$pdf->SetCreator(PDF_CREATOR);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <template>
 <name>default</name>
-<user>admin</user>
+<user>hypercms</user>
 <category>media</category>
 <extension></extension>
 <application></application>

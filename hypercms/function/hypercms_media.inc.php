@@ -795,7 +795,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if ($type == "original") @unlink ($location_source.$file);
                 }
 
-                // DOCUMENT: document-based formats
+                // DOCUMENT: document-based formats and vector graphics
                 if ($file_ext == ".pdf" || $file_ext == ".eps")
                 {
                   if ($type == "thumbnail")
@@ -959,23 +959,28 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
                   if ($type == "thumbnail")
                   {
+                    $newfile = $file_name.".thumb.jpg";
+                    
                     // reduce thumbnail size if original image is smaller then the defined thumbnail image size
                     if ($imagewidth_orig > 0 && $imagewidth_orig < $imagewidth && $imageheight_orig > 0 && $imageheight_orig < $imageheight)
                     {
                       $imageresize = "-resize ".round ($imagewidth_orig, 0)."x".round ($imageheight_orig, 0);
                     }
                      
-                    $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove \"".shellcmd_encode ($location_temp.$file_name).".buffer.bmp\"";
+                    $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove ".$imagecolorspace." ".$iccprofile." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                   }
                   else
                   {
+                    if ($type == "original") $newfile = $file_name.".".$imageformat;
+                    else $newfile = $file_name.".".$type.".".$imageformat;
+                        
                     if ($crop_mode)
                     {
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." \"".shellcmd_encode ($location_temp.$file_name).".buffer.bmp\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$iccprofile." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     else
                     {
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." \"".shellcmd_encode ($location_temp.$file_name).".buffer.bmp\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$iccprofile." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                   }
 
@@ -993,45 +998,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // on success
                   else
                   {          
-                    if (@is_file ($location_temp.$file_name.".buffer.bmp"))
+                    if (is_file ($location_dest.$newfile))
                     {
-                      if ($type == "thumbnail")
-                      {
-                        $newfile = $file_name.".thumb.jpg";
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_temp.$file_name).".buffer.bmp\" ".$imagecolorspace." ".$iccprofile." \"".shellcmd_encode ($location_dest.$newfile)."\"";
-                      }
-                      else
-                      {
-                        if ($type == "original") $newfile = $file_name.".".$imageformat;
-                        else $newfile = $file_name.".".$type.".".$imageformat;
-                          
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_temp.$file_name).".buffer.bmp\" ".$imagecolorspace." ".$iccprofile." \"".shellcmd_encode ($location_dest.$newfile)."\"";
-                      }
-
-                      @exec ($cmd, $error_array, $errorCode);
-
-                      // delete BMP buffer file
-                      @unlink ($location_temp.$file_name.".buffer.bmp");
-                      
-                      // on error
-                      if ($errorCode)
-                      {
-                        // restore original image
-                        if ($type == "original") @copy ($buffer_file, $location_source.$file);
-                    
-                        $errcode = "20235";
-                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;   
-                      } 
-                      // on success
-                      else
-                      {
-                        // copy metadata from original file using EXIFTOOL
-                        if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
-                        // remote client
-                        if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-                        // delete original RAW image if converted to other format
-                        if ($type == "original" && is_rawimage ($file_ext)) deletefile ($location_source_orig, $file_orig, 0);
-                      }               
+                      // copy metadata from original file using EXIFTOOL
+                      if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
+                      // remote client
+                      if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+                      // delete original RAW image if converted to other format
+                      if ($type == "original" && is_rawimage ($file_ext)) deletefile ($location_source_orig, $file_orig, 0);              
                     }
                   }
                 }
@@ -1672,7 +1646,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 savelog (@$error);
                 
                 // get video information
-                if ($converted == true && $newfile != false)
+                if ($converted == true && $newfile != false && $type == "origthumb")
                 { 
                   if (is_array ($videoinfo))
                   {
@@ -1704,7 +1678,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     }
         
     // no option was found for given format or no media conversion software defined
-    if (empty ($setmedia))
+    if (empty ($setmedia) && ($type == "thumbnail" || $type == "origthumb"))
     {
       // write media information to container and DB
       if (!empty ($container_id))
@@ -1793,19 +1767,21 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
 // function: convertimage()
 // input: publication name, path to source image file, path to destination dir, format (file extension w/o dot) of destination file (optional), 
 //        colorspace of new image [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (optional), 
-//        width in pixel (optional), height in pixel (optional)
+//        width in pixel/mm/inch (optional), height in pixel/mm/inch (optional), slug in pixel/mm/inch (optional), units for width, height and slug [px,mm,inch] (optional), dpi (optional)
 // output: new file name / false on error
 
-// description: converts and creates a new image from original. this is a wrapper function for createmedia.
+// description:
+// converts and creates a new image from original. the new image keeps will be resized and cropped to fit width and height.
+// this is a wrapper function for createmedia.
 
-function convertimage ($site, $file_source, $location_dest, $format="jpg", $colorspace="CMYK", $iccprofile="", $width="", $height="")
+function convertimage ($site, $file_source, $location_dest, $format="jpg", $colorspace="RGB", $iccprofile="", $width="", $height="", $slug=0, $units="px", $dpi=72)
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext;
   
   $file = getobject ($file_source);
   $location_source = getlocation ($file_source);
 
-  if (valid_publicationname ($site) && valid_locationname ($file_source) && valid_locationname ($location_dest) && ($colorspace != "" || $iccprofile != ""))
+  if (valid_publicationname ($site) && valid_locationname ($file_source) && valid_locationname ($location_dest))
   {
     //get icc profile list
     include ($mgmt_config['abs_path_cms']."library/ICC_Profiles/ICC_Profiles.php");
@@ -1825,12 +1801,74 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
     
     // get file info
     $file_info = getfileinfo ($site, $file_source, "comp");
-    
-    // new image dimensions 
+
+    // new image dimensions
     if ($width > 0 && $height > 0)
     {
-      $size = $width.'x'.$height;
-      $size_para = " -s ".$size;
+      // convert width and height to px
+      if ($units == "mm")
+      {
+        $width = mm2px ($width, $dpi);
+        $height = mm2px ($height, $dpi);
+      }
+      elseif ($units == "inch")
+      {
+        $width = inch2px ($width, $dpi);
+        $height = inch2px ($height, $dpi);
+      }
+        
+      $size = $width."x".$height;
+              
+      // get image size in px
+      $imagesize = getimagesize ($file_source);
+      
+      // if image size is available
+      if (!empty ($imagesize[0]) && !empty ($imagesize[1]))
+      {
+        // image ratios
+        $imageratio = $imagesize[0] / $imagesize[1];
+        $ratio = $width / $height;
+
+        // if image has larger ratio we define new height
+        if ($imageratio > $ratio)
+        {
+          $height_render = $height + $slug;
+          $width_render = round (($height_render * $imageratio), 0);
+        }
+        elseif ($imageratio < $ratio)
+        {
+          $width_render = $width + $slug;
+          $height_render = round (($width_render / $imageratio), 0);
+        }
+        else
+        {
+          $width_render = $width + $slug;
+          $height_render = $height + $slug;
+        }
+        
+        // define crop x and y coordinates
+        $x = intval ($width_render / 2 - $width / 2);
+        $y = intval ($height_render / 2 - $height / 2);
+        if ($x < 0) $x = 0;
+        if ($y < 0) $y = 0;
+        
+        // resize image
+        $size_para = " -s ".$width_render."x".$height_render;
+        
+        // crop image
+        if ($x > 0 || $y > 0)
+        {
+          $crop_para = " -c ".$x."x".$y." -s ".$width."x".$height;
+        }
+      }
+      // image size is not available
+      else
+      {
+        $width_render = $width + $slug;
+        $height_render = $height + $slug;
+          
+        $size_para = " -s ".$width_render."x".$height_render;
+      }
     }
     else
     {
@@ -1869,17 +1907,37 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
     
     // define type
     $type = $size."-".$color;
-
-    // define image option
-    $mgmt_imageoptions = array();
-    $mgmt_imageoptions['.gif.jpg.jpeg.png'][$type] = $size_para.$color_para.$format_para;
- 
+    
     // new file name
     $file_name = $file_info['filename'].".".$type.".".$format;
-
+    
+    // check if image exists and is newer than the original image
     if (!is_file ($location_dest.$file_name) || @filemtime ($file_source) > @filemtime ($location_dest.$file_name))
     {
-      return createmedia ($site, $location_source, $location_dest, $file, $format, $type);
+      // define image option
+      $mgmt_imageoptions = array();
+      $mgmt_imageoptions['.'.$format][$type] = $size_para.$color_para.$format_para;
+
+      // render image
+      $file_name_new = createmedia ($site, $location_source, $location_dest, $file, $format, $type);
+
+      // define image option for crop
+      if (!empty ($crop_para) && $file_name_new != false)
+      {
+        // rename intermediate file to original file name with new extension
+        rename ($location_dest.$file_name_new, $location_dest.$file_info['filename'].".".$format);
+        
+        $mgmt_imageoptions = array();
+        $mgmt_imageoptions['.'.$format][$type] = $crop_para;
+
+        // render image
+        $file_name_new = createmedia ($site, $location_dest, $location_dest, $file_info['filename'].".".$format, $format, $type);
+
+        // delete intermediate file
+        if (is_file ($location_dest.$file_info['filename'].".".$format)) unlink ($location_dest.$file_info['filename'].".".$format);
+      }
+
+      return $file_name_new;
     }
     else return $file_name;
   }
@@ -3054,5 +3112,69 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
     else return true;
   }
   return false;
+}
+
+// ---------------------- px2mm -----------------------------
+// function: px2mm()
+// input: pixel, dpi (optional)
+// output: mm / false
+
+// description: convert pixel to mm
+
+function px2mm ($pixel, $dpi=72)
+{
+  if ($pixel > 0 && $dpi > 0)
+  {
+    return round (($pixel * 25.4 / $dpi), 0);
+  }
+  else return false;
+}
+
+// ---------------------- mm2px -----------------------------
+// function: px2mm()
+// input: pixel, dpi (optional)
+// output: pixel / false
+
+// description: convert mm to pixel
+
+function mm2px ($mm, $dpi=72)
+{
+  if ($mm > 0 && $dpi > 0)
+  {
+    return round (($mm * $dpi / 25.4), 0);
+  }
+  else return false;
+}
+
+// ---------------------- px2inch -----------------------------
+// function: px2inch()
+// input: pixel, dpi (optional)
+// output: inch / false
+
+// description: convert pixel to inches
+
+function px2inch ($pixel, $dpi=72)
+{
+  if ($pixel > 0 && $dpi > 0)
+  {
+    return round (($pixel / $dpi), 0);
+  }
+  else return false;
+}
+
+// ---------------------- inch2px -----------------------------
+// function: inch2px()
+// input: pixel, dpi (optional)
+// output: pixel / false
+
+// description: convert inches to pixel
+
+function inch2px ($inch, $dpi=72)
+{
+  if ($inch > 0 && $dpi > 0)
+  {
+    return round (($inch * $dpi), 0);
+  }
+  else return false;
 }
 ?>

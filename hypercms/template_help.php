@@ -189,6 +189,10 @@ checkusersession ($user, false);
     <td class="hcmsRowHead2"><?php echo $hcms_lang['meta-information-type-optional'][$lang]; ?></td>
     <td class="hcmsRowData1">infotype='meta'</td>
   </tr>
+  <tr align="left" valign="top"> 
+    <td class="hcmsRowHead2"><?php echo $hcms_lang['path-type-optional'][$lang]; ?></td>
+    <td class="hcmsRowData1">pathtype='...'</td>
+  </tr>
   <tr align="left" valign="top">
     <td class="hcmsRowHead2"><?php echo $hcms_lang['use-thumbnail-image'][$lang]; ?></td>
     <td class="hcmsRowData1">thumbnail='yes'</td>

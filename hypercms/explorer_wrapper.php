@@ -218,8 +218,8 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
 
   if ($media_root != "")
   {
-    // convert file
-    if ($type != "")
+    // convert file if requested
+    if ($type != "" && strtolower ($type) != "original")
     {
       // target path for the temporary file
       $media_target = $mgmt_config['abs_path_cms'].'temp/';

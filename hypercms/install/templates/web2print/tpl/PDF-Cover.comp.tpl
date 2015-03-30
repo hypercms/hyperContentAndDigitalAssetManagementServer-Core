@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template>
 <name>PDF-Cover</name>
-<user>msertkan</user>
+<user>hypercms</user>
 <category>comp</category>
 <extension>page</extension>
 <application>htm</application>
@@ -64,8 +64,8 @@ if ('%view%'=='publish' && !empty($pdf))
 	$html_title = "[hyperCMS:textf id='Title' toolbar='PDF' onEdit='hidden']";
 
 	// Print textf content using writeHTMLCell()
-	$pdf->writeHTMLCell($w=100, $h=35, $x='25', $y=170, $html_version, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
-	$pdf->writeHTMLCell($w=110, $h=15, $x='75', $y=220, $html_title, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+	$pdf->writeHTMLCell($w=100, $h=35, $x='25', $y=170, $html_version, $border=0, $ln=1, $fill=0, $reset=true, $align='', $autopadding=true);
+	$pdf->writeHTMLCell($w=110, $h=15, $x='75', $y=220, $html_title, $border=0, $ln=1, $fill=0, $reset=true, $align='', $autopadding=true);
 	}
 scriptend]]]></content>
 </template>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template>
 <name>360view</name>
-<user>admin</user>
+<user>hypercms</user>
 <category>comp</category>
 <extension>php</extension>
 <application>php</application>

@@ -1206,6 +1206,7 @@ $hcms_lang['height-of-editorfield-in-pixel-optional']['sk'] = "Výška editorfie
 $hcms_lang['toolbar-selection-for-richtext-editor-optional']['sk'] = "Výber panela s nástrojmi pre richtext editor (voliteľné)";
 $hcms_lang['constraints-definitions-for-non-formatted-text-optional']['sk'] = "Obmedzenia definície pre non-formátovaný text (voliteľné)";
 $hcms_lang['meta-information-type-optional']['sk'] = "Meta-informácie typu (voliteľné)";
+$hcms_lang['path-type-optional']['sk'] = "Cesta súborový systém [file, url, abs] (voliteľné)";
 $hcms_lang['media-type-']['sk'] = "Typ média [audio, stlačený, blesk, obraz, text, video]";
 $hcms_lang['content-cannot-be-edited-optional']['sk'] = "Obsah nie je možné upravovať (voliteľné)";
 $hcms_lang['hide-content-optional']['sk'] = "Skryť obsah (voliteľné)";

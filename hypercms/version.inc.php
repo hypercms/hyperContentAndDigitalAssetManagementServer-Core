@@ -776,6 +776,14 @@ changelog:
 - implementation of new hypercms_tcpdf.class.php file with class hcmsPDF to extend standard TCPDF functionality
 - implementation of new function TCPDFdrawCropbox in class hcmsPDF
 - removed deprecated pdfsearch.class.php
+- bug fix: explorer_download did not check original-type and tried to convert media
+- bug fix: when providing a colorspace or ICC-profile in media- or textf-tags the images would have been converted multiple times, depending on the occurance of the tage in the template
+- implementation of new hyperCMS tag attribute 'pathtype' for media tags to declare path as file system path, URL, absolute path (URL without protocol and domain)
+- implementation of new media functions mm2px, px2mm, inch2px, px2inch
+- improved function convertimage which supports new input parameters and rendering features
+- implementation of timeout in media_view to ensure the media size fields in the control frame will be updated
+- removed convert to intermediate BMP file in function createmedia to keep transparency of images
+- implementation of thumbnail support for file generator in function buildview
 */
 
 // current version

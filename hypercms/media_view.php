@@ -136,21 +136,26 @@ if ($mediatype == "image")
 ?>
   <script type="text/javascript">
   <!--
-  var inputfield;
-  
-  if (parent.frames['controlFrame2'].document.forms['media'].elements['mediawidth'])
+  function updatesize ()
   {
-    inputfield = parent.frames['controlFrame2'].document.forms['media'].elements['mediawidth'];
+    var inputfield;
     
-    if (inputfield.value == "") inputfield.value = '<?php echo $mediawidth; ?>';
+    if (parent.frames['controlFrame2'].document.forms['media'].elements['mediawidth'])
+    {
+      inputfield = parent.frames['controlFrame2'].document.forms['media'].elements['mediawidth'];
+      
+      if (inputfield.value == "") inputfield.value = '<?php echo $mediawidth; ?>';
+    }
+    
+    if (parent.frames['controlFrame2'].document.forms['media'].elements['mediaheight'])
+    {
+      inputfield = parent.frames['controlFrame2'].document.forms['media'].elements['mediaheight'];
+      
+      if (inputfield.value == "") inputfield.value = '<?php echo $mediaheight; ?>';
+    }
   }
   
-  if (parent.frames['controlFrame2'].document.forms['media'].elements['mediaheight'])
-  {
-    inputfield = parent.frames['controlFrame2'].document.forms['media'].elements['mediaheight'];
-    
-    if (inputfield.value == "") inputfield.value = '<?php echo $mediaheight; ?>';
-  }
+  setTimeout (updatesize, 500);
   -->
   </script>
 <?php

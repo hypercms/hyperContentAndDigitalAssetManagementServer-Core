@@ -1206,6 +1206,7 @@ $hcms_lang['height-of-editorfield-in-pixel-optional']['fr'] = "Hauteur de editor
 $hcms_lang['toolbar-selection-for-richtext-editor-optional']['fr'] = "Sélection de la barre d'outils pour éditeur richtext (en option)";
 $hcms_lang['constraints-definitions-for-non-formatted-text-optional']['fr'] = "Définition des contraintes de non-texte formaté (en option)";
 $hcms_lang['meta-information-type-optional']['fr'] = "Les méta-informations type (en option)";
+$hcms_lang['path-type-optional']['fr'] = "Type de trajet [file, url, abs] (en option)";
 $hcms_lang['media-type-']['fr'] = "Type de support [audio comprimé, flash, image, texte, vidéo]";
 $hcms_lang['content-cannot-be-edited-optional']['fr'] = "Contenu ne peut pas être modifié (en option)";
 $hcms_lang['hide-content-optional']['fr'] = "Masquer du contenu (en option)";

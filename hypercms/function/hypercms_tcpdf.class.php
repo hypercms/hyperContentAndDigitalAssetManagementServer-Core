@@ -6,6 +6,12 @@
  *
  * You should have received a copy of the License along with hyperCMS.
  */
+ 
+// include TCPDF library
+if (is_file ($mgmt_config['abs_path_cms']."library/tcpdf/tcpdf.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."library/tcpdf/tcpdf.php");
+}
 
 class hcmsPDF extends TCPDF
 {
@@ -29,7 +35,7 @@ class hcmsPDF extends TCPDF
       $barHeight = min($slug - 1, 6);
       $barWidth = min(9 * $barHeight, ($width - $barHeight * 4)/ 2);
       $barHeight = max(1, $barWidth / 9);
-      $registrationHeight  = $barHeight / 2;
+      $registrationHeight  = $barHeight / 3;
   
       $tcpdf->setPageFormat(
         array(
