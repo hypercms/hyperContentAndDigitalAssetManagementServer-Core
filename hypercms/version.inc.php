@@ -784,6 +784,7 @@ changelog:
 - implementation of timeout in media_view to ensure the media size fields in the control frame will be updated
 - removed convert to intermediate BMP file in function createmedia to keep transparency of images
 - implementation of thumbnail support for file generator in function buildview
+- implementation of error reporting for the generator in the template engine (function buildview) 
 */
 
 // current version

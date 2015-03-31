@@ -63,9 +63,6 @@ elseif ('%view%' != 'template')
 	// set image scale factor
 	$pdf->setImageScale(1);
 
-	//set some language-dependent strings
-	$pdf->setLanguageArray($l);
-
 	// ---------------------------------------------------------
 	// Set font
 	// dejavusans is a UTF-8 Unicode font, if you only need to

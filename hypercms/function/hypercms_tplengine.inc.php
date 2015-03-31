@@ -894,7 +894,7 @@ function followlink ($site, $follow)
 function errorhandler ($source_code, $return_code, $error_identifier)
 {
   // error handling
-  if (strpos ($return_code, $error_identifier) > 0 && strpos ($return_code, " on line ") > 0)
+  if (strpos ("_".$return_code, $error_identifier) > 0 && strpos ($return_code, " on line ") > 0)
   {
     $source_code = str_replace ("<", "&lt;", $source_code);
     $source_code = str_replace (">", "&gt;", $source_code);
@@ -2239,7 +2239,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $label = "";
       $language_info = "";
       $add_submittext = "";
-      $temp_mem_id = array();
       
       foreach ($searchtag_array as $searchtag)
       {
@@ -2519,8 +2518,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   }          
                 }
 								
-								// replace img-src with reference to the newly generated img if a colorspace is given
-								if (!empty ($contentbot) && ($buildview == "publish") && $hypertagname == $searchtag."f" && ($colorspace != "" || $iccprofile != "") && !in_array ($id, $temp_mem_id))
+								// replace img-src with reference to the newly generated image if a colorspace or ICC profile is requested
+								if (!empty ($contentbot) && ($buildview == "publish") && $hypertagname == $searchtag."f" && ($colorspace != "" || $iccprofile != ""))
                 {
 									//create new dom object 
 									$dom = new DOMDocument();
@@ -2538,8 +2537,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 										$imginfo = getfileinfo ($site, $source, "comp");
                     // target dir
                     $viewdir = $mgmt_config['abs_path_cms']."temp/view/";
-										//convert img to cmyk (default)
-										$destination_file = convertimage ($site, $imgdir.$site."/".$imginfo['file'], $viewdir, "jpg", $colorspace, $iccprofile);
+										//convert image to PNG in the requested colorspace or ICC profile
+										$destination_file = convertimage ($site, $imgdir.$site."/".$imginfo['file'], $viewdir, "png", $colorspace, $iccprofile);
                     // define url of converted image
 										$imagelocation['destination'][] = $mgmt_config['url_path_cms']."temp/view/".$destination_file;
 									}
@@ -2549,9 +2548,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   {
                     $contentbot = str_replace ($imagelocation['source'], $imagelocation['destination'], $contentbot);
                   }
-                  
-                  // remember ID to avoid double conversion
-                  $temp_mem_id[] = $id;
 								}
                 
                 // replace %variables% with pathes in text content
@@ -3176,8 +3172,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $onedit_file = array();
       $label = array();
       $language_info = array();
-      $temp_mem_id = array();
-      
+
       foreach ($searchtag_array as $searchtag)
       {
         $hypertag_array = null;
@@ -3401,18 +3396,16 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               if (empty ($language_info[$id])) $language_info[$id] = getattribute ($hypertag, "language");
 
   						// replace image with reference to the newly generated image if a colorspace or ICC profile is given
-  						if (!empty ($mediafilebot[$id][$tagid]) && $buildview == "publish" && $hypertagname == $searchtag."file" && (!empty ($mediacolorspace[$id][$tagid]) || !empty ($mediaiccprofile[$id][$tagid])) && !in_array ($id, $temp_mem_id))
+  						if (!empty ($mediafilebot[$id][$tagid]) && $buildview == "publish" && $hypertagname == $searchtag."file" && (!empty ($mediacolorspace[$id][$tagid]) || !empty ($mediaiccprofile[$id][$tagid])))
               {
   							// get abs location of the image
   						  $imgdir = getmedialocation ($site, $mediafilebot[$id][$tagid], "abs_path_media");
                 // target dir
                 $viewdir = $mgmt_config['abs_path_cms']."temp/view/";
-  						  // convert image
-  						  $mediafilebot_new = convertimage ($site, $imgdir.$mediafilebot[$id][$tagid], $viewdir, "jpg", $mediacolorspace[$id][$tagid], $mediaiccprofile[$id][$tagid]);
+  						  // convert image to PNG in the requested colorspace or ICC profile
+  						  $mediafilebot_new = convertimage ($site, $imgdir.$mediafilebot[$id][$tagid], $viewdir, "png", $mediacolorspace[$id][$tagid], $mediaiccprofile[$id][$tagid]);
   						  // check converted image
                 if ($mediafilebot_new != false) $mediafilebot[$id][$tagid] = $mediafilebot_new;
-                // remember ID to avoid double conversion
-                $temp_mem_id[] = $id;
   						}
             }
             // if buildview = template
@@ -3788,7 +3781,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 } 
               
                 // define Null media if mediafilebot is empty and set URL to content media repository 
-                if ($mediafilebot[$id][$tagid] == "")
+                if (empty ($mediafilebot[$id][$tagid]))
                 {
                   // copy Null media to template media directory
                   if (!file_exists ($mgmt_config['abs_path_tplmedia'].$templatesite."/Null_media.gif"))
@@ -5491,7 +5484,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $viewstore = str_ireplace ("[hyperCMS:scriptbegin", "<?php", $viewstore);
             $viewstore = str_ireplace ("scriptend]", "?>", $viewstore);
             
-            // in Generator mode we are saving the viewstore, running it and saving the output to the generated file
+            // in Generator mode we are saving the viewstore, executing it and saving the output to the generated file
             if ($application == "generator")
             {
               // when we are using the generator the generated viewstore will be saved into a file
@@ -5505,15 +5498,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               
               // save pageview in temp
               $result_save = savefile ($mgmt_config['abs_path_cms']."temp/view/", $unique_id.".generate.php", $viewstore);
-              
+
               $viewstore_buffer = $viewstore;
-              
-              // execute code
+
               if ($result_save == true) 
               {              
                 // add language setting from session
                 if ($language_sessionvar != "" && $_SESSION[$language_sessionvar] != "") $pageview_parameter = "?hcms_session[".$language_sessionvar."]=".$_SESSION[$language_sessionvar];
                 
+                // execute code of generator (e.g. create a PDF file)
                 $viewstore_save = @file_get_contents ($mgmt_config['url_path_cms']."temp/view/".$unique_id.".generate.php".$pageview_parameter);
                 
                 // error handling
@@ -5541,6 +5534,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 else
                 {
                   $errorview = "\n\n".$viewstore;
+                  
+                  $errcode = "10201";
+                  $error[] = $mgmt_config['today']."|hypercms_tplengine.inc.php|error|$errcode|generator failed to render file ".$mediafile." with error: ".substr ($viewstore, 0, strpos (trim ($viewstore, "\n"), "\n"));
                 }
               }
               
