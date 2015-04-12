@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -222,7 +222,7 @@ if ($authorized == true || $force == "stop")
   // cancel process
   elseif ($force == "stop")
   {
-    deletefile ($mgmt_config['abs_path_cms']."temp/", session_id().".coll.dat", 1);
+    deletefile ($mgmt_config['abs_path_temp'], session_id().".coll.dat", 1);
   
     $add_javascript = "self.close();\n";
   

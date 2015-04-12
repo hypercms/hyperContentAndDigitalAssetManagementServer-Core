@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -49,7 +49,7 @@ checkusersession ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/jquery/jquery-1.9.1.min.js"></script>
@@ -82,7 +82,7 @@ function checkForm(select)
 {
   if (select.elements['search_expression'].value == "")
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['please-insert-a-search-expression'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-search-expression'][$lang]); ?>"));
     select.elements['search_expression'].focus();
     return false;
   }
@@ -96,12 +96,12 @@ function checkDate(select, min, max)
   
   val = select.value;
 
-  if (val<min || max<val) errors+='<?php echo $hcms_lang['entry-must-contain-a-number-between'][$lang]; ?> '+min+' <?php echo $hcms_lang['and'][$lang]; ?> '+max+' <?php echo $hcms_lang['be'][$lang]; ?>.\n';
+  if (val<min || max<val) errors+='<?php echo getescapedtext ($hcms_lang['entry-must-contain-a-number-between'][$lang]); ?> '+min+' <?php echo getescapedtext ($hcms_lang['and'][$lang]); ?> '+max+' <?php echo getescapedtext ($hcms_lang['be'][$lang]); ?>.\n';
   
   if (errors) 
   {
     select.focus();
-    alert (hcms_entity_decode('<?php echo $hcms_lang['the-following-error-occurred'][$lang]; ?>:\n'+errors));
+    alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang]); ?>:\n'+errors));
   }
   else
   {

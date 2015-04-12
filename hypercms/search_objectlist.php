@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -655,7 +655,7 @@ function checktype (type)
 
 function confirm_delete ()
 {
-  return confirm(hcms_entity_decode("<?php echo $hcms_lang['are-you-sure-you-want-to-remove-the-item'][$lang]; ?>"));
+  return confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-the-item'][$lang]); ?>"));
 }
 
 function toggleview (viewoption)

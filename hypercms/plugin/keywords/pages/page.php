@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("../../../include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("../../../config.inc.php");
 // hyperCMS API
@@ -17,6 +17,7 @@ require ("../../../function/hypercms_api.inc.php");
 require ("../../../function/hypercms_ui.inc.php");
 // language file
 require_once ("../lang/page.inc.php");
+
 
 // input parameters
 $site = getrequest_esc ("site", "publicationname");

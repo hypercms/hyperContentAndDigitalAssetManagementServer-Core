@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("../include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("../config.inc.php");
 // hyperCMS API
@@ -153,7 +153,7 @@ function checkType()
       
       if (allowedext.indexOf(mediaext) < 0) 
       {
-        alert(hcms_entity_decode("<?php echo $hcms_lang['file-is-of-wrong-media-type-required-type'][$lang]." ".$mediatype; ?>"));
+        alert(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['file-is-of-wrong-media-type-required-type'][$lang])." ".$mediatype; ?>"));
         return false;
       }
       else return true;   

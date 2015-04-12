@@ -4,29 +4,54 @@
 
 // Attention: All variable values set here must not include "#"!
 
-// ------------------------------------ Content Management Server ----------------------------------------
+$mgmt_config = array();
+$mgmt_lang_name = array();
+$mgmt_lang_shortcut = array();
+$mgmt_parser = array();
+$mgmt_uncompress = array();
+$mgmt_compress = array();
+$mgmt_docpreview = array();
+$mgmt_docoptions = array();
+$mgmt_docconvert = array();
+$mgmt_imagepreview = array();
+$mgmt_imageoptions = array();
+$mgmt_mediametadata = array();
+$mgmt_maxsizepreview = array();
+
+// ------------------------------------ Path settings ----------------------------------------
 
 // Please note: use always slash (/) in path settings
 
 // Depending how the user accessed our page we are setting our protocol
 $mgmt_config['url_protocol'] = (!empty($_SERVER['HTTPS'])) ? 'https://' : 'http://';
 
-// URL and asolute path to hyperCMS on your webserver (e.g. /home/domain/hyperCMS/)
+// URL and asolute path to hyperCMS on your webserver
 $mgmt_config['url_path_cms'] = $mgmt_config['url_protocol']."%url_path_cms%";
 $mgmt_config['abs_path_cms'] = "%abs_path_cms%";
 
-// URL and absolute path to the external repository on your webserver (e.g. /home/domain/repository/)
+// URL and absolute path to the external repository on your webserver
 // Used for the storage of external content management information
 $mgmt_config['url_path_rep'] = $mgmt_config['url_protocol']."%url_path_rep%";
 $mgmt_config['abs_path_rep'] = "%abs_path_rep%";
 
-// URL and absolute path to the internal repository on your webserver (e.g. /home/domain/hyperCMS/data/)
+// URL and absolute path to the internal repository on your webserver
 // Used for the storage of internal content management information
 $mgmt_config['url_path_data'] = $mgmt_config['url_protocol']."%url_path_data%";
 $mgmt_config['abs_path_data'] = "%abs_path_data%";
 
+
 // ATTENTION: Usually you do not have to change the following path variables!
-// --------------------------------------------------------------------------
+
+// Absolute path to the temporary directory
+// Used for the storage of temporary data
+$mgmt_config['url_path_temp'] = $mgmt_config['url_path_data']."temp/";
+$mgmt_config['abs_path_temp'] = $mgmt_config['abs_path_data']."temp/";
+
+// URL and absolute path to the view directory
+// Used for the storage of views and files that can be accessed without being logged in to the system
+$mgmt_config['url_path_view'] = $mgmt_config['url_path_temp']."view/";
+$mgmt_config['abs_path_view'] = $mgmt_config['abs_path_temp']."view/";
+
 // URL and absolute path to the template repository
 // Do not change this settings!
 // (e.g. http://www.yourdomain.com/hypercms/template/)
@@ -46,11 +71,23 @@ $mgmt_config['abs_path_template'] = $mgmt_config['abs_path_data']."template/";
 // (e.g. /home/domain/data/media_cnt/)
 $mgmt_config['url_path_media'] = $mgmt_config['url_path_rep']."media_cnt/";
 $mgmt_config['abs_path_media'] = $mgmt_config['abs_path_rep']."media_cnt/";
-
 // $mgmt_config['url_path_media'][1] = $mgmt_config['url_path_rep']."media_cnt1/";
 // $mgmt_config['abs_path_media'][1] = $mgmt_config['abs_path_rep']."media_cnt1/";
 // $mgmt_config['url_path_media'][2] = $mgmt_config['url_path_rep']."media_cnt2/";
 // $mgmt_config['abs_path_media'][2] = $mgmt_config['abs_path_rep']."media_cnt2/";
+
+// URL to services / Load balancing
+// To enable load balancing for file upload, storing content and rendering files
+// the system need to be alled on several physical servers.
+// In order to enable load balancing an array providing the URL to the servers services
+// need to be defined.
+// One physical server provides the GUI and splits the load. Only this server need to be
+// configured for load balancing.
+// Make sure that all servers store the files in the same central repository and use the same database.
+// There is no limit for the amount of physical servers in the load balancing array.
+// (e.g. http://www.yourdomain.com/service/)
+// $mgmt_config['url_path_service'][1] = "http://server1/hypercms/service/";
+// $mgmt_config['url_path_service'][2] = "http://server2/hypercms/service/";
 
 // URL and absolute path to the template media repository
 // Do not change this settings!
@@ -88,13 +125,11 @@ $mgmt_config['abs_path_link'] = $mgmt_config['abs_path_rep']."link/";
 $mgmt_config['url_path_plugin'] = $mgmt_config['url_path_cms']."plugin/";
 $mgmt_config['abs_path_plugin'] = $mgmt_config['abs_path_cms']."plugin/";
 
-// Relative path to the WYSIWYG editor in hyperCMS directory (default value: editor/)
-$mgmt_config['rel_path_editor'] = "editor/";
+// ------------------------------------ GUI settings ----------------------------------------
 
-// Allow (true) or disable (false) html tags used in text editor for unformatted text.
-$mgmt_config['editoru_html'] = false;
+// Allow (true) or disable (false) html tags used in text editor for unformatted text
+$mgmt_config['editoru_html'] = true;
 
-// Video Player
 // Define videoplayer name, leave empty for the default player (VIDEO.JS) or use "projekktor" as alternative
 $mgmt_config['videoplayer'] = "";
 
@@ -106,6 +141,9 @@ $mgmt_config['objectview'] = "inlineview";
 
 // Define standard view for explorer object list ("detail" = detail view; "small", "medium", "large" = thumbnail gallery view)
 $mgmt_config['explorerview'] = "detail";
+
+// How many items (folders and objects) should be displayed in the explorer object list initally
+$mgmt_config['explorer_list_maxitems'] = 500;
 
 // Define if sidebar for object preview should be displayed (true) by default or not (false)
 $mgmt_config['sidebar'] = true;
@@ -120,10 +158,10 @@ $mgmt_config['maillink'] = "download";
 // Themes are located in directory hypercms/theme/
 $mgmt_config['theme'] = "";
 
-// Define alternative logo (image file name) for top frame. the file must be in cms/images.
+// Define alternative logo (image file name) for top frame. the file must be in cms/images
 $mgmt_config['logo_top'] = "";
 
-// Show (true) or hide (false) information boxes to provide additional information to the user.
+// Show (true) or hide (false) information boxes to provide additional information to the user
 $mgmt_config['showinfobox'] = true;
 
 // Define home boxes to show for each user if no indiviual selection has been made (use ; as seperarator)
@@ -133,17 +171,18 @@ $mgmt_config['homeboxes'] = "news;tasks;recent_objects;up_and_downloads;recent_d
 // Define URL to show in welcome/news home box
 $mgmt_config['welcome'] = "https://cms.hypercms.net/home/update_info_en.xhtml";
 
-// ------------------------------------------------------------------------
-// Define operating system (OS) on content management server ("UNIX" for all UNIX and Linux OS or "WIN" for MS Windows)
-// Please note: MS PWS cannot handle multiple HTTP-requests at the same time! since version 3.0 PWS will not be supplied anymore.
-$mgmt_config['os_cms'] = "%os_cms%";
+// Check for duplicate entries based on MD5 hash of files (true) or not (false)
+$mgmt_config['check_duplicates'] = true;
 
-// Define date format for error logging and get local date today (jjjj-mm-dd)
-$mgmt_config['today'] = date ("Y-m-d H:i", time());
+// Enable AutoSave to autoamtically save the text of the edior each given value in seconds
+// Set value to 0 to disable autosave
+$mgmt_config['autosave'] = 0;
+
+// --------------------------------- Language settings ---------------------------------------
 
 // Language Settings
-// Define the languages which should be active in hyperCMS.
-// Delete or comment language entries that should not be visible.
+// Define the languages which should be active in hyperCMS
+// Delete or comment language entries that should not be visible
 
 // Albanian
 $mgmt_lang_name['sq'] = "Albanian";
@@ -299,70 +338,67 @@ $mgmt_lang_shortcut['ur'] = "ur";
 // Default Language
 $mgmt_lang_shortcut_default = "en";
 
+// --------------------------------- Technical parameters ---------------------------------------
+
+// Define operating system (OS) on content management server ("UNIX" for all UNIX and Linux OS or "WIN" for MS Windows)
+// Please note: MS PWS cannot handle multiple HTTP-requests at the same time! since version 3.0 PWS will not be supplied anymore
+$mgmt_config['os_cms'] = "%os_cms%";
+
+// Define date format for error logging and get local date today (jjjj-mm-dd)
+$mgmt_config['today'] = date ("Y-m-d H:i", time());
+
 // Supported Applications
 // Set value to true if your content management server supports rendering of objects
-// using program- and script-technologies like PHP, JSP, ASP. Otherwise set false.
-$appsupport['php'] = true;
-$appsupport['jsp'] = false;
-$appsupport['asp'] = false;
+// using program- and script-technologies like PHP, JSP, ASP. Otherwise set false
+$mgmt_config['application']['php'] = true;
+$mgmt_config['application']['jsp'] = false;
+$mgmt_config['application']['asp'] = false;
 
 // File Upload
-// Maximum file size in MB allowed for upload. set value to 0 to enable all sizes.
-// Check webserver restrictions too!
+// Maximum file size in MB allowed for upload. set value to 0 to enable all sizes
+// Check webserver and php.ini restrictions too!
 $mgmt_config['maxfilesize'] = 0;
 
-// Check for duplicate entries based on MD5 hash of files (true) or not (false).
-$mgmt_config['check_duplicates'] = true;
-
 // ZIP File
-// Maximum file size to be compressed in ZIP file in MB. set value to 0 to disable limit.
+// Maximum file size to be compressed in ZIP file in MB. set value to 0 to disable limit
 $mgmt_config['maxzipsize'] = 2000;
 
 // Maximum digits for file names (applies for createobject and uploadfile).
 $mgmt_config['max_digits_filename'] = 200;
 
-// Explorer Objectlist
-// How many items (folders and objects) should be displayed in the list initally .
-$mgmt_config['explorer_list_maxitems'] = 500;
-
-// Which types of files (file extensions)are not allowed for upload, example ".asp.jsp.php.pl.sql".
+// Which types of files (file extensions)are not allowed for upload, example ".asp.jsp.php.pl.sql"
 $mgmt_config['exclude_files'] = ".php.pl.jsp.asp.aspx.exe.sql.sh.bash";
 
-// AutoSave
-// Formated and unformated text (textf, textu) will be saved autoamtically 
-// each given value in seconds. Set value to 0 to disable autosave.
-$mgmt_config['autosave'] = 0;
-
 // Save Metadata to Files
-// Save IPTC tags to image files (true) or not (false).
+// Save IPTC tags to image files (true) or not (false)
 $mgmt_config['iptc_save'] = true;
 
-// Save XMP tags to image files (true) or not (false).
+// Save XMP tags to image files (true) or not (false)
 $mgmt_config['xmp_save'] = true;
 
-// Save ID3 tags to audio files (true) or not (false).
+// Save ID3 tags to audio files (true) or not (false)
 $mgmt_config['id3_save'] = true;
 
 // Versioning of Containers
-// Save versions of published containers and media files (true) or disable versioning (false).
+// Save versions of published containers and media files (true) or disable versioning (false)
 $mgmt_config['contentversions'] = true;
 
 // Public Download
-// Allow access to download and wrapper links without logon session (true) or not (false).
-// This setting must be enabled if users want to provide wrapper or download links to the public.
+// Allow access to download and wrapper links without logon session (true) or not (false)
+// This setting must be enabled if users want to provide wrapper or download links to the public
 $mgmt_config['publicdownload'] = true;
 
 // FTP Upload
-// Allow FTP file download (true) or not (false).
+// Allow FTP file download (true) or not (false)
 $mgmt_config['ftp_download'] = true;
 
 // Document Viewer
-// Allow the view of documents by the doc viewer (true) or not (false).
+// Allow the view of documents by the doc viewer (true) or not (false)
 $mgmt_config['docviewer'] = true;
 
 // Strong Passwords
-// Enable (true) or disable (false) strong passwords for users.
-// If enabled, passwords will be checked regarding minimum security requirements.
+// Enable (true) or disable (false) strong passwords for users
+// If enabled, passwords will be checked regarding minimum security requirements
 $mgmt_config['strongpassword'] = true;
 
 // Encryption
@@ -377,8 +413,8 @@ $mgmt_config['crypt_key'] = "h1y2p3e4r5c6m7s8";
 $mgmt_config['template_clean_level'] = 1;
 
 // Logon Timeout
-// How many minutes will an IP and user combination be locked after 10 failed attempts.
-// A value of 0 means there is no timeout.
+// How many minutes will an IP and user combination be locked after 10 failed attempts
+// A value of 0 means there is no timeout
 $mgmt_config['logon_timeout'] = 10; 
 
 // CSRF Protection
@@ -386,24 +422,34 @@ $mgmt_config['logon_timeout'] = 10;
 $mgmt_config['requests_per_minute'] = 500;
 
 // Security Token
-// Define lifetime of security token in seconds (min. 60 sec.).
+// Define lifetime of security token in seconds (min. 60 sec.)
 $mgmt_config['token_lifetime'] = 86400;
+
+// Instances
+// Instances don't share the same database, internal and external repository.
+// Enable multiple hyperCMS instances by providing a path to the instance configuration directory.
+// For distributed systems the directory must be located on a central resource can be accessed by every system node.
+$mgmt_config['instances'] = "";
+
+// Enable writing of session data for third party load balancers in order to enable session synchronization
+$mgmt_config['writesessiondata'] = false;
+
 
 // ------------------------------------ Import / Export ----------------------------------------
 
-// Define password, necessary for Import and Export execution.
+// Define password for Import and Export
 $mgmt_config['passcode'] = "";
 
-// ------------------------------------ App Keys ----------------------------------------
+// --------------------------------------- App Keys --------------------------------------------
 
 // Youtube integration
-// Please provide app-key in order to upload videos to Youtube.
+// Please provide app-key in order to upload videos to Youtube
 $mgmt_config['youtube_appname'] = "";
 $mgmt_config['youtube_appkey'] = "";
 
 // DropBox integration
 // Keep in mind that the domain needs to be added to your Dropbox developer account in order to use the app-key
-// or you create your own Dropbox app-key and set it here.
+// or you create your own Dropbox app-key and set it here
 $mgmt_config['dropbox_appname'] = "";
 $mgmt_config['dropbox_appkey'] = "";
 
@@ -482,6 +528,8 @@ $mgmt_docconvert['.odp'] = array('.pdf', '.ppt');
 // Options:
 // -s ... output size in width x height in pixel (WxH)
 // -f ... output format (file extension without dot [jpg, png, gif])
+// -d ... image density (DPI) for vector graphics and EPS files, common values are 72, 96 dots per inch for screen, while printers typically support 150, 300, 600, or 1200 dots per inch
+// -q ... quality for compressed image formats like JPEG (1 to 100)
 // -c ... crop x and y coordinates (XxY)
 // -b ... image brightness
 // -k .... image contrast
@@ -571,7 +619,7 @@ $mgmt_maxsizepreview['.psd'] = 10;
 // This seeting can be used to avoid recurring kernel problems with GhostScript if ImageMagick fails to create a thumbnail of a PDF file.
 $mgmt_config['recreate_preview'] = false;
 
-// ---------------------------------- Relational Database Connectivity -----------------------------------
+// -------------------------------- Relational Database Connectivity ----------------------------------
 
 // MySQL integration (or other relational databases via ODBC)
 // The file "db_connect_rdbms.php" provides MySQL and ODBC DB Connectivity.
@@ -590,7 +638,7 @@ $mgmt_config['dbcharset'] = "utf8";
 // Log queries and their executing time in logs/sql.log
 $mgmt_config['rdbms_log'] = false;
 
-// ---------------------------------- SMTP Mail System Configuration -----------------------------------
+// --------------------------------- SMTP Mail System Configuration -----------------------------------
 
 // SMTP parameters for sending e-mails via a given SMTP server
 $mgmt_config['smtp_host']     = "%smtp_host%";
@@ -599,13 +647,13 @@ $mgmt_config['smtp_password'] = "%smtp_password%";
 $mgmt_config['smtp_port']     = "%smtp_port%";
 $mgmt_config['smtp_sender']   = "%smtp_sender%";
 
-// ------------------------------------------ LDAP Connectivity ------------------------------------------
+// -------------------------------------- LDAP Connectivity -------------------------------------------
 
 // If you are using LDAP, you can specify the ldap_connect.php file where you can connect to an LDAP directory
 // to verify users and update user settings.
 // $ldap_connect = "";
 
-// ------------------------------------ File System Permissions ------------------------------------------
+// ----------------------------------- File System Permissions -----------------------------------------
 
 // Set permissions for files that will be created by hyperCMS in the file system. Only important on UNIX systems.
 // Default value is 0757.

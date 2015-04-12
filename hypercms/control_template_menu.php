@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -100,7 +100,7 @@ function warning_delete()
 {
   var form = document.forms['tpl_delete'];
   
-  check = confirm(hcms_entity_decode("<?php echo $hcms_lang['warning'][$lang]; ?>:\r<?php echo $hcms_lang['the-selected-item-will-be-removed'][$lang]; ?>\r<?php echo $hcms_lang['are-you-sure-you-want-to-delete-the-template'][$lang]; ?>"));
+  check = confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>:\r<?php echo getescapedtext ($hcms_lang['the-selected-item-will-be-removed'][$lang]); ?>\r<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-the-template'][$lang]); ?>"));
   if (check == true) form.submit();
   return check;
 }
@@ -123,7 +123,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert ("<?php echo $hcms_lang['please-do-not-use-the-following-special-characters'][$lang]; ?>: "+addText);
+		alert ("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>: "+addText);
 		return false;
 	}
   else
@@ -138,7 +138,7 @@ function checkForm_tpl_create()
    
   if (form.elements['template'].value == "")
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['a-name-is-required'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['template'].focus();
     return false;
   }
@@ -160,7 +160,7 @@ function checkForm_file_upload()
   
   if (uploadfile.value == "")
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['please-select-a-file-to-upload'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-select-a-file-to-upload'][$lang]); ?>"));
     uploadfile.focus();
     return false;
   }  

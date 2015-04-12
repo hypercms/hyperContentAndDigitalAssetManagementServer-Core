@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -217,10 +217,10 @@ function openBrWindowComp(winName, features, type)
         popup.moveTo(screen.width/2-800/2, screen.height/2-600/2);
         popup.focus();
       }
-      else alert (hcms_entity_decode('<?php echo $hcms_lang['this-is-an-external-component-link'][$lang]; ?>'));
+      else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['this-is-an-external-component-link'][$lang]); ?>'));
     }
   }
-  else alert (hcms_entity_decode('<?php echo $hcms_lang['no-component-selected'][$lang]; ?>'));  
+  else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-component-selected'][$lang]); ?>'));  
 }
 //-->
 </script>

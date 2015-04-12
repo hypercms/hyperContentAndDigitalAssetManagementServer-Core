@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -126,7 +126,7 @@ function insertOption (sent_name, sent_file)
 
         if (sent_name == folder_name)
         {
-          message = message + "<?php echo $hcms_lang['the-selected-folder-exists-already'][$lang]; ?> " + "\n";
+          message = message + "<?php echo getescapedtext ($hcms_lang['the-selected-folder-exists-already'][$lang]); ?> " + "\n";
           insert = false;
         }
       }
@@ -147,7 +147,7 @@ function insertOption (sent_name, sent_file)
   }
   else 
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['no-workflow-defined'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['no-workflow-defined'][$lang]); ?>"));
     return false;
   }
 }

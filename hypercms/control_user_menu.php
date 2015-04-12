@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -116,7 +116,7 @@ $token_new = createtoken ($user);
 <!--
 function warning_delete()
 {
-  check = confirm(hcms_entity_decode("<?php echo $hcms_lang['are-you-sure-you-want-to-delete-this-user'][$lang]; ?>"));
+  check = confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-this-user'][$lang]); ?>"));
   
   return check;
 }
@@ -139,7 +139,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert("<?php echo $hcms_lang['please-do-not-use-the-following-special-characters'][$lang]; ?>: "+addText);
+		alert("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>: "+addText);
 		return false;
 	}
   else
@@ -157,14 +157,14 @@ function checkForm()
   
   if (userlogin.value == "")
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['a-user-name-is-required'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-user-name-is-required'][$lang]); ?>"));
     userlogin.focus();
     return false;
   }
   
   if (userlogin.value == "admin" || userlogin.value == "sys" || userlogin.value == "hcms_download")
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['this-user-name-exists-already'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['this-user-name-exists-already'][$lang]); ?>"));
     userlogin.focus();
     return false;
   }    
@@ -177,7 +177,7 @@ function checkForm()
   
   if (userpassword.value != userconfirm_password.value)
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['your-submitted-passwords-are-not-equal'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['your-submitted-passwords-are-not-equal'][$lang]); ?>"));
     document.userform.confirm_password.focus();
     return false;
   }
@@ -190,7 +190,7 @@ function checkForm()
   
   if (userconfirm_password.value == "")
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['please-confirm-the-password'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-confirm-the-password'][$lang]); ?>"));
     userconfirm_password.focus();
     return false;
   } 

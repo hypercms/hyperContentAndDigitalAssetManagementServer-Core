@@ -784,7 +784,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           // use thumbnail if it is valid (larger than 400 bytes)
           if (@is_file ($thumb_root.$file_info['filename'].".thumb.jpg") && @filesize ($thumb_root.$file_info['filename'].".thumb.jpg") > 400)
           {
-            $viewfolder = $mgmt_config['abs_path_cms'].'temp/';
+            $viewfolder = $mgmt_config['abs_path_temp'];
             $newext = 'png';
             $typename = 'view';
             

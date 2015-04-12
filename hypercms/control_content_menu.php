@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -294,7 +294,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert (hcms_entity_decode("<?php echo $hcms_lang['please-do-not-use-the-following-special-characters'][$lang]; ?>: ") + addText);
+		alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>: ") + addText);
 		return false;
 	}
   else
@@ -309,14 +309,14 @@ function checkForm_page_create()
   
   if (form.elements['page'].value == "")
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['a-name-is-required'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['page'].focus();
     return false;
   }
   
   if (form.elements['template'].value == "empty.php")
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['please-select-a-template'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-select-a-template'][$lang]); ?>"));
     form.elements['template'].focus();
     return false;  
   }
@@ -380,8 +380,8 @@ function escapevalue (value)
 
 <?php if (!$is_mobile) { ?>
 <div style="position:absolute; right:0; top:0; margin:0; padding:0;">
-  <img onclick="parent.document.getElementById('contentFrame').rows='44,*';" class="hcmsButtonTinyBlank" style="width:18px; height:18px;" alt="<?php echo $hcms_lang['collapse'][$lang]; ?>" title="<?php echo $hcms_lang['collapse'][$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" /><br />
-  <img onclick="parent.document.getElementById('contentFrame').rows='100,*';" class="hcmsButtonTinyBlank" style="width:18px; height:18px;" alt="<?php echo $hcms_lang['expand'][$lang]; ?>" title="<?php echo $hcms_lang['expand'][$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" />
+  <img onclick="parent.minControlFrame()" class="hcmsButtonTinyBlank" style="width:18px; height:18px;" alt="<?php echo $hcms_lang['collapse'][$lang]; ?>" title="<?php echo $hcms_lang['collapse'][$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" /><br />
+  <img onclick="parent.maxControlFrame();" class="hcmsButtonTinyBlank" style="width:18px; height:18px;" alt="<?php echo $hcms_lang['expand'][$lang]; ?>" title="<?php echo $hcms_lang['expand'][$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" />
 </div>
 <?php } ?>
 

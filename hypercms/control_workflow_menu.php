@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -110,7 +110,7 @@ function warning_delete()
 {
   var form = document.forms['item_delete'];
   
-  check = confirm(hcms_entity_decode("<?php echo $hcms_lang['warning'][$lang]; ?>:\r<?php echo $hcms_lang['the-selected-item-will-be-removed'][$lang]; ?>\r<?php echo $hcms_lang['are-you-sure-you-want-to-delete-the-template'][$lang]; ?>"));
+  check = confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>:\r<?php echo getescapedtext ($hcms_lang['the-selected-item-will-be-removed'][$lang]); ?>\r<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-the-template'][$lang]); ?>"));
   if (check == true) form.submit();
   return check;
 }
@@ -133,7 +133,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert("<?php echo $hcms_lang['please-do-not-use-the-following-special-characters'][$lang]; ?>: "+addText);
+		alert("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>: "+addText);
 		return false;
 	}
   else
@@ -149,7 +149,7 @@ function checkForm_item_create()
   
   if (workflowname.value == "")
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['a-name-is-required'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     workflowname.focus();
     return false;
   }
@@ -171,7 +171,7 @@ function checkForm_item_create()
          
     if (val1=="" || val1<min1 || max1<val1) 
     {
-      alert (hcms_entity_decode ('<?php echo $hcms_lang['number-of-users'][$lang]." ".$hcms_lang['must-contain-a-number-between'][$lang]; ?> '+min1+' <?php echo $hcms_lang['and'][$lang]; ?> '+max1));
+      alert (hcms_entity_decode ('<?php echo getescapedtext ($hcms_lang['number-of-users'][$lang])." ".getescapedtext ($hcms_lang['must-contain-a-number-between'][$lang]); ?> '+min1+' <?php echo getescapedtext ($hcms_lang['and'][$lang]); ?> '+max1));
       usermax.focus();
       return false;
     }
@@ -183,7 +183,7 @@ function checkForm_item_create()
       
     if (val2<min2 || max2<val2) 
     {
-      alert (hcms_entity_decode ('<?php echo $hcms_lang['number-of-scripts'][$lang]." ".$hcms_lang['must-contain-a-number-between'][$lang]; ?> '+min2+' <?php echo $hcms_lang['and'][$lang]; ?> '+max2));
+      alert (hcms_entity_decode ('<?php echo getescapedtext ($hcms_lang['number-of-scripts'][$lang])." ".getescapedtext ($hcms_lang['must-contain-a-number-between'][$lang]); ?> '+min2+' <?php echo getescapedtext ($hcms_lang['and'][$lang]); ?> '+max2));
       scriptmax.focus();
       return false;
     }  

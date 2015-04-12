@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -53,7 +53,7 @@ $ftp_connection = false;
 // logout from FTP server (empty connection info of session)
 if ($action == "logout")
 {
-  setsession ("hcms_temp_ftp_connection", "");
+  setsession ("hcms_temp_ftp_connection", "", true);
 }
 // get existing FTP connection
 else
@@ -96,7 +96,7 @@ if ((($action == "logon" && checktoken ($token, $user)) || !empty ($ftp_connecti
     // save current server name as FTP connection
     setsession ("hcms_temp_ftp_connection", $sentserver);
     // save FTP logon data 
-    setsession ($sentserver, $ftp_array);
+    setsession ($sentserver, $ftp_array, true);
   }
 }
 

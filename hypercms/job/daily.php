@@ -6,8 +6,10 @@
  *
  * You should have received a copy of the License along with hyperCMS.
  */
- 
+
+ // management configuration
 require ("../config.inc.php");
+// hyperCMS API
 require ("../function/hypercms_api.inc.php");
 
 
@@ -46,7 +48,7 @@ if (sizeof ($config_files) > 0)
     if (!empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_data']))
     {
       // delete temporary files and ZIP files older than the given value in seconds
-      $location = $mgmt_config['abs_path_cms']."temp/";
+      $location = $mgmt_config['abs_path_temp'];
       $timespan = 86400; // 24 hours
       
       if ($location != "" && $timespan != "" && $dir = opendir ($location))

@@ -9,16 +9,16 @@
  
 // ======================================== API loader ==========================================
 
+// include main management configuration
+if (empty ($mgmt_config['abs_path_cms']) && is_file ("../config.inc.php"))
+{
+  require ("../config.inc.php");
+}
+
 // include get API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_get.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_get.inc.php");
-}
-
-// include language file for API functions
-if (empty ($hcms_lang) || !is_array ($hcms_lang))
-{
-  require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile (@$lang));
 }
 
 // include hyperCMS Event System
@@ -97,5 +97,17 @@ if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_update.inc.php"))
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_dev.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_dev.inc.php");
+}
+
+// include session
+if (defined ("SESSION") && constant ("SESSION") == "create" && is_file ($mgmt_config['abs_path_cms']."include/session.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."include/session.inc.php");
+}
+
+// include language file for API functions
+if (empty ($hcms_lang) || !is_array ($hcms_lang))
+{
+  require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile (@$lang));
 }
 ?>

@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -93,7 +93,7 @@ if ($ctrlreload == "") $ctrlreload = "yes";
 // set view in session
 if ($view != "")
 {
-  if ($view == "cmsview" || $view == "inlineview") setsession ('hcms_temp_objectview', $view);
+  if ($view == "cmsview" || $view == "inlineview") setsession ('hcms_temp_objectview', $view, true);
 }
 // set default view
 else
@@ -106,14 +106,20 @@ else
 // set hyperCMS session
 if (is_array ($hcms_session))
 {
+  $update_session = false;
+  
   foreach ($hcms_session as $key => $value)
   {
     // if session key is allowed (prefix hcms_ must not be used for the name)
     if ($key != "" && substr ($key, 0, 5) != "hcms_")
     { 
       $_SESSION[$key] = $value;
+      $update_session = true;
     }
   }
+  
+  // write session data if load balancer is used and session data need to be updated
+  if ($update_session) writesessiondata ();
 }
 
 // if link refers to other domain (external page) or to mail client (mailto)

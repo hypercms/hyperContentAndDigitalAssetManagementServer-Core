@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
  
-// session parameters
-require ("../include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("../config.inc.php");
 // hyperCMS API
@@ -19,10 +19,10 @@ require ("../function/hypercms_ui.inc.php");
 
 // input parameters
 $savetype = getrequest ("savetype");
-
 $location = getrequest_esc ("location", "locationname");
 $page = getrequest ("page", "objectname");
 $contenttype = getrequest_esc ("contenttype");
+$token = getrequest ("token");
 
 // get publication and category
 $site = getpublication ($location);
@@ -42,6 +42,11 @@ if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermiss
 
 // check session of user
 checkusersession ($user);
+
+// --------------------------------- load balancer ----------------------------------
+
+// call load balancer only for management server where user is logged in
+if (checktoken ($token, $user)) loadbalancer ("savecontent");
 
 // --------------------------------- logic section ----------------------------------
 

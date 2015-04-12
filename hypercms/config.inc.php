@@ -6,21 +6,20 @@
  *
  * You should have received a copy of the License along with hyperCMS.
  */
- 
-// Multiple hyperCMS instances (for seperated databases, internal and external repositories) 
-$mgmt_config['instances'] = false;
 
-// Include hyperCMS Main Configuration File
-// if instances are used, load configuration file of the given instance
-$instance = $_SESSION['hcms_instance'];
+// load standard main configuration file to read instance setting
+require_once ("config/config.inc.php");
 
-if ($mgmt_config['instances'] && !empty ($instance) && preg_match ('/^[a-z0-9-_]+$/', $instance))
+// get instance from session
+if (!empty ($_SESSION['hcms_instance']))
 {
-  include ("config/".$instance.".inc.php");
+  $instance_name = $_SESSION['hcms_instance'];
 }
-// load standard configuration file
-else
+
+// if instances are used, load the main configuration file of the given instance
+if (!empty ($mgmt_config['instances']) && !empty ($instance_name) && preg_match ('/^[a-z0-9-_]+$/', $instance_name) && is_file ($mgmt_config['instances'].$instance_name.".inc.php"))
 {
-  include ("config/config.inc.php");
+  // in case a distributed system is used
+  require_once ($mgmt_config['instances'].$instance_name.".inc.php");
 }
 ?>

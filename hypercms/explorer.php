@@ -7,14 +7,15 @@
  * You should have received a copy of the License along with hyperCMS.
  */
  
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
 require ("function/hypercms_api.inc.php");
 // disk key
 require ("include/diskkey.inc.php");
+
 
 // plugin file
 if (file_exists ($mgmt_config['abs_path_data']."config/plugin.conf.php"))

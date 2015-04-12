@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("../include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("../config.inc.php");
 // hyperCMS API
@@ -84,6 +84,11 @@ if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermiss
 
 // check session of user
 checkusersession ($user);
+
+// --------------------------------- load balancer ----------------------------------
+
+// call load balancer only for management server where user is logged in
+if (checktoken ($token, $user)) loadbalancer ("rendervideo");
 
 // --------------------------------- logic section ----------------------------------
 

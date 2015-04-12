@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -147,7 +147,7 @@ elseif ($objectpath_esc != "")
     $zip_filename = uniqid ("tmp");
     
     // zip all files in temp folder
-    $result = zipfiles ($site, array ($location), $mgmt_config['abs_path_cms']."temp/", $zip_filename, $user, "download");
+    $result = zipfiles ($site, array ($location), $mgmt_config['abs_path_temp'], $zip_filename, $user, "download");
     
     $media = $zip_filename.".zip";
     $media_info = getfileinfo ($site, getobject ($location).".zip", $cat);
@@ -204,9 +204,9 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
   {
     $media_root = $mgmt_config['abs_path_tplmedia'];
   }
-  elseif (@is_file($mgmt_config['abs_path_cms'].'temp/'.getobject($media)) && $user != "")
+  elseif (@is_file ($mgmt_config['abs_path_temp'].getobject($media)) && $user != "")
   {
-    $media_root = $mgmt_config['abs_path_cms'].'temp/';
+    $media_root = $mgmt_config['abs_path_temp'];
     $media = getobject ($media);
   }
   else $media_root = "";
@@ -222,7 +222,7 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
     if ($type != "" && strtolower ($type) != "original")
     {
       // target path for the temporary file
-      $media_target = $mgmt_config['abs_path_cms'].'temp/';
+      $media_target = $mgmt_config['abs_path_temp'];
 
       // convert file
       $result_conv = convertmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config, true);

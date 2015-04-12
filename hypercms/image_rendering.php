@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -355,28 +355,28 @@ function validateForm()
         if (test.indexOf('isEmail')!=-1) 
         { 
           p=val.indexOf('@');
-          if (p<1 || p==(val.length-1)) errors += nm+'-<?php echo $hcms_lang['value-must-contain-an-e-mail-address'][$lang]; ?>.\n';
+          if (p<1 || p==(val.length-1)) errors += nm+'-<?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang]); ?>.\n';
         } 
         else if (test!='R') 
         { 
           num = parseFloat(val);
-          if (isNaN(val)) errors += '-<?php echo $hcms_lang['value-must-contain-a-number'][$lang]; ?>.\n';
+          if (isNaN(val)) errors += '-<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang]); ?>.\n';
           if (test.indexOf('inRange') != -1) 
           { 
             p=test.indexOf(':');
             min=test.substring(8,p); 
             max=test.substring(p+1);
-            if (num<min || max<num) errors += '-<?php echo $hcms_lang['value-must-contain-a-number-between'][$lang]; ?> '+min+' - '+max+'.\n';
+            if (num<min || max<num) errors += '-<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang]); ?> '+min+' - '+max+'.\n';
           } 
         } 
       } 
-      else if (test.charAt(0) == 'R') errors += '-<?php echo $hcms_lang['a-value-is-required'][$lang]; ?>.\n'; 
+      else if (test.charAt(0) == 'R') errors += '-<?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>.\n'; 
     }
   } 
   
   if (errors) 
   {
-    alert(hcms_entity_decode('<?php echo $hcms_lang['the-input-is-not-valid'][$lang]; ?>:\n'+errors));
+    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang]); ?>:\n'+errors));
     return false;
   }  
   else return true;
@@ -478,7 +478,7 @@ function submitform (check)
 {
   if (check == true)
   {
-    if (!confirm(hcms_entity_decode("<?php echo $hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang] ?>"))) return false;
+    if (!confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang]); ?>"))) return false;
   }
   
   var result = checkform();

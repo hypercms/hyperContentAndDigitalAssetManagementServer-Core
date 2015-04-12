@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("../include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("../config.inc.php");
 // hyperCMS API
@@ -60,9 +60,6 @@ checkusersession ($user);
 // load object file and get container
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
-
-$url_path_editor = $mgmt_config['url_path_cms'].$mgmt_config['rel_path_editor'];
-$abs_path_editor = $mgmt_config['abs_path_cms'].$mgmt_config['rel_path_editor'];
 
 // define content-type if not set
 if ($contenttype == "")

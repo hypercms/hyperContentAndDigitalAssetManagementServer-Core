@@ -774,7 +774,7 @@ changelog:
 - update of HTML5 video player to video.js version 4.12.5
 - bug fix: undefined variables in search_objectlist, hypercms_tplengine, db_connect_rdbms
 - implementation of new hypercms_tcpdf.class.php file with class hcmsPDF to extend standard TCPDF functionality
-- implementation of new function TCPDFdrawCropbox in class hcmsPDF
+- implementation of new function drawCropbox in class hcmsPDF
 - removed deprecated pdfsearch.class.php
 - bug fix: explorer_download did not check original-type and tried to convert media
 - bug fix: when providing a colorspace or ICC-profile in media- or textf-tags the images would have been converted multiple times, depending on the occurance of the tage in the template
@@ -784,9 +784,34 @@ changelog:
 - implementation of timeout in media_view to ensure the media size fields in the control frame will be updated
 - removed convert to intermediate BMP file in function createmedia to keep transparency of images
 - implementation of thumbnail support for file generator in function buildview
-- implementation of error reporting for the generator in the template engine (function buildview) 
+- implementation of error reporting for the generator in the template engine (function buildview)
+- implementation of new function placeImage in class hcmsPDF
+- implementation of new function is_aiimage to determine if a certain file is a vector-based Adobe Illustrator (AI) or AI-compatible EPS file
+- implementation of image denisty and quality for image rendering in function createmedia and convertimage
+
+version 5.7.7
+release 05/2015
+- implementation of load balancing for file upload, storing content and rendering files
+- implementation of new setting for load balancing in main configuration
+- implementation of new function HTTP_Proxy and loadbalancer
+- implementation of new function getserverload
+- implementation of new service getserverinfo (based on function getserverload)
+- temp and view directories can be set in main configuration
+- moved temp and view directory to the internal repository (for load balancer)
+- moved instance configurations to the internal repository (for load balancer)
+- new function createusersession in include/session.inc.php
+- implementation of main management config in hyperCMS API loader
+- changed include order for every file: config.inc.php -> hypercms_api.inc.php -> session.inc.php
+- implementation of new function writesessiondata for load balancer
+- function setsession supports 3rd argument to write session data for load balancer
+- variable $appsupport has been replaced by $mgmt_config['application'] in main configuration
+- improvement in function getescapetext to escape special characters if no encoding is provided
+- use of function getescapetext for all text strings used in JS code 
+- implementation of new ICC profiles for ECI offset 2009
+- support for transparent background of SVG files
+- bug fix: frame resizer in control_content did not work
 */
 
 // current version
-$version = "Version 5.7.6";
+$version = "Version 5.7.7";
 ?>

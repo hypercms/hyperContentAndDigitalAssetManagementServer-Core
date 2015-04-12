@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -48,8 +48,6 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
-if (!$lang) $lang = 'de';
-
 // load object file and get container and media file
 $objectdata = loadfile ($location, $object);
 $media = getfilename ($objectdata, "media");
@@ -84,7 +82,7 @@ if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0
 <head>
 <title>hyperCMS</title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/jquery-fileupload.css" type="text/css">
 
@@ -179,15 +177,15 @@ $(document).ready(function ()
     
     // Button to cancel Download
     var cancel = $('<div>&nbsp;</div>');
-    cancel.prop('title', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
-          .prop('alt', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
+    cancel.prop('title', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
+          .prop('alt', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
           .addClass('hcmsButtonBlank hcmsButtonSizeSquare hcmsButtonClose file_cancel')
           .click( { }, function( event ) {
             // If we are sending data we stop it or else we remove the entry completely
             if(data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
             {
               ajax.abort();
-              buildFileMessage( data, '<?php echo $hcms_lang['upload-cancelled'][$lang]; ?>', false);
+              buildFileMessage( data, '<?php echo getescapedtext ($hcms_lang['upload-cancelled'][$lang]); ?>', false);
             }
             else
             {
@@ -317,7 +315,7 @@ $(document).ready(function ()
       // File is already in queue we inform the user
       if (found) 
       {
-        alert(hcms_entity_decode('<?php echo $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]; ?>'));
+        alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]); ?>'));
         return false;
       }
       
@@ -465,8 +463,8 @@ $(document).ready(function ()
     // Button to cancel Download
     var cancel = $('<div>&nbsp;</div>');
     
-    cancel.prop ('title', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
-          .prop ('alt', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
+    cancel.prop ('title', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
+          .prop ('alt', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
           .addClass ('hcmsButtonBlank hcmsButtonSizeSquare hcmsButtonClose file_cancel')
           .click (function(event)
           {
@@ -474,7 +472,7 @@ $(document).ready(function ()
             if(ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
             {
               ajax.abort();
-              buildDropboxFileMessage (data, '<?php echo $hcms_lang['upload-cancelled'][$lang]; ?>', false);
+              buildDropboxFileMessage (data, '<?php echo getescapedtext ($hcms_lang['upload-cancelled'][$lang]); ?>', false);
             }
             else
             {
@@ -584,7 +582,7 @@ $(document).ready(function ()
         // File is already in queue we inform the user
         if (found) 
         {
-          alert(hcms_entity_decode('<?php echo $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]; ?>'));
+          alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]); ?>'));
           break;
         }
         
@@ -751,8 +749,8 @@ $(document).ready(function ()
     // Button to cancel Download
     var cancel = $('<div>&nbsp;</div>');
     
-    cancel.prop ('title', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
-          .prop ('alt', hcms_entity_decode('<?php echo $hcms_lang['cancel'][$lang]; ?>'))
+    cancel.prop ('title', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
+          .prop ('alt', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
           .addClass ('hcmsButtonBlank hcmsButtonSizeSquare hcmsButtonClose file_cancel')
           .click (function(event)
           {
@@ -760,7 +758,7 @@ $(document).ready(function ()
             if (ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
             {
               ajax.abort();
-              buildFTPFileMessage (data, '<?php echo $hcms_lang['upload-cancelled'][$lang]; ?>', false);
+              buildFTPFileMessage (data, '<?php echo getescapedtext ($hcms_lang['upload-cancelled'][$lang]); ?>', false);
             }
             else
             {
@@ -837,7 +835,7 @@ $(document).ready(function ()
       // File is already in queue
       if (found) 
       {
-        alert(hcms_entity_decode('<?php echo $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]; ?>'));
+        alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]); ?>'));
         return;
       }
       
@@ -926,7 +924,7 @@ $(document).ready(function ()
     {
       if (isNaN(percent) || percent < 0 || percent > 200)
       {
-        alert (hcms_entity_decode('<?php echo $hcms_lang['the-resize-value-must-be-between-1-and-200-'][$lang]; ?>'));
+        alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-resize-value-must-be-between-1-and-200-'][$lang]); ?>'));
         return false;
       }
       
@@ -936,7 +934,7 @@ $(document).ready(function ()
     // check if delete is checked and date is defined
     if ($('#deleteobject').prop('checked') && $('#deletedate').val() == "")
     {
-      alert (hcms_entity_decode("<?php echo $hcms_lang['please-set-a-delete-date-for-the-files'][$lang]; ?>"));
+      alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-set-a-delete-date-for-the-files'][$lang]); ?>"));
       return false;
     }
     else if ($('#deleteobject').prop('checked'))

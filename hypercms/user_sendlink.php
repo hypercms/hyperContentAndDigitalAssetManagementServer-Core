@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -429,7 +429,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                         $mediafile_conv = false;
                         
                         // temp location
-                        $location_conv = $mgmt_config['abs_path_cms']."temp/";
+                        $location_conv = $mgmt_config['abs_path_temp'];
                         
                         // convert file if format is not original (try image)
                         if ($format_img[0] != "original")
@@ -741,7 +741,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                             $mediafile_conv = false;
                             
                             // temp location
-                            $location_conv = $mgmt_config['abs_path_cms']."temp/";
+                            $location_conv = $mgmt_config['abs_path_temp'];
                             
                             // convert file if format is not original (try image)
                             if ($format_img[0] != "original")
@@ -1150,14 +1150,14 @@ $token_new = createtoken ($user);
       {  
         if ($("div#emails div").length < 1 && $("#group_login").val() == "")
         {
-          alert (hcms_entity_decode("<?php echo $hcms_lang['add-at-least-one-user-or-email'][$lang]; ?>"));
+          alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['add-at-least-one-user-or-email'][$lang]); ?>"));
           $('input#selector').focus();
           return false;
         }
         
         if (document.getElementById("mail_title").value == "")
         {
-          alert (hcms_entity_decode("<?php echo $hcms_lang['please-define-a-mail-subject'][$lang]; ?>"));
+          alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-define-a-mail-subject'][$lang]); ?>"));
           $("input#mail_title").focus();
           return false;
         }
@@ -1169,7 +1169,7 @@ $token_new = createtoken ($user);
           
           if (isIntegerValue(valid_days) == false || isIntegerValue(valid_hours) == false)
           {
-            alert (hcms_entity_decode("<?php echo $hcms_lang['period-of-validity-is-not-correct'][$lang]; ?>"));
+            alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['period-of-validity-is-not-correct'][$lang]); ?>"));
             document.getElementById("valid_days").focus();
             return false;
           }
@@ -1243,7 +1243,7 @@ $token_new = createtoken ($user);
           $idspecial = "-99999999";
         ?>
 
-        var noneFound = { id: "<?php echo $idspecial; ?>", label: hcms_entity_decode("<?php echo $hcms_lang['add-as-recipient'][$lang]; ?>") };
+        var noneFound = { id: "<?php echo $idspecial; ?>", label: hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['add-as-recipient'][$lang]); ?>") };
         
         $("input#selector").autocomplete(
           { 
@@ -1278,7 +1278,7 @@ $token_new = createtoken ($user);
                   if (emailReg.test(inputval))
                   {
                     var pre = "";
-                    var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.gif\',1);" title="<?php echo $hcms_lang['delete-recipient'][$lang]; ?>" alt="<?php echo $hcms_lang['delete-recipient'][$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_close.gif" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
+                    var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.gif\',1);" title="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_close.gif" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
                     var input = '<input type="hidden" name="email_to[]" id="'+inputid+'" value="'+inputval+'"/>';
                     var divtext =  '<div id="'+divtextid+'"style="float:left">'+inputval+'&nbsp;</div>';
                     $("div#emails").append("<div id=\""+mainname+"\" style=\"width:355px; height:16px;\">"+input+divtext+img+"</br></div>");
@@ -1287,12 +1287,12 @@ $token_new = createtoken ($user);
                   }
                   else
                   {
-                    alert (hcms_entity_decode("<?php echo $hcms_lang['please-insert-a-valid-e-mail-adress'][$lang]; ?>"));
+                    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-valid-e-mail-adress'][$lang]); ?>"));
                   }
                 } 
                 else
                 {
-                  alert (hcms_entity_decode("<?php echo $hcms_lang['recipient-already-added'][$lang]; ?>"));
+                  alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['recipient-already-added'][$lang]); ?>"));
                   $(this).val("");
                 }
               }
@@ -1307,14 +1307,14 @@ $token_new = createtoken ($user);
                 if (!$('#'+mainname).length)
                 {
                   var pre = "";
-                  var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.gif\',1);" title="<?php echo $hcms_lang['delete-recipient'][$lang]; ?>" alt="<?php echo $hcms_lang['delete-recipient'][$lang]; ?>" src="<?php echo getthemelocation(); ?>img/button_close.gif" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
+                  var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.gif\',1);" title="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_close.gif" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
                   var input = '<input type="hidden" name="user_login[]" id="'+inputid+'" value="'+ui.item.loginname+'"/>';
                   var divtext =  '<div id="'+divtextid+'" style="float:left" title="'+ui.item.email+'">'+ui.item.username+'&nbsp;</div>';
                   $("div#emails").append("<div id=\""+mainname+"\" style=\"width:355px; height:16px;\">"+input+divtext+img+"</br></div>");
                 } 
                 else
                 {
-                  alert (hcms_entity_decode("<?php echo $hcms_lang['recipient-already-added'][$lang]; ?>"));
+                  alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['recipient-already-added'][$lang]); ?>"));
                 }
                 $(this).val("");
               }

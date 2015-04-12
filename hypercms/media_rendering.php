@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
  
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -311,24 +311,24 @@ function submitform ()
   
   if (document.getElementById('cut_yes').checked == true)
   {
-    if (document.getElementById('cut_begin').value == "") errors += '- <?php echo $hcms_lang['start'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]; ?>\n';
-    if (document.getElementById('cut_end').value == "") errors += '- <?php echo $hcms_lang['end'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]; ?>\n';
+    if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]); ?>\n';
+    if (document.getElementById('cut_end').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['end'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]); ?>\n';
   }
   
   if (document.getElementById('thumb_yes').checked == true)
   {
-    if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo $hcms_lang['frame'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]; ?>\n';
+    if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]); ?>\n';
   }
   
   if (document.getElementById('videosize_i').checked == true)
   {
-    if (document.getElementById('width_i').value == "") errors += '- <?php echo $hcms_lang['width'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]; ?>\n';
-    if (document.getElementById('height_i').value == "") errors += '- <?php echo $hcms_lang['height'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]; ?>\n';
+    if (document.getElementById('width_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['width'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]); ?>\n';
+    if (document.getElementById('height_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['height'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]); ?>\n';
   }
   
   if (errors) 
   { 
-    alert(hcms_entity_decode('<?php echo $hcms_lang['the-following-error-occurred'][$lang]; ?>:\n' + errors));
+    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang]); ?>:\n' + errors));
     return false;
   }
   else
@@ -365,7 +365,7 @@ function updateField (field)
   }
   else
   {
-    alert (hcms_entity_decode('<?php echo $hcms_lang['videoplayer-must-be-playing-or-paused-to-set-start-and-end-positions'][$lang]; ?>'));
+    alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['videoplayer-must-be-playing-or-paused-to-set-start-and-end-positions'][$lang]); ?>'));
     return 0;
   }
   <?php 

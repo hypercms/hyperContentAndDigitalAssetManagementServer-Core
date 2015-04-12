@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -54,7 +54,7 @@ function warning_media_delete ()
   
   if (form.elements['mediafile'].value != "")
   {
-    check = confirm (hcms_entity_decode("<?php echo $hcms_lang['warning'][$lang]; ?>:\r<?php echo $hcms_lang['the-selected-file-will-be-removed'][$lang]; ?>"));
+    check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>:\r<?php echo getescapedtext ($hcms_lang['the-selected-file-will-be-removed'][$lang]); ?>"));
     if (check == true) form.submit();
     return check;
   }

@@ -1397,6 +1397,8 @@ function registerinstance ($instance, $load_config=true)
     if (valid_publicationname ($instance) && is_file ("config/".$instance.".inc.php"))
     {
       $_SESSION['hcms_instance'] = $instance;
+      
+      
   
       // reload management configuration
       if ($load_config) require ($mgmt_config['abs_path_cms']."/config.inc.php");
@@ -1442,7 +1444,7 @@ function createchecksum ($permissions="")
 // requires: hypercms_api.inc.php
 
 // description:
-// writes session data of user
+// writes hyperCMS specific session data of a user
 
 function writesession ($user, $passwd, $checksum)
 {
@@ -1450,6 +1452,9 @@ function writesession ($user, $passwd, $checksum)
 
   if (valid_objectname ($user) && $passwd != "" && $checksum != "")
   {
+    // write session data for load balancer if required
+    writesessiondata ();
+    
     // timestamp
     $sessiontime = time();
     
@@ -1500,6 +1505,93 @@ function writesession ($user, $passwd, $checksum)
     }
   }
   else return false;
+}
+
+
+// ---------------------- writesessiondata -----------------------------
+// function: writesessiondata()
+// input: %
+// output: true / false on error
+// requires: hypercms_api.inc.php
+
+// description:
+// serializes and writes all session data of a user
+
+function writesessiondata ()
+{
+  global $mgmt_config;
+  
+  if (valid_objectname (session_id()))
+  {
+    // write session data for load balancer (third party load balancer or hyperCMS load balancer)
+    if ((!empty ($mgmt_config['writesessiondata']) && $mgmt_config['writesessiondata'] == true) || (!empty ($mgmt_config['url_path_service']) && is_array ($mgmt_config['url_path_service']) && sizeof ($mgmt_config['url_path_service']) > 0))
+    {
+      // register current timestamp in session
+      setsession ('hcms_temp_sessiontime', time());
+     
+      // serialize session data
+      $session_data = session_encode ();
+    
+      // save session data
+      if ($session_data != "") return savefile ($mgmt_config['abs_path_data']."session/", session_id().".dat", $session_data);
+      else return false;
+    }
+    else return true;
+  }  
+  else return false;
+}
+
+// ------------------------- createsession -----------------------------
+// function: createsession()
+// input: user name (optional)
+// output: true
+
+// description:
+// Checks if session data of a user is available. This function does access session variables directly!
+
+function createsession ()
+{
+  global $mgmt_config;
+  
+  // check user session and set session ID if required
+  if (!session_id() && !empty ($_REQUEST['PHPSESSID']))
+  {
+    session_id ($_REQUEST['PHPSESSID']);
+  }
+
+  // start session
+  session_name ("hyperCMS");
+  session_start ();
+  
+  // if a valid session ID is provided, evalute session and copy session data if required
+  if (valid_objectname (session_id()) && !empty ($mgmt_config['abs_path_data']))
+  {
+    // define session file (a session file is only available if the load balancer is used)
+    $session_file = $mgmt_config['abs_path_data']."session/".session_id().".dat";
+    
+    $session_time = (!empty ($_SESSION['hcms_temp_sessiontime']) ? $_SESSION['hcms_temp_sessiontime'] : 0);
+    
+    // check if session file exists and is newer than the existing session data
+    if (is_file ($session_file) && filemtime ($session_file) > $_SESSION['hcms_temp_sessiontime'])
+    {
+      // load session information
+      $data = file_get_contents ($session_file);
+
+      // decode session data and register variables in session
+      if ($data != "") session_decode ($data);
+    }
+  }
+  // session is not valid
+  else
+  {
+    $errcode = "10401";
+    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|$errcode|session ID could not be set or path to internal repository is empty (".$mgmt_config['abs_path_data'].")";      
+    
+    // save log
+    savelog (@$error);
+  }
+    
+  return true;
 }
 
 // ---------------------- killsession -----------------------------
@@ -1558,9 +1650,10 @@ function killsession ($user="", $destroy_php=true)
   // kill PHP session
   if ($destroy_php == true) @session_destroy();
 
-  // delete temporary files
-  deletefile ($mgmt_config['abs_path_cms']."temp/", session_id().".dat", 0);
-  deletefile ($mgmt_config['abs_path_cms']."temp/", session_id().".js", 0);
+  // delete session data and temporary files
+  deletefile ($mgmt_config['abs_path_data']."session/", session_id().".dat", 0);
+  deletefile ($mgmt_config['abs_path_temp'], session_id().".dat", 0);
+  deletefile ($mgmt_config['abs_path_temp'], session_id().".js", 0);
   
   return true;  
 }
@@ -1609,11 +1702,8 @@ function checkdiskkey ($users="", $site="")
     $data['storage'] = $storage;
     
     // cpu cores
-    if (strtoupper ($mgmt_config['os_cms']) == "UNIX")
-    {
-      exec ("cat /proc/cpuinfo | grep processor | wc -l", $processors);
-      $data['cpu'] = $processors[0];
-    }
+    $serverload = getserverload ();
+    $data['cpu'] = $serverload['cpu'];
     
     // version
     $data['version'] = $version;
@@ -1683,10 +1773,10 @@ function checkpassword ($password)
 
 // --------------------------------------- loguserip -------------------------------------------
 // function: loguserip()
-// input: client IP address, user logon name
+// input: client IP address, user logon name (optional)
 // output: true / false on error
 
-function loguserip ($client_ip, $user) 
+function loguserip ($client_ip, $user="sys") 
 {
   global $mgmt_config;
   
@@ -1766,12 +1856,12 @@ function checkuserip ($client_ip, $user="", $timeout="")
 
 // --------------------------------------- checkuserrequests -------------------------------------------
 // function: checkuserrequests()
-// input: user name
+// input: user name (optional)
 // output: true / false if a certain amount of reguests per minute is exceeded
 
 // description: provides security for Cross-Site Request Forgery
 
-function checkuserrequests ($user)
+function checkuserrequests ($user="sys")
 {
   global $mgmt_config;
   
@@ -1821,14 +1911,14 @@ function checkuserrequests ($user)
 
 // ------------------------- checkusersession -----------------------------
 // function: checkusersession()
-// input: user name, include CSRF detection [true,false]
+// input: user name (optional), include CSRF detection [true,false]
 // output: true / html-output followed by termination
 
 // description:
 // checks if session data of user is correct. This function does access session variables directly!
 // requires config.inc.php
 
-function checkusersession ($user, $CSRF_detection=true)
+function checkusersession ($user="sys", $CSRF_detection=true)
 {
   global $mgmt_config;
   
@@ -2044,7 +2134,8 @@ function valid_publicationname ($variable)
 
 // ------------------------- html_encode -----------------------------
 // function: html_encode()
-// input: variable as string or array, conversion of all special characters based on given character set or to ASCII (optional), remove characters to avoid JS injection [true,false] (optional)
+// input: variable as string or array, conversion of all special characters based on given character set or to ASCII (optional), 
+//        remove characters to avoid JS injection [true,false] (optional)
 // output: html encoded value as array or string / false on error
 
 // description:

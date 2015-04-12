@@ -7,8 +7,11 @@
  * You should have received a copy of the License along with hyperCMS.
  */
  
+ // management configuration
 require ("../config.inc.php");
+// hyperCMS API
 require ("../function/hypercms_api.inc.php");
+
 
 $config_files = array();
 

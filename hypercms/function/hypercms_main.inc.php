@@ -500,6 +500,28 @@ function is_rawimage ($file)
   else return false;
 }
 
+// -------------------------------- is_aiimage --------------------------------
+// function: is_aiimage()
+// input: file name or file extension
+// output: true / false
+
+// description:
+// this function determines if a certain file is a vector-based Adobe Illustrator (AI) or AI-compatible EPS file
+
+function is_aiimage ($file)
+{
+  if ($file != "")
+  {
+    // get file extension
+    if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
+    else $ext = $file;
+    
+    if (substr_count (".ai.eps.", ".".$ext.".") > 0) return true;
+    else return false;
+  }
+  else return false;
+}
+
 // -------------------------------- is_video --------------------------------
 // function: is_video()
 // input: file name or file extension
@@ -1283,7 +1305,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
       $zip_filename = uniqid ("tmp");
   
       // temp directory holding the zip-file
-      $mediadir = $mgmt_config['abs_path_cms']."temp/";
+      $mediadir = $mgmt_config['abs_path_temp'];
   
       // generate temp dir
       if (!file_exists ($mediadir)) mkdir ($mediadir, $mgmt_config['fspermission'], true);
@@ -1319,7 +1341,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
       $zip_filename = uniqid ("tmp");
   
       // temp directory holding the zip-file
-      $mediadir = $mgmt_config['abs_path_cms']."temp/";
+      $mediadir = $mgmt_config['abs_path_temp'];
   
       // generate temp dir
       if (!file_exists ($mediadir)) mkdir ($mediadir, $mgmt_config['fspermission'], true);
@@ -2347,7 +2369,7 @@ function createtempfile ($location, $file, $key="")
     if (substr ($location, -1) != "/") $location = $location."/";
     
     // define temporary file location to store decrypted file to
-    $location_temp = $mgmt_config['abs_path_cms']."temp/";
+    $location_temp = $mgmt_config['abs_path_temp'];
     $file_temp = "stream.".$file;
     
     // check if file is encrypted
@@ -2446,7 +2468,7 @@ function movetempfile ($location, $file, $delete=false, $force_encrypt=false, $k
     if (substr ($location, -1) != "/") $location = $location."/";
     
     // define temporary file location to store decrypted file to
-    $location_temp = $mgmt_config['abs_path_cms']."temp/";
+    $location_temp = $mgmt_config['abs_path_temp'];
     $file_temp = "stream.".$file;
     
     // temp file and source file exists
@@ -2659,11 +2681,11 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
     $prefix = uniqid();
 
     // copy to temp/view and execute
-    copy ($location.$object, $mgmt_config['abs_path_cms']."temp/view/".$prefix."_".$object);
+    copy ($location.$object, $mgmt_config['abs_path_view'].$prefix."_".$object);
     // get content
-    $content = file_get_contents ($mgmt_config['url_path_cms']."temp/view/".$prefix."_".$object);
+    $content = file_get_contents ($mgmt_config['abs_path_view'].$prefix."_".$object);
     // remove temp file
-    unlink ($mgmt_config['abs_path_cms']."temp/view/".$prefix."_".$object);
+    unlink ($mgmt_config['abs_path_view'].$prefix."_".$object);
     
     // return rendered content
     if ($content != "")
@@ -5249,7 +5271,8 @@ function createinstance ($instance_name, $settings, $user="sys")
   
   // check if input data is available
   if (
-       (empty ($mgmt_config['abs_path_cms']) && is_dir ($mgmt_config['abs_path_cms'])) ||
+       empty ($mgmt_config['instances']) || 
+       empty ($mgmt_config['abs_path_cms']) || !is_dir ($mgmt_config['abs_path_cms']) ||
        !valid_publicationname ($instance_name) || strlen ($instance_name) > 100 || 
        empty ($settings['abs_path_data']) || empty ($settings['abs_path_rep']) || 
        empty ($settings['password']) || empty ($settings['confirm_password']) || 
@@ -5260,10 +5283,11 @@ function createinstance ($instance_name, $settings, $user="sys")
      )
   {
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-enter-an-instance-name'][$lang]."\n";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span>\n";
   }
   // test if input data includes special characters incl. white spaces
   elseif (
+           $instance_name == "config" || 
            specialchr ($instance_name, "-_") == true || 
            preg_match ('/\s/', $settings['db_host']) > 0 || preg_match ('/\s/', $settings['db_username']) > 0 || preg_match ('/\s/', $settings['db_name']) > 0 || 
            preg_match ('/\s/', $settings['smtp_host']) > 0 || preg_match ('/\s/', $settings['smtp_username']) > 0 || preg_match ('/\s/', $settings['smtp_port']) > 0 || preg_match ('/\s/', $settings['smtp_sender']) > 0
@@ -5273,7 +5297,7 @@ function createinstance ($instance_name, $settings, $user="sys")
     $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
   }
   // check write permissions in CMS
-  elseif (!is_writeable ($mgmt_config['abs_path_cms']."config/") || !is_writeable ($mgmt_config['abs_path_cms']."temp/") || !is_writeable ($mgmt_config['abs_path_cms']."temp/view/"))
+  elseif (!is_writeable ($mgmt_config['abs_path_cms']."config/") || !is_writeable ($mgmt_config['abs_path_temp']) || !is_writeable ($mgmt_config['abs_path_view']))
   {
     $add_onload = "";
     $show = "<span class=hcmsHeadline>".$hcms_lang['you-do-not-have-write-permissions'][$lang]."</span>\n";
@@ -5425,14 +5449,14 @@ function createinstance ($instance_name, $settings, $user="sys")
         $config = str_replace ("%smtp_port%", $settings['smtp_port'], $config);
         $config = str_replace ("%smtp_sender%", $settings['smtp_sender'], $config);
         
-        $result = savefile ($mgmt_config['abs_path_cms']."config/", $instance_name.".inc.php", $config);
+        $result = savefile ($mgmt_config['instances'], $instance_name.".inc.php", $config);
         
         if ($result == false)
         {
           $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
         
           $errcode = "10702";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createinstance could not create config/".$instance_name.".inc.php";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createinstance could not create ".$instance_name.".inc.php";
         }
       }
     }
@@ -5464,7 +5488,7 @@ function createinstance ($instance_name, $settings, $user="sys")
     if ($show == "")
     {
       // load new config before manipulating user
-      require ($mgmt_config['abs_path_cms']."config/".$instance_name.".inc.php");
+      require ($mgmt_config['instances'].$instance_name.".inc.php");
     
       $result = edituser ("*Null*", "admin", "", $settings['password'], $settings['confirm_password'], "1", $settings['realname'], $settings['language'], "standard", $settings['email'], "", "", "", $user);
       if ($result['result'] == false) $show = "<span class=hcmsHeadline>".$result['message']."</span><br />\n";
@@ -5519,7 +5543,7 @@ function editinstance ($instance_name, $content, $user="sys")
   
   // check if input data is available
   // check if sent data is available
-  if (!is_array ($mgmt_config) || trim ($content) == "" || !valid_publicationname ($instance_name) || !is_file ($mgmt_config['abs_path_cms']."config/".$instance_name.".inc.php") || !valid_objectname ($user) || trim ($instance_name) == "config")
+  if (!is_array ($mgmt_config) || trim ($content) == "" || !valid_publicationname ($instance_name) || empty ($mgmt_config['instances']) || !is_file ($mgmt_config['instances'].$instance_name.".inc.php") || !valid_objectname ($user) || trim ($instance_name) == "config")
   {
     $add_onload = "";
     $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-select-an-instance'][$lang]."\n";
@@ -5527,18 +5551,18 @@ function editinstance ($instance_name, $content, $user="sys")
   else
   {
     // save content in file
-    $result = savefile ($mgmt_config['abs_path_cms']."config/", $instance_name.".inc.php", trim ($content));
+    $result = savefile ($mgmt_config['instances'], $instance_name.".inc.php", trim ($content));
     
     if ($result == false)
     {
       $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-could-not-be-saved'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       
       $errcode = "10721";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|editinstance could not save config/".$instance_name.".inc.php";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|editinstance could not save ".$instance_name.".inc.php";
     }
     
     // load configuration of instance
-    require ($mgmt_config['abs_path_cms']."config/".$instance_name.".inc.php");
+    require ($mgmt_config['instances'].$instance_name.".inc.php");
 
     // instance was successfully deleted
     if ($show == "")
@@ -5602,15 +5626,15 @@ function deleteinstance ($instance_name, $user="sys")
   }
 
   // check if input data is available
-  if (!is_array ($mgmt_config) || !valid_publicationname ($instance_name) || !is_file ($mgmt_config['abs_path_cms']."config/".$instance_name.".inc.php") || !valid_objectname ($user) || trim ($instance_name) == "config")
+  if (!is_array ($mgmt_config) || !valid_publicationname ($instance_name) || empty ($mgmt_config['instances']) || !is_file ($mgmt_config['instances'].$instance_name.".inc.php") || !valid_objectname ($user) || trim ($instance_name) == "config")
   {
     $add_onload = "";
     $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-select-an-instance'][$lang]."\n";
   }
-  elseif (is_file ($mgmt_config['abs_path_cms']."config/".$instance_name.".inc.php"))
+  elseif (is_file ($mgmt_config['instances'].$instance_name.".inc.php"))
   {
     // load configuration of instance
-    require ($mgmt_config['abs_path_cms']."config/".$instance_name.".inc.php");
+    require ($mgmt_config['instances'].$instance_name.".inc.php");
     
     // delete internal repository
     if (is_dir ($mgmt_config['abs_path_data']))
@@ -5674,14 +5698,14 @@ function deleteinstance ($instance_name, $user="sys")
     // delete main config of instance
     if ($show == "")
     {
-      $result = deletefile ($mgmt_config['abs_path_cms']."config/", $instance_name.".inc.php", 0);
+      $result = deletefile ($mgmt_config['instances'], $instance_name.".inc.php", 0);
       
       if ($result == false)
       {
         $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-could-not-be-removed'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       
         $errcode = "10711";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deleteinstance could not delete config/".$instance_name.".inc.php";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deleteinstance could not delete ".$instance_name.".inc.php";
       }
     }
     
@@ -10548,6 +10572,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
   $show = "";
   $show_command = "";
   $result = array();
+  $result['result'] = false;
   
   // set default language
   if ($lang == "") $lang = "en";
@@ -10593,10 +10618,31 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     $is_remote_file = false;
     
     // define path of temp file
-    $temp_file = $mgmt_config['abs_path_cms'].'temp/'.uniqid();
+    $temp_file = $mgmt_config['abs_path_temp'].uniqid();
 
+    // temporary PROXY file
+    if (substr ($global_files['Filedata']['tmp_name'], 0, 6) == "proxy_")
+    {
+      $temp_file = $mgmt_config['abs_path_temp'].$global_files['Filedata']['tmp_name'];
+      
+      if (is_file ($temp_file))
+      {
+        $global_files['Filedata']['error'] = UPLOAD_ERR_OK;
+        $global_files['Filedata']['tmp_name'] = $temp_file;
+        $global_files['Filedata']['type'] = mime_content_type ($temp_file);
+        $global_files['Filedata']['size'] = filesize ($temp_file);
+        $is_remote_file = true;
+      }
+      else
+      {
+        $result['header'] = "HTTP/1.1 501 Internal Server Error";
+        $result['message'] = $hcms_lang['file-could-not-be-downloaded'][$lang];
+        
+        return $result;
+      }
+    }
     // remote HTTP file
-    if (substr ($global_files['Filedata']['tmp_name'], 0, 4) == "http")
+    elseif (substr ($global_files['Filedata']['tmp_name'], 0, 4) == "http")
     {
       // get remote file
       $filedata = file_get_contents ($global_files['Filedata']['tmp_name']);
@@ -10680,7 +10726,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     }
   
     // error if no file is selected
-    if ($global_files['Filedata']['name'] == "")
+    if (empty ($global_files['Filedata']['name']) || empty ($global_files['Filedata']['tmp_name']))
     {
       $result['header'] = "HTTP/1.1 502 Internal Server Error";
       $result['message'] = $hcms_lang['no-file-selected-to-upload'][$lang];
@@ -10907,7 +10953,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
           $file_ext = strtolower (strrchr ($global_files['Filedata']['name'], "."));
 
           // temporary directory for extracting files
-          $temp_dir = $mgmt_config['abs_path_cms']."temp/".$session_id."/";
+          $temp_dir = $mgmt_config['abs_path_temp'].$session_id."/";
 
           if ($file_ext == ".jpg" || $file_ext == ".jpeg")
           {
@@ -10942,7 +10988,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
               }
 
               // delete temporary directory
-              deletefile ($mgmt_config['abs_path_cms']."temp/", $session_id, 1);
+              deletefile ($mgmt_config['abs_path_temp'], $session_id, 1);
             }
           }
         }
@@ -11123,6 +11169,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     if (is_file ($temp_file)) unlink ($temp_file);
   
     // return message and command to flash object
+    $result['result'] = true;
     $result['header'] = "HTTP/1.1 200 OK";
     $result['message'] = strip_tags ($show).$show_command;
     return $result;
@@ -11240,7 +11287,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       {
         // temporary directory for extracting file
         $temp_name = uniqid ("index");
-        $temp_dir = $mgmt_config['abs_path_cms']."temp/".$temp_name."/";
+        $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
         
         // create temporary directory for extraction
         @mkdir ($temp_dir, $mgmt_config['fspermission']);
@@ -11272,7 +11319,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           }
    
           // remove temp directory
-          deletefile ($mgmt_config['abs_path_cms']."temp/", $temp_name, 1);
+          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
         }
       }      
       // ------------------------ MS WORD -----------------------
@@ -11299,7 +11346,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       {
         // temporary directory for extracting file
         $temp_name = uniqid ("index");
-        $temp_dir = $mgmt_config['abs_path_cms']."temp/".$temp_name."/";
+        $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
         
         // create temporary directory for extraction
         @mkdir ($temp_dir, $mgmt_config['fspermission']);
@@ -11331,7 +11378,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           }
    
           // remove temp directory
-          deletefile ($mgmt_config['abs_path_cms']."temp/", $temp_name, 1);
+          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
         }             
       }
       // ------------------------ MS EXCEL -----------------------
@@ -11340,7 +11387,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       {
         // temporary directory for extracting file
         $temp_name = uniqid ("index");
-        $temp_dir = $mgmt_config['abs_path_cms']."temp/".$temp_name."/";
+        $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
         
         // create temporary directory for extraction
         @mkdir ($temp_dir, $mgmt_config['fspermission']);
@@ -11366,7 +11413,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           }
    
           // remove temp directory
-          deletefile ($mgmt_config['abs_path_cms']."temp/", $temp_name, 1);
+          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
         }             
       }      
       // ------------------------ MS Powerpoint -----------------------
@@ -11422,7 +11469,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       {
         // temporary directory for extracting file
         $temp_name = uniqid ("index");
-        $temp_dir = $mgmt_config['abs_path_cms']."temp/".$temp_name."/";
+        $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
         
         // create temporary directory for extraction
         @mkdir ($temp_dir, $mgmt_config['fspermission']);
@@ -11461,7 +11508,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           }
    
           // remove temp directory
-          deletefile ($mgmt_config['abs_path_cms']."temp/", $temp_name, 1);
+          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
         }             
       }
       // ------------------------ TEXT -----------------------    
@@ -12747,7 +12794,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
               deletefile ($medialocation.$site."/", $mediafile_self, 0);
               
               // delete media file in temp/view as well (copied by 360 viewer)
-              if (is_file ($mgmt_config['abs_path_cms']."temp/view/".$mediafile_self)) deletefile ($mgmt_config['abs_path_cms']."temp/view/", $mediafile_self, 0);
+              if (is_file ($mgmt_config['abs_path_view'].$mediafile_self)) deletefile ($mgmt_config['abs_path_view'], $mediafile_self, 0);
               
               // remote client
               remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_self, ""); 
@@ -14432,7 +14479,7 @@ function publishobject ($site, $location, $page, $user)
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
-    // load template engine (is not included by API and needs to be loaded seperately!)
+    // load template engine (it is not included by API and needs to be loaded seperately!)
     require_once ($mgmt_config['abs_path_cms']."function/hypercms_tplengine.inc.php");
   
     // publication management config
@@ -15384,9 +15431,9 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
 
     // -------------------------- load or create collection  -------------------------------
     // check if collection file exists and load collection
-    if ($force != "start" && @is_file ($mgmt_config['abs_path_cms']."temp/".$tempfile))
+    if ($force != "start" && @is_file ($mgmt_config['abs_path_temp'].$tempfile))
     { 
-      $collection_data = loadfile_fast ($mgmt_config['abs_path_cms']."temp/", $tempfile);
+      $collection_data = loadfile_fast ($mgmt_config['abs_path_temp'], $tempfile);
   
       if ($collection_data != false && $collection_data != "")
       {
@@ -15816,7 +15863,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
         // go on 
         if (strlen ($collection) > 0) 
         {
-          savefile ($mgmt_config['abs_path_cms']."temp/", $tempfile, $collection);
+          savefile ($mgmt_config['abs_path_temp'], $tempfile, $collection);
           
           // define result array (will allow popup_status.php to continue!)
           $result['working'] = true;
@@ -15824,13 +15871,13 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
         // finished
         else 
         {
-          deletefile ($mgmt_config['abs_path_cms']."temp/", $tempfile, 1);       
+          deletefile ($mgmt_config['abs_path_temp'], $tempfile, 1);       
         }
       }
       // finished
       else
       { 
-        deletefile ($mgmt_config['abs_path_cms']."temp/", $tempfile, 1);              
+        deletefile ($mgmt_config['abs_path_temp'], $tempfile, 1);              
       }
     }
     // finished, no items were found (could also mean directory without files!)
@@ -15980,8 +16027,6 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
     if ($action != "" && $root != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
     {
       $content = "";
-      $encoding = "application/x-www-form-urlencoded";
-      $charset = "ISO-8859-1";
      
       // load site config file of publication system
       if (valid_publicationname ($site) && @is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
@@ -16046,7 +16091,7 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
       $data['passcode'] = hcms_crypt ($data['location'].$data['page']);
          
       // call remote client
-      $result = HTTP_Post ($mgmt_config[$site]['remoteclient'], $data, $encoding, $charset);
+      $result = HTTP_Post ($mgmt_config[$site]['remoteclient'], $data, $encoding="application/x-www-form-urlencoded", $charset="UTF-8");
       
       // error log
       if (substr_count ($result, "HTTP/1.1 200 OK") == 0 || substr_count ($result, "ERROR") == 1)
@@ -16068,10 +16113,10 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
 // ---------------------- HTTP_Post -----------------------------
 // function: HTTP_Post()
 // input: URL[string], $data[array] (raw data), content-type [application/x-www-form-urlencoded, multipart/form-data], character set [string]
-// output: http answer [string]
+// output: http response [string] / false on error
 
 // description:
-// sends data via http post and returns response / false on error
+// sends data via http post and returns response
 
 function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded", $charset="UTF-8", $referrer="") 
 {
@@ -16148,9 +16193,6 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
       $request .= "POST ".$URL_Info["path"]." HTTP/1.0\n";
       $request .= "Host: ".$URL_Info["host"]."\n";
       $request .= "Referer: ".$referrer."\n";
-      //$request .= "User-Agent: Mozilla/4.05C-SGI [en] (X11; I; IRIX 6.5 IP22)\n";
-      //$request.="Accept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, image/png, */*\n";
-      //$request.="Accept-Charset: iso-8859-1,*,utf-8\n";
       //$request .= "Keep-Alive: 300\n";
       //$request .= "Connection: keep-alive\n";
       $request .= "Content-type: multipart/form-data; boundary=".$boundary."\n";
@@ -16192,25 +16234,19 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
 
 // ---------------------- HTTP_Get -----------------------------
 // function: HTTP_Get()
-// input: URL[string], $data[array] (raw data), content-type[string excl. charset], character set[string]
-// output: http answer [string]
+// input: URL[string], $data[array] (raw data) (optional), content-type[string excl. charset] (optional), character set[string] (optional)
+// output: http response [string] / false on error
 
 // description:
-// sends data via http get and returns response / false on error
+// sends data via http get and returns response
 
-function HTTP_Get ($URL, $data, $contenttype, $charset) 
+function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencoded", $charset="UTF-8") 
 {
   if ($URL != "" && substr_count ($URL, "://") > 0)
   {
     // parsing the given URL
     $URL_Info = parse_url ($URL);
-    
-    // Content-type  
-    if ($contenttype == "") $contenttype = "application/x-www-form-urlencoded";
-  
-    // character set
-    if ($charset == "") $charset = "ISO-8859-1";  
-  
+
     // making string from $data 
     if (is_array ($data))
     {
@@ -16226,9 +16262,7 @@ function HTTP_Get ($URL, $data, $contenttype, $charset)
 
     $request .= "Connection: close\n";
     $request .= "User-Agent: Mozilla/4.05C-SGI [en] (X11; I; IRIX 6.5 IP22)\n";
-    $request .= "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\n";
     $request .= "Cache-Control: no-cache\n";
-    $request .= "Accept-Language: de-de,de;q=0.8,en-us;q=0.5,en;q=0.3\n";
     $request .= "Content-Type: ".$contenttype."; charset=".$charset."\r\n";
     
     if (strlen ($URL_Info['user']) > 0 && strlen($URL_Info['pass']) > 0) 
@@ -16257,13 +16291,195 @@ function HTTP_Get ($URL, $data, $contenttype, $charset)
       }
       
       // remove header information from the xml/html-document
-      if (strpos ($result, "<") > 0) 
-        $result = substr ($result, strpos ($result, "<"), strrpos ($result, ">") - strpos ($result, "<") + 1);
+      if (strpos ($result, "<") > 0) $result = substr ($result, strpos ($result, "<"), strrpos ($result, ">") - strpos ($result, "<") + 1);
       
       @fclose ($fp);
     }
     
     return $result;
+  }
+  else return false;
+}
+
+// ---------------------- HTTP_Proxy -----------------------------
+// function: HTTP_Proxy()
+// input: URL[string], enable post of files [true,false] (optional)
+// output: http response [string] / false on error
+// requires: PHP CURL
+
+// description:
+// sends all global POST/GET and FILES data via http post and returns response
+
+function HTTP_Proxy ($URL, $enable_file=false) 
+{
+  global $mgmt_config;
+  
+  if ($URL != "" && substr_count ($URL, "://") > 0 && !empty ($_REQUEST) && is_array ($_REQUEST))
+  {    
+    // define data to be posted/redirected
+    $data = $_REQUEST;
+  
+    if (!empty ($_FILES['Filedata']['tmp_name']))
+    {
+      // add file and its contents to post data, prefix '@' is required (will cause additional traffic due to file upload to other server)
+      if ($enable_file == true)
+      {
+        $data['Filedata'] = "@".realpath ($_FILES['Filedata']['tmp_name']);
+      }
+      // save file in temp directory and send identifier (recommended for better performance)
+      else
+      {
+        // define temp file name
+        $temp_file = "proxy_".uniqid();
+        
+        // save uploaded file
+        $result_save = @move_uploaded_file ($_FILES['Filedata']['tmp_name'], $mgmt_config['abs_path_temp'].$temp_file);
+        
+        if ($result_save == false)
+        {
+          $result_save = @rename ($_FILES['Filedata']['tmp_name'], $mgmt_config['abs_path_temp'].$temp_file);
+        }
+        
+        // add file info
+        if ($result_save == true)
+        {
+          $data['proxy_file']['name'] = $_FILES['Filedata']['name'];
+          $data['proxy_file']['link'] = $temp_file;
+        }
+        else
+        {
+          $errcode = "10991";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|uploaded file ".$_FILES['Filedata']['name']." could not be saved in temp directory";
+          
+          savelog ($error);
+        }
+      }
+    }
+    
+    
+    // It is important to notice that when using curl to post form data and you use an array for CURLOPT_POSTFIELDS option, the post will be in multipart format
+    // Setting CURLOPT_POSTFIELDS as follow produce a standard post header CURLOPT_POSTFIELDS => http_build_query ($data)
+    
+    $options = array(
+        CURLOPT_POST           => true, // send a POST request 
+        CURLOPT_RETURNTRANSFER => true, // to receive the response that the site gives after it receives the request
+        CURLOPT_HEADER         => false, // return HTTP headers
+        CURLOPT_ENCODING       => "", // handle all encodings
+        CURLOPT_AUTOREFERER    => true, // set referer on redirect
+        CURLOPT_CONNECTTIMEOUT => 15, // timeout on connect
+        CURLOPT_MAXREDIRS      => 10, // stop after 10 redirects
+        CURLOPT_HTTPHEADER     => array('Connection: close'), // close connection
+        CURLOPT_POSTFIELDS     => http_build_query ($data)
+    );
+
+    // setup cURL
+    $ch = curl_init ($URL);
+
+    // set options
+    curl_setopt_array ($ch, $options);
+
+    // write and close session (important: curl_exec might hang otherwise)
+    session_write_close();
+
+    // send the request.
+    $message = curl_exec ($ch);
+    
+    // start session again
+    session_start();
+
+    // get http response code after EXEC
+    $info = curl_getinfo ($ch);
+    $error_no = curl_errno ($ch);
+    $error_message = curl_error ($ch);
+    
+    // close the cURL session
+    curl_close ($ch);
+
+    // on error
+    if ($error_no > 0)
+    {
+      $errcode = "20921";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|HTTP_Proxy failed with error (".$error_no.") ".$error_message;
+      
+      savelog ($error);
+    }
+    
+    // define http header
+    if (!empty ($info['http_code'])) $header = "HTTP/1.1 ".$info['http_code']." ".($info['http_code'] == 200 ? "OK" : "Internal Server Error");
+    else $header = "HTTP/1.1 500 Internal Server Error";
+  }
+  // invalid input
+  else
+  {
+    $header = "HTTP/1.1 500 Internal Server Error";
+    $result['message'] = "Invalid input for PROXY service";
+  }
+  
+  // return result
+  $result = array();
+  $result['header'] = $header;
+  $result['message'] = $message;
+    
+  return $result;
+}
+
+// ================================= LOAD BALANCING =====================================
+
+// ---------------------- loadbalancer -----------------------------
+// function: loadbalancer()
+// input: type [renderimage,rendervideo,savecontent,uploadfile]
+// output: http response [string] / false on error or if disabled
+// requires: HTTP_Proxy
+
+// description:
+// balances the load by sending all global POST/GET and FILES to one service ressource of a given array of service ressources
+// don't define and use the same server ressources in $mgmt_config['url_path_service'], this can lead to a infinite loop that will be ended by 
+
+function loadbalancer ($type) 
+{
+  global $mgmt_config;
+  
+  // if hyperCMS load balancer is used $mgmt_config['url_path_service'] must hold an array
+  if (in_array ($type, array("renderimage", "rendervideo", "savecontent", "uploadfile")) && !empty ($mgmt_config['url_path_service']) && is_array ($mgmt_config['url_path_service']) && sizeof ($mgmt_config['url_path_service']) > 0)
+  {
+    // define service file
+    if ($type == "renderimage") $file = "renderimage.php";
+    elseif ($type == "rendervideo") $file = "rendervideo.php";
+    elseif ($type == "savecontent") $file = "savecontent.php";
+    elseif ($type == "uploadfile") $file = "uploadfile.php";
+    
+    // prepare service array
+    $count = 0;
+    
+    foreach ($mgmt_config['url_path_service'] as $service)
+    {
+      if ($service != "")
+      {
+        $count++;
+        $service_url[$count] = $service.$file;
+      }
+    }
+    
+    // select service ressource
+    $balancer_id = getsession ("hcms_temp_balancer_id", 1);
+    
+    // save next balancer ID in session
+    if ($balancer_id < $count) $next_id = $balancer_id + 1;
+    else $next_id = 1;
+    
+    setsession ("hcms_temp_balancer_id", $next_id);
+    
+    // add session ID since the user has no session on servers providing the service for the PROXY
+    if (session_id() != "") $_REQUEST['PHPSESSID'] = session_id();
+
+    // use PROXY and return response
+    $result = HTTP_Proxy ($service_url[$balancer_id]);
+
+    // return header and message to uploader
+    header ($result['header']);
+    echo $result['message'];
+
+    exit();
   }
   else return false;
 }
@@ -16351,7 +16567,7 @@ function deletelog ()
 // output: true / false
 
 // description:
-// writes code lines into debug file in data/temp/debuglog.txt
+// writes code lines into debug file in data/log/debug.log
 
 function debuglog ($code)
 {

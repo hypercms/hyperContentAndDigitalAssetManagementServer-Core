@@ -281,7 +281,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     if ($format != "") $format = strtolower ($format);
 
     // define temporary media file location
-    $location_temp = $mgmt_config['abs_path_cms']."temp/";
+    $location_temp = $mgmt_config['abs_path_temp'];
     
     // create temp file if file is encrypted
     $temp_source = createtempfile ($location_source, $file);
@@ -546,6 +546,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               // Options:
               // -s ... output size in width x height in pixel (WxH)
               // -f ... output format (file extension without dot [jpg, png, gif])
+              // -d ... image density (DPI) for vector graphics and EPS files, common values are 72, 96 dots per inch for screen, while printers typically support 150, 300, 600, or 1200 dots per inch
+              // -q ... quality for compressed image formats like JPEG (1 to 100)
               // -c ... crop x and y coordinates (XxY)
               // -b ... image brightness
               // -k .... image contrast
@@ -569,6 +571,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 $imageheight = intval ($imageheight);
                 // ImageMagick resize parameter (resize will fit the image into the requested size, aspect ratio is preserved)
                 $imageresize = "-resize ".$imagewidth."x".$imageheight;
+                // Imagemagick geometry parameter for EPS
+                $imagegeometry = "-geometry ".$imagewidth."x".$imageheight; 
               }
               else $imageresize = "";
               
@@ -605,7 +609,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               {
                 $imagerotation = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-rotate"));
                 // ImageMagick rotate parameter
-                $imagerotate = "-rotate ".shellcmd_encode ($imagerotation);
+                $imagerotate = "-rotate ".$imagerotation;
                 
                 // no resize if rotation is used
                 $imageresize = "";
@@ -615,6 +619,28 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 $imagerotate = "";
                 $imagerotation = "";
               }
+              
+              // image density (DPI)
+              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-d ") > 0) 
+              {
+                $imagedensity = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-d"));
+                
+                if ($imagedensity > 1200) $imagedensity = "-density 1200";
+                elseif ($imagedensity < 72) $imagedensity = "-density 72";
+                else $imagedensity = "-density ".$imagedensity;
+              }
+              else $imagedensity = "";
+              
+              // image quality / compression
+              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-q ") > 0) 
+              {
+                $imagequality = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-q"));
+                
+                if ($imagequality > 100) $imagequality = "-quality 100";
+                elseif ($imagequality < 1) $imagequality = "-quality 1";
+                else $imagequality = "-quality ".$imagequality;
+              }
+              else $imagequality = "";
               
               // image brightness
               if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-b ") > 0) 
@@ -655,8 +681,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               {
                 $imagecolorspace = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-cs");
                 
+                // enable alpha blending for colorspace transparent
+                if (strtolower ($imagecolorspace) == "transparent") $add = "-alpha on ";
+                else $add = "";
+                
                 if ($imagecolorspace == "" || $imagecolorspace == false) $imagecolorspace = "";
-                else $imagecolorspace = "-colorspace ".shellcmd_encode ($imagecolorspace);
+                else $imagecolorspace = $add."-colorspace ".shellcmd_encode ($imagecolorspace);
               }
               else $imagecolorspace = "";
               
@@ -784,7 +814,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 {
                   @unlink ($location_dest.$file_name.".thumb.jpg");
                 }
-                // copy original image before conversion to restore it if an error occured              
+                // copy original image before conversion to restore it if an error occured
                 elseif ($type != "thumbnail" && @is_file ($location_source.$file))
                 {
                   // create buffer file
@@ -795,21 +825,24 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if ($type == "original") @unlink ($location_source.$file);
                 }
 
-                // DOCUMENT: document-based formats and vector graphics
-                if ($file_ext == ".pdf" || $file_ext == ".eps")
+                // DOCUMENT & VECTOR Graphics: document-based formats, encapsulated post script and vector graphics
+                if ($file_ext == ".pdf" || $file_ext == ".eps" || $file_ext == ".svg")
                 {
                   if ($type == "thumbnail")
                   {
                     $newfile = $file_name.".thumb.jpg";
                     
-                    $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." ".$imagecolorspace." ".$iccprofile." -background white -alpha remove \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                    $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                   }
                   else 
                   {
                     if ($type == "original") $newfile = $file_name.".".$imageformat;
                     else $newfile = $file_name.".".$type.".".$imageformat;
-                      
-                    $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageresize." ".$imagecolorspace." ".$iccprofile." -background white -alpha remove ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                    
+                    // use geometry instead of resize for EPS files
+                    if ($file_ext == ".eps") $imageresize = $imagegeometry;
+
+                    $cmd = $mgmt_imagepreview[$imagepreview_ext]." -background none ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageresize." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                   }
                   
                   @exec ($cmd, $buffer, $errorCode);
@@ -856,12 +889,29 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
                   }
                 }
-                // PHOTOSHOP / Adobe Illustrator: layered files
+                // Adobe Photoshop / Adobe Illustrator: layered files
                 elseif ($file_ext == ".ai" || $file_ext == ".psd")
                 {
-                  if ($type == "thumbnail") $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_source.$file)."\" -flatten \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\"";
-                  elseif ($type == "original") $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($buffer_file)."\" -flatten \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\"";
-                  else $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($buffer_file)."\" -flatten \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\"";
+                  if ($type == "thumbnail")
+                  {
+                    $newfile = $file_name.".thumb.jpg";
+                    
+                    $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."\" -flatten ".$imageresize." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                  }
+                  else
+                  {
+                    if ($type == "original") $newfile = $file_name.".".$imageformat;
+                    else $newfile = $file_name.".".$type.".".$imageformat;
+
+                    if ($crop_mode)
+                    {
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -flatten -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".$imageBrightnessContrast." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                    }
+                    else
+                    {
+                       $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -flatten \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                    }
+                  }
     
                   @exec ($cmd, $buffer, $errorCode);
     
@@ -876,76 +926,35 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   }
                   // on success
                   else
-                  {              
-                    if (@is_file ($location_dest.$file_name.".buffer.jpg"))
+                  {
+                    // watermark using composite
+                    if ($type != "thumbnail" && $type != "original" && !empty ($watermark))
                     {
-                      if ($type == "thumbnail")
-                      { 
-                        $newfile = $file_name.".thumb.jpg";
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".$imageresize." ".$imagecolorspace." ".$iccprofile." \"".shellcmd_encode ($location_dest.$newfile)."\"";
-                      }
-                      else
-                      {
-                        if ($type == "original") $newfile = $file_name.".".$imageformat;
-                        else $newfile = $file_name.".".$type.".".$imageformat;
-                          
-                        if ($crop_mode)
-                        {
-                          $cmd = $mgmt_imagepreview[$imagepreview_ext]." -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".$imageBrightnessContrast." ".$imagecolorspace." ".$iccprofile." \"".shellcmd_encode ($location_dest.$newfile)."\"";
-                        }
-                        else
-                        {
-                           $cmd = $mgmt_imagepreview[$imagepreview_ext]." \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".shellcmd_encode ($imagecolorspace)." ".$iccprofile." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." \"".shellcmd_encode ($location_dest.$newfile)."\"";
-                        }
-                      }
+                      $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."composite ".$watermark." ".shellcmd_encode ($location_dest.$newfile)." ".shellcmd_encode ($location_temp."watermark.".$newfile);
                       
                       @exec ($cmd, $buffer, $errorCode);
-
-                      // delete buffer file
-                      @unlink ($location_dest.$file_name.".buffer.jpg");   
                       
                       // on error
                       if ($errorCode)
                       {
-                        // restore original image
-                        if ($type == "original") @copy ($buffer_file, $location_source.$file);
-                              
-                        $errcode = "20233";
-                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;   
+                        // overwrite original file
+                        if (is_file ($location_temp."watermark.".$newfile)) @unlink ($location_temp."watermark.".$newfile);
+  
+                        $errcode = "20262";
+                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$file;
                       }
-                      // on success
                       else
                       {
-                        // watermark using composite
-                        if ($type != "thumbnail" && $type != "original" && !empty ($watermark))
-                        {
-                          $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."composite ".$watermark." ".shellcmd_encode ($location_dest.$newfile)." ".shellcmd_encode ($location_temp."watermark.".$newfile);
-                          
-                          @exec ($cmd, $buffer, $errorCode);
-                          
-                          // on error
-                          if ($errorCode)
-                          {
-                            // overwrite original file
-                            if (is_file ($location_temp."watermark.".$newfile)) @unlink ($location_temp."watermark.".$newfile);
-      
-                            $errcode = "20262";
-                            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$file;
-                          }
-                          else
-                          {
-                            // overwrite source file with watermarked file
-                            @rename ($location_temp."watermark.".$newfile, $location_dest.$newfile);
-                          }
-                        }
-                        
-                        $converted = true;
-                        // copy metadata from original file using EXIFTOOL
-                        if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
-                        // remote client
-                        if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-                      }       
+                        // overwrite source file with watermarked file
+                        @rename ($location_temp."watermark.".$newfile, $location_dest.$newfile);
+                      }
                     }
+                    
+                    $converted = true;
+                    // copy metadata from original file using EXIFTOOL
+                    if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
+                    // remote client
+                    if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
                   }
                 }
                 // IMAGE: standard images
@@ -967,7 +976,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       $imageresize = "-resize ".round ($imagewidth_orig, 0)."x".round ($imageheight_orig, 0);
                     }
                      
-                    $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove ".$imagecolorspace." ".$iccprofile." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                    $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                   }
                   else
                   {
@@ -976,11 +985,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         
                     if ($crop_mode)
                     {
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$iccprofile." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     else
                     {
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$iccprofile." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                   }
 
@@ -1767,14 +1776,15 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
 // function: convertimage()
 // input: publication name, path to source image file, path to destination dir, format (file extension w/o dot) of destination file (optional), 
 //        colorspace of new image [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (optional), 
-//        width in pixel/mm/inch (optional), height in pixel/mm/inch (optional), slug in pixel/mm/inch (optional), units for width, height and slug [px,mm,inch] (optional), dpi (optional)
+//        width in pixel/mm/inch (optional), height in pixel/mm/inch (optional), slug in pixel/mm/inch (optional), units for width, height and slug [px,mm,inch] (optional),
+//        dpi (optional), image quality (1 to 100)    
 // output: new file name / false on error
 
 // description:
 // converts and creates a new image from original. the new image keeps will be resized and cropped to fit width and height.
 // this is a wrapper function for createmedia.
 
-function convertimage ($site, $file_source, $location_dest, $format="jpg", $colorspace="RGB", $iccprofile="", $width="", $height="", $slug=0, $units="px", $dpi=72)
+function convertimage ($site, $file_source, $location_dest, $format="jpg", $colorspace="RGB", $iccprofile="", $width="", $height="", $slug=0, $units="px", $dpi=72, $quality="")
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext;
   
@@ -1783,7 +1793,7 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
 
   if (valid_publicationname ($site) && valid_locationname ($file_source) && valid_locationname ($location_dest))
   {
-    //get icc profile list
+    // include ICC profile list
     include ($mgmt_config['abs_path_cms']."library/ICC_Profiles/ICC_Profiles.php");
     
     // load file extensions
@@ -1801,17 +1811,30 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
     
     // get file info
     $file_info = getfileinfo ($site, $file_source, "comp");
+    
+    // validate DPI value
+    if ($dpi < 72) $dpi = 72;
+    elseif ($dpi > 1200) $dpi = 1200;
+    
+    $density_para = " -d ".$dpi;
+    
+    // validate quality value
+    if ($quality >= 1 && $quality <= 100)
+    {
+      $quality_para = " -q ".$quality;
+    }
+    else $quality_para = "";
 
     // new image dimensions
     if ($width > 0 && $height > 0)
     {
       // convert width and height to px
-      if ($units == "mm")
+      if (strtolower ($units) == "mm")
       {
         $width = mm2px ($width, $dpi);
         $height = mm2px ($height, $dpi);
       }
-      elseif ($units == "inch")
+      elseif (strtolower ($units) == "inch")
       {
         $width = inch2px ($width, $dpi);
         $height = inch2px ($height, $dpi);
@@ -1906,7 +1929,7 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
     }
     
     // define type
-    $type = $size."-".$color;
+    $type = $size."-".$color."-".$dpi."dpi";
     
     // new file name
     $file_name = $file_info['filename'].".".$type.".".$format;
@@ -1916,9 +1939,9 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
     {
       // define image option
       $mgmt_imageoptions = array();
-      $mgmt_imageoptions['.'.$format][$type] = $size_para.$color_para.$format_para;
+      $mgmt_imageoptions['.'.$format][$type] = $size_para.$color_para.$format_para.$density_para.$quality_para;
 
-      // render image
+      // render image w/o crop since one step crop and resize are not supported by hyperCMS
       $file_name_new = createmedia ($site, $location_source, $location_dest, $file, $format, $type);
 
       // define image option for crop
@@ -2797,7 +2820,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $user)
     if (!is_dir ($location.$folder."/"))
     {
       // temporary directory for extracting files
-      $location_temp = $mgmt_config['abs_path_cms']."temp/";
+      $location_temp = $mgmt_config['abs_path_temp'];
       $unzipname_temp = uniqid ("unzip");
       $unzippath_temp = $location_temp.$unzipname_temp."/";
       
@@ -2990,7 +3013,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
     }  
 
     // temporary directory for file collection
-    $tempDir = $mgmt_config['abs_path_cms']."temp/";
+    $tempDir = $mgmt_config['abs_path_temp'];
   
     $commonRoot = getlocation ($multiobject_array[0]);
   
@@ -3099,7 +3122,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
     if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
     {
       $error_message = implode ("<br />", $error_array);
-      $error_message = str_replace ($mgmt_config['abs_path_cms']."temp/", "/", $error_message);
+      $error_message = str_replace ($mgmt_config['abs_path_temp'], "/", $error_message);
   
       $errcode = "10645";
       $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|zipfiles failed for $filename: $error_message";

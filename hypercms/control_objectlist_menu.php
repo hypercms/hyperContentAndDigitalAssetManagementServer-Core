@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -217,7 +217,7 @@ if (checktoken ($token, $user))
   // create zip
   elseif ($action == "zip" && $setlocalpermission['root'] == 1)
   {
-    $zipFolder = $mgmt_config['abs_path_cms']."temp/";
+    $zipFolder = $mgmt_config['abs_path_temp'];
    
     if ($multiobject != "")
     {
@@ -332,7 +332,7 @@ function submitToWindow (url, action, windowname, features, width, height)
     form.target = windowname;
     form.submit();
   }
-  else alert ('<?php echo $hcms_lang['please-close-the-search-window'][$lang]; ?>');
+  else alert ('<?php echo getescapedtext ($hcms_lang['please-close-the-search-window'][$lang]); ?>');
 }
 
 function submitToSelf (action)
@@ -358,12 +358,12 @@ function submitToSelf (action)
     form.target = 'controlFrame';
     form.submit();
   }
-  else alert ('<?php echo $hcms_lang['please-close-the-search-window'][$lang]; ?>');
+  else alert ('<?php echo getescapedtext ($hcms_lang['please-close-the-search-window'][$lang]); ?>');
 }
 
 function checkForm_delete ()
 {
-  check = confirm ("<?php echo $hcms_lang['are-you-sure-you-want-to-remove-the-item'][$lang]; ?>");
+  check = confirm ("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-the-item'][$lang]); ?>");
 
   if (check == true)
   {    
@@ -401,7 +401,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert (hcms_entity_decode("<?php echo $hcms_lang['please-do-not-use-the-following-special-characters'][$lang]; ?>: ") + addText);
+		alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>: ") + addText);
 		return false;
 	}
   else
@@ -416,7 +416,7 @@ function checkForm_folder_create()
   
   if (form.elements['foldernew'].value == "")
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['a-name-is-required'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['foldernew'].focus();
     return false;
   }
@@ -437,7 +437,7 @@ function checkForm_folder_rename()
 
   if (form.elements['foldernew'].value == "")
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['a-name-is-required'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['foldernew'].focus();
     return false;
   }
@@ -458,7 +458,7 @@ function checkForm_page_rename()
   
   if (form.elements['pagenew'].value == "")
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['a-name-is-required'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['pagenew'].focus();
     return false;
   }
@@ -479,7 +479,7 @@ function checkForm_zip()
   
   if (form.elements['pagenew'].value == "")
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['a-name-is-required'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['pagenew'].focus();
     return false;
   }

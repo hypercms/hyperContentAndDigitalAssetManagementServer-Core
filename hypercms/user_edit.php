@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -90,7 +90,7 @@ if ($action == "user_save" && ($site == "*Null*" || checkpublicationpermission (
       // change theme in session if user changed it
       if (!empty ($theme) && $hcms_themename != $theme)
       {
-        setsession ('hcms_themename', $theme);
+        setsession ('hcms_themename', $theme, true);
         $add_onload = "setTimeout (function(){ top.location.reload(true); }, 2000);";
       }
     }
@@ -175,7 +175,7 @@ function checkForm_chars (text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert ("<?php echo $hcms_lang['please-do-not-use-the-following-special-characters-in-password'][$lang]; ?>: "+addText);
+		alert ("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-password'][$lang]); ?>: "+addText);
 		return false;
 	}
   else
@@ -191,7 +191,7 @@ function checkForm ()
   
   if (userform.elements['password'].value != userform.elements['confirm_password'].value)
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['your-submitted-passwords-are-not-equal'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['your-submitted-passwords-are-not-equal'][$lang]); ?>"));
     userform.elements['confirm_password'].focus();
     return false;
   }
@@ -206,7 +206,7 @@ function checkForm ()
     
     if (userform.elements['confirm_password'].value == "")
     {
-      alert (hcms_entity_decode("<?php echo $hcms_lang['assigned-to-publication'][$lang]; ?>"));
+      alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['assigned-to-publication'][$lang]); ?>"));
       userform.elements['confirm_password'].focus();
       return false;
     } 
@@ -220,7 +220,7 @@ function checkForm ()
   
   if(userform.elements['email'].value != "" && (userform.elements['email'].value.indexOf('@') == -1 || userform.elements['email'].value.indexOf('.') == -1))
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['please-insert-a-valid-e-mail-adress'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-valid-e-mail-adress'][$lang]); ?>"));
     userform.elements['email'].focus();
     return false;
   }

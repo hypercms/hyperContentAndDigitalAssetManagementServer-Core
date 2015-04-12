@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -175,7 +175,7 @@ function submitform ()
   {
     if (document.forms['publish'].elements['publishdate'].value == "")
     {
-      alert(hcms_entity_decode("<?php echo $hcms_lang['please-set-a-date-for-publishing'][$lang]; ?>"));
+      alert(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-set-a-date-for-publishing'][$lang]); ?>"));
     }
     else
     {

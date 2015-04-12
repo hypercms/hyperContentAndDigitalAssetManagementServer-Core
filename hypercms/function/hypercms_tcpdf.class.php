@@ -15,15 +15,53 @@ if (is_file ($mgmt_config['abs_path_cms']."library/tcpdf/tcpdf.php"))
 
 class hcmsPDF extends TCPDF
 {
-  // ----------------------------------------- TCPDFdrawCropbox ---------------------------------------------
-  // function: TCPDFdrawCropbox()
+  // ----------------------------------------- placeImage ---------------------------------------------
+  // function: placeImage()
+  // input: internal hcmsPDF/TCPDF object, x-ccordinate (optional), y-coordinate (optional), width (optional), height (optional), image/file type (optional), URL or identifier returned by AddLink (optional), 
+  //        alignment of the pointer next to image insertion relative to image height [T,M,B,N] (optional), align the image on the current line [L,C,R] (optional), 
+  //        resize (reduce) the image to fit $w and $h [true,false] (optional), DPI (optional), border (optional), specifies whether to position the bounding box (true) or the complete canvas (false) at location (x,y) (optional),
+  //        if true remove values outside the bounding box (optional), 
+  //        scale image dimensions proportionally to fit within the ($w, $h) box. $fitbox can be true or a 2 characters string indicating the image alignment inside the box. The first character indicate the horizontal alignment (L = left, C = center, R = right) the second character indicate the vertical algnment (T = top, M = middle, B = bottom),
+  //        if true the image is resized to not exceed page dimensions (optional)
+  // output: hcmsPDF/TCPDF object
+  
+  // description:
+  // Places an image in the document
+  
+  public function placeImage ($tcpdf, $file, $x='', $y='', $w=0, $h=0, $type='', $link='', $align='', $palign='', $resize=false, $dpi=300, $border=0, $useBoundingBox=true, $fixoutvals=true, $fitbox=false, $fitonpage=false)
+  {
+    if (is_file ($file))
+    {
+      // get file extension
+      $file_ext = strtolower (strrchr ($file, "."));
+      
+      // place AI or EPS file
+      if ($file_ext == ".ai" || $file_ext == ".eps")
+      {
+        $tcpdf->ImageEps ($file, $x, $y, $w, $h, $link, $useBoundingBox, $align, $palign, $border, $fitonpage, $fixoutvals);
+      }
+      // place SVG file
+      elseif ($file_ext == ".svg")
+      {
+        $tcpdf->ImageSVG ($file, $x, $y, $w, $h, $link, $align, $palign, $border, $fitonpage);
+      }
+      // place standard image file
+      else
+      {
+        $tcpdf->Image ($file, $x, $y, $w, $h, $type, $link, $align, $resize, $dpi, $palign, $ismask=false, $imgmask=false, $border, $fitbox, $hidden=false, $fitonpage, $alt=false, $altimgs=array());
+      }
+    }
+  }
+  
+  // ----------------------------------------- drawCropbox ---------------------------------------------
+  // function: drawCropbox()
   // input: internal hcmsPDF/TCPDF object, slug, cropmark [true,false] (optional), crop-mark [true,false] (optional), registration-mark [true,false] (optional), color-registration-bar [true,false] (optional)
   // output: hcmsPDF/TCPDF object
   
   // description:
   // Enlarges the MediaBox by the slug of the document in all directions and draws cropmarks, registrations marks and color bars
   
-  public function TCPDFdrawCropbox ($tcpdf, $slug=6, $cropmark=true, $registrationmark=true, $registrationbar=true)
+  public function drawCropbox ($tcpdf, $slug=6, $cropmark=true, $registrationmark=true, $registrationbar=true)
   {
     for ($i = 1; $i <= $tcpdf->getNumPages(); $i++)
     {

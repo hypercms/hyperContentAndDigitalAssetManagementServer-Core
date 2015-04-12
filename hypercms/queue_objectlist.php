@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -152,7 +152,7 @@ var session_id = '<?php echo session_id(); ?>';
 
 function confirm_delete ()
 {
-  return confirm(hcms_entity_decode("<?php echo $hcms_lang['are-you-sure-you-want-to-delete-this-entry'][$lang]; ?>"));
+  return confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-this-entry'][$lang]); ?>"));
 }
 
 function getdoc_height ()

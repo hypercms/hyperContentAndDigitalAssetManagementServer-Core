@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -83,12 +83,12 @@ if ($action == "set")
   if ($contentdate != "" && $templatedate != "")
   {
     $data = "<?php\n\$date_content = \"".$contentdate."\";\n\$date_template = \"".$templatedate."\";\n?>";
-    savefile ($mgmt_config['abs_path_cms']."temp/", session_id().".dates.php", $data);
+    savefile ($mgmt_config['abs_path_temp'], session_id().".dates.php", $data);
   }
 }
 elseif ($action == "clean")
 {
-  deletefile ($mgmt_config['abs_path_cms']."temp/", session_id().".dates.php", 0);
+  deletefile ($mgmt_config['abs_path_temp'], session_id().".dates.php", 0);
 }
 
 // load setup date of hypercms (yyyy-mm-dd)
@@ -97,9 +97,9 @@ $setupdate = loadfile ($mgmt_config['abs_path_data'], "check.dat");
 if ($setupdate != "") list ($year_setup, $month_setup, $day_setup) = explode ("-", $setupdate);
 
 // load set dates for history view
-if (file_exists ($mgmt_config['abs_path_cms']."temp/".session_id().".dates.php"))
+if (file_exists ($mgmt_config['abs_path_temp'].session_id().".dates.php"))
 {
-  include ($mgmt_config['abs_path_cms']."temp/".session_id().".dates.php");
+  include ($mgmt_config['abs_path_temp'].session_id().".dates.php");
 }
   
 if ($date_content != "") list ($year_content, $month_content, $day_content) = explode ("-", $date_content);

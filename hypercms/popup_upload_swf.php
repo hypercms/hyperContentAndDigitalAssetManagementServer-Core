@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -77,7 +77,7 @@ if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0
 <head>
 <title>hyperCMS</title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/file_upload.css" type="text/css" />
 <script type="text/javascript" src="javascript/main.js"></script>
@@ -174,7 +174,7 @@ function setpost_multi ()
   {
     if (resize.checked == true)
     {
-      alert (hcms_entity_decode('<?php echo $hcms_lang['the-resize-value-must-be-between-1-and-200-'][$lang]; ?>'));
+      alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-resize-value-must-be-between-1-and-200-'][$lang]); ?>'));
       percentage.disabled = false;
     }
     else percentage.disabled = true;
@@ -194,7 +194,7 @@ function setpost_multi ()
   {
     if (deletedate.value == "")
     {
-      alert (hcms_entity_decode('<?php echo $hcms_lang['please-set-a-delete-date-for-the-files'][$lang]; ?>'));
+      alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['please-set-a-delete-date-for-the-files'][$lang]); ?>'));
     }
     else filedeletedate = deletedate.value;
   }
@@ -253,17 +253,17 @@ function translatemessage (errorno)
 {
   if (errorno != "")
   {
-    if (errorno == 500) return "<?php echo $hcms_lang['you-dont-have-permissions-to-use-this-function'][$lang]; ?>";
-    else if (errorno == 501) return "<?php echo $hcms_lang['file-could-not-be-saved-or-only-partialy-saved'][$lang]; ?>";
-    else if (errorno == 502) return "<?php echo $hcms_lang['no-file-selected-to-upload'][$lang]; ?>";
-    else if (errorno == 503) return "<?php echo str_replace ("%maxdigits%", $mgmt_config['max_digits_filename'], $hcms_lang['the-file-name-has-more-than-maxdigits-digits'][$lang]); ?>";
-    else if (errorno == 504) return "<?php echo $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]; ?>";
-    else if (errorno == 505) return "<?php echo $hcms_lang['the-file-you-are-trying-to-upload-is-too-big'][$lang]; ?>";
-    else if (errorno == 506) return "<?php echo $hcms_lang['the-file-you-are-trying-to-upload-is-of-wrong-type'][$lang]; ?>";
-    else if (errorno == 507) return "<?php echo $hcms_lang['file-could-not-be-extracted'][$lang]; ?>";
-    else if (errorno == 508) return "<?php echo $hcms_lang['the-request-holds-invalid-parameters'][$lang]; ?>";
-    else if (errorno == 509) return "<?php echo $hcms_lang['invalid-input-parameters'][$lang]; ?>";
-    else if (errorno == 510) return "<?php echo str_replace ("%files%", "<b>No HTML5 File Support!</b>", $hcms_lang['there-are-files-with-the-same-content-files'][$lang]); ?>";
+    if (errorno == 500) return "<?php echo getescapedtext ($hcms_lang['you-dont-have-permissions-to-use-this-function'][$lang]); ?>";
+    else if (errorno == 501) return "<?php echo getescapedtext ($hcms_lang['file-could-not-be-saved-or-only-partialy-saved'][$lang]); ?>";
+    else if (errorno == 502) return "<?php echo getescapedtext ($hcms_lang['no-file-selected-to-upload'][$lang]); ?>";
+    else if (errorno == 503) return "<?php echo getescapedtext (str_replace ("%maxdigits%", $mgmt_config['max_digits_filename'], $hcms_lang['the-file-name-has-more-than-maxdigits-digits'][$lang])); ?>";
+    else if (errorno == 504) return "<?php echo getescapedtext ($hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]); ?>";
+    else if (errorno == 505) return "<?php echo getescapedtext ($hcms_lang['the-file-you-are-trying-to-upload-is-too-big'][$lang]); ?>";
+    else if (errorno == 506) return "<?php echo getescapedtext ($hcms_lang['the-file-you-are-trying-to-upload-is-of-wrong-type'][$lang]); ?>";
+    else if (errorno == 507) return "<?php echo getescapedtext ($hcms_lang['file-could-not-be-extracted'][$lang]); ?>";
+    else if (errorno == 508) return "<?php echo getescapedtext ($hcms_lang['the-request-holds-invalid-parameters'][$lang]); ?>";
+    else if (errorno == 509) return "<?php echo getescapedtext ($hcms_lang['invalid-input-parameters'][$lang]); ?>";
+    else if (errorno == 510) return "<?php echo getescapedtext (str_replace ("%files%", "<b>No HTML5 File Support!</b>", $hcms_lang['there-are-files-with-the-same-content-files'][$lang])); ?>";
   }
 }
     

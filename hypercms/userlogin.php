@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
  
- // session parameters
-require ("include/session.inc.php");
+ // session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -256,31 +256,34 @@ if (checkuserip (getuserip ()) == true)
     setsession ('hcms_html5file', $html5support);    
     // register server feedback
     setsession ('hcms_keyserver', $login_result['keyserver']);
+    // register current timestamp in session
+    setsession ('hcms_temp_sessiontime', time());
+    
+    // define frameset for access via mail link
+    if (!empty ($login_result['hcms_linking']) && is_array ($login_result['hcms_linking']))
+    {
+      setsession ('hcms_linking', $login_result['hcms_linking']);
+
+      if ($login_result['mobile']) $result_frameset = "frameset_mobile.php";
+      else $result_frameset = "frameset_main_linking.php";
+    }
+    // frameset for standard logon
+    else
+    {
+      setsession ('hcms_linking', Null);
+      
+      if ($login_result['mobile']) $result_frameset = "frameset_mobile.php";
+      else $result_frameset = "frameset_main.php";
+    }
 
     // write hypercms session file
     $login_result['writesession'] = writesession ($login_result['user'], $login_result['passwd'], $login_result['checksum']);
-     
-    if ($login_result['writesession'])
-    {  
-      // define frameset for access via mail link
-      if (!empty ($login_result['hcms_linking']) && is_array ($login_result['hcms_linking']))
-      {
-        setsession ('hcms_linking', $login_result['hcms_linking']);
 
-        if ($login_result['mobile']) $result_frameset = "frameset_mobile.php";
-        else $result_frameset = "frameset_main_linking.php";
-      }
-      // frameset for standard logon
-      else
-      {
-        setsession ('hcms_linking', Null);
-        
-        if ($login_result['mobile']) $result_frameset = "frameset_mobile.php";
-        else $result_frameset = "frameset_main.php";
-      }
-    }
     // session info could not be saved
-    else $login_result['message'] = $hcms_lang['session-information-could-not-be-saved'][$lang];    
+    if ($login_result['writesession'] == false)
+    {  
+      $login_result['message'] = $hcms_lang['session-information-could-not-be-saved'][$lang];  
+    }
   }
 
   // user is logged in

@@ -11,10 +11,10 @@
 
 // ------------------------- setsession -----------------------------
 // function: setsession()
-// input: temporary hyperCMS variable name or array, value as string or array (optional)
+// input: temporary hyperCMS variable name or array, value as string or array (optional), write session data for load balancer [true,false] (optional) 
 // output: true / false on error
 
-function setsession ($variable, $content="")
+function setsession ($variable, $content="", $write=false)
 {
   if ($variable != "" && !is_array ($variable) && session_id() != "")
   {
@@ -22,8 +22,10 @@ function setsession ($variable, $content="")
     if (strpos ("_".$variable, "hcms_") == 0) $variable = "hcms_".$variable;
     // set value for session variable
     $_SESSION[$variable] = $content;
-
-    return true;    
+    
+    // write session data for load balancer
+    if ($write == true) return writesessiondata ();
+    else return true;    
   }
   else return false;
 }

@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("../include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("../config.inc.php");
 // hyperCMS API
@@ -29,6 +29,10 @@ $page = getrequest ("page", "objectname");
 
 // image format
 $imageformat = getrequest ("imageformat");
+// image density
+$imagedensity = getrequest ("imagedensity");
+// image quality
+$imagequality= getrequest ("imagequality");
 // image resize
 $imageresize = getrequest ("imageresize");
 $imagepercentage = getrequest ("imagepercentage", "numeric");
@@ -106,6 +110,11 @@ if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermiss
 // check session of user
 checkusersession ($user);
 
+// --------------------------------- load balancer ----------------------------------
+
+// call load balancer only for management server where user is logged in
+if (checktoken ($token, $user)) loadbalancer ("renderimage");
+
 // --------------------------------- logic section ----------------------------------
 
 $show = "";
@@ -119,7 +128,7 @@ if (checktoken ($token, $user))
   $media_root_source = getmedialocation ($site, $mediafile_info['file'], "abs_path_media").$site."/";
   // destination media location
   if ($savetype == "auto") $media_root_target = $media_root_source;
-  else $media_root_target = $mgmt_config['abs_path_cms'].'temp/';
+  else $media_root_target = $mgmt_config['abs_path_temp'];
   
   $mediafile_orig = $mediafile;
   
@@ -255,6 +264,20 @@ if (checktoken ($token, $user))
             $mgmt_imageoptions[$formats]['preview'] .= " -".$flop;
             $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -".$flop;
           }
+        }
+        
+        // image density (DPI)
+        if ($imagedensity >= 72 && $imagedensity <= 1200) 
+        {
+          $mgmt_imageoptions[$formats]['preview'] .= " -d ".$imagedensity;
+          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -d ".$imagedensity;
+        }
+        
+        // image quality / compression
+        if ($imagequality >= 1 && $imagequality <= 100) 
+        {
+          $mgmt_imageoptions[$formats]['preview'] .= " -q ".$imagequality;
+          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -q ".$imagequality;
         }
   
         // brightness

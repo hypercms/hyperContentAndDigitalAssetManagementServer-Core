@@ -6,12 +6,9 @@
  *
  * You should have received a copy of the License along with hyperCMS.
  */
- 
- // Code for Session Cookie workaround
-if (!session_id() && isset ($_REQUEST["PHPSESSID"])) session_id ($_REQUEST["PHPSESSID"]);
 
-// session parameters
-require ("../include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("../config.inc.php");
 // hyperCMS API
@@ -34,9 +31,13 @@ $versioning = getrequest ("versioning");
 $deletedate = getrequest ("deletedate");
 $token = getrequest ("token");
 // Dropbox respond array
-$dropbox_file = getrequest("dropbox_file");
+$dropbox_file = getrequest ("dropbox_file");
 // FTP respond array
-$ftp_file = getrequest("ftp_file");
+$ftp_file = getrequest ("ftp_file");
+// PROXY file in case load balancing is used
+$proxy_file = getrequest ("proxy_file");
+$proxy_file_name = getrequest ("proxy_file_name");
+$proxy_file_link = getrequest ("proxy_file_link");
 
 // get publication and category
 $site = getpublication ($location);
@@ -47,11 +48,17 @@ $cat = getcategory ($site, $location);
 // check access permissions
 $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
 // uploads works only for components
 if ($cat != "comp" || $ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['upload'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location)) killsession ($user);
 
 // check session of user
 checkusersession ($user);
+
+// --------------------------------- load balancer ----------------------------------
+
+// call load balancer only for management server where user is logged in
+if (checktoken ($token, $user)) loadbalancer ("uploadfile");
 
 // --------------------------------- logic section ----------------------------------
 
@@ -69,15 +76,23 @@ savelog (@$error);
 // upload file
 if ($token != "" && checktoken ($token, $user))
 {
+  // from hyperCMS PROXY service
+  if ($proxy_file)
+  {
+    $file['Filedata']['tmp_name'] = $mgmt_config['abs_path_temp'].$proxy_file['link'];
+    $file['Filedata']['name'] = $proxy_file['name'];
+    
+    $result = uploadfile ($site, $location, $cat, $file, $unzip,  $media_update, $createthumbnail, $page, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning);
+  }
   // from Dropbox
-  if ($dropbox_file)
+  elseif ($dropbox_file)
   {
     $file['Filedata']['tmp_name'] = $dropbox_file['link'];
     $file['Filedata']['name'] = $dropbox_file['name'];
     
     $result = uploadfile ($site, $location, $cat, $file, $unzip,  $media_update, $createthumbnail, $page, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning);
   }
-  // from fTP server
+  // from FTP server
   elseif ($ftp_file)
   {
     $file['Filedata']['tmp_name'] = $ftp_file['link'];
@@ -96,6 +111,12 @@ if ($token != "" && checktoken ($token, $user))
   {
     rdbms_createqueueentry ("delete", $location_esc.$result['object'], $deletedate, 0, $user);
   }
+}
+// invalid token
+else
+{
+  $header = "HTTP/1.1 500 Internal Server Error";
+  $result['message'] = "Invalid token";
 }
 
 // return header and message to uploader

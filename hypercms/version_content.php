@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -86,7 +86,7 @@ function warning_versions_update()
 {
   var form = document.forms['versionform'];
   
-  check = confirm (hcms_entity_decode("<?php echo $hcms_lang['are-you-sure-you-want-to-to-switch-to-a-previous-content-version'][$lang]." ".$hcms_lang['andor-delete-the-selected-versions'][$lang]; ?>"));
+  check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-to-switch-to-a-previous-content-version'][$lang]." ".$hcms_lang['andor-delete-the-selected-versions'][$lang]); ?>"));
   if (check == true) form.submit();
   return check;
 }
@@ -121,7 +121,7 @@ function compare_select (version)
     }     
     else
     {
-      alert (hcms_entity_decode("<?php echo $hcms_lang['only-two-versions-can-be-compared'][$lang]; ?>"));
+      alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['only-two-versions-can-be-compared'][$lang]); ?>"));
       return false;
     }
   }
@@ -142,7 +142,7 @@ function compare_submit ()
   }
   else
   {
-    alert (hcms_entity_decode("<?php echo $hcms_lang['two-versions-need-to-be-selected-for-comparison'][$lang]; ?>"));
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['two-versions-need-to-be-selected-for-comparison'][$lang]); ?>"));
     return false; 
   }
 }

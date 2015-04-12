@@ -7,8 +7,8 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// session parameters
-require ("include/session.inc.php");
+// session
+define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
@@ -31,6 +31,31 @@ checkusersession ($user, false);
 <meta name="viewport" content="width=800; initial-scale=1.0; user-scalable=1;">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
+<script language="JavaScript">
+<!--
+function minControlFrame ()
+{
+  if (document.getElementById('controlLayer'))
+  {
+    var height = 44;
+    
+    document.getElementById('controlLayer').style.height = height + 'px';
+    document.getElementById('objLayer').style.top = height + 'px';
+  }
+}
+
+function maxControlFrame ()
+{
+  if (document.getElementById('controlLayer'))
+  {
+    var height = 100;
+    
+    document.getElementById('controlLayer').style.height = height + 'px';
+    document.getElementById('objLayer').style.top = height + 'px';
+  }
+}
+-->
+</script>
 </head>
 
 <body style="width:100%; height:100%; margin:0; padding:0;">
@@ -38,14 +63,14 @@ checkusersession ($user, false);
 // open an object 
 if (isset ($page) && $page != "")
 {
-  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" scrolling=\"no\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe>\n";
-  echo "  <div style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;\"><iframe id=\"objFrame\" name=\"objFrame\" src=\"page_view.php?ctrlreload=".$ctrlreload."&location=".$location."&page=".$page."\" scrolling=\"auto\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:0; margin:0; padding:0;\"><iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"objLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;\"><iframe id=\"objFrame\" name=\"objFrame\" src=\"page_view.php?ctrlreload=".$ctrlreload."&location=".$location."&page=".$page."\" scrolling=\"auto\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
 }
 // open a location  
 elseif (isset ($location) && $location != "")
 {
-  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_content_menu.php?location=".$location."\" scrolling=\"no\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe>\n";
-  echo "  <div style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;\"><iframe id=\"objFrame\" name=\"objFrame\" src=\"empty.php\" scrolling=\"auto\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div\n";
+  echo "  <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:0; margin:0; padding:0;\"><iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_content_menu.php?location=".$location."\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"objLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;\"><iframe id=\"objFrame\" name=\"objFrame\" src=\"empty.php\" scrolling=\"auto\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
 }
 ?>
 </body>

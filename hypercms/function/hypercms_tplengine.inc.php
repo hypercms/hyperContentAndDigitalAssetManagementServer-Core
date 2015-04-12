@@ -894,7 +894,7 @@ function followlink ($site, $follow)
 function errorhandler ($source_code, $return_code, $error_identifier)
 {
   // error handling
-  if (strpos ("_".$return_code, $error_identifier) > 0 && strpos ($return_code, " on line ") > 0)
+  if (strpos ("_".$return_code, $error_identifier) > 0 && (strpos ("_".$return_code, " on line ") > 0 || strpos ("_".$return_code, "TCPDF ERROR:") > 0))
   {
     $source_code = str_replace ("<", "&lt;", $source_code);
     $source_code = str_replace (">", "&gt;", $source_code);
@@ -1096,7 +1096,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 { 
   global $container_collection,
          $eventsystem,
-         $db_connect, $appsupport,
+         $db_connect,
          $mgmt_config, 
          $siteaccess, $adminpermission, $setlocalpermission, $token, 
          $mgmt_lang_shortcut_default, $hcms_charset, $hcms_lang_name, $hcms_lang_shortcut, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang;
@@ -1129,10 +1129,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   elseif ($buildview != "template" && (!valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page) || !valid_objectname ($user))) return false;
   
   // check for temp view directory (new since version 5.6.2)
-  if (!is_dir ($mgmt_config['abs_path_cms']."temp/view/"))
+  if (!is_dir ($mgmt_config['abs_path_view']))
   {
-    mkdir ($mgmt_config['abs_path_cms']."temp/view/", $mgmt_config['fspermission']);
-    file_put_contents ($mgmt_config['abs_path_cms']."temp/view/.htaccess", "php_flag display_errors 1\nOrder allow,deny\nAllow from all");
+    mkdir ($mgmt_config['abs_path_view'], $mgmt_config['fspermission']);
+    file_put_contents ($mgmt_config['abs_path_view'].".htaccess", "php_flag display_errors 1\nOrder allow,deny\nAllow from all");
   }
 
   // validate publication access for all views except publish
@@ -1264,9 +1264,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $namefile = getfilename ($pagedata, "name");
         
       // ---------------------- load version for history view ----------------------------
-      if (file_exists ($mgmt_config['abs_path_cms']."temp/".session_id().".dates.php"))
+      if (file_exists ($mgmt_config['abs_path_temp'].session_id().".dates.php"))
       {
-        include ($mgmt_config['abs_path_cms']."temp/".session_id().".dates.php");
+        include ($mgmt_config['abs_path_temp'].session_id().".dates.php");
         
         // allow only preview mode for history view
         $buildview = "preview";
@@ -1518,8 +1518,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
     // ---------------- file include -------------------     
     // create view for included content
-    $hypertag_array = null;
-   
+
     // get all hyperCMS tags
     $hypertag_array = gethypertag ($viewstore, "fileinclude", 0);
   
@@ -1551,8 +1550,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
     // ---------------- template include -------------------   
     // create view for included content
-    $hypertag_array = null;
-   
+
     // get all hyperCMS tags
     $hypertag_array = gethypertag ($viewstore, "tplinclude", 0);
   
@@ -1596,7 +1594,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // ========================================= define database connectivity =============================================    
     // get db_connect
     // no multiple values are allowed, in that case only the first valid db-connect value will be the valid one
-    $hypertag_array = null;
 
     // get all hyperCMS tags
     $hypertag_array = gethypertag ($viewstore, "dbconnect", 0);
@@ -1745,7 +1742,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         // loop for each hyperCMS tag found in template
         $i = 0;
         
-        foreach ($hypertag_array as $key=>$hypertag)
+        foreach ($hypertag_array as $key => $hypertag)
         {  
           // counter for media name
           $i++;      
@@ -1837,7 +1834,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         // loop for each hyperCMS tag found in template
         $i = 0;
         
-        foreach ($hypertag_array as $key=>$hypertag)
+        foreach ($hypertag_array as $key => $hypertag)
         {  
           // counter for media name
           $i++;      
@@ -2242,17 +2239,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       
       foreach ($searchtag_array as $searchtag)
       {
-        $hypertag_array = null;
-       
         // get all hyperCMS tags
         $hypertag_array = gethypertag ($viewstore, $searchtag, 0);    
       
         if ($hypertag_array != false) 
         {
+          $id_array = array();
+          
           reset ($hypertag_array);
           
           // loop for each hyperCMS tag found in template
-          foreach ($hypertag_array as $key=>$hypertag)
+          foreach ($hypertag_array as $key => $hypertag)
           {
             // get tag name
             $hypertagname = gethypertagname ($hypertag);
@@ -2338,7 +2335,19 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             
             // get colorspace and ICC profile
             $colorspace = getattribute ($hypertag, "colorspace");
-            $iccprofile = getattribute ($hypertag, "iccprofile");                    
+            $iccprofile = getattribute ($hypertag, "iccprofile");
+            
+            // collect unique id's and set position/key of hypertag
+            if (!in_array ($id, $id_array) && $onedit != "hidden")
+            {
+              $id_array[] = $id;
+              
+              // get key (position) of array item
+              $position[$id] = $key;          
+            }  
+            
+            // set position for form item
+            if (!empty ($position[$id])) $key = $position[$id];           
         
             // set flag for edit button or text field           
             if (empty ($foundtxt[$id]) && $onedit != "hidden") $foundtxt[$id] = true; 
@@ -2536,11 +2545,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 										$imgdir = getmedialocation ($site, $source, "abs_path_media");
 										$imginfo = getfileinfo ($site, $source, "comp");
                     // target dir
-                    $viewdir = $mgmt_config['abs_path_cms']."temp/view/";
+                    $viewdir = $mgmt_config['abs_path_view'];
 										//convert image to PNG in the requested colorspace or ICC profile
 										$destination_file = convertimage ($site, $imgdir.$site."/".$imginfo['file'], $viewdir, "png", $colorspace, $iccprofile);
                     // define url of converted image
-										$imagelocation['destination'][] = $mgmt_config['url_path_cms']."temp/view/".$destination_file;
+										$imagelocation['destination'][] = $mgmt_config['url_path_view'].$destination_file;
 									}
                   
 									// replace the src attributes in the img tags with
@@ -2633,7 +2642,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       {
                         $add_submittext .= "submitText ('".$hypertagname."_".$id."', '".$hypertagname."[".$id."]');\n";
                         
-                        if ($constraint != "") $constraint_array[] = "'".$hypertagname."_".$id."','".$labelname."','".$constraint."'";
+                        if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."','".$labelname."','".$constraint."'";
 
                         $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td align=left valign=top><input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" /><textarea name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea></td></tr>\n";
                       }                        
@@ -2654,7 +2663,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       {
                         $add_submittext .= "submitText ('".$hypertagname."_".$artid."_".$elementid."', '".$hypertagname."[".$id."]');\n";
                         
-                        if ($constraint != "") $constraint_array[] = "'".$hypertagname."_".$id."','".$labelname."','".$constraint."'";
+                        if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."','".$labelname."','".$constraint."'";
                         
                         $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b> ".$arttaglink[$artid]."</td><td align=left valign=top><input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" /><textarea name=\"".$hypertagname."_".$artid."_".$elementid."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea></td></tr>\n";
                       }
@@ -3175,21 +3184,18 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
       foreach ($searchtag_array as $searchtag)
       {
-        $hypertag_array = null;
-       
         // get all hyperCMS tags
         $hypertag_array = gethypertag ($viewstore, $searchtag, 0);
       
         if ($hypertag_array != false) 
         {
-          $id_array = null;
           $id_array = array ();
           $tagid = 0;
           
           reset ($hypertag_array); 
           
           // loop for each hyperCMS tag found in template
-          foreach ($hypertag_array as $key=>$hypertag)
+          foreach ($hypertag_array as $key => $hypertag)
           { 
             $tagid++;    
           
@@ -3401,7 +3407,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   							// get abs location of the image
   						  $imgdir = getmedialocation ($site, $mediafilebot[$id][$tagid], "abs_path_media");
                 // target dir
-                $viewdir = $mgmt_config['abs_path_cms']."temp/view/";
+                $viewdir = $mgmt_config['abs_path_view'];
   						  // convert image to PNG in the requested colorspace or ICC profile
   						  $mediafilebot_new = convertimage ($site, $imgdir.$mediafilebot[$id][$tagid], $viewdir, "png", $mediacolorspace[$id][$tagid], $mediaiccprofile[$id][$tagid]);
   						  // check converted image
@@ -3450,7 +3456,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             if (!isset ($mediawidthbot[$id])) $mediawidthbot[$id] = "";
             if (!isset ($mediaheightbot[$id])) $mediaheightbot[$id] = "";
           
-            // get position for form item
+            // set position for form item
             $key = $position[$id];
             
             $labelname = "";
@@ -3521,7 +3527,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                        (
                         (
                           $buildview == "cmsview" || 
-                          $buildview == 'inlineview'
+                          $buildview == "inlineview"
                         ) && 
                         $infotype[$id] != "meta"
                        ) || 
@@ -3576,7 +3582,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           }
                           else $mediaobjectname = $mediafilebot[$id][$tagid];
                           
-                          if ($mediatype[$id] != "") $constraint_array[] = "'".$hypertagname_file[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['multimedia-file'][$lang]."', '".$mediatype[$id]."'";
+                          if ($mediatype[$id] != "") $constraint_array[$key] = "'".$hypertagname_file[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['multimedia-file'][$lang]."', '".$mediatype[$id]."'";
                           
                           $formitem[$key] .= "<tr><td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering")."</td>
                           </tr>
@@ -3607,13 +3613,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         
                         if ($mediawidthbot[$id] != "*Null*")
                         {
-                          $constraint_array[] = "'".$hypertagname_width[$id]."[".$id."]','".$labelname.", ".$hcms_lang['width'][$lang]."','NisNum'";
+                          $constraint_array[$key] = "'".$hypertagname_width[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['width'][$lang]."','NisNum'";
                           $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).":</td><td><input name=\"".$hypertagname_width[$id]."[".$id."]\" value=\"".$mediawidthbot[$id]."\" size=4".$disabled." /></td></tr>\n";
                         }
                         
                         if ($mediaheightbot[$id] != "*Null*")
                         {
-                          $constraint_array[] = "'".$hypertagname_height[$id]."[".$id."]','".$labelname.", ".$hcms_lang['height'][$lang]."','NisNum'";
+                          $constraint_array[$key] = "'".$hypertagname_height[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['height'][$lang]."','NisNum'";
                           $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).":</td><td><input name=\"".$hypertagname_height[$id]."[".$id."]\" value=\"".$mediaheightbot[$id]."\" size=4".$disabled." /></td></tr>\n";
                         }
                         
@@ -3656,7 +3662,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           } 
                           else $mediaobjectname = $mediafilebot[$id][$tagid];
                           
-                          if ($mediatype[$id] != "") $constraint_array[] = "'".$hypertagname_file[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['multimedia-file'][$lang]."', '".$mediatype[$id]."'";
+                          if ($mediatype[$id] != "") $constraint_array[$key] = "'".$hypertagname_file[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['multimedia-file'][$lang]."', '".$mediatype[$id]."'";
                                        
                           $formitem[$key] .= "<tr><td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering")."</td>
                           </tr>
@@ -3687,13 +3693,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         
                         if ($mediawidthbot[$id] != "*Null*")
                         {
-                          $constraint_array[] = "'".$hypertagname_width[$id]."[".$id."]','".$labelname.", ".$hcms_lang['width'][$lang]."','NisNum'";
+                          $constraint_array[$key] = "'".$hypertagname_width[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['width'][$lang]."','NisNum'";
                           $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).":</td><td><input name=\"".$hypertagname_width[$id]."[".$id."]\" value=\"".$mediawidthbot[$id]."\" size=4".$disabled."></td></tr>\n";
                         }
                         
                         if ($mediaheightbot[$id] != "*Null*")
                         {
-                          $constraint_array[] = "'".$hypertagname_height[$id]."[".$id."]','".$labelname.", ".$hcms_lang['height'][$lang]."','NisNum'";
+                          $constraint_array[$key] = "'".$hypertagname_height[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['height'][$lang]."','NisNum'";
                           $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).":</td><td><input name=\"".$hypertagname_height[$id]."[".$id."]\" value=\"".$mediaheightbot[$id]."\" size=4".$disabled."></td></tr>\n";
                         }
                         
@@ -3796,16 +3802,16 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 else
                 {
                   // if pathytpe == file (absolute path in filesystem)
-                  if ($mediapathtype[$id][$tagid] == "file") $prefix = "abs";
+                  if (!empty ($mediapathtype[$id][$tagid]) && $mediapathtype[$id][$tagid] == "file") $prefix = "abs";
                   else $prefix = "url";
                     
                   // media path settings (overwrite media pathes with the ones of the publication target)
                   if ($buildview == "publish")
                   {                                    
                     // use generated image and temp view directory
-                    if (!empty ($mediacolorspace[$id][$tagid]) || !empty ($mediaiccprofile[$id][$tagid]) && is_file ($mgmt_config['abs_path_cms']."temp/view/".$mediafilebot[$id][$tagid]))
+                    if (!empty ($mediacolorspace[$id][$tagid]) || !empty ($mediaiccprofile[$id][$tagid]) && is_file ($mgmt_config['abs_path_view'].$mediafilebot[$id][$tagid]))
                     {
-                      $url_media = $mgmt_config[$prefix.'_path_cms']."temp/view/";
+                      $url_media = $mgmt_config[$prefix.'_path_view'];
                     }
                     else
                     {
@@ -3821,7 +3827,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   }
                 
                   // if pathytpe == abs (absolute path = URL w/o protocol and domain)
-                  if ($mediapathtype[$id][$tagid] == "abs")
+                  if (!empty ($mediapathtype[$id][$tagid]) && $mediapathtype[$id][$tagid] == "abs")
                   {
                     $url_media = cleandomain ($url_media);
                     $url_tplmedia = cleandomain ($url_tplmedia);
@@ -3904,21 +3910,19 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $targetlist = array();
       
       foreach ($searchtag_array as $searchtag)
-      {  
-        $hypertag_array = null;
-       
+      {
         // get all hyperCMS tags
         $hypertag_array = gethypertag ($viewstore, $searchtag, 0);
       
         if ($hypertag_array != false) 
         {
-          $id_array = null;
-          $id_array = array (); 
+          $id_array = array(); 
           $tagid = 0;
+          
           reset ($hypertag_array);
                
           // loop for each hyperCMS tag found in template
-          foreach ($hypertag_array as $key=>$hypertag)
+          foreach ($hypertag_array as $key => $hypertag)
           {
             $tagid++;
 
@@ -4089,7 +4093,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             if (!isset ($linktargetbot[$id])) $linktargetbot[$id] = "";
             if (!isset ($linktextbot[$id])) $linktextbot[$id] = "";
             
-            // get position for form item
+            // set position for form item
             $key = $position[$id];          
             
             $labelname = "";
@@ -4435,6 +4439,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // create view for component content
       $searchtag_array[0] = "component";
       $searchtag_array[1] = "artcomponent";
+      $id_array = array();
       $infotype = "";
       $position = "";
       $onpublish = "";
@@ -4444,9 +4449,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $add_submitcomp = "";
       
       foreach ($searchtag_array as $searchtag)
-      {    
-        $hypertag_array = null;
-       
+      {
         // get all hyperCMS tags
         $hypertag_array = gethypertag ($viewstore, $searchtag, 0);
       
@@ -4455,8 +4458,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           reset ($hypertag_array);
           
           // loop for each hyperCMS tag found in template
-          foreach ($hypertag_array as $key=>$hypertag)
-          { 
+          foreach ($hypertag_array as $key => $hypertag)
+          {            
             // get tag name
             $hypertagname = gethypertagname ($hypertag);  
             
@@ -4532,7 +4535,19 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             
             // set flag for edit button            
             if (empty ($foundcomp[$id])&& $onedit != "hidden") $foundcomp[$id] = true; 
-            elseif (!empty ($foundcomp[$id])) $foundcomp[$id] = false;                      
+            elseif (!empty ($foundcomp[$id])) $foundcomp[$id] = false;
+            
+            // collect unique id's and set position/key of hypertag
+            if (!in_array ($id, $id_array) && $onedit != "hidden")
+            {
+              $id_array[] = $id;
+              
+              // get key (position) of array item
+              $position[$id] = $key;
+            }
+            
+            // set position for form item
+            if (!empty ($position[$id])) $key = $position[$id];
           
             // check uniqueness      
             $tags = "hyperCMS:".$searchtag."s id='".$id."'";
@@ -4681,7 +4696,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $comp_entry_name = getlocationname ($site, $contentbot, "comp", "path");                    
                         if (strlen ($comp_entry_name) > 50) $comp_entry_name = "...".substr (substr ($comp_entry_name, -50), strpos (substr ($comp_entry_name, -50), "/"));                          
                         
-                        $formitem[$key] = "<tr>
+                        $formitem[$key] = "
+                        <tr>
                           <td align=left valign=top><b>".$labelname."</b></td>
                           <td align=left valign=top><table><tr><td width=\"150\">".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang).":</td>
                           <td>
@@ -5419,7 +5435,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           if ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview")
           { 
             // execute hyperCMS scripts
-            if ($appsupport['php'] == true && ($application == "php" || preg_match ("/\[hypercms:scriptbegin/i", $viewstore) || strtoupper ($mgmt_config['os_cms']) == "WIN"))
+            if ($mgmt_config['application']['php'] == true && ($application == "php" || preg_match ("/\[hypercms:scriptbegin/i", $viewstore) || strtoupper ($mgmt_config['os_cms']) == "WIN"))
             {
               // transform 
               $viewstore = str_ireplace ("[hypercms:scriptbegin", "<?php", $viewstore);
@@ -5429,7 +5445,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $viewstore =  tpl_globals_extended ("php", $mgmt_config['abs_path_cms'], $mgmt_config['abs_path_rep'], $site, $location).$viewstore;
               
               // save pageview in temp
-              $test = savefile ($mgmt_config['abs_path_cms']."temp/view/", $unique_id.".pageview.php", $viewstore);
+              $test = savefile ($mgmt_config['abs_path_view'], $unique_id.".pageview.php", $viewstore);
               
               $viewstore_buffer = $viewstore;
               
@@ -5439,23 +5455,23 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // add language setting from session
                 if (!empty ($_SESSION[$language_sessionvar])) $pageview_parameter = "?hcms_session[".$language_sessionvar."]=".$_SESSION[$language_sessionvar];
                 
-                $viewstore = @file_get_contents ($mgmt_config['url_path_cms']."temp/view/".$unique_id.".pageview.php".$pageview_parameter);
+                $viewstore = @file_get_contents ($mgmt_config['url_path_view'].$unique_id.".pageview.php".$pageview_parameter);
                 
                 // error handling
                 $viewstore = errorhandler ($viewstore_buffer, $viewstore, $unique_id.".pageview.php");            
              
-                deletefile ($mgmt_config['abs_path_cms']."temp/view/", $unique_id.".pageview.php", 0);
+                deletefile ($mgmt_config['abs_path_view'], $unique_id.".pageview.php", 0);
               }
             }
             
             // execute application code
-            if (isset ($appsupport[$application]) && $appsupport[$application] == true && $application != "php" && @substr_count ($viewstore, tpl_tagbegin ($application)) > 0)
+            if (isset ($mgmt_config['application'][$application]) && $mgmt_config['application'][$application] == true && $application != "php" && @substr_count ($viewstore, tpl_tagbegin ($application)) > 0)
             {       
               // change directory to location to have correct hrefs
               $viewstore =  tpl_globals_extended ($application, $mgmt_config['abs_path_cms'], $mgmt_config['abs_path_rep'], $site, $location).$viewstore;
               
               // save pageview in temp
-              $test = savefile ($mgmt_config['abs_path_cms']."temp/view/", $unique_id.".pageview.".$templateext, $viewstore);   
+              $test = savefile ($mgmt_config['abs_path_view'], $unique_id.".pageview.".$templateext, $viewstore);   
               
               $viewstore_buffer = $viewstore;
               
@@ -5465,17 +5481,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // add language setting from session
                 if ($language_sessionvar != "" && $_SESSION[$language_sessionvar] != "") $pageview_parameter = "?hcms_session[".$language_sessionvar."]=".$_SESSION[$language_sessionvar];
                             
-                $viewstore = @file_get_contents ($mgmt_config['url_path_cms']."temp/view/".$unique_id.".pageview.".$templateext.$pageview_parameter);
+                $viewstore = @file_get_contents ($mgmt_config['url_path_view'].$unique_id.".pageview.".$templateext.$pageview_parameter);
                 
                 // error handling
                 $viewstore = errorhandler ($viewstore_buffer, $viewstore, $unique_id.".pageview.".$templateext);                
                 
-                deletefile ($mgmt_config['abs_path_cms']."temp/view/", $unique_id.".pageview.".$templateext, 0);
+                deletefile ($mgmt_config['abs_path_view'], $unique_id.".pageview.".$templateext, 0);
               }
             }        
           }
           // Publish
-          elseif ($appsupport['php'] == true && $buildview == "publish" && (preg_match ("/\[hypercms:scriptbegin/i", $viewstore) || strtoupper ($mgmt_config['os_cms']) == "WIN"))
+          elseif ($mgmt_config['application']['php'] == true && $buildview == "publish" && (preg_match ("/\[hypercms:scriptbegin/i", $viewstore) || strtoupper ($mgmt_config['os_cms']) == "WIN"))
           {
             // execute hyperCMS scripts for preprocessing
             // transform 
@@ -5497,7 +5513,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $viewstore = tpl_globals_extended ("php", $mgmt_config['abs_path_cms'], $mgmt_config['abs_path_rep'], $site, $location).$viewstore;
               
               // save pageview in temp
-              $result_save = savefile ($mgmt_config['abs_path_cms']."temp/view/", $unique_id.".generate.php", $viewstore);
+              $result_save = savefile ($mgmt_config['abs_path_view'], $unique_id.".generate.php", $viewstore);
 
               $viewstore_buffer = $viewstore;
 
@@ -5507,12 +5523,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 if ($language_sessionvar != "" && $_SESSION[$language_sessionvar] != "") $pageview_parameter = "?hcms_session[".$language_sessionvar."]=".$_SESSION[$language_sessionvar];
                 
                 // execute code of generator (e.g. create a PDF file)
-                $viewstore_save = @file_get_contents ($mgmt_config['url_path_cms']."temp/view/".$unique_id.".generate.php".$pageview_parameter);
+                $viewstore_save = @file_get_contents ($mgmt_config['url_path_view'].$unique_id.".generate.php".$pageview_parameter);
                 
                 // error handling
                 $viewstore = errorhandler ($viewstore_buffer, $viewstore_save, $unique_id.".generate.php");            
-             
-                deletefile ($mgmt_config['abs_path_cms']."temp/view/", $unique_id.".generate.php", 0);
+
+                deletefile ($mgmt_config['abs_path_view'], $unique_id.".generate.php", 0);
                 
                 // generation of file was successful, save it to the media repository
                 if ($viewstore == $viewstore_save)
@@ -5534,9 +5550,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 else
                 {
                   $errorview = "\n\n".$viewstore;
+
+                  // clean view for event log
+                  $errview = strip_tags ($viewstore);
+                  $errview = substr ($errview, 0, strpos (trim ($errview, "\n"), "\n"));
                   
                   $errcode = "10201";
-                  $error[] = $mgmt_config['today']."|hypercms_tplengine.inc.php|error|$errcode|generator failed to render file ".$mediafile." with error: ".substr ($viewstore, 0, strpos (trim ($viewstore, "\n"), "\n"));
+                  $error[] = $mgmt_config['today']."|hypercms_tplengine.inc.php|error|$errcode|generator failed to render file ".$mediafile." with error: ".$errview;
                 }
               }
               
@@ -5549,7 +5569,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $viewstore = tpl_globals_extended ("php", $mgmt_config['abs_path_cms'], $mgmt_config['abs_path_rep'], $site, $location).$viewstore;
               
               // save pageview in temp
-              $result_save = savefile ($mgmt_config['abs_path_cms']."temp/view/", $unique_id.".pageview.php", $viewstore); 
+              $result_save = savefile ($mgmt_config['abs_path_view'], $unique_id.".pageview.php", $viewstore); 
               
               $viewstore_buffer = $viewstore;
              
@@ -5559,12 +5579,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // add language setting from session
                 if ($language_sessionvar != "" && $_SESSION[$language_sessionvar] != "") $pageview_parameter = "?hcms_session[".$language_sessionvar."]=".$_SESSION[$language_sessionvar];
                        
-                $viewstore = @file_get_contents ($mgmt_config['url_path_cms']."temp/view/".$unique_id.".pageview.php".$pageview_parameter);
+                $viewstore = @file_get_contents ($mgmt_config['url_path_view'].$unique_id.".pageview.php".$pageview_parameter);
             
                 // error handling
                 $viewstore = errorhandler ($viewstore_buffer, $viewstore, $unique_id.".pageview.php");          
                 
-                deletefile ($mgmt_config['abs_path_cms']."temp/view/", $unique_id.".pageview.php", 0);
+                deletefile ($mgmt_config['abs_path_view'], $unique_id.".pageview.php", 0);
               }
             }
           
@@ -6696,15 +6716,12 @@ function buildsearchform ($site, $template, $ownergroup="")
     // =================================================== text content ===================================================
     $searchtag_array[0] = "arttext";
     $searchtag_array[1] = "text";
-    $infotype = null;
-    $position = null;
-    $value = null;
-	  $id_array = Array();
+    $infotype = "";
+    $value = "";
+	  $id_array = array();
     
     foreach ($searchtag_array as $searchtag)
     {
-      $hypertag_array = null;
-     
       // get all hyperCMS tags
       $hypertag_array = gethypertag ($viewstore, $searchtag, 0);    
     
@@ -6713,7 +6730,7 @@ function buildsearchform ($site, $template, $ownergroup="")
         reset ($hypertag_array);
         
         // loop for each hyperCMS tag found in template
-        foreach ($hypertag_array as $key=>$hypertag)
+        foreach ($hypertag_array as $key => $hypertag)
         {
           // get tag name
           $hypertagname = gethypertagname ($hypertag);

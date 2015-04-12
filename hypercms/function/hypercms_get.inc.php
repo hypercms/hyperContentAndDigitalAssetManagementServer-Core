@@ -7,6 +7,49 @@
  * You should have received a copy of the License along with hyperCMS.
  */
  
+// ======================================== SERVER PARAMETERS ===========================================
+
+// ---------------------- getserverload -----------------------------
+// function: getserverload()
+// input: %
+// output: Returns the average system load (the number of processes in the system run queue) over the last minute and the number of CPU cores
+
+function getserverload ()
+{
+  // for Windows
+  if (stristr (PHP_OS, 'win') && class_exists ('COM'))
+  {
+    $wmi = new COM ("Winmgmts://");
+    $server = $wmi->execquery ("SELECT LoadPercentage FROM Win32_Processor");
+   
+    $cpu_num = 0;
+    $load_total = 0;
+   
+    foreach ($server as $cpu)
+    {
+      $cpu_num++;
+      $load_total += $cpu->loadpercentage;
+    }
+   
+    $load = round ($load_total / $cpu_num);
+  }
+  // for UNIX
+  else
+  {
+    $sys_load = sys_getloadavg ();
+    $load = $sys_load[0];
+    
+    exec ("cat /proc/cpuinfo | grep processor | wc -l", $processors);
+    $cpu_num = $processors[0];
+  }
+ 
+  $result = array();
+  $result['load'] = $load;
+  $result['cpu'] = $cpu_num;
+  
+  return $result;
+}
+ 
 // =========================================== REQUESTS AND SESSION ==============================================
  
 // ------------------------- getsession -----------------------------
@@ -172,32 +215,34 @@ function getcalendarlang ($lang="en")
 
 // ----------------------------------------- getescapedtext ------------------------------------------
 // function: getescapedtext()
-// input: text as string, character set of text (optional), language code
+// input: text as string, character set of text, 2-digit language code
 // output: HTML escaped text
 
 // description: if the destination character set is not supported by language set the text need to be HTML escaped.
 
-function getescapedtext ($text, $charset="UTF-8", $lang)
+function getescapedtext ($text, $charset="", $lang="")
 {
   global $mgmt_config, $hcms_lang_codepage, $hcms_lang;
   
   if ($text != "" && $charset != "" && $lang != "")
   {
+    // enocode all special characters if required
     if (strtolower ($charset) != strtolower ($hcms_lang_codepage[$lang]))
     {
       $text_encoded = html_encode ($text, "ASCII");
       
-      if (!empty ($text_encoded )) return $text_encoded;
-      else return $text;
+      // return ASCII encoded text
+      if (!empty ($text_encoded)) return $text_encoded;
     }
-    else return $text;
   }
-  else return $text;
+  
+  // escape special characters <, >, &, ", '
+  return html_encode ($text);
 }
 
  // ========================================= LOAD CONTENT ============================================
 
-// ---------------------------------------------- getobjectcontainer ----------------------------------------------
+// ---------------------------------------- getobjectcontainer ----------------------------------------
 // function: getobjectcontainer()
 // input: publication [string], location [string], object [string], user [string]
 // output: Content Container [XML]/false
@@ -253,7 +298,7 @@ function getobjectcontainer ($site, $location, $object, $user)
   else return false;
 }
 
-// ---------------------------------------------- getcontainer ----------------------------------------------
+// ------------------------------------------ getcontainer --------------------------------------------
 // function: getcontainer()
 // input: container name or container ID, container type [published, work]
 // output: Contant Container [XML]/false
@@ -269,7 +314,7 @@ function getcontainer ($containerid, $type)
   return loadcontainer ($containerid, $type, "");
 }
  
-// ========================================= GET INFORMATION ============================================
+// ======================================== GET INFORMATION ===========================================
 
 // --------------------------------------- getcontainername -------------------------------------------
 // function: getcontainername()
@@ -1628,6 +1673,8 @@ function getlockedfileinfo ($location, $file)
   }
   else return false; 
 }
+
+// =========================== CHAT ==================================
 
 // ---------------------- getusersonline -----------------------------
 // function: getusersonline()
