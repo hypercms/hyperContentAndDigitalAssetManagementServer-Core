@@ -1433,6 +1433,7 @@ function createchecksum ($permissions="")
     if (!isset ($_SESSION['hcms_localpermission'])) $_SESSION['hcms_localpermission'] = false;
     
     $permissions = array ($_SESSION['hcms_instance'], $_SESSION['hcms_superadmin'], $_SESSION['hcms_siteaccess'], $_SESSION['hcms_pageaccess'], $_SESSION['hcms_compaccess'], $_SESSION['hcms_rootpermission'], $_SESSION['hcms_globalpermission'], $_SESSION['hcms_localpermission']);
+    
     return $checksum = md5 (makestring ($permissions));
   }
 }
@@ -1563,8 +1564,17 @@ function createsession ()
   session_name ("hyperCMS");
   session_start ();
   
-  // if a valid session ID is provided, evalute session and copy session data if required
-  if (valid_objectname (session_id()) && !empty ($mgmt_config['abs_path_data']))
+  // session is not valid or data directory is missing
+  if (!valid_objectname (session_id()))
+  {
+    $errcode = "10401";
+    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|$errcode|session could not be created or session ID is invalid";      
+    
+    // save log
+    savelog (@$error);
+  }
+  // load balancer is used: if a valid session ID is provided, evalute session and copy session data if required
+  elseif (!empty ($mgmt_config['abs_path_data']) && (!empty ($mgmt_config['url_path_service']) || !empty ($mgmt_config['writesessiondata'])))
   {
     // define session file (a session file is only available if the load balancer is used)
     $session_file = $mgmt_config['abs_path_data']."session/".session_id().".dat";
@@ -1572,23 +1582,31 @@ function createsession ()
     $session_time = (!empty ($_SESSION['hcms_temp_sessiontime']) ? $_SESSION['hcms_temp_sessiontime'] : 0);
     
     // check if session file exists and is newer than the existing session data
-    if (is_file ($session_file) && filemtime ($session_file) > $_SESSION['hcms_temp_sessiontime'])
+    if (is_file ($session_file) && filemtime ($session_file) > $session_time)
     {
       // load session information
       $data = file_get_contents ($session_file);
 
       // decode session data and register variables in session
       if ($data != "") session_decode ($data);
+
+      // check hyperCMS user session file
+      if (!empty ($_SESSION['hcms_user']) && !empty ($_SESSION['hcms_passwd']) && is_file ($mgmt_config['abs_path_data']."session/".$_SESSION['hcms_user'].".dat"))
+      {
+        // check session of user
+        checkusersession ($_SESSION['hcms_user']);
+      }
+      // kill users session since there is no hyperCMS session file
+      elseif (!empty ($_SESSION['hcms_user']))
+      {
+        killsession ($_SESSION['hcms_user']);
+      }
+      // kill session
+      else
+      {
+        killsession ();
+      }
     }
-  }
-  // session is not valid
-  else
-  {
-    $errcode = "10401";
-    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|$errcode|session ID could not be set or path to internal repository is empty (".$mgmt_config['abs_path_data'].")";      
-    
-    // save log
-    savelog (@$error);
   }
     
   return true;
@@ -1615,7 +1633,7 @@ function killsession ($user="", $destroy_php=true)
     if ($session_array != false && sizeof ($session_array) > 0)
     {
       $sessiondata = "";
-      $kill = true;
+      $remove = true;
       
       foreach ($session_array as $session)
       {
@@ -1631,13 +1649,13 @@ function killsession ($user="", $destroy_php=true)
         else 
         {
           $sessiondata .= $session."\n";
-          $kill = false;
+          $remove = false;
         }
       }  
     }      
           
     // delete session file
-    if ($kill == true)
+    if ($remove == true)
     {
       $test = deletefile ($mgmt_config['abs_path_data']."session/", $user.".dat", 0);
     }
@@ -1646,14 +1664,14 @@ function killsession ($user="", $destroy_php=true)
       $test = savefile ($mgmt_config['abs_path_data']."session/", $user.".dat", $sessiondata);
     }
   }
-  
-  // kill PHP session
-  if ($destroy_php == true) @session_destroy();
 
   // delete session data and temporary files
   deletefile ($mgmt_config['abs_path_data']."session/", session_id().".dat", 0);
   deletefile ($mgmt_config['abs_path_temp'], session_id().".dat", 0);
   deletefile ($mgmt_config['abs_path_temp'], session_id().".js", 0);
+  
+  // kill PHP session
+  if ($destroy_php == true) @session_destroy();
   
   return true;  
 }

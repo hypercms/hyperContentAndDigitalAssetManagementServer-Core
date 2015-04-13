@@ -2,7 +2,7 @@
 // hyperCMS Main Configuration File
 // Please add a slash at the end of each path entries, see examples.
 
-// Attention: All variable values set here must not include "#"!
+// Attention: All variable values must not include "#"!
 
 $mgmt_config = array();
 $mgmt_lang_name = array();
