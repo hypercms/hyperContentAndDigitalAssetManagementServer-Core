@@ -1562,7 +1562,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               else
               {
                 $converted = true;
-                
+
                 // inject metadata into FLV file using YAMDI (/usr/bin/yamdi)
                 if ($mgmt_mediametadata['.flv'] != "" && $format_set == "flv")
                 {
@@ -2554,7 +2554,7 @@ function readmediaplayer_config ($location, $configfile)
 // output: true / false on error
 
 function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320, $height=240, $filesize="", $duration="", $videobitrate="", $audiobitrate="", $audiofrequenzy="", $audiochannels="")
-{ 
+{
   global $mgmt_config;
 
   if (valid_locationname ($location) && valid_objectname ($configfile) && (is_array ($mediafiles) || $mediafiles != ""))

@@ -1426,14 +1426,15 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 // --------------------------------------- showcompexplorer -------------------------------------------
 // function: showcompexplorer ()
 // input: publication name, current explorer location, object location (optional), object name (optional), 
-//        component category [single,multi,media] (optional), search expression (optional), media-type [audio,video,text,flash,image,compressed,binary] (optional), 
+//        component category [single,multi,media] (optional), search expression (optional), search format [object,document,image,video,audio] (optional), 
+//        media-type [audio,video,text,flash,image,compressed,binary] (optional), 
 //        callback of CKEditor (optional), saclingfactor for images (optional)
 // output: explorer with search / false on error
 
 // description:
-// creates component explorer incl. search.
+// creates component explorer incl. search form
 
-function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="multi", $search_expression="", $mediatype="", $lang="en", $callback="", $scalingfactor="1")
+function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="multi", $search_expression="", $search_format="", $mediatype="", $lang="en", $callback="", $scalingfactor="1")
 {
   global $user, $mgmt_config, $siteaccess, $pageaccess, $compaccess, $rootpermission, $globalpermission, $localpermission, $hiddenfolder, $html5file, $temp_complocation, $hcms_charset, $hcms_lang;
   
@@ -1446,11 +1447,15 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     $dir = deconvertpath ($dir, "file");
     $location = deconvertpath ($location_esc, "file");
     
+    // local access permissions
+    $ownergroup = accesspermission ($site, $dir, "comp");
+    $setlocalpermission = setlocalpermission ($site, $ownergroup, "comp");
+ 
     // load publication inheritance setting
     $inherit_db = inherit_db_read ();
     $parent_array = inherit_db_getparent ($inherit_db, $site);
     
-    // get last location in component structure
+    // get location in component structure from session
     if (!valid_locationname ($dir) && isset ($temp_complocation[$site])) 
     {
       $dir = $temp_complocation[$site];
@@ -1462,24 +1467,72 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
         $_SESSION['hcms_temp_complocation'] = $temp_complocation;
       }  
     }
-    elseif (valid_locationname ($dir))
+    
+    // if not configured as DAM, define root location if no dir was provided
+    if (!$mgmt_config[$site]['dam'] && $dir == "")
+    {
+      if ($mgmt_config[$site]['inherit_comp'] == false || $parent_array == false)
+      {
+        $dir = $mgmt_config['abs_path_comp'].$site."/";
+      }
+      elseif ($mgmt_config[$site]['inherit_comp'] == true)
+      {
+        $dir = $mgmt_config['abs_path_comp'];
+      }
+    }
+    // if DAM use compaccess
+    elseif ($mgmt_config[$site]['dam'] && ($setlocalpermission['root'] != 1 || $dir == ""))
+    {
+      $comp_entry_dir = array();
+      
+      if (!empty ($compaccess[$site]))
+      {
+        foreach ($compaccess[$site] as $group => $value)
+        {  
+          if ($localpermission[$site][$group]['component'] == 1 && $value != "")
+          { 
+            // create path array
+            $path_array = link_db_getobject ($value);
+            
+            foreach ($path_array as $value)
+            {
+              // path must be inside the location, avoid double entries
+              if ($value != "" && substr ($value, 0, strlen ($dir)) == $dir)
+              {
+                if (substr ($value, 0, -7) != ".folder") $value = $value.".folder";
+                
+                $comp_entry_dir[] = convertpath ($site, $value, "comp");
+              }               
+            }  
+          }
+        }
+        
+        // set dir if user has access to component root folder
+        if (sizeof ($comp_entry_dir) == 1 && $comp_entry_dir[0] == "%comp%/".$site."/.folder")
+        {
+          $comp_entry_dir = array();
+          $dir = $mgmt_config['abs_path_comp'].$site."/";
+        }
+        // remove double entries 
+        else
+        {
+          if (sizeof ($comp_entry_dir) > 1) $comp_entry_dir = array_unique ($comp_entry_dir);
+          $dir = "";
+        }
+      }
+      // user has no component access
+      else $dir = "";
+    }
+
+    // convert path
+    $dir_esc = convertpath ($site, $dir, "comp");
+    
+    // set location in component structure in session
+    if (valid_locationname ($dir))
     {
       $temp_complocation[$site] = $dir;
       $_SESSION['hcms_temp_complocation'] = $temp_complocation;
     }
-    
-    // define root location if no location data is available
-    if ($dir == "" && ($mgmt_config[$site]['inherit_comp'] == false || $parent_array == false))
-    {
-      $dir = $mgmt_config['abs_path_comp'].$site."/";
-    }
-    elseif ($dir == "" && $mgmt_config[$site]['inherit_comp'] == true)
-    {
-      $dir = $mgmt_config['abs_path_comp'];
-    }
-    
-    // convert path
-    $dir_esc = convertpath ($site, $dir, "comp");
     
     // media format
     if ($mediatype != "")
@@ -1492,7 +1545,7 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
       elseif ($mediatype == "compressed") $format_ext = strtolower ($hcms_ext['compressed']);
       elseif ($mediatype == "binary") $format_ext = strtolower ($hcms_ext['binary']);
       else $format_ext = "";
-    }  
+    }
     
     // javascript code
     $result = "<script language=\"JavaScript\">
@@ -1513,26 +1566,40 @@ function sendMediaInput(newtext, newvalue)
   parent.frames['controlFrame2'].document.forms['media'].elements['mediafile'].value = newtext;
   parent.frames['controlFrame2'].document.forms['media'].elements['mediaobject'].value = newvalue;
 }
+
+function showOptions()
+{
+  if (document.getElementById('searchOptions'))
+  {
+    if (document.getElementById('searchOptions').style.display == 'none')
+    {
+      document.getElementById('searchOptions').style.display = 'block';
+    }
+    else if (document.getElementById('searchOptions').style.display == 'block')
+    {
+      document.getElementById('searchOptions').style.display = 'none';
+    }
+  }
+}
 //-->
 </script>";
     
     // current location
     $location_name = getlocationname ($site, $dir, "comp", "path");
     
-    $result .= "<span class=\"hcmsHeadline\" style=\"padding:3px 0px 3px 0px; display:block;\">".getescapedtext ($hcms_lang['select-object'][$lang], $hcms_charset, $lang)."</span>
+    $result .= "
+    <span class=\"hcmsHeadline\" style=\"padding:3px 0px 3px 0px; display:block;\">".getescapedtext ($hcms_lang['select-object'][$lang], $hcms_charset, $lang)."</span>
     <span class=\"hcmsHeadlineTiny\" style=\"padding:3px 0px 3px 0px; display:block;\">".$location_name."</span>\n";
     
-    // file upload
-    $ownergroup = accesspermission ($site, $dir, "comp");
-    $setlocalpermission = setlocalpermission ($site, $ownergroup, "comp");
-    
+    // file upload    
     if ($compcat == "media" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1 && $search_expression == "")
     {
       // Upload Button
       if ($html5file) $popup_upload = "popup_upload_html.php";
       else $popup_upload = "popup_upload_swf.php";
       
-      $result .= "<div style=\"align:center; padding:2px; width:100%;\">
+      $result .= "
+      <div style=\"align:center; padding:2px; width:100%;\">
         <input name=\"UploadButton\" class=\"hcmsButtonGreen\" style=\"width:198px; float:left;\" type=\"button\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms'].$popup_upload."?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."','','status=yes,scrollbars=no,resizable=yes,width=600,height=400','600','400');\" value=\"".getescapedtext ($hcms_lang['upload-file'][$lang], $hcms_charset, $lang)."\" />
         <img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" />
       </div>
@@ -1540,7 +1607,8 @@ function sendMediaInput(newtext, newvalue)
     }
     elseif (($compcat == "single" || $compcat == "multi") && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1 && $search_expression == "")
     {
-      $result .= "<div style=\"align:center; padding:2px; width:100%;\">
+      $result .= "
+      <div style=\"align:center; padding:2px; width:100%;\">
         <input name=\"UploadButton\" class=\"hcmsButtonGreen\" style=\"width:198px; float:left;\" type=\"button\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."frameset_content.php?site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."','','status=yes,scrollbars=no,resizable=yes,width=800,height=600','800','600');\" value=\"".getescapedtext ($hcms_lang['new-component'][$lang], $hcms_charset, $lang)."\" />
         <img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" />
       </div>
@@ -1548,8 +1616,10 @@ function sendMediaInput(newtext, newvalue)
     }
     
     // search form
-    if ($mgmt_config['db_connect_rdbms'] != "") $result .= "
-    <div style=\"padding:2px; width:100%;\">
+    if ($mgmt_config['db_connect_rdbms'] != "")
+    {
+      $result .= "
+    <div id=\"searchForm\" style=\"padding:2px; width:100%;\">
       <form name=\"searchform_general\" method=\"post\" action=\"\">
         <input type=\"hidden\" name=\"dir\" value=\"".$dir_esc."\" />
         <input type=\"hidden\" name=\"site\" value=\"".$site."\" />
@@ -1563,15 +1633,33 @@ function sendMediaInput(newtext, newvalue)
         <input type=\"text\" name=\"search_expression\" value=\"";
         if ($search_expression != "") $result .= html_encode ($search_expression);
         else $result .= getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang);
-        $result .= "\" onblur=\"if (this.value=='') this.value='".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."';\" onfocus=\"if (this.value=='".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."') this.value='';\" style=\"width:190px;\" maxlength=\"60\" />
-        <img name=\"SearchButton\" src=\"".getthemelocation()."img/button_OK.gif\" onClick=\"if (document.forms['searchform_general'].elements['search_expression'].value=='".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."') document.forms['searchform_general'].elements['search_expression'].value=''; document.forms['searchform_general'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('SearchButton','','".getthemelocation()."img/button_OK_over.gif',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" align=\"top\" alt=\"OK\" title=\"OK\" />
+        $result .= "\" onblur=\"if (this.value=='') this.value='".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."';\" onclick=\"showOptions();\" onfocus=\"if (this.value=='".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."') this.value='';\" style=\"width:190px;\" maxlength=\"60\" />
+        <img name=\"SearchButton\" src=\"".getthemelocation()."img/button_OK.gif\" onClick=\"if (document.forms['searchform_general'].elements['search_expression'].value=='".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."') document.forms['searchform_general'].elements['search_expression'].value=''; document.forms['searchform_general'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('SearchButton','','".getthemelocation()."img/button_OK_over.gif',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" align=\"top\" alt=\"OK\" title=\"OK\" />";
+    
+      // search options
+      if (($compcat == "media" && $mediatype == "") || $mgmt_config[$site]['dam']) $result .= "
+        <div id=\"searchOptions\" class=\"hcmsInfoBox\" style=\"width:210px; margin:2px 0px 8px 0px; display:none;\">
+          &nbsp;<b>".$hcms_lang['search-for-file-type'][$lang].":</b><br />
+          <input type=\"checkbox\" name=\"search_format[object]\" value=\"comp\" checked=\"checked\" />".$hcms_lang['components'][$lang]."<br />
+          <input type=\"checkbox\" name=\"search_format[image]\" value=\"image\" checked=\"checked\" />".$hcms_lang['image'][$lang]."<br />
+          <input type=\"checkbox\" name=\"search_format[document]\" value=\"document\" checked=\"checked\" />".$hcms_lang['document'][$lang]."<br />
+          <input type=\"checkbox\" name=\"search_format[video]\" value=\"video\" checked=\"checked\" />".$hcms_lang['video'][$lang]."<br />
+          <input type=\"checkbox\" name=\"search_format[audio]\" value=\"audio\" checked=\"checked\" />".$hcms_lang['audio'][$lang]."<br />
+        </div>";
+    
+      $result .= "
       </form>
     </div>\n";
+    }
     
-    $result .= "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n";
+    $result .= "
+    <table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n";
   
     // parent directory
-    if (substr_count ($dir, $mgmt_config['abs_path_comp']) > 0 && $dir != $mgmt_config['abs_path_comp'])
+    if (
+         (!$mgmt_config[$site]['dam'] && substr_count ($dir, $mgmt_config['abs_path_comp']) > 0 && $dir != $mgmt_config['abs_path_comp']) || 
+         ($mgmt_config[$site]['dam'] && $setlocalpermission['root'] == 1)
+       )
     {
       //get parent directory
       $updir_esc = getlocation ($dir_esc);
@@ -1585,41 +1673,57 @@ function sendMediaInput(newtext, newvalue)
       else $result .= "<tr><td align=\"left\" colspan=\"2\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode("%comp%/")."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."\"><img src=\"".getthemelocation()."img/back.gif\" class=\"hcmsIconList\" />&nbsp;".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."</a></td></tr>\n";
     }
     
-    // search results
+    // -------------------------------- search results ------------------------------------
     if ($search_expression != "")
     {
-      if ($mediatype != "") $object_type = array ($mediatype);
-      else $object_type = "";
-       
-      $object_array = rdbms_searchcontent ($dir_esc, "", $object_type, "", "", "", array($search_expression), $search_expression, "", "", "", "", "", "", "", 100);
-      
+      if ($mediatype != "") $search_format = array ($mediatype);
+          
+      $object_array = rdbms_searchcontent ($dir_esc, "", $search_format, "", "", "", array($search_expression), $search_expression, "", "", "", "", "", "", "", 100);
+
       if (is_array ($object_array))
       {
         foreach ($object_array as $entry)
         {
-          if ($entry != "" && accessgeneral ($site, $entry, "comp"))
+          if ($entry != "")
           {
-            $entry_location = getlocation ($entry);
-            $entry_object = getobject ($entry);
-            $entry_object = correctfile ($entry_location, $entry_object, $user);
-
-            if ($entry_object != false)
+            $authorized = false;
+            
+            // if DAM
+            if ($mgmt_config[$site]['dam'])
             {
-              if ($entry_object == ".folder")
+              // local access permissions
+              $ownergroup_entry = accesspermission ($site, $entry, "comp");
+              $setlocalpermission_entry = setlocalpermission ($site, $ownergroup_entry, "comp");
+              
+              if (isset ($setlocalpermission_entry['root']) && $setlocalpermission_entry['root'] == 1) $authorized = true;
+            }
+            // if CMS
+            else $authorized = accessgeneral ($site, $entry, "comp");
+
+            if ($authorized)
+            {
+              $entry_location = getlocation ($entry);
+              $entry_object = getobject ($entry);
+              $entry_object = correctfile ($entry_location, $entry_object, $user);
+
+              if ($entry_object != false)
               {
-                $comp_entry_dir[] = $entry_location.$entry_object;
-              }
-              else
-              {
-                $comp_entry_file[] = $entry_location.$entry_object;
+                if ($entry_object == ".folder")
+                {
+                  $comp_entry_dir[] = $entry_location.$entry_object;
+                }
+                else
+                {
+                  $comp_entry_file[] = $entry_location.$entry_object;
+                }
               }
             }
           }
         }
       }
     }
-    // file explorer
-    else
+    // -------------------------------- file explorer -------------------------------- 
+    elseif ($dir != "")
     {
       // get all files in dir
       $outdir = @dir ($dir);
@@ -1649,6 +1753,7 @@ function sendMediaInput(newtext, newvalue)
       }
     }
 
+    // -------------------------------- prepare output  -------------------------------- 
     if (isset ($comp_entry_dir) || isset ($comp_entry_file))
     {      
       // folder
@@ -1659,28 +1764,31 @@ function sendMediaInput(newtext, newvalue)
         
         foreach ($comp_entry_dir as $dirname)
         {
-          // folder info
-          $folder_info = getfileinfo ($site, $dirname, "comp");
-          $folder_path = getlocation ($dirname);
-          $location_name = getlocationname ($site, $folder_path, "comp", "path");
-          
-          // define icon
-          if ($dir == $mgmt_config['abs_path_comp']) $icon = getthemelocation()."img/site.gif";
-          else $icon = getthemelocation()."img/".$folder_info['icon'];
+          if ($dirname != "")
+          {
+            // folder info
+            $folder_info = getfileinfo ($site, $dirname, "comp");
+            $folder_path = getlocation ($dirname);
+            $location_name = getlocationname ($site, $folder_path, "comp", "path");
             
-          if ($callback == "") $result .= "<tr><td align=\"left\" colspan=\"2\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."\" title=\"".$location_name."\"><img src=\"".$icon."\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 24)."</a></td></tr>\n";
-          else $result .= "<tr><td align=\"left\" colspan=\"2\" nowrap><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."\" title=\"".$location_name."\"><img src=\"".$icon."\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 24)."</a></td></tr>\n";
+            // define icon
+            if ($dir == $mgmt_config['abs_path_comp']) $icon = getthemelocation()."img/site.gif";
+            else $icon = getthemelocation()."img/".$folder_info['icon'];
+              
+            if ($callback == "") $result .= "<tr><td align=\"left\" colspan=\"2\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."\" title=\"".$location_name."\"><img src=\"".$icon."\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 24)."</a></td></tr>\n";
+            else $result .= "<tr><td align=\"left\" colspan=\"2\" nowrap><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."\" title=\"".$location_name."\"><img src=\"".$icon."\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 24)."</a></td></tr>\n";
+          }
         }
       }
       
-      // component
+      // component/asset
       $page_info = getfileinfo ($site, $page, "comp");
       
       if (isset ($comp_entry_file) && is_array ($comp_entry_file) && sizeof ($comp_entry_file) > 0)
       {
         natcasesort ($comp_entry_file);
         reset ($comp_entry_file);
-      
+
         foreach ($comp_entry_file as $object)
         {
           if ($object != "")
@@ -1692,13 +1800,20 @@ function sendMediaInput(newtext, newvalue)
             $comp_name = getlocationname ($site, $object, "comp", "path");
             
             if ($compcat != "media" && strlen ($comp_name) > 50) $comp_name = "...".substr (substr ($comp_name, -50), strpos (substr ($comp_name, -50), "/")); 
-      
-            if ($dir.$object != $location.$page && (($compcat != "media" && $comp_info['published'] == true && $comp_info['type'] == "Component") || ($compcat == "media" && ($mediatype == "" || $mediatype == "comp" || substr_count ($format_ext, $comp_info['ext']) > 0))))
+
+            if (
+                 $dir.$object != $location.$page && 
+                 (
+                   ($compcat != "media" && !$mgmt_config[$site]['dam'] && $comp_info['type'] == "Component") || // standard published components if not DAM for component tag
+                   ($compcat != "media" && $mgmt_config[$site]['dam']) || // any type if is DAM for component tag
+                   ($compcat == "media" && ($mediatype == "" || $mediatype == "comp" || substr_count ($format_ext, $comp_info['ext']) > 0)) // media assets for media tag
+                 )
+               )
             {
               $comp_path = $object;
-      
-              // warning if file extensions don't match and HTTP include is off
-              if ($compcat != "media" && $mgmt_config[$site]['http_incl'] == false && ($comp_info['ext'] != $page_info['ext'] && $comp_info['ext'] != ".page")) $alert = "test = confirm(hcms_entity_decode('".getescapedtext ($hcms_lang['the-object-types-do-not-match'][$lang], $hcms_charset, $lang)."'));";    
+
+              // warning if file extensions don't match and HTTP include is off and it is not a DAM
+              if ($compcat != "media" && !$mgmt_config[$site]['dam'] && $mgmt_config[$site]['http_incl'] == false && ($comp_info['ext'] != $page_info['ext'] && $comp_info['ext'] != ".page")) $alert = "test = confirm(hcms_entity_decode('".getescapedtext ($hcms_lang['the-object-types-do-not-match'][$lang], $hcms_charset, $lang)."'));";    
               else $alert = "test = true;";
               
               if ($compcat == "single")

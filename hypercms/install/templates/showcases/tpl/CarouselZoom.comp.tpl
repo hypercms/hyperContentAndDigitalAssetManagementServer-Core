@@ -37,7 +37,7 @@ $zoomWindow_border = "[hyperCMS:textu id='zoomWindow_border' onEdit='hidden' def
 $thumbnails_height = "[hyperCMS:textu id='thumbnails_height' onEdit='hidden' default='70']";
 
 // CMS VIEW => get user entries => title,height,widht,picture amaount...
-if($view == "cmsview")
+if ($view == "cmsview")
 {
 scriptend]
 <!DOCTYPE html>
@@ -56,22 +56,22 @@ scriptend]
 					<td>Amount of pictures</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='numOfPicture' label='Amount of pictures' constraint='isNum' height='15' width='100']</div></td>
 				</tr>
 				<tr>
-					<td>Width of preview</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='imageContainer_width' label='Width of preview' constraint='isNum' height='15' width='100']px</div></td>
+					<td>Width of preview</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='imageContainer_width' label='Width of preview' constraint='isNum' default='320' height='15' width='100']px</div></td>
 				</tr>
 				<tr>
-					<td>Height of preview</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='imageContainer_height' label='Height of preview' constraint='isNum' height='15' width='100']px</div></td>
+					<td>Height of preview</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='imageContainer_height' label='Height of preview' constraint='isNum' default='260' height='15' width='100']px</div></td>
 				</tr>
 				<tr>
-					<td>Width of zoom-window</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='zoomWindow_width' label='Width of zoom-window' constraint='isNum' height='15' width='100']px</div></td>
+					<td>Width of zoom-window</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='zoomWindow_width' label='Width of zoom-window' constraint='isNum' default='800' height='15' width='100']px</div></td>
 				</tr>
 				<tr>
-					<td>Height of zoom-window</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='zoomWindow_height' label='Height of zoom-window' constraint='isNum' height='15' width='100']px</div></td>
+					<td>Height of zoom-window</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='zoomWindow_height' label='Height of zoom-window' constraint='isNum' default='600' height='15' width='100']px</div></td>
 				</tr>
 				<tr>
-					<td>Border of zoom-window</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='zoomWindow_border' label='Border of zoom-window' constraint='isNum' height='15' width='100']px</div></td>
+					<td>Border of zoom-window</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='zoomWindow_border' label='Border of zoom-window' constraint='isNum' default='1' height='15' width='100']px</div></td>
 				</tr>
 				<tr>
-					<td>Height of thumbnails</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='thumbnails_height' label='Height of thumbnails' constraint='isNum' height='15' width='100']px</div></td>
+					<td>Height of thumbnails</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='thumbnails_height' label='Height of thumbnails' constraint='isNum' default='80' height='15' width='100']px</div></td>
 				</tr>
 				<tr>
 					<td>&nbsp;</td><td><div style="margin-left: 27px;"><button class="hcmsButtonGreen" type="button" onClick="location.reload();" >generate code</button></div></td>
@@ -87,14 +87,17 @@ scriptend]
 	
 	//check if component is published
 	$compinfo = getfileinfo($site, $correctFile, "comp");
+  
 	if ($compinfo['published'])
   {
 		//create embed code
 		$iframe_standard_height = $thumbnails_height + $imageContainer_height + 30;
-		if($iframe_standard_height < ($zoomWindow_height + (2 * $zoomWindow_border)))
+    
+		if ($iframe_standard_height < ($zoomWindow_height + (2 * $zoomWindow_border)))
 			$iframe_zoom_height = $zoomWindow_height + (2 * $zoomWindow_border);
 		else
 			$iframe_zoom_height = $iframe_standard_height;
+      
 		$iframe_zoom_width = 	$imageContainer_width + $zoomWindow_width + (2 * $zoomWindow_border)+1;
 		$embed_code = "<div style=\"width: {$imageContainer_width}px; height: {$iframe_standard_height}px; position: relative; z-index: 2147483647;\" onmouseover=\"document.getElementById('frame_$uniqid').style.height = $iframe_zoom_height + 'px'; document.getElementById('frame_$uniqid').style.width = $iframe_zoom_width + 'px';\" onmouseout=\"document.getElementById('frame_$uniqid').style.height = $iframe_standard_height + 'px'; document.getElementById('frame_$uniqid').style.width = $imageContainer_width + 'px';\"><iframe id='frame_$uniqid' src='{$mgmt_config['url_path_cms']}?wl=$hash' scrolling='no' frameborder=0 border=0 style='width: {$imageContainer_width}px; height: {$iframe_standard_height}px;'></iframe></div>";
 	}
@@ -118,7 +121,7 @@ else
 {
 	if ($view == "publish")
 	{
-		  //published file should be a valid html
+		//published file should be a valid html
 scriptend]
 <!DOCTYPE html>
 <html>

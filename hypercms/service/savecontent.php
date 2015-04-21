@@ -43,11 +43,6 @@ if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermiss
 // check session of user
 checkusersession ($user);
 
-// --------------------------------- load balancer ----------------------------------
-
-// call load balancer only for management server where user is logged in
-if (checktoken ($token, $user)) loadbalancer ("savecontent");
-
 // --------------------------------- logic section ----------------------------------
 
 // extract character set from content-type

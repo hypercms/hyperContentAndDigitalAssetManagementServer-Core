@@ -843,14 +843,14 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
 {
   global $mgmt_config;
 
-	// set object_type if the search is image or video related
+  // set object_type if the search is image or video related
   if (!is_array ($object_type) && (!empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype) || !empty ($filesize)))
-	{
-		if (!is_array ($object_type)) $object_type = array();
-		array_push ($object_type, "image", "video");
-	}
-	
-	if (!empty ($folderpath) || is_array ($object_type) || !empty ($date_from) || !empty ($date_to) || !empty ($template) || is_array ($expression_array) || !empty ($expression_filename) || !empty ($filesize) || !empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype))
+  {
+    if (!is_array ($object_type)) $object_type = array();
+    array_push ($object_type, "image", "video");
+  }
+  
+  if (!empty ($folderpath) || is_array ($object_type) || !empty ($date_from) || !empty ($date_to) || !empty ($template) || is_array ($expression_array) || !empty ($expression_filename) || !empty ($filesize) || !empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype))
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
@@ -881,15 +881,15 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
     {
       if (!is_array ($folderpath) && $folderpath != "") $folderpath = array ($folderpath);      
       $sql_puffer = array();
-			
-			foreach ($folderpath as $path)
+      
+      foreach ($folderpath as $path)
       {
         if ($path != "")
         {
-  				//escape characters depending on dbtype
-  				$path = $db->escape_string ($path);
+          //escape characters depending on dbtype
+          $path = $db->escape_string ($path);
           // replace %
-  				$path = str_replace ("%", "*", $path);
+          $path = str_replace ("%", "*", $path);
           // where clause for folderpath
           $sql_puffer[] = 'obj.objectpath LIKE _utf8"'.$path.'%" COLLATE utf8_bin';
         }
@@ -897,32 +897,32 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
       
       if (is_array ($sql_puffer) && sizeof ($sql_puffer) > 0) $sql_where['folderpath'] = '('.implode (" OR ", $sql_puffer).')';
     }
-		
-		// excludepath path
+    
+    // excludepath path
     if (!empty ($excludepath))
     {
       if (!is_array ($excludepath) && $excludepath != "") $excludepath = array ($excludepath);
-			$sql_puffer = array();
+      $sql_puffer = array();
       
       foreach ($excludepath as $path)
       {
         if ($path != "")
         {
           // explicitly exclude folders from result
-  				if ($path == "/.folder")
-  				{
-  					// where clause for excludepath
-  					$sql_puffer[] = 'obj.objectpath NOT LIKE _utf8"%'.$path.'" COLLATE utf8_bin';
-  				}
-  				else
+          if ($path == "/.folder")
           {
-  					//escape characters depending on dbtype
-  					$path = $db->escape_string ($path);
-  					// replace %
-  					$path = str_replace ("%", "*", $path);
-  					// where clause for excludepath
-  					$sql_puffer[] = 'obj.objectpath NOT LIKE _utf8"'.$path.'%" COLLATE utf8_bin';
-  				}
+            // where clause for excludepath
+            $sql_puffer[] = 'obj.objectpath NOT LIKE _utf8"%'.$path.'" COLLATE utf8_bin';
+          }
+          else
+          {
+            //escape characters depending on dbtype
+            $path = $db->escape_string ($path);
+            // replace %
+            $path = str_replace ("%", "*", $path);
+            // where clause for excludepath
+            $sql_puffer[] = 'obj.objectpath NOT LIKE _utf8"'.$path.'%" COLLATE utf8_bin';
+          }
         }
       }
       
@@ -939,29 +939,29 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
     
     // object type (only if less than 5 of total 5 arguments (component, audio, video, document, image), otherwise we look for all object types/formats).
     // for media reference the search can also include binary, flash, compressed and text.
-    if (is_array ($object_type) && sizeof ($object_type) < 5)
+    if (is_array ($object_type) && sizeof ($object_type) > 0 && sizeof ($object_type) < 5)
     {
       // add media table
-      $sql_table['media'] = 'LEFT JOIN media AS med on obj.id=med.id';
+      $sql_table['media'] = "";
       $sql_where['format'] = "";
       $sql_where['object'] = "";
       
       foreach ($object_type as $search_type)
       {
         if ($search_type == "page" || $search_type == "comp") 
-				{
-					if ($sql_where['object'] != "") $sql_where['object'] .= " OR ";
-					$sql_where['object'] .= 'obj.template LIKE "%.'.$search_type.'.tpl"';
-				}
+        {
+          if ($sql_where['object'] != "") $sql_where['object'] .= " OR ";
+          $sql_where['object'] .= 'obj.template LIKE "%.'.$search_type.'.tpl"';
+        }
 
         // file-type (audio, document, text, image, video, compressed, flash, binary)
         if (in_array ($search_type, array("audio","document","text","image","video","compressed","flash","binary"))) 
-				{
-					if (!empty ($sql_where['format'])) $sql_where['format'] .= " OR ";
-					$sql_where['format'] .= 'med.filetype="'.$search_type.'"';
-				}
+        {
+          if (!empty ($sql_where['format'])) $sql_where['format'] .= " OR ";
+          $sql_where['format'] .= 'med.filetype="'.$search_type.'"';
+        }
       }
-      
+
       // add meta as object type if formats are set
       if (!empty ($sql_where['format']))
       {
@@ -972,8 +972,12 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
       // add () for OR operators
       if (!empty ($sql_where['object'])) $sql_where['object'] = "(".$sql_where['object'].")";
       else unset ($sql_where['object']);
+      
       if (!empty ($sql_where['format'])) $sql_where['format'] = "(".$sql_where['format'].")";
       else unset ($sql_where['format']);
+      
+      // join media table
+      if (!empty ($sql_where['format'])) $sql_table['media'] = 'LEFT JOIN media AS med on obj.id=med.id';
     }     
     
     // file name
@@ -993,27 +997,27 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
       $expression_filename_conv = $db->escape_string ($expression_filename_conv);
       
        // folder path
-			if (!empty ($folderpath))
-			{
-				if (!is_array ($folderpath )) $folderpath = array ($folderpath);
-				
-				$sql_puffer = array();
-				
-				foreach ($folderpath as $path)
-				{
-					//escape characters depending on dbtype
-					$path = $db->escape_string ($path);
-					// replace %
-					$path = str_replace ("%", "*", $path);
-					// where clause for folderpath
-					if (substr ($expression_filename_conv, 0, 1) != "%") $folderpath_conv = $path."%";
-					else $folderpath_conv = $path;
-          
-					$sql_puffer[] = 'obj.objectpath LIKE _utf8"'.$folderpath_conv.$expression_filename_conv.'"';
-				}
+      if (!empty ($folderpath))
+      {
+        if (!is_array ($folderpath )) $folderpath = array ($folderpath);
         
-				if (is_array ($sql_puffer) && sizeof ($sql_puffer) > 0) $sql_where['filename'] = '('.implode (" OR ", $sql_puffer).')';
-			}
+        $sql_puffer = array();
+        
+        foreach ($folderpath as $path)
+        {
+          //escape characters depending on dbtype
+          $path = $db->escape_string ($path);
+          // replace %
+          $path = str_replace ("%", "*", $path);
+          // where clause for folderpath
+          if (substr ($expression_filename_conv, 0, 1) != "%") $folderpath_conv = $path."%";
+          else $folderpath_conv = $path;
+          
+          $sql_puffer[] = 'obj.objectpath LIKE _utf8"'.$folderpath_conv.$expression_filename_conv.'"';
+        }
+        
+        if (is_array ($sql_puffer) && sizeof ($sql_puffer) > 0) $sql_where['filename'] = '('.implode (" OR ", $sql_puffer).')';
+      }
     }   
     
     // dates and geo locatiojn (add table container)
@@ -1139,16 +1143,16 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
         }
         
         // parameter imagewidth can be used as general image size parameter, only if height = ""
-				// search for image_size (area)
-				if (!empty ($imagewidth) && substr_count ($imagewidth, "-") == 1)
-				{
-					list ($imagewidth_min, $imagewidth_max) = explode ("-", $imagewidth);
-					$sql_where['media'] .= (($sql_where['media'] == '') ? '' : ' AND ').'(med.width>='.intval($imagewidth_min).' OR med.height>='.intval($imagewidth_min).') AND (med.width<='.intval($imagewidth_max).' OR med.height<='.intval($imagewidth_max).')';
-				}
+        // search for image_size (area)
+        if (!empty ($imagewidth) && substr_count ($imagewidth, "-") == 1)
+        {
+          list ($imagewidth_min, $imagewidth_max) = explode ("-", $imagewidth);
+          $sql_where['media'] .= (($sql_where['media'] == '') ? '' : ' AND ').'(med.width>='.intval($imagewidth_min).' OR med.height>='.intval($imagewidth_min).') AND (med.width<='.intval($imagewidth_max).' OR med.height<='.intval($imagewidth_max).')';
+        }
         else
         {			
           //search for exact image width
-  				if (!empty ($imagewidth) && $imagewidth > 0)
+          if (!empty ($imagewidth) && $imagewidth > 0)
           {
             if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
             else $sql_where['media'] = "";
@@ -1156,8 +1160,8 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
             $sql_where['media'] .= 'med.width='.intval($imagewidth);
           }
                
-  				// search for exact image height
-  				if (!empty ($imageheight) && $imageheight > 0)
+          // search for exact image height
+          if (!empty ($imageheight) && $imageheight > 0)
           {
             if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
             else $sql_where['media'] = "";
@@ -1215,27 +1219,27 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
         if ($row['objectpath'] != "") $objectpath[$row['hash']] = str_replace ("*", "%", $row['objectpath']);
       }      
     }
-		
-		//count searchresults
-		if (!empty ($count))
-		{
-			$sql = 'SELECT COUNT(DISTINCT obj.objectpath) as cnt FROM object AS obj';
-			if (is_array ($sql_table)) $sql .= ' '.implode (" ", $sql_table);
-			$sql .= ' WHERE ';
-		
-			if (isset ($sql_table) && is_array ($sql_where)) 
-			{
-				$sql .= implode (" AND ", $sql_where);
-			}
-			
-			$errcode = "50022";
-			$done = $db->query ($sql, $errcode, $mgmt_config['today']);
+    
+    //count searchresults
+    if (!empty ($count))
+    {
+      $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as cnt FROM object AS obj';
+      if (is_array ($sql_table)) $sql .= ' '.implode (" ", $sql_table);
+      $sql .= ' WHERE ';
+    
+      if (isset ($sql_table) && is_array ($sql_where)) 
+      {
+        $sql .= implode (" AND ", $sql_where);
+      }
+      
+      $errcode = "50022";
+      $done = $db->query ($sql, $errcode, $mgmt_config['today']);
 
-			if ($done && ($row = $db->getResultRow ()))
-			{         
-				if ($row['cnt'] != "") $objectpath['count'] = $row['cnt']; 
-			}
-		}
+      if ($done && ($row = $db->getResultRow ()))
+      {         
+        if ($row['cnt'] != "") $objectpath['count'] = $row['cnt']; 
+      }
+    }
 
     // save log
     savelog ($db->getError ());    
@@ -2349,7 +2353,7 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
    
     $sql = 'SELECT DISTINCT obj.objectpath as path, tnd.textcontent as cnt FROM object AS obj, textnodes AS tnd ';
     $sql .= 'WHERE obj.id=tnd.id AND obj.objectpath LIKE _utf8"'.$folderpath.'%" COLLATE utf8_bin AND tnd.text_id=_utf8"'.$text_id.'" COLLATE utf8_bin  AND "'.$date_begin.'" <= STR_TO_DATE(tnd.textcontent, "'.$format.'") AND "'.$date_end.'" >= STR_TO_DATE(tnd.textcontent, "'.$format.'")';    
-		$errcode = "50036";
+    $errcode = "50036";
     $done = $db->query($sql, $errcode, $mgmt_config['today']);
 
     if ($done)
@@ -2404,16 +2408,16 @@ function rdbms_insertdailystat ($activity, $container_id, $user="")
     // get current date
     $date = date ("Y-m-d", time());
 
-  	// set user if not defined
-  	if ($user == "")
+    // set user if not defined
+    if ($user == "")
     {
       if (!empty ($_SESSION['hcms_user'])) $user = $_SESSION['hcms_user'];
       else $user = getuserip ();
     }
-  	
-  	// check to see if there is a row
-  	$sql = 'SELECT count(*) AS count FROM dailystat WHERE date="'.$date.'" AND user="'.$user.'" AND activity="'.$activity.'" AND id='.$container_id;
-  	
+    
+    // check to see if there is a row
+    $sql = 'SELECT count(*) AS count FROM dailystat WHERE date="'.$date.'" AND user="'.$user.'" AND activity="'.$activity.'" AND id='.$container_id;
+    
     $errcode = "50037";
     $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'select');
     
@@ -2450,7 +2454,7 @@ function rdbms_insertdailystat ($activity, $container_id, $user="")
       
       return false;
     }
-	}
+  }
   else return false;  
 }
 
@@ -2517,7 +2521,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   { 
     // search by containerid
     $sql .= ' AND dailystat.id='.$container_id;
-	}
+  }
   
   if ($date_from != "") $sql .= ' AND dailystat.date>="'.date("Y-m-d", strtotime($date_from)).'"';
   if ($date_to != "") $sql .= ' AND dailystat.date<="'.date("Y-m-d", strtotime($date_to)).'"';

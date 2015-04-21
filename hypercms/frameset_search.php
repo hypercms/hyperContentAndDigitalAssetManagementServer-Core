@@ -46,7 +46,7 @@ function maxNavFrame ()
 {
   if (document.getElementById('navFrame2'))
   {
-    var width = 250;
+    var width = 260;
     
     document.getElementById('navLayer').style.width = width + 'px';
     document.getElementById('mainLayer').style.left = width + 'px';
@@ -62,10 +62,10 @@ function toggleview (view)
 </head>
 
 <body style="width:100%; height:100%; margin:0; padding:0;">
-  <div id="navLayer" style="position:fixed; top:0; bottom:0; left:0; width:250px; margin:0; padding:0;">
+  <div id="navLayer" style="position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;">
     <iframe id="navFrame2" name="navFrame2" scrolling="auto" src="<?php echo "search_explorer.php?dir=".$location; ?>" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
   </div>
-  <div id="mainLayer" style="position:fixed; top:0; right:0; bottom:0; left:250px; margin:0; padding:0;">
+  <div id="mainLayer" style="position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;">
     <iframe id="mainFrame2" name="mainFrame2" scrolling="auto" src="<?php echo "search_form_rdbms.php?location=".$location; ?>" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
   </div>
 </body>

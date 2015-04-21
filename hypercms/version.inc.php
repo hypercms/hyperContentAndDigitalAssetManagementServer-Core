@@ -791,7 +791,7 @@ changelog:
 
 version 5.7.7
 release 05/2015
-- implementation of load balancing for file upload, storing content and rendering files
+- implementation of load balancing for file upload and rendering files
 - implementation of new setting for load balancing in main configuration
 - implementation of new function HTTP_Proxy and loadbalancer
 - implementation of new function getserverload
@@ -810,8 +810,25 @@ release 05/2015
 - implementation of new ICC profiles for ECI offset 2009
 - support for transparent background of SVG files
 - bug fix: frame resizer in control_content did not work
+
+version 5.7.8
+release 06/2015
+- implementation of multi assets tag for DAM usage
+- bug fix: correct and optimize html code in form views of template engine
+- bug fix: horizontal and vertical flip of images in multiedit mode not working
+- implementation of new function getobjectid
+- function setcomplink converts multimedia object paths to object IDs and saves them in the content container (not in the link index) in order to support component links in DAM that is not using a link index
+- implementation of object ID support for single and multiple components in template engine, component_edit_page_single and component_edit_page_multi
+- implementation of accesspermissions in function compexplorer for DAM usage
+- changes in showcase templates in install directory to use the new view directory setting
+- bug fix: download of original files for access links failed if media file was not an image or document
+- optimizations in function rdbms_searchcontent regarding joins of tables
+- implementation of search format support in search of function compexplorer
+- bug fix: media_rendering for audio files did verify non-existing fields that caused JS error
+- bug fix: audio data in config files for ogg files have been missing
+- audio quality setting has been enabled for editing of audio files
 */
 
 // current version
-$version = "Version 5.7.7";
+$version = "Version 5.7.8";
 ?>

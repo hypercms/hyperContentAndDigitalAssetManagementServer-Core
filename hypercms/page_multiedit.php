@@ -482,9 +482,9 @@ if ($is_image)
   $available_colorspaces['XYZ'] = 'XYZ';
   
   $available_flip = array();
-  $available_flip['-fv'] = $hcms_lang['vertical'][$lang];
-  $available_flip['-fh'] = $hcms_lang['horizontal'][$lang];
-  $available_flip['-fv -fh'] = $hcms_lang['both'][$lang];
+  $available_flip['fv'] = $hcms_lang['vertical'][$lang];
+  $available_flip['fh'] = $hcms_lang['horizontal'][$lang];
+  $available_flip['fv fh'] = $hcms_lang['both'][$lang];
 }
 // ------------------ video/audio parameters ------------------------
 elseif ($is_video || $is_audio)

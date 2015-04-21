@@ -235,13 +235,16 @@ if (checktoken ($token, $user))
           $mgmt_imageoptions[$formats]['preview'] .= " -s ".$imagecropwidth."x".$imagecropheight." -c ".$imagex."x".$imagey;
         }
         // resize image
-        elseif (in_array($imageresize, array("percentage", "imagewidth", "imageheight")) && $imagewidth > 0 && $imageheight > 0)
+        elseif (in_array ($imageresize, array("percentage", "imagewidth", "imageheight")) && $imagewidth > 0 && $imageheight > 0)
         {
           $mgmt_imageoptions[$formats]['preview'] .= " -s ".$imagewidth."x".$imageheight;
         }
         
-        $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -s ".$thumbwidth."x".$thumbheight;
-  
+        if ($thumbwidth > 0 && $thumbheight > 0)
+        {
+          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -s ".$thumbwidth."x".$thumbheight;
+        }
+
         // rotate
         if ($rotate == "rotate" && $angle !== NULL) 
         {
@@ -251,21 +254,12 @@ if (checktoken ($token, $user))
         // flip
         elseif ($rotate == "flip" && array_key_exists ($flip, $available_flip))
         {
-          if (strpos ($flip, " ") > 0)
-          {
-            list ($flip, $flop) = explode (" ", $flip);
-          }
+          $flipflop = str_replace (array("fv", "fh"), array("-fv", "-fh"), $flip);
           
-          $mgmt_imageoptions[$formats]['preview'] .= " -".$flip;
-          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -".$flip;
-          
-          if (!empty ($flop))
-          {
-            $mgmt_imageoptions[$formats]['preview'] .= " -".$flop;
-            $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " -".$flop;
-          }
+          $mgmt_imageoptions[$formats]['preview'] .= " ".$flipflop;
+          $mgmt_imageoptions[$thumbformat]['render.'.$thumbwidth.'x'.$thumbheight] .= " ".$flipflop;
         }
-        
+
         // image density (DPI)
         if ($imagedensity >= 72 && $imagedensity <= 1200) 
         {
@@ -440,7 +434,7 @@ if ($savetype == "auto" || $savetype == "")
 // refresh after save and open
 elseif ($savetype == "editor_so")
 {
-  $add_onload .=  "document.location.href='".$mgmt_config['url_path_cms']."image_rendering.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
+  $add_onload .=  "document.location.href='../image_rendering.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
 ?>
 <!DOCTYPE html>
 <html>

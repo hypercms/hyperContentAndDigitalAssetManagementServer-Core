@@ -776,6 +776,145 @@ function getmediacontainerid ($file)
   }
   else return false;
 }
+
+// ---------------------- getobjectid -----------------------------
+// function: getobjectid()
+// input: converted object path or pathes separated by |
+// output: object ID
+
+// description:
+// converts object path to object ID
+
+function getobjectid ($objectlink)
+{
+  if ($objectlink != "")
+  {
+    $objectlink_conv = "";
+      
+    // if multiple component
+    if (strpos ("_".$objectlink, "|") > 0)
+    {
+      $objectpath_array = explode ("|", $objectlink);
+      
+      if (!empty ($objectpath_array) && sizeof ($objectpath_array) > 0)
+      {
+        foreach ($objectpath_array as $objectpath)
+        {
+          if ($objectpath != "")
+          {
+            // if object path is a converted path
+            if (strpos ("_".$objectpath, "%page%") > 0 || strpos ("_".$objectpath, "%comp%") > 0)
+            {
+              $objectinfo = getobjectinfo (getpublication ($objectpath), getlocation ($objectpath), getobject ($objectpath));
+              
+              // if object is a multimedia object
+              if (!empty ($objectinfo['media']))
+              {
+                $objectid = rdbms_getobject_id ($objectpath);
+                
+                // object ID exists
+                if ($objectid > 0) $objectlink_conv .= $objectid."|";
+                // no object ID -> use object path
+                else $objectlink_conv .= $objectpath."|";
+              }
+              // if object is a component object
+              else $objectlink_conv .= $objectpath."|";
+            }
+            // if object is a URL
+            else $objectlink_conv .= $objectpath."|";
+          }
+        }
+      }
+    }
+    // if single component
+    else
+    {
+      // if object path is a converted path
+      if (strpos ("_".$objectlink, "%page%") > 0 || strpos ("_".$objectlink, "%comp%") > 0)
+      {
+        $objectinfo = getobjectinfo (getpublication ($objectlink), getlocation ($objectlink), getobject ($objectlink));
+        
+        // if object is a multimedia object
+        if (!empty ($objectinfo['media']))
+        {
+          $objectid = rdbms_getobject_id ($objectlink);
+          
+          // object ID exists
+          if ($objectid > 0) $objectlink_conv = $objectid;
+          // no object ID -> use object path
+          else $objectlink_conv = $objectlink;
+        }
+        // if object is a component object
+        else $objectlink_conv = $objectlink;
+      }
+      // if object is a URL
+      else $objectlink_conv = $objectlink;
+    }
+    
+    // return converted result 
+    return $objectlink_conv;
+  }
+  else return $objectlink;
+}
+
+// ---------------------- getobjectlink -----------------------------
+// function: getobjectlink()
+// input: converted object ID or IDs separated by |
+// output: converted object link
+
+// description:
+// converts object ID to object path
+
+function getobjectlink ($objectid)
+{
+  if ($objectid != "")
+  {
+    $objectid_conv = "";
+      
+    // if multiple component
+    if (strpos ("_".$objectid, "|") > 0)
+    {
+      $object_id_array = explode ("|", $objectid);
+      
+      if (!empty ($object_id_array) && sizeof ($object_id_array) > 0)
+      {
+        foreach ($object_id_array as $object_id)
+        {
+          // if object ID (numeric)
+          if ($object_id > 0)
+          {
+            $objectpath = rdbms_getobject ($object_id);
+          
+            // object path exists
+            // if no object path -> the object has been deleted
+            if (!empty ($objectpath)) $objectid_conv .= $objectpath."|";
+          }
+          // if object path (string)
+          else $objectid_conv .= $object_id."|";
+        }
+      }
+    }
+    // if single component
+    else
+    {
+      // if object ID (numeric)
+      if ($objectid > 0)
+      {
+        $objectpath = rdbms_getobject ($objectid);
+    
+        // object path exists
+        // no object path -> the object has been deleted
+        if (!empty ($objectpath)) $objectid_conv = $objectpath;
+      }
+      // if object path (string)
+      else $objectid_conv .= $object_id."|";
+    }
+    
+    // return converted result 
+    return $objectid_conv;
+  }
+  else return $objectid;
+}
   
 // ---------------------- getfileinfo -----------------------------
 // function: getfileinfo()
@@ -1331,7 +1470,7 @@ function getvideoinfo ($mediafile)
         {
           // video dimension in pixels
     			$matches = array();
-          
+
     			if (preg_match ($dimensionRegExp, implode ("\n", $metadata), $matches))
           {
     				$dimension = $matches[1];

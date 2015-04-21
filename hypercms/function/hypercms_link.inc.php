@@ -672,12 +672,12 @@ function link_db_getobject ($multiobject)
   
   if (!is_array ($multiobject) && $multiobject != "")
   {
+    // cut off whitespaces at the begin and end of the string
     $multiobject = trim ($multiobject);
     
-    // cut off | at the begin of the string
-    if (substr ($multiobject, 0, 1) == "|") $multiobject = substr ($multiobject, 1);  
-    // cut off | at the end of the string
-    if (substr ($multiobject, -1) == "|") $multiobject = substr ($multiobject, 0, strlen ($multiobject)-1);
+    // cut off | at the begin and end of the string
+    $multiobject = trim ($multiobject, "|");  
+
     // remove empty string
     if (strpos ($multiobject, "||") > 0) $multiobject = str_replace (array("||||","|||","||"), array("|","|","|"), $multiobject);    
 

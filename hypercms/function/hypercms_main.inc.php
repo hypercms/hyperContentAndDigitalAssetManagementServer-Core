@@ -4727,7 +4727,7 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
                     if ($test != false) 
                     { 
                       $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentworkflow>", $workflow_name, "", "");
-                      savecontainer ($contentfile, "work", $contentdata);
+                      savecontainer ($contentfile, "work", $contentdata, $user);
                     }
                     
                     // set stop flag to break loop after first entry      
@@ -4784,7 +4784,7 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
                 if ($test != false) 
                 { 
                   $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentworkflow>", $workflow_name, "", "");
-                  savecontainer ($contentfile, "work", $contentdata); 
+                  savecontainer ($contentfile, "work", $contentdata, $user);
                 }
               }
             }
@@ -16427,7 +16427,7 @@ function HTTP_Proxy ($URL, $enable_file=false)
 
 // ---------------------- loadbalancer -----------------------------
 // function: loadbalancer()
-// input: type [renderimage,rendervideo,savecontent,uploadfile]
+// input: type [renderimage,rendervideo,uploadfile]
 // output: http response [string] / false on error or if disabled
 // requires: HTTP_Proxy
 
@@ -16440,12 +16440,11 @@ function loadbalancer ($type)
   global $mgmt_config;
   
   // if hyperCMS load balancer is used $mgmt_config['url_path_service'] must hold an array
-  if (in_array ($type, array("renderimage", "rendervideo", "savecontent", "uploadfile")) && !empty ($mgmt_config['url_path_service']) && is_array ($mgmt_config['url_path_service']) && sizeof ($mgmt_config['url_path_service']) > 0)
+  if (in_array ($type, array("renderimage", "rendervideo", "uploadfile")) && !empty ($mgmt_config['url_path_service']) && is_array ($mgmt_config['url_path_service']) && sizeof ($mgmt_config['url_path_service']) > 0)
   {
     // define service file
     if ($type == "renderimage") $file = "renderimage.php";
     elseif ($type == "rendervideo") $file = "rendervideo.php";
-    elseif ($type == "savecontent") $file = "savecontent.php";
     elseif ($type == "uploadfile") $file = "uploadfile.php";
     
     // prepare service array

@@ -8,27 +8,27 @@
 <content><![CDATA[[hyperCMS:objectview name='inlineview']
 [hyperCMS:tplinclude file='ServiceCollectMedia.inc.tpl']
 [hyperCMS:scriptbegin	
-	global $mgmt_config;	
-	
-	// INIT
-	$uniqid = uniqid();
-	$site = "%publication%";
-	$abs_comp = "%abs_comp%";
-	$container_id = "%container_id%";
-	$view = "%view%";
-	$hash = "%objecthash%";
-	$correctFile = correctfile("%abs_location%", "%object%");
-	// picture - file extensions
-	$picture_extensions = ".jpg.png.gif.bmp";
-	// User entry - picture / folder
-	$picture = "[hyperCMS:mediafile id='picture' onEdit='hidden']";
-	$pictureTagId = "picture";
-	
-	//USER ENTRIES
-	$stageWidth = "[hyperCMS:textu id='stageWidth' onEdit='hidden' default='400']";
-	$stageHeight = "[hyperCMS:textu id='stageHeight' onEdit='hidden' default='274']";
-  
-	// CMS VIEW => get user entry and create iframe code
+global $mgmt_config;	
+
+// INIT
+$uniqid = uniqid();
+$site = "%publication%";
+$abs_comp = "%abs_comp%";
+$container_id = "%container_id%";
+$view = "%view%";
+$hash = "%objecthash%";
+$correctFile = correctfile("%abs_location%", "%object%");
+// picture - file extensions
+$picture_extensions = ".jpg.png.gif.bmp";
+// User entry - picture / folder
+$picture = "[hyperCMS:mediafile id='picture' onEdit='hidden']";
+$pictureTagId = "picture";
+
+//USER ENTRIES
+$stageWidth = "[hyperCMS:textu id='stageWidth' onEdit='hidden' default='400']";
+$stageHeight = "[hyperCMS:textu id='stageHeight' onEdit='hidden' default='274']";
+
+// CMS VIEW => get user entry and create iframe code
 if($view == "cmsview")
 {
 scriptend]
@@ -45,10 +45,10 @@ scriptend]
 					<td>Picture / Folder</td><td><img src="[hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' thumbnail='yes']" /></td>
 				</tr>
 				<tr>
-					<td>Width of stage</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='stageWidth' label='Width of stage' constraint='isNum' height='15' width='100']px</div></td>
+					<td>Width of stage</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='stageWidth' label='Width of stage' default='800' constraint='isNum' height='15' width='100']px</div></td>
 				</tr>
 				<tr>
-					<td>Height of stage</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='stageHeight' label='Height of stage' constraint='isNum' height='15' width='100']px</div></td>
+					<td>Height of stage</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='stageHeight' label='Height of stage' default='600' constraint='isNum' height='15' width='100']px</div></td>
 				</tr>
 				<tr>
 					<td>&nbsp;</td><td><div style="margin-left: 27px;"><button class="hcmsButtonGreen" type="button" onClick="location.reload();" >generate code</button></div></td>
@@ -119,7 +119,7 @@ scriptend]
 [hyperCMS:scriptbegin
 	} 
 	// check if picture (folder) is choosen or if it exsists
-	if (substr_count($picture, "Null_media.gif") == 1)
+	if (substr_count ($picture, "Null_media.gif") == 1)
   {
 scriptend]
 		<p>No media file selected!</p>
@@ -127,8 +127,9 @@ scriptend]
 	}
 	else
   {
-		$mediaFiles = collectMedia($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions );
-		if(empty($mediaFiles))
+		$mediaFiles = collectMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions);
+    
+		if (empty($mediaFiles))
 		{
 scriptend]
  <p>Folder could not be read!</p>
@@ -138,9 +139,11 @@ scriptend]
 		{
 			//build image url for simple implode
 			$imageURLs = array();
-			foreach($mediaFiles as $media){ 
-				copy($media['abspath'].$media['filename'], $mgmt_config['abs_path_cms']."temp/view/".$media['filename']);
-        $imageURLs[] = $mgmt_config['url_path_cms']."temp/view/".$media['filename'];
+      
+			foreach($mediaFiles as $media)
+      { 
+				copy ($media['abspath'].$media['filename'], $mgmt_config['abs_path_view'].$media['filename']);
+        $imageURLs[] = $mgmt_config['url_path_view'].$media['filename'];
 			}
 scriptend]
 <img id="image_[hyperCMS:scriptbegin echo $uniqid; scriptend]" src="[hyperCMS:scriptbegin echo $imageURLs[0]; scriptend]" width="[hyperCMS:scriptbegin echo $stageWidth; scriptend]" height="[hyperCMS:scriptbegin echo $stageHeight; scriptend]"/>

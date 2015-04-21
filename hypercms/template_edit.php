@@ -691,7 +691,7 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
               echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
             }
             
-            if ($cat == "page" || $cat == "comp" || $cat == "inc")
+            if ($cat == "page" || $cat == "comp" || $cat == "meta" || $cat == "inc")
             {
               echo "<img onClick=\"format_tag('components');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"media12\" src=\"".getthemelocation()."img/button_compsingletag.gif\" alt=\"".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang)."\" />\n";
               echo "<img onClick=\"format_tag('componentm');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"media13\" src=\"".getthemelocation()."img/button_compmultitag.gif\" alt=\"".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang)."\" />\n";

@@ -63,14 +63,14 @@ function maxControlFrame ()
 // open an object 
 if (isset ($page) && $page != "")
 {
-  echo "  <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:0; margin:0; padding:0;\"><iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
-  echo "  <div id=\"objLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;\"><iframe id=\"objFrame\" name=\"objFrame\" src=\"page_view.php?ctrlreload=".$ctrlreload."&location=".$location."&page=".$page."\" scrolling=\"auto\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:0; height:100px; margin:0; padding:0;\"><iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" scrolling=\"no\" style=\"width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"objLayer\" class=\"hcmsWorkplaceObjectlist\" style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;\"><iframe id=\"objFrame\" name=\"objFrame\" src=\"page_view.php?ctrlreload=".$ctrlreload."&location=".$location."&page=".$page."\" scrolling=\"auto\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
 }
 // open a location  
 elseif (isset ($location) && $location != "")
 {
-  echo "  <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:0; margin:0; padding:0;\"><iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_content_menu.php?location=".$location."\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
-  echo "  <div id=\"objLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;\"><iframe id=\"objFrame\" name=\"objFrame\" src=\"empty.php\" scrolling=\"auto\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:0; height:100px; margin:0; padding:0;\"><iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_content_menu.php?location=".$location."\" scrolling=\"no\" style=\"width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"objLayer\" class=\"hcmsWorkplaceObjectlist\" style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;\"><iframe id=\"objFrame\" name=\"objFrame\" src=\"empty.php\" scrolling=\"auto\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
 }
 ?>
 </body>

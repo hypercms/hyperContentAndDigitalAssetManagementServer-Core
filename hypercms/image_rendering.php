@@ -1257,14 +1257,14 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
         <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
         <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo $hcms_lang['flip'][$lang]; ?></label></strong>
         <select name="flip" id="flip" style="margin-left:20px">
-          <?php 
-            foreach ($available_flip as $value => $name)
-            {
-            ?>
-            <option value="<?php echo $value; ?>"><?php echo $name ?></option>
-            <?php
-            }
+        <?php 
+          foreach ($available_flip as $value => $name)
+          {
           ?>
+          <option value="<?php echo $value; ?>"><?php echo $name; ?></option>
+          <?php
+          }
+        ?>
         </select>
       </div>
       <?php } ?>      

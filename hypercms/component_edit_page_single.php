@@ -65,6 +65,10 @@ $file_info = getfileinfo ($site, $location.$page, $cat);
 // create secure token
 $token = createtoken ($user);
 
+// convert object ID to object path
+$component_curr = getobjectlink ($component_curr);
+$component = getobjectlink ($component);
+
 // get name
 $component_name = getlocationname ($site, $component, "comp", "path");
 if (strlen ($component_name) > 50) $component_name = "...".substr (substr ($component_name, -50), strpos (substr ($component_name, -50), "/")); 
@@ -188,6 +192,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
         <img onclick="submitSingleComp(document.forms['component']);" name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1);" align="absmiddle" alt="OK" title="OK" />    
       </td>
     </tr>
+    <?php if (!$mgmt_config[$site]['dam']) { ?>
     <tr>
       <td nowrap="nowrap" colspan="2">&nbsp;</td>
     </tr>
@@ -239,9 +244,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
         </select>
       </td>
     </tr>
-    <tr>
-      <td colspan="2">&nbsp;</td>
-    </tr>
+    <?php } ?>
   </table>
 </form>  
 

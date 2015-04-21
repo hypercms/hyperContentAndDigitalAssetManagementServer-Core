@@ -910,7 +910,14 @@ function errorhandler ($source_code, $return_code, $error_identifier)
       $source_code .= "<b>".$i."</b>&nbsp;&nbsp;".$buffer."<br />\n";
     }
     
-    return "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<html>\n<body>\n<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><font color='red'>".$return_code."</font><br />\n".$source_code."</font>\n</body>\n</html>";
+    return "
+  <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+  <html>
+    <body>
+    <font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><font color='red'>".$return_code."</font><br />
+    ".$source_code."</font>
+    </body>
+  </html>";
   }
   else return $return_code;
 }
@@ -1927,25 +1934,50 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   if ($label != "") $labelname = $label;
                   else $labelname = "Content-type";
                   
-                  $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td><table><tr><td style=\"width:150px;\">".getescapedtext ($hcms_lang['character-set'][$lang], $charset, $lang).":</td><td><select name=\"".$hypertagname."\" ".$disabled.">\n";
+                  $formitem[$key] = "
+                <tr>
+                  <td align=left valign=top>
+                    <b>".$labelname."</b>
+                  </td>
+                  <td>
+                    <table cellpadding=0 cellspacing=0 border=0>
+                      <tr>
+                        <td style=\"width:150px;\">
+                          ".getescapedtext ($hcms_lang['character-set'][$lang], $charset, $lang).":
+                        </td>
+                        <td>";
                   
                   //load code page index file
                   $codepage_array = file ($mgmt_config['abs_path_cms']."include/codepage.dat");
           
                   if ($codepage_array != false)
                   {
+                    $formitem[$key] = "
+                          <select name=\"".$hypertagname."\" ".$disabled.">";
+                    
                     foreach ($codepage_array as $codepage)
                     {
                       list ($code, $description, $language) = explode ("|", $codepage);
           
-                      $formitem[$key] .= "<option value=\"text/html; charset=".$code."\""; 
+                      $formitem[$key] .= "
+                            <option value=\"text/html; charset=".$code."\""; 
                       if (substr_count ($contenttype, $code) == 1) $formitem[$key] .= " selected"; 
-                      $formitem[$key] .= ">".$code." ".$description."</option>\n";
+                      $formitem[$key] .= ">".$code." ".$description."</option>";
                     }
+                    
+                    $formitem[$key] .= "
+                          </select>";
                   }
-                  else $formitem[$key] = "<b color=\"red\">".$hcms_lang['could-not-find-code-page-index'][$lang]."</b>";
+                  else $formitem[$key] = "
+                          <span class=hcmsHeadline>".$hcms_lang['could-not-find-code-page-index'][$lang]."</span>";
                   
-                  $formitem[$key] .= "</select> <img src=\"".getthemelocation()."img/button_help.gif\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."head_contenttype.php','help','resizable=yes,scrollbars=yes','800','600')\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['help'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['help'][$lang], $charset, $lang)."\"></td></tr></table></td></tr>\n";              
+                  $formitem[$key] .= "
+                          <img src=\"".getthemelocation()."img/button_help.gif\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."head_contenttype.php','help','resizable=yes,scrollbars=yes','800','600')\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['help'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['help'][$lang], $charset, $lang)."\" />
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>\n";              
                 }   
               }
               // if page language
@@ -1960,41 +1992,60 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 { 
                   $add_submitlanguage = "submitLanguage ('list2', '".$hypertagname."');\n";
                              
-                  $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td>
-                  <input type=\"hidden\" name=\"".$hypertagname."\" value=\"\">
-                  <table><tr><td>".getescapedtext ($hcms_lang['available-languages'][$lang], $charset, $lang).":<br />
-                  <select multiple size=\"10\" name=\"list1\" style=\"width:250px;\"".$disabled.">\n";
+                  $formitem[$key] = "
+                <tr>
+                  <td align=left valign=top>
+                    <b>".$labelname."</b>
+                  </td>
+                  <td>
+                    <input type=\"hidden\" name=\"".$hypertagname."\" value=\"\">
+                    <table cellpadding=0 cellspacing=0 border=0>
+                      <tr>
+                        <td>
+                          ".getescapedtext ($hcms_lang['available-languages'][$lang], $charset, $lang).":<br />";
+                          
           
                   //load code page index file
                   $langcode_array = file ($mgmt_config['abs_path_cms']."include/languagecode.dat");
           
                   if ($langcode_array != false)
                   {
+                    $formitem[$key] .= "
+                         <select multiple size=\"10\" name=\"list1\" style=\"width:250px;\"".$disabled.">";
+                    
                     foreach ($langcode_array as $langcode)
                     {
                       list ($code, $lang_short) = explode ("|", trim ($langcode));
           
                       if (substr_count ($content, $code) == 0)
                       {
-                        $formitem[$key] .= "<option value=\"".$code."\">".$lang_short."</option>\n";
+                        $formitem[$key] .= "
+                            <option value=\"".$code."\">".$lang_short."</option>";
                       }
                       else
                       {
-                        $list2_array[] = "<option value=\"".$code."\">".$lang_short."</option>\n";
+                        $list2_array[] = "
+                            <option value=\"".$code."\">".$lang_short."</option>";
                       }
                     }
+                    
+                    $formitem[$key] .= "
+                        </select>";
                   }
-                  else $formitem[$key] .= "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-find-language-code-index'][$lang], $charset, $lang)."</p>";
+                  else $formitem[$key] .= "
+                        <span class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-find-language-code-index'][$lang], $charset, $lang)."</span>";
           
-                  $formitem[$key] .= "</select>
-                  </td>
-                  <td align=\"center\" valign=\"middle\">
-                    <br />
-                    <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"moveBoxEntry(this.form.elements['list2'],this.form.elements['list1'])\" value=\"&lt;&lt;\"".$disabled." />
-                    <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"moveBoxEntry(this.form.elements['list1'],this.form.elements['list2'])\" value=\"&gt;&gt;\"".$disabled." />
-                  </td>
-                  <td>".getescapedtext ($hcms_lang['selected-languages'][$lang], $charset, $lang).":<br />\n<select multiple size=\"10\" name=\"list2\" style=\"width:250px;\"".$disabled.">\n";
-          
+                  $formitem[$key] .= "
+                      </td>
+                      <td align=\"center\" valign=\"middle\">
+                        <br />
+                        <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"moveBoxEntry(this.form.elements['list2'],this.form.elements['list1'])\" value=\"&lt;&lt;\"".$disabled." />
+                        <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"moveBoxEntry(this.form.elements['list1'],this.form.elements['list2'])\" value=\"&gt;&gt;\"".$disabled." />
+                      </td>
+                      <td>
+                        ".getescapedtext ($hcms_lang['selected-languages'][$lang], $charset, $lang).":<br />
+                        <select multiple size=\"10\" name=\"list2\" style=\"width:250px;\"".$disabled.">";
+              
                   if (sizeof ($list2_array) >= 1)
                   {
                     foreach ($list2_array as $list2)
@@ -2003,7 +2054,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     }
                   }
           
-                  $formitem[$key] .= "</select></td></tr></table></td></tr>\n";              
+                  $formitem[$key] .= "
+                        </select>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>\n";              
                 }    
               }            
               // if page customer tracking
@@ -2030,8 +2087,20 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   
                 if ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                 {
-                  $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td><table><tr><td style=\"width:150px;\">".getescapedtext ($hcms_lang['customer-tracking'][$lang], $charset, $lang).":</td><td><select name=\"".$hypertagname."\" style=\"width:250px;\"$disabled>
-                  <option value=\"\">--------- ".getescapedtext ($hcms_lang['select'][$lang], $charset, $lang)." ---------</option>\n";
+                  $formitem[$key] = "
+                <tr>
+                  <td align=left valign=top>
+                    <b>".$labelname."</b>
+                  </td>
+                  <td>
+                    <table cellpadding=0 cellspacing=0 border=0>
+                      <tr>
+                        <td style=\"width:150px;\">
+                          ".getescapedtext ($hcms_lang['customer-tracking'][$lang], $charset, $lang).":
+                        </td>
+                        <td>
+                          <select name=\"".$hypertagname."\" style=\"width:250px;\"".$disabled.">
+                            <option value=\"\">--------- ".getescapedtext ($hcms_lang['select'][$lang], $charset, $lang)." ---------</option>";
         
                   $dir_item = @dir ($mgmt_config['abs_path_data']."customer/".$site."/");
         
@@ -2065,12 +2134,19 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if ($pers_name == $contentbot[0]) $selected = " selected";
                         else $selected = "";
                         
-                        $formitem[$key] .= "<option value=\"".$pers_name."\"".$selected.">".$pers_name."</option>\n";
+                        $formitem[$key] .= "
+                            <option value=\"".$pers_name."\"".$selected.">".$pers_name."</option>";
                       }
                     }
                   }
                   
-                  $formitem[$key] .= "</select></td></tr></table></td></tr>\n";              
+                  $formitem[$key] .= "
+                          </select>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>\n";              
                 }
                 
                 // empty contentbot for customer tracking since the content won't replace teh tag  
@@ -2084,7 +2160,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 
                 if ($buildview == "formedit" || $buildview == "formlock" || $buildview == "formmeta")
                 {
-                  $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td align=left valign=top><textarea name=\"".$hypertagname."\" wrap=\"VIRTUAL\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot[0]."</textarea></td></tr>\n";            
+                  $formitem[$key] = "
+                <tr>
+                  <td align=left valign=top>
+                    <b>".$labelname."</b>
+                  </td>
+                  <td align=left valign=top>
+                    <textarea name=\"".$hypertagname."\" wrap=\"VIRTUAL\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot[0]."</textarea>
+                  </td>
+                </tr>\n";            
                 }            
               }
             }
@@ -2100,7 +2184,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         }
       }
       
-      // if no content-type is set till now
+      // if no content-type is set so far
       if (!isset ($compcontenttype) && !isset ($contenttype) && $setcontenttype != "yes")
       {
         if ($buildview == "formedit" || $buildview == "formlock" || $buildview == "formmeta")
@@ -2108,25 +2192,50 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           // set flag
           $setcontenttype = "yes";
           
-          $formitem['0'] = "<tr><td align=left valign=top><b>content-type</b></td><td><table><tr><td style=\"width:150px;\">".getescapedtext ($hcms_lang['character-set'][$lang], $charset, $lang).":</td><td><select name=\"".$hypertagname."\"".$disabled.">\n";
+          $formitem['0'] = "
+            <tr>
+              <td align=left valign=top>
+                <b>Content-type</b>
+              </td>
+              <td>
+                <table cellpadding=0 cellspacing=0 border=0>
+                  <tr>
+                    <td style=\"width:150px;\">
+                      ".getescapedtext ($hcms_lang['character-set'][$lang], $charset, $lang).":
+                    </td>
+                    <td>";
           
           //load code page index file
           $codepage_array = file ($mgmt_config['abs_path_data']."codepage.dat");
   
           if ($codepage_array != false)
           {
+            $formitem['0'] .= "
+                    <select name=\"".$hypertagname."\"".$disabled.">";
+            
             foreach ($codepage_array as $codepage)
             {
               list ($code, $description, $language) = explode ("|", $codepage);
   
-              $formitem['0'] .= "<option value=\"text/html; charset=".$code."\""; 
+              $formitem['0'] .= "
+                       <option value=\"text/html; charset=".$code."\""; 
               if (substr_count ($contenttype, $code) == 1) $formitem['0'] .= " selected"; 
-              $formitem['0'] .= ">".$code." ".$description."</option>\n";
+              $formitem['0'] .= ">".$code." ".$description."</option>";
             }
+            
+            $formitem['0'] .= "
+                     </select>";
           }
-          else $formitem['0'] = "<b color=\"red\">".$hcms_lang['could-not-find-code-page-index'][$lang]."</b>";
+          else $formitem['0'] = "
+                     <span class=hcmsHeadline>".$hcms_lang['could-not-find-code-page-index'][$lang]."</span>";
           
-          $formitem['0'] .= "</select> <img border=0 src=\"".getthemelocation()."img/button_help.gif\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."head_contenttype.php','help','resizable=yes,scrollbars=yes','800','600')\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['help'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['help'][$lang], $charset, $lang)."\"></td></tr></table></td></tr>\n";              
+          $formitem['0'] .= "
+                     <img border=0 src=\"".getthemelocation()."img/button_help.gif\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."head_contenttype.php','help','resizable=yes,scrollbars=yes','800','600')\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['help'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['help'][$lang], $charset, $lang)."\" />
+                   </td>
+                 </tr>
+               </table>
+             </td>
+           </tr>\n";              
         }        
       }
 
@@ -2162,7 +2271,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         {   
           $i++; 
                
-          if ($buildview == "cmsview" || $buildview == 'inlineview' || $buildview == "formedit" || $buildview == "formmeta" || $buildview == "publish")
+          if ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "formedit" || $buildview == "formmeta" || $buildview == "publish")
           {
             // read content using db_connect
             if (isset ($db_connect) && $db_connect != "") 
@@ -2387,8 +2496,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               </script>
               </head>
               <body class=\"hcmsWorkplaceGeneric\">
-              <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [".$tagu."], [".$tagf."], [".$tagl."], [".$tagc."] ".$hcms_lang['and-or'][$lang]." [".$tagd."] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
-              ".$hcms_lang['please-note-the-tag-identification-must-be-unique-for-different-tag-types-of-the-same-tag-set'][$lang]."
+                <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [".$tagu."], [".$tagf."], [".$tagl."], [".$tagc."] ".$hcms_lang['and-or'][$lang]." [".$tagd."] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
+                ".$hcms_lang['please-note-the-tag-identification-must-be-unique-for-different-tag-types-of-the-same-tag-set'][$lang]."
               </body>
               </html>";
               
@@ -2644,11 +2753,28 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         
                         if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."','".$labelname."','".$constraint."'";
 
-                        $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td align=left valign=top><input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" /><textarea name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea></td></tr>\n";
+                        $formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$labelname."</b>
+                          </td>
+                          <td align=left valign=top>
+                            <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
+                            <textarea name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea>
+                          </td>
+                        </tr>\n";
                       }                        
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />".getescapedtext ($hcms_lang['this-place-is-reserved-for-text-entries'][$lang], $charset, $lang)."</font>\n    </td>\n  </tr>\n</table>\n";
+                        $taglink = "
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />
+                              ".getescapedtext ($hcms_lang['this-place-is-reserved-for-text-entries'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -2665,11 +2791,28 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         
                         if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."','".$labelname."','".$constraint."'";
                         
-                        $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b> ".$arttaglink[$artid]."</td><td align=left valign=top><input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" /><textarea name=\"".$hypertagname."_".$artid."_".$elementid."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea></td></tr>\n";
+                        $formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$labelname."</b> ".$arttaglink[$artid]."
+                          </td>
+                          <td align=left valign=top>
+                            <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
+                            <textarea name=\"".$hypertagname."_".$artid."_".$elementid."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea>
+                          </td>
+                        </tr>\n";
                       }
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />".getescapedtext ($hcms_lang['this-place-is-reserved-for-text-entries'][$lang], $charset, $lang)."</font>\n    </td>\n  </tr>\n</table>\n";
+                        $taglink = "
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />
+                              ".getescapedtext ($hcms_lang['this-place-is-reserved-for-text-entries'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -2683,13 +2826,34 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       {
                         $add_submittext .= "submitText ('".$hypertagname."_".$id."', '".$hypertagname."[".$id."]');\n";
                         
-                        $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td>";
-												if (!empty ($contentcomment)) $formitem[$key] .= "<td>".$contentcomment."</td></tr><tr><td>&nbsp;</td>";
-												$formitem[$key] .= "<td align=left valign=top><input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" /><textarea name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled."></textarea></td></tr>\n";
+                        $formitem[$key] = "
+                      <tr>
+                        <td align=left valign=top>
+                          <b>".$labelname."</b>
+                        </td>";
+												if (!empty ($contentcomment)) $formitem[$key] .= "
+                        <td>".$contentcomment."</td>
+                      </tr>
+                      <tr>
+                        <td>&nbsp;</td>";
+												$formitem[$key] .= "
+                        <td align=left valign=top>
+                          <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
+                          <textarea name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled."></textarea>
+                        </td>
+                      </tr>\n";
                       }                        
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />".getescapedtext ($hcms_lang['this-place-is-reserved-for-comments'][$lang], $charset, $lang)."</font>\n    </td>\n  </tr>\n</table>\n";
+                        $taglink = "
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />
+                              ".getescapedtext ($hcms_lang['this-place-is-reserved-for-comments'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -2726,18 +2890,46 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
                         if ($buildview == "formlock")
                         {
-                          $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td align=left valign=top><table border=0 cellspacing=1 bgcolor=#000000 style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"><tr><td bgcolor=\"#FFFFFF\" align=left valign=top>".$contentbot."</td></tr></table></td></tr>\n";
+                          $formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$labelname."</b>
+                          </td>
+                          <td align=left valign=top>
+                            <table border=0 cellspacing=1 bgcolor=#000000 style=\"width:".$sizewidth."px; height:".$sizeheight."px;\">
+                              <tr>
+                                <td bgcolor=\"#FFFFFF\" align=left valign=top>
+                                  ".$contentbot."
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>\n";
                         }
                         else
                         {
-                          $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td align=left valign=top>".
-                          showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)
-                          ."</td></tr>\n";
+                          $formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$labelname."</b>
+                          </td>
+                          <td align=left valign=top>
+                          ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
+                          </td>
+                        </tr>\n";
                         }
                       }                      
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\"><tr><td><font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />".getescapedtext ($hcms_lang['this-place-is-reserved-for-formatted-text-entries'][$lang], $charset, $lang)."</font></td></tr></table>\n";
+                        $taglink = "
+                        <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />
+                              ".getescapedtext ($hcms_lang['this-place-is-reserved-for-formatted-text-entries'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -2759,18 +2951,46 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
                         if ($buildview == "formlock")
                         {
-                          $formitem[$key] = "<tr><td align=left valign=top><b>".$label."</b></td><td align=left valign=top><table border=0 cellspacing=1 bgcolor=#000000 style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"><tr><td bgcolor=bgcolor=\"#FFFFFF\" align=left valign=top>".$contentbot."</td></tr></table></td></tr>\n";
+                          $formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$label."</b>
+                          </td>
+                          <td align=left valign=top>
+                            <table border=0 cellspacing=1 bgcolor=#000000 style=\"width:".$sizewidth."px; height:".$sizeheight."px;\">
+                              <tr>
+                                <td bgcolor=bgcolor=\"#FFFFFF\" align=left valign=top>
+                                ".$contentbot."
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>\n";
                         }
                         else
                         {
-                          $formitem[$key] = "<tr><td align=left valign=top><b>".$label."</b> ".$arttaglink[$artid]."</td><td align=left valign=top>".
-                          showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)
-                          ."</td></tr>\n";
+                          $formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$label."</b> ".$arttaglink[$artid]."
+                          </td>
+                          <td align=left valign=top>
+                          ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
+                          </td>
+                        </tr>\n";
                         }
                       }                      
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\"><tr><td><font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=\"#000000\"><b>article: ".$artid."<br />element: ".$elementid."</b><br />".getescapedtext ($hcms_lang['this-place-is-reserved-for-formatted-text-entries'][$lang], $charset, $lang)."</font></td></tr></table>\n";
+                        $taglink = "
+                        <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=\"#000000\"><b>article: ".$artid."<br />element: ".$elementid."</b><br />
+                              ".getescapedtext ($hcms_lang['this-place-is-reserved-for-formatted-text-entries'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -2792,20 +3012,42 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
                         if ($buildview == "formlock")
                         {
-                          $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td>".$contentcomment."</td></tr>\n";
+                          $formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$labelname."</b>
+                          </td>
+                          <td>
+                            ".$contentcomment."
+                          </td>
+                        </tr>\n";
                         }
                         else 
 												{
-													$formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td>";
+													$formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$labelname."</b>
+                          </td>";
 													if (!empty ($contentcomment)) $formitem[$key] .= "<td>".$contentcomment."</td></tr><tr><td>&nbsp;</td>";
-													$formitem[$key] .= "<td align=left valign=top>".
-                          showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)
-                          ."</td></tr>\n";
+													$formitem[$key] .= "
+                          <td align=left valign=top>
+                            ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
+                          </td>
+                        </tr>\n";
 												}
                       }                        
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />".$hcms_lang['this-place-is-reserved-for-formatted-comments'][$lang]."</font>\n    </td>\n  </tr>\n</table>\n";
+                        $taglink = "
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />
+                              ".$hcms_lang['this-place-is-reserved-for-formatted-comments'][$lang]."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -2841,7 +3083,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $list_array = null;
                         $list_array = explode ("|", $list);
 
-                        $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td align=left valign=top><select name=\"".$hypertagname."[".$id."]\"".$disabled.">\n";
+                        $formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$labelname."</b>
+                          </td>
+                          <td align=left valign=top>
+                            <select name=\"".$hypertagname."[".$id."]\"".$disabled.">\n";
                         
                         foreach ($list_array as $list_entry)
                         {
@@ -2855,16 +3103,28 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           } 
                           else $list_value = $list_text = $list_entry;
                             
-                          $formitem[$key] .= "<option value=\"".$list_value."\""; 
+                          $formitem[$key] .= "
+                              <option value=\"".$list_value."\""; 
                           if ($list_value == $contentbot) $formitem[$key] .= " selected"; 
                           $formitem[$key] .= ">".$list_text."</option>\n";
                         }
                                        
-                        $formitem[$key] .= "</select></td></tr>\n";
+                        $formitem[$key] .= "
+                            </select>
+                          </td>
+                        </tr>\n";
                       }
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />".getescapedtext ($hcms_lang['this-place-is-reserved-for-text-options'][$lang], $charset, $lang)."</font>\n    </td>\n  </tr>\n</table>\n";
+                        $taglink = "
+                        <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />
+                              ".getescapedtext ($hcms_lang['this-place-is-reserved-for-text-options'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -2881,7 +3141,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $list_array = null;
                         $list_array = explode ("|", $list);
 
-                        $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b> ".$arttaglink[$artid]."</td><td align=left valign=top><select name=\"".$hypertagname."[".$id."]\"".$disabled.">\n";
+                        $formitem[$key] = "
+                      <tr>
+                        <td align=left valign=top>
+                          <b>".$labelname."</b> ".$arttaglink[$artid]."
+                        </td>
+                        <td align=left valign=top>
+                          <select name=\"".$hypertagname."[".$id."]\"".$disabled.">\n";
                         
                         foreach ($list_array as $list_entry)
                         {
@@ -2895,16 +3161,28 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           } 
                           else $list_value = $list_text = $list_entry;
 
-                          $formitem[$key] .= "<option value=\"".$list_value."\""; 
+                          $formitem[$key] .= "
+                            <option value=\"".$list_value."\""; 
                           if ($list_entry == $contentbot) $formitem[$key] .= " selected"; 
                           $formitem[$key] .= ">".$list_text."</option>\n";
                         }
                                        
-                        $formitem[$key] .= "</select></td></tr>\n";
+                        $formitem[$key] .= "
+                          </select>
+                        </td>
+                      </tr>\n";
                       }                      
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />".$hcms_lang['this-place-is-reserved-for-text-options'][$lang]."</font>\n    </td>\n  </tr>\n</table>\n";
+                        $taglink = "
+                        <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />
+                              ".$hcms_lang['this-place-is-reserved-for-text-options'][$lang]."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -2936,11 +3214,28 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if ($value == $contentbot) $checked = " checked";
                         else $checked = "";
                         
-                        $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td align=left valign=top><input type=\"hidden\" name=\"".$hypertagname."[".$id."]"."\" value=\"\"><input type=\"checkbox\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".$checked.$disabled."> ".$value."</td></tr>\n";
+                        $formitem[$key] = "
+                      <tr>
+                        <td align=left valign=top>
+                          <b>".$labelname."</b>
+                        </td>
+                        <td align=left valign=top>
+                          <input type=\"hidden\" name=\"".$hypertagname."[".$id."]"."\" value=\"\">
+                          <input type=\"checkbox\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".$checked.$disabled."> ".$value."
+                        </td>
+                      </tr>\n";
                       }
                       elseif ($buildview == "template" && $onedit != "hidden")
                       {
-                        $taglink = "<table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\"0>\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />".getescapedtext ($hcms_lang['this-place-is-reserved-for-a-checkbox'][$lang], $charset, $lang)."</font>\n    </td>\n  </tr>\n</table>\n";
+                        $taglink = "
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\"0>
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />
+                              ".getescapedtext ($hcms_lang['this-place-is-reserved-for-a-checkbox'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -2956,11 +3251,28 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if ($value == $contentbot) $checked = " checked";
                         else $checked = "";
                                               
-                        $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b> ".$arttaglink[$artid]."</td><td align=left valign=top><input type=\"hidden\" name=\"".$hypertagname."[".$id."]"."\" value=\"\"><input type=\"checkbox\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".$checked.$disabled."> ".$value."</td></tr>\n";
+                        $formitem[$key] = "
+                      <tr>
+                        <td align=left valign=top>
+                          <b>".$labelname."</b> ".$arttaglink[$artid]."
+                        </td>
+                        <td align=left valign=top>
+                          <input type=\"hidden\" name=\"".$hypertagname."[".$id."]"."\" value=\"\">
+                          <input type=\"checkbox\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".$checked.$disabled."> ".$value."
+                        </td>
+                      </tr>\n";
                       }                      
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />".$hcms_lang['this-place-is-reserved-for-a-checkbox'][$lang]."</font>\n    </td>\n  </tr>\n</table>\n";
+                        $taglink = "
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />
+                              element: ".$elementid."</b><br />".$hcms_lang['this-place-is-reserved-for-a-checkbox'][$lang]."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -2994,53 +3306,67 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if ($disabled == "") $showcalendar = "onclick=\"show_cal_".$id."(this);\"";
                         else $showcalendar = "";
                         
-                        $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td>
-                                           <td align=left valign=top>
-                                           <input type=\"text\" id=\"datefield_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" ".$disabled." /><img name=\"datepicker\" src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />
-                                           <script language=\"JavaScript\" type=\"text/javascript\">
-                                           <!--
-                                           var cal_obj_".$id." = null;
-                                           var format_".$id." = '".$format."';
-                                           
-                                           function show_cal_".$id." (el)
-                                           {
-                                             if (cal_obj_".$id.") return;
-                                             var datefield_".$id." = document.getElementById('datefield_".$id."');  
-                                             
-                                             cal_obj_".$id." = new RichCalendar();
-                                             cal_obj_".$id.".start_week_day = 1;
-                                             cal_obj_".$id.".show_time = false;
-                                             cal_obj_".$id.".language = '".getcalendarlang ($lang)."';
-                                             cal_obj_".$id.".user_onchange_handler = cal_on_change_".$id.";
-                                             cal_obj_".$id.".user_onautoclose_handler = cal_on_autoclose_".$id.";
-                                             cal_obj_".$id.".parse_date(datefield_".$id.".value, format_".$id.");
-                                             cal_obj_".$id.".show_at_element(datefield_".$id.", 'adj_left-bottom');
-                                           }
-                                           
-                                           // onchange handler
-                                           function cal_on_change_".$id." (cal, object_code)
-                                           {
-                                             if (object_code == 'day')
-                                             {
-                                            	 document.getElementById('datefield_".$id."').value = cal.get_formatted_date(format_".$id.");
-                                               document.getElementById('textfield_".$id."').value = cal.get_formatted_date(format_".$id.");
-                                            	 cal.hide();
-                                               cal_obj_".$id." = null;
-                                             }
-                                           }
-                                            
-                                           // onautoclose handler
-                                           function cal_on_autoclose_".$id." (cal)
-                                           {
-                                             cal_obj_".$id." = null;
-                                           }
-                                           -->
-                                           </script>                                           
-                                           </td></tr>\n";
+                        $formitem[$key] = "
+                      <tr>
+                        <td align=left valign=top>
+                          <b>".$labelname."</b>
+                        </td>
+                        <td align=left valign=top>
+                          <input type=\"text\" id=\"datefield_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" ".$disabled." />
+                          <img name=\"datepicker\" src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />
+                          <script language=\"JavaScript\" type=\"text/javascript\">
+                          <!--
+                           var cal_obj_".$id." = null;
+                           var format_".$id." = '".$format."';
+                           
+                           function show_cal_".$id." (el)
+                           {
+                             if (cal_obj_".$id.") return;
+                             var datefield_".$id." = document.getElementById('datefield_".$id."');  
+                             
+                             cal_obj_".$id." = new RichCalendar();
+                             cal_obj_".$id.".start_week_day = 1;
+                             cal_obj_".$id.".show_time = false;
+                             cal_obj_".$id.".language = '".getcalendarlang ($lang)."';
+                             cal_obj_".$id.".user_onchange_handler = cal_on_change_".$id.";
+                             cal_obj_".$id.".user_onautoclose_handler = cal_on_autoclose_".$id.";
+                             cal_obj_".$id.".parse_date(datefield_".$id.".value, format_".$id.");
+                             cal_obj_".$id.".show_at_element(datefield_".$id.", 'adj_left-bottom');
+                           }
+                           
+                           // onchange handler
+                           function cal_on_change_".$id." (cal, object_code)
+                           {
+                             if (object_code == 'day')
+                             {
+                            	 document.getElementById('datefield_".$id."').value = cal.get_formatted_date(format_".$id.");
+                               document.getElementById('textfield_".$id."').value = cal.get_formatted_date(format_".$id.");
+                            	 cal.hide();
+                               cal_obj_".$id." = null;
+                             }
+                           }
+                            
+                           // onautoclose handler
+                           function cal_on_autoclose_".$id." (cal)
+                           {
+                             cal_obj_".$id." = null;
+                           }
+                          -->
+                          </script>                                           
+                        </td>
+                      </tr>\n";
                       }
                       elseif ($buildview == "template" && $onedit != "hidden")
                       {
-                        $taglink = "<table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\"0>\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />".getescapedtext ($hcms_lang['this-place-is-reserved-for-a-date-field'][$lang], $charset, $lang)."</font>\n    </td>\n  </tr>\n</table>\n";
+                        $taglink = "
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\"0>
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />
+                              ".getescapedtext ($hcms_lang['this-place-is-reserved-for-a-date-field'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -3056,49 +3382,54 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if ($disabled == "") $showcalendar = "onclick=\"show_cal_".$artid."_".$elementid."(this);\"";
                         else $showcalendar = "";
                                               
-                        $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b> ".$arttaglink[$artid]."</td>
-                                           <td align=left valign=top>
-                                           <input type=\"hidden\" id=\"datefield_".$artid."_".$elementid."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
-                                           <input type=\"text\" id=\"textfield_".$artid."_".$elementid."\" value=\"".$contentbot."\" ".$disabled." /><img name=\"datepicker\" src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />
-                                           <script language=\"JavaScript\" type=\"text/javascript\">
-                                           <!--
-                                           var cal_obj_".$artid."_".$elementid." = null;
-                                           var format_".$artid."_".$elementid." = '".$format."';
-                                           
-                                           function show_cal_".$artid."_".$elementid." (el) {
-                                             if (cal_obj_".$artid."_".$elementid.") return;
-                                             var datefield_".$artid."_".$elementid." = document.getElementById('datefield_".$artid."_".$elementid."');  
-                                             
-                                             cal_obj_".$artid."_".$elementid." = new RichCalendar();
-                                             cal_obj_".$artid."_".$elementid.".start_week_day = 1;
-                                             cal_obj_".$artid."_".$elementid.".show_time = false;
-                                             cal_obj_".$artid."_".$elementid.".language = '".getcalendarlang ($lang)."';
-                                             cal_obj_".$artid."_".$elementid.".user_onchange_handler = cal_on_change_".$artid."_".$elementid.";
-                                             cal_obj_".$artid."_".$elementid.".user_onautoclose_handler = cal_on_autoclose_".$artid."_".$elementid.";
-                                             cal_obj_".$artid."_".$elementid.".parse_date(datefield_".$artid."_".$elementid.".value, format_".$artid."_".$elementid.");
-                                             cal_obj_".$artid."_".$elementid.".show_at_element(datefield_".$artid."_".$elementid.", 'adj_left-bottom');
-                                           }
-                                           
-                                           // onchange handler
-                                           function cal_on_change_".$artid."_".$elementid." (cal, object_code)
-                                           {
-                                             if (object_code == 'day')
-                                             {
-                                            	 document.getElementById('datefield_".$artid."_".$elementid."').value = cal.get_formatted_date(format_".$artid."_".$elementid.");
-                                               document.getElementById('textfield_".$artid."_".$elementid."').value = cal.get_formatted_date(format_".$artid."_".$elementid.");
-                                            	 cal.hide();
-                                               cal_obj_".$artid."_".$elementid." = null;
-                                             }
-                                           }
-                                            
-                                           // onautoclose handler
-                                           function cal_on_autoclose_".$artid."_".$elementid." (cal)
-                                           {
-                                             cal_obj_".$artid."_".$elementid." = null;
-                                           }                                           
-                                           -->
-                                           </script>                                            
-                                           </td></tr>\n";
+                        $formitem[$key] = "
+                      <tr>
+                        <td align=left valign=top>
+                          <b>".$labelname."</b> ".$arttaglink[$artid]."
+                        </td>
+                        <td align=left valign=top>
+                          <input type=\"hidden\" id=\"datefield_".$artid."_".$elementid."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
+                          <input type=\"text\" id=\"textfield_".$artid."_".$elementid."\" value=\"".$contentbot."\" ".$disabled." /><img name=\"datepicker\" src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />
+                          <script language=\"JavaScript\" type=\"text/javascript\">
+                          <!--
+                           var cal_obj_".$artid."_".$elementid." = null;
+                           var format_".$artid."_".$elementid." = '".$format."';
+                           
+                           function show_cal_".$artid."_".$elementid." (el) {
+                             if (cal_obj_".$artid."_".$elementid.") return;
+                             var datefield_".$artid."_".$elementid." = document.getElementById('datefield_".$artid."_".$elementid."');  
+                             
+                             cal_obj_".$artid."_".$elementid." = new RichCalendar();
+                             cal_obj_".$artid."_".$elementid.".start_week_day = 1;
+                             cal_obj_".$artid."_".$elementid.".show_time = false;
+                             cal_obj_".$artid."_".$elementid.".language = '".getcalendarlang ($lang)."';
+                             cal_obj_".$artid."_".$elementid.".user_onchange_handler = cal_on_change_".$artid."_".$elementid.";
+                             cal_obj_".$artid."_".$elementid.".user_onautoclose_handler = cal_on_autoclose_".$artid."_".$elementid.";
+                             cal_obj_".$artid."_".$elementid.".parse_date(datefield_".$artid."_".$elementid.".value, format_".$artid."_".$elementid.");
+                             cal_obj_".$artid."_".$elementid.".show_at_element(datefield_".$artid."_".$elementid.", 'adj_left-bottom');
+                           }
+                           
+                           // onchange handler
+                           function cal_on_change_".$artid."_".$elementid." (cal, object_code)
+                           {
+                             if (object_code == 'day')
+                             {
+                            	 document.getElementById('datefield_".$artid."_".$elementid."').value = cal.get_formatted_date(format_".$artid."_".$elementid.");
+                               document.getElementById('textfield_".$artid."_".$elementid."').value = cal.get_formatted_date(format_".$artid."_".$elementid.");
+                            	 cal.hide();
+                               cal_obj_".$artid."_".$elementid." = null;
+                             }
+                           }
+                            
+                           // onautoclose handler
+                           function cal_on_autoclose_".$artid."_".$elementid." (cal)
+                           {
+                             cal_obj_".$artid."_".$elementid." = null;
+                           }                                           
+                          -->
+                          </script>                                            
+                        </td>
+                      </tr>\n";
                       }                      
                       elseif ($buildview == "template")
                       {
@@ -4180,26 +4511,40 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       {  
                         if ($linkhrefbot[$id] != "*Null*") $add_submitlink .= "submitLink ('temp_".$hypertagname_href[$id]."[".$id."]', '".$hypertagname_href[$id]."[".$id."]');\n";
                         
-                        if ($buildview == "formedit" || ($buildview == "formmeta" && $infotype[$id] == "meta")) $taglink = " <img onClick=\"openBrWindowLink(document.forms['hcms_formview'].elements['".$hypertagname_href[$id]."[".$id."]'],'preview','scrollbars=yes,resizable=yes,width=800,height=600', 'preview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonView\" src=\"".getthemelocation()."img/button_file_liveview.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."\" /> 
+                        if ($buildview == "formedit" || ($buildview == "formmeta" && $infotype[$id] == "meta")) $taglink = "
+                        <img onClick=\"openBrWindowLink(document.forms['hcms_formview'].elements['".$hypertagname_href[$id]."[".$id."]'],'preview','scrollbars=yes,resizable=yes,width=800,height=600', 'preview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonView\" src=\"".getthemelocation()."img/button_file_liveview.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."\" /> 
                         <img onClick=\"openBrWindowLink(document.forms['hcms_formview'].elements['".$hypertagname_href[$id]."[".$id."]'],'','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" />                          
                         <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['temp_".$hypertagname_href[$id]."[".$id."]']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" />
                         <img onClick=\"setSaveType('form_so', '".$mgmt_config['url_path_cms']."frameset_edit_link.php?view=".url_encode($buildview)."&savetype=form_so&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label[$id])."&tagname=link&linkhref_curr=".url_encode($linkhrefbot[$id])."&linkhref=' + getValue('temp_".$hypertagname_href[$id]."[".$id."]','') + '&linktarget=' + getSelectedOption('".$hypertagname_target[$id]."[".$id."]','*Null*') + '&targetlist=".url_encode($targetlist[$id])."&linktext=' + getValue('".$hypertagname_text[$id]."[".$id."]','*Null*') + '&contenttype=".url_encode($contenttype)."&token=".$token."');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_link.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['set-link'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set-link'][$lang], $charset, $lang)."\" />\n";
                         else $taglink = "";
                        
-                        $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td align=left valign=top><table>";
-                        
-                        if ($linkhrefbot[$id] != "*Null*") $formitem[$key] .= "<tr>
-                          <td width=\"150\">".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang).":</td>
-                          <td>
-                            <input type=\"hidden\" name=\"".$hypertagname_href[$id]."_curr[".$id."]\" value=\"".$linkhrefbot[$id]."\" />
-                            <input type=\"hidden\" name=\"".$hypertagname_href[$id]."[".$id."]\" value=\"".$linkhrefbot[$id]."\" />
-                            <input type=\"text\" name=\"temp_".$hypertagname_href[$id]."[".$id."]\" value=\"".convertchars (getlocationname ($site, $linkhrefbot[$id], "page"), $hcms_lang_codepage[$lang], $charset)."\" style=\"width:350px;\" ".$disabled." /> ".$taglink."
+                        $formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$labelname."</b>
                           </td>
-                        </tr>\n";
+                          <td align=left valign=top>
+                            <table>";
+                        
+                        if ($linkhrefbot[$id] != "*Null*") $formitem[$key] .= "
+                              <tr>
+                                <td width=\"150\">".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang).":</td>
+                                <td>
+                                  <input type=\"hidden\" name=\"".$hypertagname_href[$id]."_curr[".$id."]\" value=\"".$linkhrefbot[$id]."\" />
+                                  <input type=\"hidden\" name=\"".$hypertagname_href[$id]."[".$id."]\" value=\"".$linkhrefbot[$id]."\" />
+                                  <input type=\"text\" name=\"temp_".$hypertagname_href[$id]."[".$id."]\" value=\"".convertchars (getlocationname ($site, $linkhrefbot[$id], "page"), $hcms_lang_codepage[$lang], $charset)."\" style=\"width:350px;\" ".$disabled." /> ".$taglink."
+                                </td>
+                              </tr>\n";
                         
                         if ($linktargetbot[$id] != "*Null*") 
                         {
-                          $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang).":</td><td><select name=\"".$hypertagname_target[$id]."[".$id."]\" style=\"width:350px;\"".$disabled.">\n";
+                          $formitem[$key] .= "
+                              <tr>
+                                <td width=\"150\">
+                                  ".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang).":
+                                </td>
+                                <td>
+                                  <select name=\"".$hypertagname_target[$id]."[".$id."]\" style=\"width:350px;\"".$disabled.">";
                           
                           $list_array = null;  
                           if (substr_count ($targetlist[$id], "|") >= 1) $list_array = explode ("|", $targetlist[$id]);
@@ -4209,29 +4554,52 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           {
                             foreach ($list_array as $target)
                             {
-                              $formitem[$key] .= "<option value=\"".$target."\"";
+                              $formitem[$key] .= "
+                                    <option value=\"".$target."\"";
                               if ($linktargetbot[$id] == $target) $formitem[$key] .= " selected";
                               $formitem[$key] .= ">".$target."</option>\n";
                             }
                           }
                           
-                          $formitem[$key] .= "<option value=\"_self\""; if ($linktargetbot[$id] == "_self") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-same-frame'][$lang], $charset, $lang)."</option>
-                          <option value=\"_parent\""; if ($linktargetbot[$id] == "_parent") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-parent-frame'][$lang], $charset, $lang)."</option>;
-                          <option value=\"_top\""; if ($linktargetbot[$id] == "_top") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-same-browser-window'][$lang], $charset, $lang)."</option>
-                          <option value=\"_blank\""; if ($linktargetbot[$id] == "_blank") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-new-browser-window'][$lang], $charset, $lang)."</option>
-                          </select></td></tr>\n";
+                          $formitem[$key] .= "
+                                    <option value=\"_self\""; if ($linktargetbot[$id] == "_self") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-same-frame'][$lang], $charset, $lang)."</option>
+                                    <option value=\"_parent\""; if ($linktargetbot[$id] == "_parent") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-parent-frame'][$lang], $charset, $lang)."</option>;
+                                    <option value=\"_top\""; if ($linktargetbot[$id] == "_top") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-same-browser-window'][$lang], $charset, $lang)."</option>
+                                    <option value=\"_blank\""; if ($linktargetbot[$id] == "_blank") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-new-browser-window'][$lang], $charset, $lang)."</option>
+                                  </select>
+                                </td>
+                              </tr>";
                         }   
                                           
                         if ($linktextbot[$id] != "*Null*")
                         {
-                          $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang).":</td><td><input type=\"text\" name=\"".$hypertagname_text[$id]."[".$id."]\" value=\"".$linktextbot[$id]."\" style=\"width:350px;\"".$disabled." /></td></tr>\n";
+                          $formitem[$key] .= "
+                              <tr>
+                                <td width=\"150\">
+                                  ".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang).":
+                                </td>
+                                <td>
+                                  <input type=\"text\" name=\"".$hypertagname_text[$id]."[".$id."]\" value=\"".$linktextbot[$id]."\" style=\"width:350px;\"".$disabled." />
+                                </td>
+                              </tr>";
                         }
                         
-                        $formitem[$key] .= "</table></td></tr>\n";
+                        $formitem[$key] .= "
+                            </table>
+                          </td>
+                        </tr>\n";
                       }                        
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />".getescapedtext ($hcms_lang['here-you-can-add-a-link'][$lang], $charset, $lang)."</font>\n    </td>\n  </tr>\n</table>\n";
+                        $taglink = "
+                          <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
+                            <tr>
+                              <td>
+                                <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />
+                                ".getescapedtext ($hcms_lang['here-you-can-add-a-link'][$lang], $charset, $lang)."</font>
+                              </td>
+                            </tr>
+                          </table>\n";
                       }  
                       else $taglink = ""; 
                     }
@@ -4246,26 +4614,40 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       {   
                         if ($linkhrefbot[$id] != "*Null*") $add_submitlink .= "submitLink ('temp_".$hypertagname_href[$id]."[".$id."]', '".$hypertagname_href[$id]."[".$id."]');\n";
                                 
-                        if ($buildview == "formedit" || ($buildview == "formmeta" && $infotype == "meta")) $taglink = "<img onClick=\"openBrWindowLink(document.forms['hcms_formview'].elements['".$hypertagname_href[$id]."[".$id."]'],'preview','scrollbars=yes,resizable=yes,width=800,height=600', 'preview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonView\" src=\"".getthemelocation()."img/button_file_liveview.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."\" /> 
+                        if ($buildview == "formedit" || ($buildview == "formmeta" && $infotype == "meta")) $taglink = "
+                        <img onClick=\"openBrWindowLink(document.forms['hcms_formview'].elements['".$hypertagname_href[$id]."[".$id."]'],'preview','scrollbars=yes,resizable=yes,width=800,height=600', 'preview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonView\" src=\"".getthemelocation()."img/button_file_liveview.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."\" /> 
                         <img onClick=\"openBrWindowLink(document.forms['hcms_formview'].elements['".$hypertagname_href[$id]."[".$id."]'],'','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" />                          
                         <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['temp_".$hypertagname_href[$id]."[".$id."]']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" />
                         <img onClick=\"setSaveType('form_so', '".$mgmt_config['url_path_cms']."frameset_edit_link.php?view=".url_encode($buildview)."&savetype=form_so&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label[$id])."&tagname=artlink&linkhref_curr=".url_encode($linkhrefbot[$id])."&linkhref=' + getValue('temp_".$hypertagname_href[$id]."[".$id."]','') + '&linktarget=' + getSelectedOption('".$hypertagname_target[$id]."[".$id."]','*Null*') + '&targetlist=".url_encode($targetlist[$id])."&linktext=' + getValue('".$hypertagname_text[$id]."[".$id."]','*Null*') + '&contenttype=".url_encode($contenttype)."&token=".$token."');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_link.gif\" border=\"0\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['set-link'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set-link'][$lang], $charset, $lang)."\" />\n";
                         else $taglink = "";
                         
-                        $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b> ".$arttaglink[$artid]."</td><td align=left valign=top><table>";
-                        
-                        if ($linkhrefbot[$id] != "*Null*") $formitem[$key] .= "<tr>
-                          <td width=\"150\">".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang).":</td>
-                          <td>
-                            <input type=\"hidden\" name=\"".$hypertagname_href[$id]."_curr[".$id."]\" value=\"".$linkhrefbot[$id]."\" />
-                            <input type=\"hidden\" name=\"".$hypertagname_href[$id]."[".$id."]\" value=\"".$linkhrefbot[$id]."\" />
-                            <input type=\"text\" name=\"temp_".$hypertagname_href[$id]."[".$id."]\" value=\"".convertchars (getlocationname ($site, $linkhrefbot[$id], "page", "path"), $hcms_lang_codepage[$lang], $charset)."\" style=\"width:350px;\"".$disabled." /> ".$taglink."
+                        $formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$labelname."</b> ".$arttaglink[$artid]."
                           </td>
-                        </tr>\n";
+                          <td align=left valign=top>
+                            <table>";
+                        
+                        if ($linkhrefbot[$id] != "*Null*") $formitem[$key] .= "
+                              <tr>
+                                <td width=\"150\">".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang).":</td>
+                                <td>
+                                  <input type=\"hidden\" name=\"".$hypertagname_href[$id]."_curr[".$id."]\" value=\"".$linkhrefbot[$id]."\" />
+                                  <input type=\"hidden\" name=\"".$hypertagname_href[$id]."[".$id."]\" value=\"".$linkhrefbot[$id]."\" />
+                                  <input type=\"text\" name=\"temp_".$hypertagname_href[$id]."[".$id."]\" value=\"".convertchars (getlocationname ($site, $linkhrefbot[$id], "page", "path"), $hcms_lang_codepage[$lang], $charset)."\" style=\"width:350px;\"".$disabled." /> ".$taglink."
+                                </td>
+                              </tr>\n";
                         
                         if ($linktargetbot[$id] != "*Null*") 
                         {
-                          $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang).":</td><td><select name=\"".$hypertagname_target[$id]."[".$id."]\" style=\"width:350px;\"".$disabled.">\n";
+                          $formitem[$key] .= "
+                              <tr>
+                                <td width=\"150\">
+                                  ".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang).":
+                                </td>
+                                <td>
+                                  <select name=\"".$hypertagname_target[$id]."[".$id."]\" style=\"width:350px;\"".$disabled.">";
   
                           $list_array = null;
                           if (substr_count ($targetlist[$id], "|") >= 1) $list_array = explode ("|", $targetlist[$id]);
@@ -4275,27 +4657,47 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           {
                             foreach ($list_array as $target)
                             {
-                              $formitem[$key] .= "<option value=\"".$target."\""; if ($linktargetbot[$id] == $target) $formitem[$key] .= " selected"; $formitem[$key] .= ">".$target."</option>\n";
+                              $formitem[$key] .= "
+                                    <option value=\"".$target."\""; if ($linktargetbot[$id] == $target) $formitem[$key] .= " selected"; $formitem[$key] .= ">".$target."</option>";
                             }
                           }
                           
-                          $formitem[$key] .= "<option value=\"_self\""; if ($linktargetbot[$id] == "_self") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-same-frame'][$lang], $charset, $lang)."</option>
-                          <option value=\"_parent\""; if ($linktargetbot[$id] == "_parent") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-parent-frame'][$lang], $charset, $lang)."</option>;
-                          <option value=\"_top\""; if ($linktargetbot[$id] == "_top") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-same-browser-window'][$lang], $charset, $lang)."</option>
-                          <option value=\"_blank\""; if ($linktargetbot[$id] == "_blank") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-new-browser-window'][$lang], $charset, $lang)."</option>
-                          </select></td></tr>\n";
+                          $formitem[$key] .= "
+                                    <option value=\"_self\""; if ($linktargetbot[$id] == "_self") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-same-frame'][$lang], $charset, $lang)."</option>
+                                    <option value=\"_parent\""; if ($linktargetbot[$id] == "_parent") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-parent-frame'][$lang], $charset, $lang)."</option>;
+                                    <option value=\"_top\""; if ($linktargetbot[$id] == "_top") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-same-browser-window'][$lang], $charset, $lang)."</option>
+                                    <option value=\"_blank\""; if ($linktargetbot[$id] == "_blank") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-new-browser-window'][$lang], $charset, $lang)."</option>
+                                  </select>
+                                </td>
+                              </tr>\n";
                         }
                          
                         if ($linktextbot[$id] != "*Null*")
                         {
-                          $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang).":</td><td><input type=\"text\" name=\"".$hypertagname_text[$id]."[".$id."]\" value=\"".$linktextbot[$id]."\" style=\"width:350px;\"".$disabled."></td></tr>\n";
+                          $formitem[$key] .= "
+                              <tr>
+                                <td width=\"150\">
+                                  ".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang).":
+                                </td>
+                                <td>
+                                  <input type=\"text\" name=\"".$hypertagname_text[$id]."[".$id."]\" value=\"".$linktextbot[$id]."\" style=\"width:350px;\"".$disabled.">
+                                </td>
+                              </tr>\n";
                         }
                         
                         $formitem[$key] .= "</table></td></tr>\n";
                       }                      
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."<br /></b>".getescapedtext ($hcms_lang['here-you-can-add-a-link'][$lang], $charset, $lang)."</font>\n    </td>\n  </tr>\n</table>\n";
+                        $taglink = "
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."<br />
+                              </b>".getescapedtext ($hcms_lang['here-you-can-add-a-link'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -4574,8 +4976,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               </script>
               </head>
               <body class=\"hcmsWorkplaceGeneric\">
-              <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [$tags] ".$hcms_lang['and-or'][$lang]." [$tagm] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
-              ".$hcms_lang['please-note-the-tag-identification-must-be-unique-for-different-tag-types-of-the-same-tag-set'][$lang]."
+                <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [$tags] ".$hcms_lang['and-or'][$lang]." [$tagm] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
+                ".$hcms_lang['please-note-the-tag-identification-must-be-unique-for-different-tag-types-of-the-same-tag-set'][$lang]."
               </body>
               </html>";
               
@@ -4626,6 +5028,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 
                 // set default value eventually given by tag
                 if ($contentbot == "" && $defaultvalue != "") $contentbot = $defaultvalue;
+
+                // convert object ID to object path
+                $contentbot = getobjectlink ($contentbot);
               }    
 
               // -------------------------------------- cmsview --------------------------------------------
@@ -4680,7 +5085,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $viewstore_offset = $viewstore;
 
                   while (@substr_count ($viewstore_offset, $hypertag) >= 1)  // necessary loop for unique media names for rollover effect
-                  {               
+                  {
                     if ($searchtag == "component")
                     {                   
                       // create tag link for editor
@@ -4698,43 +5103,79 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         
                         $formitem[$key] = "
                         <tr>
-                          <td align=left valign=top><b>".$labelname."</b></td>
-                          <td align=left valign=top><table><tr><td width=\"150\">".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang).":</td>
-                          <td>
-                            <input type=\"hidden\" name=\"component_curr[".$id."]\" value=\"".$contentbot."\" />
-                            <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
-                            <input type=\"text\" name=\"temp_".$hypertagname."_".$id."\" value=\"".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:350px;\" disabled=\"disabled\" />\n";
-                        
+                          <td align=left valign=top>
+                            <b>".$labelname."</b>
+                          </td>
+                          <td align=left valign=top>
+                            <table cellpadding=0 cellspacing=0 border=0>
+                              <tr>";
+                              
+                        // only if not DAM  
+                        if (!$mgmt_config[$site]['dam']) $formitem[$key] .= "
+                                <td width=\"150\">
+                                  ".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang).":
+                                </td>";
+                                
+                        $formitem[$key] .= "
+                                <td>
+                                  <input type=\"hidden\" name=\"component_curr[".$id."]\" value=\"".$contentbot."\" />
+                                  <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
+                                  <input type=\"text\" name=\"temp_".$hypertagname."_".$id."\" value=\"".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:350px;\" disabled=\"disabled\" />\n";
+                              
                         if ($buildview == "formedit" || ($buildview == "formmeta" && $infotype == "meta")) $formitem[$key] .= "
-                        <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]'],'','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\">                          
-                        <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]']); deleteEntry(document.forms['hcms_formview'].elements['temp_".$hypertagname."_".$id."']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" />
-                        <img onClick=\"self.location.href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr=".url_encode($contentbot)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."';\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compsingle.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" />\n";
+                                  <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]'],'','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\">                          
+                                  <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]']); deleteEntry(document.forms['hcms_formview'].elements['temp_".$hypertagname."_".$id."']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" />
+                                  <img onClick=\"self.location.href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr=".url_encode($contentbot)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."';\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compsingle.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" />\n";
+                          
+                        $formitem[$key] .= "
+                                </td>
+                              </tr>";
                         
-                        $formitem[$key] .= "</td>
-                          </tr>
-                          <tr>
-                            <td width=\"150\">".getescapedtext ($hcms_lang['customer-profile'][$lang], $charset, $lang).":</td>
-                            <td>
-                              <select name=\"condition[".$id."]\" style=\"width:350px;\"".$disabled.">
-                                <option value=\"\">--------- ".getescapedtext ($hcms_lang['select'][$lang], $charset, $lang)." ---------</option>\n";
-              
-                        if (sizeof ($profile_array) >= 1)
+                        // personalization/customers profiles only if not DAM  
+                        if (!$mgmt_config[$site]['dam'])
                         {
-                          reset ($profile_array);
-            
-                          foreach ($profile_array as $profile)
+                          $formitem[$key] .= "
+                              <tr>
+                                <td width=\"150\">".getescapedtext ($hcms_lang['customer-profile'][$lang], $charset, $lang).":</td>
+                                <td style=\"padding-top:3px;\">
+                                  <select name=\"condition[".$id."]\" style=\"width:350px;\"".$disabled.">
+                                    <option value=\"\">--------- ".getescapedtext ($hcms_lang['select'][$lang], $charset, $lang)." ---------</option>";
+                    
+                          if (sizeof ($profile_array) >= 1)
                           {
-                            $formitem[$key] .= "<option value=\"".$profile."\"";
-                            if ($profile == $condbot) $formitem[$key] .= " selected";
-                            $formitem[$key] .= ">".$profile."</option>\n";
+                            reset ($profile_array);
+              
+                            foreach ($profile_array as $profile)
+                            {
+                              $formitem[$key] .= "
+                                    <option value=\"".$profile."\"";
+                              if ($profile == $condbot) $formitem[$key] .= " selected";
+                              $formitem[$key] .= ">".$profile."</option>";
+                            }
                           }
+                  
+                          $formitem[$key] .= "
+                                  </select>
+                                </td>
+                              </tr>";
                         }
-                
-                        $formitem[$key] .= "</select></td></tr></table></td></tr>\n";   
+                        
+                        $formitem[$key] .= "  
+                            </table>
+                          </td>
+                        </tr>";   
                       }                      
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\"><tr><td><font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />".getescapedtext ($hcms_lang['here-you-can-insert-a-single-component'][$lang], $charset, $lang)."</font></td></tr></table>\n";
+                        $taglink = "
+                        <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />
+                              ".getescapedtext ($hcms_lang['here-you-can-insert-a-single-component'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -4750,39 +5191,68 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $comp_entry_name = getlocationname ($site, $contentbot, "comp", "path");                    
                         if (strlen ($comp_entry_name) > 50) $comp_entry_name = "...".substr (substr ($comp_entry_name, -50), strpos (substr ($comp_entry_name, -50), "/"));                        
                         
-                        $formitem[$key] = "<tr>
-                          <td align=left valign=top><b>".$labelname."</b> ".$arttaglink[$artid]."</td>
-                          <td align=left valign=top><table><tr><td width=\"150\">".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang).":</td>
-                          <td>
-                            <input type=\"hidden\" name=\"artcomponent_curr[".$id."]\" value=\"".$contentbot."\" />
-                            <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
-                            <input type=\"text\" name=\"temp_".$hypertagname."_".$artid."_".$elementid."\" value=\"".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:350px;\" disabled />\n";
-                       
+                        $formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$labelname."</b> ".$arttaglink[$artid]."
+                          </td>
+                          <td align=left valign=top>
+                            <table cellpadding=0 cellspacing=0 border=0>
+                              <tr>
+                                <td width=\"150\">
+                                  ".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang).":
+                                </td>
+                                <td>
+                                  <input type=\"hidden\" name=\"artcomponent_curr[".$id."]\" value=\"".$contentbot."\" />
+                                  <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
+                                  <input type=\"text\" name=\"temp_".$hypertagname."_".$artid."_".$elementid."\" value=\"".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:350px;\" disabled />\n";
+                             
                         if ($buildview == "formedit" || ($buildview == "formmeta" && $infotype == "meta")) $formitem[$key] .= "
-                        <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]'],'','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" />                          
-                        <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]']); deleteEntry(document.forms['hcms_formview'].elements['temp_".$hypertagname."_".$artid."_".$elementid."']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" />
-                        <img onClick=\"self.location.href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr=".url_encode($contentbot)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."';\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compsingle.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" />\n";
-                        
-                        $formitem[$key] .= "</td></tr><tr><td width=\"150\">".getescapedtext ($hcms_lang['customer-profile'][$lang], $charset, $lang).":</td><td><select name=\"condition[".$id."]\" style=\"width:350px;\"".$disabled.">
-                        <option value=\"\">--------- ".getescapedtext ($hcms_lang['select'][$lang], $charset, $lang)." ---------</option>\n";
-              
+                                  <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]'],'','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" />                          
+                                  <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['".$hypertagname."[".$id."]']); deleteEntry(document.forms['hcms_formview'].elements['temp_".$hypertagname."_".$artid."_".$elementid."']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" />
+                                  <img onClick=\"self.location.href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr=".url_encode($contentbot)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."';\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compsingle.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" />\n";
+                              
+                        $formitem[$key] .= "
+                                </td>
+                              </tr>
+                              <tr>
+                                <td width=\"150\">".getescapedtext ($hcms_lang['customer-profile'][$lang], $charset, $lang).":</td>
+                                <td style=\"padding-top:3px;\">
+                                  <select name=\"condition[".$id."]\" style=\"width:350px;\"".$disabled.">
+                                    <option value=\"\">--------- ".getescapedtext ($hcms_lang['select'][$lang], $charset, $lang)." ---------</option>";
+                    
                         if (sizeof ($profile_array) >= 1)
                         {
                           reset ($profile_array);
             
                           foreach ($profile_array as $profile)
                           {
-                            $formitem[$key] .= "<option value=\"".$profile."\"";
+                            $formitem[$key] .= "
+                                    <option value=\"".$profile."\"";
                             if ($profile == $condbot) $formitem[$key] .= " selected";
                             $formitem[$key] .= ">".$profile."</option>\n";
                           }
                         }
                 
-                        $formitem[$key] .= "</select></td></tr></table></td></tr>\n";                     
+                        $formitem[$key] .= "
+                                  </select>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>\n";                     
                       }                        
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\"><tr><td><font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />".getescapedtext ($hcms_lang['here-you-can-insert-a-single-component'][$lang], $charset, $lang)."</font></td></tr></table>\n";
+                        $taglink = "
+                        <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />
+                              ".getescapedtext ($hcms_lang['here-you-can-insert-a-single-component'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
@@ -4817,23 +5287,31 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       {
                         $add_submitcomp .= "submitMultiComp ('".$hypertagname."_".$id."', '".$hypertagname."[".$id."]');\n";
 
-                        $formitem[$key] = "<tr>
-                          <td align=left valign=top><b>".$labelname."</b></td>
+                        $formitem[$key] = "
+                        <tr>
                           <td align=left valign=top>
-                            <table>
-                              <tr>
-                                <td align=left valign=top width=\"150\">".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang).":</td>
+                            <b>".$labelname."</b>
+                          </td>
+                          <td align=left valign=top>
+                            <table cellpadding=0 cellspacing=0 border=0>
+                              <tr>";
+                              
+                        // only if not DAM  
+                        if (!$mgmt_config[$site]['dam']) $formitem[$key] .= "
+                                <td align=left valign=top width=\"150\">
+                                  ".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang).":
+                                </td>";
+                                
+                        $formitem[$key] .= "
                                 <td>
                                   <input type=\"hidden\" name=\"component_curr[".$id."]\" value=\"".$contentbot."\" />
                                   <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
-                                  <select name=\"".$hypertagname."_".$id."\" size=\"10\" style=\"width:350px;\" ".$disabled.">\n";                     
+                                  <select name=\"".$hypertagname."_".$id."\" size=\"10\" style=\"width:350px;\" ".$disabled.">";                     
                                 
                         if (!empty ($contentbot) && $contentbot != false)
                         {
-                          $component = trim ($contentbot);
-                          
                           // cut off last delimiter
-                          if ($component[strlen ($component)-1] == "|") $component = substr ($component, 0, strlen ($component) - 1);
+                          $component = trim ($contentbot, "|");
                           
                           // split component string into array
                           $component_array = null;
@@ -4846,51 +5324,79 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                             $comp_entry_name = getlocationname ($site, $comp_entry, "comp", "path");                    
                             if (strlen ($comp_entry_name) > 50) $comp_entry_name = "...".substr (substr ($comp_entry_name, -50), strpos (substr ($comp_entry_name, -50), "/"));  
                                                                                 
-                            $formitem[$key] .= "<option value=\"".$comp_entry."\">".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."</option>\n";
+                            $formitem[$key] .= "
+                                    <option value=\"".$comp_entry."\">".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."</option>";
                           }
                         }
                         
-                        $formitem[$key] .= "</select>
-                          </td>";
+                        $formitem[$key] .= "
+                                  </select>
+                                </td>";
                         
-                        if ($buildview == "formedit" || ($buildview == "formmeta" && $infotype == "meta")) $formitem[$key] .= "<td><img onClick=\"moveSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$id."'], false)\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('ButtonUp','','".getthemelocation()."img/button_moveup_over.gif',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" name=\"ButtonUp\" src=\"".getthemelocation()."img/button_moveup.gif\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" /><br />  
-                        <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['".$hypertagname."_".$id."'],'','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" /><br />                          
-                        <img onClick=\"deleteSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$id."'])\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)." alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\"><br />            
-                        <img onClick=\"self.location.href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=multi&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&condition=".url_encode($condbot)."';\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compmulti.gif\" alt=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" /><br />
-                        <img onClick=\"moveSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$id."'], true)\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('ButtonDown','','".getthemelocation()."img/button_movedown_over.gif',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" name=\"ButtonDown\" src=\"".getthemelocation()."img/button_movedown.gif\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" /></td>\n";
+                        if ($buildview == "formedit" || ($buildview == "formmeta" && $infotype == "meta")) $formitem[$key] .= "
+                                <td style=\"padding:2px;\">
+                                  <img onClick=\"moveSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$id."'], false)\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('ButtonUp','','".getthemelocation()."img/button_moveup_over.gif',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" name=\"ButtonUp\" src=\"".getthemelocation()."img/button_moveup.gif\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" /><br />  
+                                  <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['".$hypertagname."_".$id."'],'','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" /><br />                          
+                                  <img onClick=\"deleteSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$id."'])\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" /><br />            
+                                  <img onClick=\"self.location.href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=multi&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&condition=".url_encode($condbot)."';\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compmulti.gif\" alt=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" /><br />
+                                  <img onClick=\"moveSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$id."'], true)\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('ButtonDown','','".getthemelocation()."img/button_movedown_over.gif',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" name=\"ButtonDown\" src=\"".getthemelocation()."img/button_movedown.gif\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" />
+                                </td>";
+                              
+                        $formitem[$key] .= "
+                              </tr>";
                         
-                        $formitem[$key] .= "</tr>\n";
-                        
-                        $formitem[$key] .= "</td>
-                          </tr>
+                        // personalization/customers profiles only if not DAM  
+                        if (!$mgmt_config[$site]['dam'])
+                        {
+                          $formitem[$key] .= "
                           <tr>
-                            <td width=\"150\">".getescapedtext ($hcms_lang['customer-profile'][$lang], $charset, $lang).":</td>
-                            <td>
+                            <td width=\"150\">
+                              ".getescapedtext ($hcms_lang['customer-profile'][$lang], $charset, $lang).":
+                            </td>
+                            <td style=\"padding-top:3px;\">
                               <select name=\"condition[".$id."]\" style=\"width:350px;\" ".$disabled.">
                                 <option value=\"\">--------- ".getescapedtext ($hcms_lang['select'][$lang], $charset, $lang)." ---------</option>\n";
               
-                        if (sizeof ($profile_array) >= 1)
-                        {
-                          reset ($profile_array);
-            
-                          foreach ($profile_array as $profile)
+                          if (sizeof ($profile_array) >= 1)
                           {
-                            $formitem[$key] .= "<option value=\"".$profile."\""; if ($profile == $condbot) $formitem[$key] .= " selected"; $formitem[$key] .= ">".$profile."</option>\n";
+                            reset ($profile_array);
+              
+                            foreach ($profile_array as $profile)
+                            {
+                              $formitem[$key] .= "
+                                <option value=\"".$profile."\""; if ($profile == $condbot) $formitem[$key] .= " selected"; $formitem[$key] .= ">".$profile."</option>";
+                            }
                           }
+                  
+                          $formitem[$key] .= "
+                              </select>
+                            </td>
+                          </tr>\n";
                         }
-                
-                        $formitem[$key] .= "</select></td></tr></table></td></tr>\n";                         
+                        
+                        $formitem[$key] .= "
+                            </table>
+                          </td>
+                        </tr>\n";                    
                       }                        
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\"><tr><td><font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />".getescapedtext ($hcms_lang['here-you-can-insert-multiple-components'][$lang], $charset, $lang)."</font></td></tr></table>\n";
+                        $taglink = "
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />
+                              ".getescapedtext ($hcms_lang['here-you-can-insert-multiple-components'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }
                     elseif ($searchtag == "artcomponent")
                     {
                       // create tag link for editor
-                      if ($buildview == "cmsview" || $buildview == 'inlineview')
+                      if ($buildview == "cmsview" || $buildview == "inlineview")
                       {
                         $taglink = "<div><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','send');\" src=\"".getthemelocation()."img/button_compmulti.gif\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; cursor:pointer; z-index:9999999;\" />".$arttaglink[$artid]."</div>\n";
                       }
@@ -4898,21 +5404,27 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       {
                         $add_submitcomp .= "submitMultiComp ('".$hypertagname."_".$artid."_".$elementid."', '".$hypertagname."[".$id."]');\n";
                       
-                        $formitem[$key] = "<tr>
-                          <td align=left valign=top><b>".$labelname."</b> ".$arttaglink[$artid]."</td>
-                          <td align=left valign=top><table><tr><td align=left valign=top width=\"150\">".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang).":</td>
-                          <td>
-                            <input type=\"hidden\" name=\"artcomponent_curr[".$id."]\" value=\"".$contentbot."\" />
-                            <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
-                            <select name=\"".$hypertagname."_".$artid."_".$elementid."\" size=\"10\" style=\"width:350px;\" ".$disabled.">\n";                     
+                        $formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$labelname."</b> ".$arttaglink[$artid]."
+                          </td>
+                          <td align=left valign=top>
+                            <table cellpadding=0 cellspacing=0 border=0>
+                              <tr>
+                                <td align=left valign=top width=\"150\">
+                                  ".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang).":
+                                </td>
+                                <td>
+                                  <input type=\"hidden\" name=\"artcomponent_curr[".$id."]\" value=\"".$contentbot."\" />
+                                  <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
+                                  <select name=\"".$hypertagname."_".$artid."_".$elementid."\" size=\"10\" style=\"width:350px;\" ".$disabled.">\n";                     
                                 
                         if (!empty ($contentbot) && $contentbot != false)
                         {
-                          $component = trim ($contentbot);
-                          
                           // cut off last delimiter
-                          if ($component[strlen ($component)-1] == "|") $component = substr ($component, 0, strlen ($component) - 1);
-                          
+                          $component = trim ($contentbot, "|");
+
                           // split component string into array
                           $component_array = null;
                           
@@ -4924,27 +5436,31 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                             $comp_entry_name = getlocationname ($site, $comp_entry, "comp", "path");                    
                             if (strlen ($comp_entry_name) > 50) $comp_entry_name = "...".substr (substr ($comp_entry_name, -50), strpos (substr ($comp_entry_name, -50), "/"));  
                                                                                
-                            $formitem[$key] .= "<option value=\"".$comp_entry."\">".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."</option>\n";
+                            $formitem[$key] .= "
+                                    <option value=\"".$comp_entry."\">".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."</option>\n";
                           }
                         }
                         
-                        $formitem[$key] .= "</select></td>";
+                        $formitem[$key] .= "
+                                  </select>
+                                </td>";
                         
-                        if ($buildview == "formedit" || ($buildview == "formmeta" && $infotype == "meta")) $formitem[$key] .= "<td><img onClick=\"moveSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$artid."_".$elementid."'], false)\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonUp\" src=\"".getthemelocation()."img/button_moveup.gif\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" /><br />
-                        <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['".$hypertagname."_".$artid."_".$elementid."'],'','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" /><br />                          
-                        <img onClick=\"deleteSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$artid."_".$elementid."'])\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" /><br />            
-                        <img onClick=\"self.location.href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=multi&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&condition=".url_encode($condbot)."';\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compmulti.gif\" alt=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" /><br />
-                        <img onClick=\"moveSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$artid."_".$elementid."'], true)\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDown\" src=\"".getthemelocation()."img/button_movedown.gif\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" /></td>\n";
-                        
-                        $formitem[$key] .= "</tr>\n";
-                        
-                        $formitem[$key] .= "</td>
-                        </tr>
-                        <tr>
-                          <td width=\"150\">".getescapedtext ($hcms_lang['customer-profile'][$lang], $charset, $lang).":</td>
-                          <td>
-                            <select name=\"condition[".$id."]\" style=\"width:350px;\"".$disabled.">
-                              <option value=\"\">--------- ".getescapedtext ($hcms_lang['select'][$lang], $charset, $lang)." ---------</option>\n";
+                        if ($buildview == "formedit" || ($buildview == "formmeta" && $infotype == "meta")) $formitem[$key] .= "
+                                <td style=\"padding:2px;\">
+                                  <img onClick=\"moveSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$artid."_".$elementid."'], false)\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonUp\" src=\"".getthemelocation()."img/button_moveup.gif\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" /><br />
+                                  <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['".$hypertagname."_".$artid."_".$elementid."'],'','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" /><br />                          
+                                  <img onClick=\"deleteSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$artid."_".$elementid."'])\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" /><br />            
+                                  <img onClick=\"self.location.href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=multi&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&condition=".url_encode($condbot)."';\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compmulti.gif\" alt=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" /><br />
+                                  <img onClick=\"moveSelected(document.forms['hcms_formview'].elements['".$hypertagname."_".$artid."_".$elementid."'], true)\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDown\" src=\"".getthemelocation()."img/button_movedown.gif\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" />
+                                </td>";
+
+                        $formitem[$key] .= "
+                              </tr>
+                              <tr>
+                                <td width=\"150\">".getescapedtext ($hcms_lang['customer-profile'][$lang], $charset, $lang).":</td>
+                                <td style=\"padding-top:3px;\">
+                                  <select name=\"condition[".$id."]\" style=\"width:350px;\"".$disabled.">
+                                    <option value=\"\">--------- ".getescapedtext ($hcms_lang['select'][$lang], $charset, $lang)." ---------</option>\n";
               
                         if (sizeof ($profile_array) >= 1)
                         {
@@ -4952,20 +5468,32 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             
                           foreach ($profile_array as $profile)
                           {
-                            $formitem[$key] .= "<option value=\"".$profile."\"";
+                            $formitem[$key] .= "
+                                    <option value=\"".$profile."\"";
                             if ($profile == $condbot) $formitem[$key] .= " selected";
-                            $formitem[$key] .= ">".$profile."</option>\n";
+                            $formitem[$key] .= ">".$profile."</option>";
                           }
                         }
                 
-                        $formitem[$key] .= "</select>
-                          </td>
-                        </tr>
-                        </table></td></tr>\n";  
+                        $formitem[$key] .= "
+                                </select>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>\n";  
                       }                        
                       elseif ($buildview == "template")
                       {
-                        $taglink = "<table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\"><tr><td><font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />".getescapedtext ($hcms_lang['here-you-can-insert-multiple-components'][$lang], $charset, $lang)."</font></td></tr></table>\n";
+                        $taglink = "
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />
+                              ".getescapedtext ($hcms_lang['here-you-can-insert-multiple-components'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>\n";
                       }
                       else $taglink = "";
                     }

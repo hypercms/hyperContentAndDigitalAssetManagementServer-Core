@@ -28,6 +28,7 @@ $page = getrequest_esc ("page", "objectname");
 $mediacat = getrequest_esc ("mediacat", "objectname");
 $mediatype = getrequest_esc ("mediatype", "objectname");
 $search_expression = getrequest ("search_expression");
+$search_format = getrequest ("search_format", "array");
 $scaling = getrequest ("scaling", "numeric", "1");
 
 // publication management config
@@ -67,7 +68,7 @@ checkusersession ($user);
 </div>
 
 <div class="hcmsWorkplaceFrame">
-  <?php echo showcompexplorer ($site, $dir, $location, $page, $compcat, $search_expression, $mediatype, $lang, "", $scaling); ?>
+<?php echo showcompexplorer ($site, $dir, $location, $page, $compcat, $search_expression, $search_format, $mediatype, $lang, "", $scaling); ?>
 </div>
 
 </body>

@@ -792,7 +792,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhr
   else return false;
 }
 
-// -------------------------------------------- setcomponent -----------------------------------------------
+// -------------------------------------------- setcomplink -----------------------------------------------
 // function: setcomplink()
 // input: publication name, container (XML), container name, component arrays (some are optional), article array or string [yes, no], content user array or string, user name
 // output: updated content container (XML), false on error
@@ -831,6 +831,10 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
       
       if ($id != "")
       {  
+        // convert object path to object ID if DAM
+        if ($mgmt_config[$site]['dam']) $component_conv[$id] = getobjectid ($component[$id]);
+        else $component_conv[$id] = $component[$id];
+
         // set array if input parameter is string
         if ($artbuffer != "") $art[$id] = $artbuffer;
         if ($userbuffer != "") $compuser[$id] = $userbuffer;
@@ -839,12 +843,12 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
         if ($art[$id] == "no")
         {
           // set the new content
-          $contentdatanew = setcontent ($contentdata, "<component>", "<componentfiles>", trim ($component[$id]), "<component_id>", $id);
+          $contentdatanew = setcontent ($contentdata, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
           
           if ($contentdatanew == false)
           {
             $contentdatanew = addcontent ($contentdata, $component_schema_xml, "", "", "", "<componentcollection>", "<component_id>", $id);
-            $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component[$id]), "<component_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
           }
           
           if ($compuser[$id] != "") $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
@@ -857,7 +861,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
           $artid = getartid ($id);
     
           // set the new content
-          $contentdatanew = setcontent ($contentdata, "<component>", "<componentfiles>", trim ($component[$id]), "<component_id>", $id);
+          $contentdatanew = setcontent ($contentdata, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
           
           if ($contentdatanew == false)
           {
@@ -868,7 +872,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
               $contentdatanew = addcontent ($contentdata, $article_schema_xml, "", "", "", "<articlecollection>", "<article_id>", $artid);
               $contentdatanew = addcontent ($contentdatanew, $component_schema_xml, "<article>", "<article_id>", $artid, "<articlecomponentcollection>", "<component_id>", $id);
             }
-            $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component[$id]), "<component_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
           }
           
           if ($compuser[$id] != "") $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
@@ -876,6 +880,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
         }
     
         // ------------------------- add link to link management file ---------------------------
+        
         if (empty ($component_curr[$id])) $component_curr[$id] = "";
         $link_db = link_db_update ($site, $link_db, "link", $contentfile, "comp", $component_curr[$id], $component[$id], "unique"); 
           
@@ -956,7 +961,9 @@ function sethead ($site, $contentdata, $contentfile, $headcontent, $user, $chars
     {
       // relational DB connectivity
       if ($mgmt_config['db_connect_rdbms'] != "")
-      {      
+      {
+        $text_array = array();
+        
         // standard text-based meta information
         if (isset ($headcontent['pagetitle'])) $text_array['head:pagetitle'] = $headcontent['pagetitle'];
         if (isset ($headcontent['pageauthor'])) $text_array['head:pageauthor'] = $headcontent['pageauthor'];

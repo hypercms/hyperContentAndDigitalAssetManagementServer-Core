@@ -8,29 +8,29 @@
 <content><![CDATA[[hyperCMS:objectview name='inlineview']
 [hyperCMS:tplinclude file='ServiceCollectMedia.inc.tpl']
 [hyperCMS:scriptbegin	
-  global $mgmt_config;	
-  
-  // INIT
-  $uniqid = uniqid();
-  $site = "%publication%";
-  $abs_comp = "%abs_comp%";
-  $container_id = "%container_id%";
-  $view = "%view%";
-  $hash = "%objecthash%";
-  $correctFile = correctfile("%abs_location%", "%object%");
-  // picture - file extensions
-  $picture_extensions = ".jpg.png.gif.bmp";
-  // User entry - picture / folder
-  $picture = "[hyperCMS:mediafile id='picture' onEdit='hidden']";
-  $pictureTagId = "picture";
-  
-  //USER ENTRIES
-  $galleriaWidth = "[hyperCMS:textu id='galleriaWidth' onEdit='hidden' default='400']";
-  $galleriaHeight = "[hyperCMS:textu id='galleriaHeight' onEdit='hidden' default='274']";
-  $showInfo = "[hyperCMS:textc id='showInfo' onEdit='hidden']";
-  
-  // CMS VIEW => get user entry and create iframe code
-if($view == "cmsview")
+global $mgmt_config;	
+
+// INIT
+$uniqid = uniqid();
+$site = "%publication%";
+$abs_comp = "%abs_comp%";
+$container_id = "%container_id%";
+$view = "%view%";
+$hash = "%objecthash%";
+$correctFile = correctfile("%abs_location%", "%object%");
+// picture - file extensions
+$picture_extensions = ".jpg.png.gif.bmp";
+// User entry - picture / folder
+$picture = "[hyperCMS:mediafile id='picture' onEdit='hidden']";
+$pictureTagId = "picture";
+
+//USER ENTRIES
+$galleriaWidth = "[hyperCMS:textu id='galleriaWidth' onEdit='hidden' default='400']";
+$galleriaHeight = "[hyperCMS:textu id='galleriaHeight' onEdit='hidden' default='274']";
+$showInfo = "[hyperCMS:textc id='showInfo' onEdit='hidden']";
+
+// CMS VIEW => get user entry and create iframe code
+if ($view == "cmsview")
 {
 scriptend]
 <!DOCTYPE html>
@@ -46,10 +46,10 @@ scriptend]
           <td>Picture / Folder</td><td><img src="[hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' thumbnail='yes']" /></td>
         </tr>
         <tr>
-          <td>Width of stage</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='galleriaWidth' label='Width of stage' constraint='isNum' height='15' width='100']px</div></td>
+          <td>Width of stage</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='galleriaWidth' label='Width of stage' constraint='isNum' default='800' height='15' width='100']px</div></td>
         </tr>
         <tr>
-          <td>Height of stage</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='galleriaHeight' label='Height of stage' constraint='isNum' height='15' width='100']px</div></td>
+          <td>Height of stage</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='galleriaHeight' label='Height of stage' constraint='isNum' default='600' height='15' width='100']px</div></td>
         </tr>
         <tr>
           <td>Show info</td><td><div style="margin-left: 27px;">[hyperCMS:textc id='showInfo' value='true' default='false']</div></td>
@@ -58,13 +58,11 @@ scriptend]
           <td>&nbsp;</td><td><div style="margin-left: 27px;"><button class="hcmsButtonGreen" type="button" onClick="location.reload();" >generate code</button></div></td>
         </tr>
       </table>
-      <p>
-          Please do not forget to publish this page after changing the parameters!
-      </p>
+      <p>Please do not forget to publish this page after changing the parameters!</p>
       <hr>
 [hyperCMS:scriptbegin
   //check if component is published
-  $compinfo = getfileinfo($site, $correctFile, "comp");
+  $compinfo = getfileinfo ($site, $correctFile, "comp");
 
   if ($compinfo['published'])
   {
@@ -121,7 +119,7 @@ scriptend]
 [hyperCMS:scriptbegin
   } 
   // check if picture (folder) is choosen or if it exsists
-  if (substr_count($picture, "Null_media.gif") == 1)
+  if (substr_count ($picture, "Null_media.gif") == 1)
   {
 scriptend]
     <p>No media file selected!</p>
@@ -129,7 +127,7 @@ scriptend]
   }
   else
   {
-    $mediaFiles = collectMedia($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions );
+    $mediaFiles = collectMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions );
 
     if(empty($mediaFiles))
     {
@@ -142,7 +140,7 @@ scriptend]
 scriptend]
 <div id="galleria" >
 [hyperCMS:scriptbegin
-      foreach($mediaFiles as $media)
+      foreach ($mediaFiles as $media)
       {
 scriptend]
   <a hypercms_href="[hyperCMS:scriptbegin echo $media['link']; scriptend]" >

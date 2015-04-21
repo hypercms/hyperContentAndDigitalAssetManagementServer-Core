@@ -10,9 +10,9 @@
 /*
 helper function for sorting outcome
 */
-function sortByName($a, $b)
+function sortByName ($a, $b)
 {
-   return strnatcmp($a['name'], $b['name']);
+  return strnatcmp($a['name'], $b['name']);
 }
 
 /*
@@ -25,28 +25,28 @@ than all mediafiles of this location.
 @param string abs_comp
 @return array array of array where each array contains name / link / thumb_link of a mediafile
 */	
-function collectMedia($site, $container_id, $mediaTagId, $abs_comp, $allowedFileExtensions = "", $metaTitleId = "", $metaDescriptionId = "")
+function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFileExtensions = "", $metaTitleId = "", $metaDescriptionId = "")
 {
   global $mgmt_config;
   
   //check if paramters are empty
-  if(empty($site) || empty($container_id) || empty($mediaTagId) || empty($abs_comp))
+  if (empty ($site) || empty ($container_id) || empty ($mediaTagId) || empty ($abs_comp))
   {
     return false;
   }
   
   //retrieve folder of mediafile via container/mediaTagId
-  $data = loadcontainer($container_id, "work", "sys");
+  $data = loadcontainer ($container_id, "work", "sys");
   $folder = "";
   
   if($data)
   {
-    $media = selectcontent($data, "<media>", "<media_id>", $mediaTagId);
+    $media = selectcontent ($data, "<media>", "<media_id>", $mediaTagId);
     
     if($media)
     {
       // Fully determine Folder
-      $folder = str_replace("%comp%", $abs_comp, dirname(current(getcontent($media[0], "<mediaobject>"))))."/";
+      $folder = str_replace ("%comp%", $abs_comp, dirname (current (getcontent ($media[0], "<mediaobject>"))))."/";
     }
     else
     {
@@ -59,21 +59,21 @@ function collectMedia($site, $container_id, $mediaTagId, $abs_comp, $allowedFile
   }
   
   //check if folder is empty
-  if(empty($folder) && !is_dir($folder))
+  if (empty ($folder) && !is_dir ($folder))
   {
     return false;
   }
 
   //collect mediafiles
-  $location_esc = convertpath($site, $folder, "comp");
-  $item_site = getpublication($location_esc);
+  $location_esc = convertpath ($site, $folder, "comp");
+  $item_site = getpublication ($location_esc);
   $files = array();
-  $dir_handle = opendir($folder);
+  $dir_handle = opendir ($folder);
   
-  while($file = readdir($dir_handle))
+  while ($file = readdir ($dir_handle))
   {
     //check if file exists
-    if($file != "." && $file != ".." && $file != ".folder" && is_file($folder.$file))
+    if ($file != "." && $file != ".." && $file != ".folder" && is_file ($folder.$file))
     {
       $fileinfo = getfileinfo ($item_site, $file, "comp");
       $objectinfo = getobjectinfo ($item_site, $folder, $file, "sys");	
@@ -116,6 +116,5 @@ function collectMedia($site, $container_id, $mediaTagId, $abs_comp, $allowedFile
 
   return $files;
 }
-
 scriptend]]]></content>
 </template>

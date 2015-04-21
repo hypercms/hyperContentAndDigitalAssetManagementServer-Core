@@ -44,7 +44,8 @@ $location_esc = convertpath ($site, $location, $cat);
 
 // check access permissions
 $ownergroup = accesspermission ($site, $location, $cat);
-$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);  
+$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
 if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
 
 // check session of user
@@ -64,6 +65,38 @@ $token = createtoken ($user);
 
 if (substr_count ($tagname, "art") == 1) $art = "art";
 else $art = "";
+
+$component = "";
+$component_curr = "";
+
+// read content using db_connect
+if ($db_connect != false && valid_objectname ($db_connect) && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
+{
+  include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
+  
+  $db_connect_data = db_read_component ($site, $contentfile, "", $id, "", $user);
+  
+  if ($db_connect_data != false) $contentbot = $db_connect_data['file'];
+  else $contentbot = false;
+}  
+else $contentbot = false;
+
+// read content from content container
+if ($contentbot == false) 
+{
+  $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
+
+  $filedata = loadcontainer ($container_id, "work", $user);
+  $contentarray = selectcontent ($filedata, "<component>", "<component_id>", $id);
+  $contentarray = getcontent ($contentarray[0], "<componentfiles>");
+  $contentbot = $contentarray[0];
+}
+
+// define current components string
+$component_curr = $contentbot;
+
+// convert object ID to object path
+$component_curr = getobjectlink ($component_curr);
 ?>
 <!DOCTYPE html>
 <html>
@@ -228,37 +261,6 @@ function openBrWindowComp(winName, features, type)
 
 <body class="hcmsWorkplaceGeneric">
 
-<?php
-$component = "";
-$component_curr = "";
-
-// read content using db_connect
-if ($db_connect != false && valid_objectname ($db_connect) && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
-{
-  include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
-  
-  $db_connect_data = db_read_component ($site, $contentfile, "", $id, "", $user);
-  
-  if ($db_connect_data != false) $contentbot = $db_connect_data['file'];
-  else $contentbot = false;
-}  
-else $contentbot = false;
-
-// read content from content container
-if ($contentbot == false) 
-{
-  $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
-
-  $filedata = loadcontainer ($container_id, "work", $user);
-  $contentarray = selectcontent ($filedata, "<component>", "<component_id>", $id);
-  $contentarray = getcontent ($contentarray[0], "<componentfiles>");
-  $contentbot = $contentarray[0];
-}
-
-// define current components string
-$component_curr = $contentbot;
-?>
-
 <!-- top bar -->
 <?php echo showtopbar ($id, $lang, $mgmt_config['url_path_cms']."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame"); ?>
 
@@ -293,21 +295,21 @@ $component_curr = $contentbot;
                 <?php
                 if ($component_curr != false && $component_curr != "")
                 {
-                  $component = trim ($component_curr);
-                  
-                  // cut off last delimiter
-                  if ($component[strlen ($component)-1] == "|") $component = substr ($component, 0, strlen ($component) - 1);
-                  
+                  $component = trim ($component_curr, "|");
+ 
                   // split component string into array
                   $component_array = explode ("|", $component);
 
                   foreach ($component_array as $comp_entry)
                   {
-                    $comp_entry_name = getlocationname ($site, $comp_entry, "comp", "path");
-                    
-                    if (strlen ($comp_entry_name) > 50) $comp_entry_name = "...".substr (substr ($comp_entry_name, -50), strpos (substr ($comp_entry_name, -50), "/")); 
-                                     
-                    echo "<option value=\"".$comp_entry."\">".$comp_entry_name."</option>\n";
+                    if ($comp_entry != "")
+                    {
+                      $comp_entry_name = getlocationname ($site, $comp_entry, "comp", "path");
+                      
+                      if (strlen ($comp_entry_name) > 50) $comp_entry_name = "...".substr (substr ($comp_entry_name, -50), strpos (substr ($comp_entry_name, -50), "/")); 
+                                       
+                      echo "<option value=\"".$comp_entry."\">".$comp_entry_name."</option>\n";
+                    }
                   }
                 }
                 ?>
@@ -324,6 +326,7 @@ $component_curr = $contentbot;
         </table>
       </td>
     </tr>
+    <?php if (!$mgmt_config[$site]['dam']) { ?>
     <tr>
       <td nowrap colspan="2">&nbsp;</td>
     </tr>
@@ -375,6 +378,7 @@ $component_curr = $contentbot;
         </select>
       </td>
     </tr>
+    <?php } ?>
   </table>  
 </form>
 </div>

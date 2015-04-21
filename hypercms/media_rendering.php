@@ -309,18 +309,18 @@ function submitform ()
 {
   var errors = '';
   
-  if (document.getElementById('cut_yes').checked == true)
+  if (document.getElementById('cut_yes') && document.getElementById('cut_yes').checked == true)
   {
     if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]); ?>\n';
     if (document.getElementById('cut_end').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['end'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]); ?>\n';
   }
   
-  if (document.getElementById('thumb_yes').checked == true)
+  if (document.getElementById('thumb_yes') && document.getElementById('thumb_yes').checked == true)
   {
     if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]); ?>\n';
   }
   
-  if (document.getElementById('videosize_i').checked == true)
+  if (document.getElementById('videosize_i') && document.getElementById('videosize_i').checked == true)
   {
     if (document.getElementById('width_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['width'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]); ?>\n';
     if (document.getElementById('height_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['height'][$lang].": ".$hcms_lang['a-value-is-required'][$lang]); ?>\n';
@@ -750,6 +750,7 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
       </div>
   		<?php } ?>
   	</div>
+    <?php } ?>
     
     <!-- audio bitrate -->
     <div class="cell">
@@ -762,7 +763,6 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
       </div>
   		<?php } ?>
   	</div>
-    <?php } ?>
 
     <div class="cell">
       <!-- save as video format -->

@@ -30,6 +30,13 @@ $condition = url_encode (getrequest ("condition", "url"));
 
 // check session of user
 checkusersession ($user);
+
+// publication management config
+if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+
+// define media type based on DAM setting
+if (!$mgmt_config[$site]['dam']) $mediatype = "comp";
+else $mediatype = "";
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -68,7 +75,7 @@ function maxNavFrame ()
 
 <body style="width:100%; height:100%; margin:0; padding:0;">
   <?php
-  echo "<div id=\"navLayer\" style=\"position:fixed; top:0; bottom:0; left:0; width:250px; margin:0; padding:0;\"><iframe id=\"navFrame2\" name=\"navFrame2\" scrolling=\"auto\" src=\"component_edit_explorer.php?site=".$site."&cat=".$cat."&compcat=".$compcat."&location=".$location."&page=".$page."&mediatype=comp\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "<div id=\"navLayer\" style=\"position:fixed; top:0; bottom:0; left:0; width:250px; margin:0; padding:0;\"><iframe id=\"navFrame2\" name=\"navFrame2\" scrolling=\"auto\" src=\"component_edit_explorer.php?site=".$site."&cat=".$cat."&compcat=".$compcat."&location=".$location."&page=".$page."&mediatype=".$mediatype."\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
 
   if ($compcat == "single")
   {
