@@ -358,12 +358,15 @@ function cleancontent ($content, $charset="UTF-8")
   if ($content != "" && $charset != "")
   {
     $content = strip_tags ($content);
+    $content = preg_replace ('/<iframe.*?\/iframe>/i', "", $content);
+    $content = html_entity_decode ($content, ENT_NOQUOTES | ENT_HTML401, $charset);
     $content = str_replace ("\r\n", " ", $content);
     $content = str_replace ("\n\r", " ", $content);
     $content = str_replace ("\n", " ", $content);
+    $content = str_replace ("\t", " ", $content);
+    $content = str_replace ("&nbsp;", " ", $content);
     $content = preg_replace ('/\s+/', " ", $content);
-    $content = preg_replace ('<!--(.*?)-->', "", $content);	
-    $content = html_entity_decode ($content, ENT_NOQUOTES | ENT_HTML401, $charset);
+    $content = preg_replace ('<!--(.*?)-->', "", $content);
     $content = trim ($content);
 
     return $content;

@@ -27,6 +27,7 @@ $mediatype = getrequest_esc ("mediatype");
 $callback = getrequest_esc ("callback", false, "", true);
 if ($lang == "") $lang = getrequest_esc ("lang");
 $search_expression = getrequest ("search_expression");
+$search_format = getrequest ("search_format", "array");
 $scaling = getrequest ("scaling", "numeric", "1");
 
 // publication management config
@@ -66,7 +67,7 @@ checkusersession ($user);
     <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
   </div>
   <div class="hcmsWorkplaceFrame">
-    <?php echo showcompexplorer ($site, $dir, "", "", $compcat, $search_expression, $mediatype, $lang, $callback, $scaling); ?>
+    <?php echo showcompexplorer ($site, $dir, "", "", $compcat, $search_expression, $search_format, $mediatype, $lang, $callback, $scaling); ?>
   </div>
 
 </body>

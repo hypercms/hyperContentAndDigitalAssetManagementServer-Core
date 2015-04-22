@@ -14531,13 +14531,14 @@ function publishobject ($site, $location, $page, $user)
       //
       //  if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
       //    onpublishobject_pre ($site, $cat, $location, $page, $container, $contentdata, $template, "", "", $user);
-      // }      
+      // }
+
       // if object is not a multimedia file or folder
-      if ($container != false && $template != false && $application != false) 
+      if ($container != false && $template != false) 
       {
         // get connected objects 
         $object_array = getconnectedobject ($container);
-        
+
         // no object reference was found in container (object might have been deleted and restored)
         if ($object_array == false)
         {    
@@ -14579,7 +14580,7 @@ function publishobject ($site, $location, $page, $user)
         {
           $object_published = false;        
           $object_counter = 0;
-          
+
           foreach ($object_array as $object)
           {
             $object_counter++;
@@ -14620,17 +14621,17 @@ function publishobject ($site, $location, $page, $user)
                   $release = false;
                   $add_onload = "";
                   $show = $hcms_lang['an-error-occured-in-building-the-view'][$lang];
-                } 
+                }
+
+                // eventsystem
+                if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+                  onpublishobject_pre ($site, $cat, $location, $page, $contentfile, $contentdata, $templatefile, $templatedata, $viewstore, $user);
 
                 // -------------------------------- publish page -------------------------------
                 // if user has the workflow permission to publish or no workflow is attached
                 // for media files the object file will not be touched
                 if ($release >= 3 && $application != "media" && ($viewstore != "" || $application == "generator"))
-                {
-                  // eventsystem
-                  if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
-                    onpublishobject_pre ($site, $cat, $location, $page, $contentfile, $contentdata, $templatefile, $templatedata, $viewstore, $user);
-                  
+                {                  
                   // get the file extension of the object file
                   $file_info = getfileinfo ($site, $page, $cat);
   

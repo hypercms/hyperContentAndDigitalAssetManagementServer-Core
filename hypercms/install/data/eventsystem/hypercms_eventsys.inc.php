@@ -761,10 +761,10 @@ function onpublishobject_pre ($site, $cat, $location, $object, $container_name, 
         include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
 
         $url = getmedialocation ($site, $mediafile, "url_path_media").$site."/".$mediafile;
-        $container_content = loadcontainer ($container_name, "work", $user);
         $title = specialchr_decode ($object);
         $description = "";
         
+        if (!empty ($container_content)) $container_content = loadcontainer ($container_name, "work", $user);
         if (!empty ($container_content)) $content_array = getcontent ($container_content, "<content>");
         
         if (!empty ($content_array[0])) $content = $content_array[0];

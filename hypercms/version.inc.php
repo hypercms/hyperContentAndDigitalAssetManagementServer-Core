@@ -827,6 +827,9 @@ release 06/2015
 - bug fix: media_rendering for audio files did verify non-existing fields that caused JS error
 - bug fix: audio data in config files for ogg files have been missing
 - audio quality setting has been enabled for editing of audio files
+- validation of theme path in function getthemelocation
+- various improvements in search_api for website search functionality
+- bug fix: if no application was defined in the content containers of assets the template engine did not execute for the published object
 */
 
 // current version

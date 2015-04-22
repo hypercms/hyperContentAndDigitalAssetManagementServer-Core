@@ -1535,17 +1535,14 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     }
     
     // media format
-    if ($mediatype != "")
-    {
-      if ($mediatype == "audio") $format_ext = strtolower ($hcms_ext['audio']);
-      elseif ($mediatype == "video") $format_ext = strtolower ($hcms_ext['video']);
-      elseif ($mediatype == "text") $format_ext = strtolower ($hcms_ext['cms'].$hcms_ext['bintxt'].$hcms_ext['cleartxt']);
-      elseif ($mediatype == "flash") $format_ext = strtolower ($hcms_ext['flash']);
-      elseif ($mediatype == "image") $format_ext = strtolower ($hcms_ext['image']);
-      elseif ($mediatype == "compressed") $format_ext = strtolower ($hcms_ext['compressed']);
-      elseif ($mediatype == "binary") $format_ext = strtolower ($hcms_ext['binary']);
-      else $format_ext = "";
-    }
+    if ($mediatype == "audio") $format_ext = strtolower ($hcms_ext['audio']);
+    elseif ($mediatype == "video") $format_ext = strtolower ($hcms_ext['video']);
+    elseif ($mediatype == "text") $format_ext = strtolower ($hcms_ext['cms'].$hcms_ext['bintxt'].$hcms_ext['cleartxt']);
+    elseif ($mediatype == "flash") $format_ext = strtolower ($hcms_ext['flash']);
+    elseif ($mediatype == "image") $format_ext = strtolower ($hcms_ext['image']);
+    elseif ($mediatype == "compressed") $format_ext = strtolower ($hcms_ext['compressed']);
+    elseif ($mediatype == "binary") $format_ext = strtolower ($hcms_ext['binary']);
+    else $format_ext = "";
     
     // javascript code
     $result = "<script language=\"JavaScript\">
@@ -1806,7 +1803,7 @@ function showOptions()
                  (
                    ($compcat != "media" && !$mgmt_config[$site]['dam'] && $comp_info['type'] == "Component") || // standard published components if not DAM for component tag
                    ($compcat != "media" && $mgmt_config[$site]['dam']) || // any type if is DAM for component tag
-                   ($compcat == "media" && ($mediatype == "" || $mediatype == "comp" || substr_count ($format_ext, $comp_info['ext']) > 0)) // media assets for media tag
+                   ($compcat == "media" && ($mediatype == "" || $mediatype == "comp" || substr_count ($format_ext.".", $comp_info['ext'].".") > 0)) // media assets for media tag
                  )
                )
             {

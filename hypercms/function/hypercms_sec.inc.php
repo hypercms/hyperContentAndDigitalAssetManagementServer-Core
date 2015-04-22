@@ -1291,7 +1291,8 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         $mailer->Subject = "hyperCMS License Alert";
         $mailer->Body = "License limit reached by ".$mgmt_config['url_path_cms']." (".getuserip().")\r\nPublications: ".$site_collection."|\n";
         $mailer->Send();
-        //deletefile ($mgmt_config['abs_path_data'], "check.dat", 0);
+        
+        // deletefile ($mgmt_config['abs_path_data'], "check.dat", 0);
         $result['message'] = $hcms_lang['your-action-is-not-confirm-to-the-licence-agreement'][$lang]." <a href=\"mailto:support@hypercms.net\">support@hypercms.net</a>";
         $checkresult = false;
 
@@ -1305,7 +1306,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       $mailer = new HyperMailer();
       $mailer->AddAddress ("info@hypercms.net");
       $mailer->Subject = "hyperCMS ALERT";
-      $mailer->Body = "hyperCMS alert (check.dat deleted) for ".$mgmt_config['url_path_cms']."\n";
+      $mailer->Body = "hyperCMS alert (check.dat is missing) for ".$mgmt_config['url_path_cms']."\n";
       $mailer->Send();
       $result['message'] = $hcms_lang['your-action-is-not-confirm-to-the-licence-agreement'][$lang]." <a href=\"mailto:support@hypercms.net\">support@hypercms.net</a>";
       $checkresult = false;

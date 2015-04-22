@@ -4,7 +4,7 @@
 <user></user>
 <category>media</category>
 <extension></extension>
-<application></application>
+<application>media</application>
 <content><![CDATA[[hyperCMS:textu id='Title' label='Title' infotype='meta' height='25']
 [hyperCMS:textu id='Description' label='Description' infotype='meta' height='75']
 [hyperCMS:textu id='Keywords' label='Keywords' infotype='meta' height='75']

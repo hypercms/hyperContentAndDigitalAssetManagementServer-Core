@@ -14,7 +14,7 @@ $config['css_headline'] = "headline";
 $config['css_title'] = "searchtitle";
 // color code for the URL-presentation in the search results
 $config['css_url'] = "searchurl";
-// show icon for pdf documents (%tplmedia%/icon_pdf.gif)
+// show icon for pdf documents
 $config['icon_pdf'] = $url_protocol."%url_path_rep%/search/icon_pdf.png";
 // results per page
 $config['results'] = 10;
