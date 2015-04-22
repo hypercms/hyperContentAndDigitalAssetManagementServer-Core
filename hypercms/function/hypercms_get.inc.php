@@ -880,17 +880,20 @@ function getobjectlink ($objectid)
       {
         foreach ($object_id_array as $object_id)
         {
-          // if object ID (numeric)
-          if ($object_id > 0)
+          if ($object_id != "")
           {
-            $objectpath = rdbms_getobject ($object_id);
-          
-            // object path exists
-            // if no object path -> the object has been deleted
-            if (!empty ($objectpath)) $objectid_conv .= $objectpath."|";
+            // if object ID (numeric)
+            if ($object_id > 0)
+            {
+              $objectpath = rdbms_getobject ($object_id);
+            
+              // object path exists
+              // if no object path -> the object has been deleted
+              if (!empty ($objectpath)) $objectid_conv .= $objectpath."|";
+            }
+            // if object path (string)
+            else $objectid_conv .= $object_id."|";
           }
-          // if object path (string)
-          else $objectid_conv .= $object_id."|";
         }
       }
     }
@@ -907,7 +910,7 @@ function getobjectlink ($objectid)
         if (!empty ($objectpath)) $objectid_conv = $objectpath;
       }
       // if object path (string)
-      else $objectid_conv .= $object_id."|";
+      else $objectid_conv .= $object_id;
     }
     
     // return converted result 
