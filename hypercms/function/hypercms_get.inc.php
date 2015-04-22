@@ -515,7 +515,7 @@ function getthemelocation ($theme="")
   global $mgmt_config;
 
   // input parameter
-  if (valid_objectname ($theme))
+  if (valid_objectname ($theme) && is_dir ($mgmt_config['abs_path_cms']."theme/".$theme))
   {
     return cleandomain ($mgmt_config['url_path_cms']."theme/".$theme."/");
   }
@@ -525,12 +525,12 @@ function getthemelocation ($theme="")
     return $_SESSION['hcms_themepath'];
   }
   // theme name from session
-  elseif (!empty ($_SESSION['hcms_themename']))
+  elseif (!empty ($_SESSION['hcms_themename']) && is_dir ($mgmt_config['abs_path_cms']."theme/".$_SESSION['hcms_themename']))
   {
     return cleandomain ($mgmt_config['url_path_cms']."theme/".$_SESSION['hcms_themename']."/");
   }    
-  // from config 
-  elseif (valid_objectname ($mgmt_config['theme']))
+  // from main config 
+  elseif (valid_objectname ($mgmt_config['theme']) && is_dir ($mgmt_config['abs_path_cms']."theme/".$mgmt_config['theme']))
   {
     return cleandomain ($mgmt_config['url_path_cms']."theme/".$mgmt_config['theme']."/");
   }
@@ -883,7 +883,7 @@ function getobjectlink ($objectid)
           if ($object_id != "")
           {
             // if object ID (numeric)
-            if ($object_id > 0)
+            if (is_numeric ($object_id))
             {
               $objectpath = rdbms_getobject ($object_id);
             
@@ -901,7 +901,7 @@ function getobjectlink ($objectid)
     else
     {
       // if object ID (numeric)
-      if ($objectid > 0)
+      if (is_numeric ($objectid))
       {
         $objectpath = rdbms_getobject ($objectid);
     
@@ -910,7 +910,7 @@ function getobjectlink ($objectid)
         if (!empty ($objectpath)) $objectid_conv = $objectpath;
       }
       // if object path (string)
-      else $objectid_conv .= $object_id;
+      else $objectid_conv = $objectid;
     }
     
     // return converted result 

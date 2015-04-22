@@ -4931,7 +4931,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 if ($defaultvalue[strlen ($defaultvalue) - 1] != "|") $defaultvalue = $defaultvalue."|";
               }
             }
-            
+
             // get language attribute
             $language_info = getattribute ($hypertag, "language");                
             
