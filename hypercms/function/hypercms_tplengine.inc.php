@@ -5962,7 +5962,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           // CMS/Inline/Preview
           if ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview")
           { 
-            // execute hyperCMS scripts
+            // execute hyperCMS scripts or PHP code
             if ($mgmt_config['application']['php'] == true && ($application == "php" || preg_match ("/\[hypercms:scriptbegin/i", $viewstore) || strtoupper ($mgmt_config['os_cms']) == "WIN"))
             {
               // transform 
@@ -5992,8 +5992,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               }
             }
             
-            // execute application code
-            if (isset ($mgmt_config['application'][$application]) && $mgmt_config['application'][$application] == true && $application != "php" && @substr_count ($viewstore, tpl_tagbegin ($application)) > 0)
+            // execute application code (non PHP)
+            if ($application != "" && $application != "php" && isset ($mgmt_config['application'][$application]) && $mgmt_config['application'][$application] == true && @substr_count ($viewstore, tpl_tagbegin ($application)) > 0)
             {       
               // change directory to location to have correct hrefs
               $viewstore =  tpl_globals_extended ($application, $mgmt_config['abs_path_cms'], $mgmt_config['abs_path_rep'], $site, $location).$viewstore;

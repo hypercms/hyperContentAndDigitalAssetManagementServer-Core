@@ -14533,8 +14533,8 @@ function publishobject ($site, $location, $page, $user)
       //    onpublishobject_pre ($site, $cat, $location, $page, $container, $contentdata, $template, "", "", $user);
       // }
 
-      // if object is not a multimedia file or folder
-      if ($container != false && $template != false) 
+      // if object is not a multimedia file or folder (test if .folder and directory) and 
+      if ($container != false && $template != false && $page != ".folder" && !is_dir ($location.$page) && $application != "") 
       {
         // get connected objects 
         $object_array = getconnectedobject ($container);
@@ -14629,8 +14629,8 @@ function publishobject ($site, $location, $page, $user)
 
                 // -------------------------------- publish page -------------------------------
                 // if user has the workflow permission to publish or no workflow is attached
-                // for media files the object file will not be touched
-                if ($release >= 3 && $application != "media" && ($viewstore != "" || $application == "generator"))
+                // for media files the object file will not be touched (application might be empty or "media") or the media generator is used
+                if ($release >= 3 && $application != "" && $application != "media" && ($viewstore != "" || $application == "generator"))
                 {                  
                   // get the file extension of the object file
                   $file_info = getfileinfo ($site, $page, $cat);
