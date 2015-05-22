@@ -84,7 +84,7 @@ if ((($action == "logon" && checktoken ($token, $user)) || !empty ($ftp_connecti
 
   if (!$conn_id)
   {
-    $show = $hcms_lang['login-incorrect'][$lang];
+    $show = getescapedtext ($hcms_lang['login-incorrect'][$lang]);
   }
   else
   {
@@ -156,7 +156,7 @@ if (empty ($conn_id))
         <td class="hcmsTextOrange"><strong><?php echo $show; ?></strong></td>
       </tr>
       <tr>
-        <td><b><?php echo $hcms_lang['server'][$lang]; ?></b></td>
+        <td><b><?php echo getescapedtext ($hcms_lang['server'][$lang]); ?></b></td>
         <td>
           <input type="text" name="sentserver" maxlength="100" style="width:150px; height:16px;" />
         </td>
@@ -164,17 +164,17 @@ if (empty ($conn_id))
       <tr>
         <td>&nbsp;</td>
         <td>
-          <input type="checkbox" name="ssl" value="1" /> <?php echo $hcms_lang['use-ssl'][$lang]; ?>
+          <input type="checkbox" name="ssl" value="1" /> <?php echo getescapedtext ($hcms_lang['use-ssl'][$lang]); ?>
         </td>
       </tr>
       <tr>
-        <td><b><?php echo $hcms_lang['user'][$lang]; ?></b></td>
+        <td><b><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?></b></td>
         <td>
           <input type="text" name="sentuser" maxlength="100" style="width:150px; height:16px;" />
         </td>
       </tr>
       <tr>
-        <td><b><?php echo $hcms_lang['password'][$lang]; ?></b></td>
+        <td><b><?php echo getescapedtext ($hcms_lang['password'][$lang]); ?></b></td>
         <td>
           <input type="password" name="sentpasswd" maxlength="100" style="width:150px; height:16px;" />
         </td>
@@ -216,13 +216,13 @@ else
           &nbsp;
         </td>
         <td nowrap="nowrap" class="hcmsHeadline">
-          &nbsp;<?php echo $hcms_lang['name'][$lang]; ?>
+          &nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
         </td>
         <td width="120" nowrap="nowrap" class="hcmsHeadline">
-          &nbsp;<?php echo $hcms_lang['date-modified'][$lang]; ?>
+          &nbsp;<?php echo getescapedtext ($hcms_lang['date-modified'][$lang]); ?>
         </td>
         <td width="100" align="right" nowrap="nowrap" class="hcmsHeadline">
-          &nbsp;<?php echo $hcms_lang['size-in-kb'][$lang]; ?>&nbsp;
+          &nbsp;<?php echo getescapedtext ($hcms_lang['size-in-kb'][$lang]); ?>&nbsp;
         </td>
       </tr>
       <?php
@@ -230,7 +230,7 @@ else
       {
         if ($path != ".")
         {
-          $link = "<a href=\"?path=".url_encode(getlocation($path))."&multi=".$multi."\"><span class=\"hcmsStandardText\">".$hcms_lang['go-to-parent-folder'][$lang]."</span></a>";
+          $link = "<a href=\"?path=".url_encode(getlocation($path))."&multi=".$multi."\"><span class=\"hcmsStandardText\">".getescapedtext ($hcms_lang['go-to-parent-folder'][$lang])."</span></a>";
           
           echo "<tr height=\"16\" class=\"hcmsWorkplaceObjectlist\"><td nowrap=\"nowrap\">&nbsp;</td><td nowrap=\"nowrap\">&nbsp;<img src=\"".getthemelocation()."img/back.gif\" align=\"absmiddle\" />&nbsp;".$link."</td><td nowrap=\"nowrap\">&nbsp;</td><td align=\"right\" nowrap=\"nowrap\">&nbsp;</td></tr>\n";
         }
@@ -288,8 +288,8 @@ else
     </table>
 
     <div class="hcmsWorkplaceControl" style="position:fixed; left:0; bottom:0; width:100%; padding:10px;"> 
-      <button id="select" class="hcmsButtonGreen" onClick="submitfiles();"><?php echo $hcms_lang['select-files'][$lang]; ?></button>
-      <button id="logout" class="hcmsButtonOrange" onClick="location.href='?action=logout&multi=<?php echo $multi; ?>';"><?php echo $hcms_lang['logout'][$lang]; ?></button>
+      <button id="select" class="hcmsButtonGreen" onClick="submitfiles();"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></button>
+      <button id="logout" class="hcmsButtonOrange" onClick="location.href='?action=logout&multi=<?php echo $multi; ?>';"><?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></button>
     </div>
     
   </form>

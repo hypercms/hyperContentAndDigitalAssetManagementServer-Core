@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['hu'] = "A mappa átnevezése volt";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['hu'] = "Nem van-e írási jogosultsága a mappa";
 $hcms_lang['the-folder-does-not-exist']['hu'] = "A mappa nem létezik";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['hu'] = "Ön nem rendelkezik írási jogosultsággal rendelkezik a munkafolyamat mappa beállításai";
-$hcms_lang['titel']['hu'] = "Lejátszott címek";
 $hcms_lang['category']['hu'] = "Kategória";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['hu'] = "Youtube-ra történő feltöltés nem lép működésbe az Ön számlájára. Kérje a rendszergazda";
 $hcms_lang['tags']['hu'] = "Címkék";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['hu'] = "Kiszolgáló";
 $hcms_lang['use-ssl']['hu'] = "SSL használata";
 $hcms_lang['formats']['hu'] = "Formátumok";
 $hcms_lang['download-formats']['hu'] = "Letöltési formátumok";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['hu'] = "Kulcsszavak opcionális kötelező vagy nyílt lista";
 ?>

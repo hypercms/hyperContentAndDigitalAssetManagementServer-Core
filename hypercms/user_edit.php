@@ -106,7 +106,7 @@ if ($action == "user_save" && ($site == "*Null*" || checkpublicationpermission (
     $error[] = $mgmt_config['today']."|user_edit.inc.php|error|$errcode|unauthorized access of user ".$user;
     
     $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang]."</span>\n";
+    $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang])."</span>\n";
   }
   
   // save log
@@ -365,51 +365,51 @@ if ($login != "" && $login != false)
   <table border="0" cellspacing="0" cellpadding="3">
     <?php if ($login_cat == "home" || $login == $user) { ?>
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['old-password'][$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['old-password'][$lang]); ?>: </td>
       <td align="right">
         <input type="password" name="old_password" style="width:200px;" />
       </td>
     </tr>
     <?php } ?> 
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['change-password'][$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['change-password'][$lang]); ?>: </td>
       <td align="right">
         <input type="password" name="password" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['confirm-password'][$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['confirm-password'][$lang]); ?>: </td>
       <td align="right">
         <input type="password" name="confirm_password" style="width:200px;" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['hash-for-openapi'][$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['hash-for-openapi'][$lang]); ?>: </td>
       <td align="right">
         <input type="text" style="width:200px;" value="<?php echo $hashcode; ?>" readonly="readonly" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['name'][$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>: </td>
       <td align="right">
         <input type="text" name="realname" style="width:200px;" value="<?php echo $realname; ?>" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['e-mail'][$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>: </td>
       <td align="right">
         <input type="text" name="email" style="width:200px;" value="<?php echo $email; ?>" />
       </td>
     </tr>
     <tr>
-      <td valign="top" nowrap="nowrap"><?php echo $hcms_lang['signature'][$lang]; ?>: </td>
+      <td valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['signature'][$lang]); ?>: </td>
       <td align="right" valign="top">
         <textarea name="signature" wrap="VIRTUAL" style="width:200px; height:50px;"><?php echo $signature; ?></textarea>
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['language'][$lang]; ?>: </td>
-      <td align="right">
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['language'][$lang]); ?>: </td>
+      <td>
         <select name="language" style="width:200px;">
         <?php
         if (!empty ($mgmt_lang_shortcut) && is_array ($mgmt_lang_shortcut))
@@ -444,8 +444,8 @@ if ($login != "" && $login != false)
     if (($site == "*Null*" && empty ($mgmt_config['theme']) && empty ($config_theme)) || ($site != "*Null*" && empty ($mgmt_config['theme']) && empty ($mgmt_config[$site]['theme']))) {
     ?>
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['theme'][$lang]; ?>: </td>
-      <td align="right">
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['theme'][$lang]); ?>: </td>
+      <td>
         <select name="theme" style="width:200px;">
         <?php
         $theme_dir = $mgmt_config['abs_path_cms']."theme/";
@@ -493,7 +493,7 @@ if ($login != "" && $login != false)
         <table border=0 cellspacing=0 cellpadding=0>
           <tr>
             <td>
-              ".$hcms_lang['groups'][$lang].":<br /><br />
+              ".getescapedtext ($hcms_lang['groups'][$lang]).":<br /><br />
               <select multiple size=\"10\" name=\"list1\" style=\"width:200px; height:140px;\">\n";
 
               $groupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
@@ -530,7 +530,7 @@ if ($login != "" && $login != false)
               <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"move(this.form.elements['list1'], this.form.elements['list2'])\" value=\"&gt;&gt;\" />
             </td>
             <td>
-              ".$hcms_lang['assigned-to-group'][$lang].":<br /><br />
+              ".getescapedtext ($hcms_lang['assigned-to-group'][$lang]).":<br /><br />
               <select multiple size=\"10\" name=\"list2\" style=\"width:200px; height:140px;\">\n";
 
               if (is_array ($list2_array) && sizeof ($list2_array) >= 1)
@@ -555,7 +555,7 @@ if ($login != "" && $login != false)
         <table border=0 cellspacing=0 cellpadding=0>
           <tr>
             <td>
-              ".$hcms_lang['publications'][$lang].":<br /><br />
+              ".getescapedtext ($hcms_lang['publications'][$lang]).":<br /><br />
               <select multiple size=\"10\" name=\"list1\" style=\"width:200px; height:140px;\">\n";
 
               $inherit_db = inherit_db_read ($user);
@@ -600,7 +600,7 @@ if ($login != "" && $login != false)
               <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"move(this.form.elements['list1'], this.form.elements['list2'])\" value=\"&gt;&gt;\" />
             </td>
             <td>
-              ".$hcms_lang['assigned-to-publication'][$lang].":<br /><br />
+              ".getescapedtext ($hcms_lang['assigned-to-publication'][$lang]).":<br /><br />
               <select multiple size=\"10\" name=\"list2\" style=\"width:200px; height:140px;\">\n";
 
               if (is_array ($list2_array) && sizeof ($list2_array) > 0)
@@ -621,14 +621,14 @@ if ($login != "" && $login != false)
     ?>
     <?php if ($site == "*Null*" && checkadminpermission ()) { ?>
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['administration'][$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['administration'][$lang]); ?>: </td>
       <td align="left">
-        <input type="checkbox" name="superadmin" value="1" <?php if ($superadmin == "1") echo "checked=\"checked\""; ?>/><?php echo $hcms_lang['super-administrator'][$lang]; ?>
+        <input type="checkbox" name="superadmin" value="1" <?php if ($superadmin == "1") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['super-administrator'][$lang]); ?>
       </td>
     </tr>
     <?php } ?>    
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['save-settings'][$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?>: </td>
       <td>
         <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onclick="checkForm();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
       </td>

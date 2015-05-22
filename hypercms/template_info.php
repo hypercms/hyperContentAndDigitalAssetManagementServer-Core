@@ -75,10 +75,10 @@ if ($template != "")
     $pagecomp = "meta data template";
   }  
 
-  echo "<tr><td>".$hcms_lang['template'][$lang].": </td><td class=\"hcmsHeadlineTiny\">".$tpl_name."</td></tr>\n";
-  echo "<tr><td>".$hcms_lang['category'][$lang].": </td><td class=\"hcmsHeadlineTiny\">".$pagecomp."</td></tr>\n";
-  echo "<tr><td>".$hcms_lang['last-updated'][$lang].": </td><td class=\"hcmsHeadlineTiny\">".date ("Y-m-d H:i", filemtime ($mgmt_config['abs_path_template'].$site."/".$template))."</td></tr>\n";
-  echo "<tr><td>".$hcms_lang['file-size'][$lang].": </td><td class=\"hcmsHeadlineTiny\">".filesize ($mgmt_config['abs_path_template'].$site."/".$template)." bytes</td></tr>\n";
+  echo "<tr><td>".getescapedtext ($hcms_lang['template'][$lang]).": </td><td class=\"hcmsHeadlineTiny\">".$tpl_name."</td></tr>\n";
+  echo "<tr><td>".getescapedtext ($hcms_lang['category'][$lang]).": </td><td class=\"hcmsHeadlineTiny\">".$pagecomp."</td></tr>\n";
+  echo "<tr><td>".getescapedtext ($hcms_lang['last-updated'][$lang]).": </td><td class=\"hcmsHeadlineTiny\">".date ("Y-m-d H:i", filemtime ($mgmt_config['abs_path_template'].$site."/".$template))."</td></tr>\n";
+  echo "<tr><td>".getescapedtext ($hcms_lang['file-size'][$lang]).": </td><td class=\"hcmsHeadlineTiny\">".filesize ($mgmt_config['abs_path_template'].$site."/".$template)." bytes</td></tr>\n";
 }
 ?>
 </table>

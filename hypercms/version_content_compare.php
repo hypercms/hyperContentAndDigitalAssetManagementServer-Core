@@ -85,7 +85,7 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
       $time = str_replace ("-", ":", $time);
       $date_array[$i] = $date." ".$time;
     }
-    else $date_array[$i] = $hcms_lang['current-version'][$lang];
+    else $date_array[$i] = getescapedtext ($hcms_lang['current-version'][$lang]);
     
     // load container
     $contentdata = loadcontainer ($container, "version", $user);
@@ -178,7 +178,7 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
 <!-- content -->
 <div class="hcmsWorkplaceFrame">
 <?php
-if (is_array ($date_array)) echo "<p style=\"margin:2px; padding:2px;\">".$hcms_lang['comparison-of-versions'][$lang].": ".$date_array[0]." / ".$date_array[1]."</p>\n";
+if (is_array ($date_array)) echo "<p style=\"margin:2px; padding:2px;\">".getescapedtext ($hcms_lang['comparison-of-versions'][$lang]).": ".$date_array[0]." / ".$date_array[1]."</p>\n";
 
 if (is_array ($content_array))
 {  

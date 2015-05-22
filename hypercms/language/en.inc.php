@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['en'] = "The folder was renamed";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['en'] = "You do not have write permissions for the folder";
 $hcms_lang['the-folder-does-not-exist']['en'] = "The folder does not exist";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['en'] = "You do not have write permissions on workflow folder settings";
-$hcms_lang['titel']['en'] = "Titel";
 $hcms_lang['category']['en'] = "Category";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['en'] = "Youtube upload is not activated for your Account. Please contact your system adminstrator";
 $hcms_lang['tags']['en'] = "Tags";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['en'] = "Server";
 $hcms_lang['use-ssl']['en'] = "use SSL";
 $hcms_lang['formats']['en'] = "Formats";
 $hcms_lang['download-formats']['en'] = "Download formats";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['en'] = "Keywords with optional mandatory or open list";
 ?>

@@ -67,8 +67,8 @@ if ($site != "" && $template != "")
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-    echo "<p class=hcmsHeadline>".$hcms_lang['could-not-create-view-of-the-object'][$lang]."</p>\n";
-    echo $hcms_lang['an-error-occured-while-creating-the-view'][$lang]."\n";
+    echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-the-object'][$lang])."</p>\n";
+    echo getescapedtext ($hcms_lang['an-error-occured-while-creating-the-view'][$lang])."\n";
     echo "</body>\n";
     echo "</html>";
   }

@@ -707,11 +707,11 @@ changelog:
 - new function getescapetext to HTML encode specific texts from the language files (needed when presentation uses other character set than the language file)
 - implementation of escapetext in template engine and UI instead of converting all texts of a language file
 - bug fix: html_encode was double encoding if ASCII was selected as encoding
-- bug fix: content-type has not been set to provided input and not to html for various input forms
+- bug fix: content-type has not been set for various input forms
 - implementation of management of home boxes for each user on home screen
 - implementation of new function setboxex and getboxes
 - implementation of JS function hcms_switchSelector in main.js
-- implementation of new homboxes for recent downloads and uploads of a user
+- implementation of new homeboxes for recent downloads and uploads of a user
 
 version 5.7.5
 release 03/2015
@@ -805,8 +805,8 @@ release 05/2015
 - implementation of new function writesessiondata for load balancer
 - function setsession supports 3rd argument to write session data for load balancer
 - variable $appsupport has been replaced by $mgmt_config['application'] in main configuration
-- improvement in function getescapetext to escape special characters if no encoding is provided
-- use of function getescapetext for all text strings used in JS code 
+- improvement in function getescapedtext to escape special characters if no encoding is provided
+- use of function getescapedtext for all text strings used in JS code 
 - implementation of new ICC profiles for ECI offset 2009
 - support for transparent background of SVG files
 - bug fix: frame resizer in control_content did not work
@@ -829,9 +829,22 @@ release 06/2015
 - audio quality setting has been enabled for editing of audio files
 - validation of theme path in function getthemelocation
 - various improvements in search_api for website search functionality
-- bug fix: if no application was defined in the content containers of assets the template engine did not execute for the published object
+- bug fix: if no application was defined in the content containers of assets the template engine did not execute the published object
+
+version 5.7.9
+release 07/2015
+- optimization of language files
+- new input settings in main CSS of all themes
+- update of jquery from version 1.9.1 to 1.10.2
+- implementation of keyword tags with optional mandatory or open list of keywords using the new hyperCMS tag "textk"
+- improved functions loadfile and loadlockfile to reduce CPU time
+- removed default frequenzy settings for audio rendering in main configuration due to issue with OGA files
+- corrections in german language files
+- implementation of getescapetext for all files of the graphical user interface
+- bug fix: function createmedia did not execute rdbms_setmedia if $mgmt_maxfilesize limit has been reached for a file 
+- implementation of new youtube connector to support Google OAuth
 */
 
 // current version
-$version = "Version 5.7.8";
+$version = "Version 5.7.9";
 ?>

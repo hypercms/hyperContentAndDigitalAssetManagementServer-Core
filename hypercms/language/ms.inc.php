@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['ms'] = "Folder yang dinamakan semula";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['ms'] = "Anda tidak mempunyai keizinan menulis untuk folder";
 $hcms_lang['the-folder-does-not-exist']['ms'] = "Folder tidak wujud";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['ms'] = "Anda tidak mempunyai keizinan menulis di workflow Seting Folder";
-$hcms_lang['titel']['ms'] = "Titel";
 $hcms_lang['category']['ms'] = "Kategori";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['ms'] = "YouTube muat naik tidak diaktifkan untuk akaun anda. Hubungi sistem anda adminstrator";
 $hcms_lang['tags']['ms'] = "Tag";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['ms'] = "Pelayan";
 $hcms_lang['use-ssl']['ms'] = "Guna SSL";
 $hcms_lang['formats']['ms'] = "Format";
 $hcms_lang['download-formats']['ms'] = "Muatturun format";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['ms'] = "Kata kunci dengan senarai mandatori atau pilihan terbuka";
 ?>

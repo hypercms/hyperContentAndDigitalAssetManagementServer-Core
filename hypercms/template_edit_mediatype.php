@@ -59,13 +59,13 @@ function applyconstraints ()
   
   <table border="0" cellspacing="2">
     <tr align="left" valign="top"> 
-      <td colspan="3" nowrap="nowrap" class=hcmsHeadline><?php echo $hcms_lang['assigned-media-types'][$lang]; ?></td>
+      <td colspan="3" nowrap="nowrap" class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['assigned-media-types'][$lang]); ?></td>
     </tr>
     <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo $hcms_lang['select-media-type'][$lang]; ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['select-media-type'][$lang]); ?>:</td>
       <td nowrap="nowrap">
       <select name="mediatype">
-        <option value=""><?php echo $hcms_lang['all-types'][$lang]; ?></option>
+        <option value=""><?php echo getescapedtext ($hcms_lang['all-types'][$lang]); ?></option>
         <option value="audio">audio</option>
         <option value="compressed">compressed</option>
         <option value="flash">flash</option>
@@ -80,8 +80,8 @@ function applyconstraints ()
     </tr>    
     <tr align="left" valign="top">
       <td nowrap="nowrap">&nbsp;</td>
-      <td nowrap="nowrap"><input name="apply" type="button" id="apply" value="<?php echo $hcms_lang['assign'][$lang]; ?>" onClick="applyconstraints();" />
-      <input name="cancel" type="button" id="cancel" value="<?php echo $hcms_lang['cancel'][$lang]; ?>" onClick="self.close();" /></td>
+      <td nowrap="nowrap"><input name="apply" type="button" id="apply" value="<?php echo getescapedtext ($hcms_lang['assign'][$lang]); ?>" onClick="applyconstraints();" />
+      <input name="cancel" type="button" id="cancel" value="<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>" onClick="self.close();" /></td>
     </tr>  
   </table>
   

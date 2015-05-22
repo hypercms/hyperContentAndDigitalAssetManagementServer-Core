@@ -41,25 +41,25 @@ if ($template != "")
   if (strpos ($template, ".inc.tpl") > 0)
   {
     $templatename = substr ($template, 0, strpos ($template, ".inc.tpl"));
-    $pagecomp = $hcms_lang['template-component'][$lang];
+    $pagecomp = getescapedtext ($hcms_lang['template-component'][$lang]);
     $cat = "inc";
   }
   elseif (strpos ($template, ".page.tpl") > 0)
   {
     $templatename = substr ($template, 0, strpos ($template, ".page.tpl"));
-    $pagecomp = $hcms_lang['page-template'][$lang];
+    $pagecomp = getescapedtext ($hcms_lang['page-template'][$lang]);
     $cat = "page";
   }
   elseif (strpos ($template, ".comp.tpl") > 0)
   {
     $templatename = substr ($template, 0, strpos ($template, ".comp.tpl"));
-    $pagecomp = $hcms_lang['component-template'][$lang];
+    $pagecomp = getescapedtext ($hcms_lang['component-template'][$lang]);
     $cat = "comp";
   }
   elseif (strpos ($template, ".meta.tpl") > 0)
   {
     $templatename = substr ($template, 0, strpos ($template, ".meta.tpl"));
-    $pagecomp = $hcms_lang['meta-data-template'][$lang];
+    $pagecomp = getescapedtext ($hcms_lang['meta-data-template'][$lang]);
     $cat = "meta";
   }
 
@@ -103,8 +103,8 @@ else $charset = trim ($mgmt_config[$site]['default_codepage']);
   <table>
     <tr><td class="hcmsHeadline"><?php echo $pagecomp; ?>:</td><td><input name="extension" type="text" value="<?php echo $templatename; ?>" style="width:220px;" disabled="disabled" /></td></tr>
     <?php if ($cat == "page" || $cat == "comp") { ?>
-    <tr><td class="hcmsHeadline"><?php echo $hcms_lang['file-extension-without-dot'][$lang]; ?>:</td><td><input name="extension" type="text" value="<?php echo $extension; ?>" style="width:50" disabled="disabled" /></td></tr>
-    <tr><td class="hcmsHeadline"><?php echo $hcms_lang['application'][$lang]; ?>:</td><td>
+    <tr><td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['file-extension-without-dot'][$lang]); ?>:</td><td><input name="extension" type="text" value="<?php echo $extension; ?>" style="width:50" disabled="disabled" /></td></tr>
+    <tr><td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['application'][$lang]); ?>:</td><td>
     <select name="application" disabled>
       <option value="asp"<?php if ($application == "asp") echo "selected=\"selected\""; ?>>Active Server Pages (ASP)</option>
       <option value="xml"<?php if ($application == "xml") echo "selected=\"selected\""; ?>>Extensible Markup Language (XML) or Text</option>

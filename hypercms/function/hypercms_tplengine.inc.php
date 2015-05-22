@@ -250,7 +250,7 @@ function tpl_insertcomponent ($application, $linkindex, $id)
     if ($id != "") return "<% tok = insertcomponent ($linkindex, \"$id\", properties, out);
 if(tok != null){
   String component;
- 	while (tok.hasMoreTokens()) {
+   while (tok.hasMoreTokens()) {
     component = tok.nextToken();
     %><jsp:include page=\"<%=component%>\"/><%
   }
@@ -258,7 +258,7 @@ if(tok != null){
     else return "<% tok = insertcomponent (\"$linkindex\", \"$id\", properties, out);
 if(tok != null){
   String component;
- 	while (tok.hasMoreTokens()) {
+   while (tok.hasMoreTokens()) {
     component = tok.nextToken();
     %><jsp:include page=\"<%=component%>\"/><%
   }
@@ -295,7 +295,7 @@ function tpl_persinsertcomponent ($application, $condition, $linkindex, $id)
   tok = insertcomponent ($linkindex, \"$id\", properties, out);
   if(tok != null){
     String component;
-   	while (tok.hasMoreTokens()) {
+     while (tok.hasMoreTokens()) {
       component = tok.nextToken();
       %><jsp:include page=\"<%=component%>\"/><%
     }
@@ -305,7 +305,7 @@ function tpl_persinsertcomponent ($application, $condition, $linkindex, $id)
   tok = insertcomponent (\"$linkindex\", \"$id\", properties, out);
   if(tok != null){
     String component;
-   	while (tok.hasMoreTokens()) {
+     while (tok.hasMoreTokens()) {
       component = tok.nextToken();
       %><jsp:include page=\"<%=component%>\"/><%
     }
@@ -351,7 +351,7 @@ function tpl_tsinsertcomponent ($application, $datefrom, $dateto, $linkindex, $i
   tok = insertcomponent ($linkindex, \"$id\", properties, out);
   if(tok != null){
     String component;
-   	while (tok.hasMoreTokens()) {
+     while (tok.hasMoreTokens()) {
       component = tok.nextToken();
       %><jsp:include page=\"<%=component%>\"/><%
     }
@@ -361,7 +361,7 @@ function tpl_tsinsertcomponent ($application, $datefrom, $dateto, $linkindex, $i
   tok = insertcomponent (\"$linkindex\", \"$id\", properties, out);
   if(tok != null){
     String component;
-   	while (tok.hasMoreTokens()) {
+     while (tok.hasMoreTokens()) {
       component = tok.nextToken();
       %><jsp:include page=\"<%=component%>\"/><%
     }
@@ -407,7 +407,7 @@ function tpl_tspersinsertcomponent ($application, $datefrom, $dateto, $condition
   tok = insertcomponent ($linkindex, \"$id\", properties, out);
   if(tok != null){
     String component;
-   	while (tok.hasMoreTokens()) {
+     while (tok.hasMoreTokens()) {
       component = tok.nextToken();
       %><jsp:include page=\"<%=component%>\"/><%
     }
@@ -417,7 +417,7 @@ function tpl_tspersinsertcomponent ($application, $datefrom, $dateto, $condition
   tok = insertcomponent (\"$linkindex\", \"$id\", properties, out);
   if(tok != null){
     String component;
-   	while (tok.hasMoreTokens()) {
+     while (tok.hasMoreTokens()) {
       component = tok.nextToken();
       %><jsp:include page=\"<%=component%>\"/><%
     }
@@ -528,12 +528,12 @@ if objFSO.FileExists(PathINI) then
   set fileINI = objFSO.OpenTextFile(PathINI)
   
   do while fileINI.AtEndOfStream <> true
-	  lineINI = fileINI.ReadLine
-	
-  	if (left(lineINI,1)<>\";\" and len(lineINI) > 1) then
-  		MyArray = split(lineINI, \" = \")
-  		publ_config.Add MyArray(0), replace(MyArray(1),\"\"\"\",\"\")
-  	end if
+    lineINI = fileINI.ReadLine
+  
+    if (left(lineINI,1)<>\";\" and len(lineINI) > 1) then
+      MyArray = split(lineINI, \" = \")
+      publ_config.Add MyArray(0), replace(MyArray(1),\"\"\"\",\"\")
+    end if
   loop
 end if
 %>\n";
@@ -554,12 +554,12 @@ if objFSO.FileExists(PathINI) then
   set fileINI = objFSO.OpenTextFile(PathINI)
   
   do while fileINI.AtEndOfStream <> true
-	  lineINI = fileINI.ReadLine
-	
-  	if (left(lineINI,1)<>\";\" and len(lineINI) > 1) then
-  		MyArray = split(lineINI, \" = \")
-  		publ_config.Add MyArray(0), replace(MyArray(1),\"\"\"\",\"\")
-  	end if
+    lineINI = fileINI.ReadLine
+  
+    if (left(lineINI,1)<>\";\" and len(lineINI) > 1) then
+      MyArray = split(lineINI, \" = \")
+      publ_config.Add MyArray(0), replace(MyArray(1),\"\"\"\",\"\")
+    end if
   loop
 end if
 %>\n";
@@ -621,12 +621,12 @@ if objFSO.FileExists(PathLinkIndex) then
   i = 0 
   
   do while fileLinkIndex.AtEndOfStream <> true
-  	lineLinkIndex = fileLinkIndex.ReadLine
+    lineLinkIndex = fileLinkIndex.ReadLine
     
-  	if len(lineLinkIndex) > 1 Then
+    if len(lineLinkIndex) > 1 Then
       hypercms_".$container_id.".Add i, (lineLinkIndex)
       i = i + 1
-  	end if
+    end if
   loop
 end if 
 %>\n";
@@ -643,12 +643,12 @@ if objFSO.FileExists(PathLinkIndex) then
   i = 0 
   
   do while fileLinkIndex.AtEndOfStream <> true
-  	lineLinkIndex = fileLinkIndex.ReadLine
+    lineLinkIndex = fileLinkIndex.ReadLine
     
-  	if len(lineLinkIndex) > 1 Then
+    if len(lineLinkIndex) > 1 Then
       hypercms_".$container_id.".Add i, (lineLinkIndex)
       i = i + 1
-  	end if
+    end if
   loop
 end if 
 %>\n";
@@ -1121,6 +1121,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   $application = "";
   $name_orig = "";
   $filetype = "";
+  $add_onload = "";
   $add_constraint = "";
   $add_submittext = "";
   $add_submitlanguage = ""; 
@@ -2468,20 +2469,23 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $tagl = "hyperCMS:".$searchtag."l id='".$id."'";
             $tagc = "hyperCMS:".$searchtag."c id='".$id."'";
             $tagd = "hyperCMS:".$searchtag."d id='".$id."'";
+            $tagk = "hyperCMS:".$searchtag."k id='".$id."'";
         
             $tagucount = @substr_count ($viewstore, $tagu);
             $tagfcount = @substr_count ($viewstore, $tagf);
             $taglcount = @substr_count ($viewstore, $tagl);
             $tagccount = @substr_count ($viewstore, $tagc);
             $tagdcount = @substr_count ($viewstore, $tagd);
+            $tagkcount = @substr_count ($viewstore, $tagk);
         
             $control_sum = 0;
         
-            if ($tagucount >= 1) $control_sum = $control_sum + 1;
-            if ($tagfcount >= 1) $control_sum = $control_sum + 1;
-            if ($taglcount >= 1) $control_sum = $control_sum + 1;
-            if ($tagccount >= 1) $control_sum = $control_sum + 1;
-            if ($tagdcount >= 1) $control_sum = $control_sum + 1;
+            if ($tagucount >= 1) $control_sum++;
+            if ($tagfcount >= 1) $control_sum++;
+            if ($taglcount >= 1) $control_sum++;
+            if ($tagccount >= 1) $control_sum++;
+            if ($tagdcount >= 1) $control_sum++;
+            if ($tagkcount >= 1) $control_sum++;
         
             // if textu, textf or textl tag have the same id => error
             if ($control_sum >= 2)
@@ -2496,7 +2500,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               </script>
               </head>
               <body class=\"hcmsWorkplaceGeneric\">
-                <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [".$tagu."], [".$tagf."], [".$tagl."], [".$tagc."] ".$hcms_lang['and-or'][$lang]." [".$tagd."] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
+                <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [".$tagu."], [".$tagf."], [".$tagl."], [".$tagc."], [".$tagd."] ".$hcms_lang['and-or'][$lang]." [".$tagk."] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
                 ".$hcms_lang['please-note-the-tag-identification-must-be-unique-for-different-tag-types-of-the-same-tag-set'][$lang]."
               </body>
               </html>";
@@ -2539,11 +2543,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   if ($searchtag == "comment") 
                   {
                     $bufferarray = selectcontent ($contentdata, "<text>", "<text_id>", $id.':*');
-										$contentcomment = "";
-										
+                    $contentcomment = "";
+                    
                     if (is_array ($bufferarray)) 
                     {
-											$contentcomment = "<div>\n";
+                      $contentcomment = "<div>\n";
                       
                       foreach ($bufferarray as $data) 
                       {
@@ -2584,7 +2588,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       if ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
                         // only for form views
-											  $contentcomment .= "</div>\n";
+                        $contentcomment .= "</div>\n";
                       }
                     }
                     
@@ -2635,38 +2639,38 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     $contentbot = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $contentbot);
                   }          
                 }
-								
-								// replace img-src with reference to the newly generated image if a colorspace or ICC profile is requested
-								if (!empty ($contentbot) && ($buildview == "publish") && $hypertagname == $searchtag."f" && ($colorspace != "" || $iccprofile != ""))
+                
+                // replace img-src with reference to the newly generated image if a colorspace or ICC profile is requested
+                if (!empty ($contentbot) && ($buildview == "publish") && $hypertagname == $searchtag."f" && ($colorspace != "" || $iccprofile != ""))
                 {
-									//create new dom object 
-									$dom = new DOMDocument();
-									$dom->loadHTML($contentbot);
-									$imagelocation = array();
+                  //create new dom object 
+                  $dom = new DOMDocument();
+                  $dom->loadHTML($contentbot);
+                  $imagelocation = array();
                   
-									// parse for img tags
-									foreach ($dom->getElementsByTagName('img') as $img)
+                  // parse for img tags
+                  foreach ($dom->getElementsByTagName('img') as $img)
                   {
-										//get src attribute of img tag
-										$source = $img->getAttribute('src');
-										$imagelocation['source'][] = $source;
-										// get abs location of the image
-										$imgdir = getmedialocation ($site, $source, "abs_path_media");
-										$imginfo = getfileinfo ($site, $source, "comp");
+                    //get src attribute of img tag
+                    $source = $img->getAttribute('src');
+                    $imagelocation['source'][] = $source;
+                    // get abs location of the image
+                    $imgdir = getmedialocation ($site, $source, "abs_path_media");
+                    $imginfo = getfileinfo ($site, $source, "comp");
                     // target dir
                     $viewdir = $mgmt_config['abs_path_view'];
-										//convert image to PNG in the requested colorspace or ICC profile
-										$destination_file = convertimage ($site, $imgdir.$site."/".$imginfo['file'], $viewdir, "png", $colorspace, $iccprofile);
+                    //convert image to PNG in the requested colorspace or ICC profile
+                    $destination_file = convertimage ($site, $imgdir.$site."/".$imginfo['file'], $viewdir, "png", $colorspace, $iccprofile);
                     // define url of converted image
-										$imagelocation['destination'][] = $mgmt_config['url_path_view'].$destination_file;
-									}
+                    $imagelocation['destination'][] = $mgmt_config['url_path_view'].$destination_file;
+                  }
                   
-									// replace the src attributes in the img tags with
-									if (!empty ($imagelocation['source']) && !empty ($imagelocation['destination']))
+                  // replace the src attributes in the img tags with
+                  if (!empty ($imagelocation['source']) && !empty ($imagelocation['destination']))
                   {
                     $contentbot = str_replace ($imagelocation['source'], $imagelocation['destination'], $contentbot);
                   }
-								}
+                }
                 
                 // replace %variables% with pathes in text content
                 if (!empty ($contentbot))
@@ -2733,12 +2737,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 $taglink = "";
               
                 // replace hyperCMS tag with given conent/data
-                if ($hypertagname == $searchtag."u")
+                if ($hypertagname == $searchtag."u" || $hypertagname == $searchtag."k")
                 {
                   $repl_offset = 0;
                   $viewstore_offset = $viewstore;
                   
-                  while (@substr_count ($viewstore_offset, $hypertag) > 0)  // necessary loop for unique media names for rollover effect
+                  // loop for unique media names for rollover effect
+                  while (@substr_count ($viewstore_offset, $hypertag) > 0)
                   {                             
                     if ($searchtag == "text")
                     {
@@ -2751,9 +2756,68 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       {
                         $add_submittext .= "submitText ('".$hypertagname."_".$id."', '".$hypertagname."[".$id."]');\n";
                         
-                        if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."','".$labelname."','".$constraint."'";
+                        // if keyword list
+                        if ($hypertagname == $searchtag."k")
+                        {
+                          $list = "";
+                          
+                          // extract source file (file path or URL) for text list
+                          $list_sourcefile = getattribute ($hypertag, "file");
+                          
+                          if ($list_sourcefile != "")
+                          {
+                            $list .= @file_get_contents ($list_sourcefile);
+                          }
+                          
+                          // extract text list
+                          $list .= getattribute ($hypertag, "list");
 
-                        $formitem[$key] = "
+                          // extract text list
+                          $onlylist = strtolower (getattribute ($hypertag, "onlylist"));
+                          
+                          // get list entries
+                          if ($list != "")
+                          {
+                            // replace line breaks
+                            $list = str_replace ("\r\n", ",", $list);
+                            $list = str_replace ("\n", ",", $list);
+                            $list = str_replace ("\r", ",", $list);
+                            // escape single quotes
+                            $list = str_replace ("'", "\\'", $list);
+                            // create array
+                            $list_array = explode (",", $list);
+                            // create keyword string for Javascript
+                            $keywords = "['".implode ("', '", $list_array)."']";
+                            
+                            $keywords_tagit = "availableTags:".$keywords.", ";
+
+                            if ($onlylist == "true" || $onlylist == "yes" || $onlylist == "1")
+                            {
+                              $keywords_tagit .= "beforeTagAdded: function(event, ui) { if ($.inArray(ui.tagLabel, ".$keywords.") == -1) { return false; } }, ";
+                            }
+                          }
+                          else $keywords_tagit = "";
+                          
+                          $add_onload .= "
+    $('#".$hypertagname."_".$id."').tagit({".$keywords_tagit."singleField:true, singleFieldDelimiter:',', singleFieldNode:$('#".$hypertagname."_".$id."')});";
+                          
+                          $formitem[$key] = "
+                        <tr>
+                          <td align=left valign=top>
+                            <b>".$labelname."</b>
+                          </td>
+                          <td align=left valign=top>
+                            <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
+                            <input name=\"".$hypertagname."_".$id."\" id=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px;\"".$disabled." value=\"".$contentbot."\" />
+                          </td>
+                        </tr>";
+                        }
+                        // if unformatted text
+                        else
+                        {
+                          if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."','".$labelname."','".$constraint."'";
+
+                          $formitem[$key] = "
                         <tr>
                           <td align=left valign=top>
                             <b>".$labelname."</b>
@@ -2762,7 +2826,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                             <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
                             <textarea name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea>
                           </td>
-                        </tr>\n";
+                        </tr>";
+                        }
                       }                        
                       elseif ($buildview == "template")
                       {
@@ -2774,7 +2839,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-text-entries'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>
-                        </table>\n";
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -2800,7 +2865,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                             <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
                             <textarea name=\"".$hypertagname."_".$artid."_".$elementid."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea>
                           </td>
-                        </tr>\n";
+                        </tr>";
                       }
                       elseif ($buildview == "template")
                       {
@@ -2812,7 +2877,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-text-entries'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>
-                        </table>\n";
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -2831,17 +2896,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <td align=left valign=top>
                           <b>".$labelname."</b>
                         </td>";
-												if (!empty ($contentcomment)) $formitem[$key] .= "
+                        if (!empty ($contentcomment)) $formitem[$key] .= "
                         <td>".$contentcomment."</td>
                       </tr>
                       <tr>
                         <td>&nbsp;</td>";
-												$formitem[$key] .= "
+                        $formitem[$key] .= "
                         <td align=left valign=top>
                           <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
                           <textarea name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled."></textarea>
                         </td>
-                      </tr>\n";
+                      </tr>";
                       }                        
                       elseif ($buildview == "template")
                       {
@@ -2853,7 +2918,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-comments'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>
-                        </table>\n";
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -2904,7 +2969,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               </tr>
                             </table>
                           </td>
-                        </tr>\n";
+                        </tr>";
                         }
                         else
                         {
@@ -2916,7 +2981,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <td align=left valign=top>
                           ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
                           </td>
-                        </tr>\n";
+                        </tr>";
                         }
                       }                      
                       elseif ($buildview == "template")
@@ -2929,7 +2994,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-formatted-text-entries'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>
-                        </table>\n";
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -2965,7 +3030,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               </tr>
                             </table>
                           </td>
-                        </tr>\n";
+                        </tr>";
                         }
                         else
                         {
@@ -2977,7 +3042,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <td align=left valign=top>
                           ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
                           </td>
-                        </tr>\n";
+                        </tr>";
                         }
                       }                      
                       elseif ($buildview == "template")
@@ -2990,7 +3055,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-formatted-text-entries'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>
-                        </table>\n";
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -3020,22 +3085,22 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <td>
                             ".$contentcomment."
                           </td>
-                        </tr>\n";
+                        </tr>";
                         }
                         else 
-												{
-													$formitem[$key] = "
+                        {
+                          $formitem[$key] = "
                         <tr>
                           <td align=left valign=top>
                             <b>".$labelname."</b>
                           </td>";
-													if (!empty ($contentcomment)) $formitem[$key] .= "<td>".$contentcomment."</td></tr><tr><td>&nbsp;</td>";
-													$formitem[$key] .= "
+                          if (!empty ($contentcomment)) $formitem[$key] .= "<td>".$contentcomment."</td></tr><tr><td>&nbsp;</td>";
+                          $formitem[$key] .= "
                           <td align=left valign=top>
                             ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
                           </td>
-                        </tr>\n";
-												}
+                        </tr>";
+                        }
                       }                        
                       elseif ($buildview == "template")
                       {
@@ -3047,7 +3112,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               ".$hcms_lang['this-place-is-reserved-for-formatted-comments'][$lang]."</font>
                             </td>
                           </tr>
-                        </table>\n";
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -3067,7 +3132,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   while (@substr_count ($viewstore_offset, $hypertag) > 0)
                   {                 
                     // extract text list
-                    $list = "";
                     $list = getattribute ($hypertag, "list");
                     
                     if ($searchtag == "text")
@@ -3080,39 +3144,41 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       elseif (($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") && isset ($foundtxt[$id]) && $foundtxt[$id] == true)
                       {
                         // get list entries
-                        $list_array = null;
-                        $list_array = explode ("|", $list);
-
-                        $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
-                            <b>".$labelname."</b>
-                          </td>
-                          <td align=left valign=top>
-                            <select name=\"".$hypertagname."[".$id."]\"".$disabled.">\n";
-                        
-                        foreach ($list_array as $list_entry)
+                        if ($list != "")
                         {
-                          $end_val = strlen($list_entry)-1;
+                          $list_array = explode ("|", $list);
+  
+                          $formitem[$key] = "
+                          <tr>
+                            <td align=left valign=top>
+                              <b>".$labelname."</b>
+                            </td>
+                            <td align=left valign=top>
+                              <select name=\"".$hypertagname."[".$id."]\"".$disabled.">\n";
                           
-                          if (($start_val = strpos($list_entry, "{")) > 0 && strpos($list_entry, "}") == $end_val)
+                          foreach ($list_array as $list_entry)
                           {
-                            $diff_val = $end_val-$start_val-1;
-                            $list_value = substr($list_entry, $start_val+1, $diff_val);
-                            $list_text = substr($list_entry, 0, $start_val);
-                          } 
-                          else $list_value = $list_text = $list_entry;
+                            $end_val = strlen($list_entry)-1;
                             
+                            if (($start_val = strpos($list_entry, "{")) > 0 && strpos($list_entry, "}") == $end_val)
+                            {
+                              $diff_val = $end_val-$start_val-1;
+                              $list_value = substr($list_entry, $start_val+1, $diff_val);
+                              $list_text = substr($list_entry, 0, $start_val);
+                            } 
+                            else $list_value = $list_text = $list_entry;
+                              
+                            $formitem[$key] .= "
+                                <option value=\"".$list_value."\""; 
+                            if ($list_value == $contentbot) $formitem[$key] .= " selected"; 
+                            $formitem[$key] .= ">".$list_text."</option>\n";
+                          }
+                                         
                           $formitem[$key] .= "
-                              <option value=\"".$list_value."\""; 
-                          if ($list_value == $contentbot) $formitem[$key] .= " selected"; 
-                          $formitem[$key] .= ">".$list_text."</option>\n";
+                              </select>
+                            </td>
+                          </tr>";
                         }
-                                       
-                        $formitem[$key] .= "
-                            </select>
-                          </td>
-                        </tr>\n";
                       }
                       elseif ($buildview == "template")
                       {
@@ -3124,7 +3190,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-text-options'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>
-                        </table>\n";
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -3170,7 +3236,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $formitem[$key] .= "
                           </select>
                         </td>
-                      </tr>\n";
+                      </tr>";
                       }                      
                       elseif ($buildview == "template")
                       {
@@ -3182,7 +3248,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               ".$hcms_lang['this-place-is-reserved-for-text-options'][$lang]."</font>
                             </td>
                           </tr>
-                        </table>\n";
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -3223,7 +3289,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <input type=\"hidden\" name=\"".$hypertagname."[".$id."]"."\" value=\"\">
                           <input type=\"checkbox\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".$checked.$disabled."> ".$value."
                         </td>
-                      </tr>\n";
+                      </tr>";
                       }
                       elseif ($buildview == "template" && $onedit != "hidden")
                       {
@@ -3235,7 +3301,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-a-checkbox'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>
-                        </table>\n";
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -3260,7 +3326,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <input type=\"hidden\" name=\"".$hypertagname."[".$id."]"."\" value=\"\">
                           <input type=\"checkbox\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".$checked.$disabled."> ".$value."
                         </td>
-                      </tr>\n";
+                      </tr>";
                       }                      
                       elseif ($buildview == "template")
                       {
@@ -3272,7 +3338,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               element: ".$elementid."</b><br />".$hcms_lang['this-place-is-reserved-for-a-checkbox'][$lang]."</font>
                             </td>
                           </tr>
-                        </table>\n";
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -3339,9 +3405,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                            {
                              if (object_code == 'day')
                              {
-                            	 document.getElementById('datefield_".$id."').value = cal.get_formatted_date(format_".$id.");
+                               document.getElementById('datefield_".$id."').value = cal.get_formatted_date(format_".$id.");
                                document.getElementById('textfield_".$id."').value = cal.get_formatted_date(format_".$id.");
-                            	 cal.hide();
+                               cal.hide();
                                cal_obj_".$id." = null;
                              }
                            }
@@ -3354,7 +3420,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           -->
                           </script>                                           
                         </td>
-                      </tr>\n";
+                      </tr>";
                       }
                       elseif ($buildview == "template" && $onedit != "hidden")
                       {
@@ -3366,7 +3432,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-a-date-field'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>
-                        </table>\n";
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -3414,9 +3480,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                            {
                              if (object_code == 'day')
                              {
-                            	 document.getElementById('datefield_".$artid."_".$elementid."').value = cal.get_formatted_date(format_".$artid."_".$elementid.");
+                               document.getElementById('datefield_".$artid."_".$elementid."').value = cal.get_formatted_date(format_".$artid."_".$elementid.");
                                document.getElementById('textfield_".$artid."_".$elementid."').value = cal.get_formatted_date(format_".$artid."_".$elementid.");
-                            	 cal.hide();
+                               cal.hide();
                                cal_obj_".$artid."_".$elementid." = null;
                              }
                            }
@@ -3429,7 +3495,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           -->
                           </script>                                            
                         </td>
-                      </tr>\n";
+                      </tr>";
                       }                      
                       elseif ($buildview == "template")
                       {
@@ -3696,7 +3762,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 $thumbnail[$id][$tagid] = getattribute ($hypertag, "thumbnail");
                 // get infotype
                 if (!isset ($infotype[$id]) || $infotype[$id] != "meta") $infotype[$id] = getattribute ($hypertag, "infotype");
-								// get dpi for scaling
+                // get dpi for scaling
                 $mediadpi[$id] = getattribute ($hypertag, "dpi");
                 // get colorspace and ICC profile
                 $mediacolorspace[$id][$tagid] = getattribute ($hypertag, "colorspace");
@@ -3732,18 +3798,18 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               // get language attribute
               if (empty ($language_info[$id])) $language_info[$id] = getattribute ($hypertag, "language");
 
-  						// replace image with reference to the newly generated image if a colorspace or ICC profile is given
-  						if (!empty ($mediafilebot[$id][$tagid]) && $buildview == "publish" && $hypertagname == $searchtag."file" && (!empty ($mediacolorspace[$id][$tagid]) || !empty ($mediaiccprofile[$id][$tagid])))
+              // replace image with reference to the newly generated image if a colorspace or ICC profile is given
+              if (!empty ($mediafilebot[$id][$tagid]) && $buildview == "publish" && $hypertagname == $searchtag."file" && (!empty ($mediacolorspace[$id][$tagid]) || !empty ($mediaiccprofile[$id][$tagid])))
               {
-  							// get abs location of the image
-  						  $imgdir = getmedialocation ($site, $mediafilebot[$id][$tagid], "abs_path_media");
+                // get abs location of the image
+                $imgdir = getmedialocation ($site, $mediafilebot[$id][$tagid], "abs_path_media");
                 // target dir
                 $viewdir = $mgmt_config['abs_path_view'];
-  						  // convert image to PNG in the requested colorspace or ICC profile
-  						  $mediafilebot_new = convertimage ($site, $imgdir.$mediafilebot[$id][$tagid], $viewdir, "png", $mediacolorspace[$id][$tagid], $mediaiccprofile[$id][$tagid]);
-  						  // check converted image
+                // convert image to PNG in the requested colorspace or ICC profile
+                $mediafilebot_new = convertimage ($site, $imgdir.$mediafilebot[$id][$tagid], $viewdir, "png", $mediacolorspace[$id][$tagid], $mediaiccprofile[$id][$tagid]);
+                // check converted image
                 if ($mediafilebot_new != false) $mediafilebot[$id][$tagid] = $mediafilebot_new;
-  						}
+              }
             }
             // if buildview = template
             else
@@ -3876,19 +3942,19 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   {
                     if ($searchtag == "media")
                     {
-											// initialize scaling factor 
-											// check if dpi is valid and than calculate scalingfactor
-											if (!empty ($mediadpi[$id]) && $mediadpi[$id] > 0 && $mediadpi[$id] < 1000) 
-											{
-												$scalingfactor = round ((72 / $mediadpi[$id]), 2); 
-											}
+                      // initialize scaling factor 
+                      // check if dpi is valid and than calculate scalingfactor
+                      if (!empty ($mediadpi[$id]) && $mediadpi[$id] > 0 && $mediadpi[$id] < 1000) 
+                      {
+                        $scalingfactor = round ((72 / $mediadpi[$id]), 2); 
+                      }
                       else $scalingfactor = "";
-											
+                      
                       // create tag link 
                       if ($buildview == "cmsview" || $buildview == 'inlineview')
                       {
                         $taglink = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."frameset_edit_media.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label[$id])."&tagname=media&mediacat=comp&mediafile=".url_encode($mediafilebot[$id][$tagid])."&mediaobject_curr=".url_encode($mediaobjectbot[$id])."&mediaobject=".url_encode($mediaobjectbot[$id])."&mediaalttext=".url_encode($mediaalttextbot[$id])."&mediaalign=".url_encode($mediaalignbot[$id])."&mediawidth=".url_encode($mediawidthbot[$id])."&mediaheight=".url_encode($mediaheightbot[$id])."&scaling=".url_encode($scalingfactor)."&mediatype=".url_encode($mediatype[$id])."&contenttype=".url_encode($contenttype)."&token=".$token."\"><img src=\"".getthemelocation()."img/button_media.gif\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a>\n";
-											}
+                      }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
                         if ($buildview == "formedit" || $buildview == "formmeta")
@@ -3896,7 +3962,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           $taglink = " <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['mediaobject[".$id."]'],'','scrollbars=yes,resizable=yes,width=800,height=600', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" align=\"absmiddle\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".$hcms_lang['edit'][$lang]."\" />
                           <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['".$hypertagname_file[$id]."[".$id."]']); deleteEntry(document.forms['hcms_formview'].elements['mediaobject[".$id."]']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" align=\"absmiddle\" alt=\"".$hcms_lang['delete'][$lang]."\" title=\"".$hcms_lang['delete'][$lang]."\" />
                           <img onClick=\"setSaveType('form_so', '".$mgmt_config['url_path_cms']."frameset_edit_media.php?view=".url_encode($buildview)."&savetype=form_so&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&contentfile=".url_encode($contentfile)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".urlencode($label[$id])."&tagname=media&mediacat=comp&mediafile=".url_encode($mediafilebot[$id][$tagid])."&mediaobject_curr=".url_encode($mediaobjectbot[$id])."&mediaobject=' + getValue('".$hypertagname_file[$id]."[".$id."]','') + '&mediaalttext=' + getValue('".$hypertagname_text[$id]."[".$id."]','*Null*') + '&mediaalign=' + getSelectedOption('".$hypertagname_align[$id]."[".$id."]','*Null*') + '&mediawidth=' + getValue('".$hypertagname_width[$id]."[".$id."]','*Null*') + '&mediaheight=' + getValue('".$hypertagname_height[$id]."[".$id."]','*Null*') + '&scaling=".url_encode($scalingfactor)."&mediatype=".url_encode($mediatype[$id])."&contenttype=".url_encode($contenttype)."');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" />\n";
-												}
+                        }
                         else $taglink = "";
                         
                         $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td align=left valign=top><table>\n";
@@ -6480,16 +6546,20 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <base href=\"".$mgmt_config['url_path_cms']."editor/\" />
   <meta http-equiv=\"Content-Type\" content=\"".$contenttype."\" />
   <meta name=\"robots\" content=\"noindex, nofollow\" />
-  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+  <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css\" />
   <script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
-  <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-1.9.1.min.js\" type=\"text/javascript\"></script>
+  <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-1.10.2.min.js\" type=\"text/javascript\"></script>
+  <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.10.2.min.js\" type=\"text/javascript\"></script>
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."editor/ckeditor/ckeditor.js\"></script>
   <script type=\"text/javascript\">CKEDITOR.disableAutoInline = true;</script>
-  <link rel=\"stylesheet\" href=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.css\" />
+  <link  rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.css\" />
   <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>
   <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
   <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_de.js\"></script>
   <script language=\"Javascript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/domready.js\"></script>
+  <script language=\"Javascript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/tag-it/tag-it.min.js\"></script>
+  <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/tag-it/jquery.tagit.css\" />
+  <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/tag-it/tagit.ui-zendesk.css\" />
   <script language=\"JavaScript\" type=\"text/javascript\">
   <!--
   ".$bodytag_controlreload."";
@@ -6796,7 +6866,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         // manually entered relative hyperlink
         else if (select.value.indexOf('/') > 0)
         {
-    	    target.value = select.value;
+          target.value = select.value;
         }
         // or set via navigation tree
         else if (select.value.indexOf('/') == 0 && select.value.indexOf('%page%') == -1 && select.value.indexOf('%comp%') == -1)
@@ -6963,12 +7033,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   }
   ";
   
+  // autosave code
   if (intval ($mgmt_config['autosave']) > 0 && $buildview != "formlock") $viewstore .= "
-	function autosave ()
+  function autosave ()
   {
     var test = $(\"#autosave\").is(\":checked\");
       
-  	if (test == true)
+    if (test == true)
     {  
       var checkcontent = true;
           
@@ -6976,18 +7047,18 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       
       if (checkcontent == true) 
       {
-      	".$add_submittext."
+        ".$add_submittext."
         ".$add_submitlanguage."
         ".$add_submitlink."
         ".$add_submitcomp."
             
-      	for(var i in CKEDITOR.instances)
+        for(var i in CKEDITOR.instances)
         {
-      		CKEDITOR.instances[i].updateElement();
-      	}
+          CKEDITOR.instances[i].updateElement();
+        }
         
-      	hcms_showHideLayers('messageLayer','','show');
-      	$(\"#savetype\").val('auto');
+        hcms_showHideLayers('messageLayer','','show');
+        $(\"#savetype\").val('auto');
             
         $.post(
           \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
@@ -7006,7 +7077,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     }
     setTimeout('autosave()', ".(intval ($mgmt_config['autosave']) * 1000).");
   }
-  setTimeout('autosave()', ".(intval ($mgmt_config['autosave']) * 1000).");";
+  
+  setTimeout('autosave()', ".(intval ($mgmt_config['autosave']) * 1000).");
+  ";
+  
+  // onload event / document ready
+  if ($add_onload != "") $viewstore .= "
+  $(document).ready(function() {".
+    $add_onload."
+  });";
   
   $viewstore .= "
   //-->
@@ -7135,10 +7214,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // for all views except template view
       if ($buildview != "template")
       {
-      	// We only add if a video is used (Projekktor or VIDEO.JS Player)
+        // We only add if a video is used (Projekktor or VIDEO.JS Player)
         if (preg_match('/\<video.*?id=[\"\\\']hcms_mediaplayer_/i', $viewstore) || preg_match('/\<video.*?id=[\"\\\']hcms_projekktor_/i', $viewstore) || preg_match('/\<video.*?id=[\"\\\']hcms_videojs_/i', $viewstore))
         {
-       	  if (substr_count (strtolower ($viewstore), "</head>") > 0)
+           if (substr_count (strtolower ($viewstore), "</head>") > 0)
           {
             $viewstore = preg_replace ("/\<\/head\>/i", showvideoplayer_head ($site, false, $buildview)."</head>", $viewstore);
           }
@@ -7157,7 +7236,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         // We only add if a audio is used (audio.js Player)
         if (preg_match('/\<audio.*?id=[\"\\\']hcms_audioplayer_/i', $viewstore))
         {
-       	  if (substr_count (strtolower ($viewstore), "</head>") > 0)
+           if (substr_count (strtolower ($viewstore), "</head>") > 0)
           {
             $viewstore = preg_replace ("/\<\/head\>/i", showaudioplayer_head ()."</head>", $viewstore);
           }
@@ -7206,7 +7285,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   $result['object'] = $page;
   $result['name'] = $name_orig;
   $result['objecttype'] = $filetype;    
-	
+  
   return $result;
 }
 
@@ -7246,7 +7325,7 @@ function buildsearchform ($site, $template, $ownergroup="")
     $searchtag_array[1] = "text";
     $infotype = "";
     $value = "";
-	  $id_array = array();
+    $id_array = array();
     
     foreach ($searchtag_array as $searchtag)
     {
@@ -7294,7 +7373,8 @@ function buildsearchform ($site, $template, $ownergroup="")
             // search field for formatted and unformatted text
             if ($hypertagname == $searchtag."u" || $hypertagname == $searchtag."f")
             {
-              if (@substr_count ($viewstore, $hypertag) >= 1)  // necessary loop for unique media names for rollover effect
+              // loop for unique media names for rollover effect
+              if (@substr_count ($viewstore, $hypertag) >= 1)
               {    
                 if ($searchtag == "text")
                 {
@@ -7312,7 +7392,6 @@ function buildsearchform ($site, $template, $ownergroup="")
               if (@substr_count ($viewstore, $hypertag) >= 1)
               {
                 // extract text list
-                $list = "";
                 $list = getattribute ($hypertag, "list");
                 
                 if ($searchtag == "text")

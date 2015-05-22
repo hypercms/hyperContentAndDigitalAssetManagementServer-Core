@@ -125,7 +125,7 @@ window.onload = function()
 				button_width: "160",
 				button_height: "22",
 				button_placeholder_id: "spanButtonPlaceHolder",
-				button_text: '<span class="button_upload"><?php echo $hcms_lang['upload-files'][$lang]; ?></span>',
+				button_text: '<span class="button_upload"><?php echo getescapedtext ($hcms_lang['upload-files'][$lang]); ?></span>',
         button_text_style: ".button_upload { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9pt; font-weight: normal; color: #FFFFFF; }",
 				button_text_left_padding: 12,
 				button_text_top_padding: 3, 
@@ -345,8 +345,8 @@ function cal_on_autoclose (cal)
 
 <!-- top bar -->
 <?php
-if ($uploadmode == "multi") $title = $hcms_lang['upload-files-to-location'][$lang];
-else $title = $hcms_lang['upload-new-file-in'][$lang];
+if ($uploadmode == "multi") $title = getescapedtext ($hcms_lang['upload-files-to-location'][$lang]);
+else $title = getescapedtext ($hcms_lang['upload-new-file-in'][$lang]);
 
 if ($uploadmode == "multi")
 {
@@ -365,35 +365,33 @@ echo showtopbar ($title.": ".$object_name, $lang);
     <form name="upload" id="upload" action="" method="post" enctype="multipart/form-data">
   	<fieldset class="flash" id="fsUploadProgress">
 	</fieldset>
-	<div><div id="divStatus" style="float:left;">0</div>&nbsp;<?php echo $hcms_lang['files-uploaded'][$lang]; ?><br /></div>
+	<div><div id="divStatus" style="float:left;">0</div>&nbsp;<?php echo getescapedtext ($hcms_lang['files-uploaded'][$lang]); ?><br /></div>
         <br />
 	<div>
         <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
-        <input type="checkbox" name="unzip" id="unzip" value="1" onclick="setpost_multi();" /> <?php echo $hcms_lang['uncompress-files'][$lang]; ?><br />
+        <input type="checkbox" name="unzip" id="unzip" value="1" onclick="setpost_multi();" />&nbsp;<?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?><br />
         <?php } elseif ($uploadmode == "single") { ?> 
           <?php if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) { ?>
-          <input type="checkbox" name="versioning" id="versioning" value="1" onchange="setpost_single();" /> <?php echo $hcms_lang['keep-existing-file-as-old-version'][$lang]; ?><br />
+          <input type="checkbox" name="versioning" id="versioning" value="1" onchange="setpost_single();" />&nbsp;<?php echo getescapedtext ($hcms_lang['keep-existing-file-as-old-version'][$lang]); ?><br />
           <?php } ?> 
-          <input type="checkbox" name="createthumbnail" id="createthumbnail" value="1" onchange="setpost_single();" /> <?php echo $hcms_lang['thumbnail-image-jpeg-file'][$lang]; ?><br />
+          <input type="checkbox" name="createthumbnail" id="createthumbnail" value="1" onchange="setpost_single();" />&nbsp;<?php echo getescapedtext ($hcms_lang['thumbnail-image-jpeg-file'][$lang]); ?><br />
         <?php } ?> 
         <?php if ($uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) {  ?>
           <input type="checkbox" name="imageresize" id="imageresize" value="percentage" onchange="setpost_multi();" />
-          <?php echo $hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]; ?>: <input name="imagepercentage" id="imagepercentage" type="text" onkeyup="setpost_multi();" size="3" maxlength="3" value="100" disabled="disabled" /> %<br />
+          <?php echo getescapedtext ($hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]); ?>: <input name="imagepercentage" id="imagepercentage" type="text" onkeyup="setpost_multi();" size="3" maxlength="3" value="100" disabled="disabled" /> %<br />
         <?php } ?>
-          <input type="checkbox" name="checkduplicates" id="checkduplicates" value="1" onchange="setpost_multi();" <?php if ($mgmt_config['check_duplicates']) echo 'checked="checked"'; ?> />
-          <?php echo $hcms_lang['check-for-duplicates'][$lang]; ?><br />
+          <input type="checkbox" name="checkduplicates" id="checkduplicates" value="1" onchange="setpost_multi();" <?php if ($mgmt_config['check_duplicates']) echo 'checked="checked"'; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['check-for-duplicates'][$lang]); ?><br />
         <?php if ($uploadmode == "multi") { ?>
-          <input type="checkbox" name="deleteobject" id="deleteobject" value="1" onchange="setpost_multi();" />
-          <?php echo $hcms_lang['remove-uploaded-files-on'][$lang]; ?>
+          <input type="checkbox" name="deleteobject" id="deleteobject" value="1" onchange="setpost_multi();" />&nbsp;<?php echo getescapedtext ($hcms_lang['remove-uploaded-files-on'][$lang]); ?>
           <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" />
           <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
-          <img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['select-date'][$lang]; ?>" title="<?php echo $hcms_lang['select-date'][$lang]; ?>" /><br />
+          <img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" /><br />
         <?php } ?>
         <br />
         <table cellspacing="3">
           <tr>
             <td><span id="spanButtonPlaceHolder"></span></td>    
-            <td><input id="btnCancel" type="button" class="hcmsButtonOrange" value="<?php echo $hcms_lang['cancel-all-uploads'][$lang]; ?>" onclick="swfu.cancelQueue();" disabled="disabled" style="height:22px;" /></td>
+            <td><input id="btnCancel" type="button" class="hcmsButtonOrange" value="<?php echo getescapedtext ($hcms_lang['cancel-all-uploads'][$lang]); ?>" onclick="swfu.cancelQueue();" disabled="disabled" style="height:22px;" /></td>
           </tr>
         </table>
       </div>

@@ -603,8 +603,11 @@ input, select, textarea
   color: #000000;
   text-decoration: none;
   vertical-align: middle;
-  border: 1px solid #999;
+  border: 1px solid #C6C6C6;
   border-radius: 6px;
+  background-color: #FFFFFF;
+  margin: 0;
+  padding: 2px;
 }
 
 a 

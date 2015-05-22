@@ -82,9 +82,9 @@ echo showtopbar ($hcms_lang['content-container'][$lang]." '".$container."' ".$hc
 <?php
 echo "<table border=\"0\" cellspacing=\"2\" cellpadding=\"3\" width=\"99%\">
   <tr>
-    <td class=\"hcmsHeadline\" width=\"15%\" nowrap=\"nowrap\">".$hcms_lang['name'][$lang]."</td>
-    <td class=\"hcmsHeadline\">".$hcms_lang['location'][$lang]."</td>
-    <td class=\"hcmsHeadline\" width=\"15%\" nowrap=\"nowrap\">".$hcms_lang['publication'][$lang]."</td>
+    <td class=\"hcmsHeadline\" width=\"15%\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['name'][$lang])."</td>
+    <td class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['location'][$lang])."</td>
+    <td class=\"hcmsHeadline\" width=\"15%\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['publication'][$lang])."</td>
   </tr>";
 // ---------------------------- analyze links ------------------------------
 // get connected objects
@@ -165,7 +165,7 @@ else
 {
   echo "<script language=\"JavaScript\">
 <!--
-openBrWindow('popup_log.php?description=<p class=hcmsHeadline>".$hcms_lang['functional-error-occured'][$lang]."</p>".$hcms_lang['link-management-database-is-corrupt-or-you-do-not-have-read-permissions'][$lang]."', 'alert', 'scrollbars=yes,width=600,height=200','600','200');
+openBrWindow('popup_log.php?description=<p class=hcmsHeadline>".getescapedtext ($hcms_lang['functional-error-occured'][$lang])."</p>".getescapedtext ($hcms_lang['link-management-database-is-corrupt-or-you-do-not-have-read-permissions'][$lang])."', 'alert', 'scrollbars=yes,width=600,height=200','600','200');
 -->
 </script>\n";
   
@@ -174,7 +174,7 @@ openBrWindow('popup_log.php?description=<p class=hcmsHeadline>".$hcms_lang['func
 }  
 
 // if no items were found  
-if ($found == false) echo "<tr class=\"hcmsRowData1\"><td colspan=\"4\">".$hcms_lang['no-items-were-found'][$lang]."</td></tr>\n";
+if ($found == false) echo "<tr class=\"hcmsRowData1\"><td colspan=\"4\">".getescapedtext ($hcms_lang['no-items-were-found'][$lang])."</td></tr>\n";
 echo "</table>\n";
 
 // save log

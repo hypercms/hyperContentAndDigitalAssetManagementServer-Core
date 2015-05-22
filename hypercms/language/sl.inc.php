@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['sl'] = "Mapa je bila preimenovana v";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['sl'] = "Nimate dovoljenja za pisanje mape";
 $hcms_lang['the-folder-does-not-exist']['sl'] = "Mapa ne obstaja";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['sl'] = "Nimate dovoljenja za pisanje na potek dela nastavitve mape";
-$hcms_lang['titel']['sl'] = "Titel";
 $hcms_lang['category']['sl'] = "Kategorija";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['sl'] = "Prenos na Youtube ni aktivirana za vaš račun. Obrnite se na sistem nege";
 $hcms_lang['tags']['sl'] = "Zaznamki";
@@ -1308,4 +1307,5 @@ $hcms_lang['server']['sl'] = "Strežnik";
 $hcms_lang['use-ssl']['sl'] = "Uporaba SSL";
 $hcms_lang['formats']['sl'] = "Formati";
 $hcms_lang['download-formats']['sl'] = "Prenesi formate";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['sl'] = "Ključne besede z dodatno obvezno ali odprtem seznamu";
 ?>

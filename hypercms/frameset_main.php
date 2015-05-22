@@ -79,13 +79,13 @@ function maxNavFrame ()
       <td width="5">&nbsp;</td>
       <td width="320" align="left" valign="middle" nowrap="nowrap"><a href="javascript:openInfo();"><img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.gif"; ?>" border="0" align="absmiddle" title="hyper Content Management Server" alt="hyper Content Management Server" /></a></td>
       <td nowrap="nowrap">&nbsp;</td>
-      <td align="right" valign="middle" nowrap="nowrap"><span class="hcmsHeadline"><?php echo $hcms_lang['user'][$lang]; ?>: </span><span class="hcmsHeadlineTiny hcmsTextWhite"><?php echo getsession ('hcms_user'); ?></span></td>
+      <td align="right" valign="middle" nowrap="nowrap"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>: </span><span class="hcmsHeadlineTiny hcmsTextWhite"><?php echo getsession ('hcms_user'); ?></span></td>
       <td width="30" nowrap="nowrap">&nbsp;&nbsp;</td>
-      <td width="220" align="left" valign="middle" nowrap="nowrap"><span class="hcmsHeadline"><?php echo $hcms_lang['server-time'][$lang]; ?>:</span>&nbsp;<?php $servertime->InstallClock(); ?></td>
+      <td width="220" align="left" valign="middle" nowrap="nowrap"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['server-time'][$lang]); ?>:</span>&nbsp;<?php $servertime->InstallClock(); ?></td>
       <td width="30" nowrap="nowrap">&nbsp;&nbsp;</td>
       <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
       <td width="40" align="right" valign="middle" nowrap="nowrap">
-        <button id="chat" class="hcmsButtonOrange" style="margin-top:1px; heigth:20px;" onClick="hcms_openChat();"><?php echo $hcms_lang['chat'][$lang]; ?></button>
+        <button id="chat" class="hcmsButtonOrange" style="margin-top:1px; heigth:20px;" onClick="hcms_openChat();"><?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?></button>
       </td>
       <?php } ?>
       <?php if (!empty ($mgmt_config['db_connect_rdbms'])) { ?>
@@ -94,8 +94,8 @@ function maxNavFrame ()
           <input type="hidden" name="action" value="base_search" />
           <input type="hidden" name="search_dir" value="" />
           <input type="hidden" name="maxhits" value="1000" />
-          <input type="text" name="search_expression" style="width:200px;" maxlength="60" value="<?php echo $hcms_lang['search-expression'][$lang]; ?>" onfocus="if (this.value == '<?php echo $hcms_lang['search-expression'][$lang]; ?>') this.value=''" onblur="if(this.value == '') this.value='<?php echo $hcms_lang['search-expression'][$lang]; ?>'" />
-          <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onClick="if (document.forms['searchform_general'].elements['search_expression'].value=='<?php echo $hcms_lang['search-expression'][$lang]; ?>') document.forms['searchform_general'].elements['search_expression'].value=''; document.forms['searchform_general'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" style="border:0; cursor:pointer;" align="absmiddle" title="OK" alt="OK" />
+          <input type="text" name="search_expression" style="width:200px;" maxlength="60" value="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" onfocus="if (this.value == '<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>') this.value=''" onblur="if(this.value == '') this.value='<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>'" />
+          <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onClick="if (document.forms['searchform_general'].elements['search_expression'].value=='<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>') document.forms['searchform_general'].elements['search_expression'].value=''; document.forms['searchform_general'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" style="border:0; cursor:pointer;" align="absmiddle" title="OK" alt="OK" />
         </form>
       </td>
       <?php } ?>

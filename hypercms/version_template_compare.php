@@ -97,7 +97,7 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
       $time = str_replace ("-", ":", $time);
       $date_array[$i] = $date." ".$time;
     }
-    else $date_array[$i] = $hcms_lang['template-component'][$lang];
+    else $date_array[$i] = getescapedtext ($hcms_lang['template-component'][$lang]);
   
     // load template file
     $templatedata = loadtemplate ($site, $tpl_container);
@@ -146,7 +146,7 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
 <!-- content -->
 <div class="hcmsWorkplaceFrame">
 <?php
-if (is_array ($date_array)) echo "<p style=\"margin:2px; padding:2px;\">".$hcms_lang['comparison-of-versions'][$lang].": ".$date_array[0]." / ".$date_array[1]."</p>\n";
+if (is_array ($date_array)) echo "<p style=\"margin:2px; padding:2px;\">".getescapedtext ($hcms_lang['comparison-of-versions'][$lang]).": ".$date_array[0]." / ".$date_array[1]."</p>\n";
 
 if (is_array ($content_array))
 {  
@@ -155,11 +155,11 @@ if (is_array ($content_array))
   // compare old version to new version
   // extension
   $extension_diff = html_diff ($extension_array[0], $extension_array[1]);  
-  $result .= "<p><div class=\"hcmsHeadline\" style=\"margin:2px; padding:2px; width:160px; height:16px; float:left;\">".$hcms_lang['file-extension'][$lang]."</div><div style=\"margin:2px; padding:2px; width:360px; height:16px; float:left; border:1px solid #000000; background:#FFFFFF;\">".$extension_diff."</div><br /></p>";
+  $result .= "<p><div class=\"hcmsHeadline\" style=\"margin:2px; padding:2px; width:160px; height:16px; float:left;\">".getescapedtext ($hcms_lang['file-extension'][$lang])."</div><div style=\"margin:2px; padding:2px; width:360px; height:16px; float:left; border:1px solid #000000; background:#FFFFFF;\">".$extension_diff."</div><br /></p>";
   
   //application
   $application_diff = html_diff ($application_array[0], $application_array[1]);    
-  $result .= "<p><div class=\"hcmsHeadline\" style=\"margin:2px; padding:2px; width:160px; height:16px; float:left;\">".$hcms_lang['application'][$lang]."</div><div style=\"margin:2px; padding:2px; width:360px; height:16px; float:left; border:1px solid #000000; background:#FFFFFF;\">".$application_diff."</div><br /></p>";
+  $result .= "<p><div class=\"hcmsHeadline\" style=\"margin:2px; padding:2px; width:160px; height:16px; float:left;\">".getescapedtext ($hcms_lang['application'][$lang])."</div><div style=\"margin:2px; padding:2px; width:360px; height:16px; float:left; border:1px solid #000000; background:#FFFFFF;\">".$application_diff."</div><br /></p>";
   
   // content
   $content_array[0] = str_replace (array("<",">"), array("&lt;","&gt;"), $content_array[0]);

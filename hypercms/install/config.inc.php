@@ -443,9 +443,10 @@ $mgmt_config['passcode'] = "";
 // --------------------------------------- App Keys --------------------------------------------
 
 // Youtube integration
-// Please provide app-key in order to upload videos to Youtube
+// Please provide Google API credentials in order to upload videos to Youtube
 $mgmt_config['youtube_appname'] = "";
-$mgmt_config['youtube_appkey'] = "";
+$mgmt_config['youtube_oauth2_client_id'] = "";
+$mgmt_config['youtube_oauth2_client_secret'] = "";
 
 // DropBox integration
 // Keep in mind that the domain needs to be added to your Dropbox developer account in order to use the app-key
@@ -552,11 +553,11 @@ $mgmt_docconvert['.odp'] = array('.pdf', '.ppt');
 $mgmt_imagepreview['.ai.aai.act.art.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mtv.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.txt.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
 
 // If an image file is uploaded hyperCMS will try to generate a thumbnail file for preview:
-$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-cs RGB -s 180x180 -f jpg";
+$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 180x180 -f jpg";
 // Define the supported target formats for image editing:
-$mgmt_imageoptions['.jpg.jpeg']['original'] = "-cs RGB -f jpg";
+$mgmt_imageoptions['.jpg.jpeg']['original'] = "-f jpg";
 $mgmt_imageoptions['.gif']['original'] = "-f gif";
-$mgmt_imageoptions['.png']['original'] = "-cs RGB -f png";
+$mgmt_imageoptions['.png']['original'] = "-f png";
 // Define additional download formats besides the original image:
 $mgmt_imageoptions['.jpg.jpeg']['1920x1080px'] = '-s 1920x1080 -f jpg';
 $mgmt_imageoptions['.jpg.jpeg']['1024x768px'] = '-s 1024x768 -f jpg';
@@ -599,10 +600,10 @@ $mgmt_mediaoptions['.mp4'] = "-b:v %videobitrate% -s:v %width%x%height% -f mp4 -
 $mgmt_mediaoptions['.ogv'] = "-b:v %videobitrate% -s:v %width%x%height% -f ogg -c:a libvorbis -b:a %audiobitrate% -ac 2";
 $mgmt_mediaoptions['.webm'] = "-b:v %videobitrate% -s:v %width%x%height% -f webm -c:a libvorbis -b:a %audiobitrate% -ac 2";
 // Audio formats:
-$mgmt_mediaoptions['.flac'] = "-f flac -c:a flac -b:a %audiobitrate% -ar 22050";
-$mgmt_mediaoptions['.mp3'] = "-f mp3 -c:a libmp3lame -b:a %audiobitrate% -ar 22050";
-$mgmt_mediaoptions['.oga'] = "-f ogg -c:a libvorbis -b:a %audiobitrate% -ar 22050";
-$mgmt_mediaoptions['.wav'] = "-c:a pcm_u8 -b:a %audiobitrate% -ar 22050";
+$mgmt_mediaoptions['.flac'] = "-f flac -c:a flac -b:a %audiobitrate%";
+$mgmt_mediaoptions['.mp3'] = "-f mp3 -c:a libmp3lame -b:a %audiobitrate%";
+$mgmt_mediaoptions['.oga'] = "-f ogg -c:a libvorbis -b:a %audiobitrate%";
+$mgmt_mediaoptions['.wav'] = "-c:a pcm_u8 -b:a %audiobitrate%";
 
 // Define Metadata Injection
 // YAMDI to inject metadata (play length) into the generated flash video file (FFMPEG discards metadata)

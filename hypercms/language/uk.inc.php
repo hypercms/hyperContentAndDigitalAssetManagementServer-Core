@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['uk'] = "Теку було переймен
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['uk'] = "Ви не маєте права доступу для запису теки";
 $hcms_lang['the-folder-does-not-exist']['uk'] = "Папка не існує";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['uk'] = "Ви не маєте писати дозволи на документообігу параметри теки";
-$hcms_lang['titel']['uk'] = "Titel";
 $hcms_lang['category']['uk'] = "Категорії";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['uk'] = "Інтерактивна довідка не активовано на вашому рахунку. Зверніться до системного adminstrator";
 $hcms_lang['tags']['uk'] = "Теги";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['uk'] = "Сервера";
 $hcms_lang['use-ssl']['uk'] = "Використання SSL";
 $hcms_lang['formats']['uk'] = "Формати";
 $hcms_lang['download-formats']['uk'] = "Завантажити форматів";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['uk'] = "Ключові слова з додатковим обов'язковим або відкритого списку";
 ?>

@@ -47,21 +47,21 @@ checkusersession ($user, false);
 <?php
 if ($cat == "tracking")
 {
-  echo "<p class=\"hcmsHeadlineTiny\">".$hcms_lang['define-variables-and-set-their-values-see-example-for-passive-personalization'][$lang].":</p>
+  echo "<p class=\"hcmsHeadlineTiny\">".getescapedtext ($hcms_lang['define-variables-and-set-their-values-see-example-for-passive-personalization'][$lang]).":</p>
   if (!\$customer) \$customer['private']=0; else \$customer['private']++;<br /><br /> 
-  <p class=\"hcmsHeadlineTiny\">".$hcms_lang['register-variables-in-session-see-example'][$lang].":</p>
+  <p class=\"hcmsHeadlineTiny\">".getescapedtext ($hcms_lang['register-variables-in-session-see-example'][$lang]).":</p>
   \$_SESSION['customer'] = \$customer;<br /> 
   \$_SESSION['product'] = \$product;<br /> 
-  <p class=\"hcmsHeadlineTiny\">".$hcms_lang['define-a-cookie-and-set-its-value-and-an-expiration-time-see-example'][$lang].":</p>
+  <p class=\"hcmsHeadlineTiny\">".getescapedtext ($hcms_lang['define-a-cookie-and-set-its-value-and-an-expiration-time-see-example'][$lang]).":</p>
   setcookie ('cookie['user']', \$username, time() + 31536000);
-  <p class=\"hcmsHeadlineTiny\">".$hcms_lang['get-a-cookie-and-read-its-value-see-example'][$lang].":</p>
+  <p class=\"hcmsHeadlineTiny\">".getescapedtext ($hcms_lang['get-a-cookie-and-read-its-value-see-example'][$lang]).":</p>
   \$_COOKIE['cookie'];<br />
   \$username = \$cookie['user'];
-  <p class=\"hcmsHeadlineTiny\">".$hcms_lang['please-note-do-not-use-html-code-in-customer-tracking'][$lang]."</p>\n"; 
+  <p class=\"hcmsHeadlineTiny\">".getescapedtext ($hcms_lang['please-note-do-not-use-html-code-in-customer-tracking'][$lang])."</p>\n"; 
 }
 elseif ($cat == "profile")
 {
-  echo "<p class=\"hcmsHeadlineTiny\">".$hcms_lang['define-constraints-for-the-display-of-components-see-example'][$lang].":</p>
+  echo "<p class=\"hcmsHeadlineTiny\">".getescapedtext ($hcms_lang['define-constraints-for-the-display-of-components-see-example'][$lang]).":</p>
   (\$customer['private'] > \$customer['business'] AND \$count>=5) OR \$customer==\"business\"<br /><br />\n";
 }
 ?>

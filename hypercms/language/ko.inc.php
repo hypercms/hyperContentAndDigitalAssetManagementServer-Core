@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['ko'] = "폴더 이름이 바뀌었다";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['ko'] = "권한 폴더의 쓰기 권한이 없습니다.";
 $hcms_lang['the-folder-does-not-exist']['ko'] = "이 폴더가 존재하지 않습니다";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['ko'] = "워크플로우 폴더 권한 설정을 쓰기 권한이 없습니다.";
-$hcms_lang['titel']['ko'] = "titel";
 $hcms_lang['category']['ko'] = "카테고리";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['ko'] = "YouTube 업로드 계정에서 활성화되어 있지 않습니다. 시스템 관리자에게 문의하십시오.";
 $hcms_lang['tags']['ko'] = "태그";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['ko'] = "서버";
 $hcms_lang['use-ssl']['ko'] = "SSL을 사용";
 $hcms_lang['formats']['ko'] = "형식";
 $hcms_lang['download-formats']['ko'] = "다운로드 형식";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['ko'] = "선택 필수 또는 개방 목록 키워드";
 ?>

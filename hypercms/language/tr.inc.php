@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['tr'] = "Klasör adı";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['tr'] = "Bunu size yazma klasör izinlerini";
 $hcms_lang['the-folder-does-not-exist']['tr'] = "Klasör yok";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['tr'] = "Bunu size yazma izinleri iş akışı klasör ayarları";
-$hcms_lang['titel']['tr'] = "Titel";
 $hcms_lang['category']['tr'] = "Kategori";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['tr'] = "Youtube'a yükleme için etkin değil Hesap. Lütfen sistem yöneticisi";
 $hcms_lang['tags']['tr'] = "Etiketler";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['tr'] = "Server";
 $hcms_lang['use-ssl']['tr'] = "SSL KULLAN";
 $hcms_lang['formats']['tr'] = "Biçimleri";
 $hcms_lang['download-formats']['tr'] = "Yükleme biçimleri";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['tr'] = "İsteğe bağlı zorunlu veya açık liste ile Anahtar Kelimeler";
 ?>

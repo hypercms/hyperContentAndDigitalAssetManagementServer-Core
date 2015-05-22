@@ -63,7 +63,7 @@ if ($sender == "settings" && checktoken ($token, $user))
     }
     
     $add_onload = "parent.frames['mainFrame'].location.href='".$target_href."'; ";
-    $show = $result['message']."<br />\n<a href=\"group_edit_form.php?site=".url_encode($site)."&group_name=".url_encode($group_name)."&preview=no\">".$hcms_lang['back'][$lang]."</a><br />\n";      
+    $show = $result['message']."<br />\n<a href=\"group_edit_form.php?site=".url_encode($site)."&group_name=".url_encode($group_name)."&preview=no\">".getescapedtext ($hcms_lang['back'][$lang])."</a><br />\n";      
   }
   else
   {

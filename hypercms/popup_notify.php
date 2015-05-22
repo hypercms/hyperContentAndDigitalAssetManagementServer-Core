@@ -102,10 +102,10 @@ if ($action == "save" && checktoken ($token, $user) && valid_publicationname ($s
       }
     }
     
-    if ($result == false) $message = $hcms_lang['the-notification-setting-could-not-be-saved'][$lang];
+    if ($result == false) $message = getescapedtext ($hcms_lang['the-notification-setting-could-not-be-saved'][$lang]);
     else $message = "<script language=\"JavaScript\" type=\"text/javascript\"> window.close(); </script>";
   }
-  else $message = $hcms_lang['no-objects-found'][$lang];
+  else $message = getescapedtext ($hcms_lang['no-objects-found'][$lang]);
 }
 // remove notifications
 elseif ($action == "delete" && checktoken ($token, $user) && is_array ($notify_id))
@@ -115,7 +115,7 @@ elseif ($action == "delete" && checktoken ($token, $user) && is_array ($notify_i
     $result = rdbms_deletenotification ($id);
   }
   
-  if ($result == false) $message = $hcms_lang['the-notification-setting-could-not-be-saved'][$lang];
+  if ($result == false) $message = getescapedtext ($hcms_lang['the-notification-setting-could-not-be-saved'][$lang]);
 }
 ?>
 <!DOCTYPE html>
@@ -173,15 +173,15 @@ echo showtopbar ($hcms_lang['notify-me-on-these-events'][$lang], $lang);
   <table width="100%" border=0 cellpadding="3" cellspacing="0">
     <tr> 
       <td align="left">
-        <input type="checkbox" name="oncreate" value="1"/> <?php echo $hcms_lang['on-createupload'][$lang]; ?><br />
-        <input type="checkbox" name="onedit"  value="1" /> <?php echo $hcms_lang['on-edit'][$lang]; ?><br />
-        <input type="checkbox" name="onmove" value="1" /> <?php echo $hcms_lang['on-move'][$lang]; ?><br />
-        <input type="checkbox" name="ondelete" value="1" /> <?php echo $hcms_lang['on-delete'][$lang]; ?><br />
+        <input type="checkbox" name="oncreate" value="1"/> <?php echo getescapedtext ($hcms_lang['on-createupload'][$lang]); ?><br />
+        <input type="checkbox" name="onedit"  value="1" /> <?php echo getescapedtext ($hcms_lang['on-edit'][$lang]); ?><br />
+        <input type="checkbox" name="onmove" value="1" /> <?php echo getescapedtext ($hcms_lang['on-move'][$lang]); ?><br />
+        <input type="checkbox" name="ondelete" value="1" /> <?php echo getescapedtext ($hcms_lang['on-delete'][$lang]); ?><br />
 	    </td>
     </tr>
     <tr>  
       <td align="left">  
-        &nbsp;<?php echo $hcms_lang['save-settings'][$lang]; ?>: <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+        &nbsp;<?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?>: <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
       </td>
     </tr>
   </table>
@@ -203,11 +203,11 @@ if (is_array ($notify_array))
   <div style=\"width:550px; margin:10px 4px 0px 4px;\">
   <table width=\"100%\" border=\"0\" cellpadding=\"2\" cellspacing=\"0\">
     <tr>
-      <td><strong>".$hcms_lang['you-are-watching-these-objects'][$lang]."</strong></td>
-      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_new.gif\" align=\"absmiddle\" title=\"".$hcms_lang['on-createupload'][$lang]."\" /></td>
-      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_edit.gif\" align=\"absmiddle\" title=\"".$hcms_lang['on-edit'][$lang]."\" /></td>
-      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_cut.gif\" align=\"absmiddle\" title=\"".$hcms_lang['on-move'][$lang]."\" /></td>
-      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_delete.gif\" align=\"absmiddle\" title=\"".$hcms_lang['on-delete'][$lang]."\" /></td>
+      <td><strong>".getescapedtext ($hcms_lang['you-are-watching-these-objects'][$lang])."</strong></td>
+      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_new.gif\" align=\"absmiddle\" title=\"".getescapedtext ($hcms_lang['on-createupload'][$lang])."\" /></td>
+      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_edit.gif\" align=\"absmiddle\" title=\"".getescapedtext ($hcms_lang['on-edit'][$lang])."\" /></td>
+      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_cut.gif\" align=\"absmiddle\" title=\"".getescapedtext ($hcms_lang['on-move'][$lang])."\" /></td>
+      <td width=\"22\"><img src=\"".getthemelocation()."img/button_file_delete.gif\" align=\"absmiddle\" title=\"".getescapedtext ($hcms_lang['on-delete'][$lang])."\" /></td>
     </tr>
   </table>
   </div>
@@ -237,7 +237,7 @@ if (is_array ($notify_array))
   </form>\n";
 }
 
-if (is_array ($notify_array)) echo "&nbsp;".$hcms_lang['remove-selected-notifications'][$lang].": <img name=\"Button2\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"document.forms['delete'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button2','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />\n";
+if (is_array ($notify_array)) echo "&nbsp;".getescapedtext ($hcms_lang['remove-selected-notifications'][$lang]).": <img name=\"Button2\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"document.forms['delete'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button2','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />\n";
 ?>
 
 </body>

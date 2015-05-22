@@ -90,7 +90,7 @@ if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0
 <!-- <script src="javascript/click.js" type="text/javascript"></script> -->
 
 <!-- JQuery -->
-<script src="javascript/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
 
 <!-- JQuery UI -->
 <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
@@ -1036,8 +1036,8 @@ function cal_on_autoclose (cal)
 
 <!-- top bar -->
 <?php
-if ($uploadmode == "multi") $title = $hcms_lang['upload-files-to-location'][$lang];
-else $title = $hcms_lang['upload-new-file-in'][$lang];
+if ($uploadmode == "multi") $title = getescapedtext ($hcms_lang['upload-files-to-location'][$lang]);
+else $title = getescapedtext ($hcms_lang['upload-new-file-in'][$lang]);
 
 if ($uploadmode == "multi")
 {
@@ -1065,59 +1065,59 @@ echo showtopbar ($title.": ".$object_name, $lang);
     
     <div id="selectedFiles"></div>
     
-    <div style="padding:5px;"><span id="status">0</span>&nbsp;<?php echo $hcms_lang['files-uploaded'][$lang]; ?></div>
+    <div style="padding:5px;"><span id="status">0</span>&nbsp;<?php echo getescapedtext ($hcms_lang['files-uploaded'][$lang]); ?></div>
     
     <div>
       <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
       <div class="inline">
-        <input type="checkbox" name="unzip" id="unzip" value="1" /><?php echo $hcms_lang['uncompress-files'][$lang]; ?>
+        <input type="checkbox" name="unzip" id="unzip" value="1" /> <?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?>
       </div>
       <br />
       <?php } elseif ($uploadmode == "single") { ?>
         <?php if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) { ?>
       <div class="inline">
-        <input type="checkbox" name="versioning" id="versioning" value="1" /><?php echo $hcms_lang['keep-existing-file-as-old-version'][$lang]; ?>
+        <input type="checkbox" name="versioning" id="versioning" value="1" />&nbsp;<?php echo getescapedtext ($hcms_lang['keep-existing-file-as-old-version'][$lang]); ?>
       </div>
         <?php } ?> 
       <br /> 
       <div class="inline">
-        <input type="checkbox" name="createthumbnail" id="createthumbnail" value="1" /><?php echo $hcms_lang['thumbnail-image-jpeg-file'][$lang]; ?>
+        <input type="checkbox" name="createthumbnail" id="createthumbnail" value="1" />&nbsp;<?php echo getescapedtext ($hcms_lang['thumbnail-image-jpeg-file'][$lang]); ?>
       </div>
       <br />
       <?php } 
       if ($uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) { ?>
       <div class="inline">
-        <input type="checkbox" name="imageresize" id="imageresize" value="percentage" /><?php echo $hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]; ?>: <input name="imagepercentage" id="imagepercentage" type="text" size="3" maxlength="3" value="100" disabled="disabled" /> %
+        <input type="checkbox" name="imageresize" id="imageresize" value="percentage" />&nbsp;<?php echo getescapedtext ($hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]); ?>: <input name="imagepercentage" id="imagepercentage" type="text" size="3" maxlength="3" value="100" disabled="disabled" /> %
       </div>
       <br />
       <?php } ?> 
       <div class="inline">
-        <input type="checkbox" name="checkduplicates" id="checkduplicates" value="1" <?php if ($mgmt_config['check_duplicates']) echo 'checked="checked"'; ?> /><?php echo $hcms_lang['check-for-duplicates'][$lang]; ?>
+        <input type="checkbox" name="checkduplicates" id="checkduplicates" value="1" <?php if ($mgmt_config['check_duplicates']) echo 'checked="checked"'; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['check-for-duplicates'][$lang]); ?>
       </div>
       <br />
       <?php if ($uploadmode == "multi") { ?>
       <div class="inline">
-        <input type="checkbox" name="deleteobject" id="deleteobject" value="1" /><?php echo $hcms_lang['remove-uploaded-files-on'][$lang]; ?>
+        <input type="checkbox" name="deleteobject" id="deleteobject" value="1" />&nbsp;<?php echo getescapedtext ($hcms_lang['remove-uploaded-files-on'][$lang]); ?>
         <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
         <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
-        <img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['select-date'][$lang]; ?>" title="<?php echo $hcms_lang['select-date'][$lang]; ?>" />
+        <img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
       </div>
       <br />
       <?php } ?>
       <div style="margin-top:10px;">
         <img src="<?php echo getthemelocation(); ?>img/info.gif" align="absmiddle" />
-        <?php echo $hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]; ?>
+        <?php echo getescapedtext ($hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]); ?>
       </div>
       <div>
-        <div for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen" ><span id="txtSelectFile" class="inline"><?php echo $hcms_lang['select-files'][$lang]; ?></span><input id="inputSelectFile" type="file" name="Filedata" <?php if ($uploadmode == "multi") echo "multiple"; ?>/></div>
+        <div for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen" ><span id="txtSelectFile" class="inline"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></span><input id="inputSelectFile" type="file" name="Filedata" <?php if ($uploadmode == "multi") echo "multiple"; ?>/></div>
         <?php if (!empty ($mgmt_config['dropbox_appkey']) && !empty ($mgmt_config['publicdownload'])) { ?>
-        <div id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile" class="inline"><?php echo $hcms_lang['dropbox'][$lang]; ?></span></div>
+        <div id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile" class="inline"><?php echo getescapedtext ($hcms_lang['dropbox'][$lang]); ?></span></div>
         <?php } ?>
         <?php if (!empty ($mgmt_config['ftp_download'])) { ?>
-        <div id="btnFTP" class="button hcmsButtonGreen" onclick="hcms_openWindow('popup_ftp.php?site=<?php echo url_encode($site); ?>&multi=<?php if ($uploadmode == "multi") echo "true"; else echo "false"; ?>', 'ftp', 'scrollbars=yes,resizable=yes', '600', '400');"><?php echo $hcms_lang['ftp'][$lang]; ?></div>
+        <div id="btnFTP" class="button hcmsButtonGreen" onclick="hcms_openWindow('popup_ftp.php?site=<?php echo url_encode($site); ?>&multi=<?php if ($uploadmode == "multi") echo "true"; else echo "false"; ?>', 'ftp', 'scrollbars=yes,resizable=yes', '600', '400');"><?php echo getescapedtext ($hcms_lang['ftp'][$lang]); ?></div>
         <?php } ?>
-        <div id="btnUpload" class="button hcmsButtonBlue" ><?php echo $hcms_lang['upload-files'][$lang]; ?></div>
-        <div id="btnCancel" class="button hcmsButtonOrange" ><?php echo $hcms_lang['cancel-all-uploads'][$lang]; ?></div>
+        <div id="btnUpload" class="button hcmsButtonBlue" ><?php echo getescapedtext ($hcms_lang['upload-files'][$lang]); ?></div>
+        <div id="btnCancel" class="button hcmsButtonOrange" ><?php echo getescapedtext ($hcms_lang['cancel-all-uploads'][$lang]); ?></div>
         <br />
       </div>
     </div>

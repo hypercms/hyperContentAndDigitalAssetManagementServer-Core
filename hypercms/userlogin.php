@@ -282,7 +282,7 @@ if (checkuserip (getuserip ()) == true)
     // session info could not be saved
     if ($login_result['writesession'] == false)
     {  
-      $login_result['message'] = $hcms_lang['session-information-could-not-be-saved'][$lang];  
+      $login_result['message'] = getescapedtext ($hcms_lang['session-information-could-not-be-saved'][$lang]);  
     }
   }
 
@@ -318,20 +318,20 @@ if (checkuserip (getuserip ()) == true)
           </tr>\n";
           
     if ($mgmt_config['instances']) $show .= "<tr>
-            <td><b>".$hcms_lang['instance'][$lang]."</b></td>
+            <td><b>".getescapedtext ($hcms_lang['instance'][$lang])."</b></td>
             <td>
               <input type=\"text\" name=\"sentinstance\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
             </td>
           </tr>\n";
           
     $show .= "<tr>
-            <td><b>".$hcms_lang['user'][$lang]."</b></td>
+            <td><b>".getescapedtext ($hcms_lang['user'][$lang])."</b></td>
             <td>
               <input type=\"text\" name=\"sentuser\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
             </td>
           </tr>
           <tr>
-            <td><b>".$hcms_lang['password'][$lang]."</b></td>
+            <td><b>".getescapedtext ($hcms_lang['password'][$lang])."</b></td>
             <td>
               <input type=\"password\" name=\"sentpasswd\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
             </td>

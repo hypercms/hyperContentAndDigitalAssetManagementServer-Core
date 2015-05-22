@@ -62,14 +62,14 @@ function applylanguage ()
   
   <table border="0" cellspacing="2">
     <tr align="left" valign="top"> 
-      <td colspan="2" nowrap="nowrap" class=hcmsHeadline><?php echo $hcms_lang['assign-language-information'][$lang]; ?></td>
+      <td colspan="2" nowrap="nowrap" class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['assign-language-information'][$lang]); ?></td>
     </tr>
     <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo $hcms_lang['session-variable-name'][$lang]; ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['session-variable-name'][$lang]); ?>:</td>
       <td><input name="language_sessionvar" type="text" value="" /></td>
     </tr>  
     <tr align="left" valign="top">
-      <td nowrap="nowrap"><?php echo $hcms_lang['language-values'][$lang]; ?>:<br />(<?php echo $hcms_lang['use-as-delimiter'][$lang]; ?>)</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['language-values'][$lang]); ?>:<br />(<?php echo getescapedtext ($hcms_lang['use-as-delimiter'][$lang]); ?>)</td>
       <td><input name="language_sessionvalues" type="text" value="" /></td>
     </tr>
     <tr align="left" valign="top"> 
@@ -78,8 +78,8 @@ function applylanguage ()
     <tr align="left" valign="top">
       <td nowrap="nowrap">&nbsp;</td>
       <td nowrap="nowrap">
-        <input name="language_values" type="button" id="apply" value="<?php echo $hcms_lang['apply'][$lang]; ?>" onClick="applylanguage();" />
-        <input name="cancel" type="button" id="cancel" value="<?php echo $hcms_lang['cancel'][$lang]; ?>" onClick="self.close();" />
+        <input name="language_values" type="button" id="apply" value="<?php echo getescapedtext ($hcms_lang['apply'][$lang]); ?>" onClick="applylanguage();" />
+        <input name="cancel" type="button" id="cancel" value="<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>" onClick="self.close();" />
       </td>
     </tr>      
   </table>

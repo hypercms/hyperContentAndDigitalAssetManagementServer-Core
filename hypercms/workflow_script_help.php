@@ -46,17 +46,17 @@ checkusersession ($user);
 <!-- content -->
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 <?php
-echo "<p class=\"hcmsHeadlineTiny\">".$hcms_lang['you-can-use-the-following-given-input-variables'][$lang].":</p>
-".$hcms_lang['publication'][$lang].": \$site<br />
-".$hcms_lang['location-of-the-object'][$lang].": \$location<br /> 
-".$hcms_lang['object'][$lang].": \$object<br />
+echo "<p class=\"hcmsHeadlineTiny\">".getescapedtext ($hcms_lang['you-can-use-the-following-given-input-variables'][$lang]).":</p>
+".getescapedtext ($hcms_lang['publication'][$lang]).": \$site<br />
+".getescapedtext ($hcms_lang['location-of-the-object'][$lang]).": \$location<br /> 
+".getescapedtext ($hcms_lang['object'][$lang]).": \$object<br />
 <br />
-<p class=\"hcmsHeadlineTiny\">".$hcms_lang['also-the-following-system-constants-can-be-accessed'][$lang].":</p>
+<p class=\"hcmsHeadlineTiny\">".getescapedtext ($hcms_lang['also-the-following-system-constants-can-be-accessed'][$lang]).":</p>
 \$mgmt_config<br />
-<p class=\"hcmsHeadlineTiny\">".$hcms_lang['the-result-of-the-workflow-script-must-be-in-the-form'][$lang].":</p>
-".$hcms_lang['if-successful-accept-the-object-and-send-to-next-member'][$lang].": return true;<br /> 
-".$hcms_lang['if-not-successful-reject-the-object-and-send-it-back'][$lang].": return false;<br /> 
-<p class=\"hcmsHeadlineTiny\">".$hcms_lang['for-detailed-information-please-see-the-hypercms-programmers-guide-and-hypercms-workflow-guide'][$lang]."</p>";
+<p class=\"hcmsHeadlineTiny\">".getescapedtext ($hcms_lang['the-result-of-the-workflow-script-must-be-in-the-form'][$lang]).":</p>
+".getescapedtext ($hcms_lang['if-successful-accept-the-object-and-send-to-next-member'][$lang]).": return true;<br /> 
+".getescapedtext ($hcms_lang['if-not-successful-reject-the-object-and-send-it-back'][$lang]).": return false;<br /> 
+<p class=\"hcmsHeadlineTiny\">".getescapedtext ($hcms_lang['for-detailed-information-please-see-the-hypercms-programmers-guide-and-hypercms-workflow-guide'][$lang])."</p>";
 ?>
 </div>
 

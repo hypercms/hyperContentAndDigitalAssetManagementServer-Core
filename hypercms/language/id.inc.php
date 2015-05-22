@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['id'] = "Folder telah diganti namanya";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['id'] = "Anda tidak memiliki izin tulis untuk folder";
 $hcms_lang['the-folder-does-not-exist']['id'] = "Folder tidak ada";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['id'] = "Anda tidak memiliki izin tulis pada folder alur kerja setelan";
-$hcms_lang['titel']['id'] = "Titel";
 $hcms_lang['category']['id'] = "Kategori";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['id'] = "Youtube upload tidak diaktifkan untuk akun Anda. Harap hubungi administrator sistem Anda";
 $hcms_lang['tags']['id'] = "Tag";
@@ -1310,4 +1309,5 @@ $hcms_lang['server']['id'] = "Server";
 $hcms_lang['use-ssl']['id'] = "Menggunakan SSL";
 $hcms_lang['formats']['id'] = "Format";
 $hcms_lang['download-formats']['id'] = "Format Download";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['id'] = "Kata kunci dengan opsional wajib atau terbuka daftar";
 ?>

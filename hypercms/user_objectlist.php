@@ -306,15 +306,15 @@ var session_id = '<?php session_id(); ?>';
           <?php $tblrow = 1;  
           if (($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('useredit')) || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) { 
           ?>
-          <a href=# id="href_edit" onClick="if (buttonaction('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_user_edit.gif" id="img_edit" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $hcms_lang['edit'][$lang]; ?></a><br />     
+          <a href=# id="href_edit" onClick="if (buttonaction('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_user_edit.gif" id="img_edit" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
           <hr />
           <?php }
           if (($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('userdelete')) || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'userdelete'))) {
           ?>
-          <a href=# id="href_delete" onClick="if (buttonaction('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_user_delete.gif" id="img_delete" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $hcms_lang['delete'][$lang]; ?></a><br />
+          <a href=# id="href_delete" onClick="if (buttonaction('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_user_delete.gif" id="img_delete" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
           <hr />        
           <?php } ?>   
-          <a href=# id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.gif" id="img_refresh" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo $hcms_lang['refresh'][$lang]; ?></a>
+          <a href=# id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.gif" id="img_refresh" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
         </td>
       </tr>    
     </table>
@@ -325,17 +325,17 @@ var session_id = '<?php session_id(); ?>';
   <table cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
       <td width="180" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $hcms_lang['user'][$lang]; ?>
+        &nbsp; <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>
       </td>
       <?php if (!$is_mobile) { ?>
       <td width="180" onClick="hcms_sortTable(1);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $hcms_lang['name'][$lang]; ?>
+        &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
       </td>
       <td width="300" onClick="hcms_sortTable(2);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $hcms_lang['e-mail'][$lang]; ?>
+        &nbsp; <?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>
       </td> 
       <td onClick="hcms_sortTable(3);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $hcms_lang['date-created'][$lang]; ?>
+        &nbsp; <?php echo getescapedtext ($hcms_lang['date-created'][$lang]); ?>
       </td>
       <td width="16" class="hcmsTableHeader">
         &nbsp;
@@ -359,9 +359,9 @@ if ($objects_counted >= $next_max)
 {
 ?>
 <!-- status bar incl. more button -->
-<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="window.location.href='<?php echo $_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location)."&next=".url_encode($objects_counted); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo $hcms_lang['versionhcms_lang'][$lang]; ?>">
-  <div style="padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".$hcms_lang['objects'][$lang]; ?></div>
-  <div style="margin-left:auto; margin-right:auto; text-align:center; padding-top:3px;"><img src="<?php echo getthemelocation(); ?>img/button_explorer_more.gif" style="border:0;" alt="<?php echo $hcms_lang['more'][$lang]; ?>" title="<?php echo $hcms_lang['more'][$lang]; ?>" /></div>
+<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="window.location.href='<?php echo $_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location)."&next=".url_encode($objects_counted); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['versionhcms_lang'][$lang]); ?>">
+  <div style="padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
+  <div style="margin-left:auto; margin-right:auto; text-align:center; padding-top:3px;"><img src="<?php echo getthemelocation(); ?>img/button_explorer_more.gif" style="border:0;" alt="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" /></div>
 </div>
 <?php
 }
@@ -370,7 +370,7 @@ else
 ?>
 <!-- status bar -->
 <div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
-    <div style="margin:auto; padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".$hcms_lang['objects'][$lang]; ?></div>
+    <div style="margin:auto; padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
 </div>
 <?php
 }

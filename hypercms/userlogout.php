@@ -40,12 +40,12 @@ if (empty ($lang)) $lang = "en";
 if ($test == true) 
 {
   @session_destroy();
-  $answer = $hcms_lang['logged-out'][$lang];
+  $answer = getescapedtext ($hcms_lang['logged-out'][$lang]);
 }
 else
 { 
   @session_destroy();
-  $answer = $hcms_lang['session-cannot-be-closed'][$lang];
+  $answer = getescapedtext ($hcms_lang['session-cannot-be-closed'][$lang]);
 }
 ?>
 

@@ -72,8 +72,8 @@ if ($templatedata == false || $templatedata == "")
   echo "</script>\n";
   echo "</head>\n";
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-  echo "<p class=hcmsHeadline>".$hcms_lang['could-not-create-view-of-template'][$lang]."</p>\n";
-  echo $hcms_lang['the-template-holds-no-information'][$lang]."\n";
+  echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-template'][$lang])."</p>\n";
+  echo getescapedtext ($hcms_lang['the-template-holds-no-information'][$lang])."\n";
   echo "</body>\n</html>";
 }
 // check if an error occured during inclusions
@@ -89,8 +89,8 @@ elseif ($viewstore == false)
   echo "</script>\n";
   echo "</head>\n";
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-  echo "<p class=hcmsHeadline>".$hcms_lang['could-not-create-view-of-template'][$lang]."</p>\n";
-  echo $hcms_lang['an-error-occured-during-inclusion-of-a-template-component'][$lang]."\n";
+  echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-template'][$lang])."</p>\n";
+  echo getescapedtext ($hcms_lang['an-error-occured-during-inclusion-of-a-template-component'][$lang])."\n";
   echo "</body>\n</html>";
 }
 else echo $viewstore;

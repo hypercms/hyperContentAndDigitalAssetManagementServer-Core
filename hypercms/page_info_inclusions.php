@@ -44,7 +44,7 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
-// get name 
+// get object name 
 $fileinfo = getfileinfo ($site, $location.$page, $cat);
 $pagename = $fileinfo['name'];
 ?>
@@ -72,9 +72,9 @@ $site_buffer = $site;
 
 echo "<table border=\"0\" cellspacing=\"2\" cellpadding=\"3\" width=\"99%\">
 <tr>
-  <td class=\"hcmsHeadline\" width=\"15%\" nowrap=\"nowrap\">".$hcms_lang['name'][$lang]."</td>
-  <td class=\"hcmsHeadline\">".$hcms_lang['location'][$lang]."</td>
-  <td class=\"hcmsHeadline\" width=\"15%\" nowrap=\"nowrap\">".$hcms_lang['publication'][$lang]."</td>
+  <td class=\"hcmsHeadline\" width=\"15%\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['name'][$lang])."</td>
+  <td class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['location'][$lang])."</td>
+  <td class=\"hcmsHeadline\" width=\"15%\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['publication'][$lang])."</td>
 </tr>";
 // ---------------------------- analyze links ------------------------------
 // get linked objects
@@ -82,6 +82,7 @@ $result_array = getlinkedobject ($site, $location, $page, $cat);
 
 $found = false;
 $color = false;
+$addtext = "";
 
 if (is_array ($result_array) && sizeof ($result_array) > 0)
 {
@@ -157,7 +158,7 @@ elseif ($result_array == true)
 } 
 
 // if no items were found  
-if ($found == false) echo "<tr class=\"hcmsRowData1\"><td colspan=\"4\">".$hcms_lang['no-items-were-found'][$lang]." ".$addtext."</td></tr>\n";
+if ($found == false) echo "<tr class=\"hcmsRowData1\"><td colspan=\"4\">".getescapedtext ($hcms_lang['no-items-were-found'][$lang])." ".$addtext."</td></tr>\n";
 
 echo "</table>\n";
 

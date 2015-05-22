@@ -98,12 +98,12 @@ if (is_array ($delete_id) && @sizeof ($delete_id) > 0 && $setlocalpermission['de
   
   <table border="0" celspacing="2" cellpadding="1" width="99%">
     <tr>
-      <td class="hcmsHeadline" width="150" nowrap="nowrap"><?php echo $hcms_lang['date'][$lang]; ?></td>
-      <td class="hcmsHeadline" width="160" nowrap="nowrap"><?php echo $hcms_lang['sender'][$lang]; ?></td>
-      <td class="hcmsHeadline" width="160" nowrap="nowrap"><?php echo $hcms_lang['recipient'][$lang]; ?></td>
-      <td class="hcmsHeadline" nowrap="nowrap"><?php echo $hcms_lang['e-mail'][$lang]; ?></td>
-      <td class="hcmsHeadline" width="120" nowrap="nowrap"><?php echo $hcms_lang['picked-up-on'][$lang]; ?></td>
-      <td class="hcmsHeadline" width="100" nowrap="nowrap"><?php echo $hcms_lang['delete'][$lang]; ?></td>
+      <td class="hcmsHeadline" width="150" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['date'][$lang]); ?></td>
+      <td class="hcmsHeadline" width="160" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['sender'][$lang]); ?></td>
+      <td class="hcmsHeadline" width="160" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?></td>
+      <td class="hcmsHeadline" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?></td>
+      <td class="hcmsHeadline" width="120" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['picked-up-on'][$lang]); ?></td>
+      <td class="hcmsHeadline" width="100" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></td>
     </tr>
 <?php
 // get recipients
@@ -172,7 +172,7 @@ if ($result_array != false && sizeof ($result_array) > 0)
     </tr>
     <tr>
       <td colspan=\"3\" nowrap=\"nowrap\">
-        ".$hcms_lang['delete-selected-recipients'][$lang].":
+        ".getescapedtext ($hcms_lang['delete-selected-recipients'][$lang]).":
         <img name=\"Button\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onclick=\"warning_recipients_delete();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />
       </td>
     </tr>";  
@@ -181,7 +181,7 @@ if ($result_array != false && sizeof ($result_array) > 0)
 else
 {
   echo "<tr class=\"hcmsRowData1\">
-        <td colspan=\"6\">".$hcms_lang['no-users-were-found'][$lang]."</td>
+        <td colspan=\"6\">".getescapedtext ($hcms_lang['no-users-were-found'][$lang])."</td>
       </tr>\n";
 }
 ?>

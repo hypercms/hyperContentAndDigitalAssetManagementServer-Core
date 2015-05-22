@@ -35,12 +35,12 @@ checkusersession ($user);
 
 <body class="hcmsWorkplaceGeneric" leftmargin="3" topmargin="3" marginwidth="0" marginheight="0">
 
-<span class="hcmsHeadline"><?php echo $hcms_lang['content-type'][$lang]; ?></span><br /><br />
+<span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['content-type'][$lang]); ?></span><br /><br />
 <table width="100%" border="0" cellspacing="2" cellpadding="3">
   <tr>
-    <td class="hcmsHeadline"><?php echo $hcms_lang['character-set'][$lang]; ?></td>
-    <td class="hcmsHeadline"><?php echo $hcms_lang['description'][$lang]; ?></td>
-    <td class="hcmsHeadline"><?php echo $hcms_lang['language'][$lang]; ?></td>
+    <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['character-set'][$lang]); ?></td>
+    <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['description'][$lang]); ?></td>
+    <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['language'][$lang]); ?></td>
   </tr>
   <?php
   //load code page index file
@@ -71,7 +71,7 @@ checkusersession ($user);
       </tr>\n";
     }
   }
-  else echo "<p class=hcmsHeadline>".$hcms_lang['could-not-find-code-page-index'][$lang]."</p>";
+  else echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-find-code-page-index'][$lang])."</p>";
   ?>
 </table>
 

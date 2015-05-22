@@ -55,7 +55,7 @@ $media = getfilename ($pagestore, "media");
 
 if ($contentfile == false)
 {
-  $show = "<p class=hcmsHeadline>".$hcms_lang['item-is-not-managed-by-hypercms'][$lang]."</p>".$hcms_lang['no-versions-available'][$lang]."\n";
+  $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['item-is-not-managed-by-hypercms'][$lang])."</p>".getescapedtext ($hcms_lang['no-versions-available'][$lang])."\n";
 }
 elseif (valid_objectname ($contentfile))
 {
@@ -86,7 +86,7 @@ function warning_versions_update()
 {
   var form = document.forms['versionform'];
   
-  check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-to-switch-to-a-previous-content-version'][$lang]." ".$hcms_lang['andor-delete-the-selected-versions'][$lang]); ?>"));
+  check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-to-switch-to-a-previous-content-version'][$lang])." ".getescapedtext ($hcms_lang['andor-delete-the-selected-versions'][$lang]); ?>"));
   if (check == true) form.submit();
   return check;
 }
@@ -164,12 +164,12 @@ function compare_submit ()
   
   <table border="0" cellspacing="2" cellpadding="3" width="99%">
     <tr>
-     <td width="30%" nowrap="nowrap" class="hcmsHeadline"><?php echo $hcms_lang['version-date'][$lang]; ?></td>
-     <td width="30%" nowrap="nowrap" class="hcmsHeadline"><?php echo $hcms_lang['name'][$lang]; ?></td>
-     <td width="30%" nowrap="nowrap" class="hcmsHeadline"><?php echo $hcms_lang['container'][$lang]; ?></td>
-     <td nowrap="nowrap" class="hcmsHeadline"><?php echo $hcms_lang['compare'][$lang]; ?></td>
-     <td nowrap="nowrap" class="hcmsHeadline"><?php echo $hcms_lang['current'][$lang]; ?></td>
-     <td nowrap="nowrap" class="hcmsHeadline"><?php echo $hcms_lang['delete'][$lang]; ?></td>
+     <td width="30%" nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['version-date'][$lang]); ?></td>
+     <td width="30%" nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?></td>
+     <td width="30%" nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['container'][$lang]); ?></td>
+     <td nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['compare'][$lang]); ?></td>
+     <td nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['current'][$lang]); ?></td>
+     <td nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></td>
     </tr>
     <?php    
     // change to version
@@ -242,9 +242,9 @@ function compare_submit ()
           $error[] = $mgmt_config['today']."|version_content.php|error|$errcode|savecontainer failed for container ".$contentfile_wrk;           
         }      
 
-        if ($rename_2 == false || $copy_2 == false) echo "<p class=hcmsHeadline>".$hcms_lang['could-not-change-version'][$lang]."</p>\n".$hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang]."<br /><br />\n";
+        if ($rename_2 == false || $copy_2 == false) echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."<br /><br />\n";
       }
-      else $show = "<p class=hcmsHeadline>".$hcms_lang['could-not-change-version'][$lang]."</p>\n".$hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang]."<br /><br />\n";
+      else $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."<br /><br />\n";
     }
 
     // delete versions
@@ -371,7 +371,7 @@ function compare_submit ()
     }
     
     echo "<tr class=\"hcmsRowHead2\">
-      <td nowrap=\"nowrap\">".$hcms_lang['current-version'][$lang]."</td>
+      <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['current-version'][$lang])."</td>
       <td nowrap=\"nowrap\"><a href=\"#\" onClick=\"hcms_openWindow('page_preview.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."','preview','scrollbars=yes,resizable=yes','800','600')\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" width=16 height=16 border=0 align=\"absmiddle\" />&nbsp; ".$pagename."</a></td>
       <td nowrap=\"nowrap\"><a href=\"#\" onClick=\"hcms_openWindow('container_source.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."','preview','scrollbars=yes,resizable=yes','800','600')\">XML</a></td>
       <td align=\"middle\" valign=\"middle\"><input type=\"checkbox\" name=\"dummy\" value=\"\" onclick=\"if (compare_select('".$contentfile."')) this.checked=true; else this.checked=false;\" /></td>
@@ -383,7 +383,7 @@ function compare_submit ()
     savelog (@$error);     
     ?>
   </table><br />
-  <div style="width:300px; float:left;"><?php echo $hcms_lang['submit-changes-to-versions'][$lang]; ?> :</div>
+  <div style="width:300px; float:left;"><?php echo getescapedtext ($hcms_lang['submit-changes-to-versions'][$lang]); ?> :</div>
   <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_versions_update();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /><br />
 </form>
 
@@ -401,7 +401,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
   <input type="hidden" name="compare_2" value="" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <div style="width:300px; float:left;"><?php echo $hcms_lang['compare-selected-versions'][$lang]; ?> :</div>
+  <div style="width:300px; float:left;"><?php echo getescapedtext ($hcms_lang['compare-selected-versions'][$lang]); ?> :</div>
   <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="compare_submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
 </form>
 </div>

@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['cz'] = "Složka byla přejmenována";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['cz'] = "Nemáte oprávnění k zápisu do složky";
 $hcms_lang['the-folder-does-not-exist']['cz'] = "Složka neexistuje";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['cz'] = "Nemáte oprávnění k zápisu na workflow nastavení složky";
-$hcms_lang['titel']['cz'] = "Hlava";
 $hcms_lang['category']['cz'] = "Kategorie";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['cz'] = "YouTube odesílání není aktivováno pro váš účet. Prosím kontaktuje vašeho správce systému";
 $hcms_lang['tags']['cz'] = "Tagy";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['cz'] = "Server";
 $hcms_lang['use-ssl']['cz'] = "Používat protokol SSL";
 $hcms_lang['formats']['cz'] = "Formáty";
 $hcms_lang['download-formats']['cz'] = "Stáhnout formáty";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['cz'] = "Klíčová slova s volitelným povinného nebo otevřený seznam";
 ?>

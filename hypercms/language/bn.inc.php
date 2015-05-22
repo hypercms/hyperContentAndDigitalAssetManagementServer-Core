@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['bn'] = "ফোল্ডারে নাম
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['bn'] = "লিখতে না ফোল্ডারে জন্য দুই তৃতীয়াংশের বেশী প্রতিনিধির অনুমোদন দরকার";
 $hcms_lang['the-folder-does-not-exist']['bn'] = "ফোল্ডারে নেই";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['bn'] = "আপনার লেখা নিয়ে দুই তৃতীয়াংশের বেশী প্রতিনিধির অনুমোদন দরকার workflow ফোল্ডারে সেটিংস";
-$hcms_lang['titel']['bn'] = "titel";
 $hcms_lang['category']['bn'] = "ক্যাটাগরি";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['bn'] = "এক স্তর ওপরে ইউটিউব না আপনার জন্য। দয়া করে আপনার সাথে যোগাযোগ ব্যবস্থা adminstrator";
 $hcms_lang['tags']['bn'] = "পকেটে ঢুকিয়ে রাখে";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['bn'] = "সার্ভার";
 $hcms_lang['use-ssl']['bn'] = "ssl ব্যবহার";
 $hcms_lang['formats']['bn'] = "মাধ্যম";
 $hcms_lang['download-formats']['bn'] = "সফটওয়্যার ডাউনলোড মাধ্যম";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['bn'] = "ঐচ্ছিক বাধ্যতামূলক বা খোলা তালিকা মূলশব্দ";
 ?>

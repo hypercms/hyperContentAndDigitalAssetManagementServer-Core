@@ -52,7 +52,7 @@ checkusersession ($user, false);
 }
 </style>
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
-<script type="text/javascript" src="javascript/jquery/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="javascript/chat.js"></script>
 <script type="text/javascript">
 // user name    
@@ -133,14 +133,14 @@ $users_online = getusersonline ();
 
 if (is_array ($users_online) && sizeof ($users_online) > 1)
 {
-  $users_online_button = "<button class=\"hcmsButtonOrange\" style=\"heigth:20px; margin:0; white-space:nowrap;\" onClick=\"hcms_switchSelector('select_user');\">".$hcms_lang['invite-online-user'][$lang]."</button>
+  $users_online_button = "<button class=\"hcmsButtonOrange\" style=\"heigth:20px; margin:0; white-space:nowrap;\" onClick=\"hcms_switchSelector('select_user');\">".getescapedtext ($hcms_lang['invite-online-user'][$lang])."</button>
   <div id=\"select_user\" class=\"hcmsSelector\" style=\"position:fixed; top:26px; right:8px; visibility:hidden; z-index:999; max-height:300px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">\n";
 
   foreach ($users_online as $user_online) if ($user_online != $user) $users_online_button .= "    <div class=\"hcmsSelectorItem\" style=\"text-align:left\" onclick=\"invite('".$user_online."');\"><img src=\"".getthemelocation()."img/user.gif\" style=\"border:0; margin:0; padding:0;\" align=\"absmiddle\" />".$user_online."&nbsp;</div>\n";
 
   $users_online_button .= "  </div>\n";
 }
-else $users_online_button = "<button class=\"hcmsButtonOrange\" style=\"heigth:20px; margin:0; white-space:nowrap;\" onClick=\"location.reload();\">".$hcms_lang['invite-online-user'][$lang]."</button>";
+else $users_online_button = "<button class=\"hcmsButtonOrange\" style=\"heigth:20px; margin:0; white-space:nowrap;\" onClick=\"location.reload();\">".getescapedtext ($hcms_lang['invite-online-user'][$lang])."</button>";
 ?>
 
 <?php echo showtopbar ($hcms_lang['chat'][$lang], $lang); ?>
@@ -154,7 +154,7 @@ else $users_online_button = "<button class=\"hcmsButtonOrange\" style=\"heigth:2
   </div>
         
   <form id="send-message-area" style="margin:8px;">
-    <textarea id="send-message-input" class="hcmsInfoBox" style="width:272px; height:60px; margin:0; padding:5px;" placeholder="<?php echo $hcms_lang['your-message'][$lang]; ?>" maxlength="600"></textarea>
+    <textarea id="send-message-input" class="hcmsInfoBox" style="width:272px; height:60px; margin:0; padding:5px;" placeholder="<?php echo getescapedtext ($hcms_lang['your-message'][$lang]); ?>" maxlength="600"></textarea>
   </form>
   
 </div>

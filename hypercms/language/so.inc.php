@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['so'] = "Aad furanayso ahaa, kan uu butros 
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['so'] = "Ma aha u soo qor warqad aad permissions u gal";
 $hcms_lang['the-folder-does-not-exist']['so'] = "Aad furanayso ma jiri";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['so'] = "Ma aha u soo qor warqad aad ku soo permissions workflow gal gundhigyo";
-$hcms_lang['titel']['so'] = "Titel";
 $hcms_lang['category']['so'] = "Dabaqad";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['so'] = "Upload Youtube waa lagaga shaqaysiiyo aad. Fadlan la xiriir nidaamka adminstrator";
 $hcms_lang['tags']['so'] = "Tags";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['so'] = "Seref";
 $hcms_lang['use-ssl']['so'] = "SSL u isticmaal";
 $hcms_lang['formats']['so'] = "Jaalka Hirgalinta Dhismaha Sinnaanta";
 $hcms_lang['download-formats']['so'] = "Download daabacaadan shay";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['so'] = "Erayada furaha liiska khasab ah ama furan optional";
 ?>

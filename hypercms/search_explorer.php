@@ -114,7 +114,7 @@ function sendInput (search_dir, folder)
 <div class="hcmsWorkplaceFrame">
 <table width="98%" border="0" cellspacing="0" cellpadding="0">
   <tr align="left">
-    <td class="hcmsHeadline" colspan="2" style="padding: 0px 0px 8px 0px;"><?php echo $hcms_lang['search-in-folder'][$lang]; ?></td>
+    <td class="hcmsHeadline" colspan="2" style="padding: 0px 0px 8px 0px;"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?></td>
   </tr>
 <?php
 $location_name = getlocationname ($site, $dir, $cat, "path");
@@ -136,7 +136,7 @@ if (
      (($hcms_linking['location'] != "" && $hcms_linking['object'] == "" && substr_count ($hcms_linking['location'], $dir) < 1) || $hcms_linking['location'] == "")
    )
 {
-  echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."\"><img src=\"".getthemelocation()."img/back.gif\" class=\"hcmsIconList\" />&nbsp; ".$hcms_lang['back'][$lang]."</a></td></tr>\n";
+  echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."\"><img src=\"".getthemelocation()."img/back.gif\" class=\"hcmsIconList\" />&nbsp; ".getescapedtext ($hcms_lang['back'][$lang])."</a></td></tr>\n";
 }
 
 // set dir

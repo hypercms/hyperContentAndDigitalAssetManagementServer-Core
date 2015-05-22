@@ -103,10 +103,10 @@ if ($save == "yes" && $wf_file != "" && checktoken ($token, $user))
      // save pers file
     $savefile = savefile ($mgmt_config['abs_path_data']."workflow_master/", $wf_file, $wfscript_data_save);
   
-    if ($savefile == false) $show = "<span class=hcmsHeadline>".$hcms_lang['workflow-script-could-not-be-saved'][$lang]."</span><br />".$hcms_lang['write-permissions-is-missing'][$lang];
-    else $show = "<span class=hcmsHeadline>".$hcms_lang['workflow-script-was-saved-successfully'][$lang]."</span>";
+    if ($savefile == false) $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['workflow-script-could-not-be-saved'][$lang])."</span><br />".getescapedtext ($hcms_lang['write-permissions-is-missing'][$lang]);
+    else $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['workflow-script-was-saved-successfully'][$lang])."</span>";
   }
-  else $show = "<span class=hcmsHeadline>".$hcms_lang['workflow-script-could-not-be-saved'][$lang]."</span><br />\n".$hcms_lang['there-are-forbidden-functions-in-the-code'][$lang].": <span style=\"color:red;\">".$wfscript_data_check['found']."</span>";
+  else $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['workflow-script-could-not-be-saved'][$lang])."</span><br />\n".getescapedtext ($hcms_lang['there-are-forbidden-functions-in-the-code'][$lang]).": <span style=\"color:red;\">".$wfscript_data_check['found']."</span>";
 }
 // load workflow
 elseif (isset ($wf_file) && file_exists ($mgmt_config['abs_path_data']."workflow_master/".$wf_file))
@@ -168,7 +168,7 @@ function openHelp ()
 echo showmessage ($show, 500, 70, $lang, "position:fixed; left:15px; top:100px;")
 ?>
 
-<p class="hcmsHeadline"><?php echo $hcms_lang['workflow-script'][$lang]; ?>: <?php echo $wf_name; ?></p>
+<p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['workflow-script'][$lang]); ?>: <?php echo $wf_name; ?></p>
 <form name="editor" method="post" action="<?php echo $action; ?>" />
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
@@ -180,11 +180,11 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:15px; top:100px;"
   <table cellspacing="0" cellpadding="0" style="border:1px solid #000000; margin:2px;">
     <tr>
       <td align="left">
-        <?php if ($preview == "no") echo "<img onclick=\"document.forms['editor'].submit();\" name=\"Button\" src=\"".getthemelocation()."img/button_save.gif\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".$hcms_lang['save'][$lang]."\" title=\"".$hcms_lang['save'][$lang]."\" />"; ?>
+        <?php if ($preview == "no") echo "<img onclick=\"document.forms['editor'].submit();\" name=\"Button\" src=\"".getthemelocation()."img/button_save.gif\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['save'][$lang])."\" title=\"".getescapedtext ($hcms_lang['save'][$lang])."\" />"; ?>
       </td>
       <td width="26" align="right">
         <a href=# onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('pic_obj_help','','<?php echo getthemelocation(); ?>img/button_help_over.gif',1);" onClick="openHelp();">
-          <img name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.gif" class="hcmsButtonBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['help'][$lang]; ?>" title="<?php echo $hcms_lang['help'][$lang]; ?>" />
+          <img name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.gif" class="hcmsButtonBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" />
         </a>
       </td>
     </tr>

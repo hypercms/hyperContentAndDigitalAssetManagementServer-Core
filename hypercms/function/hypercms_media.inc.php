@@ -253,6 +253,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     if (valid_publicationname ($site) && !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     
     $converted = false;
+    $skip = false;
     
     // save input type in new variable
     $type_memory = $type;
@@ -372,7 +373,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       $imagewidth_orig = 0;
       $imageheight_orig = 0;    
     }
-    
+
     // Default jpg/jpeg options
     if (!array_key_exists ('.jpg.jpeg', $mgmt_imageoptions))
       $mgmt_imageoptions['.jpg.jpeg']= array();
@@ -397,7 +398,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     if (!array_key_exists ('original', $mgmt_imageoptions['.png'])) 
       $mgmt_imageoptions['.png']['original'] = "-f png";
    
-    // check max file size in MB for certain file extensions
+    // check max file size in MB for certain file extensions and skip rendering
     if (is_array ($mgmt_maxsizepreview))
     {
       reset ($mgmt_maxsizepreview);   
@@ -407,533 +408,636 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       {        
         if ($file_ext != "" && substr_count (strtolower ($maxsizepreview_ext).".", $file_ext.".") > 0)
         {
-          if ($mgmt_maxsizepreview[$maxsizepreview_ext] > 0 && ($filesize_orig / 1024) > $mgmt_maxsizepreview[$maxsizepreview_ext]) return false;
+          if ($mgmt_maxsizepreview[$maxsizepreview_ext] > 0 && ($filesize_orig / 1024) > $mgmt_maxsizepreview[$maxsizepreview_ext]) $skip = true;
         }
       }
     }
 
-    // ---------------------- if Audio file ------------------------
-    // the extracted thumbnail will be used as it is and don't use the image data for table media
-    if (is_audio ($file_ext) && ($type == "thumbnail" || $type == "origthumb"))
-    {        
-      // new file name
-      $newfile = $file_name.".thumb.jpg";
-      
-      $id3_data = id3_getdata ($location_source.$file);
-      
-      // if album art image is available
-      if (!empty ($id3_data['imagedata']))
-      {
-        // convert album art if not a JPEG and image is too large in size
-        if ($id3_data['imagemimetype'] != "image/jpeg" || $id3_data['imagewidth'] > 240 || $id3_data['imageheight'] > 240)
+    if ($skip == false)
+    {
+      // ---------------------- if Audio file ------------------------
+      // the extracted thumbnail will be used as it is and don't use the image data for table media
+      if (is_audio ($file_ext) && ($type == "thumbnail" || $type == "origthumb"))
+      {        
+        // new file name
+        $newfile = $file_name.".thumb.jpg";
+        
+        $id3_data = id3_getdata ($location_source.$file);
+        
+        // if album art image is available
+        if (!empty ($id3_data['imagedata']))
         {
-          // save temp file
-          if (strpos ("_".$id3_data['imagemimetype'], "/") > 0)
+          // convert album art if not a JPEG and image is too large in size
+          if ($id3_data['imagemimetype'] != "image/jpeg" || $id3_data['imagewidth'] > 240 || $id3_data['imageheight'] > 240)
           {
-            list ($temp_type, $temp_ext) = explode ("/", $id3_data['imagemimetype']);
-            
-            if ($temp_ext != "") $temp_ext = ".".$temp_ext;
-            else $temp_ext = ".jpg";
-          }
-          
-          $temp_file = $file_name.$temp_ext;          
-          $filehandler = fopen ($location_temp.$temp_file, "wb");
-          
-          if ($filehandler)
-          {
-            // write binary data to file
-            fwrite ($filehandler, $id3_data['imagedata']);
-            fclose ($filehandler);
-            
-            // calculate new width and height
-            $thumb_width = 180;
-            $thumb_height = 180;
-                            
-            if ($id3_data['imagewidth'] > 0 && $id3_data['imageheight'] > 0)
+            // save temp file
+            if (strpos ("_".$id3_data['imagemimetype'], "/") > 0)
             {
-              $imgratio = $id3_data['imagewidth'] / $id3_data['imageheight'];
-
-              if ($id3_data['imagewidth'] > $id3_data['imageheight'])
-              {
-                $thumb_height = round (($thumb_width / $imgratio), 0);
-              }
-              else
-              {
-                $thumb_width = round (($thumb_height * $imgratio), 0);
-              }
+              list ($temp_type, $temp_ext) = explode ("/", $id3_data['imagemimetype']);
+              
+              if ($temp_ext != "") $temp_ext = ".".$temp_ext;
+              else $temp_ext = ".jpg";
             }
             
-            // convert thumbnail to proper format and size
-            $temp_file_2 = convertimage ($site, $location_temp.$temp_file, $location_temp, "jpg", "RGB", "", $thumb_width, $thumb_height);
-
-            // remove temp file
-            deletefile ($location_temp, $temp_file, 0);
+            $temp_file = $file_name.$temp_ext;          
+            $filehandler = fopen ($location_temp.$temp_file, "wb");
             
-            // move temporary thumbnail file to destination
-            if ($temp_file_2 != "" && is_file ($location_temp.$temp_file_2)) rename ($location_temp.$temp_file_2, $location_dest.$newfile);       
-          }
-        }
-        // save binary image in destination
-        else 
-        {
-          $filehandler = fopen ($location_dest.$newfile, "wb");
-          
-          if ($filehandler)
-          {
-            // write binary data to file
-            fwrite ($filehandler, $id3_data['imagedata']);
-            fclose ($filehandler);
-          }
-        }
-      }
-    }
-    
-    // ---------------------- if Adobe InDesign file ------------------------
-    // the extracted thumbnail will be used as it is
-    if ($file_ext == ".indd" && ($type == "thumbnail" || $type == "origthumb"))
-    {
-      $newfile = createthumbnail_indesign ($site, $location_source, $location_dest, $file);
-      
-      // get media information from thumbnail
-      if ($newfile != false)
-      {
-        $converted = true;
-                  
-        $imagecolor = getimagecolors ($site, $newfile);
-      
-        // write media information to container and DB
-        if (!empty ($container_id))
-        {
-          $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
-        }
-      }
-    }
-
-    // -------------- if image conversion software is given -----------------
-    if (is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0)
-    {
-      // redefine type (for images thumbnail and preview are the same)
-      if ($type == "origthumb") $type = "thumbnail";
-            
-      // define format if not set
-      if ($format == "") $format_set = "jpg";
-      else $format_set = $format;
-          
-      reset ($mgmt_imagepreview);    
-      
-      // supported extensions for image rendering
-      foreach ($mgmt_imagepreview as $imagepreview_ext => $imagepreview)
-      {
-        // check file extension
-        if ($file_ext != "" && substr_count (strtolower ($imagepreview_ext).".", $file_ext.".") > 0)
-        {
-          reset ($mgmt_imageoptions);  
-          $i = 1;
-
-          // extensions for certain image rendering options
-          foreach ($mgmt_imageoptions as $imageoptions_ext => $imageoptions)
-          {
-            // if we make a thumbnail we always use the thumbnail configuration from the jpg
-            $check1 = $type == 'thumbnail' && substr_count ($imageoptions_ext.".", ".jpg.") > 0;
-            // else we check the format we convert to
-            $check2 = $type != 'thumbnail' && substr_count ($imageoptions_ext.".", ".".$format_set.".") > 0;
-            // we also need to check if the type array is present
-            $check3 = array_key_exists ($type, $mgmt_imageoptions[$imageoptions_ext]);
-
-            // get image rendering options based on given destination format
-            if (($check1 || $check2) && $check3)
+            if ($filehandler)
             {
-              // Options:
-              // -s ... output size in width x height in pixel (WxH)
-              // -f ... output format (file extension without dot [jpg, png, gif])
-              // -d ... image density (DPI) for vector graphics and EPS files, common values are 72, 96 dots per inch for screen, while printers typically support 150, 300, 600, or 1200 dots per inch
-              // -q ... quality for compressed image formats like JPEG (1 to 100)
-              // -c ... crop x and y coordinates (XxY)
-              // -b ... image brightness
-              // -k .... image contrast
-              // -cs ... color space of image, e.g. RGB, CMYK, gray
-              // -rotate ... rotate image
-              // -fv ... flip image in the vertical direction
-              // -fh ... flop image in the horizontal direction
-              // -sharpen ... sharpen image, e.g. one pixel size sharpen: -sharpen 0x1.0
-              // -sketch ... skecthes an image, e.g. -sketch 0x20+120
-              // -sepia-tone ... apply -sepia-tone on image, e.g. -sepia-tone 80%
-              // -monochrome ... transform image to black and white
-              // -wm ... watermark in watermark image->positioning->geometry, e.g. image.png->topleft->+30
-            
-              // image size (in pixel) definition
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-s ") > 0)
-              {
-                $imagesize = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-s");
-                list ($imagewidth, $imageheight) = explode ("x", $imagesize);
-                
-                $imagewidth = intval ($imagewidth);
-                $imageheight = intval ($imageheight);
-                // ImageMagick resize parameter (resize will fit the image into the requested size, aspect ratio is preserved)
-                $imageresize = "-resize ".$imagewidth."x".$imageheight;
-                // Imagemagick geometry parameter for EPS
-                $imagegeometry = "-geometry ".$imagewidth."x".$imageheight; 
-              }
-              else $imageresize = "";
+              // write binary data to file
+              fwrite ($filehandler, $id3_data['imagedata']);
+              fclose ($filehandler);
               
-              // if no size parameters are provided we use the original size for the new image
-              if (empty ($imagewidth) || empty ($imageheight))
+              // calculate new width and height
+              $thumb_width = 180;
+              $thumb_height = 180;
+                              
+              if ($id3_data['imagewidth'] > 0 && $id3_data['imageheight'] > 0)
               {
-                $imagewidth = $imagewidth_orig;
-                $imageheight = $imageheight_orig;
-              }
-           
-              // image crop
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-c ") > 0) $crop_mode = true;
-              else $crop_mode = false;
-              
-              if ($crop_mode)
-              {
-                $cropoffset = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-c");
-                list ($offsetX, $offsetY) = explode ("x", $cropoffset);
-                
-                $offsetX = intval ($offsetX);
-                $offsetY = intval ($offsetY);
-              }                
-
-              // image format (image file extension) definition
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-f ") > 0)
-              {
-                $imageformat = strtolower (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-f"));
-                if (empty ($imageformat) || $imageformat == false) $imageformat = "jpg";
-              }
-              else $imageformat = "jpg";
-              
-              // image rotation
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-rotate ") > 0) 
-              {
-                $imagerotation = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-rotate"));
-                // ImageMagick rotate parameter
-                $imagerotate = "-rotate ".$imagerotation;
-                
-                // no resize if rotation is used
-                $imageresize = "";
-              }
-              else
-              {
-                $imagerotate = "";
-                $imagerotation = "";
-              }
-              
-              // image density (DPI)
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-d ") > 0) 
-              {
-                $imagedensity = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-d"));
-                
-                if ($imagedensity > 1200) $imagedensity = "-density 1200";
-                elseif ($imagedensity < 72) $imagedensity = "-density 72";
-                else $imagedensity = "-density ".$imagedensity;
-              }
-              else $imagedensity = "";
-              
-              // image quality / compression
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-q ") > 0) 
-              {
-                $imagequality = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-q"));
-                
-                if ($imagequality > 100) $imagequality = "-quality 100";
-                elseif ($imagequality < 1) $imagequality = "-quality 1";
-                else $imagequality = "-quality ".$imagequality;
-              }
-              else $imagequality = "";
-              
-              // image brightness
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-b ") > 0) 
-              {
-                $imagebrightness = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-b"));
-                
-                if ($imagebrightness > 100) $imagebrightness = 100;
-                elseif ($imagebrightness < -100) $imagebrightness = -100;
-              }
-              else $imagebrightness = 0;
-              
-              // image contrast
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-k ") > 0) 
-              {
-                $imagecontrast = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-k"));
-
-                if ($imagecontrast > 100) $imagecontrast = 100;
-                elseif ($imagecontrast < -100) $imagecontrast = -100;
-              }
-              else $imagecontrast = 0;
-              
-              // set image brightness parameters for ImageMagick
-              $imageBrightnessContrast = "";
-              
-              if ($imagebrightness != 0 || $imagecontrast != 0)
-              {
-                $imageBrightnessContrast = "-brightness-contrast ";
-                
-                if ($imagebrightness == 0) $imageBrightnessContrast .= "0x";
-                else $imageBrightnessContrast .= shellcmd_encode ($imagebrightness)."x";
-                
-                if ($imagecontrast == 0) $imageBrightnessContrast .= "0";
-                else $imageBrightnessContrast .= shellcmd_encode ($imagecontrast);
-              }
-              
-              // set image color space
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-cs ") > 0) 
-              {
-                $imagecolorspace = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-cs");
-                
-                // enable alpha blending for colorspace transparent
-                if (strtolower ($imagecolorspace) == "transparent") $add = "-alpha on ";
-                else $add = "";
-                
-                if ($imagecolorspace == "" || $imagecolorspace == false) $imagecolorspace = "";
-                else $imagecolorspace = $add."-colorspace ".shellcmd_encode ($imagecolorspace);
-              }
-              else $imagecolorspace = "";
-              
-              // set image icc profile 
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-p ") > 0) 
-              {
-                $iccprofile = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-p");
-                
-                if ($iccprofile == "" || $iccprofile == false) $iccprofile = "";
-                else $iccprofile = "-profile ".shellcmd_encode ($iccprofile);
-              }
-              else $iccprofile = "";
-              
-              // set flip
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-fv ") > 0) 
-              {
-                $imageflipv = "-flop";
-              }
-              else $imageflipv = "";
-              
-              // set flop
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-fh ") > 0) 
-              {
-                $imagefliph = "-flip";
-              }
-              else $imagefliph = "";
-              
-              // Combine flip and flop into one
-              $imageflip = $imageflipv." ".$imagefliph;
-              
-              // set sepia
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sep ") > 0) 
-              {
-                $sepia = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sep");
-                
-                if ($sepia == "" || $sepia == false) $sepia = "";
-                else $sepia = "-sepia-tone ".shellcmd_encode ($sepia);
-              }
-              else $sepia = "";
-              
-              // set sharpen
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sh ") > 0) 
-              {
-                $sharpen = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sh");
-                
-                if ($sharpen == "" || $sharpen == false) $sharpen = "";
-                else $sharpen = "-sharpen ".shellcmd_encode ($sharpen);
-              }
-              else $sharpen = "";
-              
-              // set blur
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-bl ") > 0) 
-              {
-                $blur = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-bl");
-                
-                if ($blur == "" || $blur == false) $blur = "";
-                else $blur = "-blur ".shellcmd_encode ($blur);
-              }
-              else $blur = "";
-              
-              // set sketch
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sk ") > 0) 
-              {
-                $sketch = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sk");
-                
-                if ($sketch == "" || $sketch == false) $sketch = "";
-                else $sketch = "-sketch ".shellcmd_encode ($sketch);
-              }
-              else $sketch = "";
-              
-              // set paint
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-pa ") > 0) 
-              {
-                $paint = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-pa");
-                
-                if ($paint == "" || $paint == false) $paint = "";
-                else $paint = "-paint ".shellcmd_encode ($paint);
-              }
-              else $paint = "";
-              
-              // watermarking
-              // set watermark options if defined in publication settings and not already defined
-              if (!empty ($mgmt_config[$site]['watermark_image']) && strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-wm ") == 0)
-              {
-                $mgmt_imageoptions[$imageoptions_ext][$type] .= " ".$mgmt_config[$site]['watermark_image'];
-              }
-               
-              if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-wm ") > 0) 
-              {
-                $watermarking = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-wm");
-                
-                if ($watermarking == "" || $watermarking == false)
+                $imgratio = $id3_data['imagewidth'] / $id3_data['imageheight'];
+  
+                if ($id3_data['imagewidth'] > $id3_data['imageheight'])
                 {
-                  $watermark = "";
+                  $thumb_height = round (($thumb_width / $imgratio), 0);
                 }
                 else
                 {
-                  // parameters:
-                  // watermark ... reference to watermark PNG image
-                  // -gravity ... sets where in the image the watermark should be added
-                  // -geometry ... Can be used to modify the size of the watermark being passed in, and also the positioning of the watermark (relative to the gravity placement). 
-                  //               It is specified in the form width x height +/- horizontal offset +/- vertical offset (<width>x<height>{+-}<xoffset>{+-}<yoffset>).
-                  // -composite ... parameter, which tells ImageMagick to add the watermark image we’ve just specified to the image. 
-                  list ($watermark, $gravity, $geometry) = explode ("->", $watermarking);
-                  
-                  if (strtolower(trim($gravity)) == "topleft") $gravity = "northwest";
-                  elseif (strtolower(trim($gravity)) == "topright") $gravity = "northeast";
-                  elseif (strtolower(trim($gravity)) == "bottomleft") $gravity = "southwest";
-                  elseif (strtolower(trim($gravity)) == "bottomleft") $gravity = "southeast";
-                  
-                  if ($watermark != "" && $gravity != "" && $geometry != "")
-                  {
-                    $watermark = "-compose multiply -gravity ".$gravity." -geometry ".shellcmd_encode(trim($geometry))." -background none \"".shellcmd_encode(trim($watermark))."\"";
-                  }
-                  else $watermark = "";
-                }                  
+                  $thumb_width = round (($thumb_height * $imgratio), 0);
+                }
               }
-              else $watermark = "";
-
-              // -------------------- convert image using ImageMagick ----------------------
-              if (!empty ($mgmt_imagepreview[$imagepreview_ext]) && $mgmt_imagepreview[$imagepreview_ext] != "GD")
+              
+              // convert thumbnail to proper format and size
+              $temp_file_2 = convertimage ($site, $location_temp.$temp_file, $location_temp, "jpg", "RGB", "", $thumb_width, $thumb_height);
+  
+              // remove temp file
+              deletefile ($location_temp, $temp_file, 0);
+              
+              // move temporary thumbnail file to destination
+              if ($temp_file_2 != "" && is_file ($location_temp.$temp_file_2)) rename ($location_temp.$temp_file_2, $location_dest.$newfile);       
+            }
+          }
+          // save binary image in destination
+          else 
+          {
+            $filehandler = fopen ($location_dest.$newfile, "wb");
+            
+            if ($filehandler)
+            {
+              // write binary data to file
+              fwrite ($filehandler, $id3_data['imagedata']);
+              fclose ($filehandler);
+            }
+          }
+        }
+      }
+      
+      // ---------------------- if Adobe InDesign file ------------------------
+      // the extracted thumbnail will be used as it is
+      if ($file_ext == ".indd" && ($type == "thumbnail" || $type == "origthumb"))
+      {
+        $newfile = createthumbnail_indesign ($site, $location_source, $location_dest, $file);
+        
+        // get media information from thumbnail
+        if ($newfile != false)
+        {
+          $converted = true;
+                    
+          $imagecolor = getimagecolors ($site, $newfile);
+        
+          // write media information to container and DB
+          if (!empty ($container_id))
+          {
+            $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
+          }
+        }
+      }
+  
+      // -------------- if image conversion software is given -----------------
+      if (is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0)
+      {
+        // redefine type (for images thumbnail and preview are the same)
+        if ($type == "origthumb") $type = "thumbnail";
+              
+        // define format if not set
+        if ($format == "") $format_set = "jpg";
+        else $format_set = $format;
+            
+        reset ($mgmt_imagepreview);    
+        
+        // supported extensions for image rendering
+        foreach ($mgmt_imagepreview as $imagepreview_ext => $imagepreview)
+        {
+          // check file extension
+          if ($file_ext != "" && substr_count (strtolower ($imagepreview_ext).".", $file_ext.".") > 0)
+          {
+            reset ($mgmt_imageoptions);  
+            $i = 1;
+  
+            // extensions for certain image rendering options
+            foreach ($mgmt_imageoptions as $imageoptions_ext => $imageoptions)
+            {
+              // if we make a thumbnail we always use the thumbnail configuration from the jpg
+              $check1 = $type == 'thumbnail' && substr_count ($imageoptions_ext.".", ".jpg.") > 0;
+              // else we check the format we convert to
+              $check2 = $type != 'thumbnail' && substr_count ($imageoptions_ext.".", ".".$format_set.".") > 0;
+              // we also need to check if the type array is present
+              $check3 = array_key_exists ($type, $mgmt_imageoptions[$imageoptions_ext]);
+  
+              // get image rendering options based on given destination format
+              if (($check1 || $check2) && $check3)
               {
-                // delete thumbnail
-                if ($type == "thumbnail" && @is_file ($location_dest.$file_name.".thumb.jpg"))
+                // Options:
+                // -s ... output size in width x height in pixel (WxH)
+                // -f ... output format (file extension without dot [jpg, png, gif])
+                // -d ... image density (DPI) for vector graphics and EPS files, common values are 72, 96 dots per inch for screen, while printers typically support 150, 300, 600, or 1200 dots per inch
+                // -q ... quality for compressed image formats like JPEG (1 to 100)
+                // -c ... crop x and y coordinates (XxY)
+                // -b ... image brightness
+                // -k .... image contrast
+                // -cs ... color space of image, e.g. RGB, CMYK, gray
+                // -rotate ... rotate image
+                // -fv ... flip image in the vertical direction
+                // -fh ... flop image in the horizontal direction
+                // -sharpen ... sharpen image, e.g. one pixel size sharpen: -sharpen 0x1.0
+                // -sketch ... skecthes an image, e.g. -sketch 0x20+120
+                // -sepia-tone ... apply -sepia-tone on image, e.g. -sepia-tone 80%
+                // -monochrome ... transform image to black and white
+                // -wm ... watermark in watermark image->positioning->geometry, e.g. image.png->topleft->+30
+              
+                // image size (in pixel) definition
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-s ") > 0)
                 {
-                  @unlink ($location_dest.$file_name.".thumb.jpg");
-                }
-                // copy original image before conversion to restore it if an error occured
-                elseif ($type != "thumbnail" && @is_file ($location_source.$file))
-                {
-                  // create buffer file
-                  $buffer_file = $location_dest.$file_name.".buffer".strrchr ($file, ".");;
-                  @copy ($location_source.$file, $buffer_file);
-
-                  // delete the old file if we overwrite the original file
-                  if ($type == "original") @unlink ($location_source.$file);
-                }
-
-                // DOCUMENT & VECTOR Graphics: document-based formats, encapsulated post script and vector graphics
-                if ($file_ext == ".pdf" || $file_ext == ".eps" || $file_ext == ".svg")
-                {
-                  if ($type == "thumbnail")
-                  {
-                    $newfile = $file_name.".thumb.jpg";
-                    
-                    $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
-                  }
-                  else 
-                  {
-                    if ($type == "original") $newfile = $file_name.".".$imageformat;
-                    else $newfile = $file_name.".".$type.".".$imageformat;
-                    
-                    // use geometry instead of resize for EPS files
-                    if ($file_ext == ".eps") $imageresize = $imagegeometry;
-
-                    $cmd = $mgmt_imagepreview[$imagepreview_ext]." -background none ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageresize." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
-                  }
+                  $imagesize = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-s");
+                  list ($imagewidth, $imageheight) = explode ("x", $imagesize);
                   
-                  @exec ($cmd, $buffer, $errorCode);
-
-                  // on error
-                  if ($errorCode)
+                  $imagewidth = intval ($imagewidth);
+                  $imageheight = intval ($imageheight);
+                  // ImageMagick resize parameter (resize will fit the image into the requested size, aspect ratio is preserved)
+                  $imageresize = "-resize ".$imagewidth."x".$imageheight;
+                  // Imagemagick geometry parameter for EPS
+                  $imagegeometry = "-geometry ".$imagewidth."x".$imageheight; 
+                }
+                else $imageresize = "";
+                
+                // if no size parameters are provided we use the original size for the new image
+                if (empty ($imagewidth) || empty ($imageheight))
+                {
+                  $imagewidth = $imagewidth_orig;
+                  $imageheight = $imageheight_orig;
+                }
+             
+                // image crop
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-c ") > 0) $crop_mode = true;
+                else $crop_mode = false;
+                
+                if ($crop_mode)
+                {
+                  $cropoffset = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-c");
+                  list ($offsetX, $offsetY) = explode ("x", $cropoffset);
+                  
+                  $offsetX = intval ($offsetX);
+                  $offsetY = intval ($offsetY);
+                }                
+  
+                // image format (image file extension) definition
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-f ") > 0)
+                {
+                  $imageformat = strtolower (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-f"));
+                  if (empty ($imageformat) || $imageformat == false) $imageformat = "jpg";
+                }
+                else $imageformat = "jpg";
+                
+                // image rotation
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-rotate ") > 0) 
+                {
+                  $imagerotation = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-rotate"));
+                  // ImageMagick rotate parameter
+                  $imagerotate = "-rotate ".$imagerotation;
+                  
+                  // no resize if rotation is used
+                  $imageresize = "";
+                }
+                else
+                {
+                  $imagerotate = "";
+                  $imagerotation = "";
+                }
+                
+                // image density (DPI)
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-d ") > 0) 
+                {
+                  $imagedensity = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-d"));
+                  
+                  if ($imagedensity > 1200) $imagedensity = "-density 1200";
+                  elseif ($imagedensity < 72) $imagedensity = "-density 72";
+                  else $imagedensity = "-density ".$imagedensity;
+                }
+                else $imagedensity = "";
+                
+                // image quality / compression
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-q ") > 0) 
+                {
+                  $imagequality = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-q"));
+                  
+                  if ($imagequality > 100) $imagequality = "-quality 100";
+                  elseif ($imagequality < 1) $imagequality = "-quality 1";
+                  else $imagequality = "-quality ".$imagequality;
+                }
+                else $imagequality = "";
+                
+                // image brightness
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-b ") > 0) 
+                {
+                  $imagebrightness = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-b"));
+                  
+                  if ($imagebrightness > 100) $imagebrightness = 100;
+                  elseif ($imagebrightness < -100) $imagebrightness = -100;
+                }
+                else $imagebrightness = 0;
+                
+                // image contrast
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-k ") > 0) 
+                {
+                  $imagecontrast = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-k"));
+  
+                  if ($imagecontrast > 100) $imagecontrast = 100;
+                  elseif ($imagecontrast < -100) $imagecontrast = -100;
+                }
+                else $imagecontrast = 0;
+                
+                // set image brightness parameters for ImageMagick
+                $imageBrightnessContrast = "";
+                
+                if ($imagebrightness != 0 || $imagecontrast != 0)
+                {
+                  $imageBrightnessContrast = "-brightness-contrast ";
+                  
+                  if ($imagebrightness == 0) $imageBrightnessContrast .= "0x";
+                  else $imageBrightnessContrast .= shellcmd_encode ($imagebrightness)."x";
+                  
+                  if ($imagecontrast == 0) $imageBrightnessContrast .= "0";
+                  else $imageBrightnessContrast .= shellcmd_encode ($imagecontrast);
+                }
+                
+                // set image color space
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-cs ") > 0) 
+                {
+                  $imagecolorspace = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-cs");
+                  
+                  // enable alpha blending for colorspace transparent
+                  if (strtolower ($imagecolorspace) == "transparent") $add = "-alpha on ";
+                  else $add = "";
+                  
+                  if ($imagecolorspace == "" || $imagecolorspace == false) $imagecolorspace = "";
+                  else $imagecolorspace = $add."-colorspace ".shellcmd_encode ($imagecolorspace);
+                }
+                else $imagecolorspace = "";
+                
+                // set image icc profile 
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-p ") > 0) 
+                {
+                  $iccprofile = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-p");
+                  
+                  if ($iccprofile == "" || $iccprofile == false) $iccprofile = "";
+                  else $iccprofile = "-profile ".shellcmd_encode ($iccprofile);
+                }
+                else $iccprofile = "";
+                
+                // set flip
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-fv ") > 0) 
+                {
+                  $imageflipv = "-flop";
+                }
+                else $imageflipv = "";
+                
+                // set flop
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-fh ") > 0) 
+                {
+                  $imagefliph = "-flip";
+                }
+                else $imagefliph = "";
+                
+                // Combine flip and flop into one
+                $imageflip = $imageflipv." ".$imagefliph;
+                
+                // set sepia
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sep ") > 0) 
+                {
+                  $sepia = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sep");
+                  
+                  if ($sepia == "" || $sepia == false) $sepia = "";
+                  else $sepia = "-sepia-tone ".shellcmd_encode ($sepia);
+                }
+                else $sepia = "";
+                
+                // set sharpen
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sh ") > 0) 
+                {
+                  $sharpen = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sh");
+                  
+                  if ($sharpen == "" || $sharpen == false) $sharpen = "";
+                  else $sharpen = "-sharpen ".shellcmd_encode ($sharpen);
+                }
+                else $sharpen = "";
+                
+                // set blur
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-bl ") > 0) 
+                {
+                  $blur = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-bl");
+                  
+                  if ($blur == "" || $blur == false) $blur = "";
+                  else $blur = "-blur ".shellcmd_encode ($blur);
+                }
+                else $blur = "";
+                
+                // set sketch
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-sk ") > 0) 
+                {
+                  $sketch = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-sk");
+                  
+                  if ($sketch == "" || $sketch == false) $sketch = "";
+                  else $sketch = "-sketch ".shellcmd_encode ($sketch);
+                }
+                else $sketch = "";
+                
+                // set paint
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-pa ") > 0) 
+                {
+                  $paint = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-pa");
+                  
+                  if ($paint == "" || $paint == false) $paint = "";
+                  else $paint = "-paint ".shellcmd_encode ($paint);
+                }
+                else $paint = "";
+                
+                // watermarking
+                // set watermark options if defined in publication settings and not already defined
+                if (!empty ($mgmt_config[$site]['watermark_image']) && strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-wm ") == 0)
+                {
+                  $mgmt_imageoptions[$imageoptions_ext][$type] .= " ".$mgmt_config[$site]['watermark_image'];
+                }
+                 
+                if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-wm ") > 0) 
+                {
+                  $watermarking = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-wm");
+                  
+                  if ($watermarking == "" || $watermarking == false)
                   {
-                    // restore original file
-                    if ($type == "original") @copy ($buffer_file, $location_source.$file);
-
-                    $errcode = "20231";
-                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;
+                    $watermark = "";
                   }
-                  // on success
                   else
                   {
-                    // watermark using composite
-                    if ($type != "thumbnail" && $type != "original" && !empty ($watermark))
+                    // parameters:
+                    // watermark ... reference to watermark PNG image
+                    // -gravity ... sets where in the image the watermark should be added
+                    // -geometry ... Can be used to modify the size of the watermark being passed in, and also the positioning of the watermark (relative to the gravity placement). 
+                    //               It is specified in the form width x height +/- horizontal offset +/- vertical offset (<width>x<height>{+-}<xoffset>{+-}<yoffset>).
+                    // -composite ... parameter, which tells ImageMagick to add the watermark image we’ve just specified to the image. 
+                    list ($watermark, $gravity, $geometry) = explode ("->", $watermarking);
+                    
+                    if (strtolower(trim($gravity)) == "topleft") $gravity = "northwest";
+                    elseif (strtolower(trim($gravity)) == "topright") $gravity = "northeast";
+                    elseif (strtolower(trim($gravity)) == "bottomleft") $gravity = "southwest";
+                    elseif (strtolower(trim($gravity)) == "bottomleft") $gravity = "southeast";
+                    
+                    if ($watermark != "" && $gravity != "" && $geometry != "")
                     {
-                      $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."composite ".$watermark." ".shellcmd_encode ($location_dest.$newfile)." ".shellcmd_encode ($location_temp."watermark.".$newfile);
-                      
-                      @exec ($cmd, $buffer, $errorCode);
-                      
-                      // on error
-                      if ($errorCode)
-                      {
-                        // overwrite original file
-                        if (is_file ($location_temp."watermark.".$newfile)) @unlink ($location_temp."watermark.".$newfile);
+                      $watermark = "-compose multiply -gravity ".$gravity." -geometry ".shellcmd_encode(trim($geometry))." -background none \"".shellcmd_encode(trim($watermark))."\"";
+                    }
+                    else $watermark = "";
+                  }                  
+                }
+                else $watermark = "";
   
-                        $errcode = "20261";
-                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$file;
-                      }
-                      else
-                      {
-                        // overwrite source file with watermarked file
-                        @rename ($location_temp."watermark.".$newfile, $location_dest.$newfile);
-                      }
+                // -------------------- convert image using ImageMagick ----------------------
+                if (!empty ($mgmt_imagepreview[$imagepreview_ext]) && $mgmt_imagepreview[$imagepreview_ext] != "GD")
+                {
+                  // delete thumbnail
+                  if ($type == "thumbnail" && @is_file ($location_dest.$file_name.".thumb.jpg"))
+                  {
+                    @unlink ($location_dest.$file_name.".thumb.jpg");
+                  }
+                  // copy original image before conversion to restore it if an error occured
+                  elseif ($type != "thumbnail" && @is_file ($location_source.$file))
+                  {
+                    // create buffer file
+                    $buffer_file = $location_dest.$file_name.".buffer".strrchr ($file, ".");;
+                    @copy ($location_source.$file, $buffer_file);
+  
+                    // delete the old file if we overwrite the original file
+                    if ($type == "original") @unlink ($location_source.$file);
+                  }
+  
+                  // DOCUMENT & VECTOR Graphics: document-based formats, encapsulated post script and vector graphics
+                  if ($file_ext == ".pdf" || $file_ext == ".eps" || $file_ext == ".svg")
+                  {
+                    if ($type == "thumbnail")
+                    {
+                      $newfile = $file_name.".thumb.jpg";
+                      
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                    }
+                    else 
+                    {
+                      if ($type == "original") $newfile = $file_name.".".$imageformat;
+                      else $newfile = $file_name.".".$type.".".$imageformat;
+                      
+                      // use geometry instead of resize for EPS files
+                      if ($file_ext == ".eps") $imageresize = $imagegeometry;
+  
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -background none ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageresize." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     
-                    $converted = true;
-                    // copy metadata from original file using EXIFTOOL
-                    if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
-                    // remote client
-                    if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-                  }
-                }
-                // Adobe Photoshop / Adobe Illustrator: layered files
-                elseif ($file_ext == ".ai" || $file_ext == ".psd")
-                {
-                  if ($type == "thumbnail")
-                  {
-                    $newfile = $file_name.".thumb.jpg";
-                    
-                    $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."\" -flatten ".$imageresize." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
-                  }
-                  else
-                  {
-                    if ($type == "original") $newfile = $file_name.".".$imageformat;
-                    else $newfile = $file_name.".".$type.".".$imageformat;
-
-                    if ($crop_mode)
+                    @exec ($cmd, $buffer, $errorCode);
+  
+                    // on error
+                    if ($errorCode)
                     {
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -flatten -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".$imageBrightnessContrast." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      // restore original file
+                      if ($type == "original") @copy ($buffer_file, $location_source.$file);
+  
+                      $errcode = "20231";
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;
+                    }
+                    // on success
+                    else
+                    {
+                      // watermark using composite
+                      if ($type != "thumbnail" && $type != "original" && !empty ($watermark))
+                      {
+                        $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."composite ".$watermark." ".shellcmd_encode ($location_dest.$newfile)." ".shellcmd_encode ($location_temp."watermark.".$newfile);
+                        
+                        @exec ($cmd, $buffer, $errorCode);
+                        
+                        // on error
+                        if ($errorCode)
+                        {
+                          // overwrite original file
+                          if (is_file ($location_temp."watermark.".$newfile)) @unlink ($location_temp."watermark.".$newfile);
+    
+                          $errcode = "20261";
+                          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$file;
+                        }
+                        else
+                        {
+                          // overwrite source file with watermarked file
+                          @rename ($location_temp."watermark.".$newfile, $location_dest.$newfile);
+                        }
+                      }
+                      
+                      $converted = true;
+                      // copy metadata from original file using EXIFTOOL
+                      if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
+                      // remote client
+                      if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+                    }
+                  }
+                  // Adobe Photoshop / Adobe Illustrator: layered files
+                  elseif ($file_ext == ".ai" || $file_ext == ".psd")
+                  {
+                    if ($type == "thumbnail")
+                    {
+                      $newfile = $file_name.".thumb.jpg";
+                      
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."\" -flatten ".$imageresize." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     else
                     {
-                       $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -flatten \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      if ($type == "original") $newfile = $file_name.".".$imageformat;
+                      else $newfile = $file_name.".".$type.".".$imageformat;
+  
+                      if ($crop_mode)
+                      {
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -flatten -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".$imageBrightnessContrast." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      }
+                      else
+                      {
+                         $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -flatten \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      }
+                    }
+      
+                    @exec ($cmd, $buffer, $errorCode);
+      
+                    // on error
+                    if ($errorCode)
+                    {
+                      // restore original file
+                      if ($type == "original") @copy ($buffer_file, $location_source.$file);
+                      
+                      $errcode = "20232";
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;   
+                    }
+                    // on success
+                    else
+                    {
+                      // watermark using composite
+                      if ($type != "thumbnail" && $type != "original" && !empty ($watermark))
+                      {
+                        $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."composite ".$watermark." ".shellcmd_encode ($location_dest.$newfile)." ".shellcmd_encode ($location_temp."watermark.".$newfile);
+                        
+                        @exec ($cmd, $buffer, $errorCode);
+                        
+                        // on error
+                        if ($errorCode)
+                        {
+                          // overwrite original file
+                          if (is_file ($location_temp."watermark.".$newfile)) @unlink ($location_temp."watermark.".$newfile);
+    
+                          $errcode = "20262";
+                          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$file;
+                        }
+                        else
+                        {
+                          // overwrite source file with watermarked file
+                          @rename ($location_temp."watermark.".$newfile, $location_dest.$newfile);
+                        }
+                      }
+                      
+                      $converted = true;
+                      // copy metadata from original file using EXIFTOOL
+                      if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
+                      // remote client
+                      if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
                     }
                   }
-    
-                  @exec ($cmd, $buffer, $errorCode);
-    
-                  // on error
-                  if ($errorCode)
-                  {
-                    // restore original file
-                    if ($type == "original") @copy ($buffer_file, $location_source.$file);
-                    
-                    $errcode = "20232";
-                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;   
-                  }
-                  // on success
+                  // IMAGE: standard images
                   else
+                  {
+                    // only for RAW image
+                    if (is_rawimage ($file_ext))
+                    {
+                      $imagecolorspace = "";
+                    }
+  
+                    if ($type == "thumbnail")
+                    {
+                      $newfile = $file_name.".thumb.jpg";
+                      
+                      // reduce thumbnail size if original image is smaller then the defined thumbnail image size
+                      if ($imagewidth_orig > 0 && $imagewidth_orig < $imagewidth && $imageheight_orig > 0 && $imageheight_orig < $imageheight)
+                      {
+                        $imageresize = "-resize ".round ($imagewidth_orig, 0)."x".round ($imageheight_orig, 0);
+                      }
+                       
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                    }
+                    else
+                    {
+                      if ($type == "original") $newfile = $file_name.".".$imageformat;
+                      else $newfile = $file_name.".".$type.".".$imageformat;
+                          
+                      if ($crop_mode)
+                      {
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      }
+                      else
+                      {
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      }
+                    }
+  
+                    @exec ($cmd, $error_array, $errorCode);
+  
+                    // on error
+                    if ($errorCode)
+                    {
+                      // restore original image
+                      if ($type == "original") @copy ($buffer_file, $location_source.$file);
+                                   
+                      $errcode = "20234";
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file."<br />".implode ("<br />", $error_array);   
+                    }
+                    // on success
+                    else
+                    {          
+                      if (is_file ($location_dest.$newfile))
+                      {
+                        // copy metadata from original file using EXIFTOOL
+                        if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
+                        // remote client
+                        if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+                        // delete original RAW image if converted to other format
+                        if ($type == "original" && is_rawimage ($file_ext)) deletefile ($location_source_orig, $file_orig, 0);              
+                      }
+                    }
+                  }
+  
+                  // delete buffer file
+                  if ($type != "thumbnail") @unlink ($buffer_file);   
+                  
+                  // save log
+                  savelog (@$error);           
+  
+                  // if new file is larger than 5 bytes
+                  if (!empty ($newfile) && @filesize ($location_dest.$newfile) > 5)
                   {
                     // watermark using composite
                     if ($type != "thumbnail" && $type != "original" && !empty ($watermark))
                     {
-                      $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."composite ".$watermark." ".shellcmd_encode ($location_dest.$newfile)." ".shellcmd_encode ($location_temp."watermark.".$newfile);
-                      
-                      @exec ($cmd, $buffer, $errorCode);
-                      
+                      $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."composite ".$watermark." \"".shellcmd_encode ($location_dest.$newfile)."\" \"".shellcmd_encode ($location_temp."watermark.".$newfile)."\"";
+  
+                      @exec ($cmd, $error_array, $errorCode);
+  
                       // on error
                       if ($errorCode)
                       {
@@ -941,7 +1045,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         if (is_file ($location_temp."watermark.".$newfile)) @unlink ($location_temp."watermark.".$newfile);
   
                         $errcode = "20262";
-                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$file;
+                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$newfile."<br />".implode ("<br />", $error_array);
                       }
                       else
                       {
@@ -949,739 +1053,640 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         @rename ($location_temp."watermark.".$newfile, $location_dest.$newfile);
                       }
                     }
-                    
+                  
                     $converted = true;
-                    // copy metadata from original file using EXIFTOOL
-                    if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
+                    
+                    // get media information from thumbnail
+                    if ($type == "thumbnail")
+                    {
+                      $imagecolor = getimagecolors ($site, $newfile);
+                    
+                      // write media information to container and DB
+                      if (!empty ($container_id))
+                      {
+                        $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
+                      }
+                    }
+                  }
+                  else
+                  {
+                    // delete thumbnail file
+                    @unlink ($location_dest.$file_name.".thumb.jpg");
+                    // remote client
+                    if ($type == "thumbnail" || $type == "original") remoteclient ("delete", "abs_path_media", $site, $location_dest, "", $file_name.".thumb.jpg", "");
+                  }         
+                }
+                // -------------------- convert image using GD-Library -----------------------
+                elseif ($imagewidth_orig > 0 && $imageheight_orig > 0 && (empty ($mgmt_imagepreview[$imagepreview_ext]) || $mgmt_imagepreview[$imagepreview_ext] == "GD") && in_array (strtolower($file_ext), $GD_allowed_ext))
+                {
+                  // calculate aspect ratio
+                  $imageratio_orig = $imagewidth_orig / $imageheight_orig;
+                  $imageratio = $imagewidth / $imageheight;
+                  
+                  if ($type == "thumbnail")
+                  {
+                    // reduce thumbnail size, if original image will be smaller then the defined thumbnail image size
+                    if ($imagewidth_orig < $imagewidth && $imageheight_orig < $imageheight)
+                    {
+                      $resizedwidth = intval ($imagewidth_orig);
+                      $resizedheight = intval ($imageheight_orig);
+                    }
+                  }
+                  
+                  // calculate image size to fit image in the given image size frame (imagewidth x imageheight), original aspect ratio will be kept
+                  if (empty ($resizedwidth) || empty ($resizedheight))
+                  {    
+                    if ($imageratio_orig >= $imageratio)
+                    {
+                      $resizedwidth = intval ($imagewidth);
+                      $resizedheight = round (($resizedwidth / $imageratio_orig), 0);
+                    }
+                    else
+                    {
+                      $resizedheight = intval ($imageheight);
+                      $resizedwidth = round (($resizedheight * $imageratio_orig), 0);
+                    }
+                  }
+                    
+                  $imgresized = @ImageCreateTrueColor ($resizedwidth, $resizedheight);
+              
+                  if ($file_ext == ".gif") $imgsource = @ImageCreateFromGif ($location_source.$file);
+                  elseif ($file_ext == ".jpg" || $file_ext == ".jpeg") $imgsource = @ImageCreateFromJpeg ($location_source.$file);
+                  elseif ($file_ext == ".png") $imgsource = @ImageCreateFromPng ($location_source.$file);
+                  else return false;
+              
+                  // crop image
+                  if ($crop_mode)
+                  {
+                    @imagecopyresampled ($imgresized, $imgsource, 0, 0, $offsetX, $offsetY, $imagewidth, $imageheight, $imagewidth, $imageheight);
+                  }
+                  // resize image
+                  else
+                  {
+                    @ImageCopyResized ($imgresized, $imgsource, 0, 0, 0, 0, $resizedwidth, $resizedheight, $imagewidth_orig, $imageheight_orig);
+                  }
+  
+                  // create image in defined file format
+                  if ($imageformat == "jpg" && function_exists ("imagejpeg"))
+                  {
+                    if ($type == "thumbnail")
+                    {
+                      $newfile = $file_name.".thumb.jpg";
+                      $result = @imagejpeg ($imgresized, $location_dest.$newfile);
+                    }
+                    else
+                    {
+                      if ($type == "original") $newfile = $file_name.".jpg";
+                      else $newfile = $file_name.".".$type.".jpg";
+                      
+                      $result = @imagejpeg ($imgresized, $location_dest.$newfile);
+                    }
+                  }
+                  elseif ($imageformat == "png" && function_exists ("imagepng"))
+                  {
+                    if ($type == "thumbnail")
+                    {
+                      $newfile = $file_name.".thumb.png";
+                      $result = @imagepng ($imgresized, $location_dest.$newfile);
+                    }
+                    else
+                    {
+                      if ($type == "original") $newfile = $file_name.".png";
+                      else $newfile = $file_name.".".$type.".png";
+                        
+                      $result = @imagepng ($imgresized, $location_dest.$newfile);
+                    }
+                  }
+                  elseif ($imageformat == "gif" && function_exists ("imagegif"))
+                  {
+                    if ($type == "thumbnail")
+                    {
+                      $newfile = $file_name.".thumb.gif";
+                      $result = @imagegif ($imgresized, $location_dest.$newfile);
+                    }
+                    else
+                    {
+                      if ($type == "original") $newfile = $file_name.".gif";
+                      else $newfile = $file_name.".".$type.".gif";
+                        
+                      $result = @imagegif ($imgresized, $location_dest.$newfile);
+                    }
+                  }
+                  else $result = false;
+  
+                  // delete original file if file extension has been changed
+                  if ($result == true && $file_ext != ".".$format_set && $type == "original" && is_file ($location_orig.$file_orig))
+                  {
+                    @unlink ($location_orig.$file_orig);
+                  }
+              
+                  @ImageDestroy ($imgsource);
+                  @ImageDestroy ($imgresized);
+  
+                  if ($result == true)
+                  {
+                    $converted = true;
+                    // rotate image
+                    if ($type != "thumbnail" && $imagerotation != "") $result = rotateimage ($site, $location_dest.$newfile, $imagerotation, $format_set);
+  
                     // remote client
                     if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-                  }
-                }
-                // IMAGE: standard images
-                else
-                {
-                  // only for RAW image
-                  if (is_rawimage ($file_ext))
-                  {
-                    $imagecolorspace = "";
-                  }
-
-                  if ($type == "thumbnail")
-                  {
-                    $newfile = $file_name.".thumb.jpg";
                     
-                    // reduce thumbnail size if original image is smaller then the defined thumbnail image size
-                    if ($imagewidth_orig > 0 && $imagewidth_orig < $imagewidth && $imageheight_orig > 0 && $imageheight_orig < $imageheight)
+                    // get media information from thumbnail
+                    if ($type == "thumbnail")
                     {
-                      $imageresize = "-resize ".round ($imagewidth_orig, 0)."x".round ($imageheight_orig, 0);
-                    }
-                     
-                    $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
-                  }
-                  else
-                  {
-                    if ($type == "original") $newfile = $file_name.".".$imageformat;
-                    else $newfile = $file_name.".".$type.".".$imageformat;
-                        
-                    if ($crop_mode)
-                    {
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
-                    }
-                    else
-                    {
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
-                    }
-                  }
-
-                  @exec ($cmd, $error_array, $errorCode);
-
-                  // on error
-                  if ($errorCode)
-                  {
-                    // restore original image
-                    if ($type == "original") @copy ($buffer_file, $location_source.$file);
-                                 
-                    $errcode = "20234";
-                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file."<br />".implode ("<br />", $error_array);   
-                  }
-                  // on success
-                  else
-                  {          
-                    if (is_file ($location_dest.$newfile))
-                    {
-                      // copy metadata from original file using EXIFTOOL
-                      if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
-                      // remote client
-                      if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-                      // delete original RAW image if converted to other format
-                      if ($type == "original" && is_rawimage ($file_ext)) deletefile ($location_source_orig, $file_orig, 0);              
-                    }
-                  }
-                }
-
-                // delete buffer file
-                if ($type != "thumbnail") @unlink ($buffer_file);   
-                
-                // save log
-                savelog (@$error);           
-
-                // if new file is larger than 5 bytes
-                if (!empty ($newfile) && @filesize ($location_dest.$newfile) > 5)
-                {
-                  // watermark using composite
-                  if ($type != "thumbnail" && $type != "original" && !empty ($watermark))
-                  {
-                    $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."composite ".$watermark." \"".shellcmd_encode ($location_dest.$newfile)."\" \"".shellcmd_encode ($location_temp."watermark.".$newfile)."\"";
-
-                    @exec ($cmd, $error_array, $errorCode);
-
-                    // on error
-                    if ($errorCode)
-                    {
-                      // overwrite original file
-                      if (is_file ($location_temp."watermark.".$newfile)) @unlink ($location_temp."watermark.".$newfile);
-
-                      $errcode = "20262";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$newfile."<br />".implode ("<br />", $error_array);
-                    }
-                    else
-                    {
-                      // overwrite source file with watermarked file
-                      @rename ($location_temp."watermark.".$newfile, $location_dest.$newfile);
-                    }
-                  }
-                
-                  $converted = true;
-                  
-                  // get media information from thumbnail
-                  if ($type == "thumbnail")
-                  {
-                    $imagecolor = getimagecolors ($site, $newfile);
-                  
-                    // write media information to container and DB
-                    if (!empty ($container_id))
-                    {
-                      $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
-                    }
-                  }
-                }
-                else
-                {
-                  // delete thumbnail file
-                  @unlink ($location_dest.$file_name.".thumb.jpg");
-                  // remote client
-                  if ($type == "thumbnail" || $type == "original") remoteclient ("delete", "abs_path_media", $site, $location_dest, "", $file_name.".thumb.jpg", "");
-                }         
-              }
-              // -------------------- convert image using GD-Library -----------------------
-              elseif ($imagewidth_orig > 0 && $imageheight_orig > 0 && (empty ($mgmt_imagepreview[$imagepreview_ext]) || $mgmt_imagepreview[$imagepreview_ext] == "GD") && in_array (strtolower($file_ext), $GD_allowed_ext))
-              {
-                // calculate aspect ratio
-                $imageratio_orig = $imagewidth_orig / $imageheight_orig;
-                $imageratio = $imagewidth / $imageheight;
-                
-                if ($type == "thumbnail")
-                {
-                  // reduce thumbnail size, if original image will be smaller then the defined thumbnail image size
-                  if ($imagewidth_orig < $imagewidth && $imageheight_orig < $imageheight)
-                  {
-                    $resizedwidth = intval ($imagewidth_orig);
-                    $resizedheight = intval ($imageheight_orig);
-                  }
-                }
-                
-                // calculate image size to fit image in the given image size frame (imagewidth x imageheight), original aspect ratio will be kept
-                if (empty ($resizedwidth) || empty ($resizedheight))
-                {    
-                  if ($imageratio_orig >= $imageratio)
-                  {
-                    $resizedwidth = intval ($imagewidth);
-                    $resizedheight = round (($resizedwidth / $imageratio_orig), 0);
-                  }
-                  else
-                  {
-                    $resizedheight = intval ($imageheight);
-                    $resizedwidth = round (($resizedheight * $imageratio_orig), 0);
-                  }
-                }
-                  
-                $imgresized = @ImageCreateTrueColor ($resizedwidth, $resizedheight);
-            
-                if ($file_ext == ".gif") $imgsource = @ImageCreateFromGif ($location_source.$file);
-                elseif ($file_ext == ".jpg" || $file_ext == ".jpeg") $imgsource = @ImageCreateFromJpeg ($location_source.$file);
-                elseif ($file_ext == ".png") $imgsource = @ImageCreateFromPng ($location_source.$file);
-                else return false;
-            
-                // crop image
-                if ($crop_mode)
-                {
-                  @imagecopyresampled ($imgresized, $imgsource, 0, 0, $offsetX, $offsetY, $imagewidth, $imageheight, $imagewidth, $imageheight);
-                }
-                // resize image
-                else
-                {
-                  @ImageCopyResized ($imgresized, $imgsource, 0, 0, 0, 0, $resizedwidth, $resizedheight, $imagewidth_orig, $imageheight_orig);
-                }
-
-                // create image in defined file format
-                if ($imageformat == "jpg" && function_exists ("imagejpeg"))
-                {
-                  if ($type == "thumbnail")
-                  {
-                    $newfile = $file_name.".thumb.jpg";
-                    $result = @imagejpeg ($imgresized, $location_dest.$newfile);
-                  }
-                  else
-                  {
-                    if ($type == "original") $newfile = $file_name.".jpg";
-                    else $newfile = $file_name.".".$type.".jpg";
-                    
-                    $result = @imagejpeg ($imgresized, $location_dest.$newfile);
-                  }
-                }
-                elseif ($imageformat == "png" && function_exists ("imagepng"))
-                {
-                  if ($type == "thumbnail")
-                  {
-                    $newfile = $file_name.".thumb.png";
-                    $result = @imagepng ($imgresized, $location_dest.$newfile);
-                  }
-                  else
-                  {
-                    if ($type == "original") $newfile = $file_name.".png";
-                    else $newfile = $file_name.".".$type.".png";
+                      $imagecolor = getimagecolors ($site, $newfile);
                       
-                    $result = @imagepng ($imgresized, $location_dest.$newfile);
-                  }
-                }
-                elseif ($imageformat == "gif" && function_exists ("imagegif"))
-                {
-                  if ($type == "thumbnail")
-                  {
-                    $newfile = $file_name.".thumb.gif";
-                    $result = @imagegif ($imgresized, $location_dest.$newfile);
-                  }
-                  else
-                  {
-                    if ($type == "original") $newfile = $file_name.".gif";
-                    else $newfile = $file_name.".".$type.".gif";
-                      
-                    $result = @imagegif ($imgresized, $location_dest.$newfile);
-                  }
-                }
-                else $result = false;
-
-                // delete original file if file extension has been changed
-                if ($result == true && $file_ext != ".".$format_set && $type == "original" && is_file ($location_orig.$file_orig))
-                {
-                  @unlink ($location_orig.$file_orig);
-                }
-            
-                @ImageDestroy ($imgsource);
-                @ImageDestroy ($imgresized);
-
-                if ($result == true)
-                {
-                  $converted = true;
-                  // rotate image
-                  if ($type != "thumbnail" && $imagerotation != "") $result = rotateimage ($site, $location_dest.$newfile, $imagerotation, $format_set);
-
-                  // remote client
-                  if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-                  
-                  // get media information from thumbnail
-                  if ($type == "thumbnail")
-                  {
-                    $imagecolor = getimagecolors ($site, $newfile);
-                    
-                    // write media information to container and DB
-                    if (!empty ($container_id))
-                    {
-                      $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
-                    }
-                  }
-                }
-              }      
-            }               
-          }
-        }
-      }    
-    }
-    
-    // --------------- if media conversion software is given ----------------
-    if (is_array ($mgmt_mediapreview) && sizeof ($mgmt_mediapreview) > 0)
-    {
-      // convert the media file with FFMPEG
-      // Audio Options:
-      // -ac ... number of audio channels
-      // -an ... disable audio
-      // -ar ... audio sampling frequency (default = 44100 Hz)
-      // -b:a ... audio bitrate (default = 64k)
-      // -c:a ... audio codec (e.g. libmp3lame, libfaac, libvorbis)
-      // Video Options:
-      // -b:v ... video bitrate in bit/s (default = 200 kb/s)
-      // -c:v ... video codec (e.g. libx264)
-      // -cmp ... full pel motion estimation compare function (used for mp4)
-      // -f ... force file format (like flv, mp4, ogv, webm, mp3)
-      // -flags ... specific options for video encoding
-      // -mbd ... macroblock decision algorithm (high quality mode)
-      // -r ... frame rate in Hz (default = 25)
-      // -s:v ... frame size in pixel (WxH)
-      // -sh ... sharpness (blur -1 up to 1 sharpen)
-      // -gbcs ... gamma, brightness, contrast, saturation (neutral values are 0.0:1:0:0.0:1.0)
-      // -wm .... watermark image and watermark positioning (PNG-file-reference->positioning [topleft, topright, bottomleft, bottomright] e.g. image.png->topleft)
-      // -rotate ... rotate video
-      // -fv ... flip video in vertical direction
-      // -fh ... flop video in horizontal direction
-      
-      // define default option for support of versions before 5.3.4
-      // note: audio codec could be "mp3" or in newer ffmpeg versions "libmp3lame"!
-      $mgmt_mediaoptions_video = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
-      $mgmt_mediaoptions_audio = "-f mp3 -c:a libmp3lame -b:a 64k -ar 22500";
-      
-      // reset type to input value
-      $type = $type_memory;
-      
-      // define format if not set or 'origthumb' for preview is requested (this defines the file extension and the rendering options)
-      if ($format == "" || $type == "origthumb")
-      {
-        // reset media options array
-        $mgmt_mediaoptions = array();
-        
-        if (is_audio ($file_ext))
-        {
-          // set default options string if no valid one is provided
-          if (empty ($mgmt_mediaoptions['thumbnail-audio']) || strpos ("_".$mgmt_mediaoptions['thumbnail-audio'], "-f ") == 0)
-          {
-            $mgmt_mediaoptions['thumbnail-audio'] = $mgmt_mediaoptions_audio;
-          }
-         
-          // get format from options string
-          $format_set = getoption ($mgmt_mediaoptions['thumbnail-audio'], "-f");
-          
-          // set options string
-          if ($format_set != "") $mgmt_mediaoptions['.'.$format_set] = $mgmt_mediaoptions['thumbnail-audio'];
-          else $mgmt_mediaoptions['.mp3'] = $mgmt_mediaoptions_audio;
-        }
-        else
-        {
-          // set default options string if no valid one is provided
-          if (empty ($mgmt_mediaoptions['thumbnail-video']) || strpos ("_".$mgmt_mediaoptions['thumbnail-video'], "-f ") == 0)
-          {
-            $mgmt_mediaoptions['thumbnail-video'] = $mgmt_mediaoptions_video;
-          }
-        
-          // get format from options string
-          $format_set = getoption ($mgmt_mediaoptions['thumbnail-video'], "-f");
-          
-          // set options string
-          if ($format_set != "") $mgmt_mediaoptions['.'.$format_set] = $mgmt_mediaoptions['thumbnail-video'];
-          else $mgmt_mediaoptions['.mp4'] = $mgmt_mediaoptions_video;
-        }
-      }
-      // use provided target format
-      else $format_set = strtolower ($format);
-        
-      // original video info
-      $videoinfo = getvideoinfo ($location_source.$file);
-            
-      reset ($mgmt_mediapreview);
-      
-      // supported extensions for media rendering
-      foreach ($mgmt_mediapreview as $mediapreview_ext => $mediapreview)
-      {        
-        // check file extension
-        if ($file_ext != "" && substr_count (strtolower ($mediapreview_ext).".", $file_ext.".") > 0)
-        {
-          reset ($mgmt_mediaoptions);  
-          
-          // extensions for certain media rendering options
-          foreach ($mgmt_mediaoptions as $mediaoptions_ext => $mediaoptions)
-          {
-            // get media rendering options based on given destination format
-            if ($mediaoptions_ext != "thumbnail-video" && $mediaoptions_ext != "thumbnail-audio" && substr_count (strtolower ($mediaoptions_ext).".", ".".$format_set.".") > 0)
-            {
-              // media format (media file extension) definition
-              if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-f ") > 0)
-              {
-                $videoformat = strtolower (getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-f"));
-                
-                if ($videoformat == "" || $videoformat == false) $videoformat = $format_set; 
-                
-                $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-f ".$videoformat, "-f ".shellcmd_encode (trim($videoformat)), $mgmt_mediaoptions[$mediaoptions_ext]);
-              }
-         
-              // video filters
-              $vfilter = array();
-              
-              // sharpness
-              if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-sh ") > 0)
-              {
-                // Luminance is the video level of the black and white part of a video signal.
-                // Chroma is just another word for color.
-                
-                // Values for unsharp mask:
-                // luma_msize_x:luma_msize_y:luma_amount:chroma_msize_x:chroma_msize_y:chroma_amount
-                
-                // Negative values for the amount will blur the input video, while positive values will sharpen. 
-                // All parameters are optional and default to the equivalent of the string '5:5:1.0:0:0:0.0'.
-                // luma_msize_x ... set the luma matrix horizontal size. It can be an integer between 3 and 13, default value is 5
-                // luma_msize_y ... set the luma matrix vertical size. It can be an integer between 3 and 13, default value is 5
-                // luma_amount ... set the luma effect strength. It can be a float number between -2.0 and 5.0, default value is 1.0
-                // chroma_msize_x ... set the chroma matrix horizontal size. It can be an integer between 3 and 13, default value is 0
-                // chroma_msize_y ... set the chroma matrix vertical size. It can be an integer between 3 and 13, default value is 0
-                // luma_amount ... set the chroma effect strength. It can be a float number between -2.0 and 5.0, default value is 0.0
-
-                // get sharpness defined by media option (represents chorma and luma amount)
-                $sharpness = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-sh");
-                
-                // default value
-                if ($sharpness < -1 || $sharpness > 1) $amount = "1";
-                // blur
-                elseif ($sharpness < 0) $amount = round ($sharpness * 2, 2);
-                // sharpen
-                elseif ($sharpness > 0) $amount = round ($sharpness * 5, 2);
-
-                $vfilter[] = "unsharp=5:5:".floatval($amount).":5:5:".floatval($amount);
-                
-                // remove from options string since it will be added later as a video filter
-                $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-sh ".$sharpness, "", $mgmt_mediaoptions[$mediaoptions_ext]);
-              }
-              
-              // rotate (using video filters)
-              if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-rotate ") > 0)
-              {
-                // get degrees defined by media option 
-                $rotate = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-rotate");
-                
-                // usage: transpose=1
-                // for the transpose parameter you can pass:
-                // 0 = 90CounterCLockwise and Vertical Flip (default)
-                // 1 = 90Clockwise
-                // 2 = 90CounterClockwise
-                // 3 = 90Clockwise and Vertical Flip
-                
-                if ($rotate == "90") $vfilter[] = "transpose=1";
-                elseif ($rotate == "180") $vfilter[] = "hflip,vflip";
-                elseif ($rotate == "-90") $vfilter[] = "transpose=2";
-                
-                // remove from options string since it will be added later as a video filter
-                $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-rotate ".$rotate, "", $mgmt_mediaoptions[$mediaoptions_ext]);
-              }
-              
-              // flip vertically (using video filters)
-              if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-fv ") > 0)
-              {
-                // usage: hlfip (means horizontal direction = vertical flip)
-                $vfilter[] = "hflip";
-                
-                // remove from options string since it will be added later as a video filter
-                $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-fv ", "", $mgmt_mediaoptions[$mediaoptions_ext]);
-              }
-              
-              // flip horizontally (using video filters)
-              if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-fh ") > 0)
-              {
-                // usage: vlfip (means vertical direction = horizontal flip)
-                $vfilter[] = "vflip";
-                
-                // remove from options string since it will be added later as a video filter
-                $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-fh ", "", $mgmt_mediaoptions[$mediaoptions_ext]);
-              }
-
-              // gamma, brigntness, contrast, saturation, red-, green-, blue-gamm (using video filters)
-              if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-gbcs ") > 0)
-              {
-                // get sharpness defined by media option 
-                $gbcs = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-gbcs");
-                
-                // Values for EQ2 filter
-                // gamma:contrast:brightness:saturation:rg:gg:bg:weight
-                // (note that the FFMPEG docs show this incorrectly as gamma, brightness, contrast)
-                
-                // initial gamma value (default: 1.0 = gamma correction is off)
-                // initial contrast, where negative values result in a negative image (default: 1.0)
-                // initial brightness (default: 0.0)
-                // initial saturation (default: 1.0)
-                // gamma value for the red component (default: 1.0) not supported by hyperCMS
-                // gamma value for the green component (default: 1.0) not supported by hyperCMS
-                // gamma value for the blue component (default: 1.0) not supported by hyperCMS
-                // The weight parameter can be used to reduce the effect of a high gamma value on bright image areas, e.g. keep them from getting overamplified and just plain white.
-                // A value of 0.0 turns the gamma correction all the way down while 1.0 leaves it at its full strength (default: 1.0).
-                // Weight is not supported by hyperCMS.
-                
-                list ($gamma, $brightness, $contrast, $saturation) = explode (":", $gbcs);
-                
-                if ($gamma < 0 || $gamma > 2) $gamma = "1";
-                if ($brightness < -1 || $brightness > 1) $brightness = "0";
-                if ($contrast < 0 || $contrast > 2) $contrast = "1";
-                if ($saturation < 0 || $saturation > 2) $saturation = "1";
-                
-                $vfilter[] = "mp=eq2=".floatval($gamma).":".floatval($contrast).":".floatval($brightness).":".floatval($saturation);
-
-                // remove from options string since it will be added later as a video filter
-                $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-gbcs ".$gbcs, "", $mgmt_mediaoptions[$mediaoptions_ext]);
-              }
-              
-              // join filter options an add to options string
-              if (sizeof ($vfilter) > 0)
-              {
-                $mgmt_mediaoptions[$mediaoptions_ext] = " -vf \"".implode (" ", $vfilter)."\" ".$mgmt_mediaoptions[$mediaoptions_ext];
-              }
-              
-              // video size
-              if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0)
-              {
-                // get video size defined by media option 
-                $mediasize = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v");
-                list ($mediawidth, $mediaheight) = explode ("x", $mediasize);
-
-                // if valid size is provided
-                if ($mediawidth > 0 && $mediaheight > 0)
-                {
-                  // keep video ratio for original thumbnail video
-                  if ($type == "origthumb" && $videoinfo['ratio'] != "")
-                  {
-                    // if original video size is smaller than the defined size, the size will be reduced to the original size
-                    if ($videoinfo['width'] > 0 && $videoinfo['height'] > 0 && $videoinfo['width'] < $mediawidth && $videoinfo['height'] < $mediaheight)
-                    {
-                      $mediawidth = $videoinfo['width'];
-                      $mediaheight = $videoinfo['height'];
-                    }
-                    // use input size defined by media option
-                    else
-                    {
-                      // use mediawidth and calculate height
-                      if ($videoinfo['ratio'] > 1)
+                      // write media information to container and DB
+                      if (!empty ($container_id))
                       {
-                        $mediaheight = round((intval($mediawidth)/$videoinfo['ratio']), 0);
+                        $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
                       }
-                      // use mediaheight and calculate width
+                    }
+                  }
+                }      
+              }               
+            }
+          }
+        }    
+      }
+      
+      // --------------- if media conversion software is given ----------------
+      if (is_array ($mgmt_mediapreview) && sizeof ($mgmt_mediapreview) > 0)
+      {
+        // convert the media file with FFMPEG
+        // Audio Options:
+        // -ac ... number of audio channels
+        // -an ... disable audio
+        // -ar ... audio sampling frequency (default = 44100 Hz)
+        // -b:a ... audio bitrate (default = 64k)
+        // -c:a ... audio codec (e.g. libmp3lame, libfaac, libvorbis)
+        // Video Options:
+        // -b:v ... video bitrate in bit/s (default = 200 kb/s)
+        // -c:v ... video codec (e.g. libx264)
+        // -cmp ... full pel motion estimation compare function (used for mp4)
+        // -f ... force file format (like flv, mp4, ogv, webm, mp3)
+        // -flags ... specific options for video encoding
+        // -mbd ... macroblock decision algorithm (high quality mode)
+        // -r ... frame rate in Hz (default = 25)
+        // -s:v ... frame size in pixel (WxH)
+        // -sh ... sharpness (blur -1 up to 1 sharpen)
+        // -gbcs ... gamma, brightness, contrast, saturation (neutral values are 0.0:1:0:0.0:1.0)
+        // -wm .... watermark image and watermark positioning (PNG-file-reference->positioning [topleft, topright, bottomleft, bottomright] e.g. image.png->topleft)
+        // -rotate ... rotate video
+        // -fv ... flip video in vertical direction
+        // -fh ... flop video in horizontal direction
+        
+        // define default option for support of versions before 5.3.4
+        // note: audio codec could be "mp3" or in newer ffmpeg versions "libmp3lame"!
+        $mgmt_mediaoptions_video = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
+        $mgmt_mediaoptions_audio = "-f mp3 -c:a libmp3lame -b:a 64k -ar 22500";
+        
+        // reset type to input value
+        $type = $type_memory;
+        
+        // define format if not set or 'origthumb' for preview is requested (this defines the file extension and the rendering options)
+        if ($format == "" || $type == "origthumb")
+        {
+          // reset media options array
+          $mgmt_mediaoptions = array();
+          
+          if (is_audio ($file_ext))
+          {
+            // set default options string if no valid one is provided
+            if (empty ($mgmt_mediaoptions['thumbnail-audio']) || strpos ("_".$mgmt_mediaoptions['thumbnail-audio'], "-f ") == 0)
+            {
+              $mgmt_mediaoptions['thumbnail-audio'] = $mgmt_mediaoptions_audio;
+            }
+           
+            // get format from options string
+            $format_set = getoption ($mgmt_mediaoptions['thumbnail-audio'], "-f");
+            
+            // set options string
+            if ($format_set != "") $mgmt_mediaoptions['.'.$format_set] = $mgmt_mediaoptions['thumbnail-audio'];
+            else $mgmt_mediaoptions['.mp3'] = $mgmt_mediaoptions_audio;
+          }
+          else
+          {
+            // set default options string if no valid one is provided
+            if (empty ($mgmt_mediaoptions['thumbnail-video']) || strpos ("_".$mgmt_mediaoptions['thumbnail-video'], "-f ") == 0)
+            {
+              $mgmt_mediaoptions['thumbnail-video'] = $mgmt_mediaoptions_video;
+            }
+          
+            // get format from options string
+            $format_set = getoption ($mgmt_mediaoptions['thumbnail-video'], "-f");
+            
+            // set options string
+            if ($format_set != "") $mgmt_mediaoptions['.'.$format_set] = $mgmt_mediaoptions['thumbnail-video'];
+            else $mgmt_mediaoptions['.mp4'] = $mgmt_mediaoptions_video;
+          }
+        }
+        // use provided target format
+        else $format_set = strtolower ($format);
+          
+        // original video info
+        $videoinfo = getvideoinfo ($location_source.$file);
+              
+        reset ($mgmt_mediapreview);
+        
+        // supported extensions for media rendering
+        foreach ($mgmt_mediapreview as $mediapreview_ext => $mediapreview)
+        {        
+          // check file extension
+          if ($file_ext != "" && substr_count (strtolower ($mediapreview_ext).".", $file_ext.".") > 0)
+          {
+            reset ($mgmt_mediaoptions);  
+            
+            // extensions for certain media rendering options
+            foreach ($mgmt_mediaoptions as $mediaoptions_ext => $mediaoptions)
+            {
+              // get media rendering options based on given destination format
+              if ($mediaoptions_ext != "thumbnail-video" && $mediaoptions_ext != "thumbnail-audio" && substr_count (strtolower ($mediaoptions_ext).".", ".".$format_set.".") > 0)
+              {
+                // media format (media file extension) definition
+                if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-f ") > 0)
+                {
+                  $videoformat = strtolower (getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-f"));
+                  
+                  if ($videoformat == "" || $videoformat == false) $videoformat = $format_set; 
+                  
+                  $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-f ".$videoformat, "-f ".shellcmd_encode (trim($videoformat)), $mgmt_mediaoptions[$mediaoptions_ext]);
+                }
+           
+                // video filters
+                $vfilter = array();
+                
+                // sharpness
+                if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-sh ") > 0)
+                {
+                  // Luminance is the video level of the black and white part of a video signal.
+                  // Chroma is just another word for color.
+                  
+                  // Values for unsharp mask:
+                  // luma_msize_x:luma_msize_y:luma_amount:chroma_msize_x:chroma_msize_y:chroma_amount
+                  
+                  // Negative values for the amount will blur the input video, while positive values will sharpen. 
+                  // All parameters are optional and default to the equivalent of the string '5:5:1.0:0:0:0.0'.
+                  // luma_msize_x ... set the luma matrix horizontal size. It can be an integer between 3 and 13, default value is 5
+                  // luma_msize_y ... set the luma matrix vertical size. It can be an integer between 3 and 13, default value is 5
+                  // luma_amount ... set the luma effect strength. It can be a float number between -2.0 and 5.0, default value is 1.0
+                  // chroma_msize_x ... set the chroma matrix horizontal size. It can be an integer between 3 and 13, default value is 0
+                  // chroma_msize_y ... set the chroma matrix vertical size. It can be an integer between 3 and 13, default value is 0
+                  // luma_amount ... set the chroma effect strength. It can be a float number between -2.0 and 5.0, default value is 0.0
+  
+                  // get sharpness defined by media option (represents chorma and luma amount)
+                  $sharpness = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-sh");
+                  
+                  // default value
+                  if ($sharpness < -1 || $sharpness > 1) $amount = "1";
+                  // blur
+                  elseif ($sharpness < 0) $amount = round ($sharpness * 2, 2);
+                  // sharpen
+                  elseif ($sharpness > 0) $amount = round ($sharpness * 5, 2);
+  
+                  $vfilter[] = "unsharp=5:5:".floatval($amount).":5:5:".floatval($amount);
+                  
+                  // remove from options string since it will be added later as a video filter
+                  $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-sh ".$sharpness, "", $mgmt_mediaoptions[$mediaoptions_ext]);
+                }
+                
+                // rotate (using video filters)
+                if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-rotate ") > 0)
+                {
+                  // get degrees defined by media option 
+                  $rotate = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-rotate");
+                  
+                  // usage: transpose=1
+                  // for the transpose parameter you can pass:
+                  // 0 = 90CounterCLockwise and Vertical Flip (default)
+                  // 1 = 90Clockwise
+                  // 2 = 90CounterClockwise
+                  // 3 = 90Clockwise and Vertical Flip
+                  
+                  if ($rotate == "90") $vfilter[] = "transpose=1";
+                  elseif ($rotate == "180") $vfilter[] = "hflip,vflip";
+                  elseif ($rotate == "-90") $vfilter[] = "transpose=2";
+                  
+                  // remove from options string since it will be added later as a video filter
+                  $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-rotate ".$rotate, "", $mgmt_mediaoptions[$mediaoptions_ext]);
+                }
+                
+                // flip vertically (using video filters)
+                if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-fv ") > 0)
+                {
+                  // usage: hlfip (means horizontal direction = vertical flip)
+                  $vfilter[] = "hflip";
+                  
+                  // remove from options string since it will be added later as a video filter
+                  $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-fv ", "", $mgmt_mediaoptions[$mediaoptions_ext]);
+                }
+                
+                // flip horizontally (using video filters)
+                if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-fh ") > 0)
+                {
+                  // usage: vlfip (means vertical direction = horizontal flip)
+                  $vfilter[] = "vflip";
+                  
+                  // remove from options string since it will be added later as a video filter
+                  $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-fh ", "", $mgmt_mediaoptions[$mediaoptions_ext]);
+                }
+  
+                // gamma, brigntness, contrast, saturation, red-, green-, blue-gamm (using video filters)
+                if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-gbcs ") > 0)
+                {
+                  // get sharpness defined by media option 
+                  $gbcs = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-gbcs");
+                  
+                  // Values for EQ2 filter
+                  // gamma:contrast:brightness:saturation:rg:gg:bg:weight
+                  // (note that the FFMPEG docs show this incorrectly as gamma, brightness, contrast)
+                  
+                  // initial gamma value (default: 1.0 = gamma correction is off)
+                  // initial contrast, where negative values result in a negative image (default: 1.0)
+                  // initial brightness (default: 0.0)
+                  // initial saturation (default: 1.0)
+                  // gamma value for the red component (default: 1.0) not supported by hyperCMS
+                  // gamma value for the green component (default: 1.0) not supported by hyperCMS
+                  // gamma value for the blue component (default: 1.0) not supported by hyperCMS
+                  // The weight parameter can be used to reduce the effect of a high gamma value on bright image areas, e.g. keep them from getting overamplified and just plain white.
+                  // A value of 0.0 turns the gamma correction all the way down while 1.0 leaves it at its full strength (default: 1.0).
+                  // Weight is not supported by hyperCMS.
+                  
+                  list ($gamma, $brightness, $contrast, $saturation) = explode (":", $gbcs);
+                  
+                  if ($gamma < 0 || $gamma > 2) $gamma = "1";
+                  if ($brightness < -1 || $brightness > 1) $brightness = "0";
+                  if ($contrast < 0 || $contrast > 2) $contrast = "1";
+                  if ($saturation < 0 || $saturation > 2) $saturation = "1";
+                  
+                  $vfilter[] = "mp=eq2=".floatval($gamma).":".floatval($contrast).":".floatval($brightness).":".floatval($saturation);
+  
+                  // remove from options string since it will be added later as a video filter
+                  $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-gbcs ".$gbcs, "", $mgmt_mediaoptions[$mediaoptions_ext]);
+                }
+                
+                // join filter options an add to options string
+                if (sizeof ($vfilter) > 0)
+                {
+                  $mgmt_mediaoptions[$mediaoptions_ext] = " -vf \"".implode (" ", $vfilter)."\" ".$mgmt_mediaoptions[$mediaoptions_ext];
+                }
+                
+                // video size
+                if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0)
+                {
+                  // get video size defined by media option 
+                  $mediasize = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v");
+                  list ($mediawidth, $mediaheight) = explode ("x", $mediasize);
+  
+                  // if valid size is provided
+                  if ($mediawidth > 0 && $mediaheight > 0)
+                  {
+                    // keep video ratio for original thumbnail video
+                    if ($type == "origthumb" && $videoinfo['ratio'] != "")
+                    {
+                      // if original video size is smaller than the defined size, the size will be reduced to the original size
+                      if ($videoinfo['width'] > 0 && $videoinfo['height'] > 0 && $videoinfo['width'] < $mediawidth && $videoinfo['height'] < $mediaheight)
+                      {
+                        $mediawidth = $videoinfo['width'];
+                        $mediaheight = $videoinfo['height'];
+                      }
+                      // use input size defined by media option
                       else
                       {
-                        $mediawidth = round((intval($mediaheight) * $videoinfo['ratio']), 0);
+                        // use mediawidth and calculate height
+                        if ($videoinfo['ratio'] > 1)
+                        {
+                          $mediaheight = round((intval($mediawidth)/$videoinfo['ratio']), 0);
+                        }
+                        // use mediaheight and calculate width
+                        else
+                        {
+                          $mediawidth = round((intval($mediaheight) * $videoinfo['ratio']), 0);
+                        }
                       }
-                    }
-                  }                  
-                  // else we use provided size (without keeping the original aspect ratio)
-                  
-                  // switch width and height for video rotation
-                  if (!empty ($rotate) && ($rotate == "90" || $rotate == "-90"))
-                  {
-                    $temp = $mediawidth;
-                    $mediawidth = $mediaheight;
-                    $mediaheight = $temp;
-                  }
-                
-                  $mediasize_new = intval($mediawidth)."x".intval($mediaheight);
-                  
-                  $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-s:v ".$mediasize, "-s:v ".$mediasize_new, $mgmt_mediaoptions[$mediaoptions_ext]);
-                }
-                // remove mediasize option and keep original video size
-                else
-                {
-                  $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-s:v ".$mediasize, "", $mgmt_mediaoptions[$mediaoptions_ext]);
-                  
-                  // set the video size for the video config file
-                  if ($videoinfo['width'] > 0 && $videoinfo['height'] > 0)
-                  {
+                    }                  
+                    // else we use provided size (without keeping the original aspect ratio)
+                    
+                    // switch width and height for video rotation
                     if (!empty ($rotate) && ($rotate == "90" || $rotate == "-90"))
                     {
-                      $mediawidth = $videoinfo['height'];
-                      $mediaheight = $videoinfo['width'];
+                      $temp = $mediawidth;
+                      $mediawidth = $mediaheight;
+                      $mediaheight = $temp;
                     }
-                    else
-                    {
-                      $mediawidth = $videoinfo['width'];
-                      $mediaheight = $videoinfo['height'];
-                    }
+                  
+                    $mediasize_new = intval($mediawidth)."x".intval($mediaheight);
+                    
+                    $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-s:v ".$mediasize, "-s:v ".$mediasize_new, $mgmt_mediaoptions[$mediaoptions_ext]);
                   }
-                }  
-              }
-              
-              // new file name
-              if ($type == "thumbnail") $newfile = $file_name.".thumb.".$format_set;
-              elseif ($type == "origthumb") $newfile = $file_name.".orig.".$format_set;
-              else $newfile = $file_name.".media.".$format_set;
-            
-              $tmpfile = $file_name.".tmp.".$format_set;
-            
-              // render video
-              $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" ".$mgmt_mediaoptions[$mediaoptions_ext]." \"".shellcmd_encode ($location_dest.$tmpfile)."\"";
-
-              @exec ($cmd, $buffer, $errorCode);
-
-              // watermarking (using video filters)
-              // set watermark options if defined in publication settings and not already defined
-              if (!empty ($mgmt_config[$site]['watermark_video']) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-wm ") == 0 && !is_audio ($file_ext))
-              {
-                $mgmt_mediaoptions[$mediaoptions_ext] .= " ".$mgmt_config[$site]['watermark_video'];
-              }
-
-              if (filesize ($location_dest.$tmpfile) > 100 && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-wm ") > 0)
-              {
-                // get watermark defined by media option 
-                $watermarking = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-wm");
-                list ($watermark, $positioning) = explode ("->", $watermarking);
-
-                // top left corner
-                if (strtolower(trim($positioning)) == "topleft") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=10:10 [out]";
-                // top right corner
-                elseif (strtolower(trim($positioning)) == "topright") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=main_w-overlay_w-10:10 [out]";
-                // bottom left corner
-                elseif (strtolower(trim($positioning)) == "bottomleft") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=10:main_h-overlay_h-10 [out]";
-                // bottom right corner
-                elseif (strtolower(trim($positioning)) == "bottomright") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=main_w-overlay_w-10:main_h-overlay_h-10 [out]";
-
-                $tmpfile2 = $file_name.".tmp2.".$format_set;
-                
-                // apply watermark as video filter
-                if (!empty ($vfilter_wm))
-                {
-                  // render video with watermark
-                  $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_dest.$tmpfile)."\" -vf \"".$vfilter_wm."\" \"".shellcmd_encode ($location_dest.$tmpfile2)."\"";
-                
-                  @exec ($cmd, $buffer, $errorCode);
-
-                  // replace file
-                  if (is_file ($location_dest.$tmpfile2)) rename ($location_dest.$tmpfile2, $location_dest.$tmpfile);
+                  // remove mediasize option and keep original video size
+                  else
+                  {
+                    $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-s:v ".$mediasize, "", $mgmt_mediaoptions[$mediaoptions_ext]);
+                    
+                    // set the video size for the video config file
+                    if ($videoinfo['width'] > 0 && $videoinfo['height'] > 0)
+                    {
+                      if (!empty ($rotate) && ($rotate == "90" || $rotate == "-90"))
+                      {
+                        $mediawidth = $videoinfo['height'];
+                        $mediaheight = $videoinfo['width'];
+                      }
+                      else
+                      {
+                        $mediawidth = $videoinfo['width'];
+                        $mediaheight = $videoinfo['height'];
+                      }
+                    }
+                  }  
                 }
-              }
-
-              // on error or new file is smaller than 100 bytes
-              if ($errorCode || filesize ($location_dest.$tmpfile) < 100)
-              {
-                @unlink ($location_dest.$tmpfile);
-              
-                $errcode = "20236";
-                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode) failed in createmedia for file: ".$location_source.$file;
                 
-                // save log
-                savelog (@$error);            
-              } 
-              else
-              {
-                $converted = true;
-
-                // inject metadata into FLV file using YAMDI (/usr/bin/yamdi)
-                if ($mgmt_mediametadata['.flv'] != "" && $format_set == "flv")
+                // new file name
+                if ($type == "thumbnail") $newfile = $file_name.".thumb.".$format_set;
+                elseif ($type == "origthumb") $newfile = $file_name.".orig.".$format_set;
+                else $newfile = $file_name.".media.".$format_set;
+              
+                $tmpfile = $file_name.".tmp.".$format_set;
+              
+                // render video
+                $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" ".$mgmt_mediaoptions[$mediaoptions_ext]." \"".shellcmd_encode ($location_dest.$tmpfile)."\"";
+  
+                @exec ($cmd, $buffer, $errorCode);
+  
+                // watermarking (using video filters)
+                // set watermark options if defined in publication settings and not already defined
+                if (!empty ($mgmt_config[$site]['watermark_video']) && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-wm ") == 0 && !is_audio ($file_ext))
                 {
+                  $mgmt_mediaoptions[$mediaoptions_ext] .= " ".$mgmt_config[$site]['watermark_video'];
+                }
+  
+                if (is_file ($location_dest.$tmpfile) && filesize ($location_dest.$tmpfile) > 100 && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-wm ") > 0)
+                {
+                  // get watermark defined by media option 
+                  $watermarking = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-wm");
+                  list ($watermark, $positioning) = explode ("->", $watermarking);
+  
+                  // top left corner
+                  if (strtolower(trim($positioning)) == "topleft") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=10:10 [out]";
+                  // top right corner
+                  elseif (strtolower(trim($positioning)) == "topright") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=main_w-overlay_w-10:10 [out]";
+                  // bottom left corner
+                  elseif (strtolower(trim($positioning)) == "bottomleft") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=10:main_h-overlay_h-10 [out]";
+                  // bottom right corner
+                  elseif (strtolower(trim($positioning)) == "bottomright") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=main_w-overlay_w-10:main_h-overlay_h-10 [out]";
+  
                   $tmpfile2 = $file_name.".tmp2.".$format_set;
                   
-                  // inject meta data
-                  $cmd = $mgmt_mediametadata['.flv']." -i \"".shellcmd_encode ($location_dest.$tmpfile)."\" -o \"".shellcmd_encode ($location_dest.$tmpfile2)."\"";
-                  
-                  @exec ($cmd, $buffer, $errorCode);
-                  
-                  @unlink ($location_dest.$tmpfile);
-                  
-                  if ($errorCode)
+                  // apply watermark as video filter
+                  if (!empty ($vfilter_wm))
                   {
-                    $errcode = "20237";
-                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of yamdi (code:$errorCode) failed in createmedia for file: ".$location_source.$newfile;
+                    // render video with watermark
+                    $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_dest.$tmpfile)."\" -vf \"".$vfilter_wm."\" \"".shellcmd_encode ($location_dest.$tmpfile2)."\"";
+                  
+                    @exec ($cmd, $buffer, $errorCode);
+  
+                    // replace file
+                    if (is_file ($location_dest.$tmpfile2)) rename ($location_dest.$tmpfile2, $location_dest.$tmpfile);
                   }
-                  else
-                  {                  
-                    if (@filesize ($location_dest.$tmpfile2) > 10) 
+                }
+  
+                // on error or new file is smaller than 100 bytes
+                if ($errorCode || filesize ($location_dest.$tmpfile) < 100)
+                {
+                  @unlink ($location_dest.$tmpfile);
+                
+                  $errcode = "20236";
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode) failed in createmedia for file: ".$location_source.$file;
+                  
+                  // save log
+                  savelog (@$error);            
+                } 
+                else
+                {
+                  $converted = true;
+  
+                  // inject metadata into FLV file using YAMDI (/usr/bin/yamdi)
+                  if ($mgmt_mediametadata['.flv'] != "" && $format_set == "flv")
+                  {
+                    $tmpfile2 = $file_name.".tmp2.".$format_set;
+                    
+                    // inject meta data
+                    $cmd = $mgmt_mediametadata['.flv']." -i \"".shellcmd_encode ($location_dest.$tmpfile)."\" -o \"".shellcmd_encode ($location_dest.$tmpfile2)."\"";
+                    
+                    @exec ($cmd, $buffer, $errorCode);
+                    
+                    @unlink ($location_dest.$tmpfile);
+                    
+                    if ($errorCode)
                     {
-                      if (@is_file ($location_dest.$newfile)) @unlink ($location_dest.$newfile);
-                      @rename ($location_dest.$tmpfile2, $location_dest.$newfile);
+                      $errcode = "20237";
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of yamdi (code:$errorCode) failed in createmedia for file: ".$location_source.$newfile;
+                    }
+                    else
+                    {                  
+                      if (@filesize ($location_dest.$tmpfile2) > 10) 
+                      {
+                        if (@is_file ($location_dest.$newfile)) @unlink ($location_dest.$newfile);
+                        @rename ($location_dest.$tmpfile2, $location_dest.$newfile);
+                      }
+                      else 
+                      {
+                        @unlink ($location_dest.$tmpfile2);
+                      }
+                    }
+                  }
+                  // rename temp file to new file
+                  else
+                  {
+                    if (@is_file ($location_dest.$newfile)) @unlink ($location_dest.$newfile);
+                    @rename ($location_dest.$tmpfile, $location_dest.$newfile);
+                  }
+  
+                  // generate video player config code for all video formates (thumbnails)
+                  if ($type == "thumbnail")
+                  {
+                    // video thumbnail files
+                    $video_extension_array = explode (".", substr (strtolower ($hcms_ext['video']), 1));
+                    
+                    if (is_array ($video_extension_array))
+                    {
+                      // generate video file links for all available formats
+                      $videos = array();
+  
+                      foreach ($video_extension_array as $video_extension)
+                      {
+                        if ($video_extension != "" && @is_file ($location_dest.$file_name.".thumb.".$video_extension))
+                        {
+                          // thumbnail video
+                          $videos[$video_extension] = $site."/".$file_name.".thumb.".$video_extension;
+                        }
+                      }
+                    }
+                    
+                    // define config extension (audio or video)
+                    if (is_audio ($file_ext)) $config_extension = ".config.audio";
+                    else $config_extension = ".config.video";
+                  }
+                  // generate video player config code for indivdual video
+                  else
+                  {
+                    // generate video file links for individual generated video formats
+                    $videos = array();
+                    $videos[$format_set] = $site."/".$newfile;
+                    
+                    if ($type == "origthumb") $config_extension = ".config.orig";
+                    else $config_extension = ".config.".$format_set;
+                  }
+                  
+                  // capture screen from video to use as thumbnail image
+                  if ($type == "origthumb") createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
+                            
+                  // new video info (only if it is not the thumbnail file of the original file)
+                  if ($type != "origthumb") $videoinfo = getvideoinfo ($location_dest.$newfile);
+                  
+                  // set media width and height to empty string
+                  if ($mediawidth < 1 || $mediaheight < 1)
+                  {
+                    $mediawidth = "";
+                    $mediaheight = "";
+                  }
+  
+                  // save config
+                  savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $mediawidth, $mediaheight, $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels']);
+  
+                  // save log
+                  savelog (@$error);
+                  
+                  // get video information
+                  if ($converted == true && $newfile != false && $type == "origthumb")
+                  { 
+                    if (is_array ($videoinfo))
+                    {
+                      $mediawidth_orig = $videoinfo['width'];
+                      $mediaheight_orig = $videoinfo['height'];
+                      $imagetype_orig = $videoinfo['imagetype'];
                     }
                     else 
                     {
-                      @unlink ($location_dest.$tmpfile2);
+                      $mediawidth_orig = "";
+                      $mediaheight_orig = "";
+                      $imagetype_orig = "";
                     }
-                  }
-                }
-                else
-                {
-                  if (@is_file ($location_dest.$newfile)) @unlink ($location_dest.$newfile);
-                  @rename ($location_dest.$tmpfile, $location_dest.$newfile);
-                }
-
-                // generate video player config code for all video formates (thumbnails)
-                if ($type == "thumbnail")
-                {
-                  // video thumbnail files
-                  $video_extension_array = explode (".", substr (strtolower ($hcms_ext['video']), 1));
-                  
-                  if (is_array ($video_extension_array))
-                  {
-                    // generate video file links for all available formats
-                    $videos = array();
-
-                    foreach ($video_extension_array as $video_extension)
+                    
+                    // write media information to DB
+                    if (!empty ($container_id))
                     {
-                      if ($video_extension != "" && @is_file ($location_dest.$file_name.".thumb.".$video_extension))
-                      {
-                        // thumbnail video
-                        $videos[$video_extension] = $site."/".$file_name.".thumb.".$video_extension;
-                      }
+                      $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $mediawidth_orig, $mediaheight_orig, "", "", "", "", $imagetype_orig, $md5_hash);
                     }
-                  }
+                  }                             
                   
-                  // define config extension (audio or video)
-                  if (is_audio ($file_ext)) $config_extension = ".config.audio";
-                  else $config_extension = ".config.video";
+                  // remote client
+                  remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
                 }
-                // generate video player config code for indivdual video
-                else
-                {
-                  // generate video file links for individual generated video formats
-                  $videos = array();
-                  $videos[$format_set] = $site."/".$newfile;
-                  
-                  if ($type == "origthumb") $config_extension = ".config.orig";
-                  else $config_extension = ".config.".$format_set;
-                }
-                
-                // capture screen from video to use as thumbnail image
-                if ($type == "origthumb") createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
-                          
-                // new video info (only if it is not the thumbnail file of the original file)
-                if ($type != "origthumb") $videoinfo = getvideoinfo ($location_dest.$newfile);
-                
-                // set media width and height to empty string
-                if ($mediawidth < 1 || $mediaheight < 1)
-                {
-                  $mediawidth = "";
-                  $mediaheight = "";
-                }
-
-                // save config
-                savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $mediawidth, $mediaheight, $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels']);
-
-                // save log
-                savelog (@$error);
-                
-                // get video information
-                if ($converted == true && $newfile != false && $type == "origthumb")
-                { 
-                  if (is_array ($videoinfo))
-                  {
-                    $mediawidth_orig = $videoinfo['width'];
-                    $mediaheight_orig = $videoinfo['height'];
-                    $imagetype_orig = $videoinfo['imagetype'];
-                  }
-                  else 
-                  {
-                    $mediawidth_orig = "";
-                    $mediaheight_orig = "";
-                    $imagetype_orig = "";
-                  }
-                  
-                  // write media information to DB
-                  if (!empty ($container_id))
-                  {
-                    $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $mediawidth_orig, $mediaheight_orig, "", "", "", "", $imagetype_orig, $md5_hash);
-                  }
-                }                             
-                
-                // remote client
-                remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
               }
-            }
-          }     
+            }     
+          }
         }
       }
     }
@@ -1690,7 +1695,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     if (empty ($setmedia) && ($type == "thumbnail" || $type == "origthumb"))
     {
       // write media information to container and DB
-      if (!empty ($container_id))
+      if (!empty ($container_id) && !empty ($md5_hash))
       {
         $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, "", "", "", "", "", $md5_hash);
       }

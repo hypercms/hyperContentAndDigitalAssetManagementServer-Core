@@ -108,6 +108,7 @@ $textl = getrequest ("textl", "array");
 $arttextl = getrequest ("arttextl", "array");
 $textc = getrequest ("textc", "array");
 $arttextc = getrequest ("arttextc", "array");
+$textk = getrequest ("textk", "array");
 $value = getrequest_esc ("value");
 $textd = getrequest ("textd", "array");
 $arttextd = getrequest ("arttextd", "array");
@@ -244,7 +245,8 @@ if ($usedby == "" || $usedby == $user)
       if (isset ($textc) && is_array ($textc) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $textc, "c", "no", $user, $user, $charset);
       if (isset ($arttextc) && is_array ($arttextc) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $arttextc, "c", "yes", $user, $user, $charset);
       if (isset ($textd) && is_array ($textd) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $textd, "d", "no", $user, $user, $charset);
-      if (isset ($arttextd) && is_array ($arttextd) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $arttextd, "d", "yes", $user, $user, $charset);   
+      if (isset ($arttextd) && is_array ($arttextd) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $arttextd, "d", "yes", $user, $user, $charset);
+      if (isset ($textk) && is_array ($textk) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $textk, "u", "no", $user, $user, $charset);
       // only when not autosaving
       if (isset ($commentu) && is_array ($commentu) && $contentdatanew != false && $auto == false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $commentu, "u", "no", $user, $user, $charset, true);
       if (isset ($commentf) && is_array ($commentf) && $contentdatanew != false && $auto == false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $commentf, "f", "no", $user, $user, $charset, true);
@@ -263,6 +265,7 @@ if ($usedby == "" || $usedby == $user)
         if (isset ($textl) && is_array ($textl)) $textmeta = array_merge ($textmeta, $textl);
         if (isset ($textc) && is_array ($textc)) $textmeta = array_merge ($textmeta, $textc);
         if (isset ($textd) && is_array ($textd)) $textmeta = array_merge ($textmeta, $textd);
+        if (isset ($textk) && is_array ($textk)) $textmeta = array_merge ($textmeta, $textk);
         
         $object_mediafile = getmedialocation ($site, $object_info['media'], "abs_path_media").$site."/".$object_info['media'];
         

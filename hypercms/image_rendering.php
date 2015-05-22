@@ -157,9 +157,9 @@ $available_colorspaces['Transparent'] = 'Transparent';
 $available_colorspaces['XYZ'] = 'XYZ';
 
 $available_flip = array();
-$available_flip['fv'] = $hcms_lang['vertical'][$lang];
-$available_flip['fh'] = $hcms_lang['horizontal'][$lang];
-$available_flip['fv fh'] = $hcms_lang['both'][$lang];
+$available_flip['fv'] = getescapedtext ($hcms_lang['vertical'][$lang]);
+$available_flip['fh'] = getescapedtext ($hcms_lang['horizontal'][$lang]);
+$available_flip['fv fh'] = getescapedtext ($hcms_lang['both'][$lang]);
 
 // get object file information in case it was renamed due to a new file extension
 $pagefile_info = getfileinfo ($site, $location.$page, $cat);
@@ -212,7 +212,7 @@ $token_new = createtoken ($user);
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css">
 <script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/jquery/jquery-1.9.1.min.js"></script>
+<script src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script src="javascript/jquery/plugins/jquery.color.js"></script>
 <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js"></script>
 <script src="javascript/jcrop/jquery.Jcrop.min.js"></script>
@@ -1125,7 +1125,7 @@ $(window).load( function()
 <div id="savelayer" class="hcmsWorkplaceGeneric" style="position:absolute; width:100%; height:100%; z-index:999; left:0px; top:0px; visibility:hidden;">
   <table width="100%" height="100%" border="0" cellpadding="3" cellspacing="1">
     <tr>
-      <td align="center" valign="middle"><b><?php echo $hcms_lang['the-file-is-being-processed'][$lang]; ?></b><br /><br /><img src="<?php echo getthemelocation(); ?>img/loading.gif"></td>
+      <td align="center" valign="middle"><b><?php echo getescapedtext ($hcms_lang['the-file-is-being-processed'][$lang]); ?></b><br /><br /><img src="<?php echo getthemelocation(); ?>img/loading.gif"></td>
     </tr>
   </table>
 </div>
@@ -1157,22 +1157,22 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
     <div class="cell">
       <div class="row">
         <input type="checkbox" id="crop" name="imageresize" value="crop" checked="checked" onclick="toggle_crop();" />
-        <strong><label for='crop'><?php echo $hcms_lang['crop'][$lang]; ?></label></strong>
+        <strong><label for='crop'><?php echo getescapedtext ($hcms_lang['crop'][$lang]); ?></label></strong>
       </div>
       <div style="margin-left:20px;">
-        <label style="width:111px; display:inline-block;" for="imagecropwidth"><?php echo $hcms_lang['width'][$lang]; ?></label>
+        <label style="width:111px; display:inline-block;" for="imagecropwidth"><?php echo getescapedtext ($hcms_lang['width'][$lang]); ?></label>
         <input name="imagecropwidth" type="text" id="imagecropwidth" size="5" maxlength="5" value="<?php echo $imagecropwidth; ?>" /> px
       </div>
       <div style="margin-left:20px;">
-        <label style="width: 111px; display:inline-block;" for="imagecropheight"><?php echo $hcms_lang['height'][$lang]; ?></label>
+        <label style="width: 111px; display:inline-block;" for="imagecropheight"><?php echo getescapedtext ($hcms_lang['height'][$lang]); ?></label>
         <input name="imagecropheight" type="text" id="imagecropheight" size="5" maxlength="5" value="<?php echo $imagecropheight?>" /> px
       </div>
       <div style="margin-left:20px;">
-        <label style="width:111px; display:inline-block;" for="imagex"><?php echo $hcms_lang['left-distance'][$lang]; ?></label>
+        <label style="width:111px; display:inline-block;" for="imagex"><?php echo getescapedtext ($hcms_lang['left-distance'][$lang]); ?></label>
         <input name="imagex" type="text" size="5" id="imagex" value="<?php echo $imagex; ?>" /> px
       </div>
       <div style="margin-left:20px;">
-        <label style="width:111px; display:inline-block;" for="imagey"><?php echo $hcms_lang['top-distance'][$lang]; ?></label>
+        <label style="width:111px; display:inline-block;" for="imagey"><?php echo getescapedtext ($hcms_lang['top-distance'][$lang]); ?></label>
         <input name="imagey" type="text" size="5" id="imagey" value="<?php echo $imagey; ?>" /> px
       </div>
     </div>
@@ -1180,21 +1180,21 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
     <!-- width or height -->
     <div class="cell">
       <div class="row" style="margin-left:20px;">
-        <strong><?php echo $hcms_lang['pixel-size'][$lang]; ?></strong>
+        <strong><?php echo getescapedtext ($hcms_lang['pixel-size'][$lang]); ?></strong>
       </div>
       <div class="row">
         <input type="checkbox" id="percentage" name="imageresize" value="percentage" onclick="toggle_percentage();" />
-        <label style="width:80px; display:inline-block;" for="percentage"><?php echo $hcms_lang['percentage'][$lang]; ?></label>
+        <label style="width:80px; display:inline-block;" for="percentage"><?php echo getescapedtext ($hcms_lang['percentage'][$lang]); ?></label>
         <input name="imagepercentage" type="text" id="imagepercentage" size="5" maxlength="3" value="100" /> %
       </div>
       <div class="row">
         <input type="checkbox" id="width" name="imageresize" value="imagewidth" onclick="toggle_size_width();" />
-        <label style="width:80px; display:inline-block;" for="width"><?php echo $hcms_lang['width'][$lang]; ?></label>
+        <label style="width:80px; display:inline-block;" for="width"><?php echo getescapedtext ($hcms_lang['width'][$lang]); ?></label>
         <input name="imagewidth" type="text" id="imagewidth" size="5" maxlength="5" value="<?php echo $media_size[0]; ?>" /> px
       </div>
       <div class="row">
         <input type="checkbox" id="height" name="imageresize" value="imageheight" onclick="toggle_size_height();" />
-        <label style="width:80px; display:inline-block;" for="height"><?php echo $hcms_lang['height'][$lang]; ?></label>
+        <label style="width:80px; display:inline-block;" for="height"><?php echo getescapedtext ($hcms_lang['height'][$lang]); ?></label>
         <input name="imageheight" type="text" id="imageheight" size="5" maxlength="5" value="<?php echo $media_size[1]; ?>" /> px
       </div>
     </div>
@@ -1203,38 +1203,38 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
     <!-- Effects -->
     <div class="cell">
       <div class="row" style="margin-left:20px;">
-        <strong><?php echo $hcms_lang['effects'][$lang]; ?></strong>
+        <strong><?php echo getescapedtext ($hcms_lang['effects'][$lang]); ?></strong>
       </div>
       <div class="row">
         <input type="checkbox" id="sepia" name="effect" value="sepia" onclick="toggle_sepia();" />
-        <label style="width:60px; display:inline-block;" for="sepia"><?php echo $hcms_lang['sepia'][$lang]; ?></label>
+        <label style="width:60px; display:inline-block;" for="sepia"><?php echo getescapedtext ($hcms_lang['sepia'][$lang]); ?></label>
         <input name="sepia_treshold" type="text" id="sepia_treshold" size="2" maxlength="2" value="80" /> %
       </div>
       <div class="row">
         <input type="checkbox" id="blur" name="effect" value="blur" onclick="toggle_blur();" />
-        <label style="width:60px; display:inline-block;" for="blur"><?php echo $hcms_lang['blur'][$lang]; ?></label>
-        <input name="blur_radius" type="text" id="blur_radius" size="2" maxlength="2" value="0"  title="<?php echo $hcms_lang['radius'][$lang]; ?>" />
+        <label style="width:60px; display:inline-block;" for="blur"><?php echo getescapedtext ($hcms_lang['blur'][$lang]); ?></label>
+        <input name="blur_radius" type="text" id="blur_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang]); ?>" />
         <label style="width:6px; display:inline-block;" for="blur_sigma">x</label>
-        <input name="blur_sigma" type="text" id="blur_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo $hcms_lang['sigma'][$lang]; ?>" />
+        <input name="blur_sigma" type="text" id="blur_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang]); ?>" />
       </div>
       <div class="row">
         <input type="checkbox" id="sharpen" name="effect" value="sharpen" onclick="toggle_sharpen();" />
-        <label style="width:60px; display:inline-block;" for="sharpen"><?php echo $hcms_lang['sharpen'][$lang]; ?></label>
-        <input name="sharpen_radius" type="text" id="sharpen_radius" size="2" maxlength="2" value="0"  title="<?php echo $hcms_lang['radius'][$lang]; ?>" />
+        <label style="width:60px; display:inline-block;" for="sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang]); ?></label>
+        <input name="sharpen_radius" type="text" id="sharpen_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang]); ?>" />
         <label style="width:6px; display:inline-block;" for="sharpen_sigma">x</label>
-        <input name="sharpen_sigma" type="text" id="sharpen_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo $hcms_lang['sigma'][$lang]; ?>" />
+        <input name="sharpen_sigma" type="text" id="sharpen_sigma" size="3" maxlength="1" value="0.1"  title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang]); ?>" />
       </div>
       <div class="row">
         <input type="checkbox" id="sketch" name="effect" value="sketch" onclick="toggle_sketch();" />
-        <label style="width:60px; display:inline-block;" for="sketch"><?php echo $hcms_lang['sketch'][$lang]; ?></label>
-        <input name="sketch_radius" type="text" id="sketch_radius" size="2" maxlength="2" value="0"  title="<?php echo $hcms_lang['radius'][$lang]; ?> "/>
+        <label style="width:60px; display:inline-block;" for="sketch"><?php echo getescapedtext ($hcms_lang['sketch'][$lang]); ?></label>
+        <input name="sketch_radius" type="text" id="sketch_radius" size="2" maxlength="2" value="0"  title="<?php echo getescapedtext ($hcms_lang['radius'][$lang]); ?> "/>
         <label style="width:6px; display:inline-block;" for="sketch_sigma">x</label>
-        <input name="sketch_sigma" type="text" id="sketch_sigma" size="2" maxlength="2" value="0" title="<?php echo $hcms_lang['sigma'][$lang]; ?>" />
-        <input name="sketch_angle" type="text" id="sketch_angle" size="3" maxlength="3" value="0" title="<?php echo $hcms_lang['angle'][$lang]; ?>" />
+        <input name="sketch_sigma" type="text" id="sketch_sigma" size="2" maxlength="2" value="0" title="<?php echo getescapedtext ($hcms_lang['sigma'][$lang]); ?>" />
+        <input name="sketch_angle" type="text" id="sketch_angle" size="3" maxlength="3" value="0" title="<?php echo getescapedtext ($hcms_lang['angle'][$lang]); ?>" />
       </div>
       <div class="row">
         <input type="checkbox" id="paint" name="effect" value="paint" onclick="toggle_paint();" />
-        <label style="width:60px; display:inline-block;" for="paint"><?php echo $hcms_lang['oil'][$lang]; ?></label>
+        <label style="width:60px; display:inline-block;" for="paint"><?php echo getescapedtext ($hcms_lang['oil'][$lang]); ?></label>
         <input name="paint_value" type="text" id="paint_value" size="2" maxlength="3" value="0" />
       </div>
     </div>
@@ -1243,7 +1243,7 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
     <div class="cell">    
       <div class="row">
         <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
-        <strong><label for="rotate" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo $hcms_lang['rotate'][$lang]; ?></label></strong>
+        <strong><label for="rotate" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang]); ?></label></strong>
         <select name="degree" id="degree" style="margin-left:20px">
           <option value="90" selected="selected" >90&deg;</option>
           <option value="180" >180&deg;</option>
@@ -1255,7 +1255,7 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
       <!-- flip flop -->
       <div class="row">
         <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
-        <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo $hcms_lang['flip'][$lang]; ?></label></strong>
+        <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang]); ?></label></strong>
         <select name="flip" id="flip" style="margin-left:20px">
         <?php 
           foreach ($available_flip as $value => $name)
@@ -1274,16 +1274,16 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
     <!-- brigthness / contrast -->
     <div class="cell">
       <div style="margin-left:20px" class="row">
-        <strong><?php echo $hcms_lang['adjust'][$lang]; ?></strong>
+        <strong><?php echo getescapedtext ($hcms_lang['adjust'][$lang]); ?></strong>
       </div>
       <div>
         <input type="checkbox" id="chbx_brightness" name="use_brightness" value="1" onclick="toggle_brightness();" />
-        <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo $hcms_lang['brightness'][$lang]; ?></label>
+        <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang]); ?></label>
         <input name="brightness" type="text" id="brightness" size="4" value="0" />
       </div>
       <div>
          <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
-        <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo $hcms_lang['contrast'][$lang]; ?></label>
+        <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang]); ?></label>
         <input name="contrast" type="text" id="contrast" size="4" value="0" />
       </div>
     </div>
@@ -1294,7 +1294,7 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
       <!-- colorspace -->
       <div class="row">
         <input type="checkbox" id="chbx_colorspace" name="colorspace" value="1" onclick="toggle_colorspace();" />
-        <strong><label for="chbx_colorspace"><?php echo $hcms_lang['change-colorspace'][$lang]; ?></label></strong>
+        <strong><label for="chbx_colorspace"><?php echo getescapedtext ($hcms_lang['change-colorspace'][$lang]); ?></label></strong>
       </div>
       <div style="margin-left:20px">
         <select name="imagecolorspace" id="colorspace">
@@ -1312,10 +1312,10 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
       
       <!-- format -->
       <div style="margin-left:20px;">
-        <strong><label for="imageformat"><?php echo $hcms_lang['save-as'][$lang]; ?></label></strong>
+        <strong><label for="imageformat"><?php echo getescapedtext ($hcms_lang['save-as'][$lang]); ?></label></strong>
       </div>
       <div style="margin-left:20px">
-        <label for="imageformat"><?php echo $hcms_lang['file-type'][$lang]; ?></label>
+        <label for="imageformat"><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?></label>
         <select name="imageformat" id="imageformat">
           <?php 
             $file_ext_old = strtolower (strrchr ($mediafile, ".")); 
@@ -1333,8 +1333,8 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
     <br/>
     
     <div class="cell">
-      <input class="hcmsButtonGreen" type="button" name="save" onclick="submitform(true);" value="<?php echo $hcms_lang['save'][$lang]; ?>">
-      <input class="hcmsButtonGreen" type="button" name="preview" onclick="showPreview();" value="<?php echo $hcms_lang['preview'][$lang]; ?>"> 
+      <input class="hcmsButtonGreen" type="button" name="save" onclick="submitform(true);" value="<?php echo getescapedtext ($hcms_lang['save'][$lang]); ?>">
+      <input class="hcmsButtonGreen" type="button" name="preview" onclick="showPreview();" value="<?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?>"> 
     </div>
   </form>
   <!-- end edit image -->

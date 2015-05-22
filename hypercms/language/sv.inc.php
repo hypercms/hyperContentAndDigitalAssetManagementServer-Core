@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['sv'] = "Mappen döptes om";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['sv'] = "Du inte har skrivbehörighet till mappen";
 $hcms_lang['the-folder-does-not-exist']['sv'] = "Mappen finns inte";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['sv'] = "Du har inte behörighet att skriva på arbetsflöde mappen inställningar";
-$hcms_lang['titel']['sv'] = "Titel";
 $hcms_lang['category']['sv'] = "Kategori";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['sv'] = "Youtube är inte aktiverad för ditt konto. Kontakta din systemadministratör";
 $hcms_lang['tags']['sv'] = "Etiketter";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['sv'] = "Server";
 $hcms_lang['use-ssl']['sv'] = "Använd SSL";
 $hcms_lang['formats']['sv'] = "Format";
 $hcms_lang['download-formats']['sv'] = "Download format";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['sv'] = "Sökord med valfri obligatorisk eller öppna listan";
 ?>

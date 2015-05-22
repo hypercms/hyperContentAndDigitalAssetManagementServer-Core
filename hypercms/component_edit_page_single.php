@@ -181,14 +181,14 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <table border="0" cellspacing="2" cellpadding="0">
     <tr>
-      <td nowrap="nowrap" colspan="2" class="hcmsHeadlineTiny"><?php echo $hcms_lang['single-component'][$lang]; ?></td>
+      <td nowrap="nowrap" colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['single-component'][$lang]); ?></td>
     </tr>   
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['selected-component'][$lang]; ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-component'][$lang]); ?>:</td>
       <td>
         <input type="text" name="comp_name" style="width:265px;" value="<?php echo $component_name; ?>" disabled="disabled" />
-        <img onClick="openBrWindowComp('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" align="absmiddle" alt="<?php echo $hcms_lang['select'][$lang]; ?>" title="<?php echo $hcms_lang['select'][$lang]; ?>" />                          
-        <img onClick="deleteEntry(document.forms['component']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" align="absmiddle" alt="<?php echo $hcms_lang['delete'][$lang]; ?>" title="<?php echo $hcms_lang['delete'][$lang]; ?>" />
+        <img onClick="openBrWindowComp('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['select'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select'][$lang]); ?>" />                          
+        <img onClick="deleteEntry(document.forms['component']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
         <img onclick="submitSingleComp(document.forms['component']);" name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1);" align="absmiddle" alt="OK" title="OK" />    
       </td>
     </tr>
@@ -197,13 +197,13 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
       <td nowrap="nowrap" colspan="2">&nbsp;</td>
     </tr>
     <tr>
-      <td nowrap="nowrap" class="hcmsHeadlineTiny" colspan="2"><?php echo $hcms_lang['condition-for-personalization'][$lang]; ?></td>
+      <td nowrap="nowrap" class="hcmsHeadlineTiny" colspan="2"><?php echo getescapedtext ($hcms_lang['condition-for-personalization'][$lang]); ?></td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['customer-profile'][$lang]; ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['customer-profile'][$lang]); ?>:</td>
       <td>
         <select name="condition" style="width:265px;">
-          <option value="">--- <?php echo $hcms_lang['select'][$lang]; ?> ---</option>
+          <option value="">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
           <?php
           $dir_item = @dir ($mgmt_config['abs_path_data']."customer/".$site."/");
 

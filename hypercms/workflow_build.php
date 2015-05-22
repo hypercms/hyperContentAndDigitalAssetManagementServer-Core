@@ -134,11 +134,11 @@ else $savefile = false;
 
 if ($savefile == false)
 {
-  $show = "<p class=hcmsHeadline>".$hcms_lang['workflow-could-not-be-saved'][$lang]."</p>\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
+  $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['workflow-could-not-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang])."\n";
 }
 else
 {
-  $show = "<p class=hcmsHeadline>".$hcms_lang['saved-workflow'][$lang]."</p>\n".$hcms_lang['loading-'][$lang]."\n";
+  $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['saved-workflow'][$lang])."</p>\n".getescapedtext ($hcms_lang['loading-'][$lang])."\n";
 }
 ?>
 <!DOCTYPE html>

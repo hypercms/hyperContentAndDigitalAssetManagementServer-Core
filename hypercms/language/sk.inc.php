@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['sk'] = "Priečinok sa premenoval";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['sk'] = "Nemáte napíšte povolenia pre priečinok";
 $hcms_lang['the-folder-does-not-exist']['sk'] = "Priečinok neexistuje";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['sk'] = "Nemáte napíšte povolenia pre workflow priečinka nastavenie";
-$hcms_lang['titel']['sk'] = "Titul";
 $hcms_lang['category']['sk'] = "Kategória";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['sk'] = "Youtube nie je aktivovaná pre váš účet. Prosím, kontaktujte vášho systému správca";
 $hcms_lang['tags']['sk'] = "Značky";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['sk'] = "Server";
 $hcms_lang['use-ssl']['sk'] = "Používať SSL";
 $hcms_lang['formats']['sk'] = "Formáty";
 $hcms_lang['download-formats']['sk'] = "Download formáty";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['sk'] = "Kľúčové slová s voliteľným povinného alebo otvorený zoznam";
 ?>

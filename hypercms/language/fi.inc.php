@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['fi'] = "Kansio nimettiin uudelleen";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['fi'] = "Sinulla ei ole kirjoitusoikeudet kansioon";
 $hcms_lang['the-folder-does-not-exist']['fi'] = "Kansiota ei ole";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['fi'] = "Sinulla ei ole kirjoitusoikeutta nauhoitusilmoitus työnkulun taittoasetukset";
-$hcms_lang['titel']['fi'] = "Elokuva";
 $hcms_lang['category']['fi'] = "Luokka";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['fi'] = "Kolmivaiheinen Youtube-lataus ei ole käytössä. Ota yhteyttä huoltoteknikkona";
 $hcms_lang['tags']['fi'] = "Merkit";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['fi'] = "Server";
 $hcms_lang['use-ssl']['fi'] = "Käyttävät SSL";
 $hcms_lang['formats']['fi'] = "Muodot";
 $hcms_lang['download-formats']['fi'] = "Latausmuotoja";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['fi'] = "Avainsanat lisävarusteena pakollisten tai avoin luettelo";
 ?>

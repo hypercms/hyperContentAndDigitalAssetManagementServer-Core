@@ -42,7 +42,7 @@ toggleview ($view);
 <link rel="apple-touch-icon" media="screen and (resolution: 326dpi)" href="<?php echo getthemelocation(); ?>img/mobile_icon114.png" />
 <!-- 57 x 57 Nokia icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
-<script type="text/javascript" src="javascript/jquery/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/jquery.mobile-1.3.1.min.js"></script>
 </head> 
 
@@ -77,7 +77,7 @@ $(document).ready(function()
   <div id="topbar" class="ui-header ui-bar-b" data-role="header">
     <a href="#navigator">Navigator</a>
     <h1>hyperCMS <?php echo ucfirst ($hcms_themename); ?></h1>
-    <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?><a href="#chat"><?php echo $hcms_lang['chat'][$lang]; ?></a><?php } ?>
+    <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?><a href="#chat"><?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?></a><?php } ?>
   </div> 
 
   <!-- navigator panel -->
@@ -91,7 +91,7 @@ $(document).ready(function()
         <table style="padding:0; margin:0; width:100%;">
           <tr>
             <td>
-              <input type="text" name="search_expression" data-mini="true" maxlength="60" value="" placeholder="<?php echo $hcms_lang['search-expression'][$lang]; ?>" />
+              <input type="text" name="search_expression" data-mini="true" maxlength="60" value="" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" />
             </td>
             <td>
               <button id="SearchButton" data-mini="true" style="width:40px;" onclick="document.forms['searchform_general'].submit();">OK</button>

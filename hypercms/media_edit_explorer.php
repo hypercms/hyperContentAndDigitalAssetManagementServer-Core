@@ -98,7 +98,7 @@ function goToURL()
 <table border="0" cellspacing="0" cellpadding="2" width="100%">
   <tr align="left">
     <td class=hcmsHeadline>
-      <?php echo $hcms_lang['select-media-files'][$lang]; ?>
+      <?php echo getescapedtext ($hcms_lang['select-media-files'][$lang]); ?>
       <form name="imagesearch" method="post" action="">
         <input type="hidden" name="site" value="<?php echo $site; ?>" />
         <input type="hidden" name="mediacat" value="<?php echo $mediacat; ?>" />
@@ -107,12 +107,12 @@ function goToURL()
       
         <table border="0" cellspacing="2" cellpadding="0">
           <tr>
-            <td class="hcmsTextSmall"><?php echo $hcms_lang['select-media-category'][$lang]; ?>:</td>
+            <td class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['select-media-category'][$lang]); ?>:</td>
           </tr>
           <tr>
             <td>
             <select name="mediacat_name" style="width:200px;">
-              <option value=""><?php echo $hcms_lang['all-categories'][$lang]; ?></option>
+              <option value=""><?php echo getescapedtext ($hcms_lang['all-categories'][$lang]); ?></option>
               <?php
               if (is_array ($mediacat_array) && sizeof ($mediacat_array) > 0)
               {
@@ -127,23 +127,23 @@ function goToURL()
             </td>
           </tr>
           <tr>
-            <td class="hcmsTextSmall"><?php echo $hcms_lang['select-file-format'][$lang]; ?>:</td>
+            <td class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['select-file-format'][$lang]); ?>:</td>
           </tr>
           <tr>
             <td>
             <select name="mediaformat" style="width:200px;">
-              <option value=""><?php echo $hcms_lang['all-formats'][$lang]; ?></option>
-              <option value="audio" <?php if ($mediatype == "audio") echo "selected=\"selected\""; ?>><?php echo $hcms_lang['audio'][$lang]; ?></option>
-              <option value="compressed" <?php if ($mediatype == "compressed") echo "selected=\"selected\""; ?>><?php echo $hcms_lang['compressed'][$lang]; ?></option>
-              <option value="flash" <?php if ($mediatype == "flash") echo "selected=\"selected\""; ?>><?php echo $hcms_lang['flash'][$lang]; ?></option>
-              <option value="image" <?php if ($mediatype == "image") echo "selected=\"selected\""; ?>><?php echo $hcms_lang['media'][$lang]; ?></option>
-              <option value="text" <?php if ($mediatype == "text") echo "selected=\"selected\""; ?>><?php echo $hcms_lang['text'][$lang]; ?></option>
-              <option value="video" <?php if ($mediatype == "video") echo "selected=\"selected\""; ?>><?php echo $hcms_lang['video'][$lang]; ?></option>
+              <option value=""><?php echo getescapedtext ($hcms_lang['all-formats'][$lang]); ?></option>
+              <option value="audio" <?php if ($mediatype == "audio") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></option>
+              <option value="compressed" <?php if ($mediatype == "compressed") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['compressed'][$lang]); ?></option>
+              <option value="flash" <?php if ($mediatype == "flash") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['flash'][$lang]); ?></option>
+              <option value="image" <?php if ($mediatype == "image") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['media'][$lang]); ?></option>
+              <option value="text" <?php if ($mediatype == "text") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['text'][$lang]); ?></option>
+              <option value="video" <?php if ($mediatype == "video") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></option>
             </select>
             </td>
           </tr>
           <tr>
-            <td class="hcmsTextSmall"><?php echo $hcms_lang['search'][$lang]; ?>:</td>
+            <td class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>:</td>
           </tr>
           <tr>
             <td>
@@ -218,7 +218,7 @@ if ($sender == "search")
     elseif ($mediaformat == "compressed") $format_ext = strtolower ($hcms_ext['compressed']);
   }
 
-  echo "<span class=\"hcmsHeadlineTiny\">".$hcms_lang['found-media-files'][$lang]."</span><br />\n";
+  echo "<span class=\"hcmsHeadlineTiny\">".getescapedtext ($hcms_lang['found-media-files'][$lang])."</span><br />\n";
 
   // files in actual directory
   if (isset ($files) && $files != false && $files != "")
@@ -253,7 +253,7 @@ if ($sender == "search")
 
   if ($c == 0)
   {
-    echo "<b>".$hcms_lang['no-results-available'][$lang]."</b><br />\n";
+    echo "<b>".getescapedtext ($hcms_lang['no-results-available'][$lang])."</b><br />\n";
   }
 }
 ?>

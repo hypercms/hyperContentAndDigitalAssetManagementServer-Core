@@ -297,12 +297,12 @@ if ($authorized == true)
     // check result
     if ($result['result'] == false) 
     {
-      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['error-occured'][$lang]."</span>";
+      $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['error-occured'][$lang])."</span>";
       $add_onload = "";
     }
     else 
     {
-      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-data-was-saved-successfully'][$lang]."</span>";
+      $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."</span>";
       $add_onload = "if (eval(opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload();
 if (eval(parent.frames['objFrame'])) parent.frames['objFrame'].location.reload();
 if (eval(parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload();";
@@ -388,7 +388,7 @@ if (eval(parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload
 }
 else
 {
-  $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-permissions-to-execute-this-function'][$lang]."</span>";
+  $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['you-do-not-have-permissions-to-execute-this-function'][$lang])."</span>";
 }
 ?>
 <!DOCTYPE html>
@@ -445,13 +445,13 @@ if ($action == "unzip" && $authorized == true)
   {
     $result['result'] = true;
     $add_onload = "document.getElementById('loadingLayer').style.display='none'; if (eval (opener.parent.frames['mainFrame'])) {opener.parent.frames['mainFrame'].location.reload();}\n";
-    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['file-extracted-succesfully'][$lang]."</span><br />\n";
+    $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['file-extracted-succesfully'][$lang])."</span><br />\n";
   }
   else
   {
     $result['result'] = false;
     $add_onload = "document.getElementById('loadingLayer').style.display='none';\n";
-    $show = "<span class=\"hcmsHeadline\">".$hcms_lang['file-could-not-be-extracted'][$lang]."</span><br />\n";
+    $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['file-could-not-be-extracted'][$lang])."</span><br />\n";
   }
 }
 ?>

@@ -609,6 +609,10 @@ input, select, textarea
   color: #000000;
   text-decoration: none;
   vertical-align: middle;
+  border: 1px solid #C6C6C6;
+  background-color: #FFFFFF;
+  margin: 0;
+  padding: 2px;
 }
 
 a 

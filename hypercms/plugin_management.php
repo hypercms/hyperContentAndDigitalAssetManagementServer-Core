@@ -55,7 +55,7 @@ if ($action)
       break;
       
     case "change":
-      if (!is_array ($mgmt_plugin)) $show = $hcms_lang['could-not-determine-which-addons-to-activate'][$lang];
+      if (!is_array ($mgmt_plugin)) $show = getescapedtext ($hcms_lang['could-not-determine-which-addons-to-activate'][$lang]);
 
       foreach ($mgmt_plugin as $key => &$data)
       {
@@ -72,7 +72,7 @@ if ($action)
       break;
       
     default:
-      $show  = $hcms_lang['this-action-is-not-supported'][$lang];
+      $show  = getescapedtext ($hcms_lang['this-action-is-not-supported'][$lang]);
       break;    
   }
 }
@@ -93,11 +93,11 @@ if ($action)
     <?php
     if (!$is_mobile && file_exists ($mgmt_config['abs_path_cms']."help/pluginguide_".$hcms_lang_shortcut[$lang].".pdf"))
     {
-      $help = "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/pluginguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>";
+      $help = "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/pluginguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" /></a>";
     }
     elseif (!$is_mobile && file_exists ($mgmt_config['abs_path_cms']."help/pluginguide_en.pdf"))
     {
-      $help = "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/pluginguide_en.pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>";
+      $help = "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/pluginguide_en.pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" /></a>";
     }
     else $help = "";
 
@@ -110,12 +110,12 @@ if ($action)
       <table cellspacing="2" cellpadding="3" border="0" width="98%">
         <tbody>
           <tr>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="50"><?php echo $hcms_lang['number'][$lang]; ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="30%"><?php echo $hcms_lang['plugin-name'][$lang]; ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="30%"><?php echo $hcms_lang['author'][$lang]; ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap"><?php echo $hcms_lang['version'][$lang]; ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="40%"><?php echo $hcms_lang['description'][$lang]; ?></th>
-            <th class="hcmsHeadline" align="left" nowrap="nowrap"><?php echo $hcms_lang['active'][$lang]; ?></th>
+            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="50"><?php echo getescapedtext ($hcms_lang['number'][$lang]); ?></th>
+            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="30%"><?php echo getescapedtext ($hcms_lang['plugin-name'][$lang]); ?></th>
+            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="30%"><?php echo getescapedtext ($hcms_lang['author'][$lang]); ?></th>
+            <th class="hcmsHeadline" align="left" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['version'][$lang]); ?></th>
+            <th class="hcmsHeadline" align="left" nowrap="nowrap" width="40%"><?php echo getescapedtext ($hcms_lang['description'][$lang]); ?></th>
+            <th class="hcmsHeadline" align="left" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></th>
           </tr>
         <?php
         $cnt = 0;
@@ -144,10 +144,10 @@ if ($action)
       </table>
       
       <div style="margin-top:10px;">
-        <div style="width:260px; float:left;"><?php echo $hcms_lang['apply-changes'][$lang] ?>:</div>
+        <div style="width:260px; float:left;"><?php echo getescapedtext ($hcms_lang['apply-changes'][$lang]); ?>:</div>
         <img align="absmiddle" alt="OK" title="OK" onmouseover="hcms_swapImage('Button1','', '<?php echo getthemelocation(); ?>/img/button_OK_over.gif',1)" onmouseout="hcms_swapImgRestore()" onclick="document.forms['editplugins'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" name="Button1">
         <div style="clear:both;"></div>
-        <div style="width:260px; float:left;"><?php echo $hcms_lang['check-for-new-or-changed-plugins'][$lang] ?>:</div>
+        <div style="width:260px; float:left;"><?php echo getescapedtext ($hcms_lang['check-for-new-or-changed-plugins'][$lang]); ?>:</div>
         <img align="absmiddle" alt="OK" title="OK" onmouseover="hcms_swapImage('Button2','', '<?php echo getthemelocation(); ?>/img/button_OK_over.gif',1)" onmouseout="hcms_swapImgRestore()" onclick="window.location='?action=reparse'" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" name="Button2">
       </div>
         

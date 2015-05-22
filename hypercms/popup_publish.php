@@ -103,10 +103,10 @@ if ($action != "" && valid_publicationname ($site) && $cat != "" && valid_locati
         }
       }
       
-      if ($result == false) $message = $hcms_lang['the-publishing-queue-could-not-be-saved'][$lang];
+      if ($result == false) $message = getescapedtext ($hcms_lang['the-publishing-queue-could-not-be-saved'][$lang]);
       else $message = "<script language=\"JavaScript\" type=\"text/javascript\"> window.close(); </script>";
     }
-    else $message = $hcms_lang['no-objects-to-publish'][$lang];
+    else $message = getescapedtext ($hcms_lang['no-objects-to-publish'][$lang]);
   }
 }
 ?>
@@ -192,8 +192,8 @@ function submitform ()
 
 <!-- top bar -->
 <?php
-if ($action == "publish") echo $headline = $hcms_lang['publish-content'][$lang];
-elseif ($action == "unpublish") echo $headline = $hcms_lang['unpublish-content'][$lang];
+if ($action == "publish") echo $headline = getescapedtext ($hcms_lang['publish-content'][$lang]);
+elseif ($action == "unpublish") echo $headline = getescapedtext ($hcms_lang['unpublish-content'][$lang]);
 
 echo showtopbar ($headline, $lang);
 ?>
@@ -214,21 +214,21 @@ echo showtopbar ($headline, $lang);
   <table width="100%" border=0 cellpadding="3" cellspacing="0">
     <tr> 
       <td align="left">
-        <input name="publish" type="radio" value="now" checked="checked" /> <?php echo $hcms_lang['now'][$lang]; ?>
+        <input name="publish" type="radio" value="now" checked="checked" /> <?php echo getescapedtext ($hcms_lang['now'][$lang]); ?>
 	    </td>
     </tr>
     <tr> 
       <td align="left">		
-        <input name="publish" type="radio" value="later" /> <?php echo $hcms_lang['on-date'][$lang]; ?> 
+        <input name="publish" type="radio" value="later" /> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?> 
         <input type="hidden" name="publishdate" id="publishdate" value="<?php echo $publishdate; ?>" />
         <input type="text" id="text_field" value="<?php echo $publishdate; ?>" disabled="disabled" />
-        <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['select-date'][$lang]; ?>" title="<?php echo $hcms_lang['select-date'][$lang]; ?>" />
+        <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
 	    </td>
     </tr>
     <?php if ($action == "publish") { ?>
     <tr> 
       <td align="left">
-        <input type="checkbox" name="published_only" value="1" /> <?php echo $hcms_lang['only-already-published-content'][$lang]; ?>
+        <input type="checkbox" name="published_only" value="1" /> <?php echo getescapedtext ($hcms_lang['only-already-published-content'][$lang]); ?>
 	    </td>
     </tr>
     <?php } ?>

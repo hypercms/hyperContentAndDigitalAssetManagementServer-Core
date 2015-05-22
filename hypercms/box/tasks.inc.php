@@ -17,7 +17,7 @@ if (checkrootpermission ('desktoptaskmgmt'))
     {
       echo "<div id=\"task\" onclick=\"document.location.href='task_list.php';\" class=\"hcmsInfoBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left; cursor:pointer;\">\n";
 
-      echo "<div class=\"hcmsHeadline\" style=\"margin:2px;\">".$hcms_lang['my-recent-tasks'][$lang]."</div>
+      echo "<div class=\"hcmsHeadline\" style=\"margin:2px;\">".getescapedtext ($hcms_lang['my-recent-tasks'][$lang])."</div>
       <table width=\"100%\" border=\"0\" cellspacing=\"2\" cellpadding=\"2\">";
 
       foreach ($task_array as $task_node)

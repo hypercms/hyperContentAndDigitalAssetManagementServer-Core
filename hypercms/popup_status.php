@@ -121,7 +121,7 @@ if ($authorized == true || $force == "stop")
       if (isset ($result['count'])) $count = $result['count']; 
       else $count =  0;
       
-      if (!empty ($maxcount) && !empty ($count)) $status = ($maxcount - $count)." / ".$maxcount." ".$hcms_lang['items'][$lang];
+      if (!empty ($maxcount) && !empty ($count)) $status = ($maxcount - $count)." / ".$maxcount." ".getescapedtext ($hcms_lang['items'][$lang]);
       else $status = "";
       
       if (isset ($result['working'])) $working = $result['working'];
@@ -152,7 +152,7 @@ if ($authorized == true || $force == "stop")
       else $count =  0;
       
       if (!empty ($result['message'])) $status = strip_tags ($result['message']);    
-      else $status = $hcms_lang['error-occured'][$lang];
+      else $status = getescapedtext ($hcms_lang['error-occured'][$lang]);
       
       $working = "error";
       
@@ -217,7 +217,7 @@ if ($authorized == true || $force == "stop")
       $add_javascript = "self.close();\n";  
     }
   
-    $status = $maxcount." / ".$maxcount." ".$hcms_lang['items'][$lang];
+    $status = $maxcount." / ".$maxcount." ".getescapedtext ($hcms_lang['items'][$lang]);
   }
   // cancel process
   elseif ($force == "stop")
@@ -226,12 +226,12 @@ if ($authorized == true || $force == "stop")
   
     $add_javascript = "self.close();\n";
   
-    $status = ($maxcount - $count)." / ".$maxcount." ".$hcms_lang['items'][$lang];
+    $status = ($maxcount - $count)." / ".$maxcount." ".getescapedtext ($hcms_lang['items'][$lang]);
   }
 }
 else
 {
-  $status = $hcms_lang['you-do-not-have-permissions-to-execute-this-function'][$lang];
+  $status = getescapedtext ($hcms_lang['you-do-not-have-permissions-to-execute-this-function'][$lang]);
 }
 
 // define progress bar
@@ -265,7 +265,7 @@ setTimeout('closepopup()', 1000);
 <body class="hcmsWorkplaceGeneric">
 
 <div align="center">
-  <p align="center"><span class="hcmsHeadlineTiny"><?php echo $hcms_lang['status'][$lang]; ?>: </span><?php echo $status; ?></p>
+  <p align="center"><span class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?>: </span><?php echo $status; ?></p>
   
   <table width="80%" border="1" cellspacing="1" cellpadding="0" bgcolor="#CCCCCC">
     <tr> 
@@ -289,7 +289,7 @@ setTimeout('closepopup()', 1000);
     <input type="hidden" name="maxcount" value="<?php echo $maxcount; ?>" />
     <input type="hidden" name="tempfile" value="<?php echo $tempfile; ?>" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
-    <button class="hcmsButtonBlue" type="submit" /><?php echo $hcms_lang['cancel'][$lang]; ?></button>
+    <button class="hcmsButtonBlue" type="submit" /><?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?></button>
   </form>
 </div>
 

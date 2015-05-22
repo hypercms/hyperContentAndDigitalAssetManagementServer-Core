@@ -45,7 +45,7 @@ if ($action == "save")
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width; initial-scale=0.9; maximum-scale=1.0; user-scalable=0;" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
-<script src="javascript/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -198,7 +198,7 @@ function submitHomeBoxes ()
       <table border="0" cellspacing="4" cellpadding="0">
         <tr>
           <td valign="top" align="left">
-            <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo $hcms_lang['select-object'][$lang]; ?></span>
+            <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['select-object'][$lang]); ?></span>
             <?php
             // display all home boxes for selection          
             $boxes_dir = $mgmt_config['abs_path_cms']."box/";
@@ -231,7 +231,7 @@ function submitHomeBoxes ()
             ?>
           </td>
           <td valign="top" align="left">
-            <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo $hcms_lang['selected-object'][$lang]; ?></span>
+            <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['selected-object'][$lang]); ?></span>
             <select id="box_array" name="box_array" size="8" style="width:250px;">
               <?php
               // get boxes of user
@@ -258,9 +258,9 @@ function submitHomeBoxes ()
             </select>
           </td>
           <td align="left" valign="middle">
-            <a href=# onClick="moveSelected(document.forms['box_form'].elements['box_array'], false)" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('ButtonUp','','<?php echo getthemelocation(); ?>img/button_moveup_over.gif',1)"><img name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['move-up'][$lang]; ?>" title="<?php echo $hcms_lang['move-up'][$lang]; ?>" /></a><br />                     
-            <img onClick="deleteSelected(document.forms['box_form'].elements['box_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" border=0 name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" alt="<?php echo $hcms_lang['delete'][$lang]; ?>" alt="<?php echo $hcms_lang['delete'][$lang]; ?>" title="<?php echo $hcms_lang['delete'][$lang]; ?>" /><br />            
-            <a href=# onClick="moveSelected(document.forms['box_form'].elements['box_array'], true)" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('ButtonDown','','<?php echo getthemelocation(); ?>img/button_movedown_over.gif',1)"><img name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['move-down'][$lang]; ?>" title="<?php echo $hcms_lang['move-down'][$lang]; ?>" /></a><br />
+            <a href=# onClick="moveSelected(document.forms['box_form'].elements['box_array'], false)" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('ButtonUp','','<?php echo getthemelocation(); ?>img/button_moveup_over.gif',1)"><img name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /></a><br />                     
+            <img onClick="deleteSelected(document.forms['box_form'].elements['box_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" border=0 name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /><br />            
+            <a href=# onClick="moveSelected(document.forms['box_form'].elements['box_array'], true)" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('ButtonDown','','<?php echo getthemelocation(); ?>img/button_movedown_over.gif',1)"><img name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /></a><br />
             <img onclick="submitHomeBoxes();" align="absmiddle" name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" alt="OK" title="OK" />
            </td>
         </tr>

@@ -52,15 +52,15 @@ checkusersession ($user);
       <tr>
         <td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:3px; border:0;" /></td>
         <td align="left" valign="top" class="hcmsTab">
-          &nbsp;<a href="template_edit.php?site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&save=no&template=<?php echo $template; ?>" target="mainFrame2" onClick="hcms_showHideLayers('Layer_tab1','','show','Layer_tab2','','hide','Layer_tab3','','hide')"><?php echo $hcms_lang['template'][$lang]; ?></a>
+          &nbsp;<a href="template_edit.php?site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&save=no&template=<?php echo $template; ?>" target="mainFrame2" onClick="hcms_showHideLayers('Layer_tab1','','show','Layer_tab2','','hide','Layer_tab3','','hide')"><?php echo getescapedtext ($hcms_lang['template'][$lang]); ?></a>
         </td>
         <td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:3px; border:0;" /></td>
         <td align="left" valign="top" class="hcmsTab">
-          &nbsp;<a href="version_template.php?site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&template=<?php echo $template; ?>" target="mainFrame2" onClick="hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','show','Layer_tab3','','hide')"><?php echo $hcms_lang['version'][$lang]; ?></a>
+          &nbsp;<a href="version_template.php?site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&template=<?php echo $template; ?>" target="mainFrame2" onClick="hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','show','Layer_tab3','','hide')"><?php echo getescapedtext ($hcms_lang['version'][$lang]); ?></a>
         </td>
         <td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:3px; border:0;" /></td>
         <td align="left" valign="top" class="hcmsTab">
-          &nbsp;<a href="template_info.php?site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&template=<?php echo $template; ?>" target="mainFrame2" onClick="hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','hide','Layer_tab3','','show')"><?php echo $hcms_lang['information'][$lang]; ?></a>
+          &nbsp;<a href="template_info.php?site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&template=<?php echo $template; ?>" target="mainFrame2" onClick="hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','hide','Layer_tab3','','show')"><?php echo getescapedtext ($hcms_lang['information'][$lang]); ?></a>
         </td>
       </tr>
     </table>

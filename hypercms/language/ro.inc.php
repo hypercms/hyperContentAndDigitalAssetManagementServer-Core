@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['ro'] = "Dosarul a fost redenumit";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['ro'] = "Nu aveţi permisiunile pentru scriere de dosar";
 $hcms_lang['the-folder-does-not-exist']['ro'] = "La dosar nu există";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['ro'] = "Nu aveţi permisiuni scriere pe fluxul setări folder";
-$hcms_lang['titel']['ro'] = "Tinel)";
 $hcms_lang['category']['ro'] = "Categorie";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['ro'] = "Încărcare pe Youtube nu este activată pentru Contul dumneavoastră. Vă rugăm să contactaţi administratorul sistemului";
 $hcms_lang['tags']['ro'] = "Etichetele";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['ro'] = "Server";
 $hcms_lang['use-ssl']['ro'] = "Utilizaţi SSL";
 $hcms_lang['formats']['ro'] = "Formate";
 $hcms_lang['download-formats']['ro'] = "Formate de descărcare";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['ro'] = "Cuvintele cheie cu optional listă obligatorie sau deschis";
 ?>

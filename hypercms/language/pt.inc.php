@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['pt'] = "A pasta foi renomeado";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['pt'] = "Você não tem permissões de escrita para a pasta";
 $hcms_lang['the-folder-does-not-exist']['pt'] = "A pasta não existe";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['pt'] = "Você não tem permissões de escrita na pasta definições fluxo";
-$hcms_lang['titel']['pt'] = "O Título";
 $hcms_lang['category']['pt'] = "Categoria";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['pt'] = "Upload do Youtube não está ativado em sua conta. Entre em contato com o seu administrador de sistema";
 $hcms_lang['tags']['pt'] = "Tags";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['pt'] = "Server";
 $hcms_lang['use-ssl']['pt'] = "Use SSL";
 $hcms_lang['formats']['pt'] = "Formatos";
 $hcms_lang['download-formats']['pt'] = "Formatos de Download";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['pt'] = "Palavras-chave com lista obrigatória ou opcional aberto";
 ?>

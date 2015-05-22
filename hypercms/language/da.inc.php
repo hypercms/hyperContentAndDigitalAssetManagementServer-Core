@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['da'] = "Mappen blev omdøbt";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['da'] = "Du ikke har skriverettigheder til mappen";
 $hcms_lang['the-folder-does-not-exist']['da'] = "Mappen findes ikke";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['da'] = "Du har ikke skriveadgang til workflow foldeindstillinger";
-$hcms_lang['titel']['da'] = "Afsnit";
 $hcms_lang['category']['da'] = "Kategori";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['da'] = "Upload til Youtube er ikke aktiveret for din konto. Kontakt systemadministratoren";
 $hcms_lang['tags']['da'] = "Tags";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['da'] = "Server";
 $hcms_lang['use-ssl']['da'] = "Brug SSL";
 $hcms_lang['formats']['da'] = "Formater";
 $hcms_lang['download-formats']['da'] = "Download formater";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['da'] = "Søgeord med valgfri obligatorisk eller åben liste";
 ?>

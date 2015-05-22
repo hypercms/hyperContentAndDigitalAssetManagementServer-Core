@@ -85,8 +85,8 @@ if ($templatefile != false || $contentfile != false)
     echo "</script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-    echo "<p class=hcmsHeadline>".$hcms_lang['could-not-create-view-of-page'][$lang]."</p>\n";
-    echo $hcms_lang['the-associated-template-holds-no-informations'][$lang]." -> '".$templatefile."'\n";
+    echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
+    echo getescapedtext ($hcms_lang['the-associated-template-holds-no-informations'][$lang])." -> '".$templatefile."'\n";
     echo "</body>\n</html>";
     exit;
   }
@@ -103,8 +103,8 @@ if ($templatefile != false || $contentfile != false)
     echo "</script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-    echo "<p class=hcmsHeadline>".$hcms_lang['could-not-create-view-of-page'][$lang]."</p>\n";
-    echo $hcms_lang['the-content-container-holds-no-informations'][$lang]." -> '".$contentfile."'\n";
+    echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
+    echo getescapedtext ($hcms_lang['the-content-container-holds-no-informations'][$lang])." -> '".$contentfile."'\n";
     echo "</body>\n</html>";
     exit;
   }  
@@ -119,8 +119,8 @@ if ($templatefile != false || $contentfile != false)
     echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."1\">\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-    echo "<p class=hcmsHeadline>".$hcms_lang['could-not-create-view-of-page'][$lang]."</p>\n";
-    echo $hcms_lang['an-error-occured-while-creating-the-view'][$lang]."\n";
+    echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
+    echo getescapedtext ($hcms_lang['an-error-occured-while-creating-the-view'][$lang])."\n";
     echo "</body>\n</html>";
   }
   // output view
@@ -136,7 +136,7 @@ else
   echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
   echo "<html>\n";
   echo "<head>\n";
-  echo "<title>".$hcms_lang['refresh-view'][$lang]."</title>\n";
+  echo "<title>".getescapedtext ($hcms_lang['refresh-view'][$lang])."</title>\n";
   echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
 
   $fowardurl = str_replace ($mgmt_config[$site]['abs_path_page'], $mgmt_config[$site]['url_path_page'], $location).$page;
@@ -148,8 +148,8 @@ else
 
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
 
-  echo "<p class=hcmsHeadline>".$hcms_lang['this-object-is-not-managed-by-hypercms'][$lang]."</p>\n";
-  echo $hcms_lang['you-wont-be-able-to-change-the-content-of-this-item'][$lang]."\n".$text7[$lang]."\n";
+  echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['this-object-is-not-managed-by-hypercms'][$lang])."</p>\n";
+  echo getescapedtext ($hcms_lang['you-wont-be-able-to-change-the-content-of-this-item'][$lang])."\n".$text7[$lang]."\n";
 
   echo "</body>\n";
   echo "</html>\n";

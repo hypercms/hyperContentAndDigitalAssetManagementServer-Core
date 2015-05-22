@@ -251,7 +251,7 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
     if (is_array ($media_info) && substr_count (strtolower ($hcms_ext['cms']).".", $media_info['ext'].".") > 0)
     {
       header ('HTTP/1.0 403 Forbidden', true, 403);
-      echo showinfopage ($hcms_lang['the-live-view-of-the-file-is-not-allowed'][$lang]."<br />".$hcms_lang['please-download-the-file-in-order-to-view-its-content'][$lang], $lang);
+      echo showinfopage ($hcms_lang['the-live-view-of-the-file-is-not-allowed'][$lang])."<br />".getescapedtext ($hcms_lang['please-download-the-file-in-order-to-view-its-content'][$lang], $lang);
       exit;
     }
   

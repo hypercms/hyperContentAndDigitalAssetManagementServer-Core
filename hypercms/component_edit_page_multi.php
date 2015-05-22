@@ -281,10 +281,10 @@ function openBrWindowComp(winName, features, type)
     
   <table border="0" cellspacing="2" cellpadding="0">  
     <tr>
-      <td nowrap="nowrap" colspan="2" class="hcmsHeadlineTiny"><?php echo $hcms_lang['multiple-component'][$lang]; ?></td>
+      <td nowrap="nowrap" colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['multiple-component'][$lang]); ?></td>
     </tr>  
     <tr>
-      <td colspan="2" nowrap="nowrap"><?php echo $hcms_lang['selected-components'][$lang]; ?>:</td>
+      <td colspan="2" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-components'][$lang]); ?>:</td>
     </tr>  
     <tr>
       <td colspan="2">
@@ -316,10 +316,10 @@ function openBrWindowComp(winName, features, type)
               </select>
             </td>
             <td align="left" valign="middle">
-              <a href=# onClick="moveSelected(document.forms['component'].elements['component_array'], false)" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('ButtonUp','','<?php echo getthemelocation(); ?>img/button_moveup_over.gif',1)"><img name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['move-up'][$lang]; ?>" title="<?php echo $hcms_lang['move-up'][$lang]; ?>" /></a><br />
-              <img onClick="openBrWindowComp('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" alt="<?php echo $hcms_lang['edit'][$lang]; ?>" title="<?php echo $hcms_lang['edit'][$lang]; ?>" /><br />                          
-              <img onClick="deleteSelected(document.forms['component'].elements['component_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" border=0 name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" alt="<?php echo $hcms_lang['delete'][$lang]; ?>" alt="<?php echo $hcms_lang['delete'][$lang]; ?>" title="<?php echo $hcms_lang['delete'][$lang]; ?>" /><br />            
-              <a href=# onClick="moveSelected(document.forms['component'].elements['component_array'], true)" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('ButtonDown','','<?php echo getthemelocation(); ?>img/button_movedown_over.gif',1)"><img name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['move-down'][$lang]; ?>" title="<?php echo $hcms_lang['move-down'][$lang]; ?>" /></a><br /><br /><br />
+              <a href=# onClick="moveSelected(document.forms['component'].elements['component_array'], false)" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('ButtonUp','','<?php echo getthemelocation(); ?>img/button_moveup_over.gif',1)"><img name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /></a><br />
+              <img onClick="openBrWindowComp('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?>" /><br />                          
+              <img onClick="deleteSelected(document.forms['component'].elements['component_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" border=0 name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /><br />            
+              <a href=# onClick="moveSelected(document.forms['component'].elements['component_array'], true)" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('ButtonDown','','<?php echo getthemelocation(); ?>img/button_movedown_over.gif',1)"><img name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /></a><br /><br /><br />
               <img onclick="submitMultiComp(document.forms['component'].elements['component_array']);" align="absmiddle" name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" alt="OK" title="OK" />
              </td>
           </tr>
@@ -331,13 +331,13 @@ function openBrWindowComp(winName, features, type)
       <td nowrap colspan="2">&nbsp;</td>
     </tr>
     <tr>
-      <td nowrap colspan="2" class="hcmsHeadlineTiny"><?php echo $hcms_lang['condition-for-personalization'][$lang]; ?></td>
+      <td nowrap colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['condition-for-personalization'][$lang]); ?></td>
     </tr>
     <tr>
       <td nowrap colspan="2">
-        <?php echo $hcms_lang['customer-profile'][$lang]; ?>:
+        <?php echo getescapedtext ($hcms_lang['customer-profile'][$lang]); ?>:
         <select name="condition" style="width:265px;">
-          <option value="">--------- <?php echo $hcms_lang['select'][$lang]; ?> ---------</option>
+          <option value="">--------- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---------</option>
           <?php
           $dir_item = @dir ($mgmt_config['abs_path_data']."customer/".$site."/");
 

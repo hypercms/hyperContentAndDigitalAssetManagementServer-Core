@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['ja'] = "フォルダの名前が変更さ�
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['ja'] = "では、アクセス権は'フォルダの書き込み権限を持っていない";
 $hcms_lang['the-folder-does-not-exist']['ja'] = "フォルダが存在しません";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['ja'] = "アクセス権をワークフロー設定フォルダの書き込み権限がありません。";
-$hcms_lang['titel']['ja'] = "件名";
 $hcms_lang['category']['ja'] = "カテゴリ";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['ja'] = "YouTubeへのアップロード、アカウント用にアクティブ化されていません。 システム管理者に連絡してください。";
 $hcms_lang['tags']['ja'] = "タグ";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['ja'] = "サーバ";
 $hcms_lang['use-ssl']['ja'] = "SSLを使用する";
 $hcms_lang['formats']['ja'] = "形式";
 $hcms_lang['download-formats']['ja'] = "形式をダウンロードする";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['ja'] = "オプション必須またはオープンリストとキーワード";
 ?>

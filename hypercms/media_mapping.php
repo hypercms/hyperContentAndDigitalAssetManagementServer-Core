@@ -57,7 +57,7 @@ if (valid_publicationname ($site) && $save == "yes" && checktoken ($token, $user
   // creating mapping from definition
   $mapping_data_save = createmapping ($site, $mapping_data);
 
-  if ($mapping_data_save == false) $show = "<p class=hcmsHeadline>".$hcms_lang['error-while-saving'][$lang]."</p>\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
+  if ($mapping_data_save == false) $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['error-while-saving'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang])."\n";
 }
 // load mapping file
 else
@@ -66,7 +66,7 @@ else
 }
 
 ?>
-<p class=hcmsHeadline><?php echo $hcms_lang['meta-data-mapping'][$lang]; ?></p>
+<p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['meta-data-mapping'][$lang]); ?></p>
 
 <?php
 echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
@@ -80,7 +80,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
   <table border="0" cellspacing="0px" cellpadding="0px" style="border:1px solid #000000; margin:2px;">
     <tr>
       <td align="left">
-        <img onclick="document.forms['editor'].submit();" name="save" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" title="<?php echo $hcms_lang['save'][$lang]; ?>" alt="<?php echo $hcms_lang['save'][$lang]; ?>" />
+        <img onclick="document.forms['editor'].submit();" name="save" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" title="<?php echo getescapedtext ($hcms_lang['save'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang]); ?>" />
       </td>
     </tr>
     <tr>

@@ -52,7 +52,7 @@ checkusersession ($user);
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/jquery/jquery-1.9.1.min.js"></script>
+<script src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script language="JavaScript">
 <!--
@@ -173,22 +173,22 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
   <table border=0 cellspacing=0 cellpadding=0 height=22>
     <tr align="left" valign="top"> 
       <td align="left" valign="top" class="hcmsTab">
-        &nbsp;<a href="#" onClick="hcms_showHideLayers('Layer_tab1','','show','Layer_tab2','','hide','Layer_tab3','','hide','Layer_tab4','','hide','searchtab_general','','show','searchtab_advanced','','hide','contentLayer','','hide','searchtab_replace','','hide','searchtab_images','','hide')"><?php echo $hcms_lang['general'][$lang]; ?></a>
+        &nbsp;<a href="#" onClick="hcms_showHideLayers('Layer_tab1','','show','Layer_tab2','','hide','Layer_tab3','','hide','Layer_tab4','','hide','searchtab_general','','show','searchtab_advanced','','hide','contentLayer','','hide','searchtab_replace','','hide','searchtab_images','','hide')"><?php echo getescapedtext ($hcms_lang['general'][$lang]); ?></a>
       </td>
       <td width="3"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:20px; border:0;" /></td>
       <td align="left" valign="top" class="hcmsTab">
-        &nbsp;<a href="#" onClick="hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','show','Layer_tab3','','hide','Layer_tab4','','hide','searchtab_general','','hide','searchtab_advanced','','show','contentLayer','','show','searchtab_replace','','hide','searchtab_images','','hide')"><?php echo $hcms_lang['advanced'][$lang]; ?></a>
+        &nbsp;<a href="#" onClick="hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','show','Layer_tab3','','hide','Layer_tab4','','hide','searchtab_general','','hide','searchtab_advanced','','show','contentLayer','','show','searchtab_replace','','hide','searchtab_images','','hide')"><?php echo getescapedtext ($hcms_lang['advanced'][$lang]); ?></a>
       </td>
       <?php if ($setlocalpermission['create'] == 1) { ?>
       <td width="3"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:20px; border:0;" /></td>
       <td align="left" valign="top" class="hcmsTab">
-        &nbsp;<a href="#" onClick="hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','hide','Layer_tab3','','show','Layer_tab4','','hide','searchtab_general','','hide','searchtab_advanced','','hide','contentLayer','','hide','searchtab_replace','','show','searchtab_images','','hide')"><?php echo $hcms_lang['replace'][$lang]; ?></a>
+        &nbsp;<a href="#" onClick="hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','hide','Layer_tab3','','show','Layer_tab4','','hide','searchtab_general','','hide','searchtab_advanced','','hide','contentLayer','','hide','searchtab_replace','','show','searchtab_images','','hide')"><?php echo getescapedtext ($hcms_lang['replace'][$lang]); ?></a>
       </td>
       <?php } ?> 
       <?php if ($cat == "comp") { ?>
       <td width="3"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:20px; border:0;" /></td>
       <td align="left" valign="top" class="hcmsTab">
-        &nbsp;<a href="#" onClick="hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','hide','Layer_tab3','','hide','Layer_tab4','','show','searchtab_general','','hide','searchtab_advanced','','hide','contentLayer','','hide','searchtab_replace','','hide','searchtab_images','','show')"><?php echo $hcms_lang['images'][$lang]; ?></a>
+        &nbsp;<a href="#" onClick="hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','hide','Layer_tab3','','hide','Layer_tab4','','show','searchtab_general','','hide','searchtab_advanced','','hide','contentLayer','','hide','searchtab_replace','','hide','searchtab_images','','show')"><?php echo getescapedtext ($hcms_lang['images'][$lang]); ?></a>
       </td>
       <?php } ?>          
     </tr>
@@ -214,66 +214,66 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
         <td valign="top"> 
           <table border="0" cellspacing="0" cellpadding="3" width="100%">
             <tr align="left" valign="middle" class="hcmsWorkplaceExplorer">
-              <td colspan="2" class="hcmsHeadlineTiny"><?php echo $hcms_lang['general-search'][$lang]; ?></td>
+              <td colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></td>
             </tr>          
             <tr align="left" valign="top">
-              <td width="180" nowrap="nowrap"><?php echo $hcms_lang['search-expression'][$lang]; ?>:</td>
+              <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>:</td>
               <td>
                 <input type="text" name="search_expression" style="width:200px;" maxlength="60" />
               </td>
             </tr>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo $hcms_lang['search-in-folder'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?>:</td>
               <td>
                 <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:200px;" disabled="disabled" />
               </td>
             </tr>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo $hcms_lang['search-restriction'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-restriction'][$lang]); ?>:</td>
               <td class="hcmsHeadlineTiny">
-                <input type="checkbox" name="search_cat" value="file" /> <?php echo $hcms_lang['only-object-names'][$lang]; ?>
+                <input type="checkbox" name="search_cat" value="file" /> <?php echo getescapedtext ($hcms_lang['only-object-names'][$lang]); ?>
                 <?php if ($cat == "page") { ?><input type="hidden" name="search_format[object]" value="page" /><?php } ?>
               </td>
             </tr>
             <?php if ($cat == "comp") { ?>
             <tr id="row_searchformat" align="left" valign="top">
-              <td><?php echo $hcms_lang['search-for-file-type'][$lang]; ?>:</td>
+              <td><?php echo getescapedtext ($hcms_lang['search-for-file-type'][$lang]); ?>:</td>
               <td>
-                <input type="checkbox" name="search_format[object]" value="comp" checked="checked" /><?php echo $hcms_lang['components'][$lang]; ?><br />
-                <input type="checkbox" name="search_format[image]" value="image" checked="checked" /><?php echo $hcms_lang['image'][$lang]; ?><br />
-                <input type="checkbox" name="search_format[document]" value="document" checked="checked" /><?php echo $hcms_lang['document'][$lang]; ?><br />
-                <input type="checkbox" name="search_format[video]" value="video" checked="checked" /><?php echo $hcms_lang['video'][$lang]; ?><br />
-                <input type="checkbox" name="search_format[audio]" value="audio" checked="checked" /><?php echo $hcms_lang['audio'][$lang]; ?><br />
+                <input type="checkbox" name="search_format[object]" value="comp" checked="checked" /><?php echo getescapedtext ($hcms_lang['components'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[image]" value="image" checked="checked" /><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[document]" value="document" checked="checked" /><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[video]" value="video" checked="checked" /><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[audio]" value="audio" checked="checked" /><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?><br />
               </td>
             </tr>          
             <?php } ?>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><input type="checkbox" name="date_modified" value="yes">&nbsp;<?php echo $hcms_lang['last-modified'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><input type="checkbox" name="date_modified" value="yes">&nbsp;<?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?>:</td>
               <td>
                 <table border="0" cellspacing="0" cellpadding="0">     
                   <tr>
                     <td> 
-                    <?php echo $hcms_lang['from'][$lang]; ?>:&nbsp;&nbsp;
+                    <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>:&nbsp;&nbsp;
                     </td>
                     <td class="hcmsHeadlineTiny">
-                    <?php echo $hcms_lang['year'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['year'][$lang]); ?>
                     <input type="text" name="year_from" value="<?php echo $year; ?>" size="4" maxlength="4" onBlur="checkDate(document.forms['searchform_general'].elements['year_from'],1000,9000); return document.returnValue;">
-                    <?php echo $hcms_lang['month'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['month'][$lang]); ?>
                     <input type="text" name="month_from" value="<?php echo $month; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_general'].elements['month_from'],1,12); return document.returnValue;">
-                    <?php echo $hcms_lang['day'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['day'][$lang]); ?>
                     <input type="text" name="day_from" value="<?php echo $day; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_general'].elements['day_from'],1,31); return document.returnValue;"><br />
                     </td>
                   </tr>
                   <tr>
                     <td>
-                    <?php echo $hcms_lang['to'][$lang]; ?>:&nbsp;&nbsp; 
+                    <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>:&nbsp;&nbsp; 
                     </td>
                     <td class="hcmsHeadlineTiny">
-                    <?php echo $hcms_lang['year'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['year'][$lang]); ?>
                     <input type="text" name="year_to" value="<?php echo $year; ?>" size="4" maxlength="4" onBlur="checkDate(document.forms['searchform_general'].elements['year_to'],1000,9000); return document.returnValue;">
-                    <?php echo $hcms_lang['month'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['month'][$lang]); ?>
                     <input type="text" name="month_to" value="<?php echo $month; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_general'].elements['month_to'],1,12); return document.returnValue;">
-                    <?php echo $hcms_lang['day'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['day'][$lang]); ?>
                     <input type="text" name="day_to" value="<?php echo $day; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_general'].elements['day_to'],1,31); return document.returnValue;">        
                     </td>
                   </tr>
@@ -434,21 +434,21 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
                 });
                 </script>
                 
-                <?php echo $hcms_lang['geo-location'][$lang]; ?>:<br />
-                <span class="hcmsHeadlineTiny"><?php echo $hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag'][$lang]; ?></span>
+                <?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?>:<br />
+                <span class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag'][$lang]); ?></span>
                 <div id="map" style="border:1px solid grey; margin-top:4px;"></div>         
               </td>
             </tr>
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo $hcms_lang['sw-coordinates'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['sw-coordinates'][$lang]); ?>:</td>
               <td><input type="text" name="geo_border_sw" style="width:200px;" maxlength="100" /></td>
             </tr>
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo $hcms_lang['ne-coordinates'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['ne-coordinates'][$lang]); ?>:</td>
               <td><input type="text" name="geo_border_ne" style="width:200px;" maxlength="100" /></td>
             </tr>
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo $hcms_lang['maximum-amount-of-results'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['maximum-amount-of-results'][$lang]); ?>:</td>
               <td>
                 <select name="maxhits">
                   <option value="100" selected="selected">100</option>
@@ -461,7 +461,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
               </td>
             </tr>
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo $hcms_lang['start-search'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?>:</td>
               <td>
           			<img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="startSearch('searchform_general');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
               </td>
@@ -482,10 +482,10 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
         <td valign="top"> 
           <table border="0" cellspacing="0" cellpadding="3" width="100%">
             <tr align="left" valign="middle" class="hcmsWorkplaceExplorer"> 
-              <td colspan="2" class="hcmsHeadlineTiny"><?php echo $hcms_lang['advanced-search'][$lang]; ?></td>
+              <td colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['advanced-search'][$lang]); ?></td>
             </tr>
             <tr align="left" valign="middle"> 
-              <td width="180" nowrap="nowrap"><?php echo $hcms_lang['based-on-template'][$lang]; ?>:</td>
+              <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['based-on-template'][$lang]); ?>:</td>
               <td>
                 <select name="template" onChange="loadForm();">
               <?php
@@ -538,9 +538,9 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
                 
                 foreach ($template_array as $value)
                 {
-                  if (strpos ($value, ".page.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".page.tpl"))." (".$hcms_lang['page'][$lang].")";
-                  elseif (strpos ($value, ".comp.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".comp.tpl"))." (".$hcms_lang['component'][$lang].")";
-                  elseif (strpos ($value, ".meta.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".meta.tpl"))." (".$hcms_lang['meta-data'][$lang].")";
+                  if (strpos ($value, ".page.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".page.tpl"))." (".getescapedtext ($hcms_lang['page'][$lang]).")";
+                  elseif (strpos ($value, ".comp.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".comp.tpl"))." (".getescapedtext ($hcms_lang['component'][$lang]).")";
+                  elseif (strpos ($value, ".meta.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".meta.tpl"))." (".getescapedtext ($hcms_lang['meta-data'][$lang]).")";
                   
                   echo "<option value=\"".$value."\""; if ($value == $template) echo " selected=\"selected\""; echo ">".$tpl_name."</option>\n";
                 }
@@ -554,7 +554,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
               </td>
             </tr>
             <tr align="left" valign="middle"> 
-              <td nowrap="nowrap"><?php echo $hcms_lang['search-in-folder'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?>:</td>
               <td>
                 <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:200px;" disabled="disabled" /> 
               </td>
@@ -568,55 +568,55 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
             </tr>
             <?php if ($cat == "comp") { ?>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo $hcms_lang['search-for-file-type'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-for-file-type'][$lang]); ?>:</td>
               <td>
-                <input type="checkbox" name="search_format[object]" value="comp" checked="checked" /><?php echo $hcms_lang['components'][$lang]; ?><br />
-                <input type="checkbox" name="search_format[image]" value="image" checked="checked" /><?php echo $hcms_lang['image'][$lang]; ?><br />
-                <input type="checkbox" name="search_format[document]" value="document" checked="checked" /><?php echo $hcms_lang['document'][$lang]; ?><br />
-                <input type="checkbox" name="search_format[video]" value="video" checked="checked" /><?php echo $hcms_lang['video'][$lang]; ?><br />
-                <input type="checkbox" name="search_format[audio]" value="audio" checked="checked" /><?php echo $hcms_lang['audio'][$lang]; ?><br />
+                <input type="checkbox" name="search_format[object]" value="comp" checked="checked" /><?php echo getescapedtext ($hcms_lang['components'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[image]" value="image" checked="checked" /><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[document]" value="document" checked="checked" /><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[video]" value="video" checked="checked" /><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[audio]" value="audio" checked="checked" /><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?><br />
               </td>
             </tr>
             <?php } ?>  
             <tr align="left" valign="middle"> 
-              <td nowrap="nowrap"><?php echo $hcms_lang['object-id-link-id'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?>:</td>
               <td>
                 <input type="text" name="object_id" value="" style="width:200px;" /> 
               </td>
             </tr>
             <tr align="left" valign="middle"> 
-              <td nowrap="nowrap"><?php echo $hcms_lang['container-id'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['container-id'][$lang]); ?>:</td>
               <td>
                 <input type="text" name="container_id" value="" style="width:200px;" /> 
               </td>
             </tr>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><input type="checkbox" name="date_modified" value="yes" />&nbsp;<?php echo $hcms_lang['last-modified'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><input type="checkbox" name="date_modified" value="yes" />&nbsp;<?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?>:</td>
               <td>
                 <table border="0" cellspacing="0" cellpadding="0">     
                   <tr>
                     <td> 
-                    <?php echo $hcms_lang['from'][$lang]; ?>:&nbsp;&nbsp;
+                    <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>:&nbsp;&nbsp;
                     </td>
                     <td class="hcmsHeadlineTiny">
-                    <?php echo $hcms_lang['year'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['year'][$lang]); ?>
                     <input type="text" name="year_from" value="<?php echo $year; ?>" size="4" maxlength="4" onBlur="checkDate(document.forms['searchform_advanced'].elements['year_from'],1000,9000); return document.returnValue;" />
-                    <?php echo $hcms_lang['month'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['month'][$lang]); ?>
                     <input type="text" name="month_from" value="<?php echo $month; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_advanced'].elements['month_from'],1,12); return document.returnValue;" />
-                    <?php echo $hcms_lang['day'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['day'][$lang]); ?>
                     <input type="text" name="day_from" value="<?php echo $day; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_advanced'].elements['day_from'],1,31); return document.returnValue;" /><br />
                     </td>
                   </tr>
                   <tr>
                     <td>
-                    <?php echo $hcms_lang['to'][$lang]; ?>:&nbsp;&nbsp; 
+                    <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>:&nbsp;&nbsp; 
                     </td>
                     <td class="hcmsHeadlineTiny">
-                    <?php echo $hcms_lang['year'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['year'][$lang]); ?>
                     <input type="text" name="year_to" value="<?php echo $year; ?>" size="4" maxlength="4" onBlur="checkDate(document.forms['searchform_advanced'].elements['year_to'],1000,9000); return document.returnValue;" />
-                    <?php echo $hcms_lang['month'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['month'][$lang]); ?>
                     <input type="text" name="month_to" value="<?php echo $month; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_advanced'].elements['month_to'],1,12); return document.returnValue;" />
-                    <?php echo $hcms_lang['day'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['day'][$lang]); ?>
                     <input type="text" name="day_to" value="<?php echo $day; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_advanced'].elements['day_to'],1,31); return document.returnValue;" />        
                     </td>
                   </tr>
@@ -624,7 +624,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
               </td>
             </tr> 
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo $hcms_lang['maximum-amount-of-results'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['maximum-amount-of-results'][$lang]); ?>:</td>
               <td>
                 <select name="maxhits">
                   <option value="100" selected="selected">100</option>
@@ -637,7 +637,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
               </td>
             </tr>            		
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo $hcms_lang['start-search'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?>:</td>
               <td>
           			<img name="Button2" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="startSearch('searchform_advanced');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
               </td>
@@ -659,65 +659,65 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
         <td valign="top"> 
           <table border="0" cellspacing="0" cellpadding="3" width="100%">
             <tr align="left" valign="middle" class="hcmsWorkplaceExplorer">
-              <td colspan="2" class="hcmsHeadlineTiny"><?php echo $hcms_lang['search-and-replace'][$lang]; ?></td>
+              <td colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['search-and-replace'][$lang]); ?></td>
             </tr>            
             <tr align="left" valign="middle"> 
-              <td width="180" nowrap="nowrap"><?php echo $hcms_lang['search-expression'][$lang]; ?>:</td>
+              <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>:</td>
               <td> 
                 <input type="text" name="search_expression" style="width:200px;" />
               </td>
             </tr>
             <tr align="left" valign="middle"> 
-              <td nowrap="nowrap"><?php echo $hcms_lang['replace-with'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['replace-with'][$lang]); ?>:</td>
               <td> 
                 <input type="text" name="replace_expression" style="width:200px;" />
               </td>
             </tr>          
             <tr align="left" valign="middle"> 
-              <td nowrap="nowrap"><?php echo $hcms_lang['search-in-folder'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?>:</td>
               <td> 
                 <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:200px;" disabled="disabled" />
               </td>
             </tr>
             <?php if ($cat == "comp") { ?>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo $hcms_lang['search-for-file-type'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-for-file-type'][$lang]); ?>:</td>
               <td>
-                <input type="checkbox" name="search_format[object]" value="comp" checked="checked" /><?php echo $hcms_lang['components'][$lang]; ?><br />
-                <input type="checkbox" name="search_format[image]" value="image" checked="checked" /><?php echo $hcms_lang['image'][$lang]; ?><br />
-                <input type="checkbox" name="search_format[document]" value="document" checked="checked" /><?php echo $hcms_lang['document'][$lang]; ?><br />
-                <input type="checkbox" name="search_format[video]" value="video" checked="checked" /><?php echo $hcms_lang['video'][$lang]; ?><br />
-                <input type="checkbox" name="search_format[audio]" value="audio" checked="checked" /><?php echo $hcms_lang['audio'][$lang]; ?><br />
+                <input type="checkbox" name="search_format[object]" value="comp" checked="checked" /><?php echo getescapedtext ($hcms_lang['components'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[image]" value="image" checked="checked" /><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[document]" value="document" checked="checked" /><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[video]" value="video" checked="checked" /><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[audio]" value="audio" checked="checked" /><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?><br />
               </td>
             </tr>
             <?php } ?>   
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><input type="checkbox" name="date_modified" value="yes" />&nbsp;<?php echo $hcms_lang['last-modified'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><input type="checkbox" name="date_modified" value="yes" />&nbsp;<?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?>:</td>
               <td>
                 <table border="0" cellspacing="0" cellpadding="0">     
                   <tr>
                     <td> 
-                    <?php echo $hcms_lang['from'][$lang]; ?>:&nbsp;&nbsp;
+                    <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>:&nbsp;&nbsp;
                     </td>
                     <td class="hcmsHeadlineTiny">
-                    <?php echo $hcms_lang['year'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['year'][$lang]); ?>
                     <input type="text" name="year_from" value="<?php echo $year; ?>" size="4" maxlength="4" onBlur="checkDate(document.forms['searchform_replace'].elements['year_from'],1000,9000); return document.returnValue;" />
-                    <?php echo $hcms_lang['month'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['month'][$lang]); ?>
                     <input type="text" name="month_from" value="<?php echo $month; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_replace'].elements['month_from'],1,12); return document.returnValue;" />
-                    <?php echo $hcms_lang['day'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['day'][$lang]); ?>
                     <input type="text" name="day_from" value="<?php echo $day; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_replace'].elements['day_from'],1,31); return document.returnValue;" /><br />
                     </td>
                   </tr>
                   <tr>
                     <td>
-                    <?php echo $hcms_lang['to'][$lang]; ?>:&nbsp;&nbsp; 
+                    <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>:&nbsp;&nbsp; 
                     </td>
                     <td class="hcmsHeadlineTiny">
-                    <?php echo $hcms_lang['year'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['year'][$lang]); ?>
                     <input type="text" name="year_to" value="<?php echo $year; ?>" size="4" maxlength="4" onBlur="checkDate(document.forms['searchform_replace'].elements['year_to'],1000,9000); return document.returnValue;" />
-                    <?php echo $hcms_lang['month'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['month'][$lang]); ?>
                     <input type="text" name="month_to" value="<?php echo $month; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_replace'].elements['month_to'],1,12); return document.returnValue;" />
-                    <?php echo $hcms_lang['day'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['day'][$lang]); ?>
                     <input type="text" name="day_to" value="<?php echo $day; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_replace'].elements['day_to'],1,31); return document.returnValue;" />        
                     </td>
                   </tr>
@@ -725,13 +725,13 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
               </td>
             </tr>             
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo $hcms_lang['start-search'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?>:</td>
               <td>
 			          <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm(document.forms['searchform_replace']);" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
               </td>
             </tr>		            
             <tr align="left" valign="top"> 
-              <td colspan="2"><img src="<?php echo getthemelocation(); ?>img/info.gif" style="float:left;" /><div style="margin-left:4px; float:left;" class="hcmsTextSmall"><?php echo $hcms_lang['the-replacement-is-case-sensitive'][$lang]; ?></div></td>
+              <td colspan="2"><img src="<?php echo getthemelocation(); ?>img/info.gif" style="float:left;" /><div style="margin-left:4px; float:left;" class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['the-replacement-is-case-sensitive'][$lang]); ?></div></td>
             </tr>   	         
           </table>
         </td>
@@ -751,35 +751,35 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
         <td valign="top"> 
           <table border="0" cellspacing="0" cellpadding="3" width="100%">
             <tr align="left" valign="middle" class="hcmsWorkplaceExplorer">
-              <td colspan="2" class="hcmsHeadlineTiny"><?php echo $hcms_lang['image-search'][$lang]; ?></td>
+              <td colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['image-search'][$lang]); ?></td>
             </tr>          
             <tr align="left" valign="top">
-              <td width="180" nowrap="nowrap"><?php echo $hcms_lang['search-expression'][$lang]; ?>:</td>
+              <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>:</td>
               <td>
                 <input type="text" name="search_expression" style="width:200px;" maxlength="60" />
               </td>
             </tr>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo $hcms_lang['search-in-folder'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?>:</td>
               <td>
                 <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:200px;" disabled="disabled" />
               </td>
             </tr>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo $hcms_lang['search-restriction'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-restriction'][$lang]); ?>:</td>
               <td class="hcmsHeadlineTiny">
-                <input type="checkbox" name="search_cat" value="file" /> <?php echo $hcms_lang['only-object-names'][$lang]; ?>
+                <input type="checkbox" name="search_cat" value="file" /> <?php echo getescapedtext ($hcms_lang['only-object-names'][$lang]); ?>
               </td>
             </tr>                     
             <tr id="row_imagesize" align="left" valign="top">
-              <td nowrap="nowrap"><?php echo $hcms_lang['image-size'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['image-size'][$lang]); ?>:</td>
               <td><input type="hidden" name="search_format[image]" value="image" />
                 <select name="search_imagesize" style="width:140px;" onchange="if (this.options[this.selectedIndex].value=='exact') document.getElementById('searchfield_imagesize').style.display='inline'; else document.getElementById('searchfield_imagesize').style.display='none';">
-                  <option value="" selected="selected"><?php echo $hcms_lang['all'][$lang]; ?></option>
-                  <option value="1024-9000000"><?php echo $hcms_lang['big-1024px'][$lang]; ?></option>
-                  <option value="640-1024"><?php echo $hcms_lang['medium-640-1024px'][$lang]; ?></option>
-                  <option value="0-640"><?php echo $hcms_lang['small'][$lang]; ?></option>
-                  <option value="exact"><?php echo $hcms_lang['exact-w-x-h'][$lang]; ?></option>
+                  <option value="" selected="selected"><?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></option>
+                  <option value="1024-9000000"><?php echo getescapedtext ($hcms_lang['big-1024px'][$lang]); ?></option>
+                  <option value="640-1024"><?php echo getescapedtext ($hcms_lang['medium-640-1024px'][$lang]); ?></option>
+                  <option value="0-640"><?php echo getescapedtext ($hcms_lang['small'][$lang]); ?></option>
+                  <option value="exact"><?php echo getescapedtext ($hcms_lang['exact-w-x-h'][$lang]); ?></option>
                 </select>
                 <div id="searchfield_imagesize" style="display:none;">
                   <input type="text" name="search_imagewidth" style="width:40px;" maxlength="8" /> x 
@@ -788,61 +788,61 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
               </td>
             </tr>
             <tr id="row_imagecolor" align="left" valign="top">
-              <td nowrap="nowrap"><?php echo $hcms_lang['image-color'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['image-color'][$lang]); ?>:</td>
               <td>
-                <div style="width:320px; margin:1px; padding:0; float:left;"><div style="float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="" checked="checked" /></div>&nbsp;<?php echo $hcms_lang['all'][$lang]; ?></div>
-                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#000000; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="K" /></div>&nbsp;<?php echo $hcms_lang['black'][$lang]; ?></div>
-                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FFFFFF; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="W" /></div>&nbsp;<?php echo $hcms_lang['white'][$lang]; ?></div>
-                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#808080; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="E" /></div>&nbsp;<?php echo $hcms_lang['grey'][$lang]; ?></div>
-                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FF0000; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="R" /></div>&nbsp;<?php echo $hcms_lang['red'][$lang]; ?></div>
-                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#00C000; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="G" /></div>&nbsp;<?php echo $hcms_lang['green'][$lang]; ?></div>
-                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#0000FF; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="B" /></div>&nbsp;<?php echo $hcms_lang['blue'][$lang]; ?></div>
-                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#00FFFF; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="C" /></div>&nbsp;<?php echo $hcms_lang['cyan'][$lang]; ?></div>
-                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FF0090; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="M" /></div>&nbsp;<?php echo $hcms_lang['magenta'][$lang]; ?></div>
-                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FFFF00; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="Y" /></div>&nbsp;<?php echo $hcms_lang['yellow'][$lang]; ?></div>
-                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FF8A00; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="O" /></div>&nbsp;<?php echo $hcms_lang['orange'][$lang]; ?></div>
-                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FFCCDD; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="P" /></div>&nbsp;<?php echo $hcms_lang['pink'][$lang]; ?></div>
-                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#A66500; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="N" /></div>&nbsp;<?php echo $hcms_lang['brown'][$lang]; ?></div>
+                <div style="width:320px; margin:1px; padding:0; float:left;"><div style="float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="" checked="checked" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></div>
+                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#000000; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="K" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['black'][$lang]); ?></div>
+                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FFFFFF; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="W" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['white'][$lang]); ?></div>
+                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#808080; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="E" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['grey'][$lang]); ?></div>
+                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FF0000; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="R" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['red'][$lang]); ?></div>
+                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#00C000; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="G" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['green'][$lang]); ?></div>
+                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#0000FF; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="B" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['blue'][$lang]); ?></div>
+                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#00FFFF; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="C" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['cyan'][$lang]); ?></div>
+                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FF0090; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="M" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['magenta'][$lang]); ?></div>
+                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FFFF00; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="Y" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['yellow'][$lang]); ?></div>
+                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FF8A00; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="O" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['orange'][$lang]); ?></div>
+                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FFCCDD; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="P" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['pink'][$lang]); ?></div>
+                <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#A66500; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="N" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['brown'][$lang]); ?></div>
               </td>
             </tr>
             <tr id="row_imagetype" align="left" valign="top">
-              <td nowrap="nowrap"><?php echo $hcms_lang['image-type'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['image-type'][$lang]); ?>:</td>
               <td>
                 <select name="search_imagetype" style="width:140px;">
-                  <option value="" selected="selected"><?php echo $hcms_lang['all'][$lang]; ?></option>
-                  <option value="landscape"><?php echo $hcms_lang['landscape'][$lang]; ?></option>
-                  <option value="portrait"><?php echo $hcms_lang['portrait'][$lang]; ?></option>
-                  <option value="square"><?php echo $hcms_lang['square'][$lang]; ?></option>
+                  <option value="" selected="selected"><?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></option>
+                  <option value="landscape"><?php echo getescapedtext ($hcms_lang['landscape'][$lang]); ?></option>
+                  <option value="portrait"><?php echo getescapedtext ($hcms_lang['portrait'][$lang]); ?></option>
+                  <option value="square"><?php echo getescapedtext ($hcms_lang['square'][$lang]); ?></option>
                 </select>
               </td>
             </tr>            
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><input type="checkbox" name="date_modified" value="yes">&nbsp;<?php echo $hcms_lang['last-modified'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><input type="checkbox" name="date_modified" value="yes">&nbsp;<?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?>:</td>
               <td>
                 <table border="0" cellspacing="0" cellpadding="0">     
                   <tr>
                     <td> 
-                    <?php echo $hcms_lang['from'][$lang]; ?>:&nbsp;&nbsp;
+                    <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>:&nbsp;&nbsp;
                     </td>
                     <td class="hcmsHeadlineTiny">
-                    <?php echo $hcms_lang['year'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['year'][$lang]); ?>
                     <input type="text" name="year_from" value="<?php echo $year; ?>" size="4" maxlength="4" onBlur="checkDate(document.forms['searchform_general'].elements['year_from'],1000,9000); return document.returnValue;">
-                    <?php echo $hcms_lang['month'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['month'][$lang]); ?>
                     <input type="text" name="month_from" value="<?php echo $month; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_general'].elements['month_from'],1,12); return document.returnValue;">
-                    <?php echo $hcms_lang['day'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['day'][$lang]); ?>
                     <input type="text" name="day_from" value="<?php echo $day; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_general'].elements['day_from'],1,31); return document.returnValue;"><br />
                     </td>
                   </tr>
                   <tr>
                     <td>
-                    <?php echo $hcms_lang['to'][$lang]; ?>:&nbsp;&nbsp; 
+                    <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>:&nbsp;&nbsp; 
                     </td>
                     <td class="hcmsHeadlineTiny">
-                    <?php echo $hcms_lang['year'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['year'][$lang]); ?>
                     <input type="text" name="year_to" value="<?php echo $year; ?>" size="4" maxlength="4" onBlur="checkDate(document.forms['searchform_general'].elements['year_to'],1000,9000); return document.returnValue;">
-                    <?php echo $hcms_lang['month'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['month'][$lang]); ?>
                     <input type="text" name="month_to" value="<?php echo $month; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_general'].elements['month_to'],1,12); return document.returnValue;">
-                    <?php echo $hcms_lang['day'][$lang]; ?>
+                    <?php echo getescapedtext ($hcms_lang['day'][$lang]); ?>
                     <input type="text" name="day_to" value="<?php echo $day; ?>" size="2" maxlength="2" onBlur="checkDate(document.forms['searchform_general'].elements['day_to'],1,31); return document.returnValue;">        
                     </td>
                   </tr>
@@ -850,7 +850,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
               </td>
             </tr> 
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo $hcms_lang['maximum-amount-of-results'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['maximum-amount-of-results'][$lang]); ?>:</td>
               <td>
                 <select name="maxhits">
                   <option value="100" selected="selected">100</option>
@@ -863,7 +863,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
               </td>
             </tr>
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo $hcms_lang['start-search'][$lang]; ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?>:</td>
               <td>
           			<img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="startSearch('searchform_images');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
               </td>

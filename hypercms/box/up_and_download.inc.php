@@ -2,7 +2,7 @@
 // ---------------------- STATS ---------------------
 if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
 {
-  $title = $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication'][$lang];
+  $title = getescapedtext ($hcms_lang['downloadupload-statistics-for-this-month-and-for-publication'][$lang]);
   
   // language file
   require_once ("language/".getlanguagefile ($lang));
@@ -111,8 +111,8 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
 
       echo '
       <div style="margin:35px 0px 0px 40px;">
-        <div style="height:16px;"><div style="width:16px; height:16px; background:#3577ce; float:left;"></div>&nbsp;'.$hcms_lang['downloads'][$lang].' ('.number_format ($download_total_count, 0, "", ".").' Hits / '.number_format (($download_total_filesize / 1024), 0, "", ".").' MB)</div>
-        <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;'.$hcms_lang['uploads'][$lang]." (".number_format ($upload_total_count, 0, "", ".").' Hits / '.number_format (($upload_total_filesize / 1024), 0, "", ".").' MB)</div>
+        <div style="height:16px;"><div style="width:16px; height:16px; background:#3577ce; float:left;"></div>&nbsp;'.getescapedtext ($hcms_lang['downloads'][$lang]).' ('.number_format ($download_total_count, 0, "", ".").' Hits / '.number_format (($download_total_filesize / 1024), 0, "", ".").' MB)</div>
+        <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;'.getescapedtext ($hcms_lang['uploads'][$lang])." (".number_format ($upload_total_count, 0, "", ".").' Hits / '.number_format (($upload_total_filesize / 1024), 0, "", ".").' MB)</div>
       </div>';
   
       echo "

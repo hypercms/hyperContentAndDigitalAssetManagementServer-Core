@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['bg'] = "Папката е преимену
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['bg'] = "Нямате разрешения за писане на папка";
 $hcms_lang['the-folder-does-not-exist']['bg'] = "Тази папка не съществува";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['bg'] = "Нямате разрешения за писане на работния цикъл папки настройки";
-$hcms_lang['titel']['bg'] = "Възпроизведени заглавия";
 $hcms_lang['category']['bg'] = "Категория";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['bg'] = "Качване в Youtube не е активиран за вашия акаунт. Моля, свържете се със системния си администратори";
 $hcms_lang['tags']['bg'] = "Етикети";
@@ -1310,4 +1309,5 @@ $hcms_lang['server']['bg'] = "Сървър";
 $hcms_lang['use-ssl']['bg'] = "Използвайте SSL";
 $hcms_lang['formats']['bg'] = "Формати";
 $hcms_lang['download-formats']['bg'] = "Изтеглете формати";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['bg'] = "Ключови думи с опция за задължително или отворен списък";
 ?>

@@ -224,7 +224,7 @@ function getescapedtext ($text, $charset="", $lang="")
 {
   global $mgmt_config, $hcms_lang_codepage, $hcms_lang;
   
-  if ($text != "" && $charset != "" && $lang != "")
+  if ($text != "" && $charset != "" && $lang != "" && !empty ($hcms_lang_codepage[$lang]))
   {
     // enocode all special characters if required
     if (strtolower ($charset) != strtolower ($hcms_lang_codepage[$lang]))

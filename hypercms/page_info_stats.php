@@ -123,9 +123,9 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 <div class="hcmsWorkplaceFrame">
 
 <div class="hcmsHeadline" style="width:740px; padding-top:8px; text-align:center;">
-  <input class="hcmsButtonBlue" type="button" name="previous" value="<?php echo $hcms_lang['previous-month'][$lang]; ?>" onclick="document.forms['previousform'].submit();" style="width:150px;" />&nbsp;&nbsp;&nbsp;
-  <?php echo $hcms_lang['time-frame'][$lang].": ".$date_month."/".$date_year; ?>&nbsp;&nbsp;&nbsp;
-  <input class="hcmsButtonBlue" type="button" name="next" value="<?php echo $hcms_lang['next-month'][$lang]; ?>" onclick="document.forms['nextform'].submit();" style="width:150px;" <?php if ($date_month == date ("m", time()) && $date_year == date ("Y", time())) echo "disabled=\"disabled\""; ?> />
+  <input class="hcmsButtonBlue" type="button" name="previous" value="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" onclick="document.forms['previousform'].submit();" style="width:150px;" />&nbsp;&nbsp;&nbsp;
+  <?php echo getescapedtext ($hcms_lang['time-frame'][$lang]).": ".$date_month."/".$date_year; ?>&nbsp;&nbsp;&nbsp;
+  <input class="hcmsButtonBlue" type="button" name="next" value="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>" onclick="document.forms['nextform'].submit();" style="width:150px;" <?php if ($date_month == date ("m", time()) && $date_year == date ("Y", time())) echo "disabled=\"disabled\""; ?> />
 </div>
 
 <?php 
@@ -187,7 +187,7 @@ if (!empty ($container_id))
       }
       
       // bar text
-      $download_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$download_axis[$i]['value']." ".$hcms_lang['downloads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$download_axis[$i]['text'];
+      $download_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$download_axis[$i]['value']." ".getescapedtext ($hcms_lang['downloads'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$download_axis[$i]['text'];
     }
     
     // uploads
@@ -213,7 +213,7 @@ if (!empty ($container_id))
       }
       
       // bar text
-      $upload_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$upload_axis[$i]['value']." ".$hcms_lang['uploads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$upload_axis[$i]['text'];   
+      $upload_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$upload_axis[$i]['value']." ".getescapedtext ($hcms_lang['uploads'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$upload_axis[$i]['text'];   
     }
   }
     
@@ -225,8 +225,8 @@ if (!empty ($container_id))
 }
 ?>
   <div style="margin:30px 0px 0px 40px;">
-    <div style="height:16px;"><div style="width:16px; height:16px; background:#3577ce; float:left;"></div>&nbsp;<?php echo $hcms_lang['downloads'][$lang]." (".number_format ($download_total_count, 0, "", ".")." Hits / ".number_format (($download_total_filesize / 1024), 0, "", ".")." MB)"; ?></div>
-    <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;<?php echo $hcms_lang['uploads'][$lang]." (".number_format ($upload_total_count, 0, "", ".")." Hits / ".number_format (($upload_total_filesize / 1024), 0, "", ".")." MB)"; ?></div>
+    <div style="height:16px;"><div style="width:16px; height:16px; background:#3577ce; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['downloads'][$lang])." (".number_format ($download_total_count, 0, "", ".")." Hits / ".number_format (($download_total_filesize / 1024), 0, "", ".")." MB)"; ?></div>
+    <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['uploads'][$lang])." (".number_format ($upload_total_count, 0, "", ".")." Hits / ".number_format (($upload_total_filesize / 1024), 0, "", ".")." MB)"; ?></div>
   </div>
   
   <div style="margin:10px 0px 0px 40px;">

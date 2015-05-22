@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['ar'] = "وقد تم إعادة تسمية 
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['ar'] = "ليس لديك أذونات المجلد";
 $hcms_lang['the-folder-does-not-exist']['ar'] = "الملف غير موجود";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['ar'] = "ليس لديك أذونات كتابة إعدادات المجلد على سير العمل";
-$hcms_lang['titel']['ar'] = "لقب";
 $hcms_lang['category']['ar'] = "الفئة";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['ar'] = "يوتيوب تحميل لا تنشيط حسابك. يرجى الاتصال مدير النظام لديك";
 $hcms_lang['tags']['ar'] = "علامات";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['ar'] = "الخادم";
 $hcms_lang['use-ssl']['ar'] = "باستخدام SSL";
 $hcms_lang['formats']['ar'] = "أشكال";
 $hcms_lang['download-formats']['ar'] = "تنسيقات التنزيل";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['ar'] = "كلمات مع قائمة إلزامية أو اختيارية مفتوحة";
 ?>

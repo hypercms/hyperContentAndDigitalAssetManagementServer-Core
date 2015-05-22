@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['sq'] = "Dosja u riquajt";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['sq'] = "Ju nuk keni shkruani lejet për dosje";
 $hcms_lang['the-folder-does-not-exist']['sq'] = "Dosje nuk ekziston";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['sq'] = "Ju nuk keni leje ndertimi shkruani në rrjedhë skedari settings";
-$hcms_lang['titel']['sq'] = "Titel";
 $hcms_lang['category']['sq'] = "Kategoria";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['sq'] = "Youtube upload nuk është aktivizuar për llogarinë tuaj. Ju lutemi të kontaktoni me administrator sistemi";
 $hcms_lang['tags']['sq'] = "Fjalët kyçe";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['sq'] = "Server";
 $hcms_lang['use-ssl']['sq'] = "Përdorimi SSL";
 $hcms_lang['formats']['sq'] = "Formate";
 $hcms_lang['download-formats']['sq'] = "Shkarko formate";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['sq'] = "Fjalë kyçe me listën opsional detyrueshëm apo të hapur";
 ?>

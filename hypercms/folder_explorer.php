@@ -60,7 +60,7 @@ function sendOption(folder_name, folder_location)
 <div class="hcmsWorkplaceFrame">
   <table width="98%" border="0" cellspacing="0" cellpadding="0">
     <tr>
-      <td class="hcmsHeadline" align="left" colspan="2" style="padding: 0px 0px 8px 0px;"><?php echo $hcms_lang['select-folder'][$lang]; ?><td>
+      <td class="hcmsHeadline" align="left" colspan="2" style="padding: 0px 0px 8px 0px;"><?php echo getescapedtext ($hcms_lang['select-folder'][$lang]); ?><td>
     </tr>
   <?php
   if ($cat == "page" || $cat == "comp")
@@ -68,13 +68,13 @@ function sendOption(folder_name, folder_location)
     // define variables depending on content category
     if ($cat == "page")
     {
-      $folder_name = $hcms_lang['pages'][$lang];
+      $folder_name = getescapedtext ($hcms_lang['pages'][$lang]);
       $initialdir = $mgmt_config[$site]['abs_path_page'];
       $initialdir_esc = convertpath ($site, $initialdir, $cat);
     }
     elseif ($cat == "comp")
     {
-      $folder_name = $hcms_lang['assets'][$lang];
+      $folder_name = getescapedtext ($hcms_lang['assets'][$lang]);
       $initialdir = $mgmt_config['abs_path_comp'].$site."/";
       $initialdir_esc = convertpath ($site, $initialdir, $cat);
     }
@@ -110,7 +110,7 @@ function sendOption(folder_name, folder_location)
       // back to parent directory
       if (substr_count ($dir, $initialdir) > 0)
       {
-        echo "<tr><td align=\"left\" colspan=\"2\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.gif\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" />&nbsp;".$hcms_lang['back'][$lang]."</a></td></tr>\n";
+        echo "<tr><td align=\"left\" colspan=\"2\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.gif\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" />&nbsp;".getescapedtext ($hcms_lang['back'][$lang])."</a></td></tr>\n";
       }
       
       // get all files in dir

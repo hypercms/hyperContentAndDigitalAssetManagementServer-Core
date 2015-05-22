@@ -1034,7 +1034,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
         if (!is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) <= 1)
         {
-          if (strpos ($mediafile_orig, ".config.") == 0 && is_file ($thumb_root.$mediafile_orig) && substr_count (".mp4.ogg.ogv.webm.", $file_info['orig_ext'].".") > 0)
+          if (strpos ($mediafile_orig, ".config.") == 0 && is_file ($thumb_root.$mediafile_orig) && substr_count (".mp4.ogg.ogv.webm.flv.", $file_info['orig_ext'].".") > 0)
           {
             $config['mediafiles'][] = $site."/".$mediafile_orig.";".getmimetype ($mediafile_orig);
           }
@@ -1908,7 +1908,7 @@ function showinlineeditor_head ($lang)
   if (is_array ($mgmt_config) && $lang != "")
   {
     return "
-    <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-1.9.1.min.js\" type=\"text/javascript\"></script>
+    <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-1.10.2.min.js\" type=\"text/javascript\"></script>
     <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."/editor/ckeditor/ckeditor.js\"></script>
     <script type=\"text/javascript\">
       CKEDITOR.disableAutoInline = true;
@@ -2851,7 +2851,7 @@ function showvideoplayer_head ($site, $secureHref=true, $view="publish")
     // PROJEKKTOR Player
     if (isset ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor")
     {
-      $jquerylib = $mgmt_config['url_path_cms']."javascript/jquery/jquery-1.9.1.min.js";
+      $jquerylib = $mgmt_config['url_path_cms']."javascript/jquery/jquery-1.10.2.min.js";
       $css = $mgmt_config['url_path_cms']."javascript/video/theme/style.css";
       $projekktor = $mgmt_config['url_path_cms']."javascript/video/projekktor.min.js";
 

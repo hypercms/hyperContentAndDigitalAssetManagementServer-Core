@@ -98,8 +98,8 @@ if ($action != "" && checktoken ($token, $user))
 }
 
 // define name: publication or usergroup
-if ($temp_site != "*Null*") $item_name = $hcms_lang['group'][$lang];
-else $item_name = $hcms_lang['publication'][$lang];
+if ($temp_site != "*Null*") $item_name = getescapedtext ($hcms_lang['group'][$lang]);
+else $item_name = getescapedtext ($hcms_lang['publication'][$lang]);
 
 // create secure token
 $token_new = createtoken ($user);
@@ -245,11 +245,11 @@ function goToURL()
 <div class="hcmsLocationBar">
   <table border=0 cellspacing=0 cellpadding=0>
     <tr>
-      <td class="hcmsHeadline"><?php echo $hcms_lang['user-management'][$lang]; ?></td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user-management'][$lang]); ?></td>
     </tr>
     <tr>
       <td>
-        <span class="hcmsHeadline"><?php if ($login != "") echo $hcms_lang['user'][$lang].":"; ?>&nbsp;</span>
+        <span class="hcmsHeadline"><?php if ($login != "") echo getescapedtext ($hcms_lang['user'][$lang]).":"; ?>&nbsp;</span>
         <span class="hcmsHeadlineTiny">
           <?php
             if ($multiobject != "")
@@ -260,7 +260,7 @@ function goToURL()
             
             if ($multiobject_count > 1)
             {
-              echo $multiobject_count." ".$hcms_lang['users-selected'][$lang];
+              echo $multiobject_count." ".getescapedtext ($hcms_lang['users-selected'][$lang]);
             }
             elseif ($multiobject_count == 1)
             {
@@ -286,7 +286,7 @@ function goToURL()
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
              "onClick=\"hcms_showHideLayers('createuserLayer','','show','hcms_messageLayer','','hide');\" ".
-             "name=\"media_new\" src=\"".getthemelocation()."img/button_user_new.gif\" alt=\"".$hcms_lang['create-new-user'][$lang]."\" title=\"".$hcms_lang['create-new-user'][$lang]."\" />\n";
+             "name=\"media_new\" src=\"".getthemelocation()."img/button_user_new.gif\" alt=\"".getescapedtext ($hcms_lang['create-new-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create-new-user'][$lang])."\" />\n";
     }
     else
     {
@@ -302,7 +302,7 @@ function goToURL()
         "class=\"hcmsButton hcmsButtonSizeSquare\" ".
         "onClick=\"if (warning_delete()==true) ".
         "submitTo('control_user_menu.php', 'delete', 'controlFrame'); \" ".
-        "name=\"media_delete\" src=\"".getthemelocation()."img/button_user_delete.gif\" alt=\"".$hcms_lang['remove-user'][$lang]."\" title=\"".$hcms_lang['remove-user'][$lang]."\" />\n";
+        "name=\"media_delete\" src=\"".getthemelocation()."img/button_user_delete.gif\" alt=\"".getescapedtext ($hcms_lang['remove-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-user'][$lang])."\" />\n";
     }    
     else
     {
@@ -316,7 +316,7 @@ function goToURL()
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
              "onClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."','','status=yes,scrollbars=no,resizable=yes', '500', '540');\" ".
-             "name=\"media_edit\" src=\"".getthemelocation()."img/button_user_edit.gif\" alt=\"".$hcms_lang['edit-user'][$lang]."\" title=\"".$hcms_lang['edit-user'][$lang]."\" />\n";
+             "name=\"media_edit\" src=\"".getthemelocation()."img/button_user_edit.gif\" alt=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" />\n";
     }    
     else
     {
@@ -333,7 +333,7 @@ function goToURL()
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
              "onClick=\"parent.location.href='frameset_objectlist.php?site=".url_encode($site)."&login=".url_encode($login)."&action=user_files';\" name=\"media_userfiles\" ".
-             "src=\"".getthemelocation()."img/button_user_files.gif\" alt=\"".$hcms_lang['created-objects-of-user'][$lang]."\" title=\"".$hcms_lang['created-objects-of-user'][$lang]."\" />\n";
+             "src=\"".getthemelocation()."img/button_user_files.gif\" alt=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" />\n";
     }    
     else
     {
@@ -344,7 +344,7 @@ function goToURL()
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    echo "<td><img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".$hcms_lang['refresh'][$lang]."\" title=\"".$hcms_lang['refresh'][$lang]."\" /></a></td>\n";
+    echo "<td><img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" /></a></td>\n";
     ?>
     
   </div>
@@ -359,7 +359,7 @@ function goToURL()
           if ($group == "_all") $selected = "selected=\"selected\"";
           else $selected = "";        
         
-          echo "<option value=\"user_objectlist.php?site=".url_encode($site)."&group=_all\" ".$selected.">".$hcms_lang['all-users'][$lang]."</option>\n";
+          echo "<option value=\"user_objectlist.php?site=".url_encode($site)."&group=_all\" ".$selected.">".getescapedtext ($hcms_lang['all-users'][$lang])."</option>\n";
                   
           $groupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
 
@@ -388,7 +388,7 @@ function goToURL()
           if ($site == "*Null*") $selected = "selected=\"selected\"";
           else $selected = "";    
              
-          echo "<option value=\"user_objectlist.php?site=*Null*\" ".$selected.">".$hcms_lang['all-users'][$lang]."</option>\n";
+          echo "<option value=\"user_objectlist.php?site=*Null*\" ".$selected.">".getescapedtext ($hcms_lang['all-users'][$lang])."</option>\n";
         
           $inherit_db = inherit_db_read ($user);
           
@@ -427,9 +427,9 @@ function goToURL()
   <div class="hcmsToolbarBlock">
     <?php
     if (!$is_mobile && file_exists ("help/adminguide_".$hcms_lang_shortcut[$lang].".pdf"))
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','650');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>\n";}
+    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','650');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" /></a>\n";}
     elseif (!$is_mobile && file_exists ("help/adminguide_en.pdf"))
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_en.pdf','help','scrollbars=no,resizable=yes','800','650');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>\n";}
+    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_en.pdf','help','scrollbars=no,resizable=yes','800','650');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" /></a>\n";}
     ?>
   </div>
 </div>
@@ -447,26 +447,26 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   
   <table width="100%" border="0" cellspacing="1" cellpadding="0">
     <tr>
-      <td colspan="2"><span class=hcmsHeadline><?php echo $hcms_lang['create-new-user'][$lang]; ?></span></td>
+      <td colspan="2"><span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['create-new-user'][$lang]); ?></span></td>
       <td rowspan="2" width="16" align="right" valign="top">
-        <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo $hcms_lang['close'][$lang]; ?>" title="<?php echo $hcms_lang['close'][$lang]; ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('createuserLayer','','hide');" />
+        <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('createuserLayer','','hide');" />
       </td>        
     </tr>    
     <tr>
-      <td width="100" nowrap="nowrap"><?php echo $hcms_lang['user-name'][$lang]; ?>: </td>
+      <td width="100" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?>: </td>
       <td>
         <input type="text" name="login" style="width:150px;" maxlength="20" value="" tabindex="1" />
         <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" tabindex="4" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['password'][$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['password'][$lang]); ?>: </td>
       <td>
         <input type="password" name="password" maxlength="20" style="width:150px;" tabindex="2" />
       </td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo $hcms_lang['confirm-password'][$lang]; ?>: </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['confirm-password'][$lang]); ?>: </td>
       <td>
         <input type="password" name="confirm_password" maxlength="20" style="width:150px;" tabindex="3" />
       </td>     

@@ -42,7 +42,7 @@ checkusersession ($user, false);
 <body class="hcmsWorkplaceGeneric">
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
-  <p class=hcmsHeadline><?php echo $hcms_lang['media-file-view'][$lang]; ?></p>
+  <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['media-file-view'][$lang]); ?></p>
   
   <form name="media">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
@@ -50,7 +50,7 @@ checkusersession ($user, false);
     
     <table border="0">
       <tr>
-        <td nowrap="nowrap"><?php echo $hcms_lang['selected-media-file'][$lang]; ?>: </td>
+        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?>: </td>
         <td>
           <input type="text" style="width:300px" name="mediafile" />
         </td>

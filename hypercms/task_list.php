@@ -90,15 +90,15 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:50px; top:100px;"
     if (isset ($task_array) && is_array ($task_array) && sizeof ($task_array) > 0)
     {
       echo "<tr>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"10\" nowrap=\"nowrap\">".$hcms_lang['no'][$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$hcms_lang['date'][$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$hcms_lang['name'][$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"100\" nowrap=\"nowrap\">".$hcms_lang['location'][$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$hcms_lang['publication'][$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\">".$hcms_lang['description'][$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$hcms_lang['category'][$lang]."</td>
-        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".$hcms_lang['priority'][$lang]."</td>
-        <td width=\"10\" class=\"hcmsHeadline\">".$hcms_lang['done'][$lang]."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"10\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['no'][$lang])."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['date'][$lang])."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['name'][$lang])."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"100\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['location'][$lang])."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['publication'][$lang])."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['description'][$lang])."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['category'][$lang])."</td>
+        <td valign=\"top\" class=\"hcmsHeadline\" width=\"80\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['priority'][$lang])."</td>
+        <td width=\"10\" class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['done'][$lang])."</td>
       </tr>\n";
       
       $site_memory = "";
@@ -130,17 +130,17 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:50px; top:100px;"
           if ($task_priority_array[0] == "high")
           {
             $rowcolor = "hcmsPriorityHigh";
-            $priority = $hcms_lang['high'][$lang];
+            $priority = getescapedtext ($hcms_lang['high'][$lang]);
           }
           elseif ($task_priority_array[0] == "medium")
           {
             $rowcolor = "hcmsPriorityMedium";
-            $priority = $hcms_lang['medium'][$lang];
+            $priority = getescapedtext ($hcms_lang['medium'][$lang]);
           }
           else
           {
             $rowcolor = "hcmsPriorityLow";
-            $priority = $hcms_lang['low'][$lang];
+            $priority = getescapedtext ($hcms_lang['low'][$lang]);
           }
           
           // load site config
@@ -223,12 +223,12 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:50px; top:100px;"
       }
       
       // button
-      $show_button = $hcms_lang['remove-finished-tasks-from-list'][$lang].": <img name=\"Button\" src=\"".getthemelocation()."img/button_OK.gif\" onClick=\"document.forms['taskform'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_OK_over.gif',1)\" style=\"border:0; cursor:pointer;\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" />\n";
+      $show_button = getescapedtext ($hcms_lang['remove-finished-tasks-from-list'][$lang]).": <img name=\"Button\" src=\"".getthemelocation()."img/button_OK.gif\" onClick=\"document.forms['taskform'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_OK_over.gif',1)\" style=\"border:0; cursor:pointer;\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" />\n";
     }
     else
     {
       echo "<tr>
-        <td>".$hcms_lang['your-task-queue-is-empty'][$lang]."</td>
+        <td>".getescapedtext ($hcms_lang['your-task-queue-is-empty'][$lang])."</td>
       </tr>\n";
     }
     

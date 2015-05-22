@@ -86,7 +86,7 @@ if ($action == "delete" && checktoken ($token, $user) &&
       
       if ($result == true)
       {
-        $show = "<span class=hcmsHeadline>".$hcms_lang['the-items-were-successfully-removed-from-the-queue'][$lang]."</span>";
+        $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-items-were-successfully-removed-from-the-queue'][$lang])."</span>";
         $add_onload = "parent.frames['mainFrame'].location.reload();";
         $page = "";
         $multiobject = "";
@@ -94,7 +94,7 @@ if ($action == "delete" && checktoken ($token, $user) &&
       }
       else
       {
-        $show = "<span class=hcmsHeadline>".$hcms_lang['an-error-occured-removing-the-items-from-the-queue'][$lang]."</span>";
+        $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['an-error-occured-removing-the-items-from-the-queue'][$lang])."</span>";
         $add_onload = "";
       }      
     }
@@ -172,7 +172,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 <div class="hcmsLocationBar">
   <table border=0 cellspacing=0 cellpadding=0>
     <tr>
-      <td class="hcmsHeadline"><?php echo $hcms_lang['publishing-queue-management'][$lang]; ?></td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['publishing-queue-management'][$lang]); ?></td>
     </tr>
     <tr>
       <td>
@@ -183,20 +183,20 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
           // define object category name and check directory and component access rights of user
           if ($filetype == "Page")
           {
-            echo $hcms_lang['page'][$lang];
+            echo getescapedtext ($hcms_lang['page'][$lang]);
             $media = "";
           }
           elseif ($filetype == "Component")
           {
-            echo $hcms_lang['component'][$lang];
+            echo getescapedtext ($hcms_lang['component'][$lang]);
             $media = "";
           }
           elseif ($page == ".folder")
           {
-            echo $hcms_lang['folder'][$lang];
+            echo getescapedtext ($hcms_lang['folder'][$lang]);
             $media = "media";
           }
-          else echo $hcms_lang['file'][$lang];
+          else echo getescapedtext ($hcms_lang['file'][$lang]);
           
           echo ":";
         }
@@ -212,7 +212,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
           
           if ($multiobject_count >= 1)
           {
-            echo $multiobject_count." ".$hcms_lang['items-selected'][$lang];
+            echo $multiobject_count." ".getescapedtext ($hcms_lang['items-selected'][$lang]);
           }
           elseif ($queue_id != "")
           {
@@ -239,7 +239,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         "class=\"hcmsButton hcmsButtonSizeSquare\" ".
         "onClick=\"if (warning_delete()==true) ".
         "submitTo('control_queue_menu.php', 'delete', 'controlFrame'); \" ".
-        "name=\"media_delete\" src=\"".getthemelocation()."img/button_file_delete.gif\" alt=\"".$hcms_lang['remove-items'][$lang]."\" title=\"".$hcms_lang['remove-items'][$lang]."\" />\n";
+        "name=\"media_delete\" src=\"".getthemelocation()."img/button_file_delete.gif\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />\n";
     }    
     else
     {
@@ -255,7 +255,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
              "onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."','','status=yes,scrollbars=no,resizable=yes', '800', '600');\" ".
-             "name=\"media_edit\" src=\"".getthemelocation()."img/button_file_edit.gif\" alt=\"".$hcms_lang['edit-object'][$lang]."\" title=\"".$hcms_lang['edit-object'][$lang]."\" />\n";
+             "name=\"media_edit\" src=\"".getthemelocation()."img/button_file_edit.gif\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />\n";
     }    
     else
     {
@@ -266,15 +266,15 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".$hcms_lang['refresh'][$lang]."\" title=\"".$hcms_lang['refresh'][$lang]."\" />\n";
+    echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />\n";
     ?>
     
   </div>
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;"> 
-      <?php echo $hcms_lang['publication'][$lang]; ?>:
+      <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>:
       <select name="site" onChange="jumpTo('parent.frames[\'mainFrame\']')">
-        <option value=""><?php echo $hcms_lang['all-publications'][$lang]; ?></option>
+        <option value=""><?php echo getescapedtext ($hcms_lang['all-publications'][$lang]); ?></option>
         <?php
           // select publication
           $inherit_db = inherit_db_read ($user);
@@ -311,9 +311,9 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   </div>
   <div class="hcmsToolbarBlock">    
     <div style="padding:3px; float:left;">
-      <?php echo $hcms_lang['user'][$lang]; ?>:
+      <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>:
       <select name="queueuser" onChange="jumpTo('parent.frames[\'mainFrame\']')">
-        <option value=""><?php echo $hcms_lang['all-users'][$lang]; ?></option>
+        <option value=""><?php echo getescapedtext ($hcms_lang['all-users'][$lang]); ?></option>
         <?php
         // select user
         $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");  
@@ -345,9 +345,9 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <div class="hcmsToolbarBlock">  
     <?php
     if (!$is_mobile && file_exists ("help/adminguide_".$hcms_lang_shortcut[$lang].".pdf") && (checkrootpermission ('user') || checkglobalpermission ($site, 'user')))
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>\n";}
+    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" /></a>\n";}
     elseif (!$is_mobile && file_exists ("help/adminguide_en.pdf") && (checkrootpermission ('user') || checkglobalpermission ($site, 'user')))
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_en.pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".$hcms_lang['help'][$lang]."\" title=\"".$hcms_lang['help'][$lang]."\" /></a>\n";}
+    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_en.pdf','help','scrollbars=no,resizable=yes','800','600');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" /></a>\n";}
     ?>      
   </div>
   </form>

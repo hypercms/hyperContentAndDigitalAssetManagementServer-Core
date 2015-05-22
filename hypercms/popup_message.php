@@ -56,12 +56,12 @@ checkusersession ($user);
 if ($action == "accept")
 {
   $icon = getthemelocation()."img/button_workflow_accept.gif";
-  $message_default = $hcms_lang['please-check-the-content'][$lang];
+  $message_default = getescapedtext ($hcms_lang['please-check-the-content'][$lang]);
 }
 else
 {
   $icon = getthemelocation()."img/button_workflow_reject.gif";
-  $message_default = $hcms_lang['your-content-has-been-rejected'][$lang];
+  $message_default = getescapedtext ($hcms_lang['your-content-has-been-rejected'][$lang]);
 }
 
 // check authorization
@@ -136,7 +136,7 @@ $token_new = createtoken ($user);
   <table width="100%" height="100%" border=0 cellpadding="3" cellspacing="0">
     <tr class="hcmsWorkplaceControl"> 
       <td align="left" valign="top">
-        <img src="<?php echo $icon; ?>" align="absmiddle"/><span class="hcmsHeadline"><?php echo $hcms_lang['message'][$lang]; ?>:</span><br />    
+        <img src="<?php echo $icon; ?>" align="absmiddle"/><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['message'][$lang]); ?>:</span><br />    
       </td>
     </tr>
     <tr> 
@@ -146,17 +146,17 @@ $token_new = createtoken ($user);
     </tr>    
     <tr>  
       <td align="left" valign="top">
-			  <div style="width:100px; float:left;"><?php echo $hcms_lang['priority'][$lang]; ?></div>
+			  <div style="width:100px; float:left;"><?php echo getescapedtext ($hcms_lang['priority'][$lang]); ?></div>
         <select name="priority">
-          <option value="low"><?php echo $hcms_lang['low'][$lang]; ?></option>
-          <option value="medium" selected="selected"><?php echo $hcms_lang['medium'][$lang]; ?></option>
-          <option value="high"><?php echo $hcms_lang['high'][$lang]; ?></option>
+          <option value="low"><?php echo getescapedtext ($hcms_lang['low'][$lang]); ?></option>
+          <option value="medium" selected="selected"><?php echo getescapedtext ($hcms_lang['medium'][$lang]); ?></option>
+          <option value="high"><?php echo getescapedtext ($hcms_lang['high'][$lang]); ?></option>
         </select>
       </td>
     </tr>        
     <tr>  
       <td align="left" valign="top">        
-        <div style="width:100px; float:left;"><?php echo $hcms_lang['send'][$lang]; ?>:</div> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['message'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK">
+        <div style="width:100px; float:left;"><?php echo getescapedtext ($hcms_lang['send'][$lang]); ?>:</div> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['message'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK">
       </td>
     </tr>
   </table>

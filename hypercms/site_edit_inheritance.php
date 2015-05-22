@@ -68,7 +68,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save ==
     
     if ($test == false)
     {
-      $show = "<p class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</p>\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
+      $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-publication-information-cannot-be-accessed'][$lang])."</p>\n".getescapedtext ($hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
     }
     
     // update the inheritance settings in the config file of the publication
@@ -116,7 +116,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save ==
           
           if ($test = true)
           {
-            $show = "<p class=hcmsHeadline>".$hcms_lang['the-publication-configuration-was-saved-successfully'][$lang]."</p>\n";  
+            $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-publication-configuration-was-saved-successfully'][$lang])."</p>\n";  
             
             // eventsystem
             if ($eventsystem['onsavepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
@@ -124,14 +124,14 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save ==
           }
           else
           {
-            $show = "<p class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-saved'][$lang]."</p>\n".$hcms_lang['the-publication-information-is-corrupt-or-you-do-not-have-write-permissions'][$lang]."\n";      
+            $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-publication-information-cannot-be-saved'][$lang])."</p>\n".getescapedtext ($hcms_lang['the-publication-information-is-corrupt-or-you-do-not-have-write-permissions'][$lang])."\n";      
           }
         }
       }
     }
     else
     {
-      $show = "<p class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</p>\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
+      $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['the-publication-information-cannot-be-accessed'][$lang])."</p>\n".getescapedtext ($hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang])."\n";
     }  
   }
 }
@@ -256,7 +256,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   @include_once ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
 ?>
 
-<p class="hcmsHeadline"><?php echo $hcms_lang['inheritance-setting-of-publication'][$lang]; ?>: <?php echo $site_name; ?></p>
+<p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['inheritance-setting-of-publication'][$lang]); ?>: <?php echo $site_name; ?></p>
 
 <form name="siteform" action="<?php echo $action; ?>" method="post">
   <input type="hidden" name="save" value="yes" />
@@ -274,7 +274,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
         <table border=0 cellspacing=0 cellpadding=0>
           <tr>
             <td>
-              ".$hcms_lang['publications'][$lang].":<br /><br />
+              ".getescapedtext ($hcms_lang['publications'][$lang]).":<br /><br />
               <select multiple size=\"10\" name=\"list1\" style=\"width:220px;\" "; if ($preview == "yes") echo "disabled=\"disabled\""; echo ">\n";
 
               if (!isset ($inherit_db) || $inherit_db == false) $inherit_db = inherit_db_read ($user);
@@ -307,7 +307,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
               <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"move(this.form.elements['list1'], this.form.elements['list2'])\" value=\"&gt;&gt;\" />
             </td>
             <td>
-              ".$hcms_lang['assigned-publications'][$lang].":<br /><br />
+              ".getescapedtext ($hcms_lang['assigned-publications'][$lang]).":<br /><br />
               <select multiple size=\"10\" name=\"list2\" style=\"width:220px;\" "; if ($preview == "yes") echo "disabled=\"disabled\""; echo ">\n";
 
               if (sizeof ($list2_array) >= 1)
@@ -331,20 +331,20 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     </tr>
     <?php if (isset ($mgmt_config['db_connect_tamino']) && $mgmt_config['db_connect_tamino'] != "") { ?>
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['cut-copy-and-paste-objects'][$lang]; ?>: </td>
+      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['cut-copy-and-paste-objects'][$lang]); ?>: </td>
       <td width="80%" align="left" valign="top"><input type="checkbox" name="inherit_obj_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_obj'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <?php } ?>       
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['inherit-assets-content-not-editable'][$lang]; ?>: </td>
+      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['inherit-assets-content-not-editable'][$lang]); ?>: </td>
       <td width="80%" align="left" valign="top"><input type="checkbox" name="inherit_comp_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_comp'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>   
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['inherit-templates-design-not-editable'][$lang]; ?>: </td> 
+      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['inherit-templates-design-not-editable'][$lang]); ?>: </td> 
       <td width="80%" align="left" valign="top"><input type="checkbox" name="inherit_tpl_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_tpl'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>       
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['save-setting'][$lang]; ?>: </td>
+      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['save-setting'][$lang]); ?>: </td>
       <td width="80%" align="left" valign="top"><img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" <?php if ($preview == "yes") echo " disabled"; ?> /></td>
     </tr>
   </table>

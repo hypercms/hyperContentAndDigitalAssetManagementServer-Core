@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['he'] = "את התיקייה שמה היה"
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['he'] = "אין לך הרשאות כתיבה עבור התיקייה";
 $hcms_lang['the-folder-does-not-exist']['he'] = "התיקייה לא קיימת";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['he'] = "אין לך הרשאות כתיבה על זרימת עבודה הגדרות תיקייה";
-$hcms_lang['titel']['he'] = "titel";
 $hcms_lang['category']['he'] = "קטגוריה";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['he'] = "YouTube להעלות הוא לא הופעל עבור החשבון. אנא פנה לכלי מנהל הרשת";
 $hcms_lang['tags']['he'] = "תגיות";
@@ -1310,4 +1309,5 @@ $hcms_lang['server']['he'] = "Server";
 $hcms_lang['use-ssl']['he'] = "משתמשים ב- SSL";
 $hcms_lang['formats']['he'] = "תבניות";
 $hcms_lang['download-formats']['he'] = "תבניות הורדה";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['he'] = "מילות מפתח עם רשימת חובה או פתוחה אופציונלית";
 ?>

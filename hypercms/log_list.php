@@ -46,20 +46,20 @@ $logfile = "event.log";
   <table cellpadding="0" cellspacing="0" cols="5" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
       <td width="105" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $hcms_lang['type'][$lang]; ?>
+        &nbsp; <?php echo getescapedtext ($hcms_lang['type'][$lang]); ?>
       </td>
       <td width="120" onClick="hcms_sortTable(1);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $hcms_lang['datetime'][$lang]; ?>
+        &nbsp; <?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?>
       </td>
       <?php if (!$is_mobile) { ?>
       <td width="180" onClick="hcms_sortTable(2);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $hcms_lang['source'][$lang]; ?>
+        &nbsp; <?php echo getescapedtext ($hcms_lang['source'][$lang]); ?>
       </td>
       <td width="55" onClick="hcms_sortTable(3);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $hcms_lang['code'][$lang]; ?>
+        &nbsp; <?php echo getescapedtext ($hcms_lang['code'][$lang]); ?>
       </td>    
       <td onClick="hcms_sortTable(4);" class="hcmsTableHeader" nowrap="nowrap">
-        &nbsp; <?php echo $hcms_lang['description'][$lang]; ?>
+        &nbsp; <?php echo getescapedtext ($hcms_lang['description'][$lang]); ?>
       </td>
       <td width="16" class="hcmsTableHeader">
         &nbsp;
@@ -98,19 +98,19 @@ if (@file_exists ($mgmt_config['abs_path_data']."log/".$logfile))
       // error
       if ($type == "error")
       {
-        $type_name = $hcms_lang['error'][$lang];
+        $type_name = getescapedtext ($hcms_lang['error'][$lang]);
         $icon = "log_alert.gif";
       }
       // warning
       elseif ($type == "warning")
       {
-        $type_name = $hcms_lang['warning'][$lang];
+        $type_name = getescapedtext ($hcms_lang['warning'][$lang]);
         $icon = "log_warning.gif";
       }
       // information
       else
       {
-        $type_name = $hcms_lang['information'][$lang];
+        $type_name = getescapedtext ($hcms_lang['information'][$lang]);
         $icon = "log_info.gif";
       }
 

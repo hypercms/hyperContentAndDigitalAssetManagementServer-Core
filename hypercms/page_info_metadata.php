@@ -86,7 +86,7 @@ echo showtopbar ($hcms_lang['meta-information-of-'][$lang]." ".$pagename, $lang,
         $metadata_array = extractmetadata ($mediadir.$mediafile);
 
         if (is_array ($metadata_array)) echo showmetadata ($metadata_array, $lang, "hcmsRowHead2");
-        else echo "&nbsp;".$hcms_lang['no-meta-inforamtion-available'][$lang]."\n";
+        else echo "&nbsp;".getescapedtext ($hcms_lang['no-meta-inforamtion-available'][$lang])."\n";
         
         $exiftool = true;
         break;
@@ -101,26 +101,26 @@ echo showtopbar ($hcms_lang['meta-information-of-'][$lang]." ".$pagename, $lang,
       $exif = exif_getdata ($mediadir.$mediafile);
       
       if (is_array ($exif)) echo showmetadata ($exif);
-      else echo "&nbsp;".$hcms_lang['no-meta-inforamtion-available'][$lang]."\n";
+      else echo "&nbsp;".getescapedtext ($hcms_lang['no-meta-inforamtion-available'][$lang])."\n";
       
       // IPTC
       echo "<div class=\"hcmsRowHead2\" style=\"width:100%;\"><div class=\"hcmsHeadline\">IPTC</div></div>\n";
       $iptc = iptc_getdata ($mediadir.$mediafile);
       
       if (is_array ($iptc)) echo showmetadata ($iptc);
-      else echo "&nbsp;".$hcms_lang['no-meta-inforamtion-available'][$lang]."\n";
+      else echo "&nbsp;".getescapedtext ($hcms_lang['no-meta-inforamtion-available'][$lang])."\n";
       
       // XMP
       echo "<div class=\"hcmsRowHead2\" style=\"width:100%;\"><div class=\"hcmsHeadline\">XMP</div></div>\n";
       $xmp = xmp_getdata ($mediadir.$mediafile);
   
       if (is_array ($xmp)) echo showmetadata ($xmp);
-      else echo "&nbsp;".$hcms_lang['no-meta-inforamtion-available'][$lang]."\n";
+      else echo "&nbsp;".getescapedtext ($hcms_lang['no-meta-inforamtion-available'][$lang])."\n";
     }
   }
   else
   {
-    echo $hcms_lang['no-meta-inforamtion-available'][$lang];
+    echo getescapedtext ($hcms_lang['no-meta-inforamtion-available'][$lang]);
   } 
   ?>
 

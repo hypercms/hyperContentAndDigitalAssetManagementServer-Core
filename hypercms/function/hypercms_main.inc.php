@@ -1611,7 +1611,7 @@ function loadfile ($abs_path, $filename)
         @fclose ($filehandle);
       }
     }    
-    // if file is locked by other user or system, wait 10 seconds
+    // if file is locked by other user or system, wait 3 seconds
     elseif ($filename_unlocked != ".folder")
     {
       // set time stamp (now + 3 sec)
@@ -1637,8 +1637,12 @@ function loadfile ($abs_path, $filename)
 
             @flock ($filehandle,3);
             @fclose ($filehandle);
+            
+            break;
           }
         }
+        // sleep for 0 - 100 milliseconds, to avoid collision and CPU load
+        else usleep (round (rand (0, 100) * 1000));
       }
     }
   }
@@ -1748,7 +1752,9 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
               $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
  
               @flock ($filehandle, 3);
-              @fclose ($filehandle);       
+              @fclose ($filehandle);
+              
+              break; 
             }
             // file can not be loaded
             else
@@ -1758,6 +1764,8 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
             }
           }
         }
+        // sleep for 0 - 100 milliseconds, to avoid collision and CPU load
+        else usleep (round (rand (0, 100) * 1000));
       }
       
       // force unlock

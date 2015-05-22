@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['ur'] = "اپنا نام تبدیل کی ت
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['ur'] = "اپ کے پاس لکھے کے لئے permissions جب بھى ميں اتش";
 $hcms_lang['the-folder-does-not-exist']['ur'] = "نائن الیون کے جب بھى ميں اتش";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['ur'] = "اپ کے پاس لکھے permissions ضروریات پر جب بھى ميں اتش workflow";
-$hcms_lang['titel']['ur'] = "titel";
 $hcms_lang['category']['ur'] = "ببھاگ";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['ur'] = "youtube چڑھانا کو متحرک نہیں کے اپ کے کھاتے ہیں. براہ مہربانی اپ adminstrator نظام";
 $hcms_lang['tags']['ur'] = "چھیننے";
@@ -1307,6 +1306,7 @@ $hcms_lang['ftp']['ur'] = "FTP";
 $hcms_lang['file-download-from-ftp-server']['ur'] = "فائل سے معلومات ftp سرور";
 $hcms_lang['server']['ur'] = "سرور";
 $hcms_lang['use-ssl']['ur'] = "SSL استعمال";
-$hcms_lang['formats']['ur'] = "‬ ‫بيماريوں";
-$hcms_lang['download-formats']['ur'] = "‬ ‫بيماريوں معلومات";
+$hcms_lang['formats']['ur'] = "يماريوں";
+$hcms_lang['download-formats']['ur'] = "‬بيماريوں معلومات";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['ur'] = "اختیاری لازمی یا کھلی کی فہرست کے ساتھ الفاظ";
 ?>

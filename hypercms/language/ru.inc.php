@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['ru'] = "В папке был переим�
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['ru'] = "У вас нет полномочий на запись в папку";
 $hcms_lang['the-folder-does-not-exist']['ru'] = "Папка не существует";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['ru'] = "Вы не имеете права записи в рабочий процесс настройки папки";
-$hcms_lang['titel']['ru'] = "Заголовок";
 $hcms_lang['category']['ru'] = "Категории";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['ru'] = "Загрузка на Youtube не активируется для вашей учетной записи. Пожалуйста, обратитесь к системному администратору";
 $hcms_lang['tags']['ru'] = "Предупреждающие таблички";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['ru'] = "Server";
 $hcms_lang['use-ssl']['ru'] = "Использовать SSL";
 $hcms_lang['formats']['ru'] = "Форматы";
 $hcms_lang['download-formats']['ru'] = "Форматы для загрузки";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['ru'] = "Ключевые слова с дополнительным обязательным или открытого списка";
 ?>

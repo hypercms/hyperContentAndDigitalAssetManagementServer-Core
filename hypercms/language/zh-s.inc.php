@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['zh-s'] = "重命名文件夹";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['zh-s'] = "您不具有写入权限的文件夹。";
 $hcms_lang['the-folder-does-not-exist']['zh-s'] = "该文件夹不存在";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['zh-s'] = "您不具有写权限的工作流文件夹设置";
-$hcms_lang['titel']['zh-s'] = "标题";
 $hcms_lang['category']['zh-s'] = "类别";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['zh-s'] = "YOUTUBE上传未激活您的帐户。 请联系您的系统管理员";
 $hcms_lang['tags']['zh-s'] = "标签";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['zh-s'] = "服务器";
 $hcms_lang['use-ssl']['zh-s'] = "使用SSL";
 $hcms_lang['formats']['zh-s'] = "格式";
 $hcms_lang['download-formats']['zh-s'] = "下载格式";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['zh-s'] = "关键词可选的强制性或开放名单";
 ?>

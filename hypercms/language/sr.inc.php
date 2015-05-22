@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['sr'] = "U folderu je preimenovana";
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['sr'] = "Ne morate pisati dozvole za folder";
 $hcms_lang['the-folder-does-not-exist']['sr'] = "U omotnici ne postoje";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['sr'] = "Ne morate pisati dozvole u rutinu folderu podešavanja";
-$hcms_lang['titel']['sr'] = "Titel";
 $hcms_lang['category']['sr'] = "Kategorija";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['sr'] = "Youtube je slanje ne aktivira za vaš račun. Molimo Vas da se obratite vašem sistemu adminstrator";
 $hcms_lang['tags']['sr'] = "Markica";
@@ -1309,4 +1308,5 @@ $hcms_lang['server']['sr'] = "Server";
 $hcms_lang['use-ssl']['sr'] = "Korišćenje SSL";
 $hcms_lang['formats']['sr'] = "Formata";
 $hcms_lang['download-formats']['sr'] = "Download formata";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['sr'] = "Ključne reči sa dodatnom obavezno ili otvorenoj listi";
 ?>

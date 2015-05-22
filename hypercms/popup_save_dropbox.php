@@ -101,7 +101,7 @@ if((!empty($multiobject) || !empty($page)) && !empty($location))
 }
 
 //prepare info for topbar
-$title = $hcms_lang['save-files-to-dropbox-from'][$lang];
+$title = getescapedtext ($hcms_lang['save-files-to-dropbox-from'][$lang]);
 $object_name = getlocationname ($site, $location, $cat, "path");
 
 ?>
@@ -117,7 +117,7 @@ $object_name = getlocationname ($site, $location, $cat, "path");
 <script src="javascript/main.js" type="text/javascript"></script>
 <!-- <script src="javascript/click.js" type="text/javascript"></script> -->
 <!-- JQuery -->
-<script src="javascript/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
 <!-- JQuery UI -->
 <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css">
@@ -186,13 +186,13 @@ $(function() {
 		?>
 		<div class="hcmsWorkplaceBar" id="progress">
 			<div style="padding: 6px;">
-				<div class="hcmsHeadline" style="float: left; "><?php echo $hcms_lang['saving-files-to-dropbox'][$lang]; ?></div>
+				<div class="hcmsHeadline" style="float: left; "><?php echo getescapedtext ($hcms_lang['saving-files-to-dropbox'][$lang]); ?></div>
 				<div style="float: left; margin-left: 20px; margin-top: 2px;"><img src="/cms_dev/theme/standard/img/loading.gif" /></div>
 			</div>
 		</div>
 		<div class="hcmsWorkplaceBar" id="success">
 			<div style="padding: 6px;">
-				<div class="hcmsHeadline" style="float: left; "><?php echo $hcms_lang['successfully-saved-files-to-dropbox-'][$lang]; ?></div>
+				<div class="hcmsHeadline" style="float: left; "><?php echo getescapedtext ($hcms_lang['successfully-saved-files-to-dropbox-'][$lang]); ?></div>
 			</div>
 		</div>
 		<div id="content" class="hcmsWorkplaceFrame">
@@ -214,7 +214,7 @@ $(function() {
 			{
 			?>
 				<div class="file file_error">
-					<div class="inline file_name"><?php echo $hcms_lang['no-files-selected'][$lang];; ?></div>
+					<div class="inline file_name"><?php echo getescapedtext ($hcms_lang['no-files-selected'][$lang]);; ?></div>
 					<div class="inline file_size" style="float: right; width: 80px;">&nbsp;</div>
 				</div>	
 			<?php 	
@@ -226,11 +226,11 @@ $(function() {
 			if (!empty($displayObjects)) 
 			{
 			?>
-				<div id="btnUpload" class="button hcmsButtonBlue" ><?php echo $hcms_lang['save'][$lang]; ?></div>
+				<div id="btnUpload" class="button hcmsButtonBlue" ><?php echo getescapedtext ($hcms_lang['save'][$lang]); ?></div>
 			<?php 
 			}
 			?>
-				<div id="btnCancel" class="button hcmsButtonOrange" ><?php echo $hcms_lang['cancel'][$lang]; ?></div>
+				<div id="btnCancel" class="button hcmsButtonOrange" ><?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?></div>
 			</div>
 			<br />
 			<br />

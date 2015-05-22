@@ -242,7 +242,6 @@ $hcms_lang['the-folder-was-renamed']['el'] = "Ο φάκελος είχε μετ�
 $hcms_lang['you-do-not-have-write-permissions-for-the-folder']['el'] = "Δεν έχετε δικαιώματα εγγραφής για το φάκελο";
 $hcms_lang['the-folder-does-not-exist']['el'] = "Ο φάκελος δεν υπάρχει";
 $hcms_lang['you-do-not-have-write-permissions-on-workflow-folder-settings']['el'] = "Δεν έχετε δικαιώματα εγγραφής στη ροή εργασίας ρυθμίσεων φακέλου";
-$hcms_lang['titel']['el'] = "Τιτλοσ";
 $hcms_lang['category']['el'] = "Κατηγορία";
 $hcms_lang['youtube-upload-is-not-activated-for-your-account']['el'] = "Αποστολή στο Youtube δεν είναι ενεργοποιημένο για λογαριασμό σας. Παρακαλούμε επικοινωνήστε με τον διαχειριστή συστήματος";
 $hcms_lang['tags']['el'] = "Tags";
@@ -1310,4 +1309,5 @@ $hcms_lang['server']['el'] = "Διακομιστής";
 $hcms_lang['use-ssl']['el'] = "Χρήση SSL";
 $hcms_lang['formats']['el'] = "Φορμά";
 $hcms_lang['download-formats']['el'] = "Μορφές λήψης";
+$hcms_lang['keywords-with-optional-mandatory-or-open-list']['el'] = "Λέξεις-κλειδιά με προαιρετική υποχρεωτική ή ανοικτή λίστα";
 ?>

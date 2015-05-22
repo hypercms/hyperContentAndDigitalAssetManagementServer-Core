@@ -1026,7 +1026,7 @@ $token_new = createtoken ($user);
     <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css">
     <script src="javascript/main.js" type="text/javascript"></script>
     <!-- We use Jquery and Jquery UI Autocomplete -->
-    <script src="javascript/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
     <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
     <script type="text/javascript">
       <!--
@@ -1359,7 +1359,7 @@ $token_new = createtoken ($user);
   
     <!-- top bar -->
     <?php
-    if (isset ($multiobject_array) && is_array ($multiobject_array)) $title = sizeof ($multiobject_array) . $hcms_lang['-files-selected'][$lang];
+    if (isset ($multiobject_array) && is_array ($multiobject_array)) $title = sizeof ($multiobject_array).$hcms_lang['-files-selected'][$lang];
     else $title = $pagename;
                 
     echo showtopbar ($hcms_lang['selected-object'][$lang].": ".$title, $lang);
@@ -1384,13 +1384,13 @@ $token_new = createtoken ($user);
         // success message
         if (!empty ($mail_success))
         {
-          $show .= "<strong>".$hcms_lang['e-mail-was-sent-successfully-to-'][$lang]."</strong><br />\n".implode (", ", html_encode ($mail_success))."<br />\n";
+          $show .= "<strong>".getescapedtext ($hcms_lang['e-mail-was-sent-successfully-to-'][$lang])."</strong><br />\n".implode (", ", html_encode ($mail_success))."<br />\n";
         }
               
         // mail error message
         if (!empty ($mail_error))
         {
-          $show .= "<strong>".$hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang]."</strong><br />\n".implode ("<br />", html_encode ($mail_error))."<br />\n";
+          $show .= "<strong>".getescapedtext ($hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang])."</strong><br />\n".implode ("<br />", html_encode ($mail_error))."<br />\n";
         }
               
         // general error message
@@ -1419,20 +1419,20 @@ $token_new = createtoken ($user);
           <tr align="left" valign="top">
             <td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:19px; border:0;" /></td>
             <td align="left" valign="top" class="hcmsTab">
-              &nbsp;<a id="menu-Recipient" href="#" onClick="showHideLayers('LayerRecipient','show','line_Recipient','visible','LayerGroup','hide','line_Group','invisible','LayerSettings','hide','line_Settings','invisible','LayerFormats','hide','line_Formats','invisible'); close_selector();"><?php echo $hcms_lang['recipients'][$lang]; ?></a>
+              &nbsp;<a id="menu-Recipient" href="#" onClick="showHideLayers('LayerRecipient','show','line_Recipient','visible','LayerGroup','hide','line_Group','invisible','LayerSettings','hide','line_Settings','invisible','LayerFormats','hide','line_Formats','invisible'); close_selector();"><?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?></a>
             </td>
             <td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:19px; border:0;" /></td>
             <td align="left" valign="top" class="hcmsTab">
-              &nbsp;<a id="menu-Group" href="#" onClick="showHideLayers('LayerRecipient','hide','line_Recipient','invisible','LayerGroup','show','line_Group','visible','LayerSettings','hide','line_Settings','invisible','LayerFormats','hide','line_Formats','invisible'); close_selector();"><?php echo $hcms_lang['user-group'][$lang]; ?></a>
+              &nbsp;<a id="menu-Group" href="#" onClick="showHideLayers('LayerRecipient','hide','line_Recipient','invisible','LayerGroup','show','line_Group','visible','LayerSettings','hide','line_Settings','invisible','LayerFormats','hide','line_Formats','invisible'); close_selector();"><?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?></a>
             </td>
             <td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:19px; border:0;" /></td>
             <td>
             <td align="left" valign="top" class="hcmsTab">
-              &nbsp;<a id="menu-Settings" href="#" onClick="showHideLayers('LayerRecipient','hide','line_Recipient','invisible','LayerGroup','hide','line_Group','invisible','LayerSettings','show','line_Settings','visible','LayerFormats','hide','line_Formats','invisible'); close_selector();"><?php echo $hcms_lang['settings'][$lang]; ?><span id="attention_settings" style="color:red; visibility:hidden;">!</span></a>
+              &nbsp;<a id="menu-Settings" href="#" onClick="showHideLayers('LayerRecipient','hide','line_Recipient','invisible','LayerGroup','hide','line_Group','invisible','LayerSettings','show','line_Settings','visible','LayerFormats','hide','line_Formats','invisible'); close_selector();"><?php echo getescapedtext ($hcms_lang['settings'][$lang]); ?><span id="attention_settings" style="color:red; visibility:hidden;">!</span></a>
             </td>
             <td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:19px; border:0;" /></td>
             <td align="left" valign="top" class="hcmsTab">
-              &nbsp;<a id="menu-Formats" href="#" onClick="showHideLayers('LayerRecipient','hide','line_Recipient','invisible','LayerGroup','hide','line_Group','invisible','LayerSettings','hide','line_Settings','invisible','LayerFormats','show','line_Formats','visible'); close_selector();"><?php echo $hcms_lang['formats'][$lang]; ?></a>
+              &nbsp;<a id="menu-Formats" href="#" onClick="showHideLayers('LayerRecipient','hide','line_Recipient','invisible','LayerGroup','hide','line_Group','invisible','LayerSettings','hide','line_Settings','invisible','LayerFormats','show','line_Formats','visible'); close_selector();"><?php echo getescapedtext ($hcms_lang['formats'][$lang]); ?></a>
             </td>
           </tr>
         </table>
@@ -1449,13 +1449,13 @@ $token_new = createtoken ($user);
         <div id="LayerRecipient">
           <table width="100%" border="0" cellspacing="0" cellpadding="3">
             <tr>
-              <td width="180" align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['send-e-mail-to'][$lang]; ?>:</td>
+              <td width="180" align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-e-mail-to'][$lang]); ?>:</td>
               <td id="selectbox" align="left" valign="top">
                 <input type="text" value="" style="width:350px;" name="selector" id="selector" />
               </td>
             <tr>
               <td align="left" valign="top" nowrap="nowrap">
-                <?php echo $hcms_lang['recipients'][$lang]; ?>:
+                <?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?>:
               </td>
               <td align="left" valign="top">
                 <div style="overflow:auto; max-height:120px;" id="emails">
@@ -1469,19 +1469,19 @@ $token_new = createtoken ($user);
           <table width="100%" border="0" cellspacing="0" cellpadding="3">
             <tr>
               <td width="180" align="left" valign="top" nowrap="nowrap">
-                <?php echo $hcms_lang['attention'][$lang]; ?>:
+                <?php echo getescapedtext ($hcms_lang['attention'][$lang]); ?>:
               </td>
               <td align="left" valign="top">
-                <?php echo $hcms_lang['the-message-will-be-sent-to-all-members-of-the-selected-group'][$lang]; ?>
+                <?php echo getescapedtext ($hcms_lang['the-message-will-be-sent-to-all-members-of-the-selected-group'][$lang]); ?>
               </td>
             </tr>
             <tr>
               <td width="180" align="left" valign="top" nowrap="nowrap">
-                <?php echo $hcms_lang['user-group'][$lang]; ?>:
+                <?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?>:
               </td>
               <td align="left" valign="top">
                 <select name="group_login" id="group_login" style="width:350px;">
-                  <option value="" selected="selected">--- <?php echo $hcms_lang['select'][$lang]; ?> ---</option>
+                  <option value="" selected="selected">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
                   <?php 
                   if ($allgroup_array != false && sizeof ($allgroup_array) > 0)
                   {
@@ -1504,14 +1504,14 @@ $token_new = createtoken ($user);
           <table width="100%" border="0" cellspacing="0" cellpadding="3">
             <tr>
               <td width="180" align="left" valign="top" nowrap="nowrap">
-                <?php echo $hcms_lang['attention'][$lang]; ?>:
+                <?php echo getescapedtext ($hcms_lang['attention'][$lang]); ?>:
               </td>
               <td align="left" valign="top">
-                <?php echo $hcms_lang['these-are-the-settings-which-will-only-be-assigned-to-new-users'][$lang]; ?>
+                <?php echo getescapedtext ($hcms_lang['these-are-the-settings-which-will-only-be-assigned-to-new-users'][$lang]); ?>
               </td>
             </tr>
             <tr>
-              <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['language-setting'][$lang]; ?>: </td>
+              <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['language-setting'][$lang]); ?>: </td>
               <td align="left" valign="top">
                 <select name="language" style="width:350px;">
                 <?php
@@ -1531,7 +1531,7 @@ $token_new = createtoken ($user);
               </td>
             </tr>
             <tr>
-              <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['member-of-user-group'][$lang]; ?>: </td>
+              <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['member-of-user-group'][$lang]); ?>: </td>
               <td align="left" valign="top">
               <?php
                 if ($allgroup_array != false && sizeof ($allgroup_array) > 0)
@@ -1590,14 +1590,14 @@ $token_new = createtoken ($user);
         <table width="100%" border="0" cellspacing="0" cellpadding="3">
           <tr>
             <td align="left" valign="top" nowrap="nowrap">
-              <span class="hcmsHeadline"><?php echo $hcms_lang['download-formats'][$lang]; ?><span><br />
-              <span class="hcmsHeadlineTiny">&nbsp;<?php echo $hcms_lang['image'][$lang]; ?></span><br />
+              <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?><span><br />
+              <span class="hcmsHeadlineTiny">&nbsp;<?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></span><br />
               <?php 
               if (is_array ($mgmt_imageoptions) && sizeof ($mgmt_imageoptions) > 0)
               {
                 $i = 1;
                 
-                echo "<input id=\"format_img".$i."\" name=\"format_img[]\" onclick=\"selectCheckbox('format_img', this.id)\" type=\"checkbox\" value=\"original\">".$hcms_lang['original'][$lang]."<br />\n";
+                echo "<input id=\"format_img".$i."\" name=\"format_img[]\" onclick=\"selectCheckbox('format_img', this.id)\" type=\"checkbox\" value=\"original\"> ".getescapedtext ($hcms_lang['original'][$lang])."<br />\n";
                 $i++;
                 
                 foreach ($mgmt_imageoptions as $ext => $imageconfig_array)
@@ -1612,7 +1612,7 @@ $token_new = createtoken ($user);
                       if ($image_config != "original" && $image_config != "thumbnail")
                       {
                         $file_info = getfileinfo ($site, "file".$ext, "comp");
-                        echo "<input id=\"format_img".$i."\" name=\"format_img[]\" onclick=\"selectCheckbox('format_img', this.id)\" type=\"checkbox\" value=\"".$image_type."|".$image_config."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" /> ".strtoupper($image_type)." ".$file_info['type']." ".$image_config."<br />\n";
+                        echo "<input id=\"format_img".$i."\" name=\"format_img[]\" onclick=\"selectCheckbox('format_img', this.id)\" type=\"checkbox\" value=\"".$image_type."|".$image_config."\"> <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" /> ".strtoupper($image_type)." ".$file_info['type']." ".$image_config."<br />\n";
                         $i++;
                       }
                     }
@@ -1623,13 +1623,13 @@ $token_new = createtoken ($user);
             </td>
             <td align="left" valign="top">
               &nbsp;<br />
-              <span class="hcmsHeadlineTiny">&nbsp;<?php echo $hcms_lang['document'][$lang]; ?></span><br />
+              <span class="hcmsHeadlineTiny">&nbsp;<?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></span><br />
               <?php 
               if (is_array ($mgmt_docoptions) && sizeof ($mgmt_docoptions) > 0)
               {
                 $i = 1;
                                  
-                echo "<input id=\"format_doc".$i."\" name=\"format_doc[]\" onclick=\"selectCheckbox('format_doc', this.id)\" type=\"checkbox\" value=\"original\">".$hcms_lang['original'][$lang]."<br />\n";
+                echo "<input id=\"format_doc".$i."\" name=\"format_doc[]\" onclick=\"selectCheckbox('format_doc', this.id)\" type=\"checkbox\" value=\"original\"> ".getescapedtext ($hcms_lang['original'][$lang])."<br />\n";
                 $i++;
                 
                 foreach ($mgmt_docoptions as $ext => $value)
@@ -1640,7 +1640,7 @@ $token_new = createtoken ($user);
                     $doc_type = $ext_array[0];
                       
                     $file_info = getfileinfo ($site, "file".$ext, "comp");
-                    echo "<input id=\"format_doc".$i."\" name=\"format_doc[]\" onclick=\"selectCheckbox('format_doc', this.id)\" type=\"checkbox\" value=\"".$doc_type."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" /> ".$file_info['type']." (".strtoupper($doc_type).")<br />\n";
+                    echo "<input id=\"format_doc".$i."\" name=\"format_doc[]\" onclick=\"selectCheckbox('format_doc', this.id)\" type=\"checkbox\" value=\"".$doc_type."\"> <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" /> ".$file_info['type']." (".strtoupper($doc_type).")<br />\n";
                     $i++;
                   }
                 }
@@ -1661,13 +1661,13 @@ $token_new = createtoken ($user);
           </tr>
           <!-- CC, BCC -->
           <tr>
-            <td width="180" align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['cc-e-mail'][$lang]; ?>: </td>
+            <td width="180" align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['cc-e-mail'][$lang]); ?>: </td>
             <td align="left" valign="top">
               <input type="text" name="email_cc" style="width:350px;" value="<?php echo $email_cc; ?>" />
             </td>
           </tr>
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['bcc-e-mail'][$lang]; ?>: </td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['bcc-e-mail'][$lang]); ?>: </td>
             <td align="left" valign="top">
               <input type="text" name="email_bcc" style="width:350px;" value="<?php echo $email_bcc; ?>" />
             </td>
@@ -1679,13 +1679,13 @@ $token_new = createtoken ($user);
           </tr>
           <!-- TITLE and MESSAGE -->
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['subject'][$lang]; ?>:</td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['subject'][$lang]); ?>:</td>
             <td align="left" valign="top">
               <input type="text" id="mail_title" name="mail_title" style="width:350px;" value="<?php echo $mail_title; ?>" />
             </td>
           </tr>
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['message'][$lang]; ?>:</td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['message'][$lang]); ?>:</td>
             <td align="left" valign="top">
               <textarea id="mail_body" name="mail_body" rows="6" style="width:350px;"><?php
                                       
@@ -1721,43 +1721,43 @@ $token_new = createtoken ($user);
           {      
           ?>
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['send-files-as'][$lang]; ?>:</td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-files-as'][$lang]); ?>:</td>
             <td align="left" valign="top">
               <table border="0" cellpadding="0" cellspacing="0">
                 <?php if ($allow_download) { ?>
-                <tr><td><input type="checkbox" name="download_type" id="type_download" onclick="selectLinkType(this.id); initLinkType();" value="download" <?php if ($mgmt_config['maillink'] == "download" || $mgmt_config['maillink'] == "") echo "checked=\"checked\""; ?> /></td><td nowrap="nowrap"> <?php echo $hcms_lang['download-link'][$lang]; ?></td><td nowrap="nowrap"><div class="hcmsButtonTiny" onClick="$('#menu-Formats').click();">&nbsp; &#9654; <?php echo $hcms_lang['download-formats'][$lang]; ?>&nbsp;</div></td></tr>
+                <tr><td><input type="checkbox" name="download_type" id="type_download" onclick="selectLinkType(this.id); initLinkType();" value="download" <?php if ($mgmt_config['maillink'] == "download" || $mgmt_config['maillink'] == "") echo "checked=\"checked\""; ?> /></td><td nowrap="nowrap">&nbsp;<?php echo getescapedtext ($hcms_lang['download-link'][$lang]); ?></td><td nowrap="nowrap"><div class="hcmsButtonTiny" onClick="$('#menu-Formats').click();">&nbsp; &#9654; <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
                 <?php } ?>
-                <tr><td><input type="checkbox" name="download_type" id="type_access" onclick="selectLinkType(this.id); initLinkType();" value="link" <?php if ($mgmt_config['maillink'] == "access") echo "checked=\"checked\""; ?> /></td><td nowrap="nowrap"> <?php echo $hcms_lang['access-link'][$lang]; ?>&nbsp;</td><td nowrap="nowrap"><div class="hcmsButtonTiny" onClick="$('#menu-Formats').click();">&nbsp; &#9654; <?php echo $hcms_lang['download-formats'][$lang]; ?>&nbsp;</div></td></tr>
+                <tr><td><input type="checkbox" name="download_type" id="type_access" onclick="selectLinkType(this.id); initLinkType();" value="link" <?php if ($mgmt_config['maillink'] == "access") echo "checked=\"checked\""; ?> /></td><td nowrap="nowrap">&nbsp;<?php echo getescapedtext ($hcms_lang['access-link'][$lang]); ?>&nbsp;</td><td nowrap="nowrap"><div class="hcmsButtonTiny" onClick="$('#menu-Formats').click();">&nbsp; &#9654; <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
                 <?php if ($allow_attachment) { ?>
-                <tr><td><input type="checkbox" name="download_type" id="type_attachment" onclick="selectLinkType(this.id); initLinkType();" value="attachment" /></td><td nowrap="nowrap"> <?php echo $hcms_lang['attachment'][$lang]; ?></td><td nowrap="nowrap"><div class="hcmsButtonTiny" onClick="$('#menu-Formats').click();">&nbsp; &#9654; <?php echo $hcms_lang['download-formats'][$lang]; ?>&nbsp;</div></td></tr>
+                <tr><td><input type="checkbox" name="download_type" id="type_attachment" onclick="selectLinkType(this.id); initLinkType();" value="attachment" /></td><td nowrap="nowrap">&nbsp;<?php echo getescapedtext ($hcms_lang['attachment'][$lang]); ?></td><td nowrap="nowrap"><div class="hcmsButtonTiny" onClick="$('#menu-Formats').click();">&nbsp; &#9654; <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
                 <?php } ?>
               </table>
             </td>
           </tr>
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['period-of-validity'][$lang]; ?>:</td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['period-of-validity'][$lang]); ?>:</td>
             <td align="left" valign="top">
-              <input type="checkbox" name="valid_active" id="valid_active" value="yes" onclick="if (this.checked==true) { document.getElementById('valid_days').disabled=false; document.getElementById('valid_hours').disabled=false; } else { document.getElementById('valid_days').disabled=true; document.getElementById('valid_hours').disabled=true; }" /> <?php echo $hcms_lang['valid-for'][$lang]; ?>
-              <input type="text" name="valid_days" id="valid_days" value="" style="width:40px;" disabled="disabled" /> <?php echo $hcms_lang['days-and'][$lang]; ?>&nbsp;
-              <input type="text" name="valid_hours" id="valid_hours" value="" style="width:40px;" disabled="disabled" /> <?php echo $hcms_lang['hours'][$lang]; ?>
+              <input type="checkbox" name="valid_active" id="valid_active" value="yes" onclick="if (this.checked==true) { document.getElementById('valid_days').disabled=false; document.getElementById('valid_hours').disabled=false; } else { document.getElementById('valid_days').disabled=true; document.getElementById('valid_hours').disabled=true; }" /> <?php echo getescapedtext ($hcms_lang['valid-for'][$lang]); ?>
+              <input type="text" name="valid_days" id="valid_days" value="" style="width:40px;" disabled="disabled" /> <?php echo getescapedtext ($hcms_lang['days-and'][$lang]); ?>&nbsp;
+              <input type="text" name="valid_hours" id="valid_hours" value="" style="width:40px;" disabled="disabled" /> <?php echo getescapedtext ($hcms_lang['hours'][$lang]); ?>
             </td>
           </tr>          
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['meta-data'][$lang]; ?>:</td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['meta-data'][$lang]); ?>:</td>
             <td align="left" valign="top">
               <input type="checkbox" name="include_metadata" value="yes" <?php if ($include_metadata == "yes") echo "checked=\"checked\""; ?>/> 
-              <?php echo $hcms_lang['include-in-message'][$lang]; ?>
+              <?php echo getescapedtext ($hcms_lang['include-in-message'][$lang]); ?>
             </td>
           </tr>
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['create-new-task'][$lang]; ?>:</td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['create-new-task'][$lang]); ?>:</td>
             <td align="left" valign="top">
               <input type="checkbox" name="create_task" value="yes" onclick="document.getElementById('type_access').checked=true;" <?php if ($create_task == "yes") echo "checked=\"checked\""; ?>/> 
-              <?php echo $hcms_lang['for-the-recipients-with-priority'][$lang]; ?>
+              <?php echo getescapedtext ($hcms_lang['for-the-recipients-with-priority'][$lang]); ?>
               <select name="priority">
-                <option value="low" selected="selected"><?php echo $hcms_lang['low'][$lang]; ?></option>
-                <option value="medium"><?php echo $hcms_lang['medium'][$lang]; ?></option>
-                <option value="high"><?php echo $hcms_lang['high'][$lang]; ?></option>
+                <option value="low" selected="selected"><?php echo getescapedtext ($hcms_lang['low'][$lang]); ?></option>
+                <option value="medium"><?php echo getescapedtext ($hcms_lang['medium'][$lang]); ?></option>
+                <option value="high"><?php echo getescapedtext ($hcms_lang['high'][$lang]); ?></option>
               </select>
             </td>
           </tr>          
@@ -1765,7 +1765,7 @@ $token_new = createtoken ($user);
           } 
           ?>
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo $hcms_lang['send-e-mail'][$lang]; ?>: </td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?>: </td>
             <td align="left" valign="top">
               <img name="ButtonSubmit" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onClick="if (checkForm()) document.forms['mailForm'].submit();" onMouseOver="hcms_swapImage('ButtonSubmit','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" onMouseOut="hcms_swapImgRestore()" style="border:0; cursor:pointer;" align="absmiddle" title="OK" alt="OK" />
             </td>

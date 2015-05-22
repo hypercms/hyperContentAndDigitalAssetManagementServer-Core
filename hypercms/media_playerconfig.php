@@ -97,7 +97,7 @@ elseif($media_root && file_exists ($media_root.$file_info['filename'].".config.o
 else
 {
   $config = false;
-  $playercode = $hcms_lang['configuration-not-available'][$lang];
+  $playercode = getescapedtext ($hcms_lang['configuration-not-available'][$lang]);
 }
 
 $head = false;
@@ -268,8 +268,8 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
   {
   ?>
   <div style="margin-left: 10px;margin-top: 10px;">
-  	<strong><?php echo $hcms_lang['html-head-segment'][$lang];?></strong><br />
-  	<?php echo $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy'][$lang];?><br /><br />       
+  	<strong><?php echo getescapedtext ($hcms_lang['html-head-segment'][$lang]);?></strong><br />
+  	<?php echo getescapedtext ($hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy'][$lang]);?><br /><br />       
   	<textarea id="codesegment" style="height: 150px; width: 98%" wrap="VIRTUAL"><?php
     echo $head;
   	?></textarea>
@@ -284,34 +284,34 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
     <div style="margin-left:10px; margin-top:10px; float:left; width:250px;">
       <?php if (!$audio) { ?>
       <div style="height: 20px">
-        <label for="title"><?php echo $hcms_lang['title'][$lang];?>:</label><br/>
+        <label for="title"><?php echo getescapedtext ($hcms_lang['title'][$lang]);?>:</label><br/>
       </div>
       <?php } ?>
       <div style="height: 20px">
-        <label for="autoplay"><?php echo $hcms_lang['autoplay'][$lang];?>:</label>
+        <label for="autoplay"><?php echo getescapedtext ($hcms_lang['autoplay'][$lang]);?>:</label>
       </div>
       <?php if (!$audio) { ?>
       <div style="height: 20px">
-        <label for="fullscreen"><?php echo $hcms_lang['enable-fullscreen'][$lang];?>:</label>
+        <label for="fullscreen"><?php echo getescapedtext ($hcms_lang['enable-fullscreen'][$lang]);?>:</label>
       </div>
       <?php }
        
       if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
       <div style="height: 20px">
-        <label for="keyboard"><?php echo $hcms_lang['enable-keyboard-input'][$lang];?>: </label>
+        <label for="keyboard"><?php echo getescapedtext ($hcms_lang['enable-keyboard-input'][$lang]);?>: </label>
       </div>
       <div style="height: 20px">
-        <label for="pause"><?php echo $hcms_lang['enable-pause'][$lang];?>: </label>
+        <label for="pause"><?php echo getescapedtext ($hcms_lang['enable-pause'][$lang]);?>: </label>
       </div>
       <div style="height: 20px">
-        <label for="seek"><?php echo $hcms_lang['enable-seek'][$lang];?>: </label>
+        <label for="seek"><?php echo getescapedtext ($hcms_lang['enable-seek'][$lang]);?>: </label>
       </div>
       <?php }
        
       if (!$audio) {
       ?>
       <div style="height: 20px">
-        <label for="logo"><?php echo $hcms_lang['start-image'][$lang];?>: </label>
+        <label for="logo"><?php echo getescapedtext ($hcms_lang['start-image'][$lang]);?>: </label>
       </div>
       <?php } ?>
     </div>
@@ -347,7 +347,7 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
       ?>
       <div style="height:20px;">
         <input style="vertical-align: top;" type="text" onchange="updateCodeSegment();" id="logo" />
-        <img class="hcmsButtonTiny hcmsButtonSizeSquare" title="<?php echo $hcms_lang['select-image'][$lang]; ?>" style="cursor: pointer;" src="<?php echo getthemelocation(); ?>img/button_media.gif" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 620, 550);" />
+        <img class="hcmsButtonTiny hcmsButtonSizeSquare" title="<?php echo getescapedtext ($hcms_lang['select-image'][$lang]); ?>" style="cursor: pointer;" src="<?php echo getthemelocation(); ?>img/button_media.gif" onclick="hcms_openWindow('<?php echo $mgmt_config['url_path_cms']."editor/media_frameset.php?site=".url_encode($site)."&mediacat=cnt&mediatype=image&CKEditorFuncNum=123"; ?>', 'preview', '', 620, 550);" />
       </div>
       <?php } ?>
     </div>
@@ -357,13 +357,13 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
   }
   ?>
   <div style="margin-left:10px; margin-top:10px;">
-  	<strong><?php echo $hcms_lang['html-body-segment'][$lang];?></strong><br />
-  	<?php echo $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy'][$lang];?><br /><br />
+  	<strong><?php echo getescapedtext ($hcms_lang['html-body-segment'][$lang]);?></strong><br />
+  	<?php echo getescapedtext ($hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy'][$lang]);?><br /><br />
   	<textarea id="codesegment" style="height:80px; width:98%" wrap="VIRTUAL"><?php	echo html_encode($playercode, $hcms_lang_codepage[$lang]); ?></textarea>
   </div>
   <hr>
   <div style="margin-left:10px; margin-top:10px;">
-    <strong><?php echo $hcms_lang['preview'][$lang];?></strong><br />
+    <strong><?php echo getescapedtext ($hcms_lang['preview'][$lang]);?></strong><br />
     <?php echo $playercode; ?>
   </div>
 </div>
