@@ -843,6 +843,7 @@ release 07/2015
 - implementation of getescapetext for all files of the graphical user interface
 - bug fix: function createmedia did not execute rdbms_setmedia if $mgmt_maxfilesize limit has been reached for a file 
 - implementation of new youtube connector to support Google OAuth
+- bug fix: installation procedure checked temp and view directory before they were created
 */
 
 // current version

@@ -141,8 +141,6 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
   if ($show == "" && $mgmt_config['abs_path_data'] != "" && $mgmt_config['abs_path_rep'] != "" && $mgmt_config['abs_path_mypublication'] != "")
   {   
     if (!is_writeable ($mgmt_config['abs_path_cms']."config/")) $show .= "<li>Write perission for config-directory is missing (".$mgmt_config['abs_path_cms']."config/)!</li>\n";
-    if (!is_writeable ($mgmt_config['abs_path_temp'])) $show .= "<li>Write perission for temp-directory is missing (".$mgmt_config['abs_path_temp'].")!</li>\n";
-    if (!is_writeable ($mgmt_config['abs_path_view'])) $show .= "<li>Write perission for temp-directory is missing (".$mgmt_config['abs_path_view'].")!</li>\n";
     if (!is_writeable ($mgmt_config['abs_path_data'])) $show .= "<li>Write perission for data-directory is missing (".$mgmt_config['abs_path_data'].")!</li>\n";
     if (!is_writeable ($mgmt_config['abs_path_rep'])) $show .= "<li>Write perission for repository-directory is missing (".$mgmt_config['abs_path_rep'].")!</li>\n";
     if (!is_writeable ($mgmt_config['abs_path_mypublication'])) $show .= "<li>Write perissions for publication-directory is missing (".$mgmt_config['abs_path_mypublication'].")!</li>\n";
