@@ -374,10 +374,13 @@ function goToURL()
   
               foreach ($group_array as $group_item)
               {
-                if ($group == $group_item) $selected = "selected=\"selected\"";
-                else $selected = "";
+                if ($group_item != "")
+                {
+                  if ($group == $group_item) $selected = "selected=\"selected\"";
+                  else $selected = "";
                   
-                echo "<option value=\"user_objectlist.php?site=".url_encode($site)."&group=".url_encode($group_item)."\" ".$selected.">".$group_item."</option>\n";
+                  echo "<option value=\"user_objectlist.php?site=".url_encode($site)."&group=".url_encode($group_item)."\" ".$selected.">".$group_item."</option>\n";
+                }
               }
             }
           }
@@ -398,7 +401,7 @@ function goToURL()
           {
             foreach ($inherit_db as $inherit_db_record)
             {
-              if (in_array ($inherit_db_record['parent'], $siteaccess))
+              if ($inherit_db_record['parent'] != "" && in_array ($inherit_db_record['parent'], $siteaccess))
               {
                 $site_array[] = $inherit_db_record['parent'];
               }

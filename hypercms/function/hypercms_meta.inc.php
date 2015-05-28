@@ -1947,8 +1947,10 @@ function createmapping ($site, $mapping)
   if ($mapping != "")
   {
     $mapping_result = "";
-    $lines = explode ("\n", $mapping);    
+    // unescape >
     $mapping = str_replace ("&gt;", ">", $mapping);
+    // create array
+    $lines = explode ("\n", $mapping);   
     
     if (is_array ($lines))
     {
@@ -1982,8 +1984,8 @@ function createmapping ($site, $mapping)
     
     if ($mapping != "")
     {
-      // unescape & < > 
-      $mapping_data_info = str_replace (array("<", ">"), array("&lt;", "&gt;"), $mapping);
+      // remove all tags
+      $mapping_data_info = strip_tags ($mapping);
       $mapping_data_save = "/*\n".$mapping_data_info."\n*/\n/* hcms_mapping */\n".trim ($mapping_result);
     
       // save mapping file

@@ -7,12 +7,12 @@
 <application>media</application>
 <content><![CDATA[[hyperCMS:textu id='Title' label='Title' infotype='meta' height='25']
 [hyperCMS:textu id='Description' label='Description' infotype='meta' height='75']
-[hyperCMS:textu id='Keywords' label='Keywords' infotype='meta' height='75']
+[hyperCMS:textk id='Keywords' label='Keywords' infotype='meta' height='75']
 [hyperCMS:textu id='Copyright' label='Copyright' infotype='meta' height='25']
 [hyperCMS:textu id='Creator' label='Creator' infotype='meta' height='25']
 [hyperCMS:textd id='License' infotype='meta' label='License valid till']
 [hyperCMS:textl id='Quality' label='Quality' infotype='meta' height='25' list='|Print|Web']
-[hyperCMS:textl id='YoutubeCategories' label='YouTube categories' infotype='meta' height='25' list='Autos & Fahrzeuge{2}|Bildung{27}|Film & Animation{1}|Komödie{23}|Leute & Blogs{22}|Musik{10}|Nachrichten & Politik{25}|Praktische Tipps & Styling{26}|Reisen & Events{19}|Soziales Engagement{29}|Spiele{20}|Sport{17}|Tiere{15}|Unterhaltung{24}|Wissenschaft & Technik{28}'
+[hyperCMS:textl id='YoutubeCategories' label='YouTube categories' infotype='meta' height='25' list='Autos & Vehicles{2}|Comedy{23}|Education{27}|Entertainment{24}|Film & Animation{1}|Gaming{20}|Howto & Style{26}|Music{10}|News & Politics{25}|Nonprofits & Activism{29}|People & Blogs{22}|Pets & Animals{15}|Science & Technology{28}|Sport{17}|Travel & Events{19}'
 [hyperCMS:commentf id='Comment' infotype='meta' height='100']
 ]]></content>
 </template>
