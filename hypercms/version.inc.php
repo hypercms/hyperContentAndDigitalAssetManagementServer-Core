@@ -842,12 +842,9 @@ release 07/2015
 - corrections in german language files
 - implementation of getescapetext for all files of the graphical user interface
 - bug fix: function createmedia did not execute rdbms_setmedia if $mgmt_maxfilesize limit has been reached for a file 
-- implementation of new youtube connector to support Google OAuth
 - bug fix: installation procedure checked temp and view directory before they were created
-- bug fix: publication selector of import/export control displayed empty option
-- bug fix: publication selector of user management control displayed empty option
-- bug fix: function createmapping did not unescape ">"
-- improvement of function createmapping to remove all tags
+- update of videoplayer video JS to version 4.12.7
+- implementation of new youtube connector to support Google OAuth
 */
 
 // current version
