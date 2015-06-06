@@ -7214,22 +7214,22 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // for all views except template view
       if ($buildview != "template")
       {
-        // We only add if a video is used (Projekktor or VIDEO.JS Player)
+        // We only add the video player library files if a video is used (Projekktor or VIDEO.JS Player)
         if (preg_match('/\<video.*?id=[\"\\\']hcms_mediaplayer_/i', $viewstore) || preg_match('/\<video.*?id=[\"\\\']hcms_projekktor_/i', $viewstore) || preg_match('/\<video.*?id=[\"\\\']hcms_videojs_/i', $viewstore))
         {
-           if (substr_count (strtolower ($viewstore), "</head>") > 0)
+          if (substr_count (strtolower ($viewstore), "</head>") > 0)
           {
-            $viewstore = preg_replace ("/\<\/head\>/i", showvideoplayer_head ($site, false, $buildview)."</head>", $viewstore);
+            $viewstore = preg_replace ("/\<\/head\>/i", showvideoplayer_head ($site, false, false)."</head>", $viewstore);
           }
           elseif (substr_count (strtolower ($viewstore), "<body") > 0)
           {
             $bodytagold = gethtmltag ($viewstore, "<body");
-            $viewstore = str_replace ($bodytagold, $bodytagold."\n".showvideoplayer_head ($site, false, $buildview), $viewstore);
+            $viewstore = str_replace ($bodytagold, $bodytagold."\n".showvideoplayer_head ($site, false, false), $viewstore);
           }
           elseif (substr_count (strtolower ($viewstore), ":body") > 0)
           {
             $bodytagold = gethtmltag ($viewstore, ":body");
-            $viewstore = str_replace ($bodytagold, $bodytagold."\n".showvideoplayer_head ($site, false, $buildview), $viewstore);
+            $viewstore = str_replace ($bodytagold, $bodytagold."\n".showvideoplayer_head ($site, false, false), $viewstore);
           }          
         }
         

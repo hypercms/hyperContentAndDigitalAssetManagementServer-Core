@@ -843,7 +843,9 @@ release 07/2015
 - implementation of getescapetext for all files of the graphical user interface
 - bug fix: function createmedia did not execute rdbms_setmedia if $mgmt_maxfilesize limit has been reached for a file 
 - bug fix: installation procedure checked temp and view directory before they were created
-- update of videoplayer video JS to version 4.12.7
+- update of videoplayer Video JS to version 4.12.7
+- fullscreen mode in video player hase been disabled for side bar
+- bug fix: Video JS css did not properly support fullscreen when used in iframes, fullscreen is disabled in CMS views
 - implementation of new youtube connector to support Google OAuth
 */
 

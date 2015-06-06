@@ -2839,10 +2839,10 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
 
 // ------------------------- showvideoplayer_head -----------------------------
 // function: showvideoplayer_head()
-// input: publication name, secure hyperreferences by adding 'hypercms_', view [publish,%] 
+// input: publication name, secure hyperreferences by adding 'hypercms_', is it possible to view the video in fullScreen [true,false]
 // output: head for video player / false on error
 
-function showvideoplayer_head ($site, $secureHref=true, $view="publish")
+function showvideoplayer_head ($site, $secureHref=true, $enableFullScreen=true)
 {
   global $mgmt_config;
   
@@ -2877,6 +2877,7 @@ function showvideoplayer_head ($site, $secureHref=true, $view="publish")
   <script>
     videojs.options.flash.swf = \"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.swf\";
   </script>\n";
+      if ($enableFullScreen == false) $return .= "  <style> .vjs-fullscreen-control { display: none; } .vjs-default-skin .vjs-volume-control { margin-right: 20px; } </style>";
     }
     
     return $return;

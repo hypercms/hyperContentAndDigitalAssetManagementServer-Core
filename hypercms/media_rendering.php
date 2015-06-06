@@ -269,7 +269,7 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css" />
 <?php 
 if ($is_audio) echo showaudioplayer_head ();
-else echo showvideoplayer_head ($site, false, 'preview'); 
+else echo showvideoplayer_head ($site, false); 
 ?>
 
 <script type="text/javascript">

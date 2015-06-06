@@ -121,7 +121,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) echo showaudioplayer_head (); ?>
-<?php if (!empty ($file_info['ext']) && is_video ($file_info['ext'])) echo showvideoplayer_head ($site, false); ?>
+<?php if (!empty ($file_info['ext']) && is_video ($file_info['ext'])) echo showvideoplayer_head ($site, false, false); ?>
 </head>
 
 <body class="hcmsWorkplaceGeneric">

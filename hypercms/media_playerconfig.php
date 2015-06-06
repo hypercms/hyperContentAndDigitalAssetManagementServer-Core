@@ -125,7 +125,7 @@ if ($config && is_array ($config))
   }
   else
   {
-    $head = showvideoplayer_head ($site, false, 'publish');
+    $head = showvideoplayer_head ($site, false);
     $playercode = $config['data'];
   }
 }

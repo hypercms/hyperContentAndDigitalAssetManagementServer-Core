@@ -164,7 +164,7 @@ if ($playercode != "")
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <?php 
     if ($audio) echo showaudioplayer_head ();
-    else echo showvideoplayer_head ($site, false, 'publish');
+    else echo showvideoplayer_head ($site, false);
     ?>
   </head>
   <body style="padding: 0px; margin: 0px;">
