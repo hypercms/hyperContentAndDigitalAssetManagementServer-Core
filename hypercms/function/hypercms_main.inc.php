@@ -227,7 +227,7 @@ function makestring ($array)
 
 function splitstring ($string)
 {
-  if ($string != "")
+  if ($string != "" && is_string ($string))
   {
     $string = str_replace ("\n", "", $string);
     $result_array = array();
@@ -5211,7 +5211,7 @@ function inherit_db_deleteparent ($inherit_db, $parent)
 {
   if (isset ($inherit_db[$parent]))
   {
-    $inherit_db[$parent] = null;
+    unset ($inherit_db[$parent]);
     
     if (is_array ($inherit_db))
     {
@@ -8800,7 +8800,7 @@ function deleteworkflowfolder ($site, $cat, $folderpath, $user)
       {
         for ($i = 0; $i < sizeof ($wf_array); $i++)
         {
-          if (strpos ($wf_array[$i], $folderpath) > 0) $wf_array[$i] = null;
+          if (strpos ($wf_array[$i], $folderpath) > 0) unset ($wf_array[$i]);
         }
       
         $workflowdata = implode ("\n", $wf_array); 
@@ -10560,8 +10560,8 @@ function createobject ($site, $location, $page, $template, $user)
 
 // ---------------------------------------- uploadfile --------------------------------------------
 // function: uploadfile()
-// input: publication name, destination location, category [page/comp], uploaded file (PHP Autoglobale), unzip [1/0], media file name to be updated or true/false, 
-//        create only a new thumbnail [1/0], object name, imageresize [percentage, null], imagepercentage (%-value as integer), user name, check for duplicates [true,false], versioning of file [true,false]
+// input: publication name, destination location, category [page/comp], uploaded file (array as defined by PHP autoglobale $_FILES), unzip [1/0], object name (only for media file update of existing object), 
+//        create only a new thumbnail [1/0], imageresize [percentage, null], imagepercentage (%-value as integer), user name, check for duplicates [true,false], versioning of file [true,false]
 // output: result array
 // requires: config.inc.php, $pageaccess, $compaccess, $hiddenfolder, $localpermission
  
@@ -10569,7 +10569,7 @@ function createobject ($site, $location, $page, $template, $user)
 // this function manages all file uploads, like unzip files, create media objects and resize images.
 // the container name will be extracted from the media file name for updating an existing multimedia file
 
-function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_update=false, $createthumbnail=0, $page="", $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $versioning=false)
+function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, $createthumbnail=0, $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $versioning=false)
 {
   global $mgmt_config, $mgmt_uncompress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_parser, $eventsystem,
          $pageaccess, $compaccess, $hiddenfolder, $localpermission, $hcms_lang, $lang;
@@ -10584,7 +10584,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
   
   // set default language
   if ($lang == "") $lang = "en";
-  
+
   if (valid_publicationname ($site) && valid_locationname ($location) && $cat != "" && accessgeneral ($site, $location, $cat) && is_array ($global_files) && valid_objectname ($user))
   {
     // publication management config
@@ -10594,29 +10594,36 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     if (substr ($location, -1) != "/") $location = $location."/";
     
     // deconvert location
-    $location = deconvertpath ($location, "file");        
+    $location = deconvertpath ($location, "file");   
         
     // set local permissions
     $ownergroup = accesspermission ($site, $location, $cat);
     
     if ($ownergroup != false) $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
     else $setlocalpermission = false;
-    
+
     if ($setlocalpermission['root'] != 1 || $setlocalpermission['upload'] != 1)
     {
+      $errcode = 30501;
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> no permissions to upload file to ".$location." for user '".$user."'";
+        
+      // write log
+      savelog (@$error);
+      
       $result['header'] = "HTTP/1.1 500 Internal Server Error";
       $result['message'] = $hcms_lang['you-dont-have-permissions-to-use-this-function'][$lang];
       return $result;
     }
     
-    // get media file name if page has been provided and media_update is true
-    if (valid_objectname ($page) && $media_update == true)
+    // get media file name if page has been provided and media file will be updated
+    if (valid_objectname ($page) && is_file ($location.$page))
     {
       $object_info = getobjectinfo ($site, $location, $page, $user);
       
       if (!empty ($object_info['media'])) $media_update = $object_info['media'];
       else $media_update = "";
-    }  
+    }
+    else $media_update = "";
 
     // define variables
     $updir = $location; //absolute path to where files are uploaded, no trailing slash
@@ -10643,6 +10650,12 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
       }
       else
       {
+        $errcode = 20502;
+        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file could not be obtained from the source";
+          
+        // write log
+        savelog (@$error);
+        
         $result['header'] = "HTTP/1.1 501 Internal Server Error";
         $result['message'] = $hcms_lang['file-could-not-be-downloaded'][$lang];
         
@@ -10665,6 +10678,12 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
       }
       else
       {
+        $errcode = 20502;
+        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file could not be obtained from the source";
+          
+        // write log
+        savelog (@$error);
+        
         $result['header'] = "HTTP/1.1 501 Internal Server Error";
         $result['message'] = $hcms_lang['file-could-not-be-downloaded'][$lang];
         
@@ -10715,6 +10734,12 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
       }
       else
       {
+        $errcode = 10503;
+        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file could not be obtained from the source";
+          
+        // write log
+        savelog (@$error);
+        
         $result['header'] = "HTTP/1.1 501 Internal Server Error";
         $result['message'] = $hcms_lang['file-could-not-be-downloaded'][$lang];
         
@@ -10728,6 +10753,12 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     // error during file upload
     if ($global_files['Filedata']['error'] != UPLOAD_ERR_OK)
     {
+      $errcode = 20504;
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$global_files['Filedata']['name']."' could not be saved or only partialy-saved";
+        
+      // write log
+      savelog (@$error);
+        
       $result['header'] = "HTTP/1.1 501 Internal Server Error";
       $result['message'] = $hcms_lang['file-could-not-be-saved-or-only-partialy-saved'][$lang];
       return $result;
@@ -10736,6 +10767,12 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     // error if no file is selected
     if (empty ($global_files['Filedata']['name']) || empty ($global_files['Filedata']['tmp_name']))
     {
+      $errcode = 20505;
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> no file selected for upload";
+        
+      // write log
+      savelog (@$error);
+      
       $result['header'] = "HTTP/1.1 502 Internal Server Error";
       $result['message'] = $hcms_lang['no-file-selected-to-upload'][$lang];
       return $result;
@@ -10746,6 +10783,12 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     
     if (strlen ($global_files['Filedata']['name']) > $mgmt_config['max_digits_filename'])
     {
+      $errcode = 20506;
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file name '".$global_files['Filedata']['name']."' has too many digits";
+        
+      // write log
+      savelog (@$error);
+      
       $result['header'] = "HTTP/1.1 503 Internal Server Error";
       $result['message'] = str_replace ("%maxdigits%", $mgmt_config['max_digits_filename'], $hcms_lang['the-file-name-has-more-than-maxdigits-digits'][$lang]);
       return $result;
@@ -10763,7 +10806,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
 
     // error if file exists
     if ($media_update == "" && @file_exists ($location.$file_renamed))
-    {
+    {      
       $result['header'] = "HTTP/1.1 504 Internal Server Error";
       $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang];
       return $result;
@@ -10774,6 +10817,12 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
     {
       if (filesize ($global_files['Filedata']['tmp_name']) > $size)
       {
+        $errcode = 20508;
+        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$global_files['Filedata']['name']."' is too big (max. ".$mgmt_config['maxfilesize'].")";
+          
+        // write log
+        savelog (@$error);
+      
         $result['header'] = "HTTP/1.1 505 Internal Server Error";
         $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-is-too-big'][$lang];
         return $result;
@@ -10813,7 +10862,7 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
         }
         
         if (sizeof ($links) > 0)
-        {
+        {        
           $result['header'] = "HTTP/1.1 510 Internal Server Error";
           $result['message'] = str_replace ('%files%', implode(", ", $links), $hcms_lang['there-are-files-with-the-same-content-files'][$lang]);
   
@@ -10923,34 +10972,20 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
             }
           }
         }
-        else $show = $result_createobject['message'];
-      }
-      // -------------- update existing multimedia object -----------------
-      elseif ($media_update != "" && valid_objectname ($page))
-      {
-        // read media file from object file and regenerate and check media_update
-        if (@is_file ($location.$page))
-        {
-          $pagedata = loadfile ($location, $page);
-          
-          if ($pagedata != "") $mediafile = getfilename ($pagedata, "media");
-          
-          // media file to be updated doesnt match with uploaded file
-          if ($mediafile != "" && $mediafile != $media_update)
-          {
-            $result['header'] = "HTTP/1.1 508 Internal Server Error";
-            $result['message'] = $hcms_lang['the-request-holds-invalid-parameters'][$lang];
-            return $result;
-          }
-        }
         else
         {
-          // given object file doesnt exist
-          $result['header'] = "HTTP/1.1 508 Internal Server Error";
-          $result['message'] = $hcms_lang['the-request-holds-invalid-parameters'][$lang];
-          return $result;
+          $errcode = 20511;
+          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$global_files['Filedata']['name']."' could not be created by createmediaobject (".$result_createobject['message'].")";
+            
+          // write log
+          savelog (@$error);
+
+          $show = $result_createobject['message'];
         }
-        
+      }
+      // -------------- update existing multimedia object -----------------
+      elseif ($media_update != "")
+      {
         // update thumbnail file (uploaded file must be JPEG)
         if ($createthumbnail == 1)
         {
@@ -10973,11 +11008,21 @@ function uploadfile ($site, $location, $cat, $global_files, $unzip=0, $media_upd
               // copy to temporary directory
               if ($is_remote_file)
               {
-                $result_upload = @rename ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.".jpg") or $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
+                $result_upload = @rename ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.".jpg");
+                
+                if (!$result_upload)
+                {
+                  $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
+                }
               }
               else
               {
-                $result_upload = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.".jpg") or $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
+                $result_upload = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.".jpg");
+                
+                if (!$result_upload)
+                {
+                  $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
+                }
               }
               
               if ($result_upload == true)
@@ -15629,7 +15674,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
             {               
               $test = publishobject ($site_source, $location_source, $object_source, $user); 
 
-              if ($test['result'] != false) $collection[$i] = null;
+              if ($test['result'] != false) unset ($collection[$i]);
               else 
               {
                 $errcode = "20108";
@@ -15641,7 +15686,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
             {
               $test = unpublishobject ($site_source, $location_source, $object_source, $user);
        
-              if ($test['result'] != false) $collection[$i] = null;
+              if ($test['result'] != false) unset ($collection[$i]);
               else 
               {
                 $errcode = "20109";
@@ -15653,7 +15698,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
             {
               $test = deleteobject ($site_source, $location_source, $object_source, $user);
     
-              if ($test['result'] != false) $collection[$i] = null;
+              if ($test['result'] != false) unset ($collection[$i]);
               else 
               {
                 $errcode = "20109";
@@ -15841,7 +15886,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
   
               if ($test['result'] != false)
               {
-                $collection[$i] = null;
+                unset ($collection[$i]);
               }
               else 
               {

@@ -1225,7 +1225,7 @@ function getfileinfo ($site, $file, $cat="comp")
 function getobjectinfo ($site, $location, $object, $user="sys")
 {
   global $mgmt_config;
-  
+
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object))
   {
     // add slash if not present at the end of the location string
@@ -1245,7 +1245,7 @@ function getobjectinfo ($site, $location, $object, $user="sys")
     {   
       $object = correctfile ($location, $object, $user);   
     }
-    
+
     // load object file
     $data = loadfile ($location, $object);
     
