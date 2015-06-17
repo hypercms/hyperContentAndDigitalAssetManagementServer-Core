@@ -360,10 +360,12 @@ if ($usedby == "" || $usedby == $user)
     {
       // eventsystem
       if ($eventsystem['onsaveobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      {
         $contentdataevent = onsaveobject_pre ($site, $cat, $location, $page, $contentfile, $contentdatanew, $user);
       
-      // check if event returns a string, if so, the event returns the container and not true or false 
-      if (!empty ($contentdataevent) && strlen ($contentdataevent) > 10) $contentdatanew = $contentdataevent;    
+        // check if event returns a string, if so, the event returns the container and not true or false 
+        if (!empty ($contentdataevent) && strlen ($contentdataevent) > 10) $contentdatanew = $contentdataevent;
+      } 
     
       // insert new date into content file
       $contentdatanew = setcontent ($contentdatanew, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");

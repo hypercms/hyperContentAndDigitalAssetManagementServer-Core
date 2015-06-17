@@ -368,7 +368,7 @@ body
   margin: 0;
 }
 
-html, body, table, td, span
+html, body, table, th, td, span
 {  
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 11px; 
@@ -379,6 +379,8 @@ html, body, table, td, span
 
 .hcmsTableHeader
 {
+  text-align: left;
+  font-weight: normal;
   background-color: #7BB5FF;
   cursor: pointer;
 }

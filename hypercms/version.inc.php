@@ -846,12 +846,21 @@ release 07/2015
 - update of videoplayer Video JS to version 4.12.7
 - fullscreen mode in video player hase been disabled for side bar
 - bug fix: Video JS css did not properly support fullscreen when used in iframes, fullscreen is disabled in CMS views
-- implementation of new youtube connector to support Google OAuth
 - implementation of extended error logging in function uploadfile
 - improvement of input validation in function splitstring
 - removed media_update input parameter from function uploadfile. media updates require the object name as input.
+
+version 5.7.10
+release 08/2015
+- implementation of new youtube connector to support Google OAuth
+- implementation of new function editpublicationsetting to edit a single setting of a publication
+- function selectcontent, selectxmlcontent, selecticontent and selectxmlicontent use case-insensitve conditional value
+- larger youtube upload window
+- implementation of meta data content from videos into the youtube upload form
+- removed hypercms_eventsystem file from function directory
+- new youtube video link in page_info in case the video was uploaded to youtube
 */
 
 // current version
-$version = "Version 5.7.9";
+$version = "Version 5.7.10";
 ?>

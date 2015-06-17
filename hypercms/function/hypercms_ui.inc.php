@@ -1252,7 +1252,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
           {		
             $youtube_uploads['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;"> 
-            <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","420","300")\'>'.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button> </td>';
+            <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","640","400")\'>'.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button> </td>';
           }
         }
       }
@@ -1317,7 +1317,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
                 {	
                   $youtube_uploads[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;"> 
-                <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","420","300")\'>'.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button> </td>';
+                <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","640","400")\'>'.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button> </td>';
                 }
               }
             }

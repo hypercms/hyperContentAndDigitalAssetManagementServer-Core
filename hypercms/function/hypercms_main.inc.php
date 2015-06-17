@@ -1557,11 +1557,11 @@ function loadfile_fast ($abs_path, $filename)
   
       if ($filehandle != false)
       {
-        @flock ($filehandle,2);
+        @flock ($filehandle, LOCK_EX);
   
         $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
 
-        @flock ($filehandle,3);
+        @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);
       }
     }   
@@ -1603,11 +1603,11 @@ function loadfile ($abs_path, $filename)
 
       if ($filehandle != false)
       {
-        @flock ($filehandle,2);
+        @flock ($filehandle, LOCK_EX);
   
         $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
         
-        @flock ($filehandle,3);
+        @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);
       }
     }    
@@ -1631,11 +1631,11 @@ function loadfile ($abs_path, $filename)
   
           if ($filehandle != false)
           {
-            @flock ($filehandle,2);
+            @flock ($filehandle, LOCK_EX);
   
             $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
 
-            @flock ($filehandle,3);
+            @flock ($filehandle, LOCK_UN);
             @fclose ($filehandle);
             
             break;
@@ -1696,12 +1696,12 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
     
         if ($filehandle != false)
         {
-          @flock ($filehandle,2);
+          @flock ($filehandle, LOCK_EX);
     
           // read file
           $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
 
-          @flock ($filehandle, 3);
+          @flock ($filehandle, LOCK_UN);
           @fclose ($filehandle);
         }
         else
@@ -1714,7 +1714,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
     // if file is locked by other user
     elseif ($filename_unlocked != ".folder")
     {
-      // set default end time stamp for laoding (now + 3 sec)
+      // set default end time stamp for loading (now + 3 sec)
       if ($force_unlock > 0 && is_int ($force_unlock)) $timestamp = $force_unlock;
       else $timestamp = 3;
       
@@ -1746,12 +1746,12 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
             // file can be loaded   
             if ($filehandle != false)
             {
-              @flock ($filehandle,2);
+              @flock ($filehandle, LOCK_EX);
     
               // read file
               $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
  
-              @flock ($filehandle, 3);
+              @flock ($filehandle, LOCK_UN);
               @fclose ($filehandle);
               
               break; 
@@ -1821,9 +1821,9 @@ function savefile ($abs_path, $filename, $filedata)
   
     if ($filehandle != false)
     {    
-      @flock ($filehandle, 2);
+      @flock ($filehandle, LOCK_EX);
       @fwrite ($filehandle, $filedata);  
-      @flock ($filehandle, 3);  
+      @flock ($filehandle, LOCK_UN);  
       @fclose ($filehandle);
 
       return true;
@@ -1873,9 +1873,9 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
 
       if ($filehandle != false)
       {
-        @flock ($filehandle, 2);
+        @flock ($filehandle, LOCK_EX);
         @fwrite ($filehandle, $filedata);        
-        @flock ($filehandle, 3);
+        @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);
       }
       else return false;
@@ -2230,9 +2230,9 @@ function appendfile ($abs_path, $filename, $filedata)
   
       if ($filehandle != false)
       {
-        @flock ($filehandle, 2);     
+        @flock ($filehandle, LOCK_EX);     
         @fwrite ($filehandle, $filedata);    
-        @flock ($filehandle, 3);
+        @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);        
         return true;
       }
@@ -2255,9 +2255,9 @@ function appendfile ($abs_path, $filename, $filedata)
               
           if ($filehandle != false)
           {
-            @flock ($filehandle, 2);
+            @flock ($filehandle, LOCK_EX);
             @fwrite ($filehandle, $filedata);
-            @flock ($filehandle, 3);
+            @flock ($filehandle, LOCK_UN);
             @fclose ($filehandle);
                              
             return true;
@@ -6524,10 +6524,10 @@ allow_ip = ".$allow_ip_new;
         onsavepublication_pre ($site_name, $site_mgmt_config, $site_publ_config_ini, $site_publ_config_prop, $user);
     
       // Management Config
-      $test = savefile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php", $site_mgmt_config);
+      $test = savefile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php", trim ($site_mgmt_config));
 
       // Publication Config INI
-      $test = savefile ($mgmt_config['abs_path_rep']."config/", $site_name.".ini", $site_publ_config_ini);
+      $test = savefile ($mgmt_config['abs_path_rep']."config/", $site_name.".ini", trim ($site_publ_config_ini));
   
       if ($test == true)
       {
@@ -6536,7 +6536,7 @@ allow_ip = ".$allow_ip_new;
       }
       
       // Publication Config PROP   
-      $test = savefile ($mgmt_config['abs_path_rep']."config/", $site_name.".properties", $site_publ_config_prop);    
+      $test = savefile ($mgmt_config['abs_path_rep']."config/", $site_name.".properties", trim ($site_publ_config_prop));    
       
       if ($test == true)
       {      
@@ -6595,6 +6595,92 @@ allow_ip = ".$allow_ip_new;
   $result['message'] = $show;  
   
   return $result;    
+}
+
+// ------------------------- editpublicationsetting -----------------------------
+// function: editpublicationsetting()
+// input: publication name, publication settings name ['site_admin','linkengine','sendmail','webdav','http_incl','inherit_obj','inherit_comp','inherit_tpl','specialchr_disable','default_codepage','exclude_folders'], value, user name  
+// output: true/false
+
+// description:
+// this function can be used to edit a single settings of a publication.
+
+function editpublicationsetting ($site_name, $setting, $value, $user="sys")
+{
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
+
+  $result_ok = false;
+  
+  if (valid_publicationname ($site_name) && is_string ($setting) && valid_objectname ($user))
+  {        
+    // load Management Config
+    $site_mgmt_config = loadfile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php");
+    
+    // eventsystem
+    if ($eventsystem['onsavepublication_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+      onsavepublication_pre ($site_name, $site_mgmt_config, "", "", $user);
+    
+    if ($site_mgmt_config != "")
+    {
+      $site_mgmt_records = explode (PHP_EOL, $site_mgmt_config);
+      $site_mgmt_config = "";
+      
+      foreach ($site_mgmt_records as $record)
+      {
+        if (substr_count ($record, "\$mgmt_config['".$site_name."']['".$setting."']") == 1)
+        {
+          $site_mgmt_config .= "\$mgmt_config['".$site_name."']['".$setting."'] = \"".str_replace ("\"", "\\\"", $value)."\";\n";
+        }
+        else $site_mgmt_config .= $record."\n";
+      }
+  
+      if ($site_mgmt_config != "")
+      {
+        // save Management Config
+        $test = savefile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php", trim ($site_mgmt_config));
+  
+        if ($test == true)
+        {        
+          // eventsystem
+          if ($eventsystem['onsavepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
+            onsavepublication_post ($site_name, $site_mgmt_config, "", "", $user);
+      
+          $add_onload = "";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-configuration-was-saved-successfully'][$lang]."</span>\n";
+          
+          // success
+          $result_ok = true;
+        }
+        else
+        {
+          $add_onload = "";
+          $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span>\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
+        }
+      }
+      else
+      {
+        $add_onload = "";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span>\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
+      }
+    }
+    else
+    {
+      $add_onload = "";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span>\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
+    }
+  }
+  else
+  {
+    $add_onload = "";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span>\n";
+  }
+  
+  $result = array();
+  $result['result'] = $result_ok;
+  $result['add_onload'] = $add_onload;
+  $result['message'] = $show;  
+  
+  return $result; 
 }
 
 // ------------------------- deletepublication -----------------------------

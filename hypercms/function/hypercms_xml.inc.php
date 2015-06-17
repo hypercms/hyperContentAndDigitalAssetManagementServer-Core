@@ -432,7 +432,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   // if condition is set
   if ($startcondtag != "")
   {   
-    $condvalue = trim ($condvalue);
+    $condvalue = trim (strtolower ($condvalue));
     
     // check if wild card characters are used in condvalue
     if ($condvalue[0] == "*") 
@@ -473,7 +473,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
           {           
             foreach ($currentvalue_array as $currentvalue)           
             {      
-              $currentvalue = trim ($currentvalue);
+              $currentvalue = trim (strtolower ($currentvalue));
                  
               if ($wc_begin == false && $wc_end == false && $currentvalue == $condvalue)
               {
@@ -593,7 +593,7 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   // if condition is set
   if ($startcondtag != "")
   {   
-    $condvalue = trim ($condvalue);
+    $condvalue = trim (strtolower ($condvalue));
     
     // check if wild card characters are used in condvalue
     if ($condvalue[0] == "*") 
@@ -634,7 +634,7 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
           {           
             foreach ($currentvalue_array as $currentvalue)           
             {      
-              $currentvalue = trim ($currentvalue);
+              $currentvalue = trim (strtolower ($currentvalue));
                  
               if ($wc_begin == false && $wc_end == false && $currentvalue == $condvalue)
               {
@@ -753,7 +753,7 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   // if condition is set
   if ($startcondtag != "")
   {
-    $condvalue = trim ($condvalue);
+    $condvalue = trim (strtolower ($condvalue));
     
     // check if wild card characters are used in condvalue
     if ($condvalue[0] == "*") 
@@ -794,7 +794,7 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
           {           
             foreach ($currentvalue_array as $currentvalue)           
             {
-              $currentvalue = trim ($currentvalue);
+              $currentvalue = trim (strtolower ($currentvalue));
               
               if ($wc_begin == false && $wc_end == false && $currentvalue == $condvalue)
               {
@@ -916,7 +916,7 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   // if condition is set
   if ($startcondtag != "")
   {
-    $condvalue = trim ($condvalue);
+    $condvalue = trim (strtolower ($condvalue));
     
     // check if wild card characters are used in condvalue
     if ($condvalue[0] == "*") 
@@ -957,7 +957,7 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
           {           
             foreach ($currentvalue_array as $currentvalue)           
             {
-              $currentvalue = trim ($currentvalue);
+              $currentvalue = trim (strtolower ($currentvalue));
               
               if ($wc_begin == false && $wc_end == false && $currentvalue == $condvalue)
               {

@@ -434,26 +434,6 @@ $mgmt_config['instances'] = "";
 // Enable writing of session data for third party load balancers in order to enable session synchronization
 $mgmt_config['writesessiondata'] = false;
 
-
-// ------------------------------------ Import / Export ----------------------------------------
-
-// Define password for Import and Export
-$mgmt_config['passcode'] = "";
-
-// --------------------------------------- App Keys --------------------------------------------
-
-// Youtube integration
-// Please provide Google API credentials in order to upload videos to Youtube
-$mgmt_config['youtube_appname'] = "";
-$mgmt_config['youtube_oauth2_client_id'] = "";
-$mgmt_config['youtube_oauth2_client_secret'] = "";
-
-// DropBox integration
-// Keep in mind that the domain needs to be added to your Dropbox developer account in order to use the app-key
-// or you create your own Dropbox app-key and set it here
-$mgmt_config['dropbox_appname'] = "";
-$mgmt_config['dropbox_appkey'] = "";
-
 // ------------------------------------ Executable Linking -------------------------------------
 
 // hyperCMS uses third party PlugIns to parse, convert or uncompress files. The Windows binaries can
@@ -649,6 +629,25 @@ $mgmt_config['smtp_username'] = "%smtp_username%";
 $mgmt_config['smtp_password'] = "%smtp_password%";
 $mgmt_config['smtp_port']     = "%smtp_port%";
 $mgmt_config['smtp_sender']   = "%smtp_sender%";
+
+// ------------------------------------ Import / Export ----------------------------------------
+
+// Define password for Import and Export
+$mgmt_config['passcode'] = "";
+
+// --------------------------------------- App Keys --------------------------------------------
+
+// Youtube integration
+// Please provide Google API credentials in order to upload videos to Youtube
+$mgmt_config['youtube_oauth2_client_id'] = "";
+$mgmt_config['youtube_oauth2_client_secret'] = "";
+$mgmt_config['youtube_appname'] = "";
+
+// DropBox integration
+// Keep in mind that the domain needs to be added to your Dropbox developer account in order to use the app-key
+// or you create your own Dropbox app-key and set it here
+$mgmt_config['dropbox_appname'] = "";
+$mgmt_config['dropbox_appkey'] = "";
 
 // -------------------------------------- LDAP Connectivity -------------------------------------------
 

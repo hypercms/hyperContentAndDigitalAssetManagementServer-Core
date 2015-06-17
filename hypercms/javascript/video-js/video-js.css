@@ -851,14 +851,14 @@ body.vjs-full-window {
   position: fixed;
   overflow: hidden;
   z-index: 1000;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  right: 0;
+  left: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  right: 0 !important;
   width: 100% !important;
   height: 100% !important;
   /* IE6 full-window (underscore hack) */
-  _position: absolute;
+  _position: absolute !important;
 }
 .video-js:-webkit-full-screen {
   width: 100% !important;
