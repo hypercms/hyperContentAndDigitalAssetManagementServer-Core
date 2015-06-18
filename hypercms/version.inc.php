@@ -859,6 +859,7 @@ release 08/2015
 - implementation of meta data content from videos into the youtube upload form
 - removed hypercms_eventsystem file from function directory
 - new youtube video link in page_info in case the video was uploaded to youtube
+- bug fix: function showvideoplayer created wrapperlink for the video poster image, this caused the video to be loaded as the poster
 */
 
 // current version

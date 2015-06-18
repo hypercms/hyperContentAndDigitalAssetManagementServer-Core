@@ -2744,28 +2744,11 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
     }
 
     // if logo is in media repository
+    // IMPORTANT: Do not use a wrapperlink for the video poster image!
     if (substr_count ($logo_url, $mgmt_config['url_path_media'])) 
     {
-      // if publication is configured as a DAM, the direct access is not allowed and a wrapper link is required
-      if ($mgmt_config[$site]['dam'])
-      {
-        $container_id = getmediacontainerid (getobject ($logo_url));
-        
-        if ($container_id != "")
-        {
-          $logo_wrapperlink = createwrapperlink ("", "", "", "", "", $container_id);
-        }
-      }
-
-      if (!empty ($logo_wrapperlink))
-      {
-        $logo_url = $logo_wrapperlink.$ts;
-      }
-      else
-      {
-        $logo_new = str_replace ($mgmt_config['url_path_media'], "", $logo_url);
-        $logo_url = $mgmt_config['url_path_cms'].'explorer_wrapper.php?media='.$logo_new.'&token='.hcms_crypt($logo_new).$ts;
-      }
+      $logo_new = str_replace ($mgmt_config['url_path_media'], "", $logo_url);
+      $logo_url = $mgmt_config['url_path_cms'].'explorer_wrapper.php?media='.$logo_new.'&token='.hcms_crypt($logo_new).$ts;
     }
 
     $flashplayer = $mgmt_config['url_path_cms']."javascript/video/jarisplayer.swf";
