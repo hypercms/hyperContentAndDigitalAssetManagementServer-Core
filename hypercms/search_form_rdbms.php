@@ -239,11 +239,11 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
             <tr id="row_searchformat" align="left" valign="top">
               <td><?php echo getescapedtext ($hcms_lang['search-for-file-type'][$lang]); ?>:</td>
               <td>
-                <input type="checkbox" name="search_format[object]" value="comp" checked="checked" /><?php echo getescapedtext ($hcms_lang['components'][$lang]); ?><br />
-                <input type="checkbox" name="search_format[image]" value="image" checked="checked" /><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?><br />
-                <input type="checkbox" name="search_format[document]" value="document" checked="checked" /><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?><br />
-                <input type="checkbox" name="search_format[video]" value="video" checked="checked" /><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?><br />
-                <input type="checkbox" name="search_format[audio]" value="audio" checked="checked" /><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[object]" value="comp" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['components'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[image]" value="image" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['image'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[document]" value="document" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['document'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[video]" value="video" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['video'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[audio]" value="audio" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?><br />
               </td>
             </tr>          
             <?php } ?>
@@ -570,11 +570,11 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
             <tr align="left" valign="top">
               <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-for-file-type'][$lang]); ?>:</td>
               <td>
-                <input type="checkbox" name="search_format[object]" value="comp" checked="checked" /><?php echo getescapedtext ($hcms_lang['components'][$lang]); ?><br />
-                <input type="checkbox" name="search_format[image]" value="image" checked="checked" /><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?><br />
-                <input type="checkbox" name="search_format[document]" value="document" checked="checked" /><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?><br />
-                <input type="checkbox" name="search_format[video]" value="video" checked="checked" /><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?><br />
-                <input type="checkbox" name="search_format[audio]" value="audio" checked="checked" /><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[object]" value="comp" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['components'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[image]" value="image" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['image'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[document]" value="document" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['document'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[video]" value="video" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['video'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[audio]" value="audio" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?><br />
               </td>
             </tr>
             <?php } ?>  
@@ -683,11 +683,11 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
             <tr align="left" valign="top">
               <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-for-file-type'][$lang]); ?>:</td>
               <td>
-                <input type="checkbox" name="search_format[object]" value="comp" checked="checked" /><?php echo getescapedtext ($hcms_lang['components'][$lang]); ?><br />
-                <input type="checkbox" name="search_format[image]" value="image" checked="checked" /><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?><br />
-                <input type="checkbox" name="search_format[document]" value="document" checked="checked" /><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?><br />
-                <input type="checkbox" name="search_format[video]" value="video" checked="checked" /><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?><br />
-                <input type="checkbox" name="search_format[audio]" value="audio" checked="checked" /><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[object]" value="comp" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['components'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[image]" value="image" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['image'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[document]" value="document" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['document'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[video]" value="video" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['video'][$lang]); ?><br />
+                <input type="checkbox" name="search_format[audio]" value="audio" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?><br />
               </td>
             </tr>
             <?php } ?>   
@@ -768,7 +768,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
             <tr align="left" valign="top">
               <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-restriction'][$lang]); ?>:</td>
               <td class="hcmsHeadlineTiny">
-                <input type="checkbox" name="search_cat" value="file" /> <?php echo getescapedtext ($hcms_lang['only-object-names'][$lang]); ?>
+                <input type="checkbox" name="search_cat" value="file" />&nbsp;<?php echo getescapedtext ($hcms_lang['only-object-names'][$lang]); ?>
               </td>
             </tr>                     
             <tr id="row_imagesize" align="left" valign="top">

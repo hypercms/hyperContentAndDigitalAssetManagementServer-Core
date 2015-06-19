@@ -853,6 +853,7 @@ release 07/2015
 version 5.7.10
 release 08/2015
 - implementation of new youtube connector to support Google OAuth
+- removed youtube token from management publication configuration file (funtion editpublication), the token will be saved in the config directory as youtube_token.json for all publications since the refresh_token will only provided once by Google
 - implementation of new function editpublicationsetting to edit a single setting of a publication
 - function selectcontent, selectxmlcontent, selecticontent and selectxmlicontent use case-insensitve conditional value
 - larger youtube upload window
@@ -860,6 +861,8 @@ release 08/2015
 - removed hypercms_eventsystem file from function directory
 - new youtube video link in page_info in case the video was uploaded to youtube
 - bug fix: function showvideoplayer created wrapperlink for the video poster image, this caused the video to be loaded as the poster
+- bug fix: page_multiedit did not fully support keywords (list, file, listonly attributes)
+- function showmessage provided id of DIV holding the message (use ID suffix _text)
 */
 
 // current version

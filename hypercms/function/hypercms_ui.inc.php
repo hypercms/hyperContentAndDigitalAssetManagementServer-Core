@@ -295,7 +295,7 @@ function showmessage ($show, $width=580, $height=70, $lang="en", $style="", $id=
     if (is_int ($width)) $width_message = $width - 22 - 12; 
     
     return "  <div id=\"".$id."\" class=\"hcmsMessage\" style=\"".$style." width:".$width."px; height:".$height."px; z-index:999; padding:0; margin:5px; visibility:visible;\">
-    <div style=\"width:".$width_message."px; height:100%; margin:0; padding:3px; z-index:99999; overflow:auto; float:left;\">
+    <div id=\"".$id."_text\" style=\"width:".$width_message."px; height:100%; margin:0; padding:3px; z-index:99999; overflow:auto; float:left;\">
       ".$show."
     </div>
     <div style=\"margin:0; padding:3px; z-index:91; overflow:auto; float:left;\">

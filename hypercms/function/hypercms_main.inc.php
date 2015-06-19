@@ -6202,15 +6202,8 @@ function editpublication ($site_name, $setting, $user="sys")
     }
     
     // YouTube
-    if (array_key_exists ('youtube_token', $setting)) $youtube_token_new = $setting['youtube_token'];
-    else $youtube_token_new = "";
-    
     if (array_key_exists ('youtube', $setting) && $setting['youtube'] == true)  $youtube_new = "true";
-    else 
-    {
-      $youtube_new = "false";
-      $youtube_token_new = "";
-    }
+    else $youtube_new = "false";
       
     // theme
     if (array_key_exists ('theme', $setting)) $theme_new = $setting['theme'];
@@ -6353,7 +6346,6 @@ function editpublication ($site_name, $setting, $user="sys")
 // enable (false) or disable (true) restricted system usage of youtube uploader. 
 // youtube_token is the permanent session key for the upload interface
 \$mgmt_config['".$site_name."']['youtube'] = ".$youtube_new.";
-\$mgmt_config['".$site_name."']['youtube_token'] = \"".$youtube_token_new."\";
 
 // Theme
 \$mgmt_config['".$site_name."']['theme'] = \"".$theme_new."\";

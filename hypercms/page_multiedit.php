@@ -148,7 +148,14 @@ function gettagdata ($tag_array)
     $return[$id]->groupaccess = getattribute ($tagDefinition, "groups"); 
     if ($return[$id]->groupaccess == "") $return[$id]->groupaccess = "";
     
+    // get list entries
     $return[$id]->list = getattribute ($tagDefinition, "list");
+    
+    // get file entry (if keywords)
+    $return[$id]->file = getattribute ($tagDefinition, "file");
+    
+    // get onlylist setting for mandatory keywords list (if keywords)
+    $return[$id]->onlylist = getattribute ($tagDefinition, "onlylist");
   }
   
   return $return;
@@ -482,9 +489,9 @@ if ($is_image)
   $available_colorspaces['XYZ'] = 'XYZ';
   
   $available_flip = array();
-  $available_flip['fv'] = getescapedtext ($hcms_lang['vertical'][$lang]);
-  $available_flip['fh'] = getescapedtext ($hcms_lang['horizontal'][$lang]);
-  $available_flip['fv fh'] = getescapedtext ($hcms_lang['both'][$lang]);
+  $available_flip['fv'] = $hcms_lang['vertical'][$lang];
+  $available_flip['fh'] = $hcms_lang['horizontal'][$lang];
+  $available_flip['fv fh'] = $hcms_lang['both'][$lang];
 }
 // ------------------ video/audio parameters ------------------------
 elseif ($is_video || $is_audio)
@@ -519,17 +526,17 @@ elseif ($is_video || $is_audio)
   $available_bitrates = array();
   
   $available_bitrates['200k'] = array(
-  	'name'					=> $hcms_lang['low'][$lang]).' (200k)',
+  	'name'					=> $hcms_lang['low'][$lang].' (200k)',
   	'checked'				=> false
   );
   
   $available_bitrates['768k'] = array(
-  	'name'					=> $hcms_lang['medium'][$lang]).' (768k)',
+  	'name'					=> $hcms_lang['medium'][$lang].' (768k)',
   	'checked'				=> true
   );
   
   $available_bitrates['1856k'] = array(
-  	'name'		 => $hcms_lang['high'][$lang]).' (1856k)',
+  	'name'		 => $hcms_lang['high'][$lang].' (1856k)',
   	'checked'	 => false
   );
   
@@ -570,24 +577,24 @@ elseif ($is_video || $is_audio)
   $available_audiobitrates = array();
   
   $available_audiobitrates['64k'] = array(
-    'name'    => $hcms_lang['low'][$lang]).' (64 kb/s)',
+    'name'    => $hcms_lang['low'][$lang].' (64 kb/s)',
     'checked' => false
   );
   
   $available_audiobitrates['128k'] = array(
-    'name'    => $hcms_lang['medium'][$lang]).' (128 kb/s)',
+    'name'    => $hcms_lang['medium'][$lang].' (128 kb/s)',
     'checked' => true
   );
   
   $available_audiobitrates['192k'] = array(
-    'name'    => $hcms_lang['high'][$lang]).' (192 kb/s)',
+    'name'    => $hcms_lang['high'][$lang].' (192 kb/s)',
     'checked' => false
   );
   
   // flip
   $available_flip = array();
-  $available_flip['fv'] = getescapedtext ($hcms_lang['vertical'][$lang]);
-  $available_flip['fh'] = getescapedtext ($hcms_lang['horizontal'][$lang]);
+  $available_flip['fv'] = $hcms_lang['vertical'][$lang];
+  $available_flip['fh'] = $hcms_lang['horizontal'][$lang];
 }
 ?>
 <!DOCTYPE html>
@@ -601,10 +608,16 @@ elseif ($is_video || $is_audio)
   <script src="javascript/jquery/plugins/jquery.color.js"></script>
   <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js"></script>
   <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css" />
+  
+  <!-- Tag it script -->
+  <script src="javascript/tag-it/tag-it.min.js" type="text/javascript" charset="utf-8"></script>
+  <link href="javascript/tag-it/jquery.tagit.css" rel="stylesheet" type="text/css">
+  <link href="javascript/tag-it/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
 
   <script src="<?php echo $mgmt_config['url_path_cms']; ?>editor/ckeditor/ckeditor.js"></script>
   <script> CKEDITOR.disableAutoInline = true;</script>
   
+  <!-- Richcalendar -->
   <link rel="stylesheet" href="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.css" />
   <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rich_calendar.js"></script>
   <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/rich_calendar/rc_lang_en.js"></script>
@@ -1522,19 +1535,19 @@ elseif ($is_video || $is_audio)
               
         if (document.getElementById('cut_yes').checked == true)
         {
-          if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
-          if (document.getElementById('cut_end').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['end'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+          if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+          if (document.getElementById('cut_end').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['end'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
         }
         
         if (document.getElementById('thumb_yes').checked == true)
         {
-          if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+          if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
         }
         
         if (document.getElementById('videosize_i').checked == true)
         {
-          if (document.getElementById('width_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['width'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
-          if (document.getElementById('height_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['height'][$lang]).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+          if (document.getElementById('width_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
+          if (document.getElementById('height_i').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
         }
         
         if (errors) 
@@ -1849,7 +1862,7 @@ elseif ($is_video || $is_audio)
           <!-- rotate -->
           <div class="row">
             <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
-            <strong><label for="rotate" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang]); ?></label></strong>
+            <strong><label for="rotate" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang], $charset, $lang); ?></label></strong>
             <select name="degree" id="degree" style="margin-left:20px">
               <option value="90" selected="selected" >90&deg;</option>
               <option value="180" >180&deg;</option>
@@ -1861,13 +1874,13 @@ elseif ($is_video || $is_audio)
           <!-- flip flop -->
           <div class="row">
             <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
-            <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang]); ?></label></strong>
+            <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang], $charset, $lang); ?></label></strong>
             <select name="flip" id="flip" style="margin-left:20px">
               <?php 
                 foreach ($available_flip as $value => $name)
                 {
                 ?>
-                <option value="<?php echo $value; ?>"><?php echo $name ?></option>
+                <option value="<?php echo getescapedtext ($value, $charset, $lang); ?>"><?php echo getescapedtext ($name, $charset, $lang); ?></option>
                 <?php
                 }
               ?>
@@ -1908,7 +1921,7 @@ elseif ($is_video || $is_audio)
                 foreach ($available_colorspaces as $value => $name)
                 {
                 ?>
-                <option value="<?php echo $value; ?>"><?php echo getescapedtext ($name, $charset, $lang) ?></option>
+                <option value="<?php echo getescapedtext ($value, $charset, $lang); ?>"><?php echo getescapedtext ($name, $charset, $lang) ?></option>
                 <?php
                 }
               ?>
@@ -1967,9 +1980,9 @@ elseif ($is_video || $is_audio)
           </div>
       		<?php foreach ($available_videosizes as $videosize => $data) { ?>
           <div class="row">
-      			<input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>"<?php if($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo $data['name']; ?></label>
+      			<input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>"<?php if ($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo $data['name']; ?></label>
       			<?php if ($data['individual']) { ?>
-      		  <input type="text" name="width" size=4 maxlength=4 id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" size="4" maxlength=4 id="height_<?php echo $videosize;?>" value="" /><span> px</span>
+      		  <input type="text" name="width" size=4 maxlength=4 id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" size="4" maxlength=4 id="height_<?php echo $videosize; ?>" value="" /><span> px</span>
       			<?php }	?>
       		</div>
       		<?php }	?>
@@ -1984,27 +1997,27 @@ elseif ($is_video || $is_audio)
           </div>
           <div>
             <input type="checkbox" id="chbx_sharpen" name="use_sharpen" value="1" onclick="toggle_sharpen();" />
-            <label style="width:70px; display:inline-block;" for="chbx_sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang]); ?></label>
+            <label style="width:70px; display:inline-block;" for="chbx_sharpen"><?php echo getescapedtext ($hcms_lang['sharpen'][$lang], $charset, $lang); ?></label>
             <input name="sharpen" type="text" id="sharpen" size="4" value="0" />
           </div>
           <div>
             <input type="checkbox" id="chbx_gamma" name="use_gamma" value="1" onclick="toggle_gamma();" />
-            <label style="width:70px; display:inline-block;" for="chbx_gamma"><?php echo getescapedtext ($hcms_lang['gamma'][$lang]); ?></label>
+            <label style="width:70px; display:inline-block;" for="chbx_gamma"><?php echo getescapedtext ($hcms_lang['gamma'][$lang], $charset, $lang); ?></label>
             <input name="gamma" type="text" id="gamma" size="4" value="0" />
           </div>
           <div>
             <input type="checkbox" id="chbx_brightness" name="use_brightness" value="0" onclick="toggle_brightness();" />
-            <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang]); ?></label>
+            <label style="width:70px; display:inline-block;" for="chbx_brightness"><?php echo getescapedtext ($hcms_lang['brightness'][$lang], $charset, $lang); ?></label>
             <input name="brightness" type="text" id="brightness" size="4" value="0" />
           </div>
           <div>
              <input type="checkbox" id="chbx_contrast" name="use_contrast" value="1" onclick="toggle_contrast();" />
-            <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang]); ?></label>
+            <label style="width:70px; display:inline-block;" for="chbx_contrast"><?php echo getescapedtext ($hcms_lang['contrast'][$lang], $charset, $lang); ?></label>
             <input name="contrast" type="text" id="contrast" size="4" value="0" />
           </div>
           <div>
             <input type="checkbox" id="chbx_saturation" name="use_saturation" value="1" onclick="toggle_saturation();" />
-            <label style="width:70px; display:inline-block;" for="chbx_saturation"><?php echo getescapedtext ($hcms_lang['saturation'][$lang]); ?></label>
+            <label style="width:70px; display:inline-block;" for="chbx_saturation"><?php echo getescapedtext ($hcms_lang['saturation'][$lang], $charset, $lang); ?></label>
             <input name="saturation" type="text" id="saturation" size="4" value="0" />
           </div>
         </div>
@@ -2014,15 +2027,15 @@ elseif ($is_video || $is_audio)
           <!-- video cut -->
           <div class="row">
             <input type="checkbox" name="cut" id="cut_yes" onclick="checkCut();" value="1" />
-            <strong><label for="cut_yes" onclick="checkCut();" /><?php echo ($is_audio) ? $hcms_lang['audio-montage'][$lang] : $hcms_lang['video-montage'][$lang]); ?></label></strong>
+            <strong><label for="cut_yes" onclick="checkCut();" /><?php echo ($is_audio) ? getescapedtext ($hcms_lang['audio-montage'][$lang], $charset, $lang) : getescapedtext ($hcms_lang['video-montage'][$lang], $charset, $lang); ?></label></strong>
           </div>
           <div id="cut_area" style="display:none;">
             <div class="row">
-              <label for="cut_begin" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['start'][$lang]); ?></label>
+              <label for="cut_begin" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['start'][$lang], $charset, $lang); ?></label>
               <input type="text" name="cut_begin" id="cut_begin" value="00:00:00.00" style="width:70px; text-align:center; vertical-align:middle;" />
             </div>
             <div class="row">
-              <label for="cut_end" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['end'][$lang]); ?></label>
+              <label for="cut_end" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['end'][$lang], $charset, $lang); ?></label>
               <input type="text" name="cut_end" id="cut_end" value="00:00:00.00" style="width:70px; text-align:center; vertical-align:middle;" />
             </div>
           </div>
@@ -2031,17 +2044,17 @@ elseif ($is_video || $is_audio)
           <!-- video thumbnail -->
           <div class="row"> 
             <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1" />
-            <strong><label for="thumb_yes" onclick="checkThumb();" /><?php echo getescapedtext ($hcms_lang['pick-preview-image'][$lang]); ?></label></strong>
+            <strong><label for="thumb_yes" onclick="checkThumb();" /><?php echo getescapedtext ($hcms_lang['pick-preview-image'][$lang], $charset, $lang); ?></label></strong>
           </div>
           <div id="thumb_area" style="display:none;">
-              <label for="thumb_frame" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['frame'][$lang]); ?></label>
+              <label for="thumb_frame" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['frame'][$lang], $charset, $lang); ?></label>
               <input type="text" name="thumb_frame" id="thumb_frame" value="00:00:00.00" style="width:70px; text-align:center; vertical-align:middle;" />
           </div>
            
           <!-- rotate -->
           <div class="row">
             <input type="checkbox" id="rotate" name="rotate" value="rotate" onclick="toggle_rotate();" />
-            <strong><label for="rotate" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang]); ?></label></strong>
+            <strong><label for="rotate" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['rotate'][$lang], $charset, $lang); ?></label></strong>
             <select name="degree" id="degree" style="margin-left:20px">
               <option value="90" selected="selected" >90&deg;</option>
               <option value="180" >180&deg;</option>
@@ -2052,13 +2065,13 @@ elseif ($is_video || $is_audio)
           <!-- vflip hflip -->
           <div class="row">
             <input type="checkbox" id="chbx_flip" name="rotate" value="flip" onclick="toggle_flip();" />
-            <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang]); ?></label></strong>
+            <strong><label for="chbx_flip" style="width:65px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['flip'][$lang], $charset, $lang); ?></label></strong>
             <select name="flip" id="flip" style="margin-left:20px">
               <?php 
                 foreach ($available_flip as $value => $name)
                 {
                 ?>
-                <option value="<?php echo $value; ?>"><?php echo $name ?></option>
+                <option value="<?php echo $value; ?>"><?php echo getescapedtext ($name, $charset, $lang); ?></option>
                 <?php
                 }
               ?>
@@ -2071,11 +2084,11 @@ elseif ($is_video || $is_audio)
         <!-- video bitrate -->
       	<div class="cell" style="width:260px;">
           <div class="row">
-      		  <strong><?php echo getescapedtext ($hcms_lang['video-quality'][$lang]); ?></strong>
+      		  <strong><?php echo getescapedtext ($hcms_lang['video-quality'][$lang], $charset, $lang); ?></strong>
           </div>
       		<?php foreach ($available_bitrates as $bitrate => $data) { ?>
           <div class="row">
-      			<input type="radio" id="bitrate_<?php echo $bitrate; ?>" name="bitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="bitrate_<?php echo $bitrate; ?>"><?php echo $data['name']; ?></label><br />
+      			<input type="radio" id="bitrate_<?php echo $bitrate; ?>" name="bitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="bitrate_<?php echo $bitrate; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label><br />
           </div>
       		<?php } ?>
       	</div>
@@ -2083,11 +2096,11 @@ elseif ($is_video || $is_audio)
         <!-- audio bitrate -->
         <div class="cell">
           <div class="row">
-      		  <strong><?php echo getescapedtext ($hcms_lang['audio-quality'][$lang]); ?></strong>
+      		  <strong><?php echo getescapedtext ($hcms_lang['audio-quality'][$lang], $charset, $lang); ?></strong>
           </div>
       		<?php foreach ($available_audiobitrates as $bitrate => $data) { ?>
           <div class="row">
-      			<input type="radio" id="audiobitrate_<?php echo $bitrate; ?>" name="audiobitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="audiobitrate_<?php echo $bitrate; ?>"><?php echo $data['name']; ?></label><br />
+      			<input type="radio" id="audiobitrate_<?php echo $bitrate; ?>" name="audiobitrate" value="<?php echo $bitrate; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> /> <label for="audiobitrate_<?php echo $bitrate; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label><br />
           </div>
       		<?php } ?>
       	</div>
@@ -2096,8 +2109,8 @@ elseif ($is_video || $is_audio)
         <!-- save as video format -->
         <div class="cell hcmsInfoBox" style="witth:200px;">
       		<input type="checkbox" id="rendervideo" name="rendervideo" value="1" />
-          <strong><?php echo getescapedtext ($hcms_lang['save-as'][$lang], $charset, $lang);?></strong><br />
-      		<label for="filetype"><?php echo getescapedtext ($hcms_lang['file-type'][$lang], $charset, $lang);?></label>
+          <strong><?php echo getescapedtext ($hcms_lang['save-as'][$lang], $charset, $lang); ?></strong><br />
+      		<label for="filetype"><?php echo getescapedtext ($hcms_lang['file-type'][$lang], $charset, $lang); ?></label>
       		<select name="filetype">
             <?php
             if (!$is_audio)
@@ -2154,7 +2167,7 @@ elseif ($is_video || $is_audio)
     
     
     <form id="sendform">
-      <div>
+      <div style="display:block;">
         <span class="hcmsHeadlineTiny">
           <?php echo getescapedtext ($hcms_lang['only-fields-marked-with-*-hold-the-same-content-may-be-changed'][$lang], $charset, $lang); ?>
         </span>
@@ -2163,19 +2176,64 @@ elseif ($is_video || $is_audio)
         
         foreach ($tagdata_array as $key => $tagdata)
         {
-          $disabled = ($tagdata->ignore == true ? ' DISABLED="DISABLED" READONLY="READONLY"' : "");
+          $disabled = ($tagdata->ignore == true ? 'DISABLED="DISABLED" READONLY="READONLY"' : "");
           $id = $tagdata->hypertagname.'_'.$key;
           $label = $tagdata->labelname;
           
           if ($tagdata->ignore == false) $ids[] = $id;
           ?>
           <div style="margin-top: 10px;" class="fieldrow">
-            <label for="<?php echo $id ?>" style="display:inline-block; width:130px; vertical-align:top;"><b><?php if (trim ($label) != "") { echo $label.":"; if ($tagdata->ignore == false) echo " *"; } ?></b></label>
-          <?php 
+            <label for="<?php echo $id; ?>" style="display:inline-block; width:130px; vertical-align:top;"><b><?php if (trim ($label) != "") { echo $label.":"; if ($tagdata->ignore == false) echo " *"; } ?></b></label>
+          <?php
           if ($tagdata->type == "u") 
           {
           ?>
-            <textarea id="<?php echo $id ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" style="width: <?php echo $tagdata->width; ?>px; height: <?php echo $tagdata->height; ?>px;"<?php echo $disabled; ?>><?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?></textarea>
+            <textarea id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" style="width:<?php echo $tagdata->width; ?>px; height:<?php echo $tagdata->height; ?>px;" <?php echo $disabled; ?>><?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?></textarea>
+          <?php 
+          } 
+          elseif ($tagdata->type == "k") 
+          {
+            $list = "";
+            
+            // extract source file (file path or URL) for text list
+            if ($tagdata->file != "")
+            {
+              $list .= @file_get_contents ($tagdata->file);
+            }
+            
+            // extract text list
+            $list .= $tagdata->list;
+
+            // extract text list
+            $onlylist = strtolower ($tagdata->onlylist);
+            
+            // get list entries
+            if ($list != "")
+            {
+              // replace line breaks
+              $list = str_replace ("\r\n", ",", $list);
+              $list = str_replace ("\n", ",", $list);
+              $list = str_replace ("\r", ",", $list);
+              // escape single quotes
+              $list = str_replace ("'", "\\'", $list);
+              // create array
+              $list_array = explode (",", $list);
+              // create keyword string for Javascript
+              $keywords = "['".implode ("', '", $list_array)."']";
+              
+              $keywords_tagit = "availableTags:".$keywords.", ";
+
+              if ($onlylist == "true" || $onlylist == "yes" || $onlylist == "1")
+              {
+                $keywords_tagit .= "beforeTagAdded: function(event, ui) { if ($.inArray(ui.tagLabel, ".$keywords.") == -1) { return false; } }, ";
+              }
+            }
+            else $keywords_tagit = "";
+            
+            $add_onload .= "
+            $('#".$id."').tagit({".$keywords_tagit."singleField:true, singleFieldDelimiter:',', singleFieldNode:$('#".$id."')});";
+          ?>
+            <div style="display:inline-block; width:<?php echo $tagdata->width; ?>px;"><input id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php echo $disabled; ?> value="<?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?>" /></div>
           <?php 
           } 
           elseif ($tagdata->type == "f")
@@ -2187,12 +2245,12 @@ elseif ($is_video || $is_audio)
           {
             $onclick = "show_cal_{$id}(this);";
             ?>
-            <input type="text" id="<?php echo $id ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" value="<?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?>"<?php echo $disabled; ?>/>
+            <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" value="<?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?>" <?php echo $disabled; ?> />
             <?php
             if ($tagdata->ignore == false) 
             {
             ?>
-            <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="<?php echo $onclick; ?>" align="absmiddle" style="width:22px; height:22px; border:0; cursor:pointer;" alt="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>"/>
+            <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="<?php echo $onclick; ?>" align="absmiddle" style="width:22px; height:22px; border:0; cursor:pointer;" alt="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" />
             <script type="text/javascript">
             <!--
             var cal_obj_<?php echo $id; ?> = null;
@@ -2218,7 +2276,7 @@ elseif ($is_video || $is_audio)
             {
               if (object_code == 'day')
               {
-                document.getElementById('<?php echo $id ?>').value = cal.get_formatted_date(format_<?php echo $id; ?>);
+                document.getElementById('<?php echo $id; ?>').value = cal.get_formatted_date(format_<?php echo $id; ?>);
                 cal.hide();
                 cal_obj_<?php echo $id; ?> = null;
               }
@@ -2239,22 +2297,22 @@ elseif ($is_video || $is_audio)
             // get list entries
             $list_array = explode ("|", $tagdata->list);
             ?>
-            <select name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id ?>"<?php echo $disabled; ?>>
+            <select name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" <?php echo $disabled; ?>>
             <?php
             foreach ($list_array as $list_entry)
             {
-              $end_val = strlen($list_entry)-1;
+              $end_val = strlen ($list_entry)-1;
               
-              if (($start_val = strpos($list_entry, "{")) > 0 && strpos($list_entry, "}") == $end_val)
+              if (($start_val = strpos ($list_entry, "{")) > 0 && strpos ($list_entry, "}") == $end_val)
               {
                 $diff_val = $end_val-$start_val-1;
-                $list_value = substr($list_entry, $start_val+1, $diff_val);
-                $list_text = substr($list_entry, 0, $start_val);
+                $list_value = substr ($list_entry, $start_val+1, $diff_val);
+                $list_text = substr ($list_entry, 0, $start_val);
               } 
               else $list_value = $list_text = $list_entry;
               ?>
               <option value="<?php echo $list_value; ?>"
-              <?php if ($tagdata->ignore == false && $list_value == $tagdata->fieldvalue) echo " selected";?>>
+              <?php if ($tagdata->ignore == false && $list_value == $tagdata->fieldvalue) echo " selected"; ?>>
               <?php echo $list_text; ?>
               </option>
               <?php
@@ -2267,12 +2325,12 @@ elseif ($is_video || $is_audio)
           elseif ($tagdata->type == "c")
           {
             ?>
-            <input type="checkbox" name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id ?>" value="<?php echo $tagdata->value; ?>"<?php if( $tagdata->ignore == false && $tagdata->value == $tagdata->fieldvalue) echo " checked"; echo $disabled; ?>><?php echo $tagdata->value; ?>
+            <input type="checkbox" name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" value="<?php echo $tagdata->value; ?>" <?php if ($tagdata->ignore == false && $tagdata->value == $tagdata->fieldvalue) echo "checked"; echo $disabled; ?>><?php echo $tagdata->value; ?>
             <?php
           }
           else
           {
-            echo "UNKNOWN TYPE: ".var_export($tagdata->type, true)." for ".var_export($tagdata->hypertagname, true)."<br>\n";
+            echo "UNKNOWN TYPE: ".var_export ($tagdata->type, true)." for ".var_export ($tagdata->hypertagname, true)."<br>\n";
           }
           ?>
         </div>
@@ -2280,11 +2338,20 @@ elseif ($is_video || $is_audio)
       }
       ?>
       </div>
-      <input type="hidden" id="objs" value="<?php echo $multiobject ?>" />
-      <input type="hidden" id="fields" value="<?php echo implode('|', $ids) ?>" />
+      <input type="hidden" id="objs" value="<?php echo $multiobject; ?>" />
+      <input type="hidden" id="fields" value="<?php echo implode('|', $ids); ?>" />
     </form>
     <?php
-    } 
+    }
+    
+  // onload event / document ready
+  if ($add_onload != "") echo "
+  <script language=\"JavaScript\" type=\"text/javascript\">
+  $(document).ready(function() {".
+    $add_onload."
+  });
+  </script>
+  ";
     ?>
   </body>
 </html>

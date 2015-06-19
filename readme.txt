@@ -7,7 +7,7 @@ You should have received a copy of the License along with hyperCMS.
 The following technical prerequisites must be fullfilled before installing hyper Content & Digital Asset Managment Server: 
 
 On server-side:
-- Operating System: Linux, UNIX-Derivates, MS Windows NT/2000/XP
+- Operating System: Linux, UNIX-Derivates, MS Windows
 - WebServer: Apache, Iplanet or MS IIS with PHP-Modul Version 5.3+
 - RDBMS (Database): MySQL 5+ (required for installation script), any database with ODBC support (not supported by installation script)
 
