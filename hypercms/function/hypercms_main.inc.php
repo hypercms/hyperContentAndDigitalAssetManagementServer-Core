@@ -5844,6 +5844,19 @@ function createpublication ($site_name, $user="sys")
           if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savefile failed for /data/media/".$site_name.".media.tpl.dat";
         }
         
+        // media mapping file
+        if ($test != false) 
+        {
+          // get default mapping definition
+          $mapping_data = getmapping ($site_name);
+          // creating mapping from definition
+          $mapping_data = createmapping ($site_name, $mapping_data);
+                  
+          $errcode = "10134";
+          $test = savefile ($mgmt_config['abs_path_data']."media/", $site_name.".media.map.php", $mapping_data);
+          if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savefile failed for /data/media/".$site_name.".media.map.php";
+        }
+
         // link
         if ($test != false) 
         {
@@ -6859,12 +6872,12 @@ function deletepublication ($site_name, $user="sys")
         $files->close();
       }  
       
-      // customer
+      // customer files
       $errcode = "10114";
       $test = deletefile ($mgmt_config['abs_path_data']."customer/", $site_name, 1);    
       if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|$errcode|deletefile failed for /data/customer/".$site_name;    
        
-      // configs
+      // config files
       if (@is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
       {
         $errcode = "10116";
@@ -6881,9 +6894,17 @@ function deletepublication ($site_name, $user="sys")
       
       if (@is_file ($mgmt_config['abs_path_rep']."config/".$site_name.".properties"))
       {
-        $errcode = "10117";
+        $errcode = "10118";
         $test = deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".properties", 0);  
         if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /repository/config/".$site_name.".properties";
+      }
+      
+      // mapping configuration file
+      if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".media.map.php"))
+      {
+        $errcode = "10119";
+        $test = deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".media.map.php", 0);  
+        if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /repository/config/".$site_name.".media.map.php";
       }
      
       // remove site_name value from inheritance database
@@ -13850,7 +13871,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
 // description:
 // this function renames a file (NOT a page or component) and calls the function manipulateobject. 
 // this function renames the file name including the extension and not only the name of an object.
-// the event that will be executed in the event system is be the same as renameobject.
+// the event that will be executed in the event system is the same as renameobject.
 
 function renamefile ($site, $location, $page, $pagenew, $user)
 {      

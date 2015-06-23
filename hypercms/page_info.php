@@ -160,69 +160,64 @@ if ($pagestore != false)
     }
     
     // file size
-    if ($cat == "comp")
-    {
-      $filesize = 0;
-      $filecount = 0;
-      
-      // get file size in kB for:
-      // multimedia objects
-      if ($media != false && !empty ($media))
-      {
-        if ($mgmt_config['db_connect_rdbms'] != "")
-        {
-          $media_info = rdbms_getmedia ($container_id);
-          $fileMD5 = $media_info['md5_hash'];
-          $filesize = $media_info['filesize'];
-        }
-        else
-        {
-          $mediadir = getmedialocation ($site, $media, "abs_path_media");          
-          $fileMD5 = md5_file ($mediadir.$site."/".$media);
-          $filesize = filesize ($mediadir.$site."/".$media) / 1024;
-        }
-       
-        // direct link
-        if ($mgmt_config[$site]['dam'] != true) $filedirectlink = getmedialocation ($site, $media, "url_path_media").$site."/".$media;
-      }
-      // folders objects
-      elseif ($page == ".folder")
-      {
-        if (!empty ($mgmt_config['db_connect_rdbms']))
-        {
-          $filesize_array = rdbms_getfilesize ("", $location_esc.$page);
-        
-          if (is_array ($filesize_array))
-          {
-            $filesize = $filesize_array['filesize'];
-            $filecount = $filesize_array['count'];
-          }
-        }
-      } 
-      // standard objects   
-      elseif ($page != "")
-      {
-        $filesize = filesize ($location.$page) / 1024;
-      }
-      
-      $filesize = round ($filesize, 0);
-      if ($filesize < 1) $filesize = 1;
-      
-      if ($filesize > 1000)
-      {
-        $filesize = $filesize / 1024;
-        $unit = "MB";
-      }
-      else $unit = "KB";
-      
-      $filesize = number_format ($filesize, 0, "", ".")." ".$unit;
-      
-      $filecount = number_format ($filecount, 0, "", ".");
+    $filesize = 0;
+    $filecount = 0;
     
-      if ($filesize > 0) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['file-size'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filesize."</td></tr>\n";
-      if ($filecount > 1) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['number-of-files'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filecount."</td></tr>\n";
+    // get file size in kB for:
+    // multimedia objects
+    if ($media != false && !empty ($media))
+    {
+      if ($mgmt_config['db_connect_rdbms'] != "")
+      {
+        $media_info = rdbms_getmedia ($container_id);
+        $fileMD5 = $media_info['md5_hash'];
+        $filesize = $media_info['filesize'];
+      }
+      else
+      {
+        $mediadir = getmedialocation ($site, $media, "abs_path_media");          
+        $fileMD5 = md5_file ($mediadir.$site."/".$media);
+        $filesize = filesize ($mediadir.$site."/".$media) / 1024;
+      }
+     
+      // direct link
+      if ($mgmt_config[$site]['dam'] != true) $filedirectlink = getmedialocation ($site, $media, "url_path_media").$site."/".$media;
+    }
+    // folders objects
+    elseif ($page == ".folder")
+    {
+      // multimedia and standard objects
+      $filesize_array = getfilesize ($location_esc.$page);
+    
+      if (is_array ($filesize_array))
+      {
+        $filesize = $filesize_array['filesize'];
+        $filecount = $filesize_array['count'];
+      }
+    } 
+    // standard objects   
+    elseif ($page != "")
+    {
+      $filesize = filesize ($location.$page) / 1024;
     }
     
+    $filesize = round ($filesize, 0);
+    if ($filesize < 1) $filesize = 1;
+    
+    if ($filesize > 1000)
+    {
+      $filesize = $filesize / 1024;
+      $unit = "MB";
+    }
+    else $unit = "KB";
+    
+    $filesize = number_format ($filesize, 0, "", ".")." ".$unit;
+    
+    $filecount = number_format ($filecount, 0, "", ".");
+  
+    if ($filesize > 0) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['file-size'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filesize."</td></tr>\n";
+    if ($filecount > 1) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['number-of-files'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filecount."</td></tr>\n";
+  
     // links
     if ($mgmt_config['publicdownload'] == true && ($cat == "page" || $setlocalpermission['download'] == 1))
     {

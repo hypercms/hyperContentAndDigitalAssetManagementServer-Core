@@ -302,6 +302,22 @@ function rdbms_createobject ($container_id, $object, $template, $container, $use
     $object = str_replace ("%", "*", $object);
     if (strtolower (strrchr ($object, ".")) == ".off") $object = substr ($object, 0, -4);
     
+    // check for existing object with same path (duplicate due to possible database error)
+    $container_id_found = rdbms_getobject_id ($object);
+    
+    if ($container_id_duplicate != "")
+    {
+      $result_delete = rdbms_deleteobject ($object);
+      
+      if ($result_delete)
+      {
+        $errcode = "20911";
+        $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|duplicate object $object (ID: $container_id_duplicate) already existed in database and has been deleted";
+      
+        savelog (@$error);
+      }
+    }
+    
     // insert values in table object
     $sql = 'INSERT INTO object (id, hash, objectpath, template) ';
     $sql .= 'VALUES ('.intval ($container_id).', "'.$hash.'", "'.$object.'", "'.$template.'")';
@@ -690,25 +706,30 @@ function rdbms_renameobject ($object_old, $object_new)
 } 
 
 // ----------------------------------------------- delete object ------------------------------------------------- 
-function rdbms_deleteobject ($object)
+function rdbms_deleteobject ($object, $object_id="")
 {
   global $mgmt_config;
 
-  if ($object != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0))
+  if (($object != "" && (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0)) || $object_id > 0)
   {
     // correct object name 
     if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
     
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    $object = $db->escape_string ($object);
+    if ($object != "")
+    {
+      $object = $db->escape_string ($object);
     
-    // replace %
-    $object = str_replace ("%", "*", $object);
+      // replace %
+      $object = str_replace ("%", "*", $object);
+    }
     
     // query
     $sql = 'SELECT id FROM object ';
-    $sql .= 'WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
+    
+    if ($object != "") $sql .= 'WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
+    elseif ($object_id > 0) $sql .= 'WHERE object_id='.intval ($object_id).'';
        
     $errcode = "50012";
     $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select1');
@@ -2619,8 +2640,8 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
     // count files
     if ($objectpath != "" && isset ($object_info['type']) && $object_info['type'] == "Folder")
     {
-      $sql = 'SELECT count(*) AS count FROM object WHERE objectpath like "'.$objectpath.'%"'; 
-      
+      $sql = 'SELECT count(DISTINCT objectpath) AS count FROM object WHERE objectpath like "'.$objectpath.'%"'; 
+
       $errcode = "50042";
       $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'selectcount');
       

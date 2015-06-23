@@ -848,12 +848,12 @@ release 07/2015
 - bug fix: Video JS css did not properly support fullscreen when used in iframes, fullscreen is disabled in CMS views
 - implementation of extended error logging in function uploadfile
 - improvement of input validation in function splitstring
-- removed media_update input parameter from function uploadfile. media updates require the object name as input.
+- removed media_update input parameter from function uploadfile. media updates require the object name as input
 
 version 5.7.10
 release 08/2015
 - implementation of new youtube connector to support Google OAuth
-- removed youtube token from management publication configuration file (funtion editpublication), the token will be saved in the config directory as youtube_token.json for all publications since the refresh_token will only provided once by Google
+- removed youtube token from management publication configuration file (function editpublication), the token will be saved in the config directory as youtube_token.json for all publications since the refresh_token will only provided once by Google
 - implementation of new function editpublicationsetting to edit a single setting of a publication
 - function selectcontent, selectxmlcontent, selecticontent and selectxmlicontent use case-insensitve conditional value
 - larger youtube upload window
@@ -863,6 +863,12 @@ release 08/2015
 - bug fix: function showvideoplayer created wrapperlink for the video poster image, this caused the video to be loaded as the poster
 - bug fix: page_multiedit did not fully support keywords (list, file, listonly attributes)
 - function showmessage provided id of DIV holding the message (use ID suffix _text)
+- improvements in import connector regarding special characters in file names
+- function createpublication creates default media mapping definition file
+- function deletepublication deletes media mapping file
+- implementation of object file count and size (in info-tab of object) for pages based on function getfilesize
+- implementation of duplicate check in function rdbms_createobject
+- implementation of input paramter for object ID for function rdbms_deleteobject
 */
 
 // current version

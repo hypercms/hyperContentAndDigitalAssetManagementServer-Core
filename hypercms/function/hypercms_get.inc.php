@@ -543,14 +543,14 @@ function getthemelocation ($theme="")
 
 // ---------------------- getcategory -----------------------------
 // function: getcategory()
-// input: location path
+// input: publication name (optional), location path
 // output: category ['page, comp'] / false on error
 // requires: config.inc.php
 
 // description:
 // evaluates the category ['page, comp'] of a location.
 
-function getcategory ($site, $location)
+function getcategory ($site="", $location)
 {
   global $mgmt_config, $publ_config;
 
@@ -1268,46 +1268,48 @@ function getobjectinfo ($site, $location, $object, $user="sys")
 
 // ---------------------- getfilesize -----------------------------
 // function: getfilesize()
-// input: path to file or directory, max. file count in file system
+// input: converted path to file or directory
 // output: result array with file size in kB and file count / false on error
 
 // Attention!
 // this function won't give you a proper result of the file size of multimedia components, if there is no DB in use.
 
-function getfilesize ($file, $maxcount=100)
+function getfilesize ($file)
 {
-  global $mgmt_config, $site;
+  global $mgmt_config;
   
-  if (valid_locationname ($file))
+  if (is_array ($mgmt_config) && valid_locationname ($file) && (substr_count ($file, "%page%") == 1 || substr_count ($file, "%comp%") == 1))
   {
-    // get file size from DB
-    if ($mgmt_config['db_connect_rdbms'] != "")
-    {
-      $file = convertpath ($site, $file, "comp");          
+    $cat = getcategory ("", $file);
+    $site = getpublication ($file);
+  
+    // get file size from DB (only works for media files!)
+    if ($cat == "comp" && !empty ($mgmt_config['db_connect_rdbms']))
+    { 
       // get file size
       return rdbms_getfilesize ("", $file);
     }
     // get file size from file system (won't work on multimedia components!)
-    else
+    elseif ($cat == "page")
     {
-      // deconvert path 
-      if (substr_count ($file, "%page%") == 1 || substr_count ($file, "%comp%") == 1)
-      {
-        $file = deconvertpath ($file, "file");
-      }
+      // get object file
+      $object = getobject ($file);
       
       // cut off .folder
-      $object = getobject ($file);
       if ($object == ".folder") $file = getlocation ($file);
       
-      if (is_file ($file))
+      // deconvert path 
+      $file_abs = deconvertpath ($file, "file");
+      
+      // if object
+      if (is_file ($file_abs))
       {
         // get file size in kB
-        $size = filesize ($file) / 1024;
+        $size = filesize ($file_abs) / 1024;
         return array('filesize'=>$size, 'count'=>0);
       }
-      
-      if (is_dir ($file) && $dir = opendir ($file))
+      // if folder
+      elseif (is_dir ($file_abs) && $dir = opendir ($file_abs))
       {
         $size = 0;
         $n = 0;
@@ -1315,9 +1317,10 @@ function getfilesize ($file, $maxcount=100)
         // add slash if not present at the end
         if (substr ($file, -1) != "/") $file = $file."/";           
 
-        while (($item = readdir ($dir)) !== false && $n <= $maxcount)
+        while (($item = readdir ($dir)) !== false)
         {
           if ($item == "." || $item == ".." || $item == ".folder") continue;
+          
           $n++;
           $data = getfilesize ($file.$item);
           $size += $data['filesize'];
@@ -1331,6 +1334,7 @@ function getfilesize ($file, $maxcount=100)
       
       return array('filesize'=>0,'count'=>0);
     }
+    else return false;
   }
   else return false;
 }

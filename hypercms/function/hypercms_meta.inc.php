@@ -1935,10 +1935,10 @@ function iptc_create ($site, $text)
 // ------------------------- createmapping -----------------------------
 // function: createmapping()
 // input: publication name, mapping definition
-// output: mapping code / false
+// output: true / false on error
 
 // description:
-// prepares the PHP mapping array from the provided mapping definition.
+// prepares the PHP mapping array from the provided mapping definition and saves media mapping file
 
 function createmapping ($site, $mapping)
 {
@@ -2197,7 +2197,9 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
     }
     // define mapping if undefined
     else
-    {    
+    {
+      $mapping = array();
+      
       // IPTC tags
       $mapping['iptc:charset'] = "";
       $mapping['iptc:object_type'] = "";
