@@ -830,7 +830,7 @@ if ($page != "")
 ?>
 
 <div id="downloadLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "80%"; else echo "650px"; ?>; height:60px; z-index:5; left:15px; top:10px; visibility:<?php echo ($action == 'download' ? 'visible' : 'hidden'); ?>;" >
-<form name="download" action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
+<form name="download" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
   <input type="hidden" name="action" value="download" />
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
   <input type="hidden" name="page" value="<?php echo $page; ?>" />

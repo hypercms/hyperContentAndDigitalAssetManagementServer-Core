@@ -341,7 +341,7 @@ function submitToSelf (action)
   {
     var form = parent.frames['mainFrame'].document.forms['contextmenu_object'];
     
-    form.attributes['action'].value = '<?php echo $_SERVER["PHP_SELF"]; ?>';
+    form.attributes['action'].value = '<?php echo $_SERVER['PHP_SELF']; ?>';
     form.elements['action'].value = action;
     form.elements['site'].value = '<?php echo $site; ?>';
     form.elements['cat'].value = '<?php echo $cat; ?>';
@@ -500,7 +500,7 @@ function docConvert (type)
   {
     var form = parent.frames['mainFrame'].document.forms['contextmenu_object'];
     
-    form.attributes['action'].value = '<?php echo $_SERVER["PHP_SELF"]; ?>';
+    form.attributes['action'].value = '<?php echo $_SERVER['PHP_SELF']; ?>';
     form.elements['convert_type'].value = type;
     
     submitToSelf ('download');
@@ -516,7 +516,7 @@ function imgConvert (type, config)
   {
     var form = parent.frames['mainFrame'].document.forms['contextmenu_object'];
     
-    form.attributes['action'].value = '<?php echo $_SERVER["PHP_SELF"]; ?>';
+    form.attributes['action'].value = '<?php echo $_SERVER['PHP_SELF']; ?>';
     form.elements['convert_type'].value = type;
     form.elements['convert_cfg'].value = config;
     

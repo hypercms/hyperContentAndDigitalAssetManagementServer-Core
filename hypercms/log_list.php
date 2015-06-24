@@ -38,9 +38,37 @@ $logfile = "event.log";
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript">
+<!--
+function submitToWindow (url, description, windowname, features, width, height)
+{
+  if (features == undefined) features = 'scrollbars=yes,resizable=yes';
+  if (width == undefined) width = 600;
+  if (height == undefined) height = 200;
+  if (windowname == '') windowname = Math.floor(Math.random()*9999999);
+  
+  hcms_openWindow('', windowname, features, width, height);
+  
+  var form = document.forms['log_details'];
+  
+  form.attributes['action'].value = url;
+  form.elements['description'].value = description;
+  form.target = windowname;
+  form.submit();
+}
+
+function adjust_height ()
+{
+  height = hcms_getDocHeight();  
+  
+  setheight = height - 20;
+  document.getElementById('objectLayer').style.height = setheight + "px";
+}
+//-->
+</script>
 </head>
 
-<body class="hcmsWorkplaceObjectlist">
+<body class="hcmsWorkplaceObjectlist" onload="adjust_height();" onresize="adjust_height();">
 
 <div id="detailviewLayer" style="position:absolute; top:0px; left:0px; width:100%; height:100%; z-index:1; visibility:visible;">
   <table cellpadding="0" cellspacing="0" cols="5" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
@@ -88,6 +116,9 @@ if (@file_exists ($mgmt_config['abs_path_data']."log/".$logfile))
       $description = str_replace ("'", "`", $description);
       $description = str_replace ("\"", "`", $description);
       
+      // escape special characters
+      $description = html_encode ($description);
+      
       if (strlen ($description) > 50) 
       {
         $description_short = substr ($description, 0, 50)."...";
@@ -115,11 +146,11 @@ if (@file_exists ($mgmt_config['abs_path_data']."log/".$logfile))
       }
 
       echo "<tr id=g".$items_row." align=\"left\" valign=\"top\">
-  <td id=h".$items_row."_0 width=\"105\" nowrap=\"nowrap\">&nbsp; <a href=# onClick=\"hcms_openWindow('popup_log.php?description=".urlencode ($description)."','alert','scrollbars=yes','600','200');\"><img src=\"".getthemelocation()."img/".$icon."\" width=16 height=16 border=0 align=\"absmiddle\">&nbsp; ".$type_name."</a></td>
+  <td id=h".$items_row."_0 width=\"105\" nowrap=\"nowrap\">&nbsp; <a href=# onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes', '600', '200');\"><img src=\"".getthemelocation()."img/".$icon."\" width=16 height=16 border=0 align=\"absmiddle\">&nbsp; ".$type_name."</a></td>
   <td id=h".$items_row."_1 width=\"120\" nowrap=\"nowrap\">&nbsp; ".$date."</td>\n";
   if (!$is_mobile) echo "<td id=h".$items_row."_2 width=\"180\" nowrap=\"nowrap\">&nbsp; ".$source."</td>
   <td id=h".$items_row."_3 width=\"55\" nowrap=\"nowrap\">&nbsp; ".$errorcode."</td>
-  <td id=h".$items_row."_4>&nbsp; <a href=# onClick=\"hcms_openWindow('popup_log.php?description=".urlencode ($description)."','alert','scrollbars=yes','600','200');\">".$description_short."</a></td>\n";
+  <td id=h".$items_row."_4>&nbsp; <a href=# onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes', '600', '200');\">".$description_short."</a></td>\n";
   echo "</tr>\n"; 
 
       $items_row++;      
@@ -130,6 +161,10 @@ if (@file_exists ($mgmt_config['abs_path_data']."log/".$logfile))
     </table>
   </div>
 </div>
+
+<form target="_blank" method="post" action="" name="log_details">
+  <input type="hidden" name="description" value="">
+</form>
 
 </body>
 </html>

@@ -27,6 +27,11 @@ if (!checkrootpermission ('site')) killsession ($user);
 
 // check session of user
 checkusersession ($user, false);
+
+// --------------------------------- logic section ----------------------------------
+
+// replace tab space with line break
+$description = str_replace ("\t", "<br />", $description);
 ?>
 <!DOCTYPE html>
 <html>
@@ -35,7 +40,6 @@ checkusersession ($user, false);
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;">
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
-<script src="javascript/click.js" type="text/javascript"></script>
 <script language="JavaScript">
 <!--
 function popupfocus ()
@@ -53,8 +57,8 @@ popupfocus ();
 
 <table width="100%" height="100%" border=0 cellpadding="3" cellspacing="0">
   <tr>
-    <td class="hcmsWorkplaceControl" align="left" valign="top" width="20px"><img src="<?php echo getthemelocation(); ?>img/info.gif" align="absmiddle"/></td>
-    <td align="left" valign="middle"><?php echo $description; ?></td>
+    <td class="hcmsWorkplaceControl" align="left" valign="top" width="20px"><img src="<?php echo getthemelocation(); ?>img/info.gif" align="absmiddle" /></td>
+    <td align="left" valign="top"><?php echo $description; ?></td>
   </tr>
 </table>
 

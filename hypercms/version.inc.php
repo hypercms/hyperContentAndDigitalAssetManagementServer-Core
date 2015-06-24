@@ -869,6 +869,10 @@ release 08/2015
 - implementation of object file count and size (in info-tab of object) for pages based on function getfilesize
 - implementation of duplicate check in function rdbms_createobject
 - implementation of input paramter for object ID for function rdbms_deleteobject
+- implementation of logname as input parameter for function deletelog
+- implementation of new log viewer plugin to display individual logs
+- improvements in plugin management viewer
+- changed log viewer details popup from GET to POST in order to display longer messages (strings)
 */
 
 // current version

@@ -697,13 +697,23 @@ function sendtochat (text)
   }
 }
 
+function adjust_height ()
+{
+  height = hcms_getDocHeight();  
+  
+  setheight = height - 20;
+  document.getElementById('objectLayer').style.height = setheight + "px";
+  setheight = height;
+  document.getElementById('galleryviewLayer').style.height = setheight + "px";
+}
+
 // load control frame
 parent.frames['controlFrame'].location.href='control_objectlist_menu.php?virtual=1&from_page=search';
 //-->
 </script>
 </head>
 
-<body id="hcmsWorkplaceObjectlist" style="overflow:hidden;" class="hcmsWorkplaceObjectlist"">
+<body id="hcmsWorkplaceObjectlist" style="overflow:hidden;" class="hcmsWorkplaceObjectlist" onresize="adjust_height();">
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang], $lang, 3, "position:fixed; top:30px; right:30px;"); ?>
 
@@ -818,10 +828,11 @@ if ($galleryview != "")
   <br /><div style="width:100%; height:2px; z-index:0; visibility:visible;" onMouseOver="hcms_hideContextmenu();"></div>
 </div>
 
-<!-- toggle view -->
+<!-- toggle view and adjust height -->
 <script language="JavaScript">
 <!--
 toggleview (explorerview);
+adjust_height();
 //-->
 </script>
 

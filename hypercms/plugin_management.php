@@ -128,10 +128,10 @@ if ($action)
           ?>
           <tr class="hcmsRowData<?php echo ($cnt%2)+1; ?>">
             <td nowrap="nowrap"><?php echo $cnt; ?></td>
-            <td nowrap="nowrap"><?php echo $data['name']; ?></td>
-            <td nowrap="nowrap"><?php echo $data['author']; ?></td>
+            <td><?php echo $data['name']; ?></td>
+            <td><?php echo $data['author']; ?></td>
             <td nowrap="nowrap"><?php echo $data['version']; ?></td>
-            <td nowrap="nowrap"><?php echo $data['description']; ?></td>
+            <td><?php echo $data['description']; ?></td>
             <td align="center" valign="middle">
               <input type="checkbox" name="active[<?php echo $key; ?>]" value="1" <?php if ($data['active'] == true) echo "checked=\"checked\""; ?>/>
             </td>

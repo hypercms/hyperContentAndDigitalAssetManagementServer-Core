@@ -16654,6 +16654,15 @@ function savelog ($error, $logfile="event")
   {  
     // file name of event log
     $logfile = $logfile.".log";
+    
+    // replace newlines with tab space
+    foreach ($error as &$value)
+    {
+      $value = str_replace ("\n\r", "\t", $value);
+      $value = str_replace ("\r\n", "\t", $value);
+      $value = str_replace ("\r", "\t", $value);
+      $value = str_replace ("\n", "\t", $value);
+    }
   
     if (@is_file ($mgmt_config['abs_path_data']."log/".$logfile))
     { 
@@ -16669,12 +16678,12 @@ function savelog ($error, $logfile="event")
 
 // --------------------------------------- deletelog -------------------------------------------
 // function: deletelog()
-// input: %
+// input: logname (optional)
 // output: result array
 
 // description: deletes the log file
 
-function deletelog ()
+function deletelog ($logname="")
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
@@ -16682,7 +16691,8 @@ function deletelog ()
   if ($lang == "") $lang = "en";
   
   // file name of event log
-  $logfile = "event.log";
+  if ($logname != "") $logfile = $logname.".log";
+  else $logfile = "event.log";
   
   if (@is_file ($mgmt_config['abs_path_data']."log/".$logfile))
   {

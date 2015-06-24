@@ -620,18 +620,6 @@ function confirm_delete ()
   return confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-the-item'][$lang]); ?>"));
 }
 
-function adjust_height ()
-{
-  height = hcms_getDocHeight();  
-  
-  setheight = height - 20 - 30;
-  document.getElementById('objectLayer').style.height = setheight + "px";
-  setheight = height - 30;
-  document.getElementById('galleryviewLayer').style.height = setheight + "px";
-}
-
-window.onresize = adjust_height;
-
 function toggleview (viewoption)
 {
   if (viewoption == "detail") hcms_showHideLayers ('detailviewLayer','','show','objectLayer','','show','detailviewReset','','show','galleryviewLayer','','hide','galleryviewReset','','hide');
@@ -670,11 +658,21 @@ function sendtochat (text)
     chat.send(text, username);
   }
 }
+
+function adjust_height ()
+{
+  height = hcms_getDocHeight();  
+  
+  setheight = height - 20 - 30;
+  document.getElementById('objectLayer').style.height = setheight + "px";
+  setheight = height - 30;
+  document.getElementById('galleryviewLayer').style.height = setheight + "px";
+}
 //-->
 </script>
 </head>
 
-<body id="hcmsWorkplaceObjectlist" style="overflow:hidden;" class="hcmsWorkplaceObjectlist">
+<body id="hcmsWorkplaceObjectlist" style="overflow:hidden;" class="hcmsWorkplaceObjectlist" onresize="adjust_height();">
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang], $lang, 3, "position:fixed; top:30px; right:30px;"); ?>
 
@@ -851,7 +849,7 @@ else
 }
 ?>
 
-<!-- toggle view -->
+<!-- toggle view and adjust height -->
 <script language="JavaScript">
 <!--
 toggleview (explorerview);

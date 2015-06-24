@@ -172,16 +172,6 @@ function getdoc_height ()
   else return false;
 }
 
-function adjust_height ()
-{
-  height = getdoc_height();
-  
-  setheight = height - 20 - 30;
-  document.getElementById('objectLayer').style.height = setheight + "px";
-}
-
-window.onresize = adjust_height;
-
 function buttonaction (action)
 {
   multiobject = document.forms['contextmenu_queue'].elements['multiobject'].value;
@@ -191,11 +181,19 @@ function buttonaction (action)
   else if (action == "delete" && object != "") return true;
   else return false;
 }
+
+function adjust_height ()
+{
+  height = getdoc_height();
+  
+  setheight = height - 20 - 30;
+  document.getElementById('objectLayer').style.height = setheight + "px";
+}
 //-->
 </script>
 </head>
 
-<body id="hcmsWorkplaceObjectlist" style="overflow:hidden;" class="hcmsWorkplaceObjectlist">
+<body id="hcmsWorkplaceObjectlist" style="overflow:hidden;" class="hcmsWorkplaceObjectlist" onload="adjust_height();" onresize="adjust_height();">
 
 <div id="contextLayer" style="position:absolute; width:150px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_queue" method="post" action="" target="">
@@ -291,7 +289,7 @@ else
 }
 ?>
 
-<!-- toggle view -->
+<!-- adjust height -->
 <script language="JavaScript">
 <!--
 adjust_height();
