@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['ms'] = "Pengurusan Workflow";
 $hcms_lang['workflow-scripts']['ms'] = "Workflow skrip";
 $hcms_lang['checked-out-items']['ms'] = "Diperiksa item";
 $hcms_lang['system-events']['ms'] = "Peristiwa Sistem";
+$hcms_lang['custom-system-events']['ms'] = "Peristiwa Sistem adat";
 $hcms_lang['templates']['ms'] = "Templat";
 $hcms_lang['page-templates']['ms'] = "Halaman";
 $hcms_lang['component-templates']['ms'] = "Komponen templat";

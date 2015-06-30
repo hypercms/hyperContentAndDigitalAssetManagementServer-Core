@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['tr'] = "Iş akışı yönetimi";
 $hcms_lang['workflow-scripts']['tr'] = "Iş Akışı denetimleri";
 $hcms_lang['checked-out-items']['tr'] = "Kontrol edilecek öğeler";
 $hcms_lang['system-events']['tr'] = "Sistem olayları";
+$hcms_lang['custom-system-events']['tr'] = "Özel sistem olayları";
 $hcms_lang['templates']['tr'] = "Şablonları";
 $hcms_lang['page-templates']['tr'] = "Sayfa şablonları";
 $hcms_lang['component-templates']['tr'] = "Bileşen şablonları";

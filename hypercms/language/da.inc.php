@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['da'] = "Håndtering af arbejdsgange";
 $hcms_lang['workflow-scripts']['da'] = "Workflow scripts";
 $hcms_lang['checked-out-items']['da'] = "Udmeldt elementer";
 $hcms_lang['system-events']['da'] = "Systemhændelser";
+$hcms_lang['custom-system-events']['da'] = "Tilpasset system begivenheder";
 $hcms_lang['templates']['da'] = "Skabeloner";
 $hcms_lang['page-templates']['da'] = "Side skabeloner";
 $hcms_lang['component-templates']['da'] = "Komponent skabeloner";

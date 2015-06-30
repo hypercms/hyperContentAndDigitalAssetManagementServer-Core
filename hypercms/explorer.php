@@ -661,7 +661,7 @@ else
           
           if (checkrootpermission ('site'))
           {
-            $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php?site=*Null*", 'event.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php", 'event.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -731,9 +731,20 @@ else
             $point->addSubPoint($subpoint);
           }
           
-          if (strtolower($diskkey) != "server")
+          // display system log if it is not a server diskkey
+          if (checkglobalpermission ($site, 'user') && strtolower ($diskkey) != "server")
           {
-            $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php?site=".url_encode($site), 'event.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php", 'event.gif');
+            $subpoint->setOnClick('changeSelection(this)');
+            $subpoint->setTarget('workplFrame');
+            $subpoint->setOnMouseOver('hcms_resetContext();');
+            $point->addSubPoint($subpoint);
+          }
+          
+          // display custom system log if cutom log fiel exists
+          if (checkglobalpermission ($site, 'user') && is_file ($mgmt_config['abs_path_data']."log/".$site.".custom.log"))
+          {
+            $subpoint = new hcms_menupoint($hcms_lang['custom-system-events'][$lang], "frameset_log.php?site=".url_encode($site), 'event.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');

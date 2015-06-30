@@ -870,9 +870,13 @@ release 08/2015
 - implementation of duplicate check in function rdbms_createobject
 - implementation of input paramter for object ID for function rdbms_deleteobject
 - implementation of logname as input parameter for function deletelog
-- implementation of new log viewer plugin to display individual logs
+- implementation of new custom log viewer plugin to display individual logs
 - improvements in plugin management viewer
 - changed log viewer details popup from GET to POST in order to display longer messages (strings)
+- impementation of custom log manager in admin node of each publication
+- new text for 'custom-system-events' in all language files
+- bug fix: the event onpublishobject_pre has not been fired if the application tag of the underlying template was empty
+- improvements in the eventysystem reg. creating the search index for PDF files
 */
 
 // current version

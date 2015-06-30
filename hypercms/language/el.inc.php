@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['el'] = "Διαχείριση ροής εργ�
 $hcms_lang['workflow-scripts']['el'] = "Σενάρια ροής εργασιών";
 $hcms_lang['checked-out-items']['el'] = "Ελέγχονται τα στοιχεία";
 $hcms_lang['system-events']['el'] = "Συμβάντα συστήματος";
+$hcms_lang['custom-system-events']['el'] = "Εκδηλώσεις Προσαρμοσμένο σύστημα";
 $hcms_lang['templates']['el'] = "Φόρμες";
 $hcms_lang['page-templates']['el'] = "Σελίδα templates";
 $hcms_lang['component-templates']['el'] = "Φόρμες εξαρτήματος";

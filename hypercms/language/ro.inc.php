@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['ro'] = "Gestionare flux";
 $hcms_lang['workflow-scripts']['ro'] = "Scripturi Fluxul";
 $hcms_lang['checked-out-items']['ro'] = "Verificat articolele";
 $hcms_lang['system-events']['ro'] = "Evenimente Sistem";
+$hcms_lang['custom-system-events']['ro'] = "Evenimente de sistem personalizat";
 $hcms_lang['templates']['ro'] = "Şabloane";
 $hcms_lang['page-templates']['ro'] = "Pagina şabloane";
 $hcms_lang['component-templates']['ro'] = "Componenta şabloane";

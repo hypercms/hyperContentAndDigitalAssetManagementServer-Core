@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['hu'] = "Munkafolyamat-kezelés";
 $hcms_lang['workflow-scripts']['hu'] = "Munkafolyamat vegy";
 $hcms_lang['checked-out-items']['hu'] = "Ellenőrizze a";
 $hcms_lang['system-events']['hu'] = "Rendszeresemények";
+$hcms_lang['custom-system-events']['hu'] = "Egyéni rendszer események";
 $hcms_lang['templates']['hu'] = "Sablonok";
 $hcms_lang['page-templates']['hu'] = "Oldal sablonok";
 $hcms_lang['component-templates']['hu'] = "Sablonok.";

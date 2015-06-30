@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['sq'] = "Menaxhimi i rrjedhës";
 $hcms_lang['workflow-scripts']['sq'] = "Përcjellja dorëshkrimesh";
 $hcms_lang['checked-out-items']['sq'] = "Kontrolluar artikuj";
 $hcms_lang['system-events']['sq'] = "Sistemi ngjarje";
+$hcms_lang['custom-system-events']['sq'] = "Ngjarjet e sistemit Custom";
 $hcms_lang['templates']['sq'] = "Mostra";
 $hcms_lang['page-templates']['sq'] = "Faqe templates";
 $hcms_lang['component-templates']['sq'] = "Komponenti templates";

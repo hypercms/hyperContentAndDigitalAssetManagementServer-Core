@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['zh-s'] = "工作流程管理";
 $hcms_lang['workflow-scripts']['zh-s'] = "工作流脚本";
 $hcms_lang['checked-out-items']['zh-s'] = "签出项目";
 $hcms_lang['system-events']['zh-s'] = "系统事件";
+$hcms_lang['custom-system-events']['zh-s'] = "自定义的系统事件";
 $hcms_lang['templates']['zh-s'] = "模板";
 $hcms_lang['page-templates']['zh-s'] = "页面模板";
 $hcms_lang['component-templates']['zh-s'] = "组件模板";

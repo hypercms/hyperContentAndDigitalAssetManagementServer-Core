@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['uk'] = "Загальнодоступний п
 $hcms_lang['workflow-scripts']['uk'] = "Документообігу скрипти";
 $hcms_lang['checked-out-items']['uk'] = "Ознайомилась з елементів";
 $hcms_lang['system-events']['uk'] = "Система події";
+$hcms_lang['custom-system-events']['uk'] = "Користувача системні події";
 $hcms_lang['templates']['uk'] = "Шаблони";
 $hcms_lang['page-templates']['uk'] = "Шаблони сторінок";
 $hcms_lang['component-templates']['uk'] = "Компонент шаблони";

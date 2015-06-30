@@ -330,20 +330,24 @@ function onfileupload_post ($site, $cat, $location, $object, $mediafile, $contai
   // get the file extension of the file
   $mediafile_ext = strtolower (strrchr ($mediafile, "."));
 
-  if ($cat == "comp" && $mediafile_ext == ".pdf" && (empty ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false))
+  if ($cat == "comp" && $container != "" && $mediafile_ext == ".pdf" && (empty ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
 
     $url = getmedialocation ($site, $mediafile, "url_path_media").$site."/".$mediafile;
-    $container_content = loadcontainer ($container, "work", $user);
     $title = specialchr_decode ($object);
     $description = "";
-    if ($container_content != "") $content = getcontent ($container_content, "<content>");
+    
+    $container_content = loadcontainer ($container, "work", $user);
+    if (!empty ($container_content)) $content_array = getcontent ($container_content, "<content>");
+
+    if (!empty ($content_array[0])) $content = $content_array[0];
+    else $content = "";
 
     if (!empty ($eventsystem ['searchcharset'][$site])) $charset = $eventsystem ['searchcharset'][$site];
     else $charset = "UTF-8";
 
-    if ($content[0] != "") createindex ($url, $title, $description, $content[0], $charset);
+    if (!empty ($content)) createindex ($url, $title, $description, $content, $charset);
   }  
   
   // return true if successful
@@ -749,7 +753,7 @@ function onpublishobject_pre ($site, $cat, $location, $object, $container_name, 
     if ($mediafile != "") $mediafile_ext = strtolower (strrchr ($mediafile, "."));
     else $mediafile_ext = "";
 
-    if ($mediafile_ext == ".pdf")
+    if ($mediafile_ext == ".pdf" && ($container_name != "" || $container_content != ""))
     {
       if (empty ($eventsystem['searchlanguage'][$site]) || !is_array ($eventsystem['searchlanguage'][$site]))
       {
@@ -764,7 +768,7 @@ function onpublishobject_pre ($site, $cat, $location, $object, $container_name, 
         $title = specialchr_decode ($object);
         $description = "";
         
-        if (!empty ($container_content)) $container_content = loadcontainer ($container_name, "work", $user);
+        if (empty ($container_content)) $container_content = loadcontainer ($container_name, "work", $user);
         if (!empty ($container_content)) $content_array = getcontent ($container_content, "<content>");
         
         if (!empty ($content_array[0])) $content = $content_array[0];
@@ -776,7 +780,7 @@ function onpublishobject_pre ($site, $cat, $location, $object, $container_name, 
         if ($language_suffix != "") $language = array (str_replace ("_", "", strtolower ($language_suffix)));
         else $language = Null;
 
-        if ($content[0] != "") createindex ($url, $title, $description, $content, $charset, $language);
+        if (!empty ($content)) createindex ($url, $title, $description, $content, $charset, $language);
       }
     } 
   }

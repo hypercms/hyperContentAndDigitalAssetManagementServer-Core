@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['id'] = "Manajemen alur kerja";
 $hcms_lang['workflow-scripts']['id'] = "Skrip alur kerja";
 $hcms_lang['checked-out-items']['id'] = "Diperiksa dari item";
 $hcms_lang['system-events']['id'] = "Kejadian Sistem";
+$hcms_lang['custom-system-events']['id'] = "Kejadian Sistem kustom";
 $hcms_lang['templates']['id'] = "Template";
 $hcms_lang['page-templates']['id'] = "Template Halaman";
 $hcms_lang['component-templates']['id'] = "Komponen template";

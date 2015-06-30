@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['ar'] = "إدارة سير العمل";
 $hcms_lang['workflow-scripts']['ar'] = "مخطوطات سير العمل";
 $hcms_lang['checked-out-items']['ar'] = "فحص المواد";
 $hcms_lang['system-events']['ar'] = "أحداث النظام";
+$hcms_lang['custom-system-events']['ar'] = "أحداث نظام مخصص";
 $hcms_lang['templates']['ar'] = "القوالب";
 $hcms_lang['page-templates']['ar'] = "قوالب صفحات";
 $hcms_lang['component-templates']['ar'] = "قوالب العنصر";

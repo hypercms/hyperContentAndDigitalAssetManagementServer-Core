@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['es'] = "Flujo de trabajo de gestión";
 $hcms_lang['workflow-scripts']['es'] = "Secuencias de flujo";
 $hcms_lang['checked-out-items']['es'] = "Comprobar los elementos";
 $hcms_lang['system-events']['es'] = "Eventos del sistema";
+$hcms_lang['custom-system-events']['es'] = "Eventos del sistema personalizado";
 $hcms_lang['templates']['es'] = "Plantillas";
 $hcms_lang['page-templates']['es'] = "Las plantillas de página";
 $hcms_lang['component-templates']['es'] = "Ejemplos de componentes";

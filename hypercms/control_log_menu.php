@@ -18,13 +18,14 @@ require ("function/hypercms_ui.inc.php");
 
 
 // input parameters
+$site = getrequest ("site", "publicationname");
 $action = getrequest ("action");
 $token = getrequest ("token"); 
 
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if (!checkrootpermission ('site')) killsession ($user);
+if (!checkrootpermission ('site') && !checkrootpermission ('user')) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -37,7 +38,7 @@ $add_onload = "";
 // clear event log
 if ((checkrootpermission ('site') || checkrootpermission ('user')) && $action == "clear" && checktoken ($token, $user))
 {
-  $result = deletelog ();
+  $result = deletelog ($site);
   
   $add_onload =  $result['add_onload'];
   $show = $result['message'];  
@@ -62,14 +63,14 @@ function warning_delete()
 
   if (check == true)
   {  
-    document.location.href='<?php echo "control_log_menu.php?action=clear&token=".$token_new; ?>';
+    document.location.href='<?php echo "control_log_menu.php?action=clear&site=".url_encode($site)."&token=".$token_new; ?>';
   }
 }
 // -->
 </script>
 </head>
 
-<body class="hcmsWorkplaceControlWallpaper" onLoad="<?php echo $add_onload; ?>">
+<body class="hcmsWorkplaceControlWallpaper" onload="<?php echo $add_onload; ?>">
 
 <?php
 echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
@@ -78,7 +79,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 <div class="hcmsLocationBar">
   <table border=0 cellspacing=0 cellpadding=0>
     <tr>
-      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['system-events'][$lang]); ?></td>
+      <td class="hcmsHeadline"><?php if ($site != "") echo getescapedtext ($hcms_lang['custom-system-events'][$lang]); else echo getescapedtext ($hcms_lang['system-events'][$lang]); ?></td>
     </tr>
     <tr>
       <td>&nbsp;</td>
@@ -89,11 +90,9 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 <!-- toolbar -->
 <div class="hcmsToolbar">
   <div class="hcmsToolbarBlock">
-    <img onClick="location.href='log_export.php';" class="hcmsButton hcmsButtonSizeSquare" name="media_export" src="<?php echo getthemelocation(); ?>img/button_file_upload.gif" alt="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" />
-
+    <img onClick="location.href='log_export.php?site=<?php echo url_encode ($site); ?>';" class="hcmsButton hcmsButtonSizeSquare" name="media_export" src="<?php echo getthemelocation(); ?>img/button_export_page.gif" alt="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" />
     <img onClick="warning_delete();" class="hcmsButton hcmsButtonSizeSquare" name="media_delete" src="<?php echo getthemelocation(); ?>img/button_file_delete.gif" alt="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" />
-
-    <img onClick="parent['mainFrame'].location.href='log_list.php';" class="hcmsButton hcmsButtonSizeSquare" name="media_view" src="<?php echo getthemelocation(); ?>img/button_view_refresh.gif" alt="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" />
+    <img onClick="parent['mainFrame'].location.href='log_list.php?site=<?php echo url_encode ($site); ?>';" class="hcmsButton hcmsButtonSizeSquare" name="media_view" src="<?php echo getthemelocation(); ?>img/button_view_refresh.gif" alt="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" />
   </div>
   <div class="hcmsToolbarBlock">
     <?php

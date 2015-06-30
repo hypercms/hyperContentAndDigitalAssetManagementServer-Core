@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['sr'] = "Upravljanje fotoaparatom";
 $hcms_lang['workflow-scripts']['sr'] = "Rutinu pismima";
 $hcms_lang['checked-out-items']['sr'] = "Označen je stvari";
 $hcms_lang['system-events']['sr'] = "Sistem takmičenja";
+$hcms_lang['custom-system-events']['sr'] = "Carinskog sistema događaji";
 $hcms_lang['templates']['sr'] = "Predlošci";
 $hcms_lang['page-templates']['sr'] = "Obrasci stranica";
 $hcms_lang['component-templates']['sr'] = "Komponente predlošci";

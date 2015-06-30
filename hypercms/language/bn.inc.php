@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['bn'] = "workflow ব্যবস্থাপ�
 $hcms_lang['workflow-scripts']['bn'] = "workflow লিপি";
 $hcms_lang['checked-out-items']['bn'] = "এর মধ্যে পণ্যের পরীক্ষা";
 $hcms_lang['system-events']['bn'] = "ঘটনা ব্যবস্থা";
+$hcms_lang['custom-system-events']['bn'] = "কাস্টম সিস্টেমের ইভেন্ট";
 $hcms_lang['templates']['bn'] = "লেআউট প্রিভিউ";
 $hcms_lang['page-templates']['bn'] = "লেআউট প্রিভিউ দেখুন";
 $hcms_lang['component-templates']['bn'] = "কম্পোনেন্ট লেআউট প্রিভিউ";

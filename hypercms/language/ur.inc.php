@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['ur'] = "workflow مینجمنٹ";
 $hcms_lang['workflow-scripts']['ur'] = "workflow بہترين ھے";
 $hcms_lang['checked-out-items']['ur'] = "سامان کو چیک کیا";
 $hcms_lang['system-events']['ur'] = "نظام کے واقعات";
+$hcms_lang['custom-system-events']['ur'] = "اپنی مرضی کے نظام واقعات";
 $hcms_lang['templates']['ur'] = "templates";
 $hcms_lang['page-templates']['ur'] = "ادارتی صفحہ templates";
 $hcms_lang['component-templates']['ur'] = "جز templates";

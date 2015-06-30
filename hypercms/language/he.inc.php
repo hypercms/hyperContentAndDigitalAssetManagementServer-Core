@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['he'] = "ניהול תהליכי עבודה";
 $hcms_lang['workflow-scripts']['he'] = "סקריפטים זרימת עבודה";
 $hcms_lang['checked-out-items']['he'] = "בדק פריטים";
 $hcms_lang['system-events']['he'] = "אירועי מערכת";
+$hcms_lang['custom-system-events']['he'] = "אירועי מערכת מותאמת אישית";
 $hcms_lang['templates']['he'] = "תבניות";
 $hcms_lang['page-templates']['he'] = "תבניות דף";
 $hcms_lang['component-templates']['he'] = "תבניות רכיב";

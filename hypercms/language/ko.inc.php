@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['ko'] = "워크플로우 관리";
 $hcms_lang['workflow-scripts']['ko'] = "워크플로 스크립트";
 $hcms_lang['checked-out-items']['ko'] = "항목 체크 아웃";
 $hcms_lang['system-events']['ko'] = "시스템 이벤트";
+$hcms_lang['custom-system-events']['ko'] = "사용자의 시스템 이벤트";
 $hcms_lang['templates']['ko'] = "템플릿";
 $hcms_lang['page-templates']['ko'] = "페이지 템플릿";
 $hcms_lang['component-templates']['ko'] = "구성 요소 템플릿";

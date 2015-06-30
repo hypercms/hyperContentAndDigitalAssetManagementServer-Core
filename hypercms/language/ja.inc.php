@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['ja'] = "ワークフローの管理";
 $hcms_lang['workflow-scripts']['ja'] = "ワークフロースクリプト";
 $hcms_lang['checked-out-items']['ja'] = "チェックアウト済みアイテム";
 $hcms_lang['system-events']['ja'] = "システムイベント";
+$hcms_lang['custom-system-events']['ja'] = "カスタム·システム·イベント";
 $hcms_lang['templates']['ja'] = "テンプレート";
 $hcms_lang['page-templates']['ja'] = "ページのテンプレート";
 $hcms_lang['component-templates']['ja'] = "コンポーネントテンプレート";

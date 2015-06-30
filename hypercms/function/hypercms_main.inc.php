@@ -14625,6 +14625,11 @@ function publishobject ($site, $location, $page, $user)
   $show = "";
   $add_onload = "";
   $release = false;
+  $contentdata = "";
+  $container_id = "";
+  $media = "";
+  $template = "";
+  $application = "";
   
   // set default language
   if ($lang == "") $lang = "en";
@@ -14675,15 +14680,6 @@ function publishobject ($site, $location, $page, $user)
           $application = $bufferdata[0];
         }
       }
-      
-      // execute eventsystem for multimedia components and folders (deprecated since version 5.7.5)
-      // if ($container != "" && (($media != false && $application != "generator") || $page == ".folder")) 
-      // {
-      //  $contentdata = loadcontainer ($container_id, "work", $user);
-      //
-      //  if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
-      //    onpublishobject_pre ($site, $cat, $location, $page, $container, $contentdata, $template, "", "", $user);
-      // }
 
       // if object is not a multimedia file or folder (test if .folder and directory) and 
       if ($container != false && $template != false && $page != ".folder" && !is_dir ($location.$page) && $application != "") 
@@ -15030,10 +15026,17 @@ function publishobject ($site, $location, $page, $user)
           else link_db_close ($site, $user);
         }
       }
-      // object has no container, template or application (is not managed by hyperCMS)
+      // object has no container, template or application (therefore not managed by hyperCMS or application is missing in template)
       else
       {
-        // execute eventsystem for multimedia components
+        // try to load container
+        if ($container_id) $contentdata = loadcontainer ($container_id, "work", $user);
+
+        // execute eventsystem
+        if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+          onpublishobject_pre ($site, $cat, $location, $page, $container, $contentdata, $template, "", "", $user);
+          
+        // execute eventsystem
         if ($media != false && $application != "generator" && $eventsystem['onpublishobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
           onpublishobject_post ($site, $cat, $location, $page, $container, $contentdata, $template, "", "", $user);    
   
@@ -15770,7 +15773,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
           if ($location_source != "" && $object_source != "" && @is_file ($location_source.$object_source))
           {
             if ($action == "publish") 
-            {               
+            {       
               $test = publishobject ($site_source, $location_source, $object_source, $user); 
 
               if ($test['result'] != false) unset ($collection[$i]);

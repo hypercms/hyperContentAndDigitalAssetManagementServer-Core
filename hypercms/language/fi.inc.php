@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['fi'] = "Työnkulun hallinta";
 $hcms_lang['workflow-scripts']['fi'] = "Työnkulun komentosarjat";
 $hcms_lang['checked-out-items']['fi'] = "Valittu esiin esineitä";
 $hcms_lang['system-events']['fi'] = "Järjestelmätapahtumat";
+$hcms_lang['custom-system-events']['fi'] = "Custom järjestelmätapahtumia";
 $hcms_lang['templates']['fi'] = "Mallit";
 $hcms_lang['page-templates']['fi'] = ". Sivumallien avulla";
 $hcms_lang['component-templates']['fi'] = "Komponenttimallit";

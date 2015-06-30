@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['hi'] = "बाहर वर्कफ्लो
 $hcms_lang['workflow-scripts']['hi'] = "बाहर वर्कफ्लो एप्लीकेशनों लिपियां";
 $hcms_lang['checked-out-items']['hi'] = "मदों से रोकना";
 $hcms_lang['system-events']['hi'] = "घटनाक्रम प्रणाली";
+$hcms_lang['custom-system-events']['hi'] = "कस्टम प्रणाली की घटनाओं";
 $hcms_lang['templates']['hi'] = "टेम्पलेट";
 $hcms_lang['page-templates']['hi'] = "पृष्ठ टेम्पलेट";
 $hcms_lang['component-templates']['hi'] = "संघटक टेम्पलेट";

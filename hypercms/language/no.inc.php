@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['no'] = "Administrasjon av arbeidsflyt";
 $hcms_lang['workflow-scripts']['no'] = "Arbeidsflyt skript";
 $hcms_lang['checked-out-items']['no'] = "Sjekket ut elementer";
 $hcms_lang['system-events']['no'] = "Systemhendelser";
+$hcms_lang['custom-system-events']['no'] = "Personlig Systemhendelser";
 $hcms_lang['templates']['no'] = "Maler";
 $hcms_lang['page-templates']['no'] = "Siden maler";
 $hcms_lang['component-templates']['no'] = "Komponent maler";

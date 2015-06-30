@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['sl'] = "Upravljanje poteka dela";
 $hcms_lang['workflow-scripts']['sl'] = "Potek dela skripte";
 $hcms_lang['checked-out-items']['sl'] = "REZERVIRANA elemente";
 $hcms_lang['system-events']['sl'] = "Sistem dogodki";
+$hcms_lang['custom-system-events']['sl'] = "Sistem meri dogodki";
 $hcms_lang['templates']['sl'] = "Predloge";
 $hcms_lang['page-templates']['sl'] = "Stran predloge";
 $hcms_lang['component-templates']['sl'] = "Koda predloge";

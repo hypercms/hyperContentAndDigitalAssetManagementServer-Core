@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['ru'] = "Управление рабочим �
 $hcms_lang['workflow-scripts']['ru'] = "Сценарии рабочего процесса";
 $hcms_lang['checked-out-items']['ru'] = "Проверку пунктов";
 $hcms_lang['system-events']['ru'] = "событий системы";
+$hcms_lang['custom-system-events']['ru'] = "Пользовательские системные события";
 $hcms_lang['templates']['ru'] = "Шаблоны";
 $hcms_lang['page-templates']['ru'] = "Шаблоны страниц";
 $hcms_lang['component-templates']['ru'] = "Шаблоны компонентов";

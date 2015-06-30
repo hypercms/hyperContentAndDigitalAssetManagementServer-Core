@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['so'] = "Workflow maamulka kiiska";
 $hcms_lang['workflow-scripts']['so'] = "Workflow qoraallo";
 $hcms_lang['checked-out-items']['so'] = "Soo Xustay ka soo baxay alaab";
 $hcms_lang['system-events']['so'] = "Nidaamka dhacdooyinka";
+$hcms_lang['custom-system-events']['so'] = "Dhacdooyinka nidaamka Custom";
 $hcms_lang['templates']['so'] = "Templates";
 $hcms_lang['page-templates']['so'] = "Templates Bogga";
 $hcms_lang['component-templates']['so'] = "Templates Idlaysa";

@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['cz'] = "Workflow řízení";
 $hcms_lang['workflow-scripts']['cz'] = "Workflow skripty";
 $hcms_lang['checked-out-items']['cz'] = "Rezervovat položky";
 $hcms_lang['system-events']['cz'] = "Systémové události";
+$hcms_lang['custom-system-events']['cz'] = "Vlastní systémové události";
 $hcms_lang['templates']['cz'] = "Šablony";
 $hcms_lang['page-templates']['cz'] = "Šablony stránky";
 $hcms_lang['component-templates']['cz'] = "složku šablon";

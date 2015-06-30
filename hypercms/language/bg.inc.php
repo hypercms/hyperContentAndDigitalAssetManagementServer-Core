@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['bg'] = "Управление на работ�
 $hcms_lang['workflow-scripts']['bg'] = "Работния поток скриптове";
 $hcms_lang['checked-out-items']['bg'] = "Проверка на елементи";
 $hcms_lang['system-events']['bg'] = "Система събития";
+$hcms_lang['custom-system-events']['bg'] = "Потребителски системни събития";
 $hcms_lang['templates']['bg'] = "Шаблони";
 $hcms_lang['page-templates']['bg'] = "Страница шаблони";
 $hcms_lang['component-templates']['bg'] = "За компонент шаблони";

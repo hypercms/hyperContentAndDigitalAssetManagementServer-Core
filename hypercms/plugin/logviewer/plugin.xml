@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin>
+  <definition>
+    <name>Log Viewer Plugin</name>
+    <author>hyperCMS</author>
+    <version>1.0</version>
+    <description>Log Viewer Plugin provides a list view of logs based on hyperCMS logging format. Logging need to be implemented in Eventsystem and must be saved in data/log/%publication%.custom.log</description>
+  </definition>
+  <menus>
+    <publication>
+      <point>
+        <name>Custom System Events</name>
+        <icon>img/event.gif</icon>
+        <page>pages/log_list.php</page>
+        <control>pages/control_log_menu.php</control>
+      </point>
+    </publication>
+  <menus>
+</plugin>

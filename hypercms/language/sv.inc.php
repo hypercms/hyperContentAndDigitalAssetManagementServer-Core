@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['sv'] = "Hantering av arbetsflöden";
 $hcms_lang['workflow-scripts']['sv'] = "Skript för arbetsflöden";
 $hcms_lang['checked-out-items']['sv'] = "Utcheckade objekt";
 $hcms_lang['system-events']['sv'] = "Systemhändelser";
+$hcms_lang['custom-system-events']['sv'] = "Anpassad systemhändelser";
 $hcms_lang['templates']['sv'] = "Mallar";
 $hcms_lang['page-templates']['sv'] = "Sidan mallar";
 $hcms_lang['component-templates']['sv'] = "Del mallar";

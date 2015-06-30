@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['nl'] = "Werkstroombeheer";
 $hcms_lang['workflow-scripts']['nl'] = "Scripts Workflow";
 $hcms_lang['checked-out-items']['nl'] = "Uitgenomen items";
 $hcms_lang['system-events']['nl'] = "Systeemgebeurtenissen";
+$hcms_lang['custom-system-events']['nl'] = "Gepersonaliseerde Systeemgebeurtenissen";
 $hcms_lang['templates']['nl'] = "Sjablonen";
 $hcms_lang['page-templates']['nl'] = "Pagina sjablonen";
 $hcms_lang['component-templates']['nl'] = "Onderdeel sjablonen";

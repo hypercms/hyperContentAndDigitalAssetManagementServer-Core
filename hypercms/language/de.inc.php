@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['de'] = "Workflow Management";
 $hcms_lang['workflow-scripts']['de'] = "Workflow Scripts";
 $hcms_lang['checked-out-items']['de'] = "ausgecheckte Objekte";
 $hcms_lang['system-events']['de'] = "Systemereignisse";
+$hcms_lang['custom-system-events']['de'] = "Personalisierte Systemereignisse";
 $hcms_lang['templates']['de'] = "Vorlagen";
 $hcms_lang['page-templates']['de'] = "Seitenvorlagen";
 $hcms_lang['component-templates']['de'] = "Komponentenvorlagen";

@@ -10,20 +10,17 @@
 // session
 define ("SESSION", "create");
 // management configuration
-require ("config.inc.php");
+require ("../../../config.inc.php");
 // hyperCMS API
-require ("function/hypercms_api.inc.php");
+require ("../../../function/hypercms_api.inc.php");
 // hyperCMS UI
-require ("function/hypercms_ui.inc.php");
+require ("../../../function/hypercms_ui.inc.php");
 
 
 // input parameters
 $site = getrequest ("site", "publicationname");
 
 // ------------------------------ permission section --------------------------------
-
-// check permissions
-if (!checkrootpermission ('site') && !checkrootpermission ('user')) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -32,7 +29,7 @@ checkusersession ($user);
 
 // file name of event log
 if (valid_publicationname ($site)) $logfile = $site.".custom.log";
-else $logfile = "event.log";
+else $logfile = "";
 
 if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
 {

@@ -501,6 +501,7 @@ $hcms_lang['workflow-management']['pl'] = "Zarządzanie płynnością";
 $hcms_lang['workflow-scripts']['pl'] = "Skrypty przepływu pracy";
 $hcms_lang['checked-out-items']['pl'] = "Sprawdzane elementy";
 $hcms_lang['system-events']['pl'] = "Zdarzenia systemowe";
+$hcms_lang['custom-system-events']['pl'] = "Niestandardowych zdarzeń systemowych";
 $hcms_lang['templates']['pl'] = "Szablony";
 $hcms_lang['page-templates']['pl'] = "Szablony stron";
 $hcms_lang['component-templates']['pl'] = "Szablonów elementów";
