@@ -30,7 +30,7 @@ checkusersession ($user, false);
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" background="<?php echo getthemelocation(); ?>img/backgrd_empty.png" leftmargin=0 topmargin=0 marginwidth=0 marginheight=0>
+<body class="hcmsWorkplaceGeneric" leftmargin=0 topmargin=0 marginwidth=0 marginheight=0>
 <table width="100%" height="100%">
   <tr>
     <td align="middle" valign="middle">

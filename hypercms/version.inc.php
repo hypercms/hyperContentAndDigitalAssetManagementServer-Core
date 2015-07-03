@@ -877,6 +877,8 @@ release 08/2015
 - new text for 'custom-system-events' in all language files
 - bug fix: the event onpublishobject_pre has not been fired if the application tag of the underlying template was empty
 - improvements in the eventysystem reg. creating the search index for PDF files
+- removed location bar from control_objectlist_menu in mobile edition to avoid scrolling on smaller screens
+- changes in CSS of mobile edition
 */
 
 // current version
