@@ -323,7 +323,6 @@ function goToURL()
       echo "<img src=\"".getthemelocation()."img/button_user_edit.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     }
     ?>
-    
   </div>
   <div class="hcmsToolbarBlock">
     <?php
@@ -340,17 +339,15 @@ function goToURL()
       echo "<img src=\"".getthemelocation()."img/button_user_files.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     }
     ?>
-    
   </div>
   <div class="hcmsToolbarBlock">
     <?php
     echo "<td><img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" /></a></td>\n";
-    ?>
-    
+    ?> 
   </div>
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">  
-      <?php echo $item_name; ?>:
+      <?php if (!$is_mobile) echo $item_name.":"; ?>
       <select name="group" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
         <?php
         // select users by group membership
@@ -425,7 +422,6 @@ function goToURL()
         ?>
       </select>
     </div>
-    
   </div>
   <div class="hcmsToolbarBlock">
     <?php

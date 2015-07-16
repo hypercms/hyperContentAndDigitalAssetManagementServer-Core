@@ -322,8 +322,8 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                             <td id=h".$items_row."_3 nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$item_site."</span></td>\n";
             $listview .= "</tr>\n";
         
-            $galleryview .= "<td id=t".$items_row." ".$selectclick." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
-                              <div ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer; display:block;\">".
+            $galleryview .= "<td id=t".$items_row." style=\"width:".$cell_width."; height:180px; text-align:center; vertical-align:bottom;\">
+                              <div ".$selectclick." ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer; display:block;\">".
                                 $dlink_start."
                                   <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$item_info['icon_large']."\" style=\"border:0;\" /></div>
                                   ".showshorttext($folder_name, 18, true)."
@@ -472,7 +472,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             }               
         
             // open on double click
-            $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."','".$container_id."','status=yes,scrollbars=no,resizable=yes', '800', '600');\"";
+            $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', '800', '600');\"";
             // refresh sidebar
             if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
             else $sidebarclick = "";
@@ -513,7 +513,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             $ratio = "Width";
             
             // if there is a thumb file, display the thumb
-          	if ($mediafile != false && $mediadir != "")
+            if ($mediafile != false && $mediadir != "")
             {              
               // try to create thumbnail if not available
               if ($mgmt_config['recreate_preview'] == true && !file_exists ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg") && !file_exists ($mediadir.$item_site."/".$media_info['filename'].".thumb.flv"))
@@ -528,8 +528,8 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                 // calculate image ratio to define CSS for image container div-tag
                 if (is_array ($imgsize))
                 {
-              		$imgwidth = $imgsize[0];
-              		$imgheight = $imgsize[1];
+                  $imgwidth = $imgsize[0];
+                  $imgheight = $imgsize[1];
                   $imgratio = $imgwidth / $imgheight;   
                   
                   // image width >= height
@@ -541,7 +541,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                 // galleryview - view option for locked multimedia objects
                 if ($item_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
                 else $class_image = "class=\"hcmsImageItem\"";               
-            		
+                
                 // if thumbnail is smaller than defined thumbnail size
                 if ($imgwidth < 180 && $imgheight < 180)
                 {
@@ -563,9 +563,9 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                 if ($item_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
                 else $class_image = "";
                         
-          		  $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$item_info['icon_large']."\" style=\"border:0;\" ".$class_image." /></div>";
-            	}           
-          	}
+                $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$item_info['icon_large']."\" style=\"border:0;\" ".$class_image." /></div>";
+              }           
+            }
             // display file icon for non multimedia objects 
             else
             {
@@ -573,26 +573,40 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               if ($item_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
               else $class_image = "";
                       
-        		  $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$item_info['icon_large']."\" style=\"border:0;\" ".$class_image." /></div>";
-          	}
+              $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$item_info['icon_large']."\" style=\"border:0;\" ".$class_image." /></div>";
+            }
             
-            // if linking is used, display download buttons
+            // if linking is used display download buttons, display edit button for mobile edition
             $linking_buttons = "";
             
             if ($mediafile != false && is_array (getsession ('hcms_linking')) && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
             {
               // check download of original file
               if (empty ($downloadformats) || (is_document ($mediafile) && !empty ($downloadformats['document']['original'])) || (is_image ($mediafile) && !empty ($downloadformats['image']['original'])))
-              {
-                if (!$is_mobile) $width = "160px";
-                else $width = "180px";
-          
-                $linking_buttons = "<div style=\"width:".$width."; margin-left:auto; margin-right:auto; padding:0; text-align:center;\"><a href=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?name=".$object_name."&media=".$item_site."/".$mediafile."&token=".hcms_crypt($item_site."/".$mediafile)."\" target=\"_blank\"><button class=\"hcmsButtonDownload\">".getescapedtext ($hcms_lang['view'][$lang])."</button></a><a href=\"".$mgmt_config['url_path_cms']."explorer_download.php?name=".$object_name."&media=".$item_site."/".$mediafile."&token=".hcms_crypt($item_site."/".$mediafile)."\"><button class=\"hcmsButtonDownload\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a></div>";
+              {            
+                $linking_buttons .= "
+                <a href=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?name=".url_encode($object_name)."&media=".url_encode($item_site."/".$mediafile)."&token=".hcms_crypt($item_site."/".$mediafile)."\" target=\"_blank\"><button class=\"hcmsButtonDownload\" onClick=\"\">".getescapedtext ($hcms_lang['view'][$lang])."</button></a>
+                <a href=\"".$mgmt_config['url_path_cms']."explorer_download.php?name=".url_encode($object_name)."&media=".url_encode($item_site."/".$mediafile)."&token=".hcms_crypt($item_site."/".$mediafile)."\" target=\"_blank\"><button class=\"hcmsButtonDownload\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
               }
             }
+            
+            // if mobile edition is used display edit button
+            if ($is_mobile && (($mediafile == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || ($mediafile != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
+            {   
+              $linking_buttons .= "
+              <button class=\"hcmsButtonDownload\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', '800', '600');\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
+            }
+            
+            if ($linking_buttons != "")
+            {
+              if (!$is_mobile) $width = "160px";
+              else $width = "180px";
+                
+              $linking_buttons = "<div style=\"width:".$width."; margin-left:auto; margin-right:auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
+            }
 
-            $galleryview .= "<td id=t".$items_row." ".$selectclick." width=\"".$cell_width."\" align=\"center\" valign=\"bottom\">
-                              <div ".$openObject." ".$hcms_setObjectcontext." title=\"".$metadata."\" style=\"cursor:pointer; display:block;\">".
+            $galleryview .= "<td id=t".$items_row." style=\"width:".$cell_width."; height:180px; text-align:center; vertical-align:bottom;\">
+                              <div ".$selectclick." ".$openObject." ".$hcms_setObjectcontext." title=\"".$metadata."\" style=\"cursor:pointer; display:block; text-align:center;\">".
                                 $dlink_start."
                                  ".$thumbnail."
                                  ".showshorttext($object_name, 18, true)."

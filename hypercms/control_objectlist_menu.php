@@ -683,8 +683,8 @@ else
 }
 ?>
 
+<?php if (!$is_mobile) { ?>
 <div class="hcmsLocationBar">
-  <?php if (!$is_mobile) { ?>
   <table border=0 cellspacing=0 cellpadding=0>
     <tr>
       <?php
@@ -708,10 +708,8 @@ else
       ?>
     </tr>
   </table>
-  <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block;"><?php echo $location_name.$object_name; ?></span>
-  <?php } ?>
 </div>
+<?php } ?>
 
 <!-- toolbar -->
 <div class="hcmsToolbar">

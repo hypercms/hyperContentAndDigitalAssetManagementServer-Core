@@ -217,7 +217,8 @@ function hcms_showContextmenu ()
         if (eval (document.getElementById("img_copylinked"))) document.getElementById("img_copylinked").className = "hcmsIconOn";
         if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOn";
         if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOn"; 
+        if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOn";
+        if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOn"; 
       }
       else if (multiobject == "" && contexttype == "media")
       {
@@ -231,7 +232,8 @@ function hcms_showContextmenu ()
         if (eval (document.getElementById("img_copylinked"))) document.getElementById("img_copylinked").className = "hcmsIconOn";
         if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOn";
         if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOn";     
+        if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOn";
+        if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOn";  
       }
       else
       {  
@@ -245,7 +247,8 @@ function hcms_showContextmenu ()
         if (eval (document.getElementById("img_copylinked"))) document.getElementById("img_copylinked").className = "hcmsIconOff";
         if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOff";
         if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOff";
-        if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOff";     
+        if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOff";
+        if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOff";
       }
     }
   }
@@ -606,7 +609,8 @@ function hcms_selectObject (row_id, event)
   }
   
   // We found no contextmenu to use
-  if(contextmenu_form == false) {
+  if (contextmenu_form == false)
+  {
     return false;
   }   
  
@@ -655,11 +659,15 @@ function hcms_selectObject (row_id, event)
     }
     else if (multiobject_str != '')
     {
-      if(hcms_endsWith(multiobject_str, '|'+object)) {
+      if (hcms_endsWith(multiobject_str, '|'+object))
+      {
         contextmenu_form.elements['multiobject'].value = hcms_replace (multiobject_str, '|'+object, '');
-      } else {
+      }
+      else
+      {
         contextmenu_form.elements['multiobject'].value = hcms_replace (multiobject_str, '|'+object+'|', '|');
       }
+      
       document.getElementById('g' + row_id).className='hcmsObjectUnselected';
       if (eval (document.getElementById('objectgallery'))) document.getElementById('t' + row_id).className='hcmsObjectUnselected';
       return true;

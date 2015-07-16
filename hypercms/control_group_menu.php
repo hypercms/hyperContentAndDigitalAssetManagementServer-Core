@@ -149,14 +149,16 @@ function goToURL()
 
 <body class="hcmsWorkplaceControlWallpaper" onLoad="<?php echo $add_onload; ?>">
 
-<table border=0 cellspacing=0 cellpadding=0>
-  <tr>
-    <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['group-management'][$lang]); ?></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-  </tr>  
-</table>
+<div class="hcmsLocationBar">
+  <table border=0 cellspacing=0 cellpadding=0>
+    <tr>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['group-management'][$lang]); ?></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>  
+  </table>
+</div>
 
 <!-- toolbar -->
 <div class="hcmsToolbar">

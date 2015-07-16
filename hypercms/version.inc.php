@@ -879,6 +879,9 @@ release 08/2015
 - improvements in the eventysystem reg. creating the search index for PDF files
 - removed location bar from control_objectlist_menu in mobile edition to avoid scrolling on smaller screens
 - changes in CSS of mobile edition
+- removed personalization and template management from explorer of mobile edition
+- added edit button to objects in objectlist for mobile edition
+- bug fix: delete-favorite icon in context menu has not been grayed out if no object was selected
 */
 
 // current version

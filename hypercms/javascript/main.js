@@ -481,6 +481,9 @@ var lastSort=null;
 
 function hcms_sortTable (_c, _isNumber)
 {
+  if (typeof hcms_unselectAll == 'function') hcms_unselectAll();
+  if (typeof hcms_resetContext == 'function') hcms_resetContext();
+      
   is_gallery = eval (document.getElementById("t0"));  
   
   // detailed view table

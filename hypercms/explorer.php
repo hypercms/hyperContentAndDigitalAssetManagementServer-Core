@@ -755,7 +755,7 @@ else
         }
         
         // ------------------------------------------ personalization -------------------------------------------------
-        if (!isset ($hcms_linking['location']) && checkglobalpermission ($site, 'pers') && $mgmt_config[$site]['dam'] == false)
+        if (!$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'pers') && $mgmt_config[$site]['dam'] == false)
         {
           $point = new hcms_menupoint($hcms_lang['personalization'][$lang], '#pers_'.$site, 'pers_registration.gif', 'pers_'.$site);
           $point->setOnClick('hcms_jstree_toggle_preventDefault("pers_'.$site.'", event);');
@@ -809,7 +809,7 @@ else
         }
         
         // --------------------------------------------- template ---------------------------------------------------
-        if (!isset ($hcms_linking['location']) && checkglobalpermission ($site, 'template'))
+        if (!$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'template'))
         {
           $point = new hcms_menupoint($hcms_lang['templates'][$lang], '#template_'.$site, 'template.gif', 'template_'.$site);
           $point->setOnMouseOver('hcms_resetContext();');
