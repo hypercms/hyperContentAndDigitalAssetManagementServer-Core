@@ -175,7 +175,7 @@ function compare_submit ()
     // change to version
     if ($actual != "" && $versiondir != "" && checktoken ($token, $user))
     {
-      if ($media != "" && @preg_match ("/_hcm".$container_id."./i", $actual))
+      if ($media != "" && preg_match ("/_hcm".$container_id."./i", $actual))
       {
         // create version of actual content file
         $media_v = fileversion ($media);
@@ -223,13 +223,7 @@ function compare_submit ()
         if ($bufferdata != false) 
         {
           // insert new object into content container
-          $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $contentobjects[0], "", "");  
-        
-          // save working container in Tamino
-          if (isset ($mgmt_config['db_connect_tamino']) && $mgmt_config['db_connect_tamino'] != "")
-          {  
-            db_write_container ("work", $site, $contentfile_recent, $bufferdata, "");     
-          }  
+          $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $contentobjects[0], "", "");
             
           // save working container 
           $test = savecontainer ($contentfile_id, "work", $bufferdata, $user);
@@ -244,11 +238,11 @@ function compare_submit ()
 
         if ($rename_2 == false || $copy_2 == false) echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."<br /><br />\n";
       }
-      else $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."<br /><br />\n";
+      else $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."<br /><br />\n";
     }
 
     // delete versions
-    if (is_array ($delete) && @sizeof ($delete) > 0)
+    if (is_array ($delete) && sizeof ($delete) > 0)
     {
       foreach ($delete as $file_v_del)
       {
@@ -302,8 +296,9 @@ function compare_submit ()
 
     while ($entry = $dir_version->read())
     {
-      if ($entry != "." && $entry != ".." && @!is_dir ($versiondir.$entry) && (@preg_match ("/".$contentfile.".v_/i", $entry) || @preg_match ("/_hcm".$container_id."./i", $entry)))
+      if ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/".$contentfile.".v_/i", $entry) || preg_match ("/_hcm".$container_id."./i", $entry)))
       {
+        // get file extension of container version
         $ext_v = substr ($entry, strrpos ($entry, "."));
         $files_v[$ext_v] = $entry;
       }
@@ -311,7 +306,7 @@ function compare_submit ()
     
     $dir_version->close();
 
-    if (@sizeof ($files_v) >= 1)
+    if (sizeof ($files_v) > 0)
     {
       ksort ($files_v);
       reset ($files_v);
@@ -321,19 +316,17 @@ function compare_submit ()
 
       foreach ($files_v as $file_v)
       {
+        // extract date and time from file extension
         $file_v_ext = substr (strrchr ($file_v, "."), 3);
         $date = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
         $time = substr ($file_v_ext, strpos ($file_v_ext, "_") + 1);
         $time = str_replace ("-", ":", $time);
         $date_v = $date." ".$time;
         
-        // get media file extension from version file
-        if ($media != "" && @preg_match ("/_hcm".$container_id."./i", $file_v))
-        {
-          $file_name_v = substr ($file_v, 0, strrpos ($file_v, "."));
-          $file_ext_v = substr ($file_name_v, strrpos ($file_name_v, "."));
-          $pagename_v = substr ($file_info['name'], 0, strrpos ($file_info['name'], ".")).$file_ext_v;
-        }
+        // get object info of version
+        $objectinfo_v = getobjectinfo ($site, $location, $page, $user, $file_v);
+        
+        if (!empty ($objectinfo_v['name'])) $pagename_v = $objectinfo_v['name'];
         else $pagename_v = $pagename;
 
         // define row color

@@ -651,13 +651,18 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       {
         // define version thumbnail file
         $mediafile_thumb = $file_info['filename'].".thumb.jpg".strtolower (strrchr ($mediafile_orig, "."));
+        
+        $style = "";
+        if ($width > 0) $style .= "width:".intval($width)."px;";
+        if ($height > 0) $style .= "height:".intval($height)."px;";
+        if ($style != "") $style = "style=\"".$style."\"";
 
         // use thumbnail if it is valid (larger than 400 bytes)
         if (@is_file ($thumb_root.$mediafile_thumb) && @filesize ($thumb_root.$mediafile_thumb) > 400)
         {
           $mediaview .= "
         <table>
-          <tr><td align=left><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile_thumb)."&token=".hcms_crypt($site."/".$mediafile_thumb)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" /></td></tr>
+          <tr><td align=\"left\"><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile_thumb)."&token=".hcms_crypt($site."/".$mediafile_thumb)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style." /></td></tr>
           <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>";           
         }
         // if no thumbnail/preview exists
@@ -665,7 +670,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           $mediaview = "
         <table>
-          <tr><td align=\"left\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /></td></tr>
+          <tr><td align=\"left\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" ".$style." /></td></tr>
           <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>";
         }
 
@@ -859,7 +864,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
             $mediaview .= "
           <table>
-            <tr><td align=left><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile)."&token=".hcms_crypt($site."/".$mediafile)."&ts=".time()."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style."/></td></tr>
+            <tr><td align=\"left\"><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile)."&token=".hcms_crypt($site."/".$mediafile)."&ts=".time()."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style."/></td></tr>
             <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>";           
           }
           // if no thumbnail/preview exists

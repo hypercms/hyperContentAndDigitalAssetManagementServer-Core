@@ -15567,6 +15567,15 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
   // set default language
   if ($lang == "") $lang = "en";
   
+  $result = array();
+  $result['result'] = false;
+  $result['maxcount'] = 0;
+  $result['count'] = 0;
+  $result['working'] = false;
+  $result['message'] = "";
+  $result['tempfile'] = "";
+  $result['method'] = "";
+  
   // get object pathes from the session if is not set      
   if (!is_array ($objectpath_array) && (isset ($_SESSION['clipboard_multiobject']) && is_array ($_SESSION['clipboard_multiobject']))) $objectpath_array = $_SESSION['clipboard_multiobject'];
   if ((!isset ($rootpathdelete_array) || !is_array ($rootpathdelete_array)) && (isset ($_SESSION['clipboard_rootpathdelete']) && is_array ($_SESSION['clipboard_rootpathdelete']))) $rootpathdelete_array = $_SESSION['clipboard_rootpathdelete'];
@@ -16142,28 +16151,16 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
     $result['maxcount'] = $maxcount;
     $result['count'] = $count;   
     if (isset ($result['working']) && $result['working'] != true) $result['working'] = false;    
-    $result['message'] = $test['message'];  
+    if (!empty ($test['message'])) $result['message'] = $test['message'];  
     $result['tempfile'] = $tempfile;  
     
     if ($action == "paste") 
     {
       $result['method'] = $method;         
     }
-
-    return $result;
   }
-  else
-  {
-    $result['result'] = false;
-    $result['maxcount'] = 0;
-    $result['count'] = 0;
-    $result['working'] = false;
-    $result['message'] = "";
-    $result['tempfile'] = "";
-    $result['method'] = "";
-    
-    return $result;
-  }
+  
+  return $result;
 }   
 
 // ---------------------- remoteclient -----------------------------

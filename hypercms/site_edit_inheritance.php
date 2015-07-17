@@ -329,7 +329,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <tr>
       <td colspan="2">&nbsp;</td>
     </tr>
-    <?php if (isset ($mgmt_config['db_connect_tamino']) && $mgmt_config['db_connect_tamino'] != "") { ?>
+    <?php if (isset ($mgmt_config['not-supported'])) { ?>
     <tr>
       <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['cut-copy-and-paste-objects'][$lang]); ?>: </td>
       <td width="80%" align="left" valign="top"><input type="checkbox" name="inherit_obj_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_obj'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>

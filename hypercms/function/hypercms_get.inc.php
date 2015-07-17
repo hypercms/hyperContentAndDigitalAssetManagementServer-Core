@@ -777,6 +777,100 @@ function getmediacontainerid ($file)
   else return false;
 }
 
+// ---------------------- getmediafileversion -----------------------------
+// function: getmediafileversion()
+// input: container name or container ID
+// output: media file name / false on error
+
+// description:
+// extracts the name of the multimedia file by container name or ID in order to get the media file of older content versions.
+// if the result is false, there is no older media file version.
+
+function getmediafileversion ($container)
+{
+  global $mgmt_config, $user;
+  
+  if (valid_objectname ($container))
+  {
+    // if container with media file version (media file name = container version name)
+    if (strpos ("_".$container, "_hcm") > 0)
+    {
+      $container_id = getmediacontainerid ($container);
+      
+      if (@preg_match ("/_hcm".$container_id."/i", $container))
+      {
+        return $mediafile = $container;
+      }
+    }
+    // if container name
+    elseif (strpos ($container, ".xml") > 0)
+    {
+      $container_id = substr ($container, 0, strpos ($container, ".xml"));
+    }
+    // if container ID
+    else $container_id = $container;
+    
+    if ($container_id > 0)
+    {
+      // get container file extension
+      if (strpos ($container, ".") > 0) $ext = substr ($container, strrpos ($container, "."));
+      
+      // if container version (object files might not exist anymore)
+      if (!empty ($ext) && strpos ("_".$ext, ".v_") > 0)
+      {
+        // time stamp of supplied version (YYYYMMDDHHMMSS)
+        $reference_timestamp = str_replace (array(".v_", "-", "_"), array("", "", ""), $ext);
+        
+        $version_dir = getcontentlocation ($container_id, 'abs_path_content');
+        
+        // select all content version files in directory
+        $handle = dir ($version_dir);
+        
+        $version_container = array();
+    
+        while ($entry = $handle->read())
+        {
+          // only select versions when media file has been changed
+          if ($entry != "." && $entry != ".." && is_file ($version_dir.$entry) && preg_match ("/_hcm".$container_id."./i", $entry))
+          {
+            // get file extension of container version
+            $version_ext = substr ($entry, strrpos ($entry, "."));
+            
+            // time stamp of version (YYYYMMDDHHMMSS)
+            $version_timestamp = str_replace (array(".v_", "-", "_"), array("", "", ""), $version_ext);
+            
+            $version_container[$version_timestamp] = $entry;
+          }
+        }
+        
+        $handle->close();
+        
+        // get media file
+        if (sizeof ($version_container) > 0)
+        {
+          ksort ($version_container);
+          $version_container = array_reverse ($version_container, true);
+          reset ($version_container);
+          
+          $temp_mediafile = "";
+          
+          foreach ($version_container as $version_timestamp => $version_mediafile)
+          {
+            if ($reference_timestamp >= $version_timestamp) break;
+            
+            $mediafile = $version_mediafile;
+          }
+        }
+        
+        if (!empty ($mediafile)) return $mediafile;
+        else return false;
+      }
+    }
+    else return false;
+  }
+  else return false;
+}
+
 // ---------------------- getobjectid -----------------------------
 // function: getobjectid()
 // input: converted object path or pathes separated by |
@@ -1215,25 +1309,34 @@ function getfileinfo ($site, $file, $cat="comp")
 
 // ---------------------------------------------- getobjectinfo ----------------------------------------------
 // function: getobjectinfo()
-// input: publication [string], location [string], object [string], user [string] (optional)
+// input: publication name, location, object name, user name (optional), container version (optional)
 // output: result array / false on error
 // requires: config.inc.php
 
 // description:
-// get's all file pointers(container, media) and object name from object file
+// get's all file pointers (container, media, template) and object name from object file and collects info from container version if provided
 
-function getobjectinfo ($site, $location, $object, $user="sys")
+function getobjectinfo ($site, $location, $object, $user="sys", $container_version="")
 {
   global $mgmt_config;
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object))
   {
+    $result = array();
+    
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
     
     // deconvert location
     if (@substr_count ($location, "%page%") > 0 || @substr_count ($location, "%comp%") > 0)
+    {
+      $location_esc = $location;
       $location = deconvertpath ($location, "file");
+    }
+    else
+    {
+      $location_esc = convertpath ($site, $location, "");
+    }
     
     // evaluate if object is a file or a folder
     if (is_dir ($location.$object))
@@ -1257,10 +1360,83 @@ function getobjectinfo ($site, $location, $object, $user="sys")
       $result['name'] = specialchr_decode ($object);
       $result['filename'] = getfilename ($data, "name");      
       $result['container_id'] = substr ($result['content'], 0, strpos ($result['content'], ".xml"));
-      
-      if (is_array ($result)) return $result;
-      else return false;
+      $result['contentobjects'] = array ($location_esc.$object);
     }
+
+    // collect information from container version
+    if (trim ($container_version) != "")
+    {
+      // if container with media file version (media file name = container version name)
+      // reset media name and container ID 
+      if (strpos ("_".$container_version, "_hcm") > 0)
+      {
+        $container_id = getmediacontainerid ($container_version);
+        
+        if (@preg_match ("/_hcm".$result['container_id']."/i", $container_version))
+        {
+          $result['media'] = $container_version;
+        }
+      }
+      // if container name
+      elseif (strpos ($container_version, ".xml") > 0)
+      {
+        $container_id = substr ($container_version, 0, strpos ($container_version, ".xml"));
+      }
+      
+      // if container ID of object and provided contaner version match
+      if ($result['container_id'] == $container_id)
+      {
+        // reset container name and container ID
+        $result['content'] = $container_version;
+        $result['container_id'] = $container_id;
+        
+        // reset media file name
+        $mediafile = getmediafileversion ($container_version);
+        
+        if (!empty ($mediafile)) $result['media'] = $mediafile;
+      
+        // get object name from container
+        $container_data = loadcontainer ($container_version, "version", $user);
+        $contentobjects_temp = getcontent ($container_data, "<contentobjects>");
+        
+        $contentobjects = array();
+        
+        if (!empty ($contentobjects_temp[0])) $contentobjects = link_db_getobject ($contentobjects_temp[0]);
+        
+        $result['contentobjects'] = $contentobjects;
+        
+        // if connected objects
+        if (sizeof ($contentobjects) > 1)
+        {
+          foreach ($contentobjects as $contentobject_v)
+          {
+            // assuming that the object is still in the same location
+            if (getlocation ($contentobject) == $location_esc)
+            {
+              $object = getobject ($contentobject);
+              break;
+            }
+          }
+          
+          // if no connected object has been identified, use all names
+          if (empty ($object))
+          {
+            $object = implode (", ", $contentobjects);
+          }
+        }
+        // if single object
+        elseif (!empty ($contentobjects[0]))
+        {
+          $object = getobject ($contentobjects[0]);
+        }
+        
+        // reset object name
+        $result['filename'] = $result['name'] = specialchr_decode ($object);
+      }
+    }
+    
+    // return result array
+    if (sizeof ($result) > 0) return $result;
     else return false;
   }
   else return false;

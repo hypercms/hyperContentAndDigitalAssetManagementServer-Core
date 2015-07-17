@@ -167,7 +167,10 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/click.js" type="text/javascript"></script>
+<?php 
+echo showaudioplayer_head ();
+echo showvideoplayer_head ($site, false);
+?>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
@@ -178,7 +181,36 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
 <!-- content -->
 <div class="hcmsWorkplaceFrame">
 <?php
-if (is_array ($date_array)) echo "<p style=\"margin:2px; padding:2px;\">".getescapedtext ($hcms_lang['comparison-of-versions'][$lang]).": ".$date_array[0]." / ".$date_array[1]."</p>\n";
+if (is_array ($date_array)) echo "<p><span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['comparison-of-versions'][$lang]).": </span>".$date_array[0]." / ".$date_array[1]."</p>\n";
+
+$showmedia_array = array();
+$i = 0;
+
+// get object info of versions and get media view
+foreach ($compare_array as $container)
+{
+  $objectinfo = getobjectinfo ($site, $location, $page, $user, $container);
+  
+  // show thumbnails
+  if (!empty ($objectinfo['media']))
+  {
+    $showmedia_array[$i] = showmedia ($site."/".$objectinfo['media'], convertchars ($objectinfo['name'], $hcms_lang_codepage[$lang], $charset), "preview_no_rendering", "media_".$i, 180);
+    $i++;
+  }
+}
+
+if (sizeof ($showmedia_array) > 1)
+{
+  echo "
+  <table>
+    <tr>
+      <td style=\"vertical-align:top;\">".$showmedia_array[0]."</td>
+      <td width=\"40\">&nbsp;</td>
+      <td style=\"vertical-align:top;\">".$showmedia_array[1]."</td>
+    </tr>
+  </table>
+  ";
+}
 
 if (is_array ($content_array))
 {  

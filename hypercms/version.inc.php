@@ -777,7 +777,7 @@ changelog:
 - implementation of new function drawCropbox in class hcmsPDF
 - removed deprecated pdfsearch.class.php
 - bug fix: explorer_download did not check original-type and tried to convert media
-- bug fix: when providing a colorspace or ICC-profile in media- or textf-tags the images would have been converted multiple times, depending on the occurance of the tage in the template
+- bug fix: when providing a colorspace or ICC-profile in media- or textf-tags the images would have been converted multiple times, depending on the occurrence of the tag in the template
 - implementation of new hyperCMS tag attribute 'pathtype' for media tags to declare path as file system path, URL, absolute path (URL without protocol and domain)
 - implementation of new media functions mm2px, px2mm, inch2px, px2inch
 - improved function convertimage which supports new input parameters and rendering features
@@ -882,6 +882,11 @@ release 08/2015
 - removed personalization and template management from explorer of mobile edition
 - added edit button to objects in objectlist for mobile edition
 - bug fix: delete-favorite icon in context menu has not been grayed out if no object was selected
+- bug fix: content versions of media files did not point to correct media file if only the meta data has been changed and published
+- support for file name changes in content versioning
+- function getobjectinfo supports content versions
+- implementation of function getmediafile
+- implementation of media preview when comparing media content versions 
 */
 
 // current version
