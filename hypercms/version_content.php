@@ -291,18 +291,38 @@ function compare_submit ()
       }
     }
 
-    // select all content version files in directory sorted by date
-    $files_v = getcontainerversions ($container_id);
+    // select all content version files in directory
+    $dir_version = dir ($versiondir);
 
-    if (is_array ($files_v) && sizeof ($files_v) > 0)
+    while ($entry = $dir_version->read())
     {
+      if ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/".$contentfile.".v_/i", $entry) || preg_match ("/_hcm".$container_id."./i", $entry)))
+      {
+        // get file extension of container version
+        $ext_v = substr ($entry, strrpos ($entry, "."));
+        $files_v[$ext_v] = $entry;
+      }
+    }
+    
+    $dir_version->close();
+
+    if (sizeof ($files_v) > 0)
+    {
+      ksort ($files_v);
       reset ($files_v);
 
       $color = false;
       $i = 0;
 
-      foreach ($files_v as $date_v => $file_v)
-      {        
+      foreach ($files_v as $file_v)
+      {
+        // extract date and time from file extension
+        $file_v_ext = substr (strrchr ($file_v, "."), 3);
+        $date = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
+        $time = substr ($file_v_ext, strpos ($file_v_ext, "_") + 1);
+        $time = str_replace ("-", ":", $time);
+        $date_v = $date." ".$time;
+        
         // get object info of version
         $objectinfo_v = getobjectinfo ($site, $location, $page, $user, $file_v);
         

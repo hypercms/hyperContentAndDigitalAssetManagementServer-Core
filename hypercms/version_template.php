@@ -202,18 +202,36 @@ function compare_submit ()
       }     
     }
 
-    // select all template version files in directory sorted by date
-    $files_v = gettemplateversions ($site, $template);
+    // select all template version files in directory
+    $dir_version = dir ($versiondir);
 
-    if (is_array ($files_v) && sizeof ($files_v) > 0)
+    while ($entry = $dir_version->read())
     {
+      if ($entry != "." && $entry != ".." && @!is_dir ($entry) && @preg_match ("/".$template.".v_/i", $entry))
+      {
+        $files_v[] = $entry;
+      }
+    }
+    $dir_version->close();
+
+    if (@sizeof ($files_v) >= 1)
+    {
+      sort ($files_v);
       reset ($files_v);
 
       $color = false;
       $i = 0;
 
-      foreach ($files_v as $date_v => $file_v)
+      foreach ($files_v as $file_v)
       {
+        $file_v_ext = substr (strrchr ($file_v, "."), 3);
+
+        $date = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
+        $time = substr ($file_v_ext, strpos ($file_v_ext, "_") + 1);
+        $time = str_replace ("-", ":", $time);
+
+        $date_v = $date." ".$time;
+
         // define row color
         if ($color == true)
         {

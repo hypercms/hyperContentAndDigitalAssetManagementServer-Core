@@ -886,14 +886,9 @@ release 08/2015
 - support for file name changes in content versioning
 - function getobjectinfo supports content versions
 - implementation of function getmediafile
-- implementation of media preview when comparing media content versions
-
-version 5.7.11
-release 09/2015
-- implementation of new function getcontainerversions and gettemplateversions
-- implementation of VTT support for videos including WebVVT editor
+- implementation of media preview when comparing media content versions 
 */
 
 // current version
-$version = "Version 5.7.11";
+$version = "Version 5.7.10";
 ?>
