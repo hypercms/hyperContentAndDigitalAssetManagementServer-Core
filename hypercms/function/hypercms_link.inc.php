@@ -903,27 +903,27 @@ function getlinkedobject ($site, $location, $page, $cat)
 
 // ---------------------------------------- getconnectedobject --------------------------------------------
 // function: getconnectedobject()
-// input: container name
+// input: container name, container type [work,published,version] (optional)
 // output: connected objects[array] 
 
 // description:
 // this function gets all objects which use the same content container and are therefore connected.
 
-function getconnectedobject ($container)
+function getconnectedobject ($container, $type="work")
 {
   global $mgmt_config, $user;
   
   if (valid_objectname ($container))
   {
     // load container
-    $container_data = loadcontainer ($container, "work", $user);
+    $container_data = loadcontainer ($container, $type, $user);
  
     // extract object references
     if ($container_data != "")
     {
       $object_array = getcontent ($container_data, "<contentobjects>");
       
-      if (is_array ($object_array) && !empty ($object_array[0])) $object_array = link_db_getobject ($object_array[0]);
+      if (!empty ($object_array[0])) $object_array = link_db_getobject ($object_array[0]);
       else $object_array = false;
     }
     else $object_array = false;

@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['zh-s'] = "使用SSL";
 $hcms_lang['formats']['zh-s'] = "格式";
 $hcms_lang['download-formats']['zh-s'] = "下载格式";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['zh-s'] = "关键词可选的强制性或开放名单";
+$hcms_lang['video-text-track']['zh-s'] = "视频文本轨道";
+$hcms_lang['copy-tracks-from-previously-selected-language']['zh-s'] = "从复制以前选择语言轨道？";
 ?>

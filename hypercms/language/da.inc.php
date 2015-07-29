@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['da'] = "Brug SSL";
 $hcms_lang['formats']['da'] = "Formater";
 $hcms_lang['download-formats']['da'] = "Download formater";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['da'] = "Søgeord med valgfri obligatorisk eller åben liste";
+$hcms_lang['video-text-track']['da'] = "Video tekst track";
+$hcms_lang['copy-tracks-from-previously-selected-language']['da'] = "Kopier spor fra tidligere valgte sprog?";
 ?>

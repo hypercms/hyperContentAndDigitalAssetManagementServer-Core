@@ -1254,22 +1254,30 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // get name of content file
       $contentfile = getfilename ($pagedata, "content"); 
       
+      // get object name
+      $namefile = getfilename ($pagedata, "name");
+      
+      // get media file
+      $mediafile = getfilename ($pagedata, "media");
+      
       // get container id
       $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
 
-      // load given input content container if container ID macthes with the one of the object
+      // load given input content container if container ID matches with the one of the object
       if ($container != "" && substr_count ($container, $container_id) == 1)
       {
         $contentfile = $container;
+        
+        // get object info of version
+        $objectinfo_version = getobjectinfo ($site, $location, $page, $user, $container);
+        
+        if (!empty ($objectinfo_version['name'])) $name_orig = $objectinfo_version['name'];
+        if (!empty ($objectinfo_version['media'])) $mediafile = $objectinfo_version['media'];
       }
     
       // get template file
       if (isset ($template) && valid_objectname ($template)) $templatefile = $template;
       else $templatefile = getfilename ($pagedata, "template");
-     
-      // get media file
-      $mediafile = getfilename ($pagedata, "media");    
-      $namefile = getfilename ($pagedata, "name");
         
       // ---------------------- load version for history view ----------------------------
       if (file_exists ($mgmt_config['abs_path_temp'].session_id().".dates.php"))
@@ -2006,7 +2014,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           ".getescapedtext ($hcms_lang['available-languages'][$lang], $charset, $lang).":<br />";
                           
           
-                  //load code page index file
+                  // load code page index file
                   $langcode_array = file ($mgmt_config['abs_path_cms']."include/languagecode.dat");
           
                   if ($langcode_array != false)
@@ -7026,6 +7034,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       ".$add_submitlanguage."
       ".$add_submitlink."
       ".$add_submitcomp."
+      hcms_stringifyVTTrecords();
       document.forms['hcms_formview'].submit();
       return true;
     }  
@@ -7034,12 +7043,23 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   ";
   
   // autosave code
-  if (intval ($mgmt_config['autosave']) > 0 && $buildview != "formlock") $viewstore .= "
+  if (intval ($mgmt_config['autosave']) > 0)
+  {
+    $autosave_active = "var active = $(\"#autosave\").is(\":checked\");";
+    $autosave_timer = "setTimeout ('autosave()', ".(intval ($mgmt_config['autosave']) * 1000).");";
+  }
+  else
+  {
+    $autosave_active = "var active = true;";
+    $autosave_timer = "";
+  }
+  
+  if ($buildview != "formlock") $viewstore .= "
   function autosave ()
   {
-    var test = $(\"#autosave\").is(\":checked\");
+    ".$autosave_active."
       
-    if (test == true)
+    if (active == true)
     {  
       var checkcontent = true;
           
@@ -7051,41 +7071,76 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         ".$add_submitlanguage."
         ".$add_submitlink."
         ".$add_submitcomp."
+        hcms_stringifyVTTrecords();
             
-        for(var i in CKEDITOR.instances)
+        for (var i in CKEDITOR.instances)
         {
           CKEDITOR.instances[i].updateElement();
         }
         
-        hcms_showHideLayers('messageLayer','','show');
+        hcms_showHideLayers ('messageLayer','','show');
         $(\"#savetype\").val('auto');
             
         $.post(
           \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
           $(\"#hcms_formview\").serialize(), 
-          function(data)
+          function (data)
           {
-            if(data.message.length !== 0)
+            if (data.message.length !== 0)
             {
-              alert(hcms_entity_decode(data.message));
+              alert (hcms_entity_decode(data.message));
             }				
-            setTimeout(\"hcms_showHideLayers('messageLayer','','hide')\", 1500);
+            setTimeout (\"hcms_showHideLayers('messageLayer','','hide')\", 1500);
           }, 
           \"json\"
         );
       }
     }
-    setTimeout('autosave()', ".(intval ($mgmt_config['autosave']) * 1000).");
+    
+    ".$autosave_timer."
   }
   
-  setTimeout('autosave()', ".(intval ($mgmt_config['autosave']) * 1000).");
+  ".$autosave_timer."
   ";
+  
+  // define VTT records object for JS
+  $vtt_records = "{}";
+  
+  if (!empty ($contentdata))
+  {
+    $vtt_textnodes = selectcontent ($contentdata, "<text>", "<text_id>", "VTT-*");
+    
+    if (is_array ($vtt_textnodes))
+    {
+      foreach ($vtt_textnodes as $vtt_textnode)
+      {
+        if (!empty ($vtt_textnode))
+        {
+          $vtt_id = getcontent ($vtt_textnode, "<text_id>");
+          list ($vtt, $vtt_langcode) = explode ("-", $vtt_id[0]);
+          
+          $vtt_string = getcontent ($vtt_textnode, "<textcontent>");
+        }
+        
+        if (!empty ($vtt_string[0]) && !empty ($vtt_langcode))
+        {
+          $vtt_array[$vtt_langcode] = vtt2array ($vtt_string[0]);
+        }
+      }
+    }
+  }
+  
+  if (is_array ($vtt_array) && sizeof ($vtt_array) > 0) $vtt_records = json_encode ($vtt_array);
   
   // onload event / document ready
   if ($add_onload != "") $viewstore .= "
   $(document).ready(function() {".
     $add_onload."
-  });";
+  });
+  
+  // global object for VTT records
+  var vtt_object = ".$vtt_records.";
+  ";
   
   $viewstore .= "
   //-->
@@ -7174,15 +7229,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         {
           if ($buildview == "formedit" || $buildview == "formmeta") $mediaview = "preview";
           else $mediaview = "preview_no_rendering";
-          
-          // if media file version
-          if (@preg_match ("/_hcm".$container_id."/i", $contentfile))
-          {
-            $mediafile = $contentfile;
-            $file_name_v = substr ($mediafile, 0, strrpos ($mediafile, "."));
-            $file_ext_v = substr ($file_name_v, strrpos ($file_name_v, "."));
-            $name_orig = substr ($name_orig, 0, strrpos ($name_orig, ".")).$file_ext_v;
-          }
           
           $viewstore .= "<tr><td align=left valign=top><b>".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."</b></td><td align=left valign=top>".showmedia ($site."/".$mediafile, convertchars ($name_orig, $hcms_lang_codepage[$lang], $charset), $mediaview)."</td></tr>\n";
         }

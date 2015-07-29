@@ -3236,7 +3236,22 @@ function createtask ($site, $from_user, $from_email, $to_user, $to_email, $categ
       $mailer->Subject = "hyperCMS: ".$hcms_lang['new-task-from-user'][$lang]." ".$from_user;
       $mailer->CharSet = $hcms_lang_codepage[$lang];
       $mailer->Body = html_decode ($message."\n\n".$object_link, $hcms_lang_codepage[$lang]);
-      $mailer->Send();
+      
+      // send mail
+      if ($mailer->Send())
+      {
+        $mail_sent = true;
+        $errcode = "00202";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|task notification has been sent to ".$to_user." (".$to_email.") on object ".$object_esc; 
+      }
+      else
+      {
+        $errcode = "50202";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|task notification failed for ".$to_user." (".$to_email.") on object ".$object_esc." (mail could not be sent)";  
+      }
+      
+      // save log
+      savelog (@$error);
     }
 
     // load and lock file
@@ -12999,7 +13014,27 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                 $errcode = "10119";
                 $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$mgmt_config['abs_path_link'].$contentfile_id;
               }
-            }                     
+            }
+            
+            // delete all VTT files of videos
+            if ($contentfile_id != "")
+            {
+              // load language code index file
+              $langcode_array = file ($mgmt_config['abs_path_cms']."include/languagecode.dat");
+        
+              if ($langcode_array != false)
+              {
+                foreach ($langcode_array as $langcode)
+                {
+                  list ($code, $language) = explode ("|", trim ($langcode));
+                  
+                  if (is_file ($mgmt_config['abs_path_temp']."view/".$contentfile_id."_".trim($code).".vtt"))
+                  {
+                    deletefile ($mgmt_config['abs_path_temp']."view/", $contentfile_id."_".trim($code).".vtt", 0);
+                  }
+                }
+              }
+            }
           
             // delete all content and media version files
             $dir_version = $contentlocation;
@@ -15046,9 +15081,30 @@ function publishobject ($site, $location, $page, $user)
    
         $error_switch = "no";
       }
+      
+      // ------------------------ publish VTT files of video ------------------------
+      if (!empty ($contentdata) && !empty ($container_id))
+      {
+        $vtt_textnodes = selectcontent ($contentdata, "<text>", "<text_id>", "VTT-*");
+        
+        if (is_array ($vtt_textnodes))
+        {
+          foreach ($vtt_textnodes as $vtt_textnode)
+          {
+            if (!empty ($vtt_textnode))
+            {
+              $vtt_id = getcontent ($vtt_textnode, "<text_id>");
+              list ($vtt, $vtt_langcode) = explode ("-", $vtt_id[0]);              
+              $vtt_string = getcontent ($vtt_textnode, "<textcontent>");
+
+              if (!empty ($vtt_string[0])) savefile ($mgmt_config['abs_path_temp']."view/", $container_id."_".trim($vtt_langcode).".vtt", $vtt_string[0]);
+            }
+          }
+        }
+      }
               
       // ------------------------------ update and save container ------------------------------
-      if ($container != "" && $contentdata != "")
+      if (!empty ($contentdata) && !empty ($container))
       {
         // create version of previous content file
         if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true)
@@ -15335,6 +15391,7 @@ function unpublishobject ($site, $location, $page, $user)
       // get all connected objects
       $pagedata = loadfile ($location, $page);
       $container = getfilename ($pagedata, "content");
+      $container_id = substr ($container, 0, strpos ($container, ".xml"));
       $template = getfilename ($pagedata, "template");
       $media = getfilename ($pagedata, "media");
       
@@ -15352,6 +15409,26 @@ function unpublishobject ($site, $location, $page, $user)
         }
       }
       else $template = false;
+      
+      // delete all VTT files of videos
+      if ($container_id != "")
+      {
+        // load language code index file
+        $langcode_array = file ($mgmt_config['abs_path_cms']."include/languagecode.dat");
+  
+        if ($langcode_array != false)
+        {
+          foreach ($langcode_array as $langcode)
+          {
+            list ($code, $language) = explode ("|", trim ($langcode));
+            
+            if (is_file ($mgmt_config['abs_path_temp']."view/".$container_id."_".trim($code).".vtt"))
+            {
+              deletefile ($mgmt_config['abs_path_temp']."view/", $container_id."_".trim($code).".vtt", 0);
+            }
+          }
+        }
+      }
 
       // if object is a page or component and not a multimedia file
       if ($container != false && $template != false && ($media == false || $application == "generator") && $page != ".folder")
@@ -16858,15 +16935,20 @@ function notifyusers ($site, $location, $object, $event, $user_from)
               if ($mailer->Send())
               {
                 $mail_sent = true;
+                $errcode = "00802";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|notification has been sent to ".$user." (".$email_to.") on object ".$location_esc.$object; 
               }
               else
               {
                 $errcode = "50802";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|notification failed for $user on object $objectpath (mail could not be sent)";  
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|notification failed for ".$user." (".$email_to.") on object ".$location_esc.$object." (mail could not be sent)";  
               }
               
               // add user to memory to avoid multiple notifications for the same user
               $user_memory[] = $notify['user'];
+              
+              // save log
+              savelog (@$error);
             }
           }
         }
@@ -16966,7 +17048,7 @@ function licensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $
                 
                 // log notification
                 $errcode = "00900";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|license notification was sent for $folderpath, $text_id, $date_begin, $date_end, $user";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|license notification was sent to $email_to for $folderpath, $text_id, $date_begin, $date_end, $user";
               }
               else
               {

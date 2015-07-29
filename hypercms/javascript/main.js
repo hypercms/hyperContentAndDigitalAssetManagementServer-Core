@@ -477,7 +477,7 @@ function hcms_bubbleSort (c, _ud, _isNumber)
   return true;
 }
 
-var lastSort=null;
+var lastSort = null;
 
 function hcms_sortTable (_c, _isNumber)
 {
@@ -492,12 +492,12 @@ function hcms_sortTable (_c, _isNumber)
     var _o=null;
     var _i=0;
     
-    while(_o=document.getElementById("g"+_i))
+    while (_o=document.getElementById("g"+_i))
     {
       hcms_detailview[_i]=new Array();
       var _j=0;
       
-      while(_p=document.getElementById("h"+_i+"_"+_j))
+      while (_p=document.getElementById("h"+_i+"_"+_j))
       {
         hcms_detailview[_i][_j]=_p.innerHTML;
         _j++;
@@ -512,7 +512,7 @@ function hcms_sortTable (_c, _isNumber)
     _o=null;
     _i = 0;
     
-    while(_o=document.getElementById("t"+_i))
+    while (_o=document.getElementById("t"+_i))
     {
       hcms_galleryview[_i]=_o.innerHTML;
       _i++;
@@ -520,20 +520,290 @@ function hcms_sortTable (_c, _isNumber)
   } 
   
   // sort both tables the same way
-  hcms_bubbleSort(_c, lastSort!=_c, _isNumber);
+  hcms_bubbleSort (_c, lastSort!=_c, _isNumber);
   
   // refill tables with sorted arrays
-  for(var b=0;b<hcms_detailview.length;b++)
+  for (var b = 0; b < hcms_detailview.length; b++)
   {
-    for(var c=0;c<hcms_detailview[b].length;c++)
+    for (var c = 0; c < hcms_detailview[b].length; c++)
     {
       document.getElementById("h"+b+"_"+c).innerHTML=hcms_detailview[b][c];
       if (is_gallery) document.getElementById("t"+b).innerHTML=hcms_galleryview[b]; 
     }
   }
   
-  if(lastSort!=_c)
-    lastSort=_c;
-  else
-    lastSort=null;
+  if (lastSort!=_c) lastSort=_c;
+  else lastSort=null;
+}
+
+// ------------------------------ Video Text Track (VTT) --------------------------------
+
+// global object for VTT records
+if (typeof vtt_object !== 'object') var vtt_object = {};
+
+// global variable for VTT delete buttons (delete button for VTT record)
+if (typeof vtt_buttons == 'undefined') var vtt_buttons = '';
+
+// global variable for VTT confirm to copy text tracks from previous language
+if (typeof vtt_confirm == 'undefined') var vtt_confirm = '';
+
+function hcms_markVTTlanguages ()
+{
+  // mark available languages in selectbox
+  if (typeof vtt_object === 'object' && document.getElementById('vtt_language') !== null)
+  {
+    var selectbox = document.getElementById('vtt_language');
+    
+    // reset options
+    for (var i = 0; i < selectbox.options.length; i++)
+    {
+      selectbox.options[i].setAttribute('class', '');
+    }
+    
+    for (var langcode in vtt_object)
+    {
+      if (vtt_object.hasOwnProperty(langcode))
+      {
+        for (var i = 0; i < selectbox.options.length; i++)
+        {
+          if (selectbox.options[i].value == langcode)
+          {
+            selectbox.options[i].setAttribute('class', 'hcmsRowHead1');
+          }
+        }
+      }
+    }
+    
+    return true;
+  }
+  else return false;
+}
+
+function hcms_openVTTeditor (id)
+{
+  if (id != "" && document.getElementById(id) !== null)
+  {
+    var vtt_editor = document.getElementById(id);
+  
+    if (vtt_editor.style.display == 'none') vtt_editor.style.display = 'block';
+    else vtt_editor.style.display = 'none';
+    
+    hcms_markVTTlanguages();
+    return true;
+  }
+  else return false;
+}
+
+function hcms_changeVTTlanguage ()
+{
+  // language define by select
+  var e = document.getElementById('vtt_language');
+  var vtt_langcode_new = e.options[e.selectedIndex].value;
+  
+  // current language of VTT editor
+  var vtt_langcode = document.getElementById('vtt_langcode').value;
+  
+  // save language using autosave
+  if (vtt_langcode_new != "" && vtt_langcode != "" && vtt_langcode_new != vtt_langcode)
+  {
+    // if autosave checkbox is used (autosave feature is used)
+    if (document.getElementById('autosave') !== null && document.getElementById('autosave').checked == false)
+    {
+      var autosave_active = document.getElementById('autosave');
+      
+      autosave_active.checked = true;
+      autosave();
+      autosave_active.checked = false;
+    }
+    else
+    {
+      autosave();
+    }
+  }
+  
+  if (vtt_langcode_new != "")
+  {
+    // reset language code of editor
+    document.getElementById('vtt_langcode').value = vtt_langcode_new;
+    
+    // mark languages
+    hcms_markVTTlanguages();
+    
+    // tracks for language exists
+    if (vtt_object.hasOwnProperty(vtt_langcode_new)) 
+    {
+      // remove all records from editor if language records exist
+      hcms_removeVTTrecords();
+
+      // load VTT records of selected language into editor
+      hcms_createVTTrecords (vtt_object[vtt_langcode_new]);
+    }
+    // language tracks are empty
+    else if (vtt_object.hasOwnProperty(vtt_langcode) && confirm (vtt_confirm) == false)
+    {
+      // remove all records from editor if language records exist
+      hcms_removeVTTrecords();
+    }
+    
+    return true;
+  }
+  else return false;
+}
+
+function hcms_createVTTrecords (records)
+{
+  if (typeof records === 'object' && document.getElementById('vtt_records') !== null)
+  {
+    for (var time in records)
+    {
+      if (records.hasOwnProperty(time))
+      {
+        var record = records[time];
+
+        var timestamp = time;
+        timestamp = timestamp.replace(":", "");
+        timestamp = timestamp.replace(":", "");
+        timestamp = timestamp.replace(".", "");
+          
+        if (document.getElementById(timestamp) === null)
+        {
+          var div = document.createElement('div');
+          
+          div.id = timestamp;
+      
+          div.innerHTML = '<input type="text" name="vtt_start" value="' + record.start + '" maxlength="12" style="float:left; margin:2px 2px 0px 0px; width:58px;" readonly="readonly" />\
+              <input type="text" name="vtt_stop" value="' + record.stop + '" maxlength="12" style="float:left; margin:2px 2px 0px 0px; width:58px;" readonly="readonly" />\
+              <input type="text" name="vtt_text" value="' + record.text + '" maxlength="400" style="float:left; margin:2px 2px 0px 0px; width:400px;" />\
+              ' + vtt_buttons + '\
+              <div style="clear:both;"></div>';
+      
+          document.getElementById('vtt_records').appendChild(div);
+        }
+      }
+    }
+    
+    // sort VTT records
+    hcms_sortVTTrecords();
+    
+    return true;
+  }
+  else return false;
+}
+
+function hcms_createVTTrecord ()
+{
+  if (document.getElementById('vtt_create'))
+  {
+    var e = document.getElementById('vtt_language');
+    var langcode = e.options[e.selectedIndex].value;
+    var start = document.getElementById('vtt_start').value;
+    var stop = document.getElementById('vtt_stop').value;
+    var text = document.getElementById('vtt_text').value;
+    var vtt_record = {};
+
+    if (langcode != "" && start != "" && stop != "" && text != "")
+    {
+      vtt_record[start] = { start:start, stop:stop, text:text };
+      return hcms_createVTTrecords (vtt_record);
+    }
+  }
+  
+  return false;
+}
+
+function hcms_sortVTTrecords ()
+{
+  if (document.getElementById('vtt_records') !== null)
+  {
+    var main = document.getElementById('vtt_records');
+  
+    [].map.call(main.children, Object).sort( function (a, b) {
+      return +a.id.match( /\d+/ ) - +b.id.match( /\d+/ );
+    }).forEach (function (elem) {
+      main.appendChild(elem);
+    });
+  }
+  else return false;
+}
+
+function hcms_removeVTTrecords ()
+{
+  if (document.getElementById('vtt_records') !== null)
+  {
+    document.getElementById('vtt_records').innerHTML = '';
+    return true;
+  }
+  else return false;
+}
+
+function hcms_removeVTTrecord (input)
+{
+  if (input && document.getElementById('vtt_records'))
+  {
+    document.getElementById('vtt_records').removeChild(input.parentNode);
+    return true;
+  }
+  else return false;
+}
+
+function hcms_stringifyVTTrecords ()
+{
+  if (document.getElementById('vtt_records') !== null)
+  {
+    var vtt_langcode = document.getElementById('vtt_langcode').value;
+    var vtt_start = document.getElementsByName('vtt_start');
+    var vtt_stop = document.getElementsByName('vtt_stop');
+    var vtt_text = document.getElementsByName('vtt_text');
+    var vtt_records = {};
+    var vtt_string = "";
+
+    // create VTT string
+    if (vtt_start !== null && vtt_start.length > 0)
+    {
+      var i;
+      
+      for (i = 0; i < vtt_start.length; i++)
+      {
+        var start = vtt_start[i].value;
+        var stop = vtt_stop[i].value;
+        var text = vtt_text[i].value;
+        
+        // create VVT record as string
+        vtt_string += start + " --> " + stop + "\n" + text + "\n\n";
+        
+        // create VTT record as object
+        vtt_records[start] =  { start:start, stop:stop, text:text };
+      }
+
+      if (vtt_string != "") vtt_string = "WEBVTT\n\n" + vtt_string;
+      else vtt_string = "";
+    }
+    
+    // write VTT string to object and hidden input field
+    if (vtt_langcode != "")
+    {
+      // create JS object for VTT (language -> starttime -> attributes)
+      if (typeof vtt_records === 'object')
+      {
+        // remove old record
+        delete vtt_object[vtt_langcode];
+        // add new record
+        vtt_object[vtt_langcode] = vtt_records;
+      }
+
+      // write to hidden input field
+      if (document.getElementById('VTT') !== null)
+      {
+        // set name according to selected language
+        document.getElementById('VTT').name = 'textu[VTT-' + vtt_langcode + ']';
+        document.getElementById('VTT').value = vtt_string;
+      }
+      
+      // mark languages
+      hcms_markVTTlanguages();
+    }
+    
+    return vtt_string;
+  }
+  else return false;
 }

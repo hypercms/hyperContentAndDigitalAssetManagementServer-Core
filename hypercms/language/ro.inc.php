@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['ro'] = "Utilizaţi SSL";
 $hcms_lang['formats']['ro'] = "Formate";
 $hcms_lang['download-formats']['ro'] = "Formate de descărcare";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ro'] = "Cuvintele cheie cu optional listă obligatorie sau deschis";
+$hcms_lang['video-text-track']['ro'] = "Track videotext";
+$hcms_lang['copy-tracks-from-previously-selected-language']['ro'] = "Copia piese din limba selectată anterior?";
 ?>

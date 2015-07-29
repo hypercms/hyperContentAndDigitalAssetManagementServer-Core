@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['nl'] = "SSL gebruiken";
 $hcms_lang['formats']['nl'] = "Indelingen";
 $hcms_lang['download-formats']['nl'] = "Downloadindelingen";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['nl'] = "Trefwoorden met optionele of verplichte open lijst";
+$hcms_lang['video-text-track']['nl'] = "Video tekstspoor";
+$hcms_lang['copy-tracks-from-previously-selected-language']['nl'] = "Kopiëren tracks van eerder geselecteerde taal?";
 ?>

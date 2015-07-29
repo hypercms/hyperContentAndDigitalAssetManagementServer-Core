@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['bn'] = "ssl ব্যবহার";
 $hcms_lang['formats']['bn'] = "মাধ্যম";
 $hcms_lang['download-formats']['bn'] = "সফটওয়্যার ডাউনলোড মাধ্যম";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['bn'] = "ঐচ্ছিক বাধ্যতামূলক বা খোলা তালিকা মূলশব্দ";
+$hcms_lang['video-text-track']['bn'] = "ভিডিও টেক্সট ট্র্যাক";
+$hcms_lang['copy-tracks-from-previously-selected-language']['bn'] = "পূর্বে নির্বাচিত ভাষা থেকে কপি গানগুলি?";
 ?>

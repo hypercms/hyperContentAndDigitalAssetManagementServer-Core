@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['th'] = "ใช้ SSL";
 $hcms_lang['formats']['th'] = "รูปแบบ";
 $hcms_lang['download-formats']['th'] = "ดาวน์โหลดรูปแบบ";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['th'] = "คำหลักที่มีรายการที่ไม่จำเป็นบังคับหรือเปิด";
+$hcms_lang['video-text-track']['th'] = "ติดตามข้อความวิดีโอ";
+$hcms_lang['copy-tracks-from-previously-selected-language']['th'] = "คัดลอกเพลงจากภาษาที่เลือกก่อนหน้านี้?";
 ?>

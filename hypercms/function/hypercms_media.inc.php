@@ -3205,4 +3205,45 @@ function inch2px ($inch, $dpi=72)
   }
   else return false;
 }
+
+// ---------------------- vtt2array -----------------------------
+// function: vtt2array()
+// input: VTT string
+// output: array / false
+
+// description: converts VTT string to array
+
+function vtt2array ($vtt)
+{
+  $result = array();
+  
+  if ($vtt != "")
+  {
+    $vtt_lines = explode ("\n", $vtt);
+    
+    if (sizeof ($vtt_lines) > 0)
+    {
+      $start = "00:00:00.000";
+      
+      foreach ($vtt_lines as $vtt_line)
+      {
+        if (strpos ($vtt_line, "-->") > 0)
+        {
+          list ($start, $stop) = explode ("-->", $vtt_line);
+          $start = trim ($start);
+          
+          $result[$start]['start'] = $start;
+          $result[$start]['stop'] = trim ($stop);
+        }
+        elseif (trim ($vtt_line) != "" && strtoupper (trim ($vtt_line)) != "WEBVTT")
+        {
+          $result[$start]['text'] = trim ($vtt_line);
+        }
+      }
+    }
+  }
+  
+  if (sizeof ($result) > 0) return $result;
+  else return false;
+}
 ?>

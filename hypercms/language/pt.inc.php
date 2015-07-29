@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['pt'] = "Use SSL";
 $hcms_lang['formats']['pt'] = "Formatos";
 $hcms_lang['download-formats']['pt'] = "Formatos de Download";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['pt'] = "Palavras-chave com lista obrigatória ou opcional aberto";
+$hcms_lang['video-text-track']['pt'] = "Vídeo trilha de texto";
+$hcms_lang['copy-tracks-from-previously-selected-language']['pt'] = "Copie faixas do idioma selecionado anteriormente?";
 ?>

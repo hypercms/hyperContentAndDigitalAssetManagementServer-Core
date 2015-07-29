@@ -1309,4 +1309,6 @@ $hcms_lang['use-ssl']['sl'] = "Uporaba SSL";
 $hcms_lang['formats']['sl'] = "Formati";
 $hcms_lang['download-formats']['sl'] = "Prenesi formate";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['sl'] = "Ključne besede z dodatno obvezno ali odprtem seznamu";
+$hcms_lang['video-text-track']['sl'] = "Video besedilo track";
+$hcms_lang['copy-tracks-from-previously-selected-language']['sl'] = "Kopirate skladbe iz predhodno izbranem jeziku?";
 ?>

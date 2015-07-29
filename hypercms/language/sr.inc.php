@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['sr'] = "Korišćenje SSL";
 $hcms_lang['formats']['sr'] = "Formata";
 $hcms_lang['download-formats']['sr'] = "Download formata";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['sr'] = "Ključne reči sa dodatnom obavezno ili otvorenoj listi";
+$hcms_lang['video-text-track']['sr'] = "Video tekst Track";
+$hcms_lang['copy-tracks-from-previously-selected-language']['sr'] = "Kopirajte numere sa prethodno izabranom jeziku?";
 ?>

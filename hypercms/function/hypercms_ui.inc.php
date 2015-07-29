@@ -1090,30 +1090,156 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       
         $mediaview .= "
         <table>
-        <tr><td align=left>".$playercode."</td></tr>
-        <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";
+          <tr><td align=\"left\">
+            <!-- video player begin -->
+            <div id=\"videoplayer_container\" style=\"display:inline-block; text-align:center;\">
+              ".$playercode."<br />
+              ".showshorttext($medianame, 40, false)."<br />\n";
+              
+        // video rendering and embedding 
+        if (is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+        {  
+          // VTT, edit, embed button
+          if ($viewtype == "preview")
+          {
+            $mediaview .= "
+                <input type=\"hidden\" id=\"VTT\" name=\"\" value=\"\" />
+                <button type=\"button\" name=\"media_rendering\" class=\"hcmsButtonGreen\" onclick=\"hcms_openVTTeditor('vtt_container');\" />".getescapedtext ($hcms_lang['video-text-track'][$lang], $hcms_charset, $lang)."</button>&nbsp;
+                <button type=\"button\" name=\"media_rendering\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '');\" />".getescapedtext ($hcms_lang['edit-video'][$lang], $hcms_charset, $lang)."</button>&nbsp;
+                <button type=\"button\" name=\"media_embedding\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '');\">".getescapedtext ($hcms_lang['embed-video'][$lang], $hcms_charset, $lang)."</button>";
+          }
+          // embed button
+          elseif ($viewtype == "preview_download" && valid_locationname ($location) && valid_objectname ($page))
+          {
+            $mediaview .= "
+                <button type=\"button\" name=\"media_embedding\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\">".getescapedtext ($hcms_lang['embed-video'][$lang], $hcms_charset, $lang)."</button>";
+          }
+        }
         
-        // video rendering and embedding
+        $mediaview .= "
+            </div>
+            <!-- video player end -->";
+        
+        // VVT editor
         if (is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
         {
           if ($viewtype == "preview")
           {
+            // load language code index file
+            $langcode_array = file ($mgmt_config['abs_path_cms']."include/languagecode.dat");
+    
+            if ($langcode_array != false)
+            {
+              $lang_select = "
+                 <select id=\"vtt_language\" name=\"vtt_language\" style=\"width:318px;\" onchange=\"hcms_changeVTTlanguage()\">
+                   <option value=\"\">".getescapedtext ($hcms_lang['language'][$lang], $hcms_charset, $lang)."</option>";
+              
+              foreach ($langcode_array as $langcode)
+              {
+                list ($code, $language) = explode ("|", trim ($langcode));
+
+                $lang_select .= "
+                    <option value=\"".$code."\">".$language."</option>";
+              }
+              
+              $lang_select .= "
+                </select>\n";
+            }
+          
             $mediaview .= "
-        <tr><td style=\"text-align:center;\">
-          <button type=\"button\" name=\"media_rendering\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '');\" />".getescapedtext ($hcms_lang['edit-video'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-          <button type=\"button\" name=\"media_embedding\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '');\">".getescapedtext ($hcms_lang['embed-video'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-        </td></tr>";
-          }
-          elseif ($viewtype == "preview_download" && valid_locationname ($location) && valid_objectname ($page))
-          {
-            $mediaview .= "
-        <tr><td style=\"text-align:center;\">
-          <button type=\"button\" name=\"media_embedding\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\">".getescapedtext ($hcms_lang['embed-video'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-        </td></tr>";
+          </td></tr>
+          <tr><td align=\"left\">
+          
+            <div id=\"vtt_container\" style=\"display:none; width:592px;\">
+              <!-- VTT editor -->
+              <div id=\"vtt_create\" class=\"hcmsInfoBox\" style=\"width:100%;\">
+                <b>".getescapedtext ($hcms_lang['video-text-track'][$lang], $hcms_charset, $lang)."</b><br />
+                <div style=\"float:left; margin:2px 2px 0px 0px;\">".$lang_select."</div>
+                <input type=\"hidden\" id=\"vtt_langcode\" name=\"vtt_langcode\" value=\"\" />
+                <input type=\"text\" id=\"vtt_start\" name=\"start\" value=\"\" placeholder=\"".getescapedtext ($hcms_lang['start'][$lang], $hcms_charset, $lang)."\" maxlength=\"12\" style=\"float:left; margin:2px 0px 0px 0px; width:90px;\" readonly=\"readonly\" />
+                <img src=\"".getthemelocation()."img/button_tpldate.gif\" onclick=\"setVTTtime('vtt_start');\" class=\"hcmsButton hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['set'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set'][$lang], $hcms_charset, $lang)."\" />
+                <input type=\"text\" id=\"vtt_stop\" name=\"stop\" value=\"\" placeholder=\"".getescapedtext ($hcms_lang['end'][$lang], $hcms_charset, $lang)."\" maxlength=\"12\" style=\"float:left; margin:2px 0px 0px 0px; width:90px;\" readonly=\"readonly\" />
+                <img src=\"".getthemelocation()."img/button_tpldate.gif\" onclick=\"setVTTtime('vtt_stop');\" class=\"hcmsButton hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['set'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set'][$lang], $hcms_charset, $lang)."\" />
+                <input type=\"text\" id=\"vtt_text\" name=\"text\" value=\"\" placeholder=\"".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."\" maxlength=\"400\" style=\"float:left; margin:2px 0px 0px 0px; width:532px;\" />
+                <img src=\"".getthemelocation()."img/button_save.gif\" onclick=\"createVTTrecord()\" class=\"hcmsButton hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['save'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['save'][$lang], $hcms_charset, $lang)."\" />
+                <div style=\"clear:both;\"></div>
+              </div>
+              <div id=\"vtt_records_container\" class=\"hcmsInfoBox\" style=\"margin-top:10px; width:100%; height:200px; overflow:auto;\">
+                <div id=\"vtt_header\">
+                  <div style=\"float:left; margin:2px 2px 0px 0px; width:64px;\"><b>".getescapedtext ($hcms_lang['start'][$lang], $hcms_charset, $lang)."</b></div>
+                  <div style=\"float:left; margin:2px 2px 0px 0px; width:64px;\"><b>".getescapedtext ($hcms_lang['end'][$lang], $hcms_charset, $lang)."</b></div>
+                  <div style=\"float:left; margin:2px 2px 0px 0px; width:400px;\"><b>".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."</b></div>
+                  <div style=\"clear:both;\"></div>
+                </div>
+                <div id=\"vtt_records\">
+                </div>
+              </div>
+            </div>
+
+            <script language=\"JavaScript\" type=\"text/javascript\">
+            // define delete button for VTT record
+            var vtt_buttons = '<img src=\"".getthemelocation()."img/button_delete.gif\" onclick=\"hcms_removeVTTrecord(this)\" class=\"hcmsButton hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $hcms_charset, $lang)."\" />';
+            var vtt_confirm = '".getescapedtext ($hcms_lang['copy-tracks-from-previously-selected-language'][$lang], $hcms_charset, $lang)."';
+
+            function createVTTrecord ()
+            {
+              var result = hcms_createVTTrecord();
+            
+              if (!result) alert (hcms_entity_decode ('".getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $hcms_charset, $lang)."'));
+            }
+            
+            function setVTTtime (id)
+            {
+              ";
+              // if projekktor is used, we need to check for the state beforehand
+              if (strtolower ($mgmt_config['videoplayer']) ==  "projekktor") $mediaview .= "
+              var player = projekktor('hcms_mediaplayer_cut_video');
+              
+              if (player.getState('PLAYING') || player.getState('PAUSED'))
+              {
+                var time = player.getPosition();
+              }
+              else
+              {
+                alert (hcms_entity_decode('".getescapedtext ($hcms_lang['videoplayer-must-be-playing-or-paused-to-set-start-and-end-positions'][$lang], $hcms_charset, $lang)."'));
+                return 0;
+              }
+              ";
+              // if VIDEO-JS
+              else $mediaview .= "
+              var player = videojs(\"hcms_mediaplayer_cut_video\");
+              var time = player.currentTime();
+              ";
+              $mediaview .= "
+              var seconds = Math.floor(time) % 60;
+              
+              if (seconds > 0)
+              {
+                var milliseconds = Math.floor((time % seconds) * 1000);
+                
+                if (milliseconds < 10) milliseconds = \"00\" + milliseconds;
+                else if (milliseconds < 100) milliseconds = \"0\" + milliseconds;
+                else if (milliseconds > 999) milliseconds = milliseconds.toString().substring(0,3);
+              }
+              else var milliseconds = \"000\";
+              
+              var minutes = Math.floor(time / 60) % 60;
+              var hours = Math.floor(time / 3600) % 24;
+              
+              if (hours   < 10) hours = \"0\" + hours;
+              if (minutes < 10) minutes = \"0\" + minutes;
+              if (seconds < 10) seconds = \"0\" + seconds;
+            
+              document.getElementById(id).value = hours + ':' + minutes + ':' + seconds + '.' + milliseconds;
+            }
+            </script>
+            
+          </td></tr>";
           }
         }     
         
-        $mediaview .= "</table>\n";
+        $mediaview .= "
+      </table>\n";
       }
       // ---------------------------------- if plain/clear text ---------------------------------- 
       elseif ($file_info['ext'] != "" && substr_count (strtolower ($hcms_ext['cleartxt'].$hcms_ext['cms']).".", $file_info['ext'].".") > 0)
@@ -2669,7 +2795,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
       // only partial URL
       if (strpos ("_".trim($value), "http") != 1)
       {
-        // version 2.0 (only media reference incl. the wrapper is given)
+        // before version 2.0 (only media reference incl. the wrapper is given)
         if (strpos ("_".$value, "explorer_wrapper.php") > 0)
         {
           $media = getattribute ($value, "media");
@@ -2708,6 +2834,14 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
         else $type = "";
         
         $url = $value.$ts;
+      }
+      
+      // define VTT file name
+      if ($media != "")
+      {
+        $container_id = getmediacontainerid ($media);
+        
+        if ($container_id > 0) $vtt_filename = $container_id;
       }
 
       if ($url != "") $sources .= "    <source src=\"".$url."\" ".$type."/>\n";
@@ -2816,6 +2950,26 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $view="p
     data-setup='{\"loop\":false".$fallback."}' title=\"".$title."\" ".($enableFullScreen ? "allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"" : "").">\n";
     
       $return .= $sources;
+      
+      // create VTT track sources
+      if (!empty ($vtt_filename))
+      {
+        // load language code index file
+        $langcode_array = file ($mgmt_config['abs_path_cms']."include/languagecode.dat");
+
+        if ($langcode_array != false)
+        {
+          foreach ($langcode_array as $langcode)
+          {
+            list ($code, $language) = explode ("|", trim ($langcode));
+            
+            if (is_file ($mgmt_config['abs_path_temp']."view/".$vtt_filename."_".trim($code).".vtt"))
+            {
+              $return .= "    <track kind=\"captions\" src=\"".$mgmt_config['url_path_temp']."view/".$vtt_filename."_".trim($code).".vtt\" srclang=\"".trim($code)."\" label=\"".trim($language)."\" />\n";
+            }
+          }
+        }
+      }
       
       $return .= "  </video>\n";
     }

@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['ko'] = "SSL을 사용";
 $hcms_lang['formats']['ko'] = "형식";
 $hcms_lang['download-formats']['ko'] = "다운로드 형식";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ko'] = "선택 필수 또는 개방 목록 키워드";
+$hcms_lang['video-text-track']['ko'] = "비디오 텍스트 트랙";
+$hcms_lang['copy-tracks-from-previously-selected-language']['ko'] = "이전에 선택한 언어에서 트랙을 복사?";
 ?>

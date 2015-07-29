@@ -1,6 +1,6 @@
 /*!
 Video.js Default Styles (http://videojs.com)
-Version 4.12.7
+Version 4.12.11
 Create your own skin at http://designer.videojs.com
 */
 /* SKIN
@@ -851,14 +851,14 @@ body.vjs-full-window {
   position: fixed;
   overflow: hidden;
   z-index: 1000;
-  left: 0 !important;
-  top: 0 !important;
-  bottom: 0 !important;
-  right: 0 !important;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
   width: 100% !important;
   height: 100% !important;
   /* IE6 full-window (underscore hack) */
-  _position: absolute !important;
+  _position: absolute;
 }
 .video-js:-webkit-full-screen {
   width: 100% !important;

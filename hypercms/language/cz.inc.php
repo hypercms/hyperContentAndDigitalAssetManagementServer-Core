@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['cz'] = "Používat protokol SSL";
 $hcms_lang['formats']['cz'] = "Formáty";
 $hcms_lang['download-formats']['cz'] = "Stáhnout formáty";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['cz'] = "Klíčová slova s volitelným povinného nebo otevřený seznam";
+$hcms_lang['video-text-track']['cz'] = "Video Text skladby";
+$hcms_lang['copy-tracks-from-previously-selected-language']['cz'] = "Kopírovat skladby z dříve zvoleném jazyce?";
 ?>

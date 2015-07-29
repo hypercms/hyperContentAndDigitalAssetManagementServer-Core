@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['ms'] = "Guna SSL";
 $hcms_lang['formats']['ms'] = "Format";
 $hcms_lang['download-formats']['ms'] = "Muatturun format";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ms'] = "Kata kunci dengan senarai mandatori atau pilihan terbuka";
+$hcms_lang['video-text-track']['ms'] = "Trek teks Video";
+$hcms_lang['copy-tracks-from-previously-selected-language']['ms'] = "Salin trek dari Bahasa yang dipilih sebelum ini?";
 ?>

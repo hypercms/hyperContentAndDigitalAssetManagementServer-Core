@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['so'] = "SSL u isticmaal";
 $hcms_lang['formats']['so'] = "Jaalka Hirgalinta Dhismaha Sinnaanta";
 $hcms_lang['download-formats']['so'] = "Download daabacaadan shay";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['so'] = "Erayada furaha liiska khasab ah ama furan optional";
+$hcms_lang['video-text-track']['so'] = "Track text Video";
+$hcms_lang['copy-tracks-from-previously-selected-language']['so'] = "Copy kuwan raadkaygay ka luqadda hore soo xulay?";
 ?>

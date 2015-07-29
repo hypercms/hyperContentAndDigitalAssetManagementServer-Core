@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['uk'] = "Використання SSL";
 $hcms_lang['formats']['uk'] = "Формати";
 $hcms_lang['download-formats']['uk'] = "Завантажити форматів";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['uk'] = "Ключові слова з додатковим обов'язковим або відкритого списку";
+$hcms_lang['video-text-track']['uk'] = "Відео текст трек";
+$hcms_lang['copy-tracks-from-previously-selected-language']['uk'] = "Скопіюйте доріжки з раніше вибраної мови?";
 ?>

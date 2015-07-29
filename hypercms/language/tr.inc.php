@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['tr'] = "SSL KULLAN";
 $hcms_lang['formats']['tr'] = "Biçimleri";
 $hcms_lang['download-formats']['tr'] = "Yükleme biçimleri";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['tr'] = "İsteğe bağlı zorunlu veya açık liste ile Anahtar Kelimeler";
+$hcms_lang['video-text-track']['tr'] = "Video metin parça";
+$hcms_lang['copy-tracks-from-previously-selected-language']['tr'] = "Önce seçilen dilden şarkıları kopyalayın?";
 ?>

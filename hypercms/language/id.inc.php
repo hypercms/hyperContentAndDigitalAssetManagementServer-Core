@@ -1311,4 +1311,6 @@ $hcms_lang['use-ssl']['id'] = "Menggunakan SSL";
 $hcms_lang['formats']['id'] = "Format";
 $hcms_lang['download-formats']['id'] = "Format Download";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['id'] = "Kata kunci dengan opsional wajib atau terbuka daftar";
+$hcms_lang['video-text-track']['id'] = "Teks Video lagu";
+$hcms_lang['copy-tracks-from-previously-selected-language']['id'] = "Menyalin trek dari bahasa yang dipilih sebelumnya?";
 ?>

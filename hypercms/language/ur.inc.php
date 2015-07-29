@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['ur'] = "SSL استعمال";
 $hcms_lang['formats']['ur'] = "يماريوں";
 $hcms_lang['download-formats']['ur'] = "‬بيماريوں معلومات";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ur'] = "اختیاری لازمی یا کھلی کی فہرست کے ساتھ الفاظ";
+$hcms_lang['video-text-track']['ur'] = "ویڈیو متن ٹریک";
+$hcms_lang['copy-tracks-from-previously-selected-language']['ur'] = "پہلے منتخب کردہ زبان سے پٹریوں کاپی؟";
 ?>

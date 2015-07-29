@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['ar'] = "باستخدام SSL";
 $hcms_lang['formats']['ar'] = "أشكال";
 $hcms_lang['download-formats']['ar'] = "تنسيقات التنزيل";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ar'] = "كلمات مع قائمة إلزامية أو اختيارية مفتوحة";
+$hcms_lang['video-text-track']['ar'] = "المسار نص الفيديو";
+$hcms_lang['copy-tracks-from-previously-selected-language']['ar'] = "نسخ المسارات من اللغة المحددة سابقا؟";
 ?>

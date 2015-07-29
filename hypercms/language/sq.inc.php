@@ -1310,4 +1310,6 @@ $hcms_lang['use-ssl']['sq'] = "Përdorimi SSL";
 $hcms_lang['formats']['sq'] = "Formate";
 $hcms_lang['download-formats']['sq'] = "Shkarko formate";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['sq'] = "Fjalë kyçe me listën opsional detyrueshëm apo të hapur";
+$hcms_lang['video-text-track']['sq'] = "Udhë text Video";
+$hcms_lang['copy-tracks-from-previously-selected-language']['sq'] = "Kopjoni gjurmët nga gjuha e zgjedhur më parë?";
 ?>
