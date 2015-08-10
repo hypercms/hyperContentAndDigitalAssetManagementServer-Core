@@ -233,8 +233,9 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 
 // ---------------------- createmedia -----------------------------
 // function: createmedia()
-// input: publication, path to source dir, path to destination dir, file name, format (file extension w/o dot) of destination file (optional if type is 'thumbnail' or 'origthumb'), 
-//        type of image/video/audio file [thumbnail,origthumb(thumbail made from original video/audio),original,any other string present in $mgmt_imageoptions/$mgmt_mediaoptions] (optional),
+// input: publication, path to source dir, path to destination dir, file name, 
+//        format (file extension w/o dot) (optional), 
+//        type of image/video/audio file [thumbnail(for thumbnails of images),origthumb(thumbnail made from original video/audio),original(to overwrite original video/audio file),any other string present in $mgmt_imageoptions/$mgmt_mediaoptions] (optional),
 //        force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
 // output: new file name / false on error (saves original or thumbnail media file in destination location, for thumbnail only jpeg format is supported as output)
 
@@ -1244,13 +1245,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         
         // reset type to input value
         $type = $type_memory;
-        
+
         // define format if not set or 'origthumb' for preview is requested (this defines the file extension and the rendering options)
         if ($format == "" || $type == "origthumb")
         {
-          // reset media options array
-          $mgmt_mediaoptions = array();
-          
+          // reset media options array to use default options for rendering of the preview video/audio
+          if ($type == "origthumb") $mgmt_mediaoptions = array();
+
+          // get default options for audio file
           if (is_audio ($file_ext))
           {
             // set default options string if no valid one is provided
@@ -1266,6 +1268,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
             if ($format_set != "") $mgmt_mediaoptions['.'.$format_set] = $mgmt_mediaoptions['thumbnail-audio'];
             else $mgmt_mediaoptions['.mp3'] = $mgmt_mediaoptions_audio;
           }
+          // get default options for video file
           else
           {
             // set default options string if no valid one is provided
@@ -1282,9 +1285,17 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
             else $mgmt_mediaoptions['.mp4'] = $mgmt_mediaoptions_video;
           }
         }
+        // define target format if type is "original" (overwrite originla file with same format)
+        elseif ($format == "" || $type == "original")
+        {
+          $format_set = strtolower (substr ($file_ext, 1));
+        }
         // use provided target format
-        else $format_set = strtolower ($format);
-          
+        elseif ($format != "")
+        {
+          $format_set = strtolower ($format);
+        }
+
         // original video info
         $videoinfo = getvideoinfo ($location_source.$file);
               
@@ -1297,12 +1308,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
           if ($file_ext != "" && substr_count (strtolower ($mediapreview_ext).".", $file_ext.".") > 0)
           {
             reset ($mgmt_mediaoptions);  
-            
+
             // extensions for certain media rendering options
             foreach ($mgmt_mediaoptions as $mediaoptions_ext => $mediaoptions)
             {
               // get media rendering options based on given destination format
-              if ($mediaoptions_ext != "thumbnail-video" && $mediaoptions_ext != "thumbnail-audio" && substr_count (strtolower ($mediaoptions_ext).".", ".".$format_set.".") > 0)
+              if ($mediaoptions_ext != "thumbnail-video" && $mediaoptions_ext != "thumbnail-audio" && $mediaoptions_ext != "segments" && substr_count (strtolower ($mediaoptions_ext).".", ".".$format_set.".") > 0)
               {
                 // media format (media file extension) definition
                 if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-f ") > 0)
@@ -1433,11 +1444,20 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
                 
                 // video size
-                if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0)
+                if (strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-s:v ") > 0 || (!empty ($videoinfo['width']) && !empty ($videoinfo['height'])))
                 {
                   // get video size defined by media option 
                   $mediasize = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-s:v");
-                  list ($mediawidth, $mediaheight) = explode ("x", $mediasize);
+                  
+                  if (strpos ($mediasize, "x") > 0)
+                  {
+                    list ($mediawidth, $mediaheight) = explode ("x", $mediasize);
+                  }
+                  else
+                  {
+                    $mediawidth = $videoinfo['width'];
+                    $mediaheight = $videoinfo['height'];
+                  }
   
                   // if valid size is provided
                   if ($mediawidth > 0 && $mediaheight > 0)
@@ -1501,18 +1521,141 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
                   }  
                 }
+
+                // split media file if requested
+                if (!empty ($mgmt_mediaoptions['segments']))
+                {
+                  // decode JSON string to array
+                  $segments = json_decode ($mgmt_mediaoptions['segments'], true);
+                
+                  // split media file
+                  if (is_array ($segments) && sizeof ($segments) > 0)
+                  {
+                    // count segments to be kept
+                    $segment_counter = 0;
+                    
+                    foreach ($segments as $segment)
+                    {                      
+                      if ($segment['keep'] == 1) $segment_counter++;
+                    }
+                  
+                    // if there is more than 1 segment
+                    if ($segment_counter > 1)
+                    {
+                      $segment_seconds = 0;
+                      $segment_starttime = "00:00:00.000";
+                      $temp_files = array();
+                      $i = 1;
+                      
+                      // slice file into segments
+                      foreach ($segments as $id => $segment)
+                      {                      
+                        $segment_duration = $segment['seconds'] - $segment_seconds;
+
+                        if ($segment['keep'] == 1)
+                        {
+                          $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" -ss ".$segment_starttime." -t ".$segment_duration." -sameq -f mpegts -target ntsc-vcd \"".$mgmt_config['abs_path_temp'].shellcmd_encode ($file_name)."-".$i.".ts\"";
+
+                          @exec ($cmd, $buffer, $errorCode);
+                        
+                          // on error
+                          if ($errorCode)
+                          {
+                            $errcode = "20239";
+                            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode) failed in createmedia for file: ".$location_source.$file;           
+                          }
+                          //
+                          else
+                          {
+                            $temp_files[] = $mgmt_config['abs_path_temp'].$file_name."-".$i.".ts";
+                            $i++;
+                          }
+                        }
+                        
+                        $segment_seconds = $segment['seconds'];
+                        $segment_starttime = $segment['time'];
+                      }
+                    }
+  
+                    // join media file slices
+                    if (sizeof ($temp_files) > 0)
+                    {
+                      $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"concat:".implode ("|", $temp_files)."\" -sameq \"".$mgmt_config['abs_path_temp'].shellcmd_encode ($file)."\"";
+
+                      @exec ($cmd, $buffer, $errorCode);
+
+                      // remove files slices
+                      foreach ($temp_files as $temp_file)
+                      {
+                        unlink ($temp_file);
+                      }
+                          
+                      // on error
+                      if ($errorCode)
+                      {
+                        $errcode = "20240";
+                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode) failed in createmedia for file: ".$location_source.$file;           
+                      }
+                      // reset media file source
+                      else
+                      {
+                        $location_source = $mgmt_config['abs_path_temp'];
+                      }
+                    }
+                    // only 1 segment
+                    else
+                    {
+                      $segment_seconds = 0;
+                      $segment_starttime = "00:00:00.000";
+                        
+                      foreach ($segments as $id => $segment)
+                      {
+                        if ($segment['keep'] == 1)
+                        {
+                          $segment_starttime = $segment_seconds;
+                          $segment_endtime = $segment['seconds'];
+                          $segment_duration = $segment_endtime - $segment_starttime;
+                          break;
+                        }
+                        
+                        $segment_seconds = $segment['seconds'];
+                        $segment_starttime = $segment['time'];
+                      }
+                    
+                      // rename file
+                      $cut_add = "-ss ".$segment_starttime." -t ".$segment_duration." ";
+                      
+                      // add to options
+                      $mgmt_mediaoptions[$mediaoptions_ext] = $cut_add.$mgmt_mediaoptions[$mediaoptions_ext];
+                    }
+                  }
+                }
                 
                 // new file name
-                if ($type == "thumbnail") $newfile = $file_name.".thumb.".$format_set;
+                if ($type == "original") $newfile = $file;
+                elseif ($type == "thumbnail") $newfile = $file_name.".thumb.".$format_set;
                 elseif ($type == "origthumb") $newfile = $file_name.".orig.".$format_set;
                 else $newfile = $file_name.".media.".$format_set;
-              
+
+                // temp file name
                 $tmpfile = $file_name.".tmp.".$format_set;
-              
+                
+                // create version of original media file and container (only works for files in the media content repository)
+                if ($type == "original")
+                {
+                  $createversion = createversion ($site, $file);
+                }
+
                 // render video
                 $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" ".$mgmt_mediaoptions[$mediaoptions_ext]." \"".shellcmd_encode ($location_dest.$tmpfile)."\"";
-  
+
                 @exec ($cmd, $buffer, $errorCode);
+
+                // delete joined slice temp file
+                if (is_file ($mgmt_config['abs_path_temp'].$file_name.$file_ext))
+                {
+                  unlink ($mgmt_config['abs_path_temp'].$file_name.$file_ext);
+                }
   
                 // watermarking (using video filters)
                 // set watermark options if defined in publication settings and not already defined
@@ -1558,9 +1701,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 
                   $errcode = "20236";
                   $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode) failed in createmedia for file: ".$location_source.$file;
-                  
-                  // save log
-                  savelog (@$error);            
                 } 
                 else
                 {
@@ -1602,7 +1742,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if (@is_file ($location_dest.$newfile)) @unlink ($location_dest.$newfile);
                     @rename ($location_dest.$tmpfile, $location_dest.$newfile);
                   }
-  
+
                   // generate video player config code for all video formates (thumbnails)
                   if ($type == "thumbnail")
                   {
@@ -1635,15 +1775,15 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     $videos = array();
                     $videos[$format_set] = $site."/".$newfile;
                     
-                    if ($type == "origthumb") $config_extension = ".config.orig";
+                    if ($type == "origthumb" || $type == "original") $config_extension = ".config.orig";
                     else $config_extension = ".config.".$format_set;
                   }
                   
                   // capture screen from video to use as thumbnail image
-                  if ($type == "origthumb") createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
+                  if ($type == "origthumb" || $type == "original") createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
                             
                   // new video info (only if it is not the thumbnail file of the original file)
-                  if ($type != "origthumb") $videoinfo = getvideoinfo ($location_dest.$newfile);
+                  if ($type != "origthumb" || $type == "original") $videoinfo = getvideoinfo ($location_dest.$newfile);
                   
                   // set media width and height to empty string
                   if ($mediawidth < 1 || $mediaheight < 1)
@@ -1658,8 +1798,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // save log
                   savelog (@$error);
                   
-                  // get video information
-                  if ($converted == true && $newfile != false && $type == "origthumb")
+                  // get video information to save in DB
+                  if ($converted == true && $newfile != false && ($type == "origthumb" || $type == "original"))
                   { 
                     if (is_array ($videoinfo))
                     {
@@ -1678,6 +1818,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if (!empty ($container_id))
                     {
                       $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $mediawidth_orig, $mediaheight_orig, "", "", "", "", $imagetype_orig, $md5_hash);
+                    }
+                    
+                    // create preview (new preview for video/audio file)
+                    if ($type == "original")
+                    {
+                      createmedia ($site, $location_dest, $location_dest, $newfile, "", "origthumb");
                     }
                   }                             
                   
@@ -1719,6 +1865,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         if (!empty ($data)) savefile ($location_dest, $file, $data);
       }
     }
+    
+    // save log
+    savelog (@$error); 
 
     // return result
     if ($converted == true && !empty ($newfile)) return $newfile;
@@ -2637,11 +2786,13 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
 
 function createdocument ($site, $location_source, $location_dest, $file, $format="", $force_no_encrypt=false)
 {
-  global $mgmt_config, $mgmt_docpreview, $mgmt_docoptions, $mgmt_docconvert, $hcms_ext, $hcms_lang, $lang;
+  global $mgmt_config, $mgmt_docpreview, $mgmt_docoptions, $mgmt_docconvert, $mgmt_maxsizepreview, $hcms_ext, $hcms_lang, $lang;
   
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
   {
     $converted = false;
+    
+    set_time_limit (60);
     
     // add slash if not present at the end of the location string
     if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
@@ -2652,6 +2803,24 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
     
     // get the file extension
     $file_ext = strtolower (strrchr ($file, "."));
+    
+    // get file size of media file in kB
+    $filesize_orig = round (@filesize ($location_source.$file) / 1024, 0);
+    
+    // check max file size in MB for certain file extensions and skip rendering
+    if (is_array ($mgmt_maxsizepreview))
+    {
+      reset ($mgmt_maxsizepreview);   
+      
+      // defined extension for maximum file size restriction in MB
+      foreach ($mgmt_maxsizepreview as $maxsizepreview_ext => $maxsizepreview)
+      {        
+        if ($file_ext != "" && substr_count (strtolower ($maxsizepreview_ext).".", $file_ext.".") > 0)
+        {
+          if ($mgmt_maxsizepreview[$maxsizepreview_ext] > 0 && ($filesize_orig / 1024) > $mgmt_maxsizepreview[$maxsizepreview_ext]) return false;
+        }
+      }
+    }   
     
     // define format if not set
     if ($format == "") $format = "pdf";
@@ -2738,7 +2907,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                          
               @exec ($cmd." 2>&1", $error_array, $errorCode);
           
-              // error if new file is smaller than 500 bytes
+              // error if conersion failed
               if ($errorCode || !is_file ($location_source.$file_name.".".$docformat))
               {
                 $errcode = "20236";

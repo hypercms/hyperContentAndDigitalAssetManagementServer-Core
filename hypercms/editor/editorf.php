@@ -199,7 +199,7 @@ $token = createtoken ($user);
 			?>
 			//-->
 		</script>
-		<?php echo showvideoplayer_head ($site, false, "preview"); ?>
+		<?php echo showvideoplayer_head (false); ?>
 	</head>
   
 	<body class="hcmsWorkplaceGeneric" leftmargin="3" topmargin="3" marginwidth="0" marginheight="0">

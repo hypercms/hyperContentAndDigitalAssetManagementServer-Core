@@ -380,6 +380,7 @@
 	text-decoration: none;
   cursor: pointer;
 }
+
 .hcmsButtonMenu:hover
 {
 	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #6A9FEF) );
@@ -387,10 +388,21 @@
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#6A9FEF');
   background-color: #A2C5F9;
 }
+
 .hcmsButtonMenu:active
 {
 	position: relative;
 	top: 1px;
+}
+
+.hcmsButtonMenuActive
+{
+	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #6A9FEF) );
+	background: -moz-linear-gradient( center top, #C8DCFF 5%, #6A9FEF 100% );
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#6A9FEF');
+  background-color: #A2C5F9;
+  position: relative;
+  top: 1px;
 }
 
 .hcmsButtonBlue
@@ -411,6 +423,7 @@
 	text-decoration: none;
   cursor: pointer;
 }
+
 .hcmsButtonBlue:hover
 {
 	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #4197ee), color-stop(1, #79bbff) );
@@ -418,6 +431,7 @@
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4197ee', endColorstr='#79bbff');
 	background-color: #4197ee;
 }
+
 .hcmsButtonBlue:active
 {
 	position: relative;
@@ -442,6 +456,7 @@
 	text-decoration: none;
   cursor: pointer;
 }
+
 .hcmsButtonGreen:hover
 {
 	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #5cb811), color-stop(1, #77d42a) );
@@ -449,6 +464,7 @@
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5cb811', endColorstr='#77d42a');
 	background-color: #5cb811;
 }
+
 .hcmsButtonGreen:active
 {
 	position:relative;
@@ -473,6 +489,7 @@
 	text-decoration: none;
   cursor: pointer;
 }
+
 .hcmsButtonOrange:hover
 {
 	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FB940C), color-stop(1, #FFC477) );
@@ -480,6 +497,7 @@
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FB940C', endColorstr='#FFC477');
 	background-color: #FB9E25;
 }
+
 .hcmsButtonOrange:active
 {
 	position: relative;

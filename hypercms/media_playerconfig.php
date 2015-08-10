@@ -74,6 +74,7 @@ else
   $type = "video";
 }
 
+// read config
 if ($media_root && file_exists ($media_root.$file_info['filename'].".config.".$type))
 {
   $config = readmediaplayer_config ($media_root, $file_info['filename'].".config.".$type);
@@ -112,20 +113,20 @@ if ($config && is_array ($config))
     
     if ($audio) 
     {
-      $size = 'height="36" width="320"';
+      $size = 'height="320" width="320"';
       $fullscreen = '';
     }
     else 
     {
-      $size = 'height="'.$config['height'].'" width="'.$config['width'].'" ';
-      $fullscreen = ' allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"';
+      $size = 'height="'.$config['height'].'" width="'.$config['width'].'"';
+      $fullscreen = 'allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"';
     }
     
-    $playercode = '<iframe id="'.$frameid.'" '.$size.'frameBorder="0" src="'.$url.'"'.$fullscreen.'></iframe>';
+    $playercode = '<iframe id="'.$frameid.'" '.$size.' frameBorder="0" src="'.$url.'" '.$fullscreen.'></iframe>';
   }
   else
   {
-    $head = showvideoplayer_head ($site, false);
+    $head = showvideoplayer_head (false);
     $playercode = $config['data'];
   }
 }

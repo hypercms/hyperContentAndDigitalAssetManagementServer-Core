@@ -370,6 +370,7 @@
   text-decoration: none;
   cursor: pointer;
 }
+
 .hcmsButtonMenu:hover
 {
   background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #6A9FEF) );
@@ -377,8 +378,19 @@
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#6A9FEF');
   background-color: #A2C5F9;
 }
+
 .hcmsButtonMenu:active
 {
+  position: relative;
+  top: 1px;
+}
+
+.hcmsButtonMenuActive
+{
+  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #6A9FEF) );
+  background: -moz-linear-gradient( center top, #C8DCFF 5%, #6A9FEF 100% );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#6A9FEF');
+  background-color: #A2C5F9;
   position: relative;
   top: 1px;
 }

@@ -577,6 +577,7 @@ $mgmt_mediaoptions['thumbnail-audio'] = "-f mp3 -c:a libmp3lame -b:a 64k -ar 225
 // Video formats:
 $mgmt_mediaoptions['.flv'] = "-b:v %videobitrate% -s:v %width%x%height% -f flv -c:a libmp3lame -b:a %audiobitrate% -ac 2 -ar 22050";
 $mgmt_mediaoptions['.mp4'] = "-b:v %videobitrate% -s:v %width%x%height% -f mp4 -c:a libfaac -b:a %audiobitrate% -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
+$mgmt_mediaoptions['.mpeg'] = "-b:v %videobitrate% -s:v %width%x%height% -f mpeg -c:v h263 -c:a aac -b:a %audiobitrate% -ac 2 -target ntsc-vcd";
 $mgmt_mediaoptions['.ogv'] = "-b:v %videobitrate% -s:v %width%x%height% -f ogg -c:a libvorbis -b:a %audiobitrate% -ac 2";
 $mgmt_mediaoptions['.webm'] = "-b:v %videobitrate% -s:v %width%x%height% -f webm -c:a libvorbis -b:a %audiobitrate% -ac 2";
 // Audio formats:
@@ -597,6 +598,12 @@ $mgmt_mediametadata['.3fr.3g2.3gp2.3gp.3gpp.acr.afm.acfm.amfm.ai.ait.aiff.aif.ai
 // Define max. file size in MB for thumbnail/video generation for certain file extensions
 $mgmt_maxsizepreview['.pdf'] = 10;
 $mgmt_maxsizepreview['.psd'] = 10;
+$mgmt_maxsizepreview['.doc'] = 4;
+$mgmt_maxsizepreview['.docx'] = 4;
+$mgmt_maxsizepreview['.ppt'] = 4;
+$mgmt_maxsizepreview['.pptx'] = 4;
+$mgmt_maxsizepreview['.xls'] = 4;
+$mgmt_maxsizepreview['.xlsx'] = 4;
 
 // Try to regenerate previews of multimedia files in explorer list if the thumbnail file doesn't exist.
 // This seeting can be used to avoid recurring kernel problems with GhostScript if ImageMagick fails to create a thumbnail of a PDF file.

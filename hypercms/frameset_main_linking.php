@@ -106,12 +106,12 @@ $servertime->InstallClockBody();
 
 <!-- workplace -->
 <div id="workplLayer" style="position:fixed; top:32px; bottom:0; left:0; width:100%; margin:0; padding:0;">
-  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php" border="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php" border="0" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
 </div>
 
 <!-- chat sidebar -->
 <div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:32px; right:0; bottom:0; width:300px; z-index:100; display:none;">
-  <iframe id="chatFrame" scrolling="auto" src="chat.php" border="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="chatFrame" scrolling="auto" src="chat.php" border="0" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
 </div>
 
 </body>

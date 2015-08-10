@@ -47,7 +47,7 @@ if (substr_count ($media, "/") == 1)
 else 
 {
   // publication name is missing
-  if (!$site) 
+  if ($site == "") 
   {
     echo showinfopage ($hcms_lang['couldnt-find-the-requested-video'][$lang], $lang);
     exit;
@@ -143,8 +143,8 @@ if (is_array ($config))
   // config version 2.0 and up
   if (intval ($config['version']) >= 2) 
   {
-    if ($audio) $playercode = showaudioplayer ($site, $config['mediafiles'], 'publish', "", $autoplay, false );
-    else $playercode = showvideoplayer ($site, $config['mediafiles'], $width, $height, 'publish', $logo, "", $title, $autoplay, $enableFullScreen, $enableKeyBoard, $enablePause, $enableSeek, true);
+    if ($audio) $playercode = showaudioplayer ($site, $config['mediafiles'], $width, $height, $logo, "", $autoplay, false);
+    else $playercode = showvideoplayer ($site, $config['mediafiles'], $width, $height, $logo, "", $title, $autoplay, $enableFullScreen, $enableKeyBoard, $enablePause, $enableSeek, true);
   }
   // player code is embedded in config
   else
@@ -163,8 +163,8 @@ if ($playercode != "")
     <title>hyperCMS Videoplayer</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <?php 
-    if ($audio) echo showaudioplayer_head ();
-    else echo showvideoplayer_head ($site, false);
+    if ($audio) echo showaudioplayer_head (false);
+    else echo showvideoplayer_head (false);
     ?>
   </head>
   <body style="padding: 0px; margin: 0px;">

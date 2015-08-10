@@ -306,7 +306,12 @@ function refreshPreview ()
 <body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 marginwidth=0 marginheight=0>
 
 <!-- top bar -->
-<?php echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame"); ?>
+<?php
+// set character set in global variable of function showtopbar 
+$hcms_charset = $charset;
+
+echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
+?>
 
 <form name="link" action="service/savecontent.php" target="_parent" method="post">
   <input type="hidden" name="contenttype" value="<?php echo $contenttype; ?>">

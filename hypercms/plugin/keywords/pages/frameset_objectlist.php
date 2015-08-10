@@ -62,7 +62,7 @@ else $objectlist_width = 100;
 if ($action == "keyword_search")
 {
   // control
-  echo "<iframe id=\"controlFrame\" name=\"controlFrame\" scrolling=\"".$scrolling."\" src=\"../../../loading.php\" border=\"0\" style=\"width:100%; height:100px; border:0; margin:0; padding:0; float:left;\"></iframe>\n";
+  echo "<iframe id=\"controlFrame\" name=\"controlFrame\" scrolling=\"".$scrolling."\" src=\"../../../loading.php\" border=\"0\" frameBorder=\"0\" style=\"width:100%; height:100px; border:0; margin:0; padding:0; float:left;\"></iframe>\n";
   
   // object list
   $search_textnode_str = "";
@@ -72,9 +72,10 @@ if ($action == "keyword_search")
     foreach ($search_textnode as $key=>$value) $search_textnode_str .= "&search_textnode[".$key."]=".urlencode($value);
   }
   
-  echo "<iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"NO\" src=\"../../../search_objectlist.php?site=".$site."&action=".$action."&search_dir=".$search_dir.$search_textnode_str."&maxhits=".$maxhits."\" border=\"0\" style=\"width:".$objectlist_width."%; height:100%; border:0; margin:0; padding:0; float:left;\"></iframe>\n";
+  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; width:".$objectlist_width."%; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"no\" src=\"../../../search_objectlist.php?site=".$site."&action=".$action."&search_dir=".$search_dir.$search_textnode_str."&maxhits=".$maxhits."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  
   // sidebar
-  if (!$is_mobile) echo "<iframe id=\"sidebarFrame\" scrolling=\"auto\" name=\"sidebarFrame\" src=\"../../../explorer_preview.php\" border=\"0\" style=\"width:".(100 - $objectlist_width)."%; height:100%; border:0; margin:0; padding:0; float:left;\"></iframe>\n";
+  if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".(100 - $objectlist_width)."%; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" scrolling=\"auto\" name=\"sidebarFrame\" src=\"../../../explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
 }
 ?>
 </body>

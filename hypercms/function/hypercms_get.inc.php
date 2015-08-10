@@ -150,6 +150,42 @@ function getuserip ()
   else return false;
 }
 
+// ----------------------------------------- getlanguageoptions ------------------------------------------
+// function: getlanguageoptions()
+// input: %
+// output: array with 2-gigit language code as key and language name in English as value / false on error
+
+function getlanguageoptions ()
+{
+  global $mgmt_config;
+  
+  if (is_file ($mgmt_config['abs_path_cms']."include/languagecode.dat"))
+  {
+    $result = array();
+    
+    // load manguage code file
+    $langcode_array = file ($mgmt_config['abs_path_cms']."include/languagecode.dat");
+
+    if ($langcode_array != false)
+    {
+      foreach ($langcode_array as $langcode)
+      {
+        list ($code, $lang) = explode ("|", trim ($langcode));        
+        $result[$code] = $lang;
+      }
+
+      if (sizeof ($result) > 0)
+      {
+        asort ($result);
+        return $result;
+      }
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
 // ----------------------------------------- getlanguagefile ------------------------------------------
 // function: getlanguagefile()
 // input: language code (optional)
@@ -1040,7 +1076,7 @@ function getcontainerversions ($container)
     {
       while ($entry = $dir_version->read())
       {
-        if ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/".$contentfile.".v_/i", $entry) || preg_match ("/_hcm".$container_id."./i", $entry)))
+        if ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/".$container_id.".xml.v_/i", $entry) || preg_match ("/_hcm".$container_id."./i", $entry)))
         {
           // extract date and time from file extension
           $file_v_ext = substr (strrchr ($entry, "."), 3);
@@ -1450,7 +1486,15 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
     {   
       $object = correctfile ($location, $object, $user);   
     }
-
+    
+    // get name
+    if ($object == ".folder") $name = getobject ($location);
+    else $name = $object;
+    
+    // get file icon
+    $fileinfo = getfileinfo ($site, $location.$object, "");
+    $result['icon'] = $fileinfo['icon'];
+  
     // load object file
     $data = loadfile ($location, $object);
     
@@ -1459,7 +1503,8 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
       $result['template'] = getfilename ($data, "template");
       $result['content'] = getfilename ($data, "content");
       $result['media'] = getfilename ($data, "media");
-      $result['name'] = specialchr_decode ($object);
+      $result['file'] = $object;
+      $result['name'] = specialchr_decode ($name);
       $result['filename'] = getfilename ($data, "name");      
       $result['container_id'] = substr ($result['content'], 0, strpos ($result['content'], ".xml"));
       $result['contentobjects'] = array ($location_esc.$object);
@@ -1485,7 +1530,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
         $container_id = substr ($container_version, 0, strpos ($container_version, ".xml"));
       }
       
-      // if container ID of object and provided contaner version match
+      // if container ID of object and provided container version match
       if ($result['container_id'] == $container_id)
       {
         // reset container name and container ID
@@ -1524,6 +1569,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
           if (empty ($object))
           {
             $object = implode (", ", $contentobjects);
+            $object = str_replace ("/.folder", "", $object);
           }
         }
         // if single object
@@ -1532,8 +1578,17 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
           $object = getobject ($contentobjects[0]);
         }
         
+        // get file icon
+        $fileinfo = getfileinfo ($site, $contentobjects[0], "");
+        $result['icon'] = $fileinfo['icon'];
+        
+        // get name
+        if ($object == ".folder") $name = getobject ($location);
+        else $name = $object;
+            
         // reset object name
-        $result['filename'] = $result['name'] = specialchr_decode ($object);
+        $result['filename'] = specialchr_decode ($object);
+        $result['name'] = specialchr_decode ($name);
       }
     }
     
@@ -1782,13 +1837,16 @@ function getvideoinfo ($mediafile)
             }
     			}
 
-          // video duration in hours:minutes:seconds
+          // video duration in hours:minutes:seconds.milliseconds
     			$matches = array();
           
     			if (preg_match ($durationRegExp, implode ("\n", $metadata), $matches))
           {
-            if (strpos ($matches[1], ".") > 6) $matches[1] = substr ($matches[1], 0, -3);
-    				$duration = $matches[1];
+            // cut of milliseconds: 
+            if (strpos ($matches[1], ".") > 6) $duration = substr ($matches[1], 0, -3);
+            else $duration = $matches[1];
+            
+    				$duration_ms = $matches[1];
     			}
           
           // video bitrate in kB/s (flac file uses the same bitrate declaration as video streams)
@@ -1834,6 +1892,7 @@ function getvideoinfo ($mediafile)
     if ($height > 0) $result['ratio'] = round (($width / $height), 5);
     else $result['ratio'] = 0;      
     $result['duration'] = $duration;
+    $result['duration_ms'] = $duration_ms;
     $result['videobitrate'] = $video_bitrate;
     $result['imagetype'] = $imagetype;
     $result['audio_codec'] = $audio_codec;

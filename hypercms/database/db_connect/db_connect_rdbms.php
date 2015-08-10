@@ -303,7 +303,7 @@ function rdbms_createobject ($container_id, $object, $template, $container, $use
     if (strtolower (strrchr ($object, ".")) == ".off") $object = substr ($object, 0, -4);
     
     // check for existing object with same path (duplicate due to possible database error)
-    $container_id_found = rdbms_getobject_id ($object);
+    $container_id_duplicate = rdbms_getobject_id ($object);
     
     if ($container_id_duplicate != "")
     {
@@ -1047,8 +1047,8 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
       $sql_table['container'] = "LEFT JOIN container AS cnt ON obj.id=cnt.id";
       
       // dates
-      if ($date_from != "") $sql_where['datefrom'] = 'cnt.date>="'.$date_from.'"';
-      if ($date_to != "") $sql_where['dateto'] = 'cnt.date<="'.$date_to.'"';
+      if ($date_from != "") $sql_where['datefrom'] = 'DATE(cnt.date)>="'.$date_from.'"';
+      if ($date_to != "") $sql_where['dateto'] = 'DATE(cnt.date)<="'.$date_to.'"';
       
       // geo location
       if (!empty ($geo_border_sw) && !empty ($geo_border_ne))
@@ -1337,8 +1337,8 @@ function rdbms_replacecontent ($folderpath, $object_type, $date_from, $date_to, 
     $sql_where['filename'] = 'obj.objectpath LIKE _utf8"'.$folderpath.'%" COLLATE utf8_bin';
  
     // dates
-    if (!empty ($date_from)) $sql_where['datefrom'] = 'cnt.date>="'.$date_from.'"';
-    if (!empty ($date_to)) $sql_where['dateto'] = 'cnt.date<="'.$date_to.'"'; 
+    if (!empty ($date_from)) $sql_where['datefrom'] = 'DATE(cnt.date)>="'.$date_from.'"';
+    if (!empty ($date_to)) $sql_where['dateto'] = 'DATE(cnt.date)<="'.$date_to.'"'; 
     
     // search expression
     if ($search_expression != "")
@@ -2619,7 +2619,7 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
       
       $sqladd = ', object WHERE media.id = object.id';
       
-      if ($object_info['type'] == "Folder") $sqladd .= ' AND object.objectpath like "'.$objectpath.'%"';
+      if ($object_info['type'] == "Folder") $sqladd .= ' AND object.objectpath LIKE "'.$objectpath.'%"';
       else $sqladd .= ' AND object.objectpath = "'.$objectpath.'"';
       
       $sqlfilesize = 'SUM(filesize) AS filesize';
@@ -2640,7 +2640,7 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
     // count files
     if ($objectpath != "" && isset ($object_info['type']) && $object_info['type'] == "Folder")
     {
-      $sql = 'SELECT count(DISTINCT objectpath) AS count FROM object WHERE objectpath like "'.$objectpath.'%"'; 
+      $sql = 'SELECT count(DISTINCT objectpath) AS count FROM object WHERE objectpath LIKE "'.$objectpath.'%"'; 
 
       $errcode = "50042";
       $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'selectcount');

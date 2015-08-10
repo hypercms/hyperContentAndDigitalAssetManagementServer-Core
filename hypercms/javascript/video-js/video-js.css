@@ -451,13 +451,13 @@ easily in the skin designer. http://designer.videojs.com/
   margin-left: -1em;
   /* Center it vertically */
   top: 50%;
-  margin-top: -1em;
+  margin-top: -0.9em;
   font-size: 3em;
   display: block;
   z-index: 2;
   position: absolute;
-  width: 2em;
-  height: 2em;
+  width: 1.6em;
+  height: 1.6em;
   text-align: center;
   vertical-align: middle;
   cursor: pointer;
@@ -526,7 +526,7 @@ easily in the skin designer. http://designer.videojs.com/
   /* In order to center the play icon vertically we need to set the line height
      to the same as the button height */
 
-  line-height: 2em;
+  line-height: 1.6em;
   text-shadow: 0.05em 0.05em 0.1em #000;
   text-align: center /* Needed for IE8 */;
   position: absolute;

@@ -47,6 +47,28 @@ if (sizeof ($config_files) > 0)
     
     if (!empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_data']))
     {
+      // create filesize.at files in order to check storage limit (MB) for each publication
+      $inherit_db = inherit_db_read ();
+      
+      if (is_array ($inherit_db))
+      {
+        foreach ($inherit_db as $site => $array)
+        {
+          if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0)
+          {
+            // memory for file size (should be kept for 24 hours)
+            $filesize_mem = $mgmt_config['abs_path_temp'].$site.".filesize.dat";
+            
+            if (!is_file ($filesize_mem) || (filemtime ($filesize_mem) + 86400) < time())
+            {  
+              // this function might require some time for the result in case of large databases
+              $filesize = rdbms_getfilesize ("", "%comp%/".$site."/");
+              savefile ($mgmt_config['abs_path_temp'], $site.".filesize.dat", $filesize['filesize']);
+            }
+          }
+        }
+      }
+    
       // delete temporary files and ZIP files older than the given value in seconds
       $location = $mgmt_config['abs_path_temp'];
       $timespan = 86400; // 24 hours

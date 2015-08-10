@@ -911,7 +911,7 @@ function errorhandler ($source_code, $return_code, $error_identifier)
     }
     
     return "
-  <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+  <!DOCTYPE html>
   <html>
     <body>
     <font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><font color='red'>".$return_code."</font><br />
@@ -1436,26 +1436,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       echo showinfopage ($hcms_lang['the-template-holds-no-information'][$lang], $lang);
       return false;
     }
-    
-    // remove tags in meta-data templates
-    if (strpos ($templatefile, ".meta.tpl") > 0)
-    {
-      // remove all tags
-      $templatedata = strip_tags ($templatedata);
-      $templatedata = str_replace ("document.cookie", "", $templatedata);
-      
-      $templatedata = "<!DOCTYPE html\">
-      <html>
-      <head>
-      <title>hyperCMS</title>
-      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">
-      <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">
-      </head>
-      <body class=\"hcmsWorkplaceGeneric\">
-      <div class=\"hcmsWorkplaceFrame\">".$templatedata."</div>
-      </body>
-      </html>";
-    }
 
     // add newline at the begin to correct errors in tag-search
     $templatedata = "\n".$templatedata;
@@ -1466,7 +1446,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // set viewstore initially
     $viewstore = $templatedata;  
     
-    // get set view in template
+    // get view from template
     $hypertag_array = gethypertag ($viewstore, "objectview", 0);
     
     if ($hypertag_array != false && sizeof ($hypertag_array) > 0) 
@@ -1484,7 +1464,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       }
     }
     
-    // if media file or folder is set in an object
+    // if object is media file or folder
     if ((!empty ($mediafile) && $application != "generator") || $page == ".folder")
     {
       if ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "formmeta") $buildview = "formedit";
@@ -1493,9 +1473,31 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     
     // disable form fields
     if ($buildview == "formlock") $disabled = " disabled=\"disabled\"";
-    else $disabled = "";      
+    else $disabled = "";
+    
+    // =============================== get content-type and character set ===============================
+    
+    $result = getcharset ($site, $viewstore);
+    
+    $contenttype = $result['contenttype'];
+    $hcms_charset = $charset = $result['charset'];
+
+    // get content-type from component template, if set
+    $hypertag_array = gethypertag ($viewstore, "compcontenttype", 0);
+    
+    // remove tag
+    if ($hypertag_array != false && sizeof ($hypertag_array) > 0) 
+    {
+      foreach ($hypertag_array as $hypertag)
+      {
+        $viewstore = str_replace ($hypertag, "", $viewstore);
+      }
+      
+      $compcontenttype = true;
+    }
     
     // ==================================== remove hyperCMS stylesheet tags in template ==================================
+    
     if ($buildview == "publish" || $buildview == "template" || ($buildview == "preview" && $ctrlreload != "yes"))
     {  
       $hypertag_array = gethypertag ($viewstore, "compstylesheet", 0);
@@ -1509,25 +1511,29 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       }
     }
     
-    // =============================== get content-type and character set ===============================
+    // ============================================== meta data templates ==============================================
     
-    $result = getcharset ($site, $viewstore);
-    
-    $contenttype = $result['contenttype'];
-    $hcms_charset = $charset = $result['charset'];
-    
-    // get content-type from component template, if set
-    $hypertag_array = gethypertag ($viewstore, "compcontenttype", 0);
-    
-    // remove tag
-    if ($hypertag_array != false && sizeof ($hypertag_array) > 0) 
+    // remove tags in meta-data templates
+    if (strpos ($templatefile, ".meta.tpl") > 0)
     {
-      foreach ($hypertag_array as $hypertag)
-      {
-        $viewstore = str_replace ($hypertag, "", $viewstore);
-      }
+      // remove all tags
+      $viewstore = strip_tags ($viewstore);
+      $viewstore = str_replace ("document.cookie", "", $viewstore);
       
-      $compcontenttype = true;
+      // character set must be UTF-8 for media files
+      if ($mediafile != "") $contenttype = "text/html; charset=UTF-8";
+      
+      $viewstore = "<!DOCTYPE html>
+      <html>
+      <head>
+      <title>hyperCMS</title>
+      <meta http-equiv=\"Content-Type\" content=\"".$contenttype."\">
+      <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">
+      </head>
+      <body class=\"hcmsWorkplaceGeneric\">
+      <div class=\"hcmsWorkplaceFrame\">".$viewstore."</div>
+      </body>
+      </html>";
     }
     
     // ============================================== included files ==============================================
@@ -2012,20 +2018,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       <tr>
                         <td>
                           ".getescapedtext ($hcms_lang['available-languages'][$lang], $charset, $lang).":<br />";
-                          
-          
-                  // load code page index file
-                  $langcode_array = file ($mgmt_config['abs_path_cms']."include/languagecode.dat");
+
+                  // get languages
+                  $langcode_array = getlanguageoptions();
           
                   if ($langcode_array != false)
                   {
                     $formitem[$key] .= "
                          <select multiple size=\"10\" name=\"list1\" style=\"width:250px;\"".$disabled.">";
-                    
-                    foreach ($langcode_array as $langcode)
+
+                    foreach ($langcode_array as $code => $lang_short)
                     {
-                      list ($code, $lang_short) = explode ("|", trim ($langcode));
-          
                       if (substr_count ($content, $code) == 0)
                       {
                         $formitem[$key] .= "
@@ -2498,7 +2501,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // if textu, textf or textl tag have the same id => error
             if ($control_sum >= 2)
             {
-              $result['view'] = "<!DOCTYPE html\">
+              $result['view'] = "<!DOCTYPE html>
               <html>
               <head>
               <title>hyperCMS</title>
@@ -4201,7 +4204,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   }
          
                   $file_media = "Null_media.gif";
-                  $url_media = $mgmt_config['url_path_tplmedia'].$templatesite."/";            
+                  
+                  if ($buildview == "publish") $url_media = $publ_config['url_publ_tplmedia'].$templatesite."/";
+                  else $url_media = $mgmt_config['url_path_tplmedia'].$templatesite."/";         
                 }
                 // define media file to present
                 else
@@ -5040,7 +5045,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // if textu, textf or textl tag have the same id => error
             if ($control_sum >= 2)
             {
-              $result['view'] = "<!DOCTYPE html\">
+              $result['view'] = "<!DOCTYPE html>
               <html>
               <head>
               <title>hyperCMS</title>
@@ -6231,7 +6236,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           // get HTML body-tag
           if (@substr_count (strtolower ($viewstore), "<body") == 0 && @substr_count (strtolower ($viewstore), ":body") == 0)
           {
-            $viewstore = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+            $viewstore = "<!DOCTYPE html>
             <html>
             <head>
             <title>hyperCMS</title>
@@ -6290,7 +6295,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           // no body-tag available
           else
           {
-            $viewstore_new = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+            $viewstore_new = "<!DOCTYPE html>
 <html>
 <head>
 <title>hyperCMS</title>
@@ -7105,6 +7110,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   
   // define VTT records object for JS
   $vtt_records = "{}";
+  $vtt_array = array();
   
   if (!empty ($contentdata))
   {
@@ -7130,6 +7136,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     }
   }
   
+  // json encode array
   if (is_array ($vtt_array) && sizeof ($vtt_array) > 0) $vtt_records = json_encode ($vtt_array);
   
   // onload event / document ready
@@ -7200,8 +7207,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         $viewstore .= "<img src=\"".getthemelocation()."img/button_print.gif\" class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"window.print();\" alt=\"".getescapedtext ($hcms_lang['print'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['print'][$lang], $charset, $lang)."\" align=\"absmiddle\" />\n";
         
         // autosave checkbox
-        if (intval ($mgmt_config['autosave']) > 0 && ($buildview == "formedit" || $buildview == "formmeta")) $viewstore .= "<div class=\"hcmsButton\" style=\"height:22px;\"><input type=\"checkbox\" id=\"autosave\" name=\"autosave\" value=\"yes\" checked=\"checked\" /><label for=\"autosave\">&nbsp;".getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang)."</label></div>\n";
-        else $viewstore .= "<div class=\"hcmsButtonOff\" style=\"height:22px;\"><input type=\"checkbox\" id=\"autosave\" name=\"autosave\" value=\"\" disabled=\"disabled\" />&nbsp;".getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang)."</div>\n";
+        if (intval ($mgmt_config['autosave']) > 0 && ($buildview == "formedit" || $buildview == "formmeta")) $viewstore .= "<div class=\"hcmsButton\" style=\"height:22px;\">&nbsp;<input type=\"checkbox\" id=\"autosave\" name=\"autosave\" value=\"yes\" checked=\"checked\" /><label for=\"autosave\">&nbsp;".getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang)."</label></div>\n";
+        else $viewstore .= "<div class=\"hcmsButtonOff\" style=\"height:22px;\">&nbsp;<input type=\"checkbox\" id=\"autosave\" name=\"autosave\" value=\"\" disabled=\"disabled\" />&nbsp;".getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang)."</div>\n";
         
         $viewstore .= "</td>\n";
         
@@ -7265,36 +7272,36 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         {
           if (substr_count (strtolower ($viewstore), "</head>") > 0)
           {
-            $viewstore = preg_replace ("/\<\/head\>/i", showvideoplayer_head ($site, false, false)."</head>", $viewstore);
+            $viewstore = preg_replace ("/\<\/head\>/i", showvideoplayer_head (false, false)."</head>", $viewstore);
           }
           elseif (substr_count (strtolower ($viewstore), "<body") > 0)
           {
             $bodytagold = gethtmltag ($viewstore, "<body");
-            $viewstore = str_replace ($bodytagold, $bodytagold."\n".showvideoplayer_head ($site, false, false), $viewstore);
+            $viewstore = str_replace ($bodytagold, $bodytagold."\n".showvideoplayer_head (false, false), $viewstore);
           }
           elseif (substr_count (strtolower ($viewstore), ":body") > 0)
           {
             $bodytagold = gethtmltag ($viewstore, ":body");
-            $viewstore = str_replace ($bodytagold, $bodytagold."\n".showvideoplayer_head ($site, false, false), $viewstore);
+            $viewstore = str_replace ($bodytagold, $bodytagold."\n".showvideoplayer_head (false, false), $viewstore);
           }          
         }
         
-        // We only add if a audio is used (audio.js Player)
-        if (preg_match('/\<audio.*?id=[\"\\\']hcms_audioplayer_/i', $viewstore))
+        // We only add if a audio is used (audio.js Player) and VIDEO.JS has not been integrated already
+        if (preg_match('/\<audio.*?id=[\"\\\']hcms_mediaplayer_/i', $viewstore) && substr_count ($viewstore, "javascript/video-js/video.js") == 0)
         {
            if (substr_count (strtolower ($viewstore), "</head>") > 0)
           {
-            $viewstore = preg_replace ("/\<\/head\>/i", showaudioplayer_head ()."</head>", $viewstore);
+            $viewstore = preg_replace ("/\<\/head\>/i", showaudioplayer_head (false)."</head>", $viewstore);
           }
           elseif (substr_count (strtolower ($viewstore), "<body") > 0)
           {
             $bodytagold = gethtmltag ($viewstore, "<body");
-            $viewstore = str_replace ($bodytagold, $bodytagold."\n".showaudioplayer_head (), $viewstore);
+            $viewstore = str_replace ($bodytagold, $bodytagold."\n".showaudioplayer_head (false), $viewstore);
           }
           elseif (substr_count (strtolower ($viewstore), ":body") > 0)
           {
             $bodytagold = gethtmltag ($viewstore, ":body");
-            $viewstore = str_replace ($bodytagold, $bodytagold."\n".showaudioplayer_head (), $viewstore);
+            $viewstore = str_replace ($bodytagold, $bodytagold."\n".showaudioplayer_head (false), $viewstore);
           }          
         }
       }
@@ -7494,7 +7501,7 @@ function buildsearchform ($site, $template, $ownergroup="")
       }
     }
             
-    $viewstore = "<!DOCTYPE html\">
+    $viewstore = "<!DOCTYPE html>
     <html>
     <head>
     <title>hyperCMS</title>

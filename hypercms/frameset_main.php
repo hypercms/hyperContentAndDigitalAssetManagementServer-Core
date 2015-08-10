@@ -77,7 +77,7 @@ function maxNavFrame ()
   <table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
     <tr> 
       <td width="5">&nbsp;</td>
-      <td width="320" align="left" valign="middle" nowrap="nowrap"><a href="javascript:openInfo();"><img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.gif"; ?>" border="0" align="absmiddle" title="hyper Content Management Server" alt="hyper Content Management Server" /></a></td>
+      <td width="320" align="left" valign="middle" nowrap="nowrap"><a href="javascript:openInfo();"><img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" border="0" align="absmiddle" title="hyper Content Management Server" alt="hyper Content Management Server" /></a></td>
       <td nowrap="nowrap">&nbsp;</td>
       <td align="right" valign="middle" nowrap="nowrap"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>: </span><span class="hcmsHeadlineTiny hcmsTextWhite"><?php echo getsession ('hcms_user'); ?></span></td>
       <td width="30" nowrap="nowrap">&nbsp;&nbsp;</td>
@@ -95,7 +95,7 @@ function maxNavFrame ()
           <input type="hidden" name="search_dir" value="" />
           <input type="hidden" name="maxhits" value="1000" />
           <input type="text" name="search_expression" style="width:200px;" maxlength="60" value="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" onfocus="if (this.value == '<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>') this.value=''" onblur="if(this.value == '') this.value='<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>'" />
-          <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onClick="if (document.forms['searchform_general'].elements['search_expression'].value=='<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>') document.forms['searchform_general'].elements['search_expression'].value=''; document.forms['searchform_general'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" style="border:0; cursor:pointer;" align="absmiddle" title="OK" alt="OK" />
+          <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onClick="if (document.forms['searchform_general'].elements['search_expression'].value=='<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>') document.forms['searchform_general'].elements['search_expression'].value=''; if (document.forms['searchform_general'].elements['search_expression'].value!='') document.forms['searchform_general'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" style="border:0; cursor:pointer;" align="absmiddle" title="OK" alt="OK" />
         </form>
       </td>
       <?php } ?>
@@ -109,18 +109,18 @@ $servertime->InstallClockBody();
 
 <!-- explorer -->
 <div id="navLayer" style="position:fixed; top:32px; bottom:0; left:0; width:260px; margin:0; padding:0;">
-  <iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php?refresh=1" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php?refresh=1" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
 </div>
 
 <!-- workplace -->
 <div id="workplLayer" style="position:fixed; top:32px; right:0; bottom:0; left:260px; margin:0; padding:0;">
-  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="home.php" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="home.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
 </div>
 
 <!-- chat sidebar -->
 <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
 <div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:32px; right:0; bottom:0; width:300px; z-index:100; display:none;">
-  <iframe id="chatFrame" scrolling="auto" src="chat.php" border="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="chatFrame" scrolling="auto" src="chat.php" border="0" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
 </div>
 <?php } ?>
 

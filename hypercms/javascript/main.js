@@ -3,6 +3,35 @@ var nn6= (document.getElementById && !document.all);
 var ie4= (document.all && !document.getElementById);
 var ie5= (document.all && document.getElementById);
 
+// ---------------------- standard AJAX request --------------------------
+
+function hcms_ajaxService (url)
+{
+  var xmlhttp;
+
+  // code for IE7+, Firefox, Chrome, Opera, Safari
+  if (window.XMLHttpRequest)
+  {
+    xmlhttp = new XMLHttpRequest();
+  }
+  // code for IE6, IE5
+  else
+  {
+    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  
+  xmlhttp.onreadystatechange = function()
+  {
+    if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
+    {
+      return xmlhttp.responseText;
+    }
+  }
+
+  xmlhttp.open('GET', url, true);
+  xmlhttp.send();
+}
+
 // ---------------------- loading content from iframe to div --------------------------
 
 function hcms_loadPage (id, nestref, url)
@@ -534,6 +563,35 @@ function hcms_sortTable (_c, _isNumber)
   
   if (lastSort!=_c) lastSort=_c;
   else lastSort=null;
+}
+
+// ------------------------------ sort object --------------------------------
+
+function hcms_sortObject (object)
+{
+  if (typeof object === 'object')
+  {
+    var sorted = {},
+    key, a = [];
+  
+    for (key in object)
+    {
+      if (object.hasOwnProperty(key))
+      {
+        a.push(key);
+      }
+    }
+  
+    a.sort();
+  
+    for (key = 0; key < a.length; key++)
+    {
+      sorted[a[key]] = object[a[key]];
+    }
+    
+    return sorted;
+  }
+  else return false;
 }
 
 // ------------------------------ Video Text Track (VTT) --------------------------------

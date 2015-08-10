@@ -36,9 +36,9 @@ else setsession ('hcms_temp_user', Null);
 </head>
 
 <body style="width:100%; height:100%; margin:0; padding:0;">
-  <iframe id="controlFrame" name="controlFrame" scrolling="no" src="control_queue_menu.php?queueuser=<?php echo $queueuser; ?>" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="controlFrame" name="controlFrame" scrolling="no" src="control_queue_menu.php?queueuser=<?php echo $queueuser; ?>" frameBorder="0" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;"></iframe>
   <div style="position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;">
-    <iframe id="mainFrame" name="mainFrame" scrolling="no" src="queue_objectlist.php?queueuser=<?php echo $queueuser; ?>" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+    <iframe id="mainFrame" name="mainFrame" scrolling="no" src="queue_objectlist.php?queueuser=<?php echo $queueuser; ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
   </div>
 </body>
 </html>

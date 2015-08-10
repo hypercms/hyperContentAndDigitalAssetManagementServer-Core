@@ -33,9 +33,9 @@ checkusersession ($user, false);
 </head>
 
 <body style="width:100%; height:100%; margin:0; padding:0;">
-  <iframe id="controlFrame" name="controlFrame" scrolling="NO" src="<?php echo "control_workflow_menu.php?site=".$site."&cat=".$cat; ?>" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="controlFrame" name="controlFrame" scrolling="NO" src="<?php echo "control_workflow_menu.php?site=".$site."&cat=".$cat; ?>" frameBorder="0" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;"></iframe>
   <div style="position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;">
-    <iframe id="mainFrame" name="mainFrame" src="empty.php?site=<?php echo $site; ?>" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+    <iframe id="mainFrame" name="mainFrame" src="empty.php?site=<?php echo $site; ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
   </div>
 </body>
 </html>

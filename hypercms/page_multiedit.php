@@ -165,10 +165,12 @@ function gettagdata ($tag_array)
 // get multiple objects
 $multiobject_array = explode ("|", $multiobject);
 
+$add_onload = "";
+$mediafile = "";
 $is_image = true;
 $is_video = true;
 $is_audio = true;
-$media = "";
+$mediapreview = "";
 $template = "";
 $templatedata = "";
 $error = false;
@@ -233,7 +235,8 @@ foreach ($multiobject_array as $object)
   // media  
   if (!empty ($oinfo['media']))
   {
-    $media_info = getfileinfo ($site, $oinfo['media'], "");
+    $mediafile = $oinfo['media'];
+    $media_info = getfileinfo ($site, $mediafile, "comp");
     $thumbnail = $media_info['filename'].".thumb.jpg";
     $mediadir = getmedialocation ($site, $oinfo['media'], "abs_path_media");
     
@@ -269,12 +272,12 @@ foreach ($multiobject_array as $object)
       if ($imgwidth < 100 && $imgheight < 100) $style_size = "";
       else $style_size = $ratio;
       
-      $media .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$thumbnail)."&token=".hcms_crypt($site."/".$thumbnail)."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";;
+      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$thumbnail)."&token=".hcms_crypt($site."/".$thumbnail)."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";;
     }
     // no thumbnail available
     else
     {                 
-       $media .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".getthemelocation()."img/".$media_info['icon_large']."\" style=\"border:0; width:100px;\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";
+       $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".getthemelocation()."img/".$media_info['icon_large']."\" style=\"border:0; width:100px;\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";
     }
   }
   
@@ -375,7 +378,13 @@ $tagdata_array = gettagdata ($all_array);
 // get character set
 $result = getcharset ($site, $templatedata);
 
-if (!empty ($result['charset']))
+// for media files character set must be UTF-8
+if ($mediafile != "")
+{
+  $charset = "UTF-8";
+  $contenttype = "text/html; charset=".$charset;
+}
+elseif (!empty ($result['charset']))
 {
   $charset = $result['charset'];
   $contenttype = $result['contenttype'];
@@ -525,6 +534,11 @@ elseif ($is_video || $is_audio)
   // available bitrates
   $available_bitrates = array();
   
+  $available_bitrates['original'] = array(
+  	'name'					=> $hcms_lang['original'][$lang],
+  	'checked'				=> true
+  );
+
   $available_bitrates['200k'] = array(
   	'name'					=> $hcms_lang['low'][$lang].' (200k)',
   	'checked'				=> false
@@ -532,7 +546,7 @@ elseif ($is_video || $is_audio)
   
   $available_bitrates['768k'] = array(
   	'name'					=> $hcms_lang['medium'][$lang].' (768k)',
-  	'checked'				=> true
+  	'checked'				=> false
   );
   
   $available_bitrates['1856k'] = array(
@@ -576,6 +590,11 @@ elseif ($is_video || $is_audio)
   // available audio bitrates
   $available_audiobitrates = array();
   
+  $available_audiobitrates['original'] = array(
+    'name'    => $hcms_lang['original'][$lang],
+    'checked' => true
+  );
+
   $available_audiobitrates['64k'] = array(
     'name'    => $hcms_lang['low'][$lang].' (64 kb/s)',
     'checked' => false
@@ -583,7 +602,7 @@ elseif ($is_video || $is_audio)
   
   $available_audiobitrates['128k'] = array(
     'name'    => $hcms_lang['medium'][$lang].' (128 kb/s)',
-    'checked' => true
+    'checked' => false
   );
   
   $available_audiobitrates['192k'] = array(
@@ -1964,23 +1983,23 @@ elseif ($is_video || $is_audio)
         <div class="cell" style="width:260px;">
           <!-- video screen format -->
           <div class="row">
-        		<strong><?php echo getescapedtext ($hcms_lang['formats'][$lang]); ?></strong>
+        		<strong><?php echo getescapedtext ($hcms_lang['formats'][$lang], $charset, $lang); ?></strong>
           </row>
       		<?php foreach ($available_formats as $format => $data) { ?>
             <div class="row">
               <input type="radio" id="format_<?php echo $format; ?>" name="format" value="<?php echo $format; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> />
-              <label for="format_<?php echo $format; ?>"><?php echo $data['name']; ?></label>
+              <label for="format_<?php echo $format; ?>"><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label>
             </div>
       		<?php } ?>
       	  </div>
         
           <!-- video size -->
         	<div class="row">
-        		<strong><?php echo getescapedtext ($hcms_lang['video-size'][$lang]); ?></strong>
+        		<strong><?php echo getescapedtext ($hcms_lang['video-size'][$lang], $charset, $lang); ?></strong>
           </div>
       		<?php foreach ($available_videosizes as $videosize => $data) { ?>
           <div class="row">
-      			<input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>"<?php if ($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo $data['name']; ?></label>
+      			<input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>"<?php if ($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo getescapedtext ($data['name'], $charset, $lang); ?></label>
       			<?php if ($data['individual']) { ?>
       		  <input type="text" name="width" size=4 maxlength=4 id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" size="4" maxlength=4 id="height_<?php echo $videosize; ?>" value="" /><span> px</span>
       			<?php }	?>
@@ -2149,11 +2168,10 @@ elseif ($is_video || $is_audio)
     }
     else
     {
-      // show media if available
-      if ($media != "") echo $media."<div style=\"clear:both;\"></div>\n";
+      // show media preview if available
+      if ($mediapreview != "") echo $mediapreview."<div style=\"clear:both;\"></div>\n";
     ?>
-    
-    
+
     <form id="reloadform" style="display:none" method="POST" action="<?php echo $mgmt_config['url_path_cms']; ?>page_multiedit.php">
       <?php
       foreach ($_POST as $pkey => $pvalue)

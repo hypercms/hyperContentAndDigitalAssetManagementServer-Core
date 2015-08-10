@@ -395,6 +395,16 @@
   top: 1px;
 }
 
+.hcmsButtonMenuActive
+{
+  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #DCDEE0), color-stop(1, #86888A) );
+  background: -moz-linear-gradient( center top, #DCDEE0 5%, #86888A 100% );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#DCDEE0', endColorstr='#86888A');
+  background-color: #9AA1A7;
+  position: relative;
+  top: 1px;
+}
+
 .hcmsButtonBlue
 {
   -moz-box-shadow: inset 0px 1px 0px 0px #cae3fc;

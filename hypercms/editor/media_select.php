@@ -184,8 +184,13 @@ function submitMedia ()
 }
 //-->
 </script>
-<?php if (!empty ($file_info) && substr_count ($hcms_ext['audio'], $file_info['ext']) > 0) echo showaudioplayer_head (); ?>
-<?php if (!empty ($file_info) && substr_count ($hcms_ext['video'], $file_info['ext']) > 0) echo showvideoplayer_head ($site, false); ?>
+<?php
+if (!empty ($file_info['ext']))
+{
+  if (substr_count ($hcms_ext['video'], $file_info['ext']) > 0) echo showvideoplayer_head (false);
+  elseif (substr_count ($hcms_ext['audio'], $file_info['ext']) > 0) echo showaudioplayer_head (false);
+}
+?>
 </head>
 
 <body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 marginwidth=0 marginheight=0>

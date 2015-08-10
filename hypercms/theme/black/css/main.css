@@ -396,6 +396,16 @@
   top: 1px;
 }
 
+.hcmsButtonMenuActive
+{
+  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #DCDEE0), color-stop(1, #86888A) );
+  background: -moz-linear-gradient( center top, #DCDEE0 5%, #86888A 100% );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#DCDEE0', endColorstr='#86888A');
+  background-color: #9AA1A7;
+  position: relative;
+  top: 1px;
+}
+
 .hcmsButtonBlue
 {
   -moz-box-shadow: inset 0px 1px 0px 0px #cae3fc;
@@ -414,6 +424,7 @@
   text-decoration: none;
   cursor: pointer;
 }
+
 .hcmsButtonBlue:hover
 {
   background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #4197ee), color-stop(1, #79bbff) );
@@ -421,6 +432,7 @@
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4197ee', endColorstr='#79bbff');
   background-color: #4197ee;
 }
+
 .hcmsButtonBlue:active
 {
   position: relative;
@@ -445,6 +457,7 @@
   text-decoration: none;
   cursor: pointer;
 }
+
 .hcmsButtonGreen:hover
 {
   background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #5cb811), color-stop(1, #77d42a) );
@@ -452,6 +465,7 @@
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5cb811', endColorstr='#77d42a');
   background-color: #5cb811;
 }
+
 .hcmsButtonGreen:active
 {
   position:relative;
@@ -476,6 +490,7 @@
   text-decoration: none;
   cursor: pointer;
 }
+
 .hcmsButtonOrange:hover
 {
   background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FB940C), color-stop(1, #FFC477) );
@@ -483,6 +498,7 @@
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FB940C', endColorstr='#FFC477');
   background-color: #FB9E25;
 }
+
 .hcmsButtonOrange:active
 {
   position: relative;

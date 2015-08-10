@@ -3240,7 +3240,6 @@ function createtask ($site, $from_user, $from_email, $to_user, $to_email, $categ
       // send mail
       if ($mailer->Send())
       {
-        $mail_sent = true;
         $errcode = "00202";
         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|task notification has been sent to ".$to_user." (".$to_email.") on object ".$object_esc; 
       }
@@ -10260,14 +10259,11 @@ function createobject ($site, $location, $page, $template, $user)
         $templatefile = getattribute ($template, "template");
         $catpos1 = strpos ($templatefile, ".") + 1;
         $catpos2 = strpos ($templatefile, ".tpl");
-        $cat = substr ($templatefile, $catpos1, $catpos2 - $catpos1);
+        $template_cat = substr ($templatefile, $catpos1, $catpos2 - $catpos1);
+        $cat = getcategory ($site, $location);
         
         // if multimedia file
-        if ($cat == "meta")
-        {
-          $cat = getcategory ($site, $location);
-          $mediatype = true;
-        }
+        if ($template_cat == "meta" && $page != ".folder") $mediatype = true;
         else $mediatype = false;  
       }
       elseif (@substr_count ($template, ".tpl") >= 1) 
@@ -10275,14 +10271,11 @@ function createobject ($site, $location, $page, $template, $user)
         $templatefile = $template;      
         $catpos1 = strpos ($templatefile, ".") + 1;
         $catpos2 = strpos ($templatefile, ".tpl");
-        $cat = substr ($templatefile, $catpos1, $catpos2 - $catpos1);   
+        $template_cat = substr ($templatefile, $catpos1, $catpos2 - $catpos1);   
+        $cat = getcategory ($site, $location);
         
         // if multimedia file
-        if ($cat == "meta")
-        {
-          $cat = getcategory ($site, $location);
-          $mediatype = true;
-        }
+        if ($template_cat == "meta" && $page != ".folder") $mediatype = true;
         else $mediatype = false;         
       }
       else 
@@ -10316,7 +10309,8 @@ function createobject ($site, $location, $page, $template, $user)
         // get file extension from template
         $bufferarray = getcontent ($templatestore, "<extension>");
         
-        if ($mediatype == false)
+        // for all pages and components
+        if ($mediatype == false && $page != ".folder")
         {
           $file_ext = $bufferarray[0];      
           // add extension to page name
@@ -10325,7 +10319,8 @@ function createobject ($site, $location, $page, $template, $user)
           // original file name
           $page_orig = $page_orig.".".$file_ext;              
         }
-        elseif ($mediatype == true)
+        // for all multimedia assets and folders
+        elseif ($mediatype == true || $page == ".folder")
         {
           // get the file extension of the file
           $file_ext = strtolower (strrchr ($page, "."));
@@ -10402,8 +10397,8 @@ function createobject ($site, $location, $page, $template, $user)
 
           $contenttype = $result['contenttype'];
           
-          // character set for meta-data of folders and multimedia components must be UTF-8
-          if ($page == ".folder" || $mediatype == true) $charset = "UTF-8";
+          // character set for meta-data of multimedia assets must be UTF-8
+          if ($mediatype == true) $charset = "UTF-8";
           else $charset = $result['charset'];
 
           // --------------------------- load page xml schema -----------------------
@@ -11265,7 +11260,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
             remoteclient ("save", "abs_path_media", $site, $media_root.$site."/", "", $media_update, "");
             
             // create preview (thumbnail for images, previews for video/audio files)
-            $createmedia = createmedia ($site, $media_root.$site."/", $media_root.$site."/", $media_update, "", "origthumb");
+            createmedia ($site, $media_root.$site."/", $media_root.$site."/", $media_update, "", "origthumb");
 
             // remove indexed content if file extension has changed
             if ($file_ext_old != $file_ext_new)
@@ -11358,7 +11353,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
 // description:
 // this function extracts the text content of multimedia objects and writes it the text to the container.
 // the given charset of the publication (not set by default), container or publication (not set by default) will be used.
-// the default character set of default.meta.tpl ist UTF-8, so all content should be saved in UTF-8.
+// the default character set of default.meta.tpl is UTF-8, so all content should be saved in UTF-8.
 
 function indexcontent ($site, $location, $file, $container="", $container_content="", $user)
 {
@@ -13020,14 +13015,12 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             if ($contentfile_id != "")
             {
               // load language code index file
-              $langcode_array = file ($mgmt_config['abs_path_cms']."include/languagecode.dat");
+              $langcode_array = getlanguageoptions ();
         
               if ($langcode_array != false)
               {
-                foreach ($langcode_array as $langcode)
+                foreach ($langcode_array as $code => $language)
                 {
-                  list ($code, $language) = explode ("|", trim ($langcode));
-                  
                   if (is_file ($mgmt_config['abs_path_temp']."view/".$contentfile_id."_".trim($code).".vtt"))
                   {
                     deletefile ($mgmt_config['abs_path_temp']."view/", $contentfile_id."_".trim($code).".vtt", 0);
@@ -15414,14 +15407,12 @@ function unpublishobject ($site, $location, $page, $user)
       if ($container_id != "")
       {
         // load language code index file
-        $langcode_array = file ($mgmt_config['abs_path_cms']."include/languagecode.dat");
+        $langcode_array = getlanguageoptions ();
   
         if ($langcode_array != false)
         {
-          foreach ($langcode_array as $langcode)
+          foreach ($langcode_array as $code => $language)
           {
-            list ($code, $language) = explode ("|", trim ($langcode));
-            
             if (is_file ($mgmt_config['abs_path_temp']."view/".$container_id."_".trim($code).".vtt"))
             {
               deletefile ($mgmt_config['abs_path_temp']."view/", $container_id."_".trim($code).".vtt", 0);
@@ -16844,6 +16835,8 @@ function notifyusers ($site, $location, $object, $event, $user_from)
   
   if ($event != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($user_from))
   {
+    $mail_sent = false;
+    
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
     // convert location
@@ -16865,21 +16858,24 @@ function notifyusers ($site, $location, $object, $event, $user_from)
         foreach ($notify_array as $notify)
         {
           // dont notify the same user multiple times and don't inform the user if he took the action
-          if (!in_array ($notify['user'], $user_memory) && $notify['user'] != $user_from)
+          if (!empty ($notify['user']) && !in_array ($notify['user'], $user_memory) && $notify['user'] != $user_from)
           {        
             // get user node and extract required information    
             $usernode = selectcontent ($userdata, "<user>", "<login>", $notify['user']);
+            
+            // add user to memory to avoid multiple notifications for the same user
+            $user_memory[] = $notify['user'];
   
             if (is_array ($usernode))
             {
               // email
               $temp = getcontent ($usernode[0], "<email>");
-              if ($temp != false && $temp[0] != "") $email_to = $temp[0];
+              if (!empty ($temp[0])) $email_to = $temp[0];
               else $email_to = "";
             
               // language
               $temp = getcontent ($usernode[0], "<language>");            
-              if ($temp != false && $temp[0] != "") $lang = $temp[0];
+              if (!empty ($temp[0])) $lang = $temp[0];
               else $lang = "en";
             }
             
@@ -16935,23 +16931,24 @@ function notifyusers ($site, $location, $object, $event, $user_from)
               if ($mailer->Send())
               {
                 $mail_sent = true;
+                
+                // log notification
                 $errcode = "00802";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|notification has been sent to ".$user." (".$email_to.") on object ".$location_esc.$object; 
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|notification has been sent to ".$notify['user']." (".$email_to.") on object ".$location_esc.$object; 
               }
               else
               {
                 $errcode = "50802";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|notification failed for ".$user." (".$email_to.") on object ".$location_esc.$object." (mail could not be sent)";  
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|notification failed for ".$notify['user']." (".$email_to.") on object ".$location_esc.$object." (mail could not be sent)";  
               }
-              
-              // add user to memory to avoid multiple notifications for the same user
-              $user_memory[] = $notify['user'];
-              
-              // save log
-              savelog (@$error);
             }
           }
         }
+
+        // save log
+        savelog (@$error);
+        
+        return $mail_sent;
       }
       else return false;
     }

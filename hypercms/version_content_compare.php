@@ -57,11 +57,11 @@ $pagename = $file_info['name'];
 if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
 {
   // sort logic
-  if (substr_count ($compare_1, ".xml.v_") == 0)
+  if (substr_count ($compare_1, ".v_") == 0)
   {
     $compare_array = array ($compare_2, $compare_1);    
   }
-  elseif (substr_count ($compare_2, ".xml.v_") == 0)
+  elseif (substr_count ($compare_2, ".v_") == 0)
   {
     $compare_array = array ($compare_1, $compare_2);  
   }
@@ -77,7 +77,7 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
   foreach ($compare_array as $container)
   {
     // construct time stamp
-    if (strpos ($container, ".xml.v_") > 0)
+    if (strpos ($container, ".v_") > 0)
     {
       $file_v_ext = substr (strrchr ($container, "."), 3);
       $date = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
@@ -86,7 +86,7 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
       $date_array[$i] = $date." ".$time;
     }
     else $date_array[$i] = getescapedtext ($hcms_lang['current-version'][$lang]);
-    
+
     // load container
     $contentdata = loadcontainer ($container, "version", $user);
 
@@ -168,8 +168,8 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <?php 
-echo showaudioplayer_head ();
-echo showvideoplayer_head ($site, false);
+if (is_audio ($page)) echo showaudioplayer_head (false);
+else echo showvideoplayer_head (false);
 ?>
 </head>
 

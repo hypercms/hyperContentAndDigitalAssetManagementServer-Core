@@ -94,7 +94,7 @@ $(document).ready(function()
               <input type="text" name="search_expression" data-mini="true" maxlength="60" value="" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" />
             </td>
             <td>
-              <button id="SearchButton" data-mini="true" style="width:40px;" onclick="document.forms['searchform_general'].submit();">OK</button>
+              <button id="SearchButton" data-mini="true" style="width:40px;" onclick="if (document.forms['searchform_general'].elements['search_expression'].value!='') document.forms['searchform_general'].submit();">OK</button>
             </td>
           </tr>
         </table>
@@ -102,16 +102,16 @@ $(document).ready(function()
     </div>
     <?php } ?>
     <div id="navContainer" style="position:absolute; top:0; left:0; padding:0; margin:48px 0px 0px 0px; border:0; width:260px; overflow:auto; -webkit-overflow-scrolling:touch;">
-      <iframe id="navFrame" src="explorer.php" style="border:0; width:260px;"></iframe>
+      <iframe id="navFrame" src="explorer.php" frameBorder="0" style="border:0; width:260px;"></iframe>
     </div>
   </div>
   
   <!-- content -->
   <div id="content" data-role="content" style="padding:0; margin:0;">
     <?php if (is_array ($hcms_linking)) { ?>
-    <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
+    <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php" frameBorder="0" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
     <?php } else { ?>
-    <iframe id="workplFrame" name="workplFrame" src="home.php" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
+    <iframe id="workplFrame" name="workplFrame" src="home.php" frameBorder="0" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
     <?php } ?>
   </div>
   
@@ -119,7 +119,7 @@ $(document).ready(function()
   <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
   <div id="chat" data-role="panel" data-display="overlay" data-position="right" style="padding:0; margin:0; width:300px;">    
     <div id="chatContainer" style="position:absolute; top:0; right:0; padding:0; margin:0; border:0; width:300px; overflow:auto; -webkit-overflow-scrolling:touch;">
-      <iframe id="chatFrame" scrolling="yes" src="chat.php" style="border:0; width:300px;"></iframe>
+      <iframe id="chatFrame" scrolling="yes" src="chat.php" frameBorder="0" style="border:0; width:300px;"></iframe>
     </div>
   </div>  
   <?php } ?>

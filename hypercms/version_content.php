@@ -305,7 +305,7 @@ function compare_submit ()
       {        
         // get object info of version
         $objectinfo_v = getobjectinfo ($site, $location, $page, $user, $file_v);
-        
+ 
         if (!empty ($objectinfo_v['name'])) $pagename_v = $objectinfo_v['name'];
         else $pagename_v = $pagename;
 
@@ -320,13 +320,10 @@ function compare_submit ()
           $rowcolor = "hcmsRowData2";
           $color = true;
         }
-        
-        // get file info
-        $file_info_v = getfileinfo ($site, $pagename_v, $cat);
 
         echo "<tr class=\"".$rowcolor."\">
           <td nowrap=\"nowrap\">".$date_v."</td>
-          <td nowrap=\"nowrap\"><a href=\"#\" onClick=\"hcms_openWindow('page_preview.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&container=".url_encode($file_v)."','preview','scrollbars=yes,resizable=yes','800','600')\"><img src=\"".getthemelocation()."img/".$file_info_v['icon']."\" width=16 height=16 border=0 align=\"absmiddle\" />&nbsp; ".$pagename_v."</a></td>
+          <td nowrap=\"nowrap\"><a href=\"#\" onClick=\"hcms_openWindow('page_preview.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&container=".url_encode($file_v)."','preview','scrollbars=yes,resizable=yes','800','600')\"><img src=\"".getthemelocation()."img/".$objectinfo_v['icon']."\" width=16 height=16 border=0 align=\"absmiddle\" />&nbsp; ".$pagename_v."</a></td>
           <td nowrap=\"nowrap\"><a href=\"#\" onClick=\"hcms_openWindow('container_source.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&container=".url_encode($file_v)."','preview','scrollbars=yes,resizable=yes','800','600')\">XML</a></td>
           <td align=\"middle\" valign=\"middle\"><input type=\"checkbox\" name=\"dummy\" value=\"".$file_v."\" onclick=\"if (compare_select('".$file_v."')) this.checked=true; else this.checked=false;\" /></td>
           <td align=\"middle\" valign=\"middle\"><input type=\"radio\" name=\"actual\" value=\"".$file_v."\" /></td>

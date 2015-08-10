@@ -68,7 +68,16 @@ else $maximumQueueItems = -1;
 // check storage limit (MB)
 if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0)
 {
-  $filesize = rdbms_getfilesize ("", "%comp%/".$site."/");
+  // memory for file size (should be kept for 24 hours)
+  $filesize_mem = $mgmt_config['abs_path_temp'].$site.".filesize.dat";
+  
+  if (!is_file ($filesize_mem) || (filemtime ($filesize_mem) + 86400) < time())
+  {  
+    // this function might require some time for the result in case of large databases
+    $filesize = rdbms_getfilesize ("", "%comp%/".$site."/");
+    savefile ($mgmt_config['abs_path_temp'], $site.".filesize.dat", $filesize['filesize']);
+  }
+  else $filesize['filesize'] = loadfile ($mgmt_config['abs_path_temp'], $site.".filesize.dat");
 
   if ($filesize['filesize'] > ($mgmt_config[$site]['storage'] * 1024))
   {

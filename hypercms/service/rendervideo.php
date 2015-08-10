@@ -36,10 +36,12 @@ $audiobitrate = getrequest ("audiobitrate");
 $videosize = getrequest ("videosize");
 $width = getrequest ("width", "numeric");
 $height = getrequest ("height", "numeric");
-// cut
+// cut (used when page_multiedit is used)
 $cut = getrequest ("cut", "numeric", 0);
 $cut_begin = getrequest ("cut_begin");
 $cut_end = getrequest ("cut_end");
+// segments
+$mgmt_mediaoptions['segments'] = getrequest ("segments");
 // thumbnail
 $thumb = getrequest ("thumb", "numeric", 0);
 $thumb_frame = getrequest ("thumb_frame");
@@ -106,14 +108,20 @@ function startConversion ($videotype)
   global $hcms_lang, $lang;
   
   $success = false;
-    
-  // define FFMPEG options
-  $mgmt_mediaoptions['.'.$filetype] = $cut_add.$sh_add.$rotate_add.$gbcs_add.str_replace (array('%videobitrate%', '%audiobitrate%', '%width%', '%height%'), array($bitrate, $audiobitrate, $width, $height), $mgmt_mediaoptions['.'.$filetype]);
-    
-  // create video
-  if ($videotype == "videoplayer") $videotype = "thumbnail";
-  else $videotype = "video";
 
+  // set media type
+  if ($videotype == "videoplayer") $videotype = "thumbnail";
+  // set format if type is "original"
+  if ($videotype == "original") $filetype = strtolower (substr ($file_info['ext'], 1));
+
+  // define FFMPEG options
+  if ($bitrate == "" || $bitrate == "original") $mgmt_mediaoptions['.'.$filetype] = str_replace ("-b:v %videobitrate%", "", $mgmt_mediaoptions['.'.$filetype]);
+  if ($audiobitrate == "" || $audiobitrate == "original") $mgmt_mediaoptions['.'.$filetype] = str_replace ("-b:a %audiobitrate%", "", $mgmt_mediaoptions['.'.$filetype]);
+  if ($width < 1 || $height < 1) $mgmt_mediaoptions['.'.$filetype] = str_replace ("-s:v %width%x%height%", "", $mgmt_mediaoptions['.'.$filetype]);
+  
+  $mgmt_mediaoptions['.'.$filetype] = $cut_add.$sh_add.$rotate_add.$gbcs_add.str_replace (array('%videobitrate%', '%audiobitrate%', '%width%', '%height%'), array($bitrate, $audiobitrate, $width, $height), $mgmt_mediaoptions['.'.$filetype]);
+
+  // create video
   $createmedia = createmedia ($site, $media_root, $media_root, $file_info['file'], $filetype, $videotype);
 
   if ($createmedia == false)
@@ -181,6 +189,11 @@ $available_formats['ws'] = array(
 // available bitrates
 $available_bitrates = array();
 
+$available_bitrates['original'] = array(
+	'name'					=> $hcms_lang['original'][$lang],
+	'checked'				=> true
+);
+
 $available_bitrates['200k'] = array(
 	'name'					=> $hcms_lang['low'][$lang].' (200k)',
 	'checked'				=> false
@@ -232,6 +245,11 @@ $available_videosizes['i'] = array(
 //available bitrates for the audio
 $available_audiobitrates = array();
 
+$available_audiobitrates['original'] = array(
+  'name'    => $hcms_lang['original'][$lang],
+  'checked' => true
+);
+
 $available_audiobitrates['64k'] = array(
   'name'    => $hcms_lang['low'][$lang].' (64 kb/s)',
   'checked' => true
@@ -253,20 +271,17 @@ $available_flip['fv'] = $hcms_lang['vertical'][$lang];
 $available_flip['fh'] = $hcms_lang['horizontal'][$lang];
 
 // check input paramters and define video settings
-if ($filetype != "" && (array_key_exists ($filetype, $available_extensions) || strtolower ($filetype) == 'videoplayer')) $filetype = strtolower ($filetype);
-else $filetype = "videoplayer";
-
 if ($format != "" && array_key_exists ($format, $available_formats)) $format = $format;
-else $format = "fs";
+else $format = "";
 
 if ($bitrate != "" && array_key_exists ($bitrate, $available_bitrates)) $bitrate = $bitrate;
-else $bitrate = "768k";
+else $bitrate = "";
 
 if ($audiobitrate != "" && array_key_exists ($audiobitrate, $available_audiobitrates)) $audiobitrate = $audiobitrate;
-else $audiobitrate = "64k";
+else $audiobitrate = "";
 
 if ($videosize != "" && array_key_exists ($videosize, $available_videosizes)) $videosize = $videosize;
-else $videosize = "o";
+else $videosize = "";
 
 // options for FFMPEG:
 // Audio Options:
@@ -291,6 +306,11 @@ else $videosize = "o";
 // get publication and file info
 $media_root = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
 $file_info = getfileinfo ($site, $mediafile, $cat);
+
+// define filetype
+if ($filetype != "" && array_key_exists ($filetype, $available_extensions)) $filetype = strtolower ($filetype);
+elseif (strtolower ($filetype) == 'videoplayer' || strtolower ($filetype) == 'original') $filetype = strtolower ($filetype);
+else $filetype = "videoplayer";
 
 // render media
 if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
@@ -423,7 +443,7 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
     {
       $filetype = strtolower ($filetype);
       
-      // we only convert the most used video formats (FLV, MP4, OGV)
+      // we only convert the commonly used video formats (FLV, MP4, OGV)
       if (in_array ($filetype, array('flv', 'mp4', 'ogv')))
       {
         // only capture video screen for thumbnail image for the first video

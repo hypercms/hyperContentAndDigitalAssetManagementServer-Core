@@ -7,16 +7,15 @@ These changes need to be applied in the file video-js.css in order to center the
   margin-left: -1em;
   /* Center it vertically */
   top: 50%;
-  margin-top: -1em;
+  margin-top: -0.9em;
 
-  width: 2em;
-  height: 2em;
+  width: 1.6em;
+  height: 1.6em;
 
 }
 
 .vjs-default-skin .vjs-big-play-button:before {
 
-
-  line-height: 2em;
+  line-height: 1.6em;
 
 }

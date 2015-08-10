@@ -90,13 +90,16 @@ $is_audio = is_audio ($file_info['ext']);
 // read supported formats
 $available_extensions = array();
 
-foreach ($mgmt_mediaoptions as $ext => $options)
+if (is_array ($mgmt_mediaoptions))
 {
-  if ($ext != "thumbnail-video" && $ext != "thumbnail-audio")
+  foreach ($mgmt_mediaoptions as $ext => $options)
   {
-  	// remove the dot
-  	$name = strtolower (trim ($ext, "."));    
-  	$available_extensions[$name] = strtoupper ($name);
+    if ($ext != "thumbnail-video" && $ext != "thumbnail-audio")
+    {
+    	// remove the dot
+    	$name = strtolower (trim ($ext, "."));    
+    	$available_extensions[$name] = strtoupper ($name);
+    }
   }
 }
 
@@ -116,6 +119,11 @@ $available_formats['ws'] = array(
 // available bitrates
 $available_bitrates = array();
 
+$available_bitrates['original'] = array(
+	'name'					=> $hcms_lang['original'][$lang],
+	'checked'				=> true
+);
+
 $available_bitrates['200k'] = array(
 	'name'					=> $hcms_lang['low'][$lang].' (200k)',
 	'checked'				=> false
@@ -123,7 +131,7 @@ $available_bitrates['200k'] = array(
 
 $available_bitrates['768k'] = array(
 	'name'					=> $hcms_lang['medium'][$lang].' (768k)',
-	'checked'				=> true
+	'checked'				=> false
 );
 
 $available_bitrates['1856k'] = array(
@@ -167,6 +175,11 @@ $available_videosizes['i'] = array(
 //available bitrates for the audio
 $available_audiobitrates = array();
 
+$available_audiobitrates['original'] = array(
+  'name'    => $hcms_lang['original'][$lang],
+  'checked' => true
+);
+
 $available_audiobitrates['64k'] = array(
   'name'    => $hcms_lang['low'][$lang].' (64 kb/s)',
   'checked' => false
@@ -174,7 +187,7 @@ $available_audiobitrates['64k'] = array(
 
 $available_audiobitrates['128k'] = array(
   'name'    => $hcms_lang['medium'][$lang].' (128 kb/s)',
-  'checked' => true
+  'checked' => false
 );
 
 $available_audiobitrates['192k'] = array(
@@ -188,20 +201,20 @@ $available_flip['fv'] = $hcms_lang['vertical'][$lang];
 $available_flip['fh'] = $hcms_lang['horizontal'][$lang];
 
 // check input paramters and define video settings
-if ($filetype != "" && (array_key_exists ($filetype, $available_extensions) || strtolower ($filetype) == 'videoplayer')) $filetype = strtolower ($filetype);
+if ($filetype != "" && (array_key_exists ($filetype, $available_extensions) || strtolower ($filetype) == 'videoplayer' || strtolower ($filetype) == 'original')) $filetype = strtolower ($filetype);
 else $filetype = "videoplayer";
 
 if ($format != "" && array_key_exists ($format, $available_formats)) $format = $format;
 else $format = "fs";
 
 if ($bitrate != "" && array_key_exists ($bitrate, $available_bitrates)) $bitrate = $bitrate;
-else $bitrate = "768k";
+else $bitrate = "";
 
 if ($audiobitrate != "" && array_key_exists ($audiobitrate, $available_audiobitrates)) $audiobitrate = $audiobitrate;
-else $audiobitrate = "64k";
+else $audiobitrate = "";
 
 if ($videosize != "" && array_key_exists ($videosize, $available_videosizes)) $videosize = $videosize;
-else $videosize = "s";
+else $videosize = "";
 
 // generate media preview (media player)
 if ($hcms_ext['video'] != "" && $hcms_ext['audio'] != "")
@@ -210,7 +223,7 @@ if ($hcms_ext['video'] != "" && $hcms_ext['audio'] != "")
   $mediaheight = 0;
 
   // generate player code
-  $playercode = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_download", "cut_video", $mediawidth, $mediaheight, "");
+  $playercode = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_download", "cut", $mediawidth, $mediaheight, "");
 }
 else
 {
@@ -229,6 +242,11 @@ $token_new = createtoken ($user);
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css" />
+<?php 
+if ($is_audio) echo showaudioplayer_head (false);
+else echo showvideoplayer_head (false); 
+?>
 <style>
 .row
 {
@@ -266,12 +284,6 @@ $token_new = createtoken ($user);
   font-size: 11px;
 }
 </style>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css" />
-<?php 
-if ($is_audio) echo showaudioplayer_head ();
-else echo showvideoplayer_head ($site, false); 
-?>
-
 <script type="text/javascript">
 <!--
 
@@ -332,70 +344,17 @@ function submitform ()
     return false;
   }
   else
-  {  
+  {
+    var filetype = document.getElementById('filetype');
+    
+    if (filetype.options[filetype.selectedIndex].value == "original")
+    {
+      if (!confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang]); ?>"))) return false;
+    }
+  
     hcms_showHideLayers('savelayer','','show');
     document.forms['mediaconfig'].submit();
   }
-}
-
-function updateField (field)
-{ 
-  <?php
-  // if we use the audio player we check other values
-  if ($is_audio) { ?>
-  var player = {};
-  
-  for (var i = 0; i < audiojs.instanceCount; i++)
-  {
-    if (audiojs.instances['audiojs'+i].element.id == "hcms_audioplayer_cut_audio")
-      player = audiojs.instances['audiojs'+i];
-  }
-  
-  var time = player.element.currentTime;  
-  <?php  
-  }
-  // if we use projekktor we need to check for the state beforehand
-  elseif (strtolower ($mgmt_config['videoplayer']) == "projekktor") { 
-  ?>
-  var player = projekktor('hcms_mediaplayer_cut_video');
-  
-  if (player.getState('PLAYING') || player.getState('PAUSED'))
-  {
-    var time = player.getPosition();
-  }
-  else
-  {
-    alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['videoplayer-must-be-playing-or-paused-to-set-start-and-end-positions'][$lang]); ?>'));
-    return 0;
-  }
-  <?php 
-  } else {
-  ?>
-  var player = videojs("hcms_mediaplayer_cut_video");
-  var time = player.currentTime();
-  <?php 
-  }
-  ?>
-  var seconds = Math.floor(time) % 60;
-  
-  if (seconds > 0)
-  {
-    var milliseconds = Math.floor((time % seconds) * 1000);
-    
-    if (milliseconds < 10) milliseconds = "00" + milliseconds;
-    else if (milliseconds < 100) milliseconds = "0" + milliseconds;
-    else if (milliseconds > 999) milliseconds = milliseconds.toString().substring(0,3);
-  }
-  else var milliseconds = "000";
-  
-  var minutes = Math.floor(time / 60) % 60;
-  var hours = Math.floor(time / 3600) % 24;
-  
-  if (hours < 10) hours = "0" + hours;
-  if (minutes < 10) minutes = "0" + minutes;
-  if (seconds < 10) seconds = "0" + seconds;
-
-  field.value = hours + ':' + minutes + ':' + seconds + '.' + milliseconds;
 }
 
 function openerReload ()
@@ -535,7 +494,7 @@ function toggle_flip ()
   }
 }
 
-function toggleDivAndButton (caller, element)
+function toggle_options (caller, element)
 {
   var options = $(element);
   caller = $(caller);
@@ -543,13 +502,14 @@ function toggleDivAndButton (caller, element)
     
   if (options.css('display') == 'none')
   {
-    caller.addClass('hcmsButtonActive');
+    caller.addClass('hcmsButtonMenuActive');
     activate();
     options.fadeIn(time);
+    window.scrollTo(0,0);
   }
   else
   {
-    caller.removeClass('hcmsButtonActive');
+    caller.removeClass('hcmsButtonMenuActive');
     options.fadeOut(time);
   }
 }
@@ -565,6 +525,252 @@ function activate ()
   toggle_rotate();
 }
 
+function updateField (field)
+{
+  field.value = getplayertime();
+}
+
+function getplayertime ()
+{ 
+  <?php  
+  // if we use projekktor we need to check for the state beforehand
+  if (strtolower ($mgmt_config['videoplayer']) == "projekktor") { 
+  ?>
+  var player = projekktor('hcms_mediaplayer_cut_video');
+  
+  if (player.getState('PLAYING') || player.getState('PAUSED'))
+  {
+    var playerseconds = player.getPosition();
+  }
+  else
+  {
+    alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['videoplayer-must-be-playing-or-paused-to-set-start-and-end-positions'][$lang]); ?>'));
+    return 0;
+  }
+  <?php 
+  // VIDEO JS
+  } else {
+  ?>
+  var player = videojs("hcms_mediaplayer_cut");  
+  var playerseconds = player.currentTime();
+  <?php 
+  }
+  ?>
+
+  if (playerseconds > 0)
+  {
+    var hours = Math.floor(playerseconds / 3600) % 24;    
+    if (hours < 10) hours = "0" + hours;
+    
+    var minutes = Math.floor(playerseconds / 60) % 60;
+    if (minutes < 10) minutes = "0" + minutes;
+    
+    var seconds = Math.floor(playerseconds) % 60;
+    if (seconds < 10) seconds = "0" + seconds;
+
+    var milliseconds = Math.round(playerseconds * 1000) / 1000;
+    var comma = milliseconds.toString().indexOf('.');
+    var milliseconds = milliseconds.toString().substring(comma + 1);
+    milliseconds = parseInt(milliseconds);
+    if (milliseconds < 10) milliseconds = "00" + milliseconds;
+    else if (milliseconds < 100) milliseconds = "0" + milliseconds;
+
+    return hours + ':' + minutes + ':' + seconds + '.' + milliseconds;
+  }
+  else return false;
+}
+
+function getplayerduration ()
+{
+  if ($('#mediaplayer_duration').val())
+  {
+    return $('#mediaplayer_duration').val();
+  }
+  else return false;
+}
+
+function convert2seconds (time)
+{
+  if (time != "")
+  {
+    // cut off milliseconds (since we want to use the previous video frame)
+    if (time.indexOf('.') > 0)
+    {
+      var ms = time.substring(time.indexOf('.'));
+      time = time.substring(0, time.indexOf('.'));
+    }
+    else var ms = 0;
+    
+    if (time.indexOf(':') > 0)
+    {
+      // split time at the colons
+      var parts = time.split(':');
+
+      // minutes are worth 60 seconds, hours are worth 60 minutes
+      var seconds = (+parts[0]) * 60 * 60 + (+parts[1]) * 60 + (+parts[2]) + ms;
+    }
+    else var seconds = time + ms;
+    
+    return seconds;
+  }
+  else return false;
+}
+
+// add 0 to add up to given max length
+function addzeros (str, max)
+{
+  str = str.toString();
+  return str.length < max ? addzeros ("0" + str, max) : str;
+}
+
+// create id as string
+function createid (str)
+{
+  var max = 10;
+  str = str.toString();
+  
+  // correct comma digits
+  var n = str.lastIndexOf('.');
+  var number = str.substring(0, n);
+  var commas = str.substring(n + 1);
+
+  if (commas.length < 2) commas = commas + "00";
+  else if (commas.length < 3) commas = commas + "0";
+  else if (commas.length > 3) commas = commas.substring(0, 2);
+  
+  str = number + commas;
+
+  // add 0 to add up to given max length
+  return addzeros (str, max);
+}
+
+var segments = {};
+
+function setbreakpoint ()
+{
+  var time = getplayertime ();
+  var duration_time = getplayerduration();
+  
+  if (time != "" && duration_time != "")
+  {
+    var duration_ms = convert2seconds (duration_time);
+    var seconds_ms = convert2seconds (time);
+    var id = createid (seconds_ms);
+    var width_bar = document.getElementById('mediaplayer_segmentbar').offsetWidth;
+    var left = Math.floor(seconds_ms / duration_ms * width_bar);
+
+    // time for split must be greater than zero
+    if (parseFloat(seconds_ms) > 0 && parseFloat(seconds_ms) < parseFloat(duration_ms))
+    {
+      // limits for left
+      if (parseInt(left) < 1) left = 1;
+      else if (parseInt(left) > parseInt(width_bar)) left = width_bar;
+
+      // save split time in object of segment
+      segments[id] = { time:time, seconds:seconds_ms, left:left, keep:'1' };
+
+      // add last segment if it does not exist
+      var duration_id = createid (duration_ms);
+
+      if (segments.hasOwnProperty(duration_id) == false)
+      {
+        segments[duration_id] = { time:duration_time, seconds:duration_ms, left:width_bar, keep:'1' };
+      }
+      
+      setsegements();
+    }
+    else return false;
+  }
+  else return false;
+}
+
+function deletebreakpoint (id)
+{
+  if (id != "" && typeof segments === 'object')
+  {
+    delete segments[id];
+    setsegements();
+    return true;
+  }
+  else return false;
+}
+
+function setsegements ()
+{
+  if (typeof segments === 'object')
+  {
+    var width_bar = document.getElementById('mediaplayer_segmentbar').offsetWidth;
+    
+    // clean segment bar
+    document.getElementById('mediaplayer_segmentbar').innerHTML = '';
+    
+    // sort segments by plsit time
+    segments = hcms_sortObject (segments);
+    
+    // write segments as JSON string to hidden field
+    var json_string = JSON.stringify (segments);
+    $('#segments').val(json_string);
+
+    var left = 0;
+
+    for (var id in segments)
+    {
+      if (segments.hasOwnProperty(id))
+      {
+        var segment = segments[id];
+        var time = segment.time;
+        var width = segment.left - left;
+        var left = segment.left;
+        var keep = segment.keep;
+
+        // color of segment
+        if (parseInt(keep) < 1) var segment_color = 'background-color:#FC6F65; ';
+        else var segment_color = '';
+      
+        // create div for segment
+        var div = document.createElement('div');
+        div.style.cssText = segment_color + 'cursor:pointer; display:inline-block; width:' + width + 'px; height:22px;';
+        
+        // define delete button for split
+        var segment_delete = '<img src="<?php echo getthemelocation(); ?>img/button_delete.gif" onclick="deletebreakpoint(\'' + id + '\')" class="hcmsButton hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />';    
+
+        // define split
+        if ((parseInt(width_bar) - parseInt(left)) > 0)
+        {
+          var segment_split = '<div style="background-color:#A20303; display:inline-block; width:1px; height:100%;" onmouseover="$(\'#popup_' + id + '\').show();" onmouseout="$(\'#popup_' + id + '\').hide();"><div style="background-color:#A20303; position:relative; top:22px; left:-3px; width:7px; height:7px; vertical-align:middle;"></div><div id="popup_' + id + '" class="hcmsInfoBox" style="position:relative; top:22px; left:-60px; width:120px; height:28px; display:none; vertical-align:middle;"><div style="padding:4px; float:left;">' + time + '</div>' + segment_delete + '</div></div>';
+        }
+        else var segment_split = '';
+        
+        // define segment bar
+        var segment_bar = '<div style="display:inline-block; width:' + (width - 1) + 'px; height:100%; text-align:center;" onclick="keepsegment(\'' + id + '\')" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>"></div>';
+        
+        div.innerHTML = segment_bar + segment_split;
+        
+        document.getElementById('mediaplayer_segmentbar').appendChild(div);
+      }
+    }
+  }
+  else return false;
+}
+
+function keepsegment (id)
+{
+  if (id != "" && typeof segments === 'object' && segments.hasOwnProperty(id))
+  {
+    var segment = segments[id];
+    var keep = segment['keep'];
+
+    if (keep < 1) keep = 1;
+    else keep = 0;
+    
+    segments[id]['keep'] = keep;
+    
+    setsegements();
+    return true;
+  }
+  else return false;
+}
+
 $(window).load( function()
 {
   var spinner_config = { step: 1, min: -100, max: 100}
@@ -578,15 +784,21 @@ $(window).load( function()
   // add special function
   $.fn.getGeneratorParameter = function() {
     return this.prop('name')+'='+this.val();
-  } 
+  }
 });
 
-<?php if (!$is_audio) { ?>
 $().ready(function() {
-  checkCut();
-  checkThumb();
+  <?php if (!$is_audio) { ?>checkThumb();<?php } ?>
+  
+  // hide mebed button
+  $('#mediaplayer_embed').hide();
+  
+  // show videoplayers segment bar and buttons
+  $('#mediaplayer_segmentbar').show();
+  $('#mediaplayer_cut').show();
+  $('#mediaplayer_options').show();
 });
-<?php } ?>
+
 -->  
 </script>
 </head>
@@ -610,7 +822,7 @@ echo showmessage ($show, 600 , 80, $lang, "position:fixed; left:50px; top:150px;
 
 <!-- top bar -->
 <?php
-echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['options'][$lang] => 'onclick="toggleDivAndButton(this, \'#renderOptions\'); hcms_hideInfo (\'hcms_infoLayer\')"'), $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
+echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['options'][$lang] => 'onclick="toggle_options(this, \'#renderOptions\'); hcms_hideInfo(\'hcms_infoLayer\')"'), $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
 ?>
 
 <!-- rendering settings -->
@@ -624,13 +836,13 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
   	<input type="hidden" name="page" value="<?php echo $page; ?>" />
   	<input type="hidden" name="media" value="<?php echo $mediafile; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
+    <input type="hidden" id="segments" name="segments" value="" />
     
     <?php if (!$is_audio) { ?>
     <div class="cell" style="width:260px;">
       <!-- video screen format -->
       <div class="row">
     		<strong><?php echo getescapedtext ($hcms_lang['formats'][$lang]); ?></strong>
-      </row>
   		<?php foreach ($available_formats as $format => $data) { ?>
         <div class="row">
           <input type="radio" id="format_<?php echo $format; ?>" name="format" value="<?php echo $format; ?>" <?php if ($data['checked']) echo "checked=\"checked\""; ?> />
@@ -645,7 +857,7 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
       </div>
   		<?php foreach ($available_videosizes as $videosize => $data) { ?>
       <div class="row">
-  			<input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>"<?php if($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo $data['name']; ?></label>
+  			<input type="radio" id="videosize_<?php echo $videosize; ?>" name="videosize" value="<?php echo $videosize; ?>" <?php if ($data['checked']) echo "checked=\"checked\"";?> /> <label for="videosize_<?php echo $videosize; ?>" <?php if ($data['individual']) echo 'onclick="document.getElementById(\'width_'.$videosize.'\').focus();document.getElementById(\'videosize_'.$videosize.'\').checked=true;return false;"'; ?>><?php echo $data['name']; ?></label>
   			<?php if ($data['individual']) { ?>
   		  <input type="text" name="width" size=4 maxlength=4 id="width_<?php echo $videosize;?>" value=""><span> x </span><input type="text" name="height" size="4" maxlength=4 id="height_<?php echo $videosize;?>" value="" /><span> px</span>
   			<?php }	?>
@@ -687,27 +899,9 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
       </div>
     </div>
     <?php }	?>
-    
-    <div class="cell">
-      <!-- video cut -->
-      <div class="row">
-        <input type="checkbox" name="cut" id="cut_yes" onclick="checkCut();" value="1" />
-        <strong><label for="cut_yes" onclick="checkCut();" /><?php echo ($is_audio) ? getescapedtext ($hcms_lang['audio-montage'][$lang]) : getescapedtext ($hcms_lang['video-montage'][$lang]); ?></label></strong>
-      </div>
-      <div id="cut_area" style="display:none;">
-        <div class="row">
-          <label for="cut_start" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['start'][$lang]); ?></label>
-          <input id="cut_start" type="button" value="<?php echo getescapedtext ($hcms_lang['set'][$lang]); ?>" onclick="updateField(document.getElementById('cut_begin'));" class="cellButton" />
-          <input type="text" name="cut_begin" id="cut_begin" READONLY style="width:70px; text-align:center; vertical-align:middle;" />
-        </div>
-        <div class="row">
-          <label for="cut_stop" style="width:70px; display:inline-block; vertical-align:middle;"><?php echo getescapedtext ($hcms_lang['end'][$lang]); ?></label>
-          <input id="cut_stop" type="button" value="<?php echo getescapedtext ($hcms_lang['set'][$lang]); ?>" onclick="updateField(document.getElementById('cut_end'));" class="cellButton" />
-          <input type="text" name="cut_end" id="cut_end" READONLY style="width:70px; text-align:center; vertical-align:middle;" />
-        </div>
-      </div>
-      
-      <?php if (!$is_audio) { ?>
+ 
+    <?php if (!$is_audio) { ?>
+    <div class="cell">      
       <!-- video thumbnail -->
       <div class="row"> 
         <input type="checkbox" name="thumb" id="thumb_yes" onclick="checkThumb();" value="1" />
@@ -745,8 +939,8 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
           ?>
         </select>
       </div>
-      <?php } ?>
     </div>
+    <?php } ?>
     
     <?php if (!$is_audio) { ?>    
     <!-- video bitrate -->
@@ -779,8 +973,23 @@ echo showtopmenubar ($hcms_lang['video-editing'][$lang], array($hcms_lang['optio
       <div class="row">
     		<strong><?php echo getescapedtext ($hcms_lang['save-as'][$lang]);?></strong><br />
     		<label for="filetype"><?php echo getescapedtext ($hcms_lang['file-type'][$lang]);?></label>
-    		<select name="filetype">
+    		<select id="filetype" name="filetype">
           <?php
+          // check supported extensions to render and overwrite original media file
+          if (is_array ($mgmt_mediaoptions))
+          {
+            foreach ($mgmt_mediaoptions as $mediaoptions_ext => $mediaoptions)
+            {
+              // if media option exists for the media file
+              if (substr_count ($mediaoptions_ext.".", $file_info['ext'].".") > 0)
+              {
+              ?>
+          <option value="original" ><?php echo getescapedtext ($hcms_lang['original'][$lang]); ?></option>
+              <?php
+              }
+            }
+          }
+
           if (!$is_audio)
           {
           ?>

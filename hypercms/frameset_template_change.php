@@ -36,9 +36,9 @@ checkusersession ($user, false);
 </head>
 
 <body style="width:100%; height:100%; margin:0; padding:0;">
-  <iframe id="controlFrame2" name="controlFrame2" scrolling="no" src="<?php echo "template_change.php?location=".$location."&page=".$page; ?>" style="position:fixed; top:0; left:0; width:100%; height:80px; border:0; margin:0; padding:0;"></iframe>
+  <iframe id="controlFrame2" name="controlFrame2" scrolling="no" src="<?php echo "template_change.php?location=".$location."&page=".$page; ?>" frameBorder="0" style="position:fixed; top:0; left:0; width:100%; height:80px; border:0; margin:0; padding:0;"></iframe>
   <div style="position:fixed; top:80px; right:0; bottom:0; left:0; margin:0; padding:0;">
-    <iframe id="mainFrame2" name="mainFrame2" scrolling="auto" src="<?php echo "template_view.php?site=".$site."&cat=".$cat."&template=".$template; ?>" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+    <iframe id="mainFrame2" name="mainFrame2" scrolling="auto" src="<?php echo "template_view.php?site=".$site."&cat=".$cat."&template=".$template; ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
   </div>
 </body>
 </html>
