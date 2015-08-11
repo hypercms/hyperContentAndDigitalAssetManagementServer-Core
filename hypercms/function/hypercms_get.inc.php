@@ -1763,14 +1763,15 @@ function getvideoinfo ($mediafile)
     $dimension = "";
     $width = "";
     $height = ""; 
-    $duration = "";   
+    $duration = "";
+    $duration_ms = "";  
     $video_bitrate = "";
     $imagetype = "";
     $audio_codec = "";
     $audio_bitrate = "";
     $audio_frequenzy = "";
     $audio_channels = "";
-    
+
     $location = getlocation ($mediafile);
     $media = getobject ($mediafile);
     
