@@ -566,6 +566,18 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     if ($viewtype == "template" && valid_publicationname ($site))
     {
       $media_root = $mgmt_config['abs_path_tplmedia'].$site."/";
+      
+      // get file size
+      $mediafilesize = round (@filesize ($media_root.$mediafile) / 1024, 0);
+    
+      // get dimensions of original media file
+      $media_size = @getimagesize ($media_root.$mediafile);
+      
+      if (!empty ($media_size[0]) && !empty ($media_size[1]))
+      {
+        $width_orig = $media_size[0];
+        $height_orig = $media_size[1];
+      }
     }
     // define media file root directory for assets
     elseif (valid_publicationname ($site))
@@ -899,7 +911,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           $mediaview = "
         <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
-          <tr><td align=\"left\"><img src=\"".$mgmt_config['url_path_tplmedia'].$mediafile."\" ".$id." alt=\"".$mediafile."\" title=\"".$mediafile."\" class=\"".$class."\" ".$style."/></td></tr>
+          <tr><td align=\"left\"><img src=\"".$mgmt_config['url_path_tplmedia'].$site."/".$mediafile."\" ".$id." alt=\"".$mediafile."\" title=\"".$mediafile."\" class=\"".$class."\" ".$style."/></td></tr>
           <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($mediafile, 40, false)."</td></tr>";
         }      
   

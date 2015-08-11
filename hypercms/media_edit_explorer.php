@@ -58,8 +58,8 @@ $mediacat_array = array();
 if (trim ($mediacat_data) != "")
 {
   $mediacat_array = explode ("\n", $mediacat_data);
-  @sort ($mediacat_array);
-  @reset ($mediacat_array);
+  natcasesort ($mediacat_array);
+  reset ($mediacat_array);
 }
 ?>
 <!DOCTYPE html>
@@ -223,8 +223,8 @@ if ($sender == "search")
   // files in actual directory
   if (isset ($files) && $files != false && $files != "")
   {
-    @sort ($files);
-    @reset ($files);
+    natcasesort ($files);
+    reset ($files);
 
     $c = 0;
 

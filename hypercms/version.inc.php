@@ -924,6 +924,8 @@ release 09/2015
 - check of empty search string in general search form in top bar has been implemented
 - implementation of function getlanguageoptions to get all languages and their 2-digit codes sorted by the language name
 - bug fix: page_multiedit did not set UTF-8 as character set for multimedia objects
+- bug fix: implementation of natural case sort for media_edit_explorer
+- bug fix: template media preview provided by function showmedia dit not present any information of template media files
 */
 
 // current version
