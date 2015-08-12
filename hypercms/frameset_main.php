@@ -90,7 +90,7 @@ function maxNavFrame ()
       <?php } ?>
       <?php if (!empty ($mgmt_config['db_connect_rdbms'])) { ?>
       <td width="240" align="right" valign="middle" nowrap="nowrap">
-        <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0px; border:0;">
+        <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
           <input type="hidden" name="action" value="base_search" />
           <input type="hidden" name="search_dir" value="" />
           <input type="hidden" name="maxhits" value="1000" />
