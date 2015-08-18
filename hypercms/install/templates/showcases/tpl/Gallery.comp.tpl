@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template>
 <name>Gallery</name>
-<user>hypercms</user>
+<user>admin</user>
 <category>comp</category>
 <extension>php</extension>
 <application>php</application>
@@ -43,19 +43,19 @@ scriptend]
       <br />
       <table>
         <tr>
-          <td>Picture / Folder</td><td><img src="[hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' thumbnail='yes']" /></td>
+          <td>Select Picture / Folder <!-- [hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' onPublish='hidden'] --></td><td><img src="[hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' thumbnail='yes' onEdit='hidden']" /></td>
         </tr>
         <tr>
-          <td>Width of stage</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='galleriaWidth' label='Width of stage' constraint='isNum' default='800' height='15' width='100']px</div></td>
+          <td>Width of stage</td><td><div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textu id='galleriaWidth' label='Width of stage' constraint='isNum' default='800' height='15' width='100']</div> px</td>
         </tr>
         <tr>
-          <td>Height of stage</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='galleriaHeight' label='Height of stage' constraint='isNum' default='600' height='15' width='100']px</div></td>
+          <td>Height of stage</td><td><div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textu id='galleriaHeight' label='Height of stage' constraint='isNum' default='600' height='15' width='100']</div> px</td>
         </tr>
         <tr>
-          <td>Show info</td><td><div style="margin-left: 27px;">[hyperCMS:textc id='showInfo' value='true' default='false']</div></td>
+          <td>Show info</td><td><div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textc id='showInfo' value='true' default='false']</div></td>
         </tr>
         <tr>
-          <td>&nbsp;</td><td><div style="margin-left: 27px;"><button class="hcmsButtonGreen" type="button" onClick="location.reload();" >generate code</button></div></td>
+          <td>&nbsp;</td><td><button class="hcmsButtonGreen" type="button" onClick="location.reload();" >generate code</button></td>
         </tr>
       </table>
       <p>Please do not forget to publish this page after changing the parameters!</p>
@@ -78,7 +78,7 @@ scriptend]
       Mark and copy the code from the text area box (keys ctrl + A and Ctrl + C for copy or right mouse button -> copy).  insert this code into your HTML Body of the page, where the image-zoom will be integrated (keys Crtl + V or right mouse button -> insert).
       <br />
       <br />
-      <textarea id="codesegment" wrap="VIRTUAL" style="height:250px; width:98%">[hyperCMS:scriptbegin echo html_encode($embed_code); scriptend]</textarea>
+      <textarea id="codesegment" wrap="VIRTUAL" style="height:80px; width:98%">[hyperCMS:scriptbegin echo html_encode($embed_code); scriptend]</textarea>
     </div>
   </body>
 </html>

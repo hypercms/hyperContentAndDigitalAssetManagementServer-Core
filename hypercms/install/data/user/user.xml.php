@@ -2,15 +2,19 @@
 <userlist>
 <user>
 <login>admin</login>
-<password></password>
-<hashcode></hashcode>
+<password>cm8f4Ju0UivGk</password>
+<hashcode>f689ea646103c28c2521ceaff9f0600c</hashcode>
 <admin>1</admin>
 <userdate></userdate>
-<realname><![CDATA[Super User]]></realname>
+<realname>Super User</realname>
 <email></email>
 <signature></signature>
 <language>en</language>
 <theme>standard</theme>
+<memberof>
+<publication></publication>
+<usergroup></usergroup>
+</memberof>
 </user>
 <user>
 <login>hcms_download</login>

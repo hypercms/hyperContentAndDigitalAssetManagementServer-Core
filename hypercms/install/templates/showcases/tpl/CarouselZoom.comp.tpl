@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template>
 <name>CarouselZoom</name>
-<user>hypercms</user>
+<user>admin</user>
 <category>comp</category>
 <extension>php</extension>
 <application>php</application>
@@ -50,31 +50,31 @@ scriptend]
 			<br />
 			<table>
 				<tr>
-					<td>Picture / Folder</td><td><img src="[hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' thumbnail='yes']" /></td>
+					<td>Select Picture / Folder <!-- [hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' onPublish='hidden'] --></td><td><img src="[hyperCMS:mediafile id='picture' label='Picture (folder)' mediatype='image' thumbnail='yes' onEdit='hidden']" /></td>
 				</tr>
 				<tr>
-					<td>Amount of pictures</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='numOfPicture' label='Amount of pictures' constraint='isNum' height='15' width='100']</div></td>
+					<td>Amount of pictures</td><td><div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textu id='numOfPicture' label='Amount of pictures' constraint='isNum' height='15' width='100']</div></td>
 				</tr>
 				<tr>
-					<td>Width of preview</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='imageContainer_width' label='Width of preview' constraint='isNum' default='320' height='15' width='100']px</div></td>
+					<td>Width of preview</td><td><div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textu id='imageContainer_width' label='Width of preview' constraint='isNum' default='320' height='15' width='100']</div> px</td>
 				</tr>
 				<tr>
-					<td>Height of preview</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='imageContainer_height' label='Height of preview' constraint='isNum' default='260' height='15' width='100']px</div></td>
+					<td>Height of preview</td><td><div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textu id='imageContainer_height' label='Height of preview' constraint='isNum' default='260' height='15' width='100']</div> px</td>
 				</tr>
 				<tr>
-					<td>Width of zoom-window</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='zoomWindow_width' label='Width of zoom-window' constraint='isNum' default='800' height='15' width='100']px</div></td>
+					<td>Width of zoom-window</td><td><div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textu id='zoomWindow_width' label='Width of zoom-window' constraint='isNum' default='800' height='15' width='100']</div> px</td>
 				</tr>
 				<tr>
-					<td>Height of zoom-window</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='zoomWindow_height' label='Height of zoom-window' constraint='isNum' default='600' height='15' width='100']px</div></td>
+					<td>Height of zoom-window</td><td><div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textu id='zoomWindow_height' label='Height of zoom-window' constraint='isNum' default='600' height='15' width='100']</div> px</td>
 				</tr>
 				<tr>
-					<td>Border of zoom-window</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='zoomWindow_border' label='Border of zoom-window' constraint='isNum' default='1' height='15' width='100']px</div></td>
+					<td>Border of zoom-window</td><td><div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textu id='zoomWindow_border' label='Border of zoom-window' constraint='isNum' default='1' height='15' width='100']</div> px</td>
 				</tr>
 				<tr>
-					<td>Height of thumbnails</td><td><div style="margin-left: 27px;">[hyperCMS:textu id='thumbnails_height' label='Height of thumbnails' constraint='isNum' default='80' height='15' width='100']px</div></td>
+					<td>Height of thumbnails</td><td><div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textu id='thumbnails_height' label='Height of thumbnails' constraint='isNum' default='80' height='15' width='100']</div> px</td>
 				</tr>
 				<tr>
-					<td>&nbsp;</td><td><div style="margin-left: 27px;"><button class="hcmsButtonGreen" type="button" onClick="location.reload();" >generate code</button></div></td>
+					<td>&nbsp;</td><td><button class="hcmsButtonGreen" type="button" onClick="location.reload();" >generate code</button></td>
 				</tr>
 			</table>
 			<p>
@@ -111,7 +111,7 @@ scriptend]
 			Mark and copy the code from the text area box (keys ctrl + A and Ctrl + C for copy or right mouse button -> copy).  insert this code into your HTML Body of the page, where the image-zoom will be integrated (keys Crtl + V or right mouse button -> insert).
 			<br />
 			<br />
-			<textarea id="codesegment" wrap="VIRTUAL" style="height:250px; width:98%">[hyperCMS:scriptbegin echo html_encode($embed_code); scriptend]</textarea>
+			<textarea id="codesegment" wrap="VIRTUAL" style="height:140px; width:98%">[hyperCMS:scriptbegin echo html_encode($embed_code); scriptend]</textarea>
 		</div>
 	</body>
 </html>

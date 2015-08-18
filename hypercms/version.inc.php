@@ -926,8 +926,28 @@ release 09/2015
 - bug fix: page_multiedit did not set UTF-8 as character set for multimedia objects
 - bug fix: implementation of natural case sort for media_edit_explorer
 - bug fix: template media preview provided by function showmedia dit not present any information of template media files
+
+version 5.7.12
+release 10/2015
+- improved graphics for flat design theme
+- improved CX-showcase-template for zoom viewer in the installation directory
+- improved CX-showcase-template for 360 degree viewer in the installation directory
+- improved CX-showcase-template for gallery viewer in the installation directory
+- implementation of new home box with the favorites of a user
+- changed function createinstance to support username of user account and create the user as superuser
+- bug fix: function createinstance did not check for special characters in the instance name
+- bug fix: function createinstance tested the CMS config directory for wriote permissions and not the instance directory
+- bug fix: function copyrecursive did not verify file handler
+- changed setting of strongpassword for new instances to false
+- bug fix: function registerinstance refered to config and not to the instance directory
+- bug fix: include of session had to be relocated to API loader in order to load the instance configuration file
+- bug fix: instances setting of main configuration file has not been set in instance configuration file by function createinstance
+- improvements in keyword plugin
+- bug fix: function _loadSiteConfig did not check if config file exists which can cause a fatal error if a publication has been deleted
+- bug fix: JS function setVTTtime used wrong player id
+- bug fix: function showmedia did not provide preview of PSD files
 */
 
 // current version
-$version = "Version 5.7.11";
+$version = "Version 5.7.12";
 ?>

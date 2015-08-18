@@ -15,6 +15,7 @@ createsession ();
 
 // instance parameter
 $instance =  getsession ("hcms_instance");
+
 // user parameter
 $user =  getsession ("hcms_user");
 $passwd =  getsession ("hcms_passwd");

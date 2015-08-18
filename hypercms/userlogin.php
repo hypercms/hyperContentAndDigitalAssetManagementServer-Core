@@ -27,7 +27,7 @@ $sentinstance = getrequest ("sentinstance", "publicationname");
 
 // register instance in session and load main config of instance
 registerinstance ($sentinstance);
-  
+
 // input parameters (standard logon)
 $sentuser = getrequest ("sentuser", "objectname");
 $sentpasswd = getrequest ("sentpasswd");
@@ -222,7 +222,7 @@ if (checkuserip (getuserip ()) == true)
     setsession ('hcms_superadmin', $login_result['superadmin']);
     setsession ('hcms_lang', $login_result['lang']);
     setsession ('hcms_hiddenfolder', $login_result['hiddenfolder']);
-    
+
     // register download formats in case of an access link
     if (!empty ($hcms_objformats)) setsession ('hcms_downloadformats', $hcms_objformats);
     

@@ -399,7 +399,7 @@ $mgmt_config['docviewer'] = true;
 // Strong Passwords
 // Enable (true) or disable (false) strong passwords for users
 // If enabled, passwords will be checked regarding minimum security requirements
-$mgmt_config['strongpassword'] = true;
+$mgmt_config['strongpassword'] = false;
 
 // Encryption
 // Encryption strength (weak, standard, strong)
@@ -428,8 +428,8 @@ $mgmt_config['token_lifetime'] = 86400;
 // Instances
 // Instances don't share the same database, internal and external repository.
 // Enable multiple hyperCMS instances by providing a path to the instance configuration directory.
-// For distributed systems the directory must be located on a central resource can be accessed by every system node.
-$mgmt_config['instances'] = "";
+// For distributed systems the directory must be located on a central resource that can be accessed by every system node.
+$mgmt_config['instances'] = "%instances%";
 
 // Enable writing of session data for third party load balancers in order to enable session synchronization
 $mgmt_config['writesessiondata'] = false;

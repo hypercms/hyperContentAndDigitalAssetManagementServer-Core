@@ -958,7 +958,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
 
         $memberofnode = getcontent ($usernode[0], "<memberof>");
       }
-      
+
       // check logon
       if ($hash == $result['userhash'] || ($user == $fileuser && ($filepasswd == $passwd_crypted || $ignore_password)))
       {
@@ -1392,18 +1392,16 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
 function registerinstance ($instance, $load_config=true)
 {
   global $mgmt_config;
-  
-  if ($mgmt_config['instances'] && !empty ($instance))
+
+  if (!empty ($mgmt_config['instances']) && $instance != "")
   {
-    if (valid_publicationname ($instance) && is_file ("config/".$instance.".inc.php"))
+    if (valid_publicationname ($instance) && is_file ($mgmt_config['instances'].$instance.".inc.php"))
     {
       $_SESSION['hcms_instance'] = $instance;
-      
-      
-  
-      // reload management configuration
-      if ($load_config) require ($mgmt_config['abs_path_cms']."/config.inc.php");
-      
+
+      // load management configuration of instance
+      if ($load_config) require ($mgmt_config['instances'].$instance.".inc.php");
+
       return true;
     }
     else return false;
@@ -1564,7 +1562,7 @@ function createsession ()
   // start session
   session_name ("hyperCMS");
   session_start ();
-  
+
   // session is not valid or data directory is missing
   if (!valid_objectname (session_id()))
   {
@@ -1581,7 +1579,7 @@ function createsession ()
     $session_file = $mgmt_config['abs_path_data']."session/".session_id().".dat";
     
     $session_time = (!empty ($_SESSION['hcms_temp_sessiontime']) ? $_SESSION['hcms_temp_sessiontime'] : 0);
-    
+
     // check if session file exists and is newer than the existing session data
     if (is_file ($session_file) && filemtime ($session_file) > $session_time)
     {

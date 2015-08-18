@@ -615,18 +615,22 @@ function copyrecursive ($src, $dst)
   $dir = opendir ($src);
   if (!is_dir ($dst)) @mkdir ($dst);
   
-  while (false !== ($file = readdir ($dir)))
+  if ($dir)
   {
-    if (($file != '.') && ($file != '..'))
+    while (false !== ($file = readdir ($dir)))
     {
-      if (is_dir ($src.$file)) $result = copyrecursive ($src.$file."/", $dst.$file."/");
-      else $result = copy ($src.$file, $dst.$file);
-      
-      if ($result == false) break;
+      if (($file != '.') && ($file != '..'))
+      {
+        if (is_dir ($src.$file)) $result = copyrecursive ($src.$file."/", $dst.$file."/");
+        else $result = copy ($src.$file, $dst.$file);
+        
+        if ($result == false) break;
+      }
     }
+    
+    closedir ($dir);
   }
   
-  closedir ($dir);
   return $result;
 } 
 
@@ -5295,7 +5299,7 @@ function createinstance ($instance_name, $settings, $user="sys")
   if (
        empty ($mgmt_config['instances']) || 
        empty ($mgmt_config['abs_path_cms']) || !is_dir ($mgmt_config['abs_path_cms']) ||
-       !valid_publicationname ($instance_name) || strlen ($instance_name) > 100 || 
+       !valid_publicationname ($instance_name) || strlen ($instance_name) > 100 || specialchr ($instance_name, "-_") || 
        empty ($settings['abs_path_data']) || empty ($settings['abs_path_rep']) || 
        empty ($settings['password']) || empty ($settings['confirm_password']) || 
        !isset ($settings['realname']) || empty ($settings['language']) || empty ($settings['email']) || 
@@ -5319,13 +5323,13 @@ function createinstance ($instance_name, $settings, $user="sys")
     $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
   }
   // check write permissions in CMS
-  elseif (!is_writeable ($mgmt_config['abs_path_cms']."config/") || !is_writeable ($mgmt_config['abs_path_temp']) || !is_writeable ($mgmt_config['abs_path_view']))
+  elseif (!is_writeable ($mgmt_config['instances']) || !is_writeable ($mgmt_config['abs_path_temp']) || !is_writeable ($mgmt_config['abs_path_view']))
   {
     $add_onload = "";
     $show = "<span class=hcmsHeadline>".$hcms_lang['you-do-not-have-write-permissions'][$lang]."</span>\n";
   }
   // check if instance name exists already
-  elseif (is_file ($mgmt_config['abs_path_cms']."config/".trim ($instance_name).".inc.php"))
+  elseif (is_file ($mgmt_config['instances'].trim ($instance_name).".inc.php"))
   {
     $add_onload = "";
     $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
@@ -5449,6 +5453,8 @@ function createinstance ($instance_name, $settings, $user="sys")
         
         $config = str_replace ("%os_cms%", $mgmt_config['os_cms'], $config);
         
+        $config = str_replace ("%instances%", $mgmt_config['instances'], $config);
+        
         $config = str_replace ("%pdftotext%", $mgmt_parser['.pdf'], $config);
         $config = str_replace ("%antiword%", $mgmt_parser['.doc'], $config);
         $config = str_replace ("%gunzip%", $mgmt_uncompress['.gz'], $config);
@@ -5506,14 +5512,25 @@ function createinstance ($instance_name, $settings, $user="sys")
       }
     }
 
-    // edit admin user
+    // create admin user
     if ($show == "")
     {
       // load new config before manipulating user
       require ($mgmt_config['instances'].$instance_name.".inc.php");
     
-      $result = edituser ("*Null*", "admin", "", $settings['password'], $settings['confirm_password'], "1", $settings['realname'], $settings['language'], "standard", $settings['email'], "", "", "", $user);
+      if (!empty ($settings['user'])) $username = $settings['user'];
+      else $username = "admin";
+      
+      // create admin user
+      $result = createuser ("*Null*", $username, $settings['password'], $settings['confirm_password'], $user);
       if ($result['result'] == false) $show = "<span class=hcmsHeadline>".$result['message']."</span><br />\n";
+    
+      // edit admin user
+      if ($show == "")
+      {
+        $result = edituser ("*Null*", $username, "", $settings['password'], $settings['confirm_password'], "1", $settings['realname'], $settings['language'], "standard", $settings['email'], "", "", "", $user);
+        if ($result['result'] == false) $show = "<span class=hcmsHeadline>".$result['message']."</span><br />\n";
+      }
     }
 
     // new instance was successfully created
@@ -7608,7 +7625,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
  
   $add_onload = "";
   $show = "";
-  
+
   // set default language
   if ($lang == "") $lang = "en";
   
@@ -7662,7 +7679,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
     
     // load user xml file
     $userdata = loadlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", 5);
-    
+
     if ($userdata != false)
     {
       // Updates in XML nodes:

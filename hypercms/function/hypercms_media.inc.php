@@ -809,7 +809,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   }                  
                 }
                 else $watermark = "";
-  
+
                 // -------------------- convert image using ImageMagick ----------------------
                 if (!empty ($mgmt_imagepreview[$imagepreview_ext]) && $mgmt_imagepreview[$imagepreview_ext] != "GD")
                 {
@@ -828,7 +828,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // delete the old file if we overwrite the original file
                     if ($type == "original") @unlink ($location_source.$file);
                   }
-  
+
                   // DOCUMENT & VECTOR Graphics: document-based formats, encapsulated post script and vector graphics
                   if ($file_ext == ".pdf" || $file_ext == ".eps" || $file_ext == ".svg")
                   {
@@ -913,10 +913,17 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       }
                       else
                       {
-                         $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -flatten \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                        // split layers into files if type is view (used for image editing)
+                        // if (substr_count ($type, "view.") > 0)
+                        // {
+                        //   $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                        //   @exec ($cmd, $buffer, $errorCode);
+                        // }
+                        
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."\" -flatten ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                       }
                     }
-      
+
                     @exec ($cmd, $buffer, $errorCode);
       
                     // on error

@@ -1251,7 +1251,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               ";
               // if VIDEO-JS
               else $mediaview .= "
-              var player = videojs(\"hcms_mediaplayer_cut_video\");
+              var player = videojs(\"hcms_mediaplayer_cut\");
               var time = player.currentTime();
               ";
               $mediaview .= "

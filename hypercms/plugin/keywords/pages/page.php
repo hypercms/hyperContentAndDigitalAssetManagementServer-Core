@@ -248,9 +248,9 @@ if (is_file ($keywordfile))
 <!-- top bar -->
 <?php echo showtopbar ($text0[$lang], $lang); ?>
 
-<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
-  <div id="scrollFrame" style="width:98%; height:700px; overflow:auto;">
-  
+
+<div id="scrollFrame" style="width:98%; height:95%; overflow:auto;">
+  <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
   <?php echo showmessage ($show, 560, 120, $lang, "position:absolute; left:15px; top:15px;"); ?>
   
   <?php if ($regenerate) { ?>
