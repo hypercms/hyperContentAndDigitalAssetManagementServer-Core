@@ -1,5 +1,0 @@
-Options +FollowSymlinks
-#ErrorDocument 404 /cms/webdav/index.php
-RewriteEngine on
-RewriteCond %{REQUEST_URI} !^index.php
-RewriteRule ^(.+)$ index.php [L]  
