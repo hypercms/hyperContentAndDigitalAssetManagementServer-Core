@@ -909,7 +909,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
   
                       if ($crop_mode)
                       {
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -flatten -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($location_dest.$file_name).".buffer.jpg\" ".$imageBrightnessContrast." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."\" -flatten -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." ".$imageBrightnessContrast." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                       }
                       else
                       {
@@ -987,7 +987,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         $imageresize = "-resize ".round ($imagewidth_orig, 0)."x".round ($imageheight_orig, 0);
                       }
                        
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     else
                     {
@@ -996,11 +996,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                           
                       if ($crop_mode)
                       {
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                       }
                       else
                       {
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." -size ".$imagewidth."x".$imageheight." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                       }
                     }
   

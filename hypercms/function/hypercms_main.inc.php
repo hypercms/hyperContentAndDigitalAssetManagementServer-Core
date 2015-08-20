@@ -16895,7 +16895,13 @@ function notifyusers ($site, $location, $object, $event, $user_from)
               if (!empty ($temp[0])) $lang = $temp[0];
               else $lang = "en";
             }
-            
+
+            // load language of user if it has not been loaded
+            if (!empty ($lang) && empty ($hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang]))
+            {
+              require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+            }
+
             if ($email_to != "")
             {
               // text options
@@ -16933,7 +16939,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
               $mail_fullbody .= ": ".$object_name;
               if ($accesslink != "") $mail_fullbody .=  " (".$accesslink.")";          
               $mail_fullbody .= "\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang];
-             
+          
               $mailer = new HyperMailer();
              
               // if the mailserver config entry is empty, the email address of the user will be used for FROM

@@ -74,7 +74,7 @@ function adjust_width ()
   <table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
     <tr> 
       <td width="5">&nbsp;</td>
-      <td width="320" align="left" valign="middle" nowrap="nowrap"><a href="javascript:openInfo();"><img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.gif"; ?>" border="0" align="absmiddle" title="hyper Content Management Server" alt="hyper Content Management Server" /></a></td>
+      <td width="320" align="left" valign="middle" nowrap="nowrap"><a href="javascript:openInfo();"><img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" border="0" align="absmiddle" title="hyper Content Management Server" alt="hyper Content Management Server" /></a></td>
       <td nowrap="nowrap">&nbsp;</td>
       <td align="right" valign="middle" nowrap="nowrap"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>: </span><span class="hcmsHeadlineTiny hcmsTextWhite"><?php echo getsession ('hcms_user'); ?></span></td>
       <td width="30" nowrap="nowrap">&nbsp;&nbsp;</td>
