@@ -949,6 +949,8 @@ release 10/2015
 - bug fix: function createmedia used the crop option before the source PSD file which led to a wrong result
 - bug fix: function notifyusers did not load the language of a recipient
 - bug fix: frameset_main_linking used deprecated logo file
+- improvements in user_sendlink
+- implementation of language loader for function createtask, notifyuser and licensenotification 
 */
 
 // current version

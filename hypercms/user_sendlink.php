@@ -250,7 +250,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
             // real name
             $buffer_array = getcontent ($mail_sender_array[0], "<realname>");
             
-            if ($buffer_array != false && $buffer_array[0] != "")
+            if (!empty ($buffer_array[0]))
             {
               $realname_from = $buffer_array[0];
             }
@@ -259,19 +259,20 @@ if ($intention == "sendmail" && checktoken ($token, $user))
             // email
             $buffer_array = getcontent ($mail_sender_array[0], "<email>");
             
-            if ($buffer_array != false && $buffer_array[0] != "")
+            if (!empty ($buffer_array[0]))
             {
               $email_from = $buffer_array[0];
             }
-            else
+            elseif (!empty ($mgmt_config[$site]['mailserver']))
             {
               $email_from = "automailer@".$mgmt_config[$site]['mailserver'];
             }
+            else $email_from = "automailer@hypercms.net";
             
             // signature
             $buffer_array = getcontent ($mail_sender_array[0], "<signature>");
             
-            if ($buffer_array != false && $buffer_array[0] != "")
+            if (!empty ($buffer_array[0]))
             {
               $mail_signature = $buffer_array[0];              
             }
@@ -288,9 +289,14 @@ if ($intention == "sendmail" && checktoken ($token, $user))
           $mailer->From = $email_from;
           $mailer->FromName = $realname_from;
         }
-        else
+        elseif (!empty ($mgmt_config[$site]['mailserver']))
         {
           $mailer->From = "automailer@".$mgmt_config[$site]['mailserver'];
+          $mailer->FromName = "hyperCMS Automailer";
+        }
+        else
+        {
+          $mailer->From = "automailer@hypercms.net";
           $mailer->FromName = "hyperCMS Automailer";
         }
         
@@ -561,7 +567,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
           // real name
           $buffer_array = getcontent ($mail_sender_array[0], "<realname>");
           
-          if ($buffer_array != false && $buffer_array[0] != "")
+          if (!empty ($buffer_array[0]))
           {
             $realname_from = $buffer_array[0];
           }
@@ -570,19 +576,20 @@ if ($intention == "sendmail" && checktoken ($token, $user))
           // email
           $buffer_array = getcontent ($mail_sender_array[0], "<email>");
           
-          if ($buffer_array != false && $buffer_array[0] != "")
+          if (!empty ($buffer_array[0]))
           {
             $email_from = $buffer_array[0];
           }
-          else
+          elseif (!empty ($mgmt_config[$site]['mailserver']))
           {
             $email_from = "automailer@".$mgmt_config[$site]['mailserver'];
           }
+          else $email_from = "automailer@hypercms.net";
           
           // signature
           $buffer_array = getcontent ($mail_sender_array[0], "<signature>");
           
-          if ($buffer_array != false && $buffer_array[0] != "")
+          if (!empty ($buffer_array[0]))
           {
             $mail_signature = $buffer_array[0];           
           }
@@ -604,7 +611,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
             // real name
             $buffer_array = getcontent ($mail_receiver_array[0], "<realname>");
             
-            if ($buffer_array != false && $buffer_array[0] != "")
+            if (!empty ($buffer_array[0]))
             {
               $realname_to = $buffer_array[0];
             }
@@ -612,7 +619,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
             // email
             $buffer_array = getcontent ($mail_receiver_array[0], "<email>");
             
-            if ($buffer_array != false && $buffer_array[0] != "")
+            if (!empty ($buffer_array[0]))
             {
               $email_to = $buffer_array[0];
             }
@@ -624,7 +631,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
             // language
             $buffer_array = getcontent ($mail_receiver_array[0], "<language>");
             
-            if ($buffer_array != false && $buffer_array[0] != "")
+            if (!empty ($buffer_array[0]))
             {
               $user_lang = $buffer_array[0];
 
@@ -822,9 +829,14 @@ if ($intention == "sendmail" && checktoken ($token, $user))
               $mailer->From = $email_from;
               $mailer->FromName = $realname_from;
             }
-            else
-            { 
+            elseif (!empty ($mgmt_config[$site]['mailserver']))
+            {
               $mailer->From = "automailer@".$mgmt_config[$site]['mailserver'];
+              $mailer->FromName = "hyperCMS Automailer";
+            }
+            else
+            {
+              $mailer->From = "automailer@hypercms.net";
               $mailer->FromName = "hyperCMS Automailer";
             }
             
