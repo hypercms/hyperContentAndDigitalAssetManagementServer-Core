@@ -928,7 +928,7 @@ release 09/2015
 - bug fix: template media preview provided by function showmedia dit not present any information of template media files
 
 version 5.7.12
-release 10/2015
+release 09/2015
 - improved graphics for flat design theme
 - improved CX-showcase-template for zoom viewer in the installation directory
 - improved CX-showcase-template for 360 degree viewer in the installation directory
@@ -950,9 +950,15 @@ release 10/2015
 - bug fix: function notifyusers did not load the language of a recipient
 - bug fix: frameset_main_linking used deprecated logo file
 - improvements in user_sendlink
-- implementation of language loader for function createtask, notifyuser and licensenotification 
+- implementation of language loader for function createtask, notifyuser and licensenotification
+
+version 5.7.13
+release 10/2015
+- improvements in workflow_manager
+- improvements in user_sendlink
+- improvements in user_objectlist
 */
 
 // current version
-$version = "Version 5.7.12";
+$version = "Version 5.7.13";
 ?>

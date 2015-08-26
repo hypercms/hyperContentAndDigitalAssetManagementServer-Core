@@ -345,8 +345,9 @@ if (isset ($stage_max) && $stage_max >= 0)
                      
                   if ($id == "u.1") 
                   {
-                    if ($wfuser == "") $selected = " selected=\"selected\"";
+                    if (empty ($wfuser)) $selected = " selected=\"selected\"";
                     else $selected = "";
+                    
                     echo "<option value=\"\" ".$selected.">".getescapedtext ($hcms_lang['automatic-select'][$lang])."</option>\n"; 
                   }                    
               
@@ -372,8 +373,9 @@ if (isset ($stage_max) && $stage_max >= 0)
                      
                   if ($id == "u.1") 
                   {
-                    if ($wfgroup == "") $selected = " selected=\"selected\"";
+                    if (empty ($wfgroup)) $selected = " selected=\"selected\"";
                     else $selected = "";
+                    
                     echo "<option value=\"\" ".$selected.">".getescapedtext ($hcms_lang['automatic-select'][$lang])."</option>\n"; 
                   }                    
               

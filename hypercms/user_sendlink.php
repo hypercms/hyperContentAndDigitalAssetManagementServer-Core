@@ -92,12 +92,12 @@ function getallusers ()
   global $groupdata, $userdata, $alluseritem_array, $alluser_array, $allemail_array, $allrealname_array, $allgroup_array, $mgmt_config, $site;
   
   // load usergroup data
-  if ($groupdata == "" && valid_publicationname ($site)) $groupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");  
+  if (empty ($groupdata) && valid_publicationname ($site)) $groupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");  
   
   if ($groupdata != false) $allgroup_array = getcontent ($groupdata, "<groupname>");  
   
   // load user data
-  if ($userdata == "") $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");  
+  if (empty ($userdata)) $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");  
                     
   if ($userdata != false)
   {
@@ -284,7 +284,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
         $mailer->CharSet = $hcms_lang_codepage[$lang];
         
         // if the mailserver config entry is empty, the email address of the user will be used for FROM
-        if ($email_from != "" && $mgmt_config[$site]['mailserver'] == "")
+        if (!empty ($email_from) && $mgmt_config[$site]['mailserver'] == "")
         {
           $mailer->From = $email_from;
           $mailer->FromName = $realname_from;
@@ -824,7 +824,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
             // if the mailserver config entry is empty, the email address of the user will be used for FROM
             $mail_header = "";
             
-            if ($email_from != "" && $mgmt_config[$site]['mailserver'] == "")
+            if (!empty ($email_from) && $mgmt_config[$site]['mailserver'] == "")
             {
               $mailer->From = $email_from;
               $mailer->FromName = $realname_from;

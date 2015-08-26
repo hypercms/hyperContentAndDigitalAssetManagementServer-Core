@@ -39,7 +39,7 @@ checkusersession ($user);
 $token = createtoken ($user);
 
 // default value for inital max items in list
-if ($mgmt_config['explorer_list_maxitems'] == "") $mgmt_config['explorer_list_maxitems'] = 100; 
+if (empty ($mgmt_config['explorer_list_maxitems'])) $mgmt_config['explorer_list_maxitems'] = 100; 
 
 // define next max number of items on the list 
 if ($next != "" && is_numeric ($next)) $next_max = $next + $mgmt_config['explorer_list_maxitems'];
