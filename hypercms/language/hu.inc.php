@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['hu'] = "Előnézeti ablak";
 $hcms_lang['click-here-to-viewdownload-the-file']['hu'] = "Küldés a chat";
 $hcms_lang['file-extracted-succesfully']['hu'] = "Kivont fájl exportálása sikeresen megtörtént";
 $hcms_lang['date-created']['hu'] = "Létrehozás dátuma";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['hu'] = "Biztos, hogy törölni szeretné ezt a felhasználót?";
 $hcms_lang['html-body-segment']['hu'] = "HTML-szakasz karosszéria";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['hu'] = "Mark és másolja be a kódot a szövegben területen box (billentyűk ctrl + A és Ctrl + C másolás vagy jobb egérgombbal -> másolás). Helyezze be ezt a kódot a HTML vezetője az oldalra, ahol a video lejátszó lesz integrálva (billentyűk a Ctrl + V, vagy jobb egérgombbal -> insert).";
 $hcms_lang['html-head-segment']['hu'] = "HTML head szegmens";

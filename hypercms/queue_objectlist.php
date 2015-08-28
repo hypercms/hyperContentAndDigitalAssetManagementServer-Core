@@ -155,23 +155,6 @@ function confirm_delete ()
   return confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-this-entry'][$lang]); ?>"));
 }
 
-function getdoc_height ()
-{
-	if (self.innerHeight) // all except Explorer
-	{
-		return self.innerHeight;
-	}
-	else if (document.documentElement && document.documentElement.clientHeight) // Explorer 6 Strict Mode	
-	{
-		return document.documentElement.clientHeight;
-	}
-	else if (document.body) // other Explorers
-	{
-		return document.body.clientHeight;
-	}
-  else return false;
-}
-
 function buttonaction (action)
 {
   multiobject = document.forms['contextmenu_queue'].elements['multiobject'].value;
@@ -181,19 +164,11 @@ function buttonaction (action)
   else if (action == "delete" && object != "") return true;
   else return false;
 }
-
-function adjust_height ()
-{
-  height = getdoc_height();
-  
-  setheight = height - 20 - 30;
-  document.getElementById('objectLayer').style.height = setheight + "px";
-}
 //-->
 </script>
 </head>
 
-<body id="hcmsWorkplaceObjectlist" style="overflow:hidden;" class="hcmsWorkplaceObjectlist" onload="adjust_height();" onresize="adjust_height();">
+<body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" style="overflow:hidden;">
 
 <div id="contextLayer" style="position:absolute; width:150px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_queue" method="post" action="" target="">
@@ -228,7 +203,7 @@ function adjust_height ()
   </form>
 </div>
 
-<div id="detailviewLayer" style="position:absolute; top:0px; left:0px; margin:0; padding:0; width:100%; height:100%; z-index:3; visibility:visible;">
+<div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; margin:0px; padding:0px; width:100%; z-index:3; visibility:visible;">
   <table cellpadding="0" cellspacing="0" cols="6" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
       <td width="180" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
@@ -257,7 +232,7 @@ function adjust_height ()
     </tr>
   </table>
   
-  <div id="objectLayer" style="position:absolute; width:100%; height:100%; top:20px; left:0px; margin:0; padding:0; z-index:2; visibility:visible; overflow:scroll;">
+  <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:30px; margin:0px; padding:0px; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
     <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" cols="6" style="border:0; width:100%; table-layout:fixed;">
     <?php 
     echo $listview;
@@ -272,7 +247,7 @@ if ($objects_counted >= $next_max)
 {
 ?>
 <!-- status bar incl. more button -->
-<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="window.location.href='<?php echo $_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&next=".url_encode($objects_counted); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['sionhcms_lang'][$lang]); ?>">
+<div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0px; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="window.location.href='<?php echo $_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&next=".url_encode($objects_counted); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['sionhcms_lang'][$lang]); ?>">
   <div style="padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
   <div style="margin-left:auto; margin-right:auto; text-align:center; padding-top:3px;"><img src="<?php echo getthemelocation(); ?>img/button_explorer_more.gif" style="border:0;" alt="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" /></div>
 </div>
@@ -282,19 +257,12 @@ else
 {
 ?>
 <!-- status bar -->
-<div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
+<div id="StatusBar" class="hcmsStatusbar" style="position:fixed; bottom:0px; width:100%; height:30px; z-index:3; visibility:visible; text-align:left;" onMouseOver="hcms_hideContextmenu();">
     <div style="margin:auto; padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
 </div>
 <?php
 }
 ?>
-
-<!-- adjust height -->
-<script language="JavaScript">
-<!--
-adjust_height();
-//-->
-</script>
 
 </body>
 </html>

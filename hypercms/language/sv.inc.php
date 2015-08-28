@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['sv'] = "Fönstret Förhandsgranska";
 $hcms_lang['click-here-to-viewdownload-the-file']['sv'] = "Skicka till chatt";
 $hcms_lang['file-extracted-succesfully']['sv'] = "Filen extraheras brandväggarna";
 $hcms_lang['date-created']['sv'] = "Skapad datum";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['sv'] = "Är du säker på att du vill ta bort den här användaren?";
 $hcms_lang['html-body-segment']['sv'] = "HTML-segment";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['sv'] = "Markera och kopiera koden i textfältet (nycklar ctrl + A och Ctrl + C för att kopiera eller högerklicka -> kopiera).  Sätt in denna kod i din HTML-huvudet på sidan, där den video-spelare kommer att vara integrerade (nycklar Ctrl + V eller högerklicka -> infoga).";
 $hcms_lang['html-head-segment']['sv'] = "HTML-huvud segment";

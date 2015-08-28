@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['uk'] = "Вікно попереднього пер
 $hcms_lang['click-here-to-viewdownload-the-file']['uk'] = "Надіслати чат";
 $hcms_lang['file-extracted-succesfully']['uk'] = "Файл витягнуто ідентифікатор";
 $hcms_lang['date-created']['uk'] = "Дата створення";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['uk'] = "Ви впевнені, що хочете видалити цей користувач?";
 $hcms_lang['html-body-segment']['uk'] = "HTML-сегменті тіла";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['uk'] = "Марка і скопіюйте код з тексту області скринька (клавіші Ctrl + A і Ctrl + C для копіювання або клацання правою кнопкою миші -> Копіювати).  Вставте цей код в свій HTML голова сторінки, де будуть інтегровані відео програвача (клавіші Crtl + V або правою кнопкою миші -> Вставити).";
 $hcms_lang['html-head-segment']['uk'] = "Керівник сегменту HTML";

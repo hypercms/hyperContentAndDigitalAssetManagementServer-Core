@@ -672,21 +672,11 @@ function sendtochat (text)
     chat.send(text, username);
   }
 }
-
-function adjust_height ()
-{
-  var height = hcms_getDocHeight();  
-  
-  var setheight = height - 20 - 30;
-  document.getElementById('objectLayer').style.height = setheight + "px";
-  setheight = height - 30;
-  document.getElementById('galleryviewLayer').style.height = setheight + "px";
-}
 //-->
 </script>
 </head>
 
-<body id="hcmsWorkplaceObjectlist" style="overflow:hidden;" class="hcmsWorkplaceObjectlist" onresize="adjust_height();">
+<body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" style="overflow:hidden;">
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang], $lang, 3, "position:fixed; top:30px; right:30px;"); ?>
 
@@ -785,7 +775,7 @@ function adjust_height ()
 </div>
 
 <!-- Detail View -->
-<div id="detailviewLayer" style="position:absolute; top:0px; left:0px; margin:0; padding:0; width:100%; height:100%; z-index:1; visibility:visible;">
+<div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; margin:0; padding:0; width:100%; z-index:1; visibility:visible;">
   <table cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
       <td width="360" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
@@ -808,7 +798,7 @@ function adjust_height ()
     </tr>
   </table>
 
-  <div id="objectLayer" style="position:absolute; top:20px; left:0px; margin:0; padding:0; width:100%; height:100%; z-index:2; visibility:visible; overflow:scroll;">
+  <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:30px; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
     <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; table-layout:fixed;">
     <?php 
     echo $listview;
@@ -819,7 +809,7 @@ function adjust_height ()
 </div>
 
 <!-- Gallery View -->
-<div id="galleryviewLayer" style="position:absolute; top:0px; left:0px; margin:0; padding:0; width:100%; height:100%; z-index:1; visibility:hidden; overflow:scroll;">
+<div id="galleryviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; margin:0; padding:0; width:100%; z-index:1; visibility:hidden; overflow-y:scroll;">
 <?php
 if ($galleryview != "")
 {
@@ -867,7 +857,6 @@ else
 <script language="JavaScript">
 <!--
 toggleview (explorerview);
-adjust_height();
 //-->
 </script>
 

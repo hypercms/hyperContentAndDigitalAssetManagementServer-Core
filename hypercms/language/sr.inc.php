@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['sr'] = "Pregled prozor";
 $hcms_lang['click-here-to-viewdownload-the-file']['sr'] = "Upute za vrljanje";
 $hcms_lang['file-extracted-succesfully']['sr'] = "Dobijeni fajl uspješno je okončala projekat";
 $hcms_lang['date-created']['sr'] = "Datum stvoren";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['sr'] = "Jeste li sigurni da želite obrisati ovu korisnik?";
 $hcms_lang['html-body-segment']['sr'] = "HTML telo segment";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['sr'] = "Mark i primerak zakona iz oblasti tekst sadržaj (tasteri ctrl + i Ctrl + C za kopiranje ili pravo dugme miša -> copy).  Umetanje naslova ovaj kod u vaš HTML Šef stranice, gdje je video plejer će biti ugrađen (tasteri Crtl + V ili kliknite desnim tasterom Vašeg miša -> umetanje).";
 $hcms_lang['html-head-segment']['sr'] = "HTML šef segment";

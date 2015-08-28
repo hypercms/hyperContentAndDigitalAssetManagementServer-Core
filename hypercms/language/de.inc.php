@@ -1274,7 +1274,6 @@ $hcms_lang['preview-window']['de'] = "Vorschaufenster";
 $hcms_lang['click-here-to-viewdownload-the-file']['de'] = "An Chat senden";
 $hcms_lang['file-extracted-succesfully']['de'] = "Datei wurde erfolgreich extrahiert";
 $hcms_lang['date-created']['de'] = "erstellt am";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['de'] = "Sind Sie sicher, dass Sie disen Benutzer entfernen möchten?";
 $hcms_lang['html-body-segment']['de'] = "HTML-Body Segment";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['de'] = "Markieren und kopieren Sie den Code aus dem Textfeld (Tasten Strg + A und Strg + C für Kopieren oder rechte Maustaste -> Kopieren). Fügen Sie danach das Codesegment in der gewünschten Seite im HTML Head ein (Tasten Strg + V oder rechte Maustaste -> Einfügen), um das Streaming Video/Audio zu integrieren.";
 $hcms_lang['html-head-segment']['de'] = "HTML-Head Segment";

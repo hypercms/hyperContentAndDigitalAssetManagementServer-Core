@@ -1273,7 +1273,6 @@ $hcms_lang['preview-window']['id'] = "Jendela Cuplikan";
 $hcms_lang['click-here-to-viewdownload-the-file']['id'] = "Kirim ke obrolan";
 $hcms_lang['file-extracted-succesfully']['id'] = "File diekstrak berhasil";
 $hcms_lang['date-created']['id'] = "Tanggal dibuat";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['id'] = "Anda yakin ingin menghapus pengguna ini?";
 $hcms_lang['html-body-segment']['id'] = "HTML segmen tubuh";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['id'] = "Markus dan menyalin kode dari kotak teks area (tombol ctrl + A dan Ctrl + C untuk menyalin atau ke kanan tombol mouse -> copy).  Masukkan kode ini ke dalam anda Kepala HTML pada halaman, di mana pemutar video akan diintegrasikan (tombol Crtl + V atau ke kanan tombol mouse -> memasukkan).";
 $hcms_lang['html-head-segment']['id'] = "Kepala HTML segmen";

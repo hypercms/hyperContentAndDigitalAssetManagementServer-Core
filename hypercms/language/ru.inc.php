@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['ru'] = "Окно предварительного 
 $hcms_lang['click-here-to-viewdownload-the-file']['ru'] = "Отправить чат";
 $hcms_lang['file-extracted-succesfully']['ru'] = "Извлеченный файл успешно";
 $hcms_lang['date-created']['ru'] = "Дата создания";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['ru'] = "Вы уверены, что хотите удалить этого пользователя?";
 $hcms_lang['html-body-segment']['ru'] = "HTML органа высокого уровня";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['ru'] = "Марк и скопировать код из окна текстового поля (клавиши Ctrl + A и Ctrl + C для копирования или правой кнопкой мыши -> Copy). Вставьте этот код в ваш HTML руководителя странице, где видео-плеер будет интегрирована (ключи Ctrl + V или правой кнопкой мыши -> вставить).";
 $hcms_lang['html-head-segment']['ru'] = "Заголовок HTML этап заседаний высокого уровня";

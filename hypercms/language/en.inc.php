@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['en'] = "Preview window";
 $hcms_lang['click-here-to-viewdownload-the-file']['en'] = "Send to chat";
 $hcms_lang['file-extracted-succesfully']['en'] = "File extracted succesfully";
 $hcms_lang['date-created']['en'] = "Date created";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['en'] = "Are you sure you wan\'t to delete this user?";
 $hcms_lang['html-body-segment']['en'] = "HTML body segment";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['en'] = "Mark and copy the code from the text area box (keys ctrl + A and Ctrl + C for copy or right mouse button -> copy). Insert this code into your HTML Head of the page, where the video player will be integrated (keys Crtl + V or right mouse button -> insert).";
 $hcms_lang['html-head-segment']['en'] = "HTML head segment";

@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['ko'] = "미리 보기 창";
 $hcms_lang['click-here-to-viewdownload-the-file']['ko'] = "채팅에 보내";
 $hcms_lang['file-extracted-succesfully']['ko'] = "성공적으로 압축 파일";
 $hcms_lang['date-created']['ko'] = "작성일";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['ko'] = "이 사용자를 삭제하시겠습니까?";
 $hcms_lang['html-body-segment']['ko'] = "HTML body 세그먼트";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['ko'] = "표시 및 복사 텍스트 영역 상자에서 키는 Ctrl + A, Ctrl + c 복사하거나 마우스 오른쪽 버튼 -> 복사) 코드. 이 코드는 페이지의 HTML 헤드, 비디오 플레이어(키 Crtl + V 또는 마우스 오른쪽 버튼 -> 넣으십시오) 통합되는 곳에 넣으십시오.";
 $hcms_lang['html-head-segment']['ko'] = "HTML 세그먼트 헤드";

@@ -236,35 +236,8 @@ else $objects_counted = 0;
 <!--
 function confirm_delete ()
 {
-  return confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-wan\t-to-delete-this-user'][$lang]); ?>"));
+  return confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-this-user'][$lang]); ?>"));
 }
-
-function getdoc_height ()
-{
-	if (self.innerHeight) // all except Explorer
-	{
-		return self.innerHeight;
-	}
-	else if (document.documentElement && document.documentElement.clientHeight) // Explorer 6 Strict Mode	
-	{
-		return document.documentElement.clientHeight;
-	}
-	else if (document.body) // other Explorers
-	{
-		return document.body.clientHeight;
-	}
-  else return false;
-}
-
-function adjust_height ()
-{
-  height = getdoc_height();
-  
-  setheight = height - 20 - 30;
-  document.getElementById('objectLayer').style.height = setheight + "px";
-}
-
-window.onresize = adjust_height;
 
 function buttonaction (action)
 {
@@ -286,7 +259,7 @@ var session_id = '<?php session_id(); ?>';
 </script>
 </head>
 
-<body class="hcmsWorkplaceObjectlist" onload="adjust_height();">
+<body class="hcmsWorkplaceObjectlist" style="overflow:hidden;">
 
 <div id="contextLayer" style="position:absolute; width:150px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_user" method="post" action="" target="">
@@ -321,7 +294,7 @@ var session_id = '<?php session_id(); ?>';
   </form>
 </div>
 
-<div id="detailviewLayer" style="position:absolute; top:0px; left:0px; width:100%; height:100%; z-index:1; visibility:visible;">
+<div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; width:100%; z-index:1; visibility:visible;">
   <table cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
       <td width="180" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
@@ -344,7 +317,7 @@ var session_id = '<?php session_id(); ?>';
     </tr>
   </table>
   
-  <div id="objectLayer" style="position:absolute; Top:20px; Left:0px; width:100%; height:100%; z-index:2; visibility:visible; overflow:scroll;">
+  <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:30px; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
     <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; table-layout:fixed;">
   <?php
   echo $listview;

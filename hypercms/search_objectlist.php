@@ -711,23 +711,13 @@ function sendtochat (text)
   }
 }
 
-function adjust_height ()
-{
-  height = hcms_getDocHeight();  
-  
-  setheight = height - 20;
-  document.getElementById('objectLayer').style.height = setheight + "px";
-  setheight = height;
-  document.getElementById('galleryviewLayer').style.height = setheight + "px";
-}
-
 // load control frame
 parent.frames['controlFrame'].location.href='control_objectlist_menu.php?virtual=1&from_page=search';
 //-->
 </script>
 </head>
 
-<body id="hcmsWorkplaceObjectlist" style="overflow:hidden;" class="hcmsWorkplaceObjectlist" onresize="adjust_height();">
+<body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" style="overflow:hidden;">
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang], $lang, 3, "position:fixed; top:30px; right:30px;"); ?>
 
@@ -788,7 +778,7 @@ parent.frames['controlFrame'].location.href='control_objectlist_menu.php?virtual
   </form>
 </div>
 
-<div id="detailviewLayer" style="position:absolute; top:0px; left:0px; width:100%; height:100%; z-index:1; visibility:visible;">
+<div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:0px; width:100%; z-index:1; visibility:visible;">
   <table cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; height:20px; table-layout:fixed;">
     <tr>
       <td width="280" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
@@ -811,7 +801,7 @@ parent.frames['controlFrame'].location.href='control_objectlist_menu.php?virtual
     </tr>
   </table>
 
-  <div id="objectLayer" style="position:absolute; Top:20px; Left:0px; width:100%; height:100%; z-index:2; visibility:visible; overflow:scroll;">
+  <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:0px; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
     <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; table-layout:fixed;">
 <?php 
 echo $listview;
@@ -821,7 +811,7 @@ echo $listview;
   </div>
 </div>
 
-<div id="galleryviewLayer" style="position:absolute; Top:0px; Left:0px; width:100%; height:100%; z-index:1; visibility:hidden; overflow:scroll;">
+<div id="galleryviewLayer" style="position:fixed; top:0px; left:0px; bottom:0px; width:100%; z-index:1; visibility:hidden; overflow-y:scroll;">
 <?php
 if ($galleryview != "")
 {
@@ -846,7 +836,6 @@ if ($galleryview != "")
 <script language="JavaScript">
 <!--
 toggleview (explorerview);
-adjust_height();
 //-->
 </script>
 

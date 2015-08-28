@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['no'] = "Vinduet Forhåndsvisning";
 $hcms_lang['click-here-to-viewdownload-the-file']['no'] = "Send til chat";
 $hcms_lang['file-extracted-succesfully']['no'] = "Filen pakkes ut gjenopprettet";
 $hcms_lang['date-created']['no'] = "Dato opprettet";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['no'] = "Er du sikker på at du vil slette denne brukeren?";
 $hcms_lang['html-body-segment']['no'] = "HTML-kroppen-segment";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['no'] = "Merk og kopier koden fra tekstfeltet boksen (tastene Ctrl + A og Ctrl + C for kopiere eller høyre museknapp -> kopier).  Sett inn denne koden i HTML-hode av siden, der den video-spiller vil være integrert (tastene Ctrl + V eller høyre museknapp -> Sett inn).";
 $hcms_lang['html-head-segment']['no'] = "HTML-hode-segment";

@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['ja'] = "プレビューウィンドウ";
 $hcms_lang['click-here-to-viewdownload-the-file']['ja'] = "チャットに送信";
 $hcms_lang['file-extracted-succesfully']['ja'] = "ファイルが正常に解凍された";
 $hcms_lang['date-created']['ja'] = "作成された日付";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['ja'] = "このユーザーを削除しますか?";
 $hcms_lang['html-body-segment']['ja'] = "HTMLボディセグメント";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['ja'] = "マークとコピーをテキスト領域]ボックスに(キーは、Ctrlキー+は、Ctrl+Cでコピーまたはマウスの右ボタン->コピー)のコード。 このコードは、ページのHTMLヘッド、ビデオプレーヤー(キーCtrl+Vまたは右マウスボタン->挿入(Insert))統合するに挿入します。";
 $hcms_lang['html-head-segment']['ja'] = "HTMLセグメントヘッド";

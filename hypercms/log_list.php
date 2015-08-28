@@ -60,21 +60,13 @@ function submitToWindow (url, description, windowname, features, width, height)
   form.target = windowname;
   form.submit();
 }
-
-function adjust_height ()
-{
-  height = hcms_getDocHeight();  
-  
-  setheight = height - 20;
-  document.getElementById('objectLayer').style.height = setheight + "px";
-}
 //-->
 </script>
 </head>
 
-<body class="hcmsWorkplaceObjectlist" onload="adjust_height();" onresize="adjust_height();">
+<body class="hcmsWorkplaceObjectlist" style="overflow:hidden;">
 
-<div id="detailviewLayer" style="position:absolute; top:0px; left:0px; width:100%; height:100%; z-index:1; visibility:visible;">
+<div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:0px; width:100%; z-index:1; visibility:visible;">
   <table cellpadding="0" cellspacing="0" cols="5" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
       <td width="105" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
@@ -100,7 +92,7 @@ function adjust_height ()
     </tr>
   </table>
 
-  <div id="objectLayer" style="position:absolute; top:20px; left:0px; width:100%; height:100%; z-index:2; visibility:visible; overflow:scroll;">
+  <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:0px; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
     <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" cols="5" style="border:0; width:100%; table-layout:fixed;">
 <?php
 if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))

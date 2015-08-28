@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['th'] = "หน้าต่างแสดงตั
 $hcms_lang['click-here-to-viewdownload-the-file']['th'] = "ส่งการ Chat";
 $hcms_lang['file-extracted-succesfully']['th'] = "ไฟล์ถูกแยกออกมาเสร็จเรียบร้อยแล้ว";
 $hcms_lang['date-created']['th'] = "วันที่สร้าง:";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['th'] = "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้";
 $hcms_lang['html-body-segment']['th'] = "ส่วนตัว HTML";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['th'] = "คัดลอกและทำเครื่องหมายจากช่องทำเครื่องหมายพื้นที่ข้อความ(ปุ่ม Ctrl + A และกด Ctrl + C เพื่อคัดลอกหรือปุ่มเมาส์ขวา - >คัดลอก) ใส่รหัสนี้ลงใน html ศีรษะของคุณในหน้าที่เครื่องเล่นวิดีโอที่จะเป็นแบบอินทิเกรต(ปุ่ม crtl + V หรือปุ่มเมาส์ขวา - >ใส่)";
 $hcms_lang['html-head-segment']['th'] = "HTML หัวตลาด";

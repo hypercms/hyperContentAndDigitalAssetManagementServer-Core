@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['es'] = "Ventana de Vista Previa";
 $hcms_lang['click-here-to-viewdownload-the-file']['es'] = "Enviar a chat";
 $hcms_lang['file-extracted-succesfully']['es'] = "Ha extraído el archivo correctamente.";
 $hcms_lang['date-created']['es'] = "Fecha de creación";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['es'] = "¿Está seguro de que desea eliminar este usuario?";
 $hcms_lang['html-body-segment']['es'] = "Segmento de HTML";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['es'] = "Marcos y copia el código de la caja de área de texto (teclas Ctrl + A y Ctrl + C para copiar o botón derecho del ratón -> copiar). Introduzca este código en tu Cabeza HTML de la página, en el que el reproductor de vídeo se integrará (teclas Crtl + V o botón derecho del ratón -> insertar).";
 $hcms_lang['html-head-segment']['es'] = "HTML cabeza segmento";

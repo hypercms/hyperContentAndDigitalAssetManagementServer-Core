@@ -104,35 +104,35 @@ function hcms_geolocation ()
 
 function hcms_getDocWidth ()
 {
-	if (self.innerHeight) // all except Explorer
-	{
-		return self.innerWidth;
-	}
-	else if (document.documentElement && document.documentElement.clientWidth) // Explorer 6 Strict Mode	
-	{
-		return document.documentElement.clientWidth;
-	}
-	else if (document.body) // other Explorers
-	{
-		return document.body.clientWidth;
-	}
+  if (self.innerHeight) // all except Explorer
+  {
+    return self.innerWidth;
+  }
+  else if (document.documentElement && document.documentElement.clientWidth) // Explorer 6 Strict Mode	
+  {
+    return document.documentElement.clientWidth;
+  }
+  else if (document.body) // other Explorers
+  {
+    return document.body.clientWidth;
+  }
   else return false;
 }
 
 function hcms_getDocHeight ()
 {
-	if (self.innerHeight) // all except Explorer
-	{
-		return self.innerHeight;
-	}
-	else if (document.documentElement && document.documentElement.clientHeight) // Explorer 6 Strict Mode	
-	{
-		return document.documentElement.clientHeight;
-	}
-	else if (document.body) // other Explorers
-	{
-		return document.body.clientHeight;
-	}
+  if (self.innerHeight) // all except Explorer
+  {
+    return self.innerHeight;
+  }
+  else if (document.documentElement && document.documentElement.clientHeight) // Explorer 6 Strict Mode	
+  {
+    return document.documentElement.clientHeight;
+  }
+  else if (document.body) // other Explorers
+  {
+    return document.body.clientHeight;
+  }
   else return false;
 }
 
@@ -262,8 +262,8 @@ function hcms_scanStyles (obj, prop)
   if(inlineStyle) return inlineStyle;
   var ss = document.styleSheets;
   for (var x = 0; x < ss.length; x++) { var rules = ss[x].cssRules;
-	for (var y = 0; y < rules.length; y++) { var z = rules[y].style;
-	  if(z[prop] && (rules[y].selectorText == '*[ID"' + obj.id + '"]' || rules[y].selectorText == '#' + obj.id)) {
+  for (var y = 0; y < rules.length; y++) { var z = rules[y].style;
+    if(z[prop] && (rules[y].selectorText == '*[ID"' + obj.id + '"]' || rules[y].selectorText == '#' + obj.id)) {
         return z[prop];
   }  }  }  return "";
 }
@@ -277,17 +277,17 @@ function hcms_getProp (obj, prop)
   else if (prop == "H") return obj.offsetHeight;
   else {
     if (typeof(window.getComputedStyle) == "undefined") {
-	    if (typeof(obj.currentStyle) == "undefined"){
-		    if (prop == "P") return hcms_scanStyles(obj,"position");
+      if (typeof(obj.currentStyle) == "undefined"){
+        if (prop == "P") return hcms_scanStyles(obj,"position");
         else if (prop == "Z") return hcms_scanStyles(obj,"z-index");
         else if (prop == "V") return hcms_scanStyles(obj,"visibility");
-	    } else {
-	      if (prop == "P") return obj.currentStyle.position;
+      } else {
+        if (prop == "P") return obj.currentStyle.position;
         else if (prop == "Z") return obj.currentStyle.zIndex;
         else if (prop == "V") return obj.currentStyle.visibility;
-	    }
+      }
     } else {
-	    if (prop == "P") return window.getComputedStyle(obj,null).getPropertyValue("position");
+      if (prop == "P") return window.getComputedStyle(obj,null).getPropertyValue("position");
       else if (prop == "Z") return window.getComputedStyle(obj,null).getPropertyValue("z-index");
       else if (prop == "V") return window.getComputedStyle(obj,null).getPropertyValue("visibility");
     }

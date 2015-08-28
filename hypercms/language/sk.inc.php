@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['sk'] = "Okno náhľadu";
 $hcms_lang['click-here-to-viewdownload-the-file']['sk'] = "Poslať na pokec";
 $hcms_lang['file-extracted-succesfully']['sk'] = "Súbor vyťažené úspešne";
 $hcms_lang['date-created']['sk'] = "Dátum vytvorenia";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['sk'] = "Ste si istí, že chcete vymazať tento používateľ?";
 $hcms_lang['html-body-segment']['sk'] = "HTML časti tela";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['sk'] = "Mark a skopírujte kód z textovej oblasti poľa (klávesová skratka Ctrl + A a Ctrl + C pre kopírovanie, alebo pravým tlačidlom myši -> kópia). Tento kód vložte do vášho HTML vedúci na stránku, kde bude prehrávač videa integrované (klávesy CTRL + V, alebo pravé tlačidlo myši -> Vložiť).";
 $hcms_lang['html-head-segment']['sk'] = "HTML head segment";

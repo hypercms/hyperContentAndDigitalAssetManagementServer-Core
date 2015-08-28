@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['so'] = "Preview daaqad";
 $hcms_lang['click-here-to-viewdownload-the-file']['so'] = "Soo Dir u sheekeyso";
 $hcms_lang['file-extracted-succesfully']['so'] = "Aad u Qoreysid lisan succesfully";
 $hcms_lang['date-created']['so'] = "Taariikhda abuuray";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['so'] = "Ma hubtaa aad rabto inaad reeb oo isticmaale?";
 $hcms_lang['html-body-segment']['so'] = "HTML jirka xubin";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['so'] = "Iyo hal nuqul code-ka . dhexdiisa waxaa lagu qoraa warbixin deegaanka sanduuqa (fureyaasha ctrl + iyo Ctrl + C/nuqul, ama aad xaq u leedahay jiir badhanka -> nuqul ama koobi).  Geli xeerkan ku HTML Madaxa bogga, taasoo fiidiyow doonaa iswaafajinta siyaasadaha (fureyaasha Crtl + V ama aad xaq u leedahay jiirka adigoon sii deynin badhanka -> geli).";
 $hcms_lang['html-head-segment']['so'] = "HTML madaxa xubin";

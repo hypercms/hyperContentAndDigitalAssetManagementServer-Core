@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['pl'] = "Okno podglądu";
 $hcms_lang['click-here-to-viewdownload-the-file']['pl'] = "Wyślij do czatu";
 $hcms_lang['file-extracted-succesfully']['pl'] = "Plik rozpakowany pomyślnie";
 $hcms_lang['date-created']['pl'] = "Data utworzenia";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['pl'] = "Czy na pewno chcesz usunąć tego użytkownika?";
 $hcms_lang['html-body-segment']['pl'] = "HTML segmentu ciała";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['pl'] = "Znak towarowy i skopiuj kod z obszaru tekstu (klawisze ctrl + A, Ctrl + C, aby skopiować lub prawy przycisk myszy -> kopiuj).  Wstaw ten kod w KOD HTML strony głowy, gdy odtwarzacz wideo zostanie zintegrowany (przyciski nacisnąć Crtl +V lub prawy przycisk myszy -> wstaw).";
 $hcms_lang['html-head-segment']['pl'] = "HTML segment głowy";

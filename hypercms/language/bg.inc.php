@@ -1273,7 +1273,6 @@ $hcms_lang['preview-window']['bg'] = "Прозорец за преглед";
 $hcms_lang['click-here-to-viewdownload-the-file']['bg'] = "Изпрати за чат";
 $hcms_lang['file-extracted-succesfully']['bg'] = "Файл извлечени успешно";
 $hcms_lang['date-created']['bg'] = "Дата на създаване";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['bg'] = "Сигурни ли сте, че искате да изтриете този потребител?";
 $hcms_lang['html-body-segment']['bg'] = "HTML орган сегмент";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['bg'] = "Марка и копие на код от зоната за текст кутия (клавишите Ctrl + A и Ctrl + C за копиране или десния бутон на мишката -> копие).  Поставете този код във вашия HTML ръководител на страница, когато на видео плейър ще бъдат интегрирани (бутоните Crtl + V или десния бутон на мишката -> поставете).";
 $hcms_lang['html-head-segment']['bg'] = "HTML глава сегмент";

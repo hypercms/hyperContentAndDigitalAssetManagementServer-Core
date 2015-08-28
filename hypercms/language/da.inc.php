@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['da'] = "Vinduet Vis udskrift";
 $hcms_lang['click-here-to-viewdownload-the-file']['da'] = "Send til chat";
 $hcms_lang['file-extracted-succesfully']['da'] = "Filen hentes fuldført";
 $hcms_lang['date-created']['da'] = "Oprettet dato";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['da'] = "Er du sikker på, at du vil slette denne bruger?";
 $hcms_lang['html-body-segment']['da'] = "HTML body segment";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['da'] = "Marker og kopier koden fra tekstområdet box (tasterne ctrl + A og Ctrl + C for kopiering eller højre museknap -> kopier).  Indsæt denne kode i din HTML-side, hvor video afspiller bliver integreret (tasterne Ctrl + V eller højreklik -> indsæt).";
 $hcms_lang['html-head-segment']['da'] = "HTML-segment";

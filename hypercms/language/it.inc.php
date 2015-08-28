@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['it'] = "Finestra di anteprima";
 $hcms_lang['click-here-to-viewdownload-the-file']['it'] = "Invio di chat";
 $hcms_lang['file-extracted-succesfully']['it'] = "File estratto con successo";
 $hcms_lang['date-created']['it'] = "Data di creazione";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['it'] = "Sei sicuro di voler eliminare questo utente?";
 $hcms_lang['html-body-segment']['it'] = "HTML segmento del corpo";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['it'] = "Mark e copiare il codice dalla casella di testo (i tasti ctrl + A e Ctrl + C per copiare o tasto destro del mouse -> copia). Inserire il codice in testa codice HTML della pagina, in cui il videogiocatore sarà integrato (i tasti CTRL + V o tasto destro del mouse -> insert).";
 $hcms_lang['html-head-segment']['it'] = "HTML segmento di testa";

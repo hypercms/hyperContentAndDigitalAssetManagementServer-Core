@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['sq'] = "Preview dritare";
 $hcms_lang['click-here-to-viewdownload-the-file']['sq'] = "Dergo në chat";
 $hcms_lang['file-extracted-succesfully']['sq'] = "Dosje nxjerrë përmbushë";
 $hcms_lang['date-created']['sq'] = "Data krijuar";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['sq'] = "Je e sigurtë që do ta fshini këtë përdorues?";
 $hcms_lang['html-body-segment']['sq'] = "HTML segment trupin";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['sq'] = "Mark dhe kopjo kodin nga teksti zonë box (çelësat Ctrl + një dhe Ctrl + C për kopje ose të drejtë mousit -> kopje).  Shkruani këtë kod HTML tuaj në krye të faqes, ku video player do të jetë i integruar (çelësat Crtl +V ose të drejtë mousit -> shkruani).";
 $hcms_lang['html-head-segment']['sq'] = "HTML kreu segment";

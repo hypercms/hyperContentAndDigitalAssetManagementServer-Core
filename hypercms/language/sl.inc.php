@@ -1271,7 +1271,6 @@ $hcms_lang['preview-window']['sl'] = "Okno Predogled";
 $hcms_lang['click-here-to-viewdownload-the-file']['sl'] = "Pošlji za klepet";
 $hcms_lang['file-extracted-succesfully']['sl'] = "Datoteke prenesene uspešno";
 $hcms_lang['date-created']['sl'] = "Ustvarjene podatke";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['sl'] = "Ali ste prepričani, da želite izbrisati tega uporabnika?";
 $hcms_lang['html-body-segment']['sl'] = "HTML telo segment";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['sl'] = "Označite in kopiranje dela iz območje z besedilom (tipke CTRL + A in Ctrl + C za kopiranje ali desna tipka na miški -> izvod).  Vnesite to kodo v vašo glavo HTML strani, kjer je video predvajalnik bo vgrajen (ključi tipko CRTL+V ali z desno tipko na miški -> vložek).";
 $hcms_lang['html-head-segment']['sl'] = "Glava HTML segment";

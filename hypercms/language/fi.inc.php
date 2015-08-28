@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['fi'] = "Esikatselu-ikkunassa";
 $hcms_lang['click-here-to-viewdownload-the-file']['fi'] = "Lähetä jos haluat keskustella";
 $hcms_lang['file-extracted-succesfully']['fi'] = "Tiedosto haetaan onnistui";
 $hcms_lang['date-created']['fi'] = "Luontipäivämäärä";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['fi'] = "Haluatko varmasti poistaa tämän käyttäjän?";
 $hcms_lang['html-body-segment']['fi'] = "HTML-korin segmentti";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['fi'] = "Merkitse ja kopioi tekstistä aluekehys (painikkeet Ctrl + A ja Ctrl + C kopioi tai hiiren oikeanpuoleisella painikkeella -> kopio).  Aseta tämä koodi HTML-pää sivu, jossa videosoitin integroidaan (painikkeet tuotteita Crtl + V tai hiiren oikeanpuoleisella painikkeella -> lisää).";
 $hcms_lang['html-head-segment']['fi'] = "HTML-pään segmentti";

@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['ms'] = "Tetingkap Prapapar";
 $hcms_lang['click-here-to-viewdownload-the-file']['ms'] = "Hantar ke chat";
 $hcms_lang['file-extracted-succesfully']['ms'] = "Fail diekstrak berjaya";
 $hcms_lang['date-created']['ms'] = "Tarikh dicipta";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['ms'] = "Anda pasti ingin menghapuskan pengguna ini?";
 $hcms_lang['html-body-segment']['ms'] = "HTML tubuh segmen";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['ms'] = "Tandakan dan salin kode dari kawasan teks kotak (kekunci Ctrl + A dan Ctrl + C untuk salin atau butang kanan tetikus - > salin).  Selitkan kod ini ke kepala HTML halaman, di mana pemain video akan bersepadu (kunci Crtl + V atau butang kanan tetikus - > selitkan).";
 $hcms_lang['html-head-segment']['ms'] = "HTML kepala segmen";

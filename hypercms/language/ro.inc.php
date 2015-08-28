@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['ro'] = "Fereastra de previzualizare";
 $hcms_lang['click-here-to-viewdownload-the-file']['ro'] = "Trimite la chat";
 $hcms_lang['file-extracted-succesfully']['ro'] = "File extrase cu succes";
 $hcms_lang['date-created']['ro'] = "Data creării";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['ro'] = "Sunteţi sigur că doriţi să suprimaţi acest utilizator?";
 $hcms_lang['html-body-segment']['ro'] = "HTML segment caroserie";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['ro'] = "Reperaţi şi să copiaţi codul de pe zona de text box (tastele ctrl + şi Ctrl + C pentru copiere sau butonul dreapta-mouse -> copiere).  Introduceţi acest cod HTML în Cap de pagina, unde video player vor fi integrate (tastele Crtl + V sau butonul dreapta-mouse -> introduceţi).";
 $hcms_lang['html-head-segment']['ro'] = "HTML cap segment";

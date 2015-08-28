@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['ur'] = "preview کھڑکی بند کردی";
 $hcms_lang['click-here-to-viewdownload-the-file']['ur'] = "بھیجنے سے بات چیت";
 $hcms_lang['file-extracted-succesfully']['ur'] = "فائل رائلٹی succesfully";
 $hcms_lang['date-created']['ur'] = "تاریخ پیدا";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['ur'] = "کیا اپ کو یقین کرنا چاہتے ہیں تو اپ کو اس چھیلنا یوتھ ایکسیس ٹیلیفون:?";
 $hcms_lang['html-body-segment']['ur'] = "html لاش قطعہ";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['ur'] = "مارک اینڈ کاپی کوڈ اف سے الفہظ کے علاقے صندوقچی (کی چابیاں ctrl + اور ctrl + سی کے کاپی یا چوہی بٹن دبا کا واک اؤٹ پرتروپ) اپ کو اس گھوپنا کوڈ کے سربراہ html صفحہ, جہاں ویڈیو کھلاڑی مربوط ہوں گے (کی چابیاں crtl + ویجی لینس یا چوہی بوتام,,,,,گھوپنا).";
 $hcms_lang['html-head-segment']['ur'] = "سر html قطعہ";

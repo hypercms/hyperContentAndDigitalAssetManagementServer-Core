@@ -1273,7 +1273,6 @@ $hcms_lang['preview-window']['he'] = "חלון תצוגה מקדימה";
 $hcms_lang['click-here-to-viewdownload-the-file']['he'] = "שלח צ'אט";
 $hcms_lang['file-extracted-succesfully']['he'] = "קובץ BlackBerryשברשותך חולצו";
 $hcms_lang['date-created']['he'] = "תאריך יצירה";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['he'] = "האם אתה בטוח שברצונך למחוק את המשתמש?";
 $hcms_lang['html-body-segment']['he'] = "הגוף קטע HTML";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['he'] = "לסמן, להעתיק את הקוד של אזור הטקסט בתיבה (מקשים CTRL + A ו CTRL + C להעתקה או לחצן העכבר הימני -> העתק).  הכנס את קוד HTML זה הראש של הדף, שבו יהיה משולב נגן וידאו (מפתחות crtl + V או לחצן העכבר הימני -> הכנס).";
 $hcms_lang['html-head-segment']['he'] = "HTML בראש קטע";

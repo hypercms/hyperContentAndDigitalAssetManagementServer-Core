@@ -1272,7 +1272,6 @@ $hcms_lang['preview-window']['nl'] = "Voorbeeldvenster";
 $hcms_lang['click-here-to-viewdownload-the-file']['nl'] = "Verzenden om te chatten";
 $hcms_lang['file-extracted-succesfully']['nl'] = "Bestand hebt uitgepakt voltooid";
 $hcms_lang['date-created']['nl'] = "Datum gemaakt";
-$hcms_lang['are-you-sure-you-wan\t-to-delete-this-user']['nl'] = "Weet u zeker dat u deze gebruiker wilt verwijderen?";
 $hcms_lang['html-body-segment']['nl'] = "HTML body segment";
 $hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy']['nl'] = "Mark en kopieer de code uit het tekstgedeelte (ctrl + en Ctrl + C om te kopiëren of rechtermuisknop -> kopiëren).  Plaats deze code in uw HTML bovenaan de pagina waar de video zal worden geïntegreerd (toetsen Ctrl + V of rechtermuisknop -> invoegen).";
 $hcms_lang['html-head-segment']['nl'] = "HTML head segment";
