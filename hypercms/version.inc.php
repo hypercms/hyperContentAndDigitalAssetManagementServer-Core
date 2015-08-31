@@ -611,7 +611,7 @@ changelog:
 - bug fix: JS function hcms_showContextmenu did not disable icons for notfication and chat in context menu if no object has been selected
 - bug fix: explorer_objectlist did hide notfication and chat completety in context menu if user has no permissions
 - improvements in hyperCMS UI document viewer regarding size of view
-- bug fix: funtion getusersonline returned WebDAV users, these users are not able to chat and must not be returned
+- bug fix: funtion getusersonline returned WebDAV users, these users are not able to chat and must not be returned#
 - fixed showmessage boxes positioning in GUI
 - rounded corners of showmessage boxes
 - improved design of context menu for all themes
@@ -959,7 +959,7 @@ release 10/2015
 - improvements in user_objectlist
 - removed double entries in language files
 - replaced JS based height calculation of div layers by CSS based layer positioning for all objectlist views
-- improvements in workplace integration (WebDAV)
+- update of PDF viewer (PDF.JS) to version 1.1.215
 */
 
 // current version
