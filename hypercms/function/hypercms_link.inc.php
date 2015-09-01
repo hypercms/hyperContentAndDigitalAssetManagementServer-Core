@@ -1045,6 +1045,9 @@ function medialinks_to_complinks ($link_array)
   {
     foreach ($link_array as $link)
     {
+      // set default link for result
+      $object_array[$link] = $link;
+    
       // check if media link
       if (strpos ($link, "_hcm") > 0)
       {
@@ -1054,7 +1057,19 @@ function medialinks_to_complinks ($link_array)
         {
           if ($mgmt_config['db_connect_rdbms'] != "")
           {
-            $object_array[$link] = rdbms_getobjects ($container_id, "");
+            $temp_array = rdbms_getobjects ($container_id, "");
+
+            if (is_array ($temp_array)) 
+            {
+              foreach ($temp_array as $temp_link)
+              {
+                if ($temp_link != "")
+                {
+                  $object_array[$link] = $temp_link;
+                  break;
+                }
+              }
+            }
           }
           else
           {
@@ -1066,8 +1081,19 @@ function medialinks_to_complinks ($link_array)
             
             if (is_array ($link_db))
             {
-              $object_str = $link_db[$container_id.".xml"]['object'];
-              $object_array[$link] = link_db_getobject ($object_str); 
+              $temp_array = link_db_getobject ($link_db[$container_id.".xml"]['object']);
+
+              if (is_array ($temp_array)) 
+              {
+                foreach ($temp_array as $temp_link)
+                {
+                  if ($temp_link != "")
+                  {
+                    $object_array[$link] = $temp_link;
+                    break;
+                  }
+                }
+              }
             }
           }
         }
@@ -1098,6 +1124,9 @@ function complinks_to_medialinks ($link_array)
   {
     foreach ($link_array as $link)
     {
+      // set default link for result
+      $mediafile_array[$link] = $link;
+    
       // deconvert
       $link_converted = deconvertpath ($link, "file");
       

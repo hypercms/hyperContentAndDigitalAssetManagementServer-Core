@@ -960,6 +960,10 @@ release 10/2015
 - removed double entries in language files
 - replaced JS based height calculation of div layers by CSS based layer positioning for all objectlist views
 - update of PDF viewer (PDF.JS) to version 1.1.215
+- update of TCPDF to version 6.2.11
+- set default link for function medialinks_to_complinks
+- function medialinks_to_complinks returns only first valid link ressource and not a link array
+- set default link for function complinks_to_medialinks
 */
 
 // current version
