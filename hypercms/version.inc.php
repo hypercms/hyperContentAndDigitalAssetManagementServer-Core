@@ -964,6 +964,8 @@ release 10/2015
 - set default link for function medialinks_to_complinks
 - function medialinks_to_complinks returns only first valid link ressource and not a link array
 - set default link for function complinks_to_medialinks
+- index page of the system is using configured domain for redirect in order to avoid session issues with multiple domains used to access the system
+- bug fix: control_content_menu used 2nd parameter in location.replace, only one parameter is supported
 */
 
 // current version

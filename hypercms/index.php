@@ -123,6 +123,7 @@ if ($dm != "")
 
 // ------------------------- forward ------------------------------
 
-if ($forward != "") header ("Location: ".$forward);
-else header ("Location: userlogin.php");
+// use full CMS URL to avoid session issues with multiple domain names
+if ($forward != "") header ("Location: ".$mgmt_config['url_path_cms'].$forward);
+else header ("Location: ".$mgmt_config['url_path_cms']."userlogin.php");
 ?>

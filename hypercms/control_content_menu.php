@@ -877,7 +877,7 @@ if ($action == "download" && !$is_iphone)
 function downloadFile()
 {
   hcms_showHideLayers('downloadLayer','','hide');
-  location.replace('<?php echo $downloadlink; ?>','popup_download');
+  location.replace('<?php echo $downloadlink; ?>');
 }
 
 setTimeout('downloadFile()', 1000);
