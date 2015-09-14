@@ -834,7 +834,7 @@ release 06/2015
 version 5.7.9
 release 07/2015
 - optimization of language files
-- new input settings in main CSS of all themes
+- new input tag settings in main CSS for all themes
 - update of jquery from version 1.9.1 to 1.10.2
 - implementation of keyword tags with optional mandatory or open list of keywords using the new hyperCMS tag "textk"
 - improved functions loadfile and loadlockfile to reduce CPU time
@@ -844,7 +844,7 @@ release 07/2015
 - bug fix: function createmedia did not execute rdbms_setmedia if $mgmt_maxfilesize limit has been reached for a file 
 - bug fix: installation procedure checked temp and view directory before they were created
 - update of videoplayer Video JS to version 4.12.7
-- fullscreen mode in video player hase been disabled for side bar
+- fullscreen mode in video player has been disabled for side bar
 - bug fix: Video JS css did not properly support fullscreen when used in iframes, fullscreen is disabled in CMS views
 - implementation of extended error logging in function uploadfile
 - improvement of input validation in function splitstring
@@ -966,6 +966,8 @@ release 10/2015
 - set default link for function complinks_to_medialinks
 - index page of the system is using configured domain for redirect in order to avoid session issues with multiple domains used to access the system
 - bug fix: control_content_menu used 2nd parameter in location.replace, only one parameter is supported
+- failed FFMPEG commands are reported in event log
+- improvements in function createmedia to create player config file and create media database entry in case the conversion of a media file failed after upload
 */
 
 // current version

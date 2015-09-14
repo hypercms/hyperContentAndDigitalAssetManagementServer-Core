@@ -1569,7 +1569,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                           if ($errorCode)
                           {
                             $errcode = "20239";
-                            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode) failed in createmedia for file: ".$location_source.$file;           
+                            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;           
                           }
                           //
                           else
@@ -1601,7 +1601,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       if ($errorCode)
                       {
                         $errcode = "20240";
-                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode) failed in createmedia for file: ".$location_source.$file;           
+                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;           
                       }
                       // reset media file source
                       else
@@ -1707,7 +1707,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   @unlink ($location_dest.$tmpfile);
                 
                   $errcode = "20236";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode) failed in createmedia for file: ".$location_source.$file;
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
                 } 
                 else
                 {
@@ -1728,7 +1728,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if ($errorCode)
                     {
                       $errcode = "20237";
-                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of yamdi (code:$errorCode) failed in createmedia for file: ".$location_source.$newfile;
+                      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of yamdi (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$newfile;
                     }
                     else
                     {                  
@@ -1749,94 +1749,91 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     if (@is_file ($location_dest.$newfile)) @unlink ($location_dest.$newfile);
                     @rename ($location_dest.$tmpfile, $location_dest.$newfile);
                   }
-
-                  // generate video player config code for all video formates (thumbnails)
-                  if ($type == "thumbnail")
+                }
+                
+                // generate video player config code for all video formats (thumbnails)
+                if ($type == "thumbnail")
+                {
+                  // video thumbnail files
+                  $video_extension_array = explode (".", substr (strtolower ($hcms_ext['video']), 1));
+                  
+                  if (is_array ($video_extension_array))
                   {
-                    // video thumbnail files
-                    $video_extension_array = explode (".", substr (strtolower ($hcms_ext['video']), 1));
-                    
-                    if (is_array ($video_extension_array))
+                    // generate video file links for all available formats
+                    $videos = array();
+
+                    foreach ($video_extension_array as $video_extension)
                     {
-                      // generate video file links for all available formats
-                      $videos = array();
-  
-                      foreach ($video_extension_array as $video_extension)
+                      if ($video_extension != "" && @is_file ($location_dest.$file_name.".thumb.".$video_extension))
                       {
-                        if ($video_extension != "" && @is_file ($location_dest.$file_name.".thumb.".$video_extension))
-                        {
-                          // thumbnail video
-                          $videos[$video_extension] = $site."/".$file_name.".thumb.".$video_extension;
-                        }
+                        // thumbnail video
+                        $videos[$video_extension] = $site."/".$file_name.".thumb.".$video_extension;
                       }
                     }
-                    
-                    // define config extension (audio or video)
-                    if (is_audio ($file_ext)) $config_extension = ".config.audio";
-                    else $config_extension = ".config.video";
-                  }
-                  // generate video player config code for indivdual video
-                  else
-                  {
-                    // generate video file links for individual generated video formats
-                    $videos = array();
-                    $videos[$format_set] = $site."/".$newfile;
-                    
-                    if ($type == "origthumb" || $type == "original") $config_extension = ".config.orig";
-                    else $config_extension = ".config.".$format_set;
                   }
                   
-                  // capture screen from video to use as thumbnail image
-                  if ($type == "origthumb" || $type == "original") createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
-                            
-                  // new video info (only if it is not the thumbnail file of the original file)
-                  if ($type != "origthumb" || $type == "original") $videoinfo = getvideoinfo ($location_dest.$newfile);
-                  
-                  // set media width and height to empty string
-                  if ($mediawidth < 1 || $mediaheight < 1)
-                  {
-                    $mediawidth = "";
-                    $mediaheight = "";
-                  }
-  
-                  // save config
-                  savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $mediawidth, $mediaheight, $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels']);
-  
-                  // save log
-                  savelog (@$error);
-                  
-                  // get video information to save in DB
-                  if ($converted == true && $newfile != false && ($type == "origthumb" || $type == "original"))
-                  { 
-                    if (is_array ($videoinfo))
-                    {
-                      $mediawidth_orig = $videoinfo['width'];
-                      $mediaheight_orig = $videoinfo['height'];
-                      $imagetype_orig = $videoinfo['imagetype'];
-                    }
-                    else 
-                    {
-                      $mediawidth_orig = "";
-                      $mediaheight_orig = "";
-                      $imagetype_orig = "";
-                    }
-                    
-                    // write media information to DB
-                    if (!empty ($container_id))
-                    {
-                      $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $mediawidth_orig, $mediaheight_orig, "", "", "", "", $imagetype_orig, $md5_hash);
-                    }
-                    
-                    // create preview (new preview for video/audio file)
-                    if ($type == "original")
-                    {
-                      createmedia ($site, $location_dest, $location_dest, $newfile, "", "origthumb");
-                    }
-                  }                             
-                  
-                  // remote client
-                  remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+                  // define config extension (audio or video)
+                  if (is_audio ($file_ext)) $config_extension = ".config.audio";
+                  else $config_extension = ".config.video";
                 }
+                // generate video player config code for indivdual video
+                else
+                {
+                  // generate video file links for individual generated video formats
+                  $videos = array();
+                  $videos[$format_set] = $site."/".$newfile;
+                  
+                  if ($type == "origthumb" || $type == "original") $config_extension = ".config.orig";
+                  else $config_extension = ".config.".$format_set;
+                }
+                
+                // capture screen from video to use as thumbnail image
+                if ($type == "origthumb" || $type == "original") createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
+                          
+                // new video info (only if it is not the thumbnail file of the original file)
+                if ($type != "origthumb" || $type == "original") $videoinfo = getvideoinfo ($location_dest.$newfile);
+                
+                // set media width and height to empty string
+                if ($mediawidth < 1 || $mediaheight < 1)
+                {
+                  $mediawidth = "";
+                  $mediaheight = "";
+                }
+
+                // save config
+                savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $mediawidth, $mediaheight, $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels']);
+
+                // get video information to save in DB
+                if ($type == "origthumb" || $type == "original")
+                { 
+                  if (is_array ($videoinfo))
+                  {
+                    $mediawidth_orig = $videoinfo['width'];
+                    $mediaheight_orig = $videoinfo['height'];
+                    $imagetype_orig = $videoinfo['imagetype'];
+                  }
+                  else 
+                  {
+                    $mediawidth_orig = "";
+                    $mediaheight_orig = "";
+                    $imagetype_orig = "";
+                  }
+                  
+                  // write media information to DB
+                  if (!empty ($container_id))
+                  {
+                    $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $mediawidth_orig, $mediaheight_orig, "", "", "", "", $imagetype_orig, $md5_hash);
+                  }
+                  
+                  // create preview (new preview for video/audio file)
+                  if ($type == "original")
+                  {
+                    createmedia ($site, $location_dest, $location_dest, $newfile, "", "origthumb");
+                  }
+                }                             
+                
+                // remote client
+                remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
               }
             }     
           }
