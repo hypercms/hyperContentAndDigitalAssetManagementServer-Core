@@ -3,7 +3,7 @@
 <name>ContactUs</name>
 <user>admin</user>
 <category>page</category>
-<extension>php</extension>
+<extension>xhtml</extension>
 <application>php</application>
 <content><![CDATA[<?php if ("%view%" == "publish") session_start(); ?>
 [hyperCMS:textc id='NavigationHide' label='Hide in Navigation' value='yes' infotype='meta' onPublish='hidden']
@@ -16,8 +16,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="[hyperCMS:pagedescription infotype='meta' height='50']" />
-    <meta name="keywords" content="[hyperCMS:pagekeywords infotype='meta' height='50']" />
+    <meta name="description" content="[hyperCMS:textu id='Description' infotype='meta' height='50']" />
+    <meta name="keywords" content="[hyperCMS:textu id='Keywords' infotype='meta' height='50']" />
     <link rel="shortcut icon" href="%tplmedia%/favicon.ico"> 
     <!-- 57 x 57 Android and iPhone 3 icon -->
     <link rel="apple-touch-icon" media="screen and (resolution: 163dpi)" href="%tplmedia%/mobile_icon57.png" />

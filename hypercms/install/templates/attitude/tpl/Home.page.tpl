@@ -3,7 +3,7 @@
 <name>Home</name>
 <user>admin</user>
 <category>page</category>
-<extension>php</extension>
+<extension>xhtml</extension>
 <application>php</application>
 <content><![CDATA[[hyperCMS:textc id='NavigationHide' label='Hide in Navigation' value='yes' infotype='meta' onPublish='hidden']
 [hyperCMS:textu id='NavigationSortOrder' label='Navigation Sort Order' constraint='inRange0:1000' infotype='meta' onPublish='hidden' height='25']
@@ -15,8 +15,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="[hyperCMS:pagedescription infotype='meta' height='50']" />
-    <meta name="keywords" content="[hyperCMS:pagekeywords infotype='meta' height='50']" />
+    <meta name="description" content="[hyperCMS:textu id='Description' infotype='meta' height='50']" />
+    <meta name="keywords" content="[hyperCMS:textu id='Keywords' infotype='meta' height='50']" />
     <link rel="shortcut icon" href="%tplmedia%/favicon.ico"> 
     <!-- 57 x 57 Android and iPhone 3 icon -->
     <link rel="apple-touch-icon" media="screen and (resolution: 163dpi)" href="%tplmedia%/mobile_icon57.png" />
@@ -51,8 +51,8 @@
             <div class="slides">
               <figure>
                 [hyperCMS:mediafile id='slide_1' mediatype='image' label='Picture for Slide 1' onPublish='hidden' ]
-                <a href="[hyperCMS:linkhref id='slide_1_link' label='Link for Slide 1']" title="[hyperCMS:mediaalttext id='slide_1' label='Alttext for Slide 1']">
-                  <img title="[hyperCMS:mediaalttext id='slide_1' label='Alttext for Slide 1']" alt="[hyperCMS:mediaalttext id='slide_1' label='Alttext for Slide 1']" width="1038" height="460" src="[hyperCMS:scriptbegin echo $slide; scriptend]"></img>
+                <a href="[hyperCMS:linkhref id='slide_1_link' label='Link for Slide 1' ]" title="[hyperCMS:mediaalttext id='slide_1' label='Alttext for Slide 1']">
+                  <img title="[hyperCMS:mediaalttext id='slide_1' label='Alttext for Slide 1' ]" alt="[hyperCMS:mediaalttext id='slide_1' label='Alttext for Slide 1']" width="1038" height="460" src="[hyperCMS:scriptbegin echo $slide; scriptend]"></img>
                 </a>
               </figure>
               <article class="featured-text">
@@ -79,8 +79,8 @@
             <div class="slides">
               <figure>
                 [hyperCMS:mediafile id='slide_2' mediatype='image' label='Picture for Slide 2' onPublish='hidden']
-                <a href="[hyperCMS:linkhref id='slide_2_link' label='Link for Slide 2']" title="[hyperCMS:mediaalttext id='slide_2' label='Alttext for Slide 2']">
-                  <img title="[hyperCMS:mediaalttext id='slide_2' label='Alttext Slide 2']" alt="[hyperCMS:mediaalttext id='slide_2' label='Alttext for Slide 2']" width="1038" height="460" src="[hyperCMS:scriptbegin echo $slide; scriptend]"></img>
+                <a href="[hyperCMS:linkhref id='slide_2_link' label='Link for Slide 2' ]" title="[hyperCMS:mediaalttext id='slide_2' label='Alttext for Slide 2']">
+                  <img title="[hyperCMS:mediaalttext id='slide_2' label='Alttext Slide 2' ]" alt="[hyperCMS:mediaalttext id='slide_2' label='Alttext for Slide 2']" width="1038" height="460" src="[hyperCMS:scriptbegin echo $slide; scriptend]"></img>
                 </a>
               </figure>
               <article class="featured-text">
@@ -107,8 +107,8 @@
             <div class="slides">
               <figure>
                 [hyperCMS:mediafile id='slide_3' mediatype='image' label='Picture for Slide 3' onPublish='hidden']
-                <a href="[hyperCMS:linkhref id='slide_3_link' label='Link for Slide 3']" title="[hyperCMS:mediaalttext id='slide_3' label='Alttext for Slide 3']">
-                  <img title="[hyperCMS:mediaalttext id='slide_3' label='Alttext for Slide 3']" alt="[hyperCMS:mediaalttext id='slide_3' label='Alttext for Slide 3']" width="1038" height="460" src="[hyperCMS:scriptbegin echo $slide; scriptend]"></img>
+                <a href="[hyperCMS:linkhref id='slide_3_link' label='Link for Slide 3' ]" title="[hyperCMS:mediaalttext id='slide_3' label='Alttext for Slide 3']">
+                  <img title="[hyperCMS:mediaalttext id='slide_3' label='Alttext for Slide 3' ]" alt="[hyperCMS:mediaalttext id='slide_3' label='Alttext for Slide 3']" width="1038" height="460" src="[hyperCMS:scriptbegin echo $slide; scriptend]"></img>
                 </a>
               </figure>
               <article class="featured-text">
@@ -136,7 +136,7 @@
               <figure>
                 [hyperCMS:mediafile id='slide_4' mediatype='image' label='Picture for Slide 4' onPublish='hidden']
                 <a href="[hyperCMS:linkhref id='slide_4_link' label='Link for Slide 4']" title="[hyperCMS:mediaalttext id='slide_4' label='Alttext Slide 4']">
-                  <img title="[hyperCMS:mediaalttext id='slide_4' label='Alttext Slide 4']" alt="[hyperCMS:mediaalttext id='slide_4' label='Alttext Slide 4']" width="1038" height="460" src="[hyperCMS:scriptbegin echo $slide; scriptend]"></img>
+                  <img title="[hyperCMS:mediaalttext id='slide_4' label='Alttext Slide 4' ]" alt="[hyperCMS:mediaalttext id='slide_4' label='Alttext Slide 4']" width="1038" height="460" src="[hyperCMS:scriptbegin echo $slide; scriptend]"></img>
                 </a>
               </figure>
               <article class="featured-text">

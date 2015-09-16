@@ -968,6 +968,7 @@ release 10/2015
 - bug fix: control_content_menu used 2nd parameter in location.replace, only one parameter is supported
 - failed FFMPEG commands are reported in event log
 - improvements in function createmedia to create player config file and create media database entry in case the conversion of a media file failed after upload
+- moved from head tags to text-IDs for meta data in attitude templates
 */
 
 // current version
