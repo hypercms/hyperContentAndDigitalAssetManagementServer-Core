@@ -969,8 +969,12 @@ release 10/2015
 - failed FFMPEG commands are reported in event log
 - improvements in function createmedia to create player config file and create media database entry in case the conversion of a media file failed after upload
 - moved from head tags to text-IDs for meta data in attitude templates
+
+version 5.7.14
+release 11/2015
+- improvements on mobile home screen
 */
 
 // current version
-$version = "Version 5.7.13";
+$version = "Version 5.7.14";
 ?>
