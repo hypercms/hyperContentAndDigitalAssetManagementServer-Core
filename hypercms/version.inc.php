@@ -973,6 +973,8 @@ release 10/2015
 version 5.7.14
 release 11/2015
 - improvements on mobile home screen
+- bug fix: user_sendlink did not validate array for email recipients
+- improvements in template engine to avoid line break of edit icons in "cmsview" and "inlineview"
 */
 
 // current version

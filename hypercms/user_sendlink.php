@@ -883,9 +883,12 @@ if ($intention == "sendmail" && checktoken ($token, $user))
             // create email recipient array
             $email_to_array = splitstring ($email_to);
             
-            foreach ($email_to_array as $email_to_entry)
+            if (is_array ($email_to_array))
             {
-              $mailer->AddAddress ($email_to_entry);
+              foreach ($email_to_array as $email_to_entry)
+              {
+                $mailer->AddAddress ($email_to_entry);
+              }
             }
             
             // send mail
