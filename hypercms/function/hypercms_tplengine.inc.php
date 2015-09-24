@@ -91,7 +91,7 @@ function tpl_languagesession ($application, $name, $values, $default)
 {
   $application = strtolower (trim ($application));
   
-  if ($application == "php") return "<?php\n if (\$_REQUEST['".$name."']!=\"\" && substr_count (\"|$values|\", \"|\".\$_REQUEST['$name'].\"|\")==1) \$_SESSION['$name']=\$_REQUEST['$name'];\nelseif (\$_SESSION['$name']==\"\") \$_SESSION['$name']=\"$default\";\n?>";
+  if ($application == "php") return "<?php\nif (!empty(\$_REQUEST['".$name."']) && substr_count (\"|$values|\", \"|\".\$_REQUEST['$name'].\"|\")==1) \$_SESSION['$name']=\$_REQUEST['$name'];\nelseif (empty(\$_SESSION['$name'])) \$_SESSION['$name']=\"$default\";\n?>";
   elseif ($application == "jsp") return "<%\nString hypercms_language=\"|$values|\";\nif (request.getParameter('$name')!=\"\" && hypercms_language.indexOf (\"|\"+request.getParameter('$name')+\"|\")>0) session.setAttribute(\"$name\", request.getParameter(\"$name\"));\nelseif (session.getAttribute(\"$name\")==\"\") session.setAttribute(\"$name\", \"$default\");\n%>";
   elseif ($application == "asp") return "<%\nif (Request.QueryString('$name')<>\"\" and InStr (\"|$values|\", \"|\"&Request.QueryString('$name')&\"|\")>0) then Session['$name']=Request.QueryString('$name');\nelseif (Session['$name']==\"\") then Session['$name']=\"$default\";\nend if\n%>";
   elseif ($application == "aspx") return "<script runat=server>\nif (Request.QueryString['$name']!=\"\" && InStr (\"|$values|\", \"|\"+Request.QueryString['$name']+\"|\"]>0) { Session['$name']=Request.QueryString['$name']; }\nelseif (Session['$name']==\"\") { Session['$name']=\"$default\"; }\n</script>";

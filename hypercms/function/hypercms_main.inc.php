@@ -2689,13 +2689,12 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
 
   if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object))
   {
-    
     $prefix = uniqid();
 
     // copy to temp/view and execute
     copy ($location.$object, $mgmt_config['abs_path_view'].$prefix."_".$object);
-    // get content
-    $content = file_get_contents ($mgmt_config['abs_path_view'].$prefix."_".$object);
+    // get content via HTTP in order ro render page
+    $content = @file_get_contents ($mgmt_config['url_path_view'].$prefix."_".$object);
     // remove temp file
     unlink ($mgmt_config['abs_path_view'].$prefix."_".$object);
     

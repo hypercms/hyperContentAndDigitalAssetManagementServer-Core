@@ -975,6 +975,12 @@ release 11/2015
 - improvements on mobile home screen
 - bug fix: user_sendlink did not validate array for email recipients
 - improvements in template engine to avoid line break of edit icons in "cmsview" and "inlineview"
+- improvements in template engine regarding language session handling
+- bug fix: txt file extension has been defined as clear text format and image format
+- bug fix: function showmedia did not properly convert non UTF8 strings
+- updated PHPWord library to version 0.12.0
+- removed unused library charsetconversion
+- bug fix: function downloadobject did not get page via HTTP view and failed to render it
 */
 
 // current version

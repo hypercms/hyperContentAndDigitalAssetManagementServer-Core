@@ -1291,11 +1291,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if (file_exists ($media_root.$mediafile))
         {
           $content = loadfile ($media_root, $mediafile);
-          
+
           if (!is_utf8 ($content))
           {
             if (is_latin1 ($content)) $content = iconv ("ISO-8859-1", "UTF-8//TRANSLIT", $content);
-            else $content = iconv ("GBK", "UTF-8//TRANSLIT", $content);
+            else $content = utf8_encode ($content);
           }
           
           // escape special characters
