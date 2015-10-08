@@ -1967,7 +1967,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           
                   if ($codepage_array != false)
                   {
-                    $formitem[$key] = "
+                    $formitem[$key] .= "
                           <select name=\"".$hypertagname."\" ".$disabled.">";
                     
                     foreach ($codepage_array as $codepage)

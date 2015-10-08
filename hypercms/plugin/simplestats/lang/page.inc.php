@@ -1,26 +1,23 @@
 <?php
 // text version
-$text0['en'] = "Simple Statistics";
-$text0['de'] = "Simple Statistics";
+$hcms_lang['simple-statistics']['en'] = "Simple Statistics";
+$hcms_lang['simple-statistics']['de'] = "Simple Statistics";
 
-$text1['en'] = "Total disk space";
-$text1['de'] = "Gesamter Speicherplatz";
+$hcms_lang['total-disk-space']['en'] = "Total disk space";
+$hcms_lang['total-disk-space']['de'] = "Gesamter Speicherplatz";
 
-$text2['en'] = "Free disk space";
-$text2['de'] = "Freier Speicherplatz";
+$hcms_lang['free-disk-space']['en'] = "Free disk space";
+$hcms_lang['free-disk-space']['de'] = "Freier Speicherplatz";
 
-$text3['en'] = "Top downloaded files";
-$text3['de'] = "Top Datei-Downloads";
+$hcms_lang['top-downloaded-files']['en'] = "Top downloaded files";
+$hcms_lang['top-downloaded-files']['de'] = "Top Datei-Downloads";
 
-$text4['en'] = "Object";
-$text4['de'] = "Object";
+$hcms_lang['hits']['en'] = "Hits";
+$hcms_lang['hits']['de'] = "Hits";
 
-$text5['en'] = "Hits";
-$text5['de'] = "Hits";
+$hcms_lang['traffic-in-mb']['en'] = "Traffic in MB";
+$hcms_lang['traffic-in-mb']['de'] = "Datenmenge in MB";
 
-$text6['en'] = "Traffic in MB";
-$text6['de'] = "Datenmenge in MB";
-
-$text7['en'] = "Top uploaded files";
-$text7['de'] = "Top Datei-Uploads";
+$hcms_lang['top-uploaded-files']['en'] = "Top uploaded files";
+$hcms_lang['top-uploaded-files']['de'] = "Top Datei-Uploads";
 ?>

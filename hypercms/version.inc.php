@@ -971,7 +971,7 @@ release 10/2015
 - moved from head tags to text-IDs for meta data in attitude templates
 
 version 5.7.14
-release 11/2015
+release 10/2015
 - improvements on mobile home screen
 - bug fix: user_sendlink did not validate array for email recipients
 - improvements in template engine to avoid line break of edit icons in "cmsview" and "inlineview"
@@ -981,6 +981,15 @@ release 11/2015
 - updated PHPWord library to version 0.12.0
 - removed unused library charsetconversion
 - bug fix: function downloadobject did not get page via HTTP view and failed to render it
+- implementation of search expression logging in function rdbms_searchcontent
+- implementation of search expression statistics plugin
+- rework of icons in all themes
+- bug fix: keyword plugin always selected english language version
+- bug fix: keyword plugin only stores assets or pages keywords in stats file and did not join them
+- updates in keyword analysis plugin to support new language file format
+- bug fix: pagecontenttype select in template engine has not been added to the form item string
+- updates in simple stats plugin to support new language file format
+- updates in test plugin to support new language file format
 */
 
 // current version

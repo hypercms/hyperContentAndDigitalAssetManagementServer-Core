@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin>
+  <definition>
+    <name>Search Statistics Plugin</name>
+    <author>hyperCMS</author>
+    <version>1.0</version>
+    <description>Search Expression Statistics Plugin provides basic statistics about search expressions.</description>
+  </definition>
+  <menus>
+    <main>
+      <point>
+        <name>Search Statistics</name>
+        <icon>img/search.png</icon>
+        <page>pages/page.php</page>
+      </point>
+    </main>
+  <menus>
+</plugin>

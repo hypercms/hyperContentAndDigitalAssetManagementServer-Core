@@ -1,11 +1,11 @@
 <?php
 // text version
-$text0['en'] = "Feature A";
-$text0['de'] = "Feature A";
+$hcms_lang['feature-a']['en'] = "Feature A";
+$hcms_lang['feature-a']['de'] = "Feature A";
 
-$text1['en'] = "Feature B";
-$text1['de'] = "Feature B";
+$hcms_lang['feature-b']['en'] = "Feature B";
+$hcms_lang['feature-b']['de'] = "Feature B";
 
-$text2['en'] = "Feature C";
-$text2['de'] = "Feature C";
+$hcms_lang['feature-c']['en'] = "Feature C";
+$hcms_lang['feature-c']['de'] = "Feature C";
 ?>

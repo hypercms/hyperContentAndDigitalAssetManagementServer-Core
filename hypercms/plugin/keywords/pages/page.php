@@ -15,7 +15,7 @@ require ("../../../config.inc.php");
 require ("../../../function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("../../../function/hypercms_ui.inc.php");
-// language file
+// language file of plugin
 require_once ("../lang/page.inc.php");
 
 
@@ -24,8 +24,8 @@ $site = getrequest_esc ("site", "publicationname");
 $action = getrequest_esc ("action");
 $token = getrequest_esc ("token");
 
-// only german and english is supported
-if ($lang != "en" || $lang != "de") $lang = "en";
+// only german and english language is supported by plugin
+if ($lang != "en" && $lang != "de") $lang = "en";
 
 // define text-ID to looks for keywords
 $text_id = "Keywords";
@@ -129,6 +129,8 @@ if ($action == "regenerate" && checktoken ($token, $user) && valid_objectname ($
     $site = $mysqli->escape_string($site);
     $text_id = $mysqli->escape_string($text_id);
     
+    $store = "";
+    
     // Select keywords from Assets
     $sql = "SELECT textnodes.textcontent FROM textnodes, object WHERE textnodes.text_id='".$text_id."' AND textnodes.textcontent!='' AND textnodes.id=object.id AND object.objectpath LIKE '*comp*/".$site."/%'";
   
@@ -147,8 +149,7 @@ if ($action == "regenerate" && checktoken ($token, $user) && valid_objectname ($
       {
         // list of mostly used keywords
         $keywords_tmp = array_count_values ($keywords);
-        
-        $store = "";
+
         $i = 0;
         
         foreach ($keywords_tmp as $keyword=>$count)
@@ -159,9 +160,6 @@ if ($action == "regenerate" && checktoken ($token, $user) && valid_objectname ($
             $i++;
           }
         }
-        
-        // save keywords
-        if ($store != "") savefile ($mgmt_config['abs_path_data']."config/", $site.".keyword.php", "<?php\n".$store."?>\n");
       }
     } 
     else $show .= "DB error (".$mysqli->errno."): ".$mysqli->error."<br/>\n";
@@ -184,8 +182,7 @@ if ($action == "regenerate" && checktoken ($token, $user) && valid_objectname ($
       {
         // list of mostly used keywords
         $keywords_tmp = array_count_values ($keywords);
-        
-        $store = "";
+
         $i = 0;
         
         foreach ($keywords_tmp as $keyword=>$count)
@@ -196,13 +193,13 @@ if ($action == "regenerate" && checktoken ($token, $user) && valid_objectname ($
             $i++;
           }
         }
-        
-        // save keywords
-        if ($store != "") savefile ($mgmt_config['abs_path_data']."config/", $site.".keyword.php", "<?php\n".$store."?>\n");
       }
     }
     else $show .= "DB error (".$mysqli->errno."): ".$mysqli->error."<br/>\n";
     
+    // save keywords
+    if ($store != "") savefile (getlocation ($keywordfile), getobject ($keywordfile), "<?php\n".$store."?>\n");
+
     $result->close();
     $mysqli->close();
   }
@@ -246,7 +243,7 @@ if (is_file ($keywordfile))
 <div id="hcmsLoadScreen" class="hcmsLoadScreen"></div>
 
 <!-- top bar -->
-<?php echo showtopbar ($text0[$lang], $lang); ?>
+<?php echo showtopbar ($hcms_lang['keyword-analysis'][$lang], $lang); ?>
 
 
 <div id="scrollFrame" style="width:98%; height:95%; overflow:auto;">
@@ -254,16 +251,16 @@ if (is_file ($keywordfile))
   <?php echo showmessage ($show, 560, 120, $lang, "position:absolute; left:15px; top:15px;"); ?>
   
   <?php if ($regenerate) { ?>
-  <button class="hcmsButtonGreen" onclick="document.getElementById('hcmsLoadScreen').style.display='block'; location.href='?action=regenerate&site=<?php echo html_encode ($site); ?>&token=<?php echo createtoken ($user); ?>';"><?php echo $text6[$lang]; ?></button>
+  <button class="hcmsButtonGreen" onclick="document.getElementById('hcmsLoadScreen').style.display='block'; location.href='?action=regenerate&site=<?php echo html_encode ($site); ?>&token=<?php echo createtoken ($user); ?>';"><?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></button>
   <?php } ?>
 
   <?php if (!empty ($show_comp_rank)) { ?>
   <div style="float:left; margin-right:20px;">
-  <p class=hcmsHeadline><?php echo $text1[$lang]; ?></p>
-  <p><?php echo $text2[$lang]; ?></p>
+  <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['keyword-frequency'][$lang]); ?></p>
+  <span style="padding-left:4px;"><?php echo getescapedtext ($hcms_lang['please-click-the-links-below-to-access-the-files'][$lang]); ?></span>
   <table border="0" cellspacing="2" cellpadding="2">
  	  <tr align="left" valign="top">
-      <td class="hcmsHeadline"><?php echo $text3[$lang]; ?></td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['assets'][$lang]); ?></td>
     </tr>
     <?php
     echo $show_comp_rank;
@@ -274,11 +271,11 @@ if (is_file ($keywordfile))
   
   <?php if (!empty ($show_page_rank)) { ?>
   <div style="float:left; margin-right:20px;">
-  <p class=hcmsHeadline><?php echo $text1[$lang]; ?></p>
-  <p><?php echo $text2[$lang]; ?></p>
+  <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['keyword-frequency'][$lang]); ?></p>
+  <span style="padding-left:4px;"><?php echo getescapedtext ($hcms_lang['please-click-the-links-below-to-access-the-files'][$lang]); ?></span>
   <table border="0" cellspacing="2" cellpadding="2">
  	  <tr align="left" valign="top">
-      <td class="hcmsHeadline"><?php echo $text4[$lang]; ?></td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['pages'][$lang]); ?></td>
     </tr>
     <?php
     echo $show_page_rank;
@@ -289,11 +286,11 @@ if (is_file ($keywordfile))
   
   <?php if (!empty ($show_comp_sort)) { ?>
   <div style="float:left; margin-right:20px;">
-  <p class=hcmsHeadline><?php echo $text5[$lang]; ?></p>
-  <p><?php echo $text2[$lang]; ?></p>
+  <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['keywords-sorted-alphabetically'][$lang]); ?></p>
+  <span style="padding-left:4px;"><?php echo getescapedtext ($hcms_lang['please-click-the-links-below-to-access-the-files'][$lang]); ?></span>
   <table border="0" cellspacing="2" cellpadding="2">
  	  <tr align="left" valign="top">
-      <td class="hcmsHeadline"><?php echo $text3[$lang]; ?></td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['assets'][$lang]); ?></td>
     </tr>
     <?php
     echo $show_comp_sort;
@@ -304,11 +301,11 @@ if (is_file ($keywordfile))
   
   <?php if (!empty ($show_page_sort)) { ?>
   <div style="float:left; margin-right:20px;">
-  <p class=hcmsHeadline><?php echo $text5[$lang]; ?></p>
-  <p><?php echo $text2[$lang]; ?></p>
+  <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['keywords-sorted-alphabetically'][$lang]); ?></p>
+  <span style="padding-left:4px;"><?php echo getescapedtext ($hcms_lang['please-click-the-links-below-to-access-the-files'][$lang]); ?></span>
   <table border="0" cellspacing="2" cellpadding="2">
  	  <tr align="left" valign="top">
-      <td class="hcmsHeadline"><?php echo $text4[$lang]; ?></td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['pages'][$lang]); ?></td>
     </tr>
     <?php
     echo $show_page_sort;

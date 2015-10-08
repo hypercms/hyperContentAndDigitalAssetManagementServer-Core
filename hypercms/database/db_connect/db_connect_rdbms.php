@@ -862,7 +862,8 @@ function rdbms_deletecontent ($container_id, $text_id, $user)
 // ----------------------------------------------- search content ------------------------------------------------- 
 function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_from, $date_to, $template, $expression_array, $expression_filename, $filesize, $imagewidth, $imageheight, $imagecolor, $imagetype, $geo_border_sw, $geo_border_ne, $maxhits=1000, $count=false)
 {
-  global $mgmt_config;
+  // user will be provided as global for search expression logging
+  global $mgmt_config, $user;
 
   // set object_type if the search is image or video related
   if (!is_array ($object_type) && (!empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype) || !empty ($filesize)))
@@ -1086,12 +1087,16 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
     {
       $i = 1;
       reset ($expression_array);
+      $expression_log = array();
       
       while (list ($key, $expression) = each ($expression_array))
       {
+        // define search log entry
+        if ($expression != "") $expression_log[] = $mgmt_config['today']."|".$user."|".$expression;
+               
         // advanced text-id based search in textnodes
         if ($expression != "" && $key != "" && $key != "0")
-        { 
+        {        
           if ($i > 1)
           {
             $j = $i - 1;
@@ -1134,7 +1139,10 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
           $i++;
         } 
       }
-
+      
+      // save search expression in search expression log
+      savelog ($expression_log, "search");
+      
       // combine all text_id based search conditions using the operator (default is AND)
       if (isset ($sql_expr_advanced) && is_array ($sql_expr_advanced) && sizeof ($sql_expr_advanced) > 0) $sql_where_textnodes = "(".implode (" ".$operator." ", $sql_expr_advanced).")";
       

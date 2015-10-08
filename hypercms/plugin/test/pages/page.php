@@ -13,7 +13,7 @@ define ("SESSION", "create");
 require ("../../../config.inc.php");
 // hyperCMS API
 require ("../../../function/hypercms_api.inc.php");
-// language file
+// language file of plugin
 require_once ("../lang/page.inc.php");
 
 
@@ -22,8 +22,8 @@ $plugin = getrequest_esc ("plugin");
 $page = getrequest_esc ("page", "locationname");
 $content = getrequest_esc ("content");
 
-// only german and english is supported
-if ($lang != "en" || $lang != "de") $lang = "en";
+// only german and english is supported by plugin
+if ($lang != "en" && $lang != "de") $lang = "en";
 
 // ------------------------------ permission section --------------------------------
 
@@ -44,8 +44,14 @@ checkusersession ($user, false);
 <table width="100%" height="100%">
   <tr>
     <td align="middle" valign="middle">
-      <img src="<?php echo getthemelocation(); ?>img/logo_welcome.gif" />
-      <div><?php echo "<strong>".$text0[$lang].": </strong>".$plugin."<br/>\n<strong>".$text1[$lang].": </strong>".$page."<br/>\n<strong>".$text2[$lang].": </strong>".$content."<br/>\n"; ?></div>
+      <img src="<?php echo getthemelocation(); ?>img/logo_server.png" style="margin:40px;" />
+      <div>
+        <?php
+        echo "<strong>".getescapedtext ($hcms_lang['plugin-name'][$lang]).": </strong>".$plugin."<br/>
+        <strong>".getescapedtext ($hcms_lang['plugin-page'][$lang]).": </strong>".$page."<br/>
+        <strong>".getescapedtext ($hcms_lang['plugin-content'][$lang]).": </strong>".$content."<br/>";
+        ?>
+      </div>
     </td>
   </tr>
 </table>

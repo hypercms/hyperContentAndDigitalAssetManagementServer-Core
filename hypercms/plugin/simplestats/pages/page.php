@@ -16,7 +16,7 @@ require ("../../../config.inc.php");
 require ("../../../function/hypercms_api.inc.php");
 // hyperCMS UI
 require ("../../../function/hypercms_ui.inc.php");
-// language file
+// language file of plugin
 require_once ("../lang/page.inc.php");
 
 
@@ -24,8 +24,8 @@ require_once ("../lang/page.inc.php");
 $site = getrequest_esc ("site", "publicationname");
 $content = getrequest_esc ("content");
 
-// only german and english is supported
-if ($lang != "en" || $lang != "de") $lang = "en";
+// only german and english is supported by plugin
+if ($lang != "en" && $lang != "de") $lang = "en";
 
 // ------------------------------ permission section --------------------------------
 
@@ -44,7 +44,7 @@ checkusersession ($user, false);
 <body class="hcmsWorkplaceGeneric" background="<?php echo getthemelocation(); ?>img/backgrd_empty.png">
 
 <!-- top bar -->
-<?php echo showtopbar ($text0[$lang], $lang); ?>
+<?php echo showtopbar ($hcms_lang['simple-statistics'][$lang], $lang); ?>
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
   <div id="scrollFrame" style="width:98%; height:700px; overflow:auto;">
@@ -52,21 +52,21 @@ checkusersession ($user, false);
   <div style="display:block; margin-bottom:20px;">
   <table border="0" cellspacing="2" cellpadding="0">
  	  <tr align="left" valign="top">
-      <td class="hcmsHeadline"><?php echo $text1[$lang]; ?>: </td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['total-disk-space'][$lang]); ?>: </td>
       <td><?php if ($space = disk_total_space($mgmt_config['abs_path_cms'])) echo number_format (($space/1024/1024/1024), 2, ",", ".")." GB"; else echo "not available"; ?></td>
     </tr>
  	  <tr align="left" valign="top">
-      <td class="hcmsHeadline"><?php echo $text2[$lang]; ?>: </td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['free-disk-space'][$lang]); ?>: </td>
       <td><?php if ($space = disk_free_space($mgmt_config['abs_path_cms'])) echo number_format (($space/1024/1024/1024), 2, ",", ".")." GB"; else echo "not available"; ?></td>
     </tr>
   </table>
   </div>
   
   <div style="float:left; margin-right:20px;">
-  <p class=hcmsHeadline><?php echo $text3[$lang]; ?></p>
+  <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['top-downloaded-files'][$lang]); ?></p>
   <table border="0" cellspacing="2" cellpadding="3">
  	  <tr align="left" valign="top">
-      <td class="hcmsHeadline"><?php echo $text4[$lang]; ?></td><td class="hcmsHeadline" align="right"><?php echo $text5[$lang]; ?></td><td class="hcmsHeadline" align="right"><?php echo $text6[$lang]; ?></td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['object'][$lang]); ?></td><td class="hcmsHeadline" align="right"><?php echo getescapedtext ($hcms_lang['hits'][$lang]); ?></td><td class="hcmsHeadline" align="right"><?php echo getescapedtext ($hcms_lang['traffic-in-mb'][$lang]); ?></td>
     </tr>
     <?php
     $show = "";
@@ -112,10 +112,10 @@ checkusersession ($user, false);
   </div>
   
   <div style="float:left; margin-right:20px;">
-  <p class=hcmsHeadline><?php echo $text7[$lang]; ?></p>
+  <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['top-uploaded-files'][$lang]); ?></p>
   <table border="0" cellspacing="2" cellpadding="3">
  	  <tr align="left" valign="top">
-      <td class="hcmsHeadline"><?php echo $text4[$lang]; ?></td><td class="hcmsHeadline" align="right"><?php echo $text5[$lang]; ?></td><td class="hcmsHeadline" align="right"><?php echo $text6[$lang]; ?></td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['object'][$lang]); ?></td><td class="hcmsHeadline" align="right"><?php echo getescapedtext ($hcms_lang['hits'][$lang]); ?></td><td class="hcmsHeadline" align="right"><?php echo getescapedtext ($hcms_lang['traffic-in-mb'][$lang]); ?></td>
     </tr>
     <?php
     $show = "";

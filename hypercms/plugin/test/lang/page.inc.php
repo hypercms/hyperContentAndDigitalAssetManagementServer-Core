@@ -1,11 +1,8 @@
 <?php
 // text version
-$text0['en'] = "Plugin name";
-$text0['de'] = "Plugin Name";
+$hcms_lang['plugin-page']['en'] = "Plugin page";
+$hcms_lang['plugin-page']['de'] = "Plugin Seite";
 
-$text1['en'] = "Plugin page";
-$text1['de'] = "Plugin Seite";
-
-$text2['en'] = "Plugin content";
-$text2['de'] = "Plugin Inhalt";
+$hcms_lang['plugin-content']['en'] = "Plugin content";
+$hcms_lang['plugin-content']['de'] = "Plugin Inhalt";
 ?>
