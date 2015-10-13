@@ -51,8 +51,12 @@ checkusersession ($user);
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css">
 <script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<!-- Jquery and Jquery UI Autocomplete -->
+<script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
+<!-- Google Maps -->
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script language="JavaScript">
 <!--
@@ -137,6 +141,41 @@ function startSearch (form)
   }
   else return false;
 }
+
+$(document).ready(function()
+{
+  <?php
+  $keywords = array();
+  
+  if (is_file ($mgmt_config['abs_path_data']."log/search.log"))
+  {
+    // load search log
+    $data = file ($mgmt_config['abs_path_data']."log/search.log");
+  
+    if (is_array ($data))
+    {
+      foreach ($data as $record)
+      {
+        list ($date, $user, $keyword_add) = explode ("|", $record);
+  
+        $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
+      }
+      
+      // only unique expressions
+      $keywords = array_unique ($keywords);
+    }
+  }
+  ?>
+  var available_expressions = [<?php echo implode (",\n", $keywords); ?>];
+
+  $("#search_expression").autocomplete({
+    source: available_expressions
+  });
+  
+  $("#image_expression").autocomplete({
+    source: available_expressions
+  });
+});   
 //-->
 </script>
 
@@ -219,7 +258,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
             <tr align="left" valign="top">
               <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>:</td>
               <td>
-                <input type="text" name="search_expression" style="width:200px;" maxlength="60" />
+                <input type="text" name="search_expression" id="search_expression" style="width:200px;" maxlength="60" />
               </td>
             </tr>
             <tr align="left" valign="top">
@@ -756,7 +795,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
             <tr align="left" valign="top">
               <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>:</td>
               <td>
-                <input type="text" name="search_expression" style="width:200px;" maxlength="60" />
+                <input type="text" name="search_expression" id="image_expression" style="width:200px;" maxlength="60" />
               </td>
             </tr>
             <tr align="left" valign="top">

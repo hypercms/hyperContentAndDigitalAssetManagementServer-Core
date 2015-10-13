@@ -1040,7 +1040,7 @@ $token_new = createtoken ($user);
     <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
     <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css">
     <script src="javascript/main.js" type="text/javascript"></script>
-    <!-- We use Jquery and Jquery UI Autocomplete -->
+    <!-- Jquery and Jquery UI Autocomplete -->
     <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
     <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -1236,26 +1236,25 @@ $token_new = createtoken ($user);
         initLinkType();
         
         <?php 
-            $tmpuser = array();
-            
-            if (is_array($alluser_array))
+        $tmpuser = array();
+        
+        if (is_array ($alluser_array))
+        {
+          foreach ($alluser_array as $user_id => $user_login)
+          {
+            if (array_key_exists ($user_id, $allemail_array) && !empty ($allemail_array[$user_id]))
             {
-              foreach ($alluser_array as $user_id => $user_login)
-              {
-                if (array_key_exists($user_id, $allemail_array) && !empty($allemail_array[$user_id]))
-                {
-                  $username = (array_key_exists($user_id, $allrealname_array) && !empty($allrealname_array[$user_id])) ? $allrealname_array[$user_id] : $user_login;
-                  $tmpuser[] = "{ loginname: \"{$user_login}\", id: \"{$user_id}\", username:\"{$username}\", email:\"{$allemail_array[$user_id]}\", label: \"{$username} ({$allemail_array[$user_id]})\" }"; 
-                }
-              }
-              
+              $username = (array_key_exists ($user_id, $allrealname_array) && !empty ($allrealname_array[$user_id])) ? $allrealname_array[$user_id] : $user_login;
+              $tmpuser[] = "{ loginname: \"{$user_login}\", id: \"{$user_id}\", username:\"{$username}\", email:\"{$allemail_array[$user_id]}\", label: \"{$username} ({$allemail_array[$user_id]})\" }"; 
             }
-          ?>
-        var userlist = [<?php echo implode(",\n", $tmpuser);?>];
+          }
+        }
+        ?>
+        var userlist = [<?php echo implode (",\n", $tmpuser); ?>];
         <?php
-          unset($tmpuser);
-          // id for the special element
-          $idspecial = "-99999999";
+        unset ($tmpuser);
+        // id for the special element
+        $idspecial = "-99999999";
         ?>
 
         var noneFound = { id: "<?php echo $idspecial; ?>", label: hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['add-as-recipient'][$lang]); ?>") };
@@ -1357,8 +1356,9 @@ $token_new = createtoken ($user);
           }
         })
         ;
-        // call click function for the first tag!
+        // call click function for the first tap
         $("#menu-Recipient").click();
+        
         $("#mailForm").keypress(function (key) 
         {
           if(key.keyCode === 13 &&  key.target.id != 'mail_body') return false;

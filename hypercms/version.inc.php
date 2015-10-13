@@ -990,8 +990,12 @@ release 10/2015
 - bug fix: pagecontenttype select in template engine has not been added to the form item string
 - updates in simple stats plugin to support new language file format
 - updates in test plugin to support new language file format
+
+version 5.7.15
+release 10/2015
+- implementation of search expressions recommender based on the search history of all users
 */
 
 // current version
-$version = "Version 5.7.14";
+$version = "Version 5.7.15";
 ?>
