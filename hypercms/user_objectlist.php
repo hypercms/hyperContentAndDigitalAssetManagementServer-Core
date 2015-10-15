@@ -264,6 +264,7 @@ var session_id = '<?php session_id(); ?>';
 <div id="contextLayer" style="position:absolute; width:150px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_user" method="post" action="" target="">
     <input type="hidden" name="contextmenustatus" value="" />
+    <input type="hidden" name="contextmenulocked" value="false" />
     <input type="hidden" name="action" value="" />
     <input type="hidden" name="xpos" value="" />
     <input type="hidden" name="ypos" value="" />

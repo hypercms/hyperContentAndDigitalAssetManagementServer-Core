@@ -724,6 +724,7 @@ parent.frames['controlFrame'].location.href='control_objectlist_menu.php?virtual
 <div id="contextLayer" style="position:absolute; width:150px; height:260px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_object" action="" method="post" target="_blank">
     <input type="hidden" name="contextmenustatus" value="" />
+    <input type="hidden" name="contextmenulocked" value="false" />
     <input type="hidden" name="action" value="" />
     <input type="hidden" name="force" value="" />
     <input type="hidden" name="contexttype" value="none" />

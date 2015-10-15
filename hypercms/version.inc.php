@@ -994,6 +994,10 @@ release 10/2015
 version 5.7.15
 release 10/2015
 - implementation of search expressions recommender based on the search history of all users
+- bug fix: deleting folders caused workplace control to display wrong location (folder has been added to location for each step of popup_status)
+- bug fix: deleting folders using the context menu could cause delting other folders since the values of the context menu has not been locked for writing
+- implementation of new JS functions hcms_lockContext and hcms_isLockedContext
+- improvements in JS library for context menu
 */
 
 // current version

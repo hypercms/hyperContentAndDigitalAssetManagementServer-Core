@@ -19,7 +19,7 @@ require ("function/hypercms_ui.inc.php");
 
 // input parameters
 $multiobject = getrequest ("multiobject");
-$location = getrequest_esc ("location", "locationname");
+$location_orig = getrequest_esc ("location", "locationname");
 $folder = getrequest_esc ("folder", "objectname");
 $page = getrequest_esc ("page", "objectname");
 $force = getrequest_esc ("force");
@@ -33,8 +33,9 @@ $token = getrequest ("token");
 // set current location (for action = paste the folder is not part of the location to paste)
 if ($folder != "" && $action != "paste")
 {
-  $location = $location.$folder."/";
+  $location = $location_orig.$folder."/";
 }
+else $location = $location_orig;
 
 // get publication and category
 $site = getpublication ($location);
@@ -136,11 +137,11 @@ if ($authorized == true || $force == "stop")
       // define next process
       if ($working == true)
       {
-        $add_javascript = "document.location.href='".$mgmt_config['url_path_cms']."popup_status.php?force=continue&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&folder=".url_encode($folder)."&page=".url_encode($page)."&token=".$token."';\n";
+        $add_javascript = "document.location.href='".$mgmt_config['url_path_cms']."popup_status.php?force=continue&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&token=".$token."';\n";
       }
       elseif ($working == false)
       {
-        $add_javascript = "document.location.href='".$mgmt_config['url_path_cms']."popup_status.php?force=finish&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&folder=".url_encode($folder)."&page=".url_encode($page)."&token=".$token."';\n"; 
+        $add_javascript = "document.location.href='".$mgmt_config['url_path_cms']."popup_status.php?force=finish&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&token=".$token."';\n"; 
       }    
     }
     // if an error occured
@@ -177,7 +178,7 @@ if ($authorized == true || $force == "stop")
     elseif ($action == "delete")
     {
       // not suitable for EasyEdit
-      $add_javascript = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['controlFrame'].location.href='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."';
+      $add_javascript = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['controlFrame'].location.href='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
     opener.parent.frames['mainFrame'].location.reload();  
     self.close();\n";
     }  
@@ -282,7 +283,7 @@ setTimeout('closepopup()', 1000);
   <form name="stop" action="" method="post">
     <input type="hidden" name="force" value="stop" />
     <input type="hidden" name="action" value="<?php echo $action; ?>" />
-    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+    <input type="hidden" name="location" value="<?php echo $location_orig; ?>" />
     <input type="hidden" name="folder" value="<?php echo $folder; ?>" />
     <input type="hidden" name="page" value="<?php echo $page; ?>" />
     <input type="hidden" name="count" value="<?php echo $count; ?>" />

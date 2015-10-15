@@ -20,6 +20,8 @@ function hcms_loadSidebar()
   {
 		allow_tr_submit = true;
 	}
+  
+  return true;
 }
 
 // reset context menu  
@@ -63,6 +65,37 @@ function hcms_resetContext ()
   
   return true;
 } 
+
+// lock/unlock context menu for writing  
+function hcms_lockContext (status)
+{
+  if (status == "true" || status == true || status == "false" || status == false)
+  {
+    if (status == true) status = "true";
+    if (status == false) status = "false";
+    
+    if (eval (document.forms['contextmenu_object'])) document.forms['contextmenu_object'].elements['contextmenulocked'].value = status;
+    else if (eval (document.forms['contextmenu_user'])) document.forms['contextmenu_user'].elements['contextmenulocked'].value = status;
+    else if (eval (document.forms['contextmenu_queue'])) document.forms['contextmenu_queue'].elements['contextmenulocked'].value = status;
+  }
+
+  return true;
+}
+
+// lock/unlock status of context menu  
+function hcms_isLockedContext ()
+{
+  var status = "false";
+  
+  if (eval (document.forms['contextmenu_object'])) status = document.forms['contextmenu_object'].elements['contextmenulocked'].value;
+  else if (eval (document.forms['contextmenu_user'])) status = document.forms['contextmenu_user'].elements['contextmenulocked'].value;
+  else if (eval (document.forms['contextmenu_queue'])) status = document.forms['contextmenu_queue'].elements['contextmenulocked'].value;
+  
+  if (status == "true" || status == true) var result = true;
+  else var result = false;
+
+  return result;
+}
 
 // retrieve mouse x-y position
 function hcms_getMouseXY (e) 
@@ -131,7 +164,9 @@ function hcms_getWindowWidth (win)
 			return win.document.documentElement.clientWidth; 
 		} 
 		else return win.document.body.offsetWidth; 
-	} 
+	}
+  
+  return true;
 } 
 
 // retrieve browser window height 
@@ -150,7 +185,9 @@ function hcms_getWindowHeight (win)
 			return win.document.documentElement.clientHeight; 
 		} 
 		else return win.document.body.offsetHeight; 
-	} 
+	}
+  
+  return true;
 }
 
 // position the contextmenu layer and make it visible
@@ -202,7 +239,7 @@ function hcms_showContextmenu ()
     
     var contexttype = document.forms['contextmenu_object'].elements['contexttype'].value;
     var multiobject = document.forms['contextmenu_object'].elements['multiobject'].value;
-    
+
     if (contextenable == 1)
     {
       if (contexttype == "object" || contexttype == "folder" || (multiobject != "" && contexttype == "media"))
@@ -323,10 +360,15 @@ function hcms_submitWindow(formName, features, width, height)
   document.forms[formName].target = winName;
   hcms_openWindow('', winName, features, width, height);
   document.forms[formName].submit();
+  
+  return true;
 }
 
 function hcms_createContextmenuItem (action)
 {
+  // lock
+  hcms_lockContext ('true');
+  
   if (eval (document.forms['contextmenu_object']))
   {
     var contexttype = document.forms['contextmenu_object'].elements['contexttype'].value;
@@ -372,7 +414,7 @@ function hcms_createContextmenuItem (action)
         URLfile = "popup_notify.php";
           
         document.forms['contextmenu_object'].attributes['action'].value = URLfile;
-        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no','560','420');  
+        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no','560','420');
       }
       else if (action == "chat")
       {
@@ -399,7 +441,7 @@ function hcms_createContextmenuItem (action)
       {
         document.forms['contextmenu_object'].attributes['action'].value = 'popup_action.php';
         document.forms['contextmenu_object'].elements['action'].value = action;
-        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no,width=400,height=120','400','120'); 
+        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no,width=400,height=120','400','120');
       }  
       else if (action == "paste")
       {
@@ -412,7 +454,7 @@ function hcms_createContextmenuItem (action)
         document.forms['contextmenu_object'].attributes['action'].value = URLfile;
         document.forms['contextmenu_object'].elements['action'].value = action;
         document.forms['contextmenu_object'].elements['force'].value = 'start';
-        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no','400','320');   
+        hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no','400','370');
       }
       else if (action == "favorites_delete")
       {
@@ -488,12 +530,15 @@ function hcms_createContextmenuItem (action)
     }  
   }
   
+  // unlock
+  hcms_lockContext ('false');
+  
   return true;
 }
 
 function hcms_setObjectcontext(site, cat, location, page, pagename, filetype, media, folder, folder_id, token)
 {
-  if (eval (document.forms['contextmenu_object']))
+  if (eval (document.forms['contextmenu_object']) && hcms_isLockedContext() == false)
   {
     // hide and reset context menu
     hcms_hideContextmenu();
@@ -507,7 +552,7 @@ function hcms_setObjectcontext(site, cat, location, page, pagename, filetype, me
     else contexttype = "none";
     
     var contextmenu_form = document.forms['contextmenu_object'];
-    
+
     contextmenu_form.elements['contexttype'].value = contexttype;
     contextmenu_form.elements['xpos'].value = tempX;
     contextmenu_form.elements['ypos'].value = tempY;
@@ -522,11 +567,13 @@ function hcms_setObjectcontext(site, cat, location, page, pagename, filetype, me
     if (eval (contextmenu_form.elements['folder_id'])) contextmenu_form.elements['folder_id'].value = folder_id;
     contextmenu_form.elements['token'].value = token;
   }
+  
+  return true;
 }
 
 function hcms_setUsercontext(site, login, token)
 {
-  if (eval (document.forms['contextmenu_user']))
+  if (eval (document.forms['contextmenu_user']) && hcms_isLockedContext() == false)
   {
     // hide and reset context menu
     hcms_hideContextmenu();
@@ -540,11 +587,13 @@ function hcms_setUsercontext(site, login, token)
     contextmenu_form.elements['login'].value = login;
     contextmenu_form.elements['token'].value = token;
   }
+  
+  return true;
 }
 
 function hcms_setQueuecontext(site, cat, location, page, pagename, filetype, queueuser, queue_id, token)
 {
-  if (eval (document.forms['contextmenu_queue']))
+  if (eval (document.forms['contextmenu_queue']) && hcms_isLockedContext() == false)
   {
     // hide and reset context menu
     hcms_hideContextmenu();
@@ -564,6 +613,8 @@ function hcms_setQueuecontext(site, cat, location, page, pagename, filetype, que
     contextmenu_form.elements['queue_id'].value = queue_id;
     contextmenu_form.elements['token'].value = token;
   }
+  
+  return true;
 }
 
 // replace string

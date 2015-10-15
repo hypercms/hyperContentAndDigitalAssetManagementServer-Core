@@ -683,6 +683,7 @@ function sendtochat (text)
 <div id="contextLayer" style="position:absolute; width:150px; height:300px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_object" action="" method="post" target="_blank">
     <input type="hidden" name="contextmenustatus" value="" />
+    <input type="hidden" name="contextmenulocked" value="false" />
     <input type="hidden" name="action" value="" />
     <input type="hidden" name="force" value="" />
     <input type="hidden" name="contexttype" value="none" />
