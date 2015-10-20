@@ -209,7 +209,9 @@ if ($intention == "sendmail" && checktoken ($token, $user))
       {
         $login = "User".date ("YmdHis", time());
         $user_login[] = $login;
-        $password = $confirm_password = substr (session_id(), 0, 8);
+        
+        // generate password from upper case letter and session ID
+        $password = $confirm_password = "P".substr (session_id(), 0, 7);
            
         $result = createuser ($site, $login, $password, $confirm_password, $user);
         
@@ -907,7 +909,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
   }
   else
   {
-    $general_error = $hcms_lang['object-is-not-defined'][$lang];
+    $general_error[] = $hcms_lang['object-is-not-defined'][$lang];
   }
   
   // ------------ save recipients and create new task for user on success --------------
@@ -1397,19 +1399,19 @@ $token_new = createtoken ($user);
         $show = "<div style=\"width:100%; max-height:190px; z-index:10; overflow:auto;\">\n";
               
         // success message
-        if (!empty ($mail_success))
+        if (!empty ($mail_success) && is_array ($mail_success))
         {
           $show .= "<strong>".getescapedtext ($hcms_lang['e-mail-was-sent-successfully-to-'][$lang])."</strong><br />\n".implode (", ", html_encode ($mail_success))."<br />\n";
         }
               
         // mail error message
-        if (!empty ($mail_error))
+        if (!empty ($mail_error) && is_array ($mail_error))
         {
           $show .= "<strong>".getescapedtext ($hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang])."</strong><br />\n".implode ("<br />", html_encode ($mail_error))."<br />\n";
         }
               
         // general error message
-        if (!empty ($general_error))
+        if (!empty ($general_error) && is_array ($general_error))
         {
           $show .= implode ("<br />", $general_error)."<br />\n";
         }

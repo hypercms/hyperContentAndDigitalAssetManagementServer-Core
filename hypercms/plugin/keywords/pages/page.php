@@ -97,12 +97,12 @@ function splitkeywords ($string)
   {
     $string = str_replace ("\n", "", $string);
     $result_array = array();
-  	$array1 = explode (",", $string);
+    $array1 = explode (",", $string);
         
-  	foreach ($array1 as $entry1)
+    foreach ($array1 as $entry1)
     {
-      $result_array[] = trim ($entry1);
-  	}
+      if (strlen ($entry1) <= 255) $result_array[] = trim ($entry1);
+    }
     
     if (is_array ($result_array)) return $result_array;
     else return false;

@@ -128,7 +128,7 @@ $(document).ready(function()
         <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
           <input type="hidden" name="action" value="base_search" />
           <input type="hidden" name="search_dir" value="" />
-          <input type="hidden" name="maxhits" value="1000" />
+          <input type="hidden" name="maxhits" value="500" />
           <input type="text" name="search_expression" id="search_expression" style="width:200px;" maxlength="60" value="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" onfocus="if (this.value == '<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>') this.value=''" onblur="if(this.value == '') this.value='<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>'" />
           <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onClick="if (document.forms['searchform_general'].elements['search_expression'].value=='<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>') document.forms['searchform_general'].elements['search_expression'].value=''; if (document.forms['searchform_general'].elements['search_expression'].value!='') document.forms['searchform_general'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" style="border:0; cursor:pointer;" align="absmiddle" title="OK" alt="OK" />
         </form>

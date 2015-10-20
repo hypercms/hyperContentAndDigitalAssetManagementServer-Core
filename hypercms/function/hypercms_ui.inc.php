@@ -769,12 +769,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               rename ($thumb_root.$file_info['filename'].".pdf", $thumb_root.$file_info['filename'].".thumb.pdf");
               $thumb_pdf_exists = true;
             }
+            else $thumb_pdf_exists = false;
             
             // thumb pdf exsists
             if ($thumb_pdf_exists != false)
             {
               // using pdfjs with thumbnail file via iframe
-              $doc_link = cleandomain ($mgmt_config['url_path_cms'])."explorer_wrapper.php?site=".$site."&name=".$medianame_thumb."&media=".$site."/".$mediafile_thumb."&token=".hcms_crypt ($site."/".$mediafile_thumb).$type."&ts=".time();
+              $doc_link = cleandomain ($mgmt_config['url_path_cms'])."explorer_wrapper.php?site=".$site."&name=".$medianame_thumb."&media=".$site."/".$mediafile_thumb."&token=".hcms_crypt ($site."/".$mediafile_thumb)."&ts=".time();
               $mediaview = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
             }
             // thumb pdf does not exsist

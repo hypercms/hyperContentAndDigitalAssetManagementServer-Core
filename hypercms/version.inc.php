@@ -995,9 +995,17 @@ version 5.7.15
 release 10/2015
 - implementation of search expressions recommender based on the search history of all users
 - bug fix: deleting folders caused workplace control to display wrong location (folder has been added to location for each step of popup_status)
-- bug fix: deleting folders using the context menu could cause delting other folders since the values of the context menu has not been locked for writing
+- bug fix: deleting folders using the context menu could cause deleting other folders since the values of the context menu has not been locked for writing
 - implementation of new JS functions hcms_lockContext and hcms_isLockedContext
 - improvements in JS library for context menu
+- improvements in frameset_main_linking to support search expression recommender, removed dynamical framesets, implementation of sidebar configuration check
+- implementation of max keyword length of 255 digits to avoid long strings that have beem imported as keywords (e.g. Adobe Indesign documents with unreadable keyword strings)
+- bug fix: location has been undefined in popup_status if no folder has been provided as input request
+- changed max search hist from 1000 to 500 in top bar search forms
+- bug fix: user_sendlink did not define upper case letter in password to fullfill strong password criteria
+- bug fix: user_sendlink did not set all general_error's as array element
+- implementation of a new standard design theme
+- bug fix: undefined variable $type and $thumb_pdf_exists in function showmedia in hyperCMS UI
 */
 
 // current version

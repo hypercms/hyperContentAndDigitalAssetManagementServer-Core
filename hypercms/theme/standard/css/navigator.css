@@ -26,7 +26,7 @@
   padding: 0;
   width: 100%;
   height: 100%;
-  background-color: #E0E6ED;
+  background-color: #DFEBFE;
 }
 
 .hcmsWorkplaceObjectlistLinks
@@ -405,20 +405,20 @@ html, body, table, td, span
 .hcmsTableHeader
 {
   background-color: #61A3F9;
-	border-left: 1px solid #99CCFF;
-	border-right: 1px solid #0000CC;
-	border-top: 1px solid #99CCFF;
-	border-bottom: 1px solid #0000CC;
+  border-left: 1px solid #99CCFF;
+  border-right: 1px solid #61A3F9;
+  border-top: 1px solid #579DF7;
+  border-bottom: 1px solid #61A3F9;
   cursor: pointer;
 }
 
 .hcmsTableHeader:hover
 {
   background-color: #7BB5FF;
-	border-left: 1px solid #99CCFF;
-	border-right: 1px solid #0000CC;
-	border-top: 1px solid #99CCFF;
-	border-bottom: 1px solid #0000CC;
+  border-left: 1px solid #99CCFF;
+  border-right: 1px solid #7BB5FF;
+  border-top: 1px solid #99CCFF;
+  border-bottom: 1px solid #7BB5FF;
   cursor: pointer;
 }
 
