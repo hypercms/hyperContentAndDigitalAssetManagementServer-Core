@@ -6,6 +6,7 @@ $hcms_lang_codepage['ru'] = "utf-8";
 $hcms_lang_date['ru'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['ru'] = "Запомни меня";
 $hcms_lang['my-recent-tasks']['ru'] = "Мои последние задачи";
 $hcms_lang['my-recent-objects']['ru'] = "Мои последние объекты";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['ru'] = "Загрузки статистика в этом месяце и для публикации";

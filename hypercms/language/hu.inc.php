@@ -6,6 +6,7 @@ $hcms_lang_codepage['hu'] = "utf-8";
 $hcms_lang_date['hu'] = 'd.m.Y H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['hu'] = "Emlékezz rám";
 $hcms_lang['my-recent-tasks']['hu'] = "Az újabb feladatok";
 $hcms_lang['my-recent-objects']['hu'] = "Az én újabb objektumok";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['hu'] = "Le- és feltöltési statisztikák és az ezt követő hónap";

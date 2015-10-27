@@ -6,6 +6,7 @@ $hcms_lang_codepage['ur'] = "utf-8";
 $hcms_lang_date['ur'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['ur'] = "مجھے پہچانتے ہو";
 $hcms_lang['my-recent-tasks']['ur'] = "میری حالیہ والو";
 $hcms_lang['my-recent-objects']['ur'] = "میری حالیہ اسکرو";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['ur'] = "اس معلومات چڑھانا اس ماہ کے اعداد و شمار اور اشاعت";

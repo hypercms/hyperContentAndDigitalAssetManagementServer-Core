@@ -6,6 +6,7 @@ $hcms_lang_codepage['bn'] = "utf-8";
 $hcms_lang_date['bn'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['bn'] = "আমাকে মনে কর";
 $hcms_lang['my-recent-tasks']['bn'] = "সাম্প্রতিক বছরগুলোতে কাজ আমার";
 $hcms_lang['my-recent-objects']['bn'] = "আমার সাম্প্রতিক বছরগুলোতে বিরোধীতা";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['bn'] = "সফটওয়্যার ডাউনলোড/এক স্তর ওপরে এই মাসের পরিসংখ্যান ও প্রকাশনা";

@@ -3,6 +3,13 @@ var nn6= (document.getElementById && !document.all);
 var ie4= (document.all && !document.getElementById);
 var ie5= (document.all && document.getElementById);
 
+// ------------------------ get URL paramater ----------------------------
+
+function hcms_getURLparameter (name)
+{
+  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+}
+
 // ---------------------- standard AJAX request --------------------------
 
 function hcms_ajaxService (url)
@@ -32,7 +39,7 @@ function hcms_ajaxService (url)
   xmlhttp.send();
 }
 
-// ---------------------- loading content from iframe to div --------------------------
+// ----------------- loading content from iframe to div ---------------------
 
 function hcms_loadPage (id, nestref, url)
 {
@@ -60,7 +67,7 @@ function hcms_showPage (id)
   }
 }
 
-// ------------------------------ standard functions -------------------------------
+// --------------------------- standard functions ----------------------------
 
 function hcms_setGlobalVar (name, value)
 {

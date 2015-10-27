@@ -6,6 +6,7 @@ $hcms_lang_codepage['sq'] = "utf-8";
 $hcms_lang_date['sq'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['sq'] = "mua më kujtoni";
 $hcms_lang['my-recent-tasks']['sq'] = "Detyra ime të fundit";
 $hcms_lang['my-recent-objects']['sq'] = "Objektet sime të fundit";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['sq'] = "Shkarko/Upload statistika për këtë muaj dhe për Publikim";

@@ -6,6 +6,7 @@ $hcms_lang_codepage['sl'] = "utf-8";
 $hcms_lang_date['sl'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['sl'] = "Zapomni si me";
 $hcms_lang['my-recent-tasks']['sl'] = "Moje zadnje naloge";
 $hcms_lang['my-recent-objects']['sl'] = "Moje zadnje predmetov";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['sl'] = "Download/Upload statistika za ta mesec in za objavo";

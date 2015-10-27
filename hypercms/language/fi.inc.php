@@ -6,6 +6,7 @@ $hcms_lang_codepage['fi'] = "utf-8";
 $hcms_lang_date['fi'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['fi'] = "Muista minut";
 $hcms_lang['my-recent-tasks']['fi'] = "Minun viimeisimmät tehtävät";
 $hcms_lang['my-recent-objects']['fi'] = "Viimeisimmät kohteet";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['fi'] = "Lataa ja lataa tilastotiedot tässä kuussa ja julkaisemista varten";

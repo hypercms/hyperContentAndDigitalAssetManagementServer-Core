@@ -6,6 +6,7 @@ $hcms_lang_codepage['tr'] = "utf-8";
 $hcms_lang_date['tr'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['tr'] = "Beni hatırla";
 $hcms_lang['my-recent-tasks']['tr'] = "My son görevleri";
 $hcms_lang['my-recent-objects']['tr'] = "My son nesneler";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['tr'] = "Indirme/Yükleme istatistikleri bu ay için ve Yayın için";

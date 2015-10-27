@@ -317,29 +317,37 @@ if (checkuserip (getuserip ()) == true)
             <td class=\"hcmsTextOrange\"><strong>".$show."</strong></td>
           </tr>\n";
           
-    if ($mgmt_config['instances']) $show .= "<tr>
+    if (!empty ($mgmt_config['instances'])) $show .= "
+          <tr id=\"sentinstance_container\">
             <td><b>".getescapedtext ($hcms_lang['instance'][$lang])."</b></td>
             <td>
-              <input type=\"text\" name=\"sentinstance\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
+              <input type=\"text\" id=\"sentinstance\" name=\"sentinstance\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
             </td>
           </tr>\n";
           
-    $show .= "<tr>
+    $show .= "
+          <tr>
             <td><b>".getescapedtext ($hcms_lang['user'][$lang])."</b></td>
             <td>
-              <input type=\"text\" name=\"sentuser\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
+              <input type=\"text\" id=\"sentuser\" name=\"sentuser\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
             </td>
           </tr>
           <tr>
             <td><b>".getescapedtext ($hcms_lang['password'][$lang])."</b></td>
             <td>
-              <input type=\"password\" name=\"sentpasswd\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
+              <input type=\"password\" id=\"sentpasswd\" name=\"sentpasswd\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
+            </td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td style=\"padding:4px 0px 4px 0px;\">
+              <input id=\"remember\" type=\"checkbox\" /> ".getescapedtext ($hcms_lang['remember-me'][$lang])."
             </td>
           </tr>
           <tr>
             <td>&nbsp;</td>   
             <td>
-              <button class=\"hcmsButtonGreen\" style=\"width:155px; heigth:20px;\" onClick=\"document.forms['login'].submit();\">Log in</button>
+              <button class=\"hcmsButtonGreen\" style=\"width:155px; heigth:20px;\" onClick=\"submitlogin()\">Log in</button>
             </td>
           </tr>
           <tr>
@@ -384,6 +392,25 @@ else
 <!--
 function focusform()
 {
+  <?php if (!empty ($mgmt_config['instances'])) { ?>
+  // if instance parameter has been provided via GET
+  if (hcms_getURLparameter('i') !== null)
+  {
+    document.getElementById('sentinstance').value = hcms_getURLparameter('i');
+    document.getElementById('sentinstance_container').style.display = "none";
+  }
+  // if local storage saved instance
+  else if (localStorage.getItem('instance') !== null)
+  {
+    document.getElementById('sentinstance').value = localStorage.getItem('instance');
+    document.getElementById('sentinstance_container').style.display = "none";
+  }
+  <?php } ?>
+
+  // username and password from local storage
+  if (localStorage.getItem('username') !== null) document.getElementById('sentuser').value = localStorage.getItem('username'); 
+  if (localStorage.getItem('password') !== null) document.getElementById('sentpasswd').value = localStorage.getItem('password');
+  
   document.forms['login'].elements['sentuser'].focus();
 }
 
@@ -400,6 +427,22 @@ function is_iphone()
 function html5support()
 {
   if (eval (document.forms['login']) && hcms_html5file()) document.forms['login'].elements['html5support'].value = '1';
+}
+
+function submitlogin()
+{
+  if (document.getElementById('sentinstance')) var instance = document.getElementById('sentinstance').value;
+  var username = document.getElementById('sentuser').value;
+  var password = document.getElementById('sentpasswd').value;
+
+  if (document.getElementById('remember').checked == true)
+  {
+    if (document.getElementById('sentinstance')) localStorage.setItem('instance', instance);
+    localStorage.setItem('username', username);
+    localStorage.setItem('password', password);
+  }
+
+  document.forms['login'].submit();
 }
 //-->
 </script>

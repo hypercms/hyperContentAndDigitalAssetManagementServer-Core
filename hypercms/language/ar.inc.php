@@ -6,6 +6,7 @@ $hcms_lang_codepage['ar'] = "utf-8";
 $hcms_lang_date['ar'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['ar'] = "تذكرنى";
 $hcms_lang['my-recent-tasks']['ar'] = "المهام الاخيرة";
 $hcms_lang['my-recent-objects']['ar'] = "الأشياء الأخيرة";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['ar'] = "تنزيل / تحميل إحصائيات هذا الشهر نشر";

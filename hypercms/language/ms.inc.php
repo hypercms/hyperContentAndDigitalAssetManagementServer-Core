@@ -6,6 +6,7 @@ $hcms_lang_codepage['ms'] = "utf-8";
 $hcms_lang_date['ms'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['ms'] = "Ingat aku";
 $hcms_lang['my-recent-tasks']['ms'] = "Saya terkini tugasan";
 $hcms_lang['my-recent-objects']['ms'] = "Saya objek terbaru";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['ms'] = "Muatturun awak muat naik statistik untuk bulan ini dan untuk memperjelas bukunya";

@@ -6,6 +6,7 @@ $hcms_lang_codepage['ja'] = "utf-8";
 $hcms_lang_date['ja'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['ja'] = "私を覚えてますか";
 $hcms_lang['my-recent-tasks']['ja'] = "私の最近のタスク";
 $hcms_lang['my-recent-objects']['ja'] = "私の最近のオブジェクト";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['ja'] = "この月では、パブリケーションのアップロード/ダウンロードの統計情報";

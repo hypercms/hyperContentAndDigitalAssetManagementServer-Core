@@ -6,6 +6,7 @@ $hcms_lang_codepage['cz'] = "utf-8";
 $hcms_lang_date['cz'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['cz'] = "Zapamatuj si mě";
 $hcms_lang['my-recent-tasks']['cz'] = "Mé nedávné úkoly";
 $hcms_lang['my-recent-objects']['cz'] = "Mé nedávné objekty";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['cz'] = "Stáhnout/Uložit statistické údaje pro tento měsíc a pro zveřejnění";

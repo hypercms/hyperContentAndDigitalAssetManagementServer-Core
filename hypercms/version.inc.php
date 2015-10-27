@@ -991,8 +991,8 @@ release 10/2015
 - updates in simple stats plugin to support new language file format
 - updates in test plugin to support new language file format
 
-version 5.7.15
-release 10/2015
+version 5.8.0
+release 11/2015
 - implementation of search expressions recommender based on the search history of all users
 - bug fix: deleting folders caused workplace control to display wrong location (folder has been added to location for each step of popup_status)
 - bug fix: deleting folders using the context menu could cause deleting other folders since the values of the context menu has not been locked for writing
@@ -1006,8 +1006,12 @@ release 10/2015
 - bug fix: user_sendlink did not set all general_error's as array element
 - implementation of a new standard design theme
 - bug fix: undefined variable $type and $thumb_pdf_exists in function showmedia in hyperCMS UI
+- new set of user manuals
+- implementation of new main JS function hcms_getURLparameter
+- implementation of "Remember me" feature for logon, using the local storage of the browser
+- implementation of new text in all language files for "Remember me" feature
 */
 
 // current version
-$version = "Version 5.7.15";
+$version = "Version 5.8.0";
 ?>

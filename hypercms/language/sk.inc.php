@@ -6,6 +6,7 @@ $hcms_lang_codepage['sk'] = "utf-8";
 $hcms_lang_date['sk'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['sk'] = "Pamätaj na mňa";
 $hcms_lang['my-recent-tasks']['sk'] = "Moje posledné úlohy";
 $hcms_lang['my-recent-objects']['sk'] = "Moje posledné objekty";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['sk'] = "Download/upload štatistika pre tento mesiac a na zverejnenie";

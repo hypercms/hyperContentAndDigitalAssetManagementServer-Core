@@ -6,6 +6,7 @@ $hcms_lang_codepage['pt'] = "utf-8";
 $hcms_lang_date['pt'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['remember-me']['pt'] = "Lembre de mim";
 $hcms_lang['my-recent-tasks']['pt'] = "A minha recente tarefas";
 $hcms_lang['my-recent-objects']['pt'] = "A minha recente objetos";
 $hcms_lang['downloadupload-statistics-for-this-month-and-for-publication']['pt'] = "Download/Upload estatísticas para este mês e para publicação";
