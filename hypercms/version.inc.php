@@ -1010,8 +1010,14 @@ release 11/2015
 - implementation of new main JS function hcms_getURLparameter
 - implementation of "Remember me" feature for logon, using the local storage of the browser
 - implementation of new text in all language files for "Remember me" feature
+- implementation of workflow as a module that is part of the Standard and Enterprise Edition
+- implementation of absolute path check for references to manuals
+- implementation of absolute URL in hypercms_main API as referrer to empty.php
+
+version 5.8.1
+release 11/2015
 */
 
 // current version
-$version = "Version 5.8.0";
+$version = "Version 5.8.1";
 ?>

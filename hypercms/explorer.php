@@ -632,7 +632,7 @@ else
           $point->setOnClick('hcms_jstree_toggle_preventDefault("main", event);');
           $point->setOnMouseOver('hcms_resetContext();');
           
-          if ($mgmt_config['instances'] && checkadminpermission () && checkrootpermission ('site') && is_file ($mgmt_config['abs_path_cms']."connector/instance/frameset_instance.php"))
+          if (is_file ($mgmt_config['abs_path_cms']."connector/instance/frameset_instance.php") && $mgmt_config['instances'] && checkadminpermission () && checkrootpermission ('site'))
           {
             $subpoint = new hcms_menupoint($hcms_lang['instance-management'][$lang], "connector/instance/frameset_instance.php?site=*Null*", 'instance.gif');
             $subpoint->setOnClick('changeSelection(this)');
@@ -677,7 +677,7 @@ else
             $point->addSubPoint($subpoint);
           }
           
-          if ($site != "hcms_empty" && checkrootpermission ('site') && is_file ($mgmt_config['abs_path_cms']."connector/imexport/frameset_imexport.php"))
+          if (is_file ($mgmt_config['abs_path_cms']."connector/imexport/frameset_imexport.php") && $site != "hcms_empty" && checkrootpermission ('site'))
           {
             $subpoint = new hcms_menupoint($hcms_lang['importexport'][$lang], "connector/imexport/frameset_imexport.php?site=*Null*", 'imexport.gif');
             $subpoint->setOnClick('changeSelection(this)');
@@ -782,14 +782,14 @@ else
         }
         
         // --------------------------------------------- workflow -----------------------------------------------------
-        if (!$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'workflow'))
+        if (is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php") && !$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'workflow'))
         {
           $point = new hcms_menupoint($hcms_lang['workflow'][$lang], '#wrkflw_'.$site, 'workflow.gif', 'wrkflw_'.$site);
           $point->setOnClick('hcms_jstree_toggle_preventDefault("wrkflw_'.$site.'", event);');
             
           if (checkglobalpermission ($site, 'workflowproc'))
           {
-            $subpoint = new hcms_menupoint($hcms_lang['workflow-management'][$lang], "frameset_workflow.php?site=".url_encode($site)."&cat=man", 'workflow.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['workflow-management'][$lang], "workflow/frameset_workflow.php?site=".url_encode($site)."&cat=man", 'workflow.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -798,7 +798,7 @@ else
           
           if (checkglobalpermission ($site, 'workflowscript'))
           {
-            $subpoint = new hcms_menupoint($hcms_lang['workflow-scripts'][$lang], "frameset_workflow.php?site=".url_encode($site)."&cat=script", 'workflowscript.gif');
+            $subpoint = new hcms_menupoint($hcms_lang['workflow-scripts'][$lang], "workflow/frameset_workflow.php?site=".url_encode($site)."&cat=script", 'workflowscript.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');

@@ -444,6 +444,7 @@ elseif ($preview == "yes")
       <td align="center"><input type="checkbox" name="permission[persprofedit]" value="1" <?php if ($persprofedit==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <?php } ?>
+    <?php if (is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php")) { ?>
     <tr class="hcmsRowHead1"> 
       <td nowrap="nowrap" align="left" valign="bottom"> <b><img src="<?php echo getthemelocation(); ?>img/workflow.gif" width="16px" height="16px" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-workflow-management'][$lang]); ?>:</b></td>
       <td align="center"><input type="checkbox" name="permission[workflowglobal]" value="1" <?php if ($workflowglobal==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
@@ -484,6 +485,7 @@ elseif ($preview == "yes")
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['edit-workflow-script'][$lang]); ?>:</td>
       <td align="center"><input type="checkbox" name="permission[workflowscriptedit]" value="1" <?php if ($workflowscriptedit==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
+    <?php } ?>
     <tr class="hcmsRowHead1"> 
       <td nowrap="nowrap" align="left" valign="bottom"> <b><img src="<?php echo getthemelocation(); ?>img/template.gif" width="16px" height="16px" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-template-management'][$lang]); ?>:</b></td>
       <td align="center"><input type="checkbox" name="permission[templateglobal]" value="1" <?php if ($templateglobal==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
