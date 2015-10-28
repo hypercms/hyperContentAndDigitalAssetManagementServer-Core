@@ -1020,5 +1020,5 @@ release 11/2015
 */
 
 // current version
-$version = "Version 5.8.0";
+$version = "Version 5.8.1";
 ?>
