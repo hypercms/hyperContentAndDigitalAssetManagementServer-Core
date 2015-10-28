@@ -4603,6 +4603,9 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
       $cat = getcategory ($site, $location);
     }
     
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
     // check contentfile and viewstore
     if ($contentfile == "" || $viewstore == "")
     {
@@ -4635,7 +4638,7 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
         {
           $wf_array = explode ("\n", trim ($wf_data));                 
         
-          if (is_array ($wf_array) && sizeof ($wf_array) >= 1)
+          if (is_array ($wf_array) && sizeof ($wf_array) > 0)
           {   
             $folder_current = convertpath ($site, $location, $cat);
           
@@ -4648,6 +4651,10 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
               if (substr_count ($object_id, "/") == 0) $folder = rdbms_getobject ($object_id);
               else $folder = $object_id;
               
+              // remove .folder from folder location
+              if (substr (trim ($folder), -8) == "/.folder") $folder = substr (trim ($folder), 0, strlen(trim ($folder)) - 7);
+
+              // compare workflow folder with current location
               if (@substr_count ($folder_current, $folder) == 1) $wf_apply_array[] = $wf_folder;          
             }
             

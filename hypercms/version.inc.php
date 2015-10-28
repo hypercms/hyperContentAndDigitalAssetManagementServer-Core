@@ -1016,8 +1016,9 @@ release 11/2015
 
 version 5.8.1
 release 11/2015
+- bug fix: function checkworkflow did not exclude .folder of the folder path for comparison 
 */
 
 // current version
-$version = "Version 5.8.1";
+$version = "Version 5.8.0";
 ?>
