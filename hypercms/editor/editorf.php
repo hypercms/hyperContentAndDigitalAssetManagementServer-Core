@@ -237,7 +237,7 @@ $token = createtoken ($user);
   						if (intval ($mgmt_config['autosave']) > 0) {
   						?>
               <div class="hcmsButton" style="height:22px;">
-  						  <input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" /><label for="autosave">&nbsp;<?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?></label>
+  						  &nbsp;<input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" /><label for="autosave">&nbsp;<?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?></label>&nbsp;
               </div>
   						<?php 
   						} 

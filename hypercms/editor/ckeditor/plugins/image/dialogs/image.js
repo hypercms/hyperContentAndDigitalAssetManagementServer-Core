@@ -233,7 +233,7 @@
                         }, {
                             type: "button",
                             id: "browse",
-                            style: "display:inline-block;margin-top:10px;",
+                            style: "display:inline-block;margin-top:15px;",
                             align: "center",
                             label: c.lang.common.browseServer,
                             hidden: !0,
@@ -536,7 +536,7 @@
                         target: "Link:txtUrl",
                         url: c.config.filebrowserImageBrowseLinkUrl
                     },
-                    style: "float:right",
+                    style: "display:inline-block;margin-top:10px;margin-bottom:10px;",
                     hidden: !0,
                     label: c.lang.common.browseServer
                 }, {
