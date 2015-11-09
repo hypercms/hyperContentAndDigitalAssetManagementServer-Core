@@ -6,6 +6,8 @@ $hcms_lang_codepage['zh-s'] = "utf-8";
 $hcms_lang_date['zh-s'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['share']['zh-s'] = "Share";
+$hcms_lang['social-media-sharing']['zh-s'] = "Social Media sharing";
 $hcms_lang['remember-me']['zh-s'] = "记住账号";
 $hcms_lang['my-recent-tasks']['zh-s'] = "我最近的任务";
 $hcms_lang['my-recent-objects']['zh-s'] = "我最近对象";

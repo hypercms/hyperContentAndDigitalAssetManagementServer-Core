@@ -6,6 +6,8 @@ $hcms_lang_codepage['ko'] = "utf-8";
 $hcms_lang_date['ko'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['share']['ko'] = "Share";
+$hcms_lang['social-media-sharing']['ko'] = "Social Media sharing";
 $hcms_lang['remember-me']['ko'] = "날 기억해";
 $hcms_lang['my-recent-tasks']['ko'] = "나의 최근 작업";
 $hcms_lang['my-recent-objects']['ko'] = "내 최근 오브젝트";

@@ -7224,9 +7224,16 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       </table>
     </div>
     <div style=\"width:100%; height:32px;\">&nbsp;</div>\n";
-        
-        // table for form
-        $viewstore .= "
+    
+      // include share links for image and video files
+      if (is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/") && !empty ($mgmt_config[$site]['sharesociallink']) && $mediafile != "" && (is_image ($mediafile) || is_video ($mediafile)) && $buildview != "formlock")
+      {
+        $sharelink = createwrapperlink ($site, $location, $page, "comp");        
+        $viewstore .= showsharelinks ($sharelink, $lang, "position:absolute; top:40px; right:12px;");
+      }
+
+      // table for form
+      $viewstore .= "
     <!-- form for content -->
     <div class=\"hcmsWorkplaceFrame\" style=\"z-index:1;\">
       <table>\n";
@@ -7256,7 +7263,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       </table>
     </div>\n";        
  
-        $viewstore .= "
+      $viewstore .= "
   </form>
 </body>
 </html>";

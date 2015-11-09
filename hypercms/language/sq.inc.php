@@ -6,6 +6,8 @@ $hcms_lang_codepage['sq'] = "utf-8";
 $hcms_lang_date['sq'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['share']['sq'] = "Share";
+$hcms_lang['social-media-sharing']['sq'] = "Social Media sharing";
 $hcms_lang['remember-me']['sq'] = "mua më kujtoni";
 $hcms_lang['my-recent-tasks']['sq'] = "Detyra ime të fundit";
 $hcms_lang['my-recent-objects']['sq'] = "Objektet sime të fundit";

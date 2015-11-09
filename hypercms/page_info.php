@@ -259,10 +259,10 @@ if ($pagestore != false)
     }
     
     // show youtube statistics button (requires youtube connector)
-    if ($cat == "comp" && is_dir ($mgmt_config['abs_path_cms']."connector/youtube") && !empty ($mgmt_config[$site]['youtube_token']))
+    if ($cat == "comp" && is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/youtube") && !empty ($mgmt_config[$site]['youtube_token']))
     {
       // YouTube functions
-      require ("connector/youtube/functions.inc.php");
+      require ("connector/socialmedia/youtube/functions.inc.php");
 
       // get youtube video ID
       $temp = selectcontent ($contentdata, "<text>", "<text_id>", "Youtube-ID");

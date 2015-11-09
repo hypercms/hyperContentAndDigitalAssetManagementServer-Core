@@ -6,6 +6,8 @@ $hcms_lang_codepage['sk'] = "utf-8";
 $hcms_lang_date['sk'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['share']['sk'] = "Share";
+$hcms_lang['social-media-sharing']['sk'] = "Social Media sharing";
 $hcms_lang['remember-me']['sk'] = "Pamätaj na mňa";
 $hcms_lang['my-recent-tasks']['sk'] = "Moje posledné úlohy";
 $hcms_lang['my-recent-objects']['sk'] = "Moje posledné objekty";

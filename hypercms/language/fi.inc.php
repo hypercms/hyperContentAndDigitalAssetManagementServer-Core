@@ -6,6 +6,8 @@ $hcms_lang_codepage['fi'] = "utf-8";
 $hcms_lang_date['fi'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['share']['fi'] = "Share";
+$hcms_lang['social-media-sharing']['fi'] = "Social Media sharing";
 $hcms_lang['remember-me']['fi'] = "Muista minut";
 $hcms_lang['my-recent-tasks']['fi'] = "Minun viimeisimmät tehtävät";
 $hcms_lang['my-recent-objects']['fi'] = "Viimeisimmät kohteet";

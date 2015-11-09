@@ -1017,10 +1017,20 @@ release 11/2015
 version 5.8.1
 release 11/2015
 - bug fix: function checkworkflow did not exclude .folder of the folder path for comparison
-- update of CKEditor to version 4.5.4
+- update of CKEditor to version 4.5.4 due to issue with source code view in MS Edge browser
 - implementation of the Youtube plugin for CKEditor in all toolbar configurations, except DAM and PDF
 - optimizations in rich text editor UI
 - implementation of Spellchecker and Scayt plugin for CKEditor in all toolbar configurations, except DAM
+- implementation of share link generator
+- implementation of social media share link function in connect API: createsharelink_facebook, createsharelink_twitter, createsharelink_googleplus, createsharelink_linkedin, createsharelink_pinterest
+- implementation of social media sharing for media files in hyperCMS UI
+- implementation of new publication setting for social media sharing
+- implementation of JS functions for social share links: hcms_sharelinkFacebook, hcms_sharelinkTwitter, hcms_sharelinkGooglePlus, hcms_sharelinkLinkedin, hcms_sharelinkPinterest
+- implementation of JS function hcms_getcontentByName to get value of form field by its name
+- implementation of share links for media files in tmeplate engine
+- new organisation of directory structure for connector module and changes in youtube connector
+- add new text to language files for social media sharing
+- optimizations in HTML5 file upload
 */
 
 // current version

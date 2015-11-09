@@ -1113,7 +1113,7 @@ echo showtopbar ($title.": ".$object_name, $lang);
       </div>
       <br />
       <?php } ?>
-      <div style="margin-top:10px;">
+      <div style="margin:10px 0px 10px 0px;">
         <img src="<?php echo getthemelocation(); ?>img/info.gif" align="absmiddle" />
         <?php echo getescapedtext ($hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]); ?>
       </div>
@@ -1127,7 +1127,6 @@ echo showtopbar ($title.": ".$object_name, $lang);
         <?php } ?>
         <div id="btnUpload" class="button hcmsButtonBlue" ><?php echo getescapedtext ($hcms_lang['upload-files'][$lang]); ?></div>
         <div id="btnCancel" class="button hcmsButtonOrange" ><?php echo getescapedtext ($hcms_lang['cancel-all-uploads'][$lang]); ?></div>
-        <br />
       </div>
     </div>
 

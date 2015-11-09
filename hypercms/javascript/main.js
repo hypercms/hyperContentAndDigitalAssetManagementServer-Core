@@ -67,7 +67,74 @@ function hcms_showPage (id)
   }
 }
 
+// -------------------------- share link functions ---------------------------
+
+function hcms_sharelinkFacebook (url)
+{
+  if (url != "")
+  {
+    var sharelink = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url);
+    hcms_openWindow (sharelink, "", "", 800, 800);
+  }
+  else return false;
+}
+
+function hcms_sharelinkTwitter (url, text)
+{
+  if (url != "" && text != "")
+  {
+    var sharelink = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&source=hypercms&related=hypercms&url=" + encodeURIComponent(url);
+    hcms_openWindow (sharelink, "", "", 800, 800);
+  }
+  else return false;
+}
+
+function hcms_sharelinkGooglePlus (url)
+{
+  if (url != "")
+  {
+    var sharelink = "https://plus.google.com/share?url=" + encodeURIComponent(url);
+    hcms_openWindow (sharelink, "", "", 800, 800);
+  }
+  else return false;
+}
+
+function hcms_sharelinkLinkedin (url, title, summary, source)
+{
+  if (url != "" && title != "")
+  {
+    var sharelink = "https://www.linkedin.com/shareArticle?mini=true&url=" + encodeURIComponent(url) + "&title=" + encodeURIComponent(title) + "&summary=" + encodeURIComponent(summary) + "&source=" + encodeURIComponent(source);
+    hcms_openWindow (sharelink, "", "", 800, 800);
+  }
+  else return false;
+}
+
+function hcms_sharelinkPinterest (image_url, title, description)
+{
+  if (image_url != "" && title != "")
+  {
+    var sharelink = "https://pinterest.com/pin/create/button/?url=" + encodeURIComponent(image_url) + "&media=" + encodeURIComponent(title) + "&description=" + encodeURIComponent(description);
+    hcms_openWindow (sharelink, "", "", 800, 800);
+  }
+  else return false;
+}
+
 // --------------------------- standard functions ----------------------------
+
+function hcms_getcontentByName(name)
+{
+  if (name != "" && document.getElementsByName(name))
+  {
+    var e = document.getElementsByName(name);
+    var i;
+
+    for (i = 0; i < e.length; i++)
+    {
+      if (e[i].type == "textarea" || e[i].type == "input") return e[i].value;
+    }
+  }
+  else return false;
+}
 
 function hcms_setGlobalVar (name, value)
 {
@@ -165,7 +232,7 @@ function hcms_resizeFrameWidth (leftframe, leftwidth, rightframe, rightwidth, un
   }
 }
 
-function hcms_openWindow (theURL,winName,features,width,height)
+function hcms_openWindow (theURL, winName, features, width, height)
 {
   popup = window.open(theURL,winName,features + ',width=' + width + ',height=' + height);    
   popup.moveTo(screen.width/2-width/2, screen.height/2-height/2);

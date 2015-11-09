@@ -158,6 +158,8 @@ function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
 
 function ftp_filelist ($conn_id, $path=".", $passive=true)
 {
+  global $mgmt_config;
+  
   if ($conn_id != "")
   {
     ftp_pasv ($conn_id, true);
@@ -193,6 +195,86 @@ function ftp_filelist ($conn_id, $path=".", $passive=true)
       return $items;
     }
     else return false;
+  }
+  else return false;
+}
+
+// ----------------------------------------- createsharelink_facebook ---------------------------------------------
+// function: createsharelink_facebook()
+// input: URL to share
+// output: Share URL / false on error
+
+function createsharelink_facebook ($site, $url)
+{
+  global $mgmt_config;
+  
+  if (is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/") && !empty ($mgmt_config[$site]['sharesociallink']) && $url != "")
+  {
+    return "https://www.facebook.com/sharer/sharer.php?u=".url_encode($url);
+  }
+  else return false;
+}
+
+// ----------------------------------------- createsharelink_twitter ---------------------------------------------
+// function: createsharelink_twitter()
+// input: URL to share, message to share
+// output: Share URL / false on error
+
+function createsharelink_twitter ($site, $url, $text)
+{
+  global $mgmt_config;
+  
+  if (is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/") && !empty ($mgmt_config[$site]['sharesociallink']) && $url != "" && $text != "")
+  {
+    return "https://twitter.com/intent/tweet?text=".url_encode($text)."&source=hypercms&related=hypercms&url=".url_encode($url);
+  }
+  else return false;
+}
+
+// ----------------------------------------- createsharelink_googleplus ---------------------------------------------
+// function: createsharelink_googleplus()
+// input: URL to share
+// output: Share URL / false on error
+
+function createsharelink_googleplus ($site, $url)
+{
+  global $mgmt_config;
+  
+  if (is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/") && !empty ($mgmt_config[$site]['sharesociallink']) && $url != "")
+  {
+    return "https://plus.google.com/share?url=".url_encode($url);
+  }
+  else return false;
+}
+
+// ----------------------------------------- createsharelink_linkedin ---------------------------------------------
+// function: createsharelink_linkedin()
+// input: URL to share, title, summary (optional), source (optional)
+// output: Share URL / false on error
+
+function createsharelink_linkedin ($site, $url, $title, $summary, $source)
+{
+  global $mgmt_config;
+  
+  if (is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/") && !empty ($mgmt_config[$site]['sharesociallink']) && $url != "" && $title != "")
+  {
+    return "https://www.linkedin.com/shareArticle?mini=true&url=".url_encode($url)."&title=".url_encode($title)."&summary=".url_encode($summary)."&source=".url_encode($source);
+  }
+  else return false;
+}
+
+// ----------------------------------------- createsharelink_pinterest ---------------------------------------------
+// function: createsharelink_pinterest()
+// input: image URL to share, title, description (optional)
+// output: Share URL / false on error
+
+function createsharelink_pinterest ($site, $image_url, $title, $description)
+{
+  global $mgmt_config;
+  
+  if (is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/") && !empty ($mgmt_config[$site]['sharesociallink']) && $image_url != "" && $title != "")
+  {
+    return "https://pinterest.com/pin/create/button/?url=".url_encode($image_url)."&media=".url_encode($title)."&description=".url_encode($description);
   }
   else return false;
 }

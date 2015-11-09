@@ -6287,6 +6287,10 @@ function editpublication ($site_name, $setting, $user="sys")
       if (is_file ($mgmt_config['abs_path_media'].$site_name."/web.config")) deletefile ($mgmt_config['abs_path_media'].$site_name."/", "web.config");
     }
     
+    // share social media links
+    if (array_key_exists ('sharesociallink', $setting) && $setting['sharesociallink'] == true) $sharesociallink_new = "true";
+    else $sharesociallink_new = "false";
+    
     // YouTube
     if (array_key_exists ('youtube', $setting) && $setting['youtube'] == true)  $youtube_new = "true";
     else $youtube_new = "false";
@@ -6428,11 +6432,20 @@ function editpublication ($site_name, $setting, $user="sys")
 \$mgmt_config['".$site_name."']['watermark_image'] = \"".$watermark_image."\";
 \$mgmt_config['".$site_name."']['watermark_video'] = \"".$watermark_video."\";
 
+";
+
+  if (is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/")) $site_mgmt_config .= "
+  // Allow sharing of social media links
+// enable (false) or disable (true) restricted system usage of social media link sharing. 
+\$mgmt_config['".$site_name."']['sharesociallink'] = ".$sharesociallink_new.";
+
 // Allow upload to Youtube
 // enable (false) or disable (true) restricted system usage of youtube uploader. 
 // youtube_token is the permanent session key for the upload interface
 \$mgmt_config['".$site_name."']['youtube'] = ".$youtube_new.";
 
+";
+  $site_mgmt_config .= "
 // Theme
 \$mgmt_config['".$site_name."']['theme'] = \"".$theme_new."\";
 

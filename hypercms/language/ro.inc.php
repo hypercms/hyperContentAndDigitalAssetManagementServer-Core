@@ -6,6 +6,8 @@ $hcms_lang_codepage['ro'] = "utf-8";
 $hcms_lang_date['ro'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['share']['ro'] = "Share";
+$hcms_lang['social-media-sharing']['ro'] = "Social Media sharing";
 $hcms_lang['remember-me']['ro'] = "Amintește-ți de mine";
 $hcms_lang['my-recent-tasks']['ro'] = "Sarcinile Mele recente";
 $hcms_lang['my-recent-objects']['ro'] = "Obiectele mele recente";

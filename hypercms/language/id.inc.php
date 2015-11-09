@@ -6,6 +6,8 @@ $hcms_lang_codepage['id'] = "utf-8";
 $hcms_lang_date['id'] = 'Y-m-d H:i:s';
 
 // Text for hyperCMS
+$hcms_lang['share']['id'] = "Share";
+$hcms_lang['social-media-sharing']['id'] = "Social Media sharing";
 $hcms_lang['remember-me']['id'] = "Ingat saya";
 $hcms_lang['my-recent-tasks']['id'] = "Tugas terakhir Saya";
 $hcms_lang['my-recent-objects']['id'] = "Objek terakhir Saya";

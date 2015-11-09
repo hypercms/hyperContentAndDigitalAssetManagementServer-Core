@@ -236,12 +236,16 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td nowrap="nowrap"> <input type="text" name="setting[watermark_video]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['watermark_video']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <?php 
-  	if (is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
+  	if (is_file ($mgmt_config['abs_path_cms']."connector/socialmedia/youtube/index.php"))
   	{
   	?>
       <tr align="left" valign="top"> 
+        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['social-media-sharing'][$lang]); ?>: </td>
+        <td nowrap="nowrap"> <input type="checkbox" id="youtube" name="setting[sharesociallink]" value="true" <?php if ($mgmt_config[$site_name]['sharesociallink'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      </tr>
+      <tr align="left" valign="top"> 
         <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['youtube-upload'][$lang]); ?>: </td>
-        <td nowrap="nowrap"> <input type="checkbox" id="youtube" name="setting[youtube]"  value="true" <?php if ($mgmt_config[$site_name]['youtube'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+        <td nowrap="nowrap"> <input type="checkbox" id="youtube" name="setting[youtube]" value="true" <?php if ($mgmt_config[$site_name]['youtube'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
       </tr>
     <?php 
   	}
