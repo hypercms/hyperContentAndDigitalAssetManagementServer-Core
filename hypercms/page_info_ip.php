@@ -55,7 +55,7 @@ echo showtopbar ($hcms_lang['geo-location-of'][$lang]." ".$ip, $lang);
 <div class="hcmsWorkplaceFrame">
 
   <iframe width="760" height="400" frameborder="no" scrolling="no" style="margin:10px; border:0;" 
-    src="http://maps.google.de/maps?ll=<?php echo $data['lat']; ?>,<?php echo $data['lon']; ?>&amp;ie=UTF8&amp;om=1&amp;iwloc=near
+    src="https://maps.google.de/maps?ll=<?php echo $data['lat']; ?>,<?php echo $data['lon']; ?>&amp;ie=UTF8&amp;om=1&amp;iwloc=near
     &amp;z=13&amp;iwloc=addr&amp;output=embed">
   </iframe>
   

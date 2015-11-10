@@ -1027,10 +1027,11 @@ release 11/2015
 - implementation of new publication setting for social media sharing
 - implementation of JS functions for social share links: hcms_sharelinkFacebook, hcms_sharelinkTwitter, hcms_sharelinkGooglePlus, hcms_sharelinkLinkedin, hcms_sharelinkPinterest
 - implementation of JS function hcms_getcontentByName to get value of form field by its name
-- implementation of share links for media files in tmeplate engine
+- implementation of share links for media files in template engine
 - new organisation of directory structure for connector module and changes in youtube connector
 - add new text to language files for social media sharing
 - optimizations in HTML5 file upload
+- change to HTTPS for IP Geo location finder in Google maps
 */
 
 // current version
