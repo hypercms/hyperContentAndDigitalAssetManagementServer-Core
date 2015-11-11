@@ -1032,8 +1032,16 @@ release 11/2015
 - add new text to language files for social media sharing
 - optimizations in HTML5 file upload
 - change to HTTPS for IP Geo location finder in Google maps
+
+version 5.8.2
+release 11/2015
+- implementation of AES 256 encrpytion based on OpenSSL as standard strong encryption with fallback to Mcrypt (CBC)
+- changed encryption of container data to strong as default (same as file encryption)
+- implementation of config setting for the key for AES 256 encrpytion: $mgmt_config['aes256_key']
+- removed base64 encoding from function encryptfile, decryptfile, creattempfile and movetempfile to reduce the size of encrypted files
+- Implementation of binary mode for writing files using function savefile and savelockfile due to encryption without base64 encoding
 */
 
 // current version
-$version = "Version 5.8.1";
+$version = "Version 5.8.2";
 ?>

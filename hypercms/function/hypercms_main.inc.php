@@ -1821,7 +1821,7 @@ function savefile ($abs_path, $filename, $filedata)
     // if file is offline
     elseif (@is_file ($abs_path.$filename.".off")) $filename = $filename.".off";
 
-    $filehandle = @fopen ($abs_path.$filename, "w");
+    $filehandle = @fopen ($abs_path.$filename, "wb");
   
     if ($filehandle != false)
     {    
@@ -1873,7 +1873,7 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
     // if locked file exists
     if (@is_file ($abs_path.$filename))
     {
-      $filehandle = @fopen ($abs_path.$filename, "w");
+      $filehandle = @fopen ($abs_path.$filename, "wb");
 
       if ($filehandle != false)
       {
@@ -2302,7 +2302,7 @@ function encryptfile ($location, $file, $key="")
       if (!empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") == 0)
       {
         // decrpyt content
-        $data = hcms_encrypt ($data, $key, "strong", "base64");
+        $data = hcms_encrypt ($data, $key, "strong", "");
           
         if (!empty ($data)) return "<!-- hyperCMS:encrypted -->".$data;
         else return false;
@@ -2336,12 +2336,12 @@ function decryptfile ($location, $file, $key="")
     {
       // load file
       $data = loadfile ($location, $file);
-      
+
       // decrypt data if file is encypted
       if (!empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") > 0)
       {
         $data = str_replace ("<!-- hyperCMS:encrypted -->", "", $data);
-        $data = hcms_decrypt ($data, $key, "strong", "base64");
+        $data = hcms_decrypt ($data, $key, "strong", "");
           
         if (!empty ($data)) return $data;
         else return false;
@@ -2420,7 +2420,7 @@ function createtempfile ($location, $file, $key="")
       if (!empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") > 0)
       {
         $data = str_replace ("<!-- hyperCMS:encrypted -->", "", $data);
-        $data = hcms_decrypt ($data, $key, "strong", "base64");
+        $data = hcms_decrypt ($data, $key, "strong", "");
         
         // save decrypted file
         $save = savefile ($location_temp, $file_temp, $data);
@@ -2502,7 +2502,7 @@ function movetempfile ($location, $file, $delete=false, $force_encrypt=false, $k
          )
       {
         // encrpyt content
-        $data = hcms_encrypt ($data, $key, "strong", "base64");
+        $data = hcms_encrypt ($data, $key, "strong", "");
         
         // add crypted information to files content
         if (!empty ($data))
@@ -3065,7 +3065,7 @@ function loadcontainer ($container, $type="work", $user)
       if (!empty ($contentdata) && strpos ("_".$contentdata, "<!-- hyperCMS:encrypted -->") > 0)
       {
         $contentdata = str_replace ("<!-- hyperCMS:encrypted -->", "", $contentdata);
-        $contentdata = hcms_decrypt ($contentdata, "", "", "base64");
+        $contentdata = hcms_decrypt ($contentdata, "", "strong", "");
         
         // set status to "restored"
         if ($restored) $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentstatus>", "restored", "", "");
@@ -3143,7 +3143,7 @@ function savecontainer ($container, $type="work", $data, $user, $init=false)
            $data != "" && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") == 0
          )
       {
-        $data = hcms_encrypt (trim ($data), "", "", "base64");
+        $data = hcms_encrypt (trim ($data), "", "strong", "");
         if (!empty ($data)) $data = "<!-- hyperCMS:encrypted -->".trim ($data); 
       }
 

@@ -405,8 +405,14 @@ $mgmt_config['strongpassword'] = false;
 // Encryption strength (weak, standard, strong)
 $mgmt_config['crypt_level'] = "standard";
 
-// Key used for en/decryption of length 16, 24 or 32
+// Key used for en/decryption of temporary system data (key length must be 8, 16, or 32)
 $mgmt_config['crypt_key'] = "h1y2p3e4r5c6m7s8";
+
+// Data and file encryption is always based on strong AES 256
+// You need to define a key with 32 digits for en/decryption
+// If a key server is used please use the commented line to access the key:
+// $mgmt_config['aes256_key'] = file_get_contents ("https://key-server/aes256-key.key");
+$mgmt_config['aes256_key'] = "h1y2p3e4r5c6m7s8s9m0c1r2e3p4y5h6";
 
 // Template code
 // Cleaning level of template code from none = 0 to strong = 3 (no cleaning = 0, basic set of disabled functions = 1, 1 + file access functions = 2, 2 + include functions = 3)

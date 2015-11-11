@@ -1106,12 +1106,15 @@ $token_new = createtoken ($user);
             }
           }
           
-          document.getElementById('valid_active').disabled = false;
-          
-          if (document.getElementById('valid_active').checked == true)
+          if (document.getElementById('valid_active'))
           {
-            document.getElementById('valid_days').disabled = false;
-            document.getElementById('valid_hours').disabled = false;
+            document.getElementById('valid_active').disabled = false;
+            
+            if (document.getElementById('valid_active').checked == true)
+            {
+              document.getElementById('valid_days').disabled = false;
+              document.getElementById('valid_hours').disabled = false;
+            }
           }
         }
         // access link -> multi select
@@ -1128,12 +1131,15 @@ $token_new = createtoken ($user);
             if (document.getElementById('format_doc' + i)) document.getElementById('format_doc' + i).disabled = false;
           }
           
-          document.getElementById('valid_active').disabled = false;
-          
-          if (document.getElementById('valid_active').checked == true)
+          if (document.getElementById('valid_active'))
           {
-            document.getElementById('valid_days').disabled = false;
-            document.getElementById('valid_hours').disabled = false;
+            document.getElementById('valid_active').disabled = false;
+            
+            if (document.getElementById('valid_active').checked == true)
+            {
+              document.getElementById('valid_days').disabled = false;
+              document.getElementById('valid_hours').disabled = false;
+            }
           }
         }
         // attachment -> single select
@@ -1150,10 +1156,13 @@ $token_new = createtoken ($user);
             if (document.getElementById('format_doc' + i)) document.getElementById('format_doc' + i).disabled = false;
           }
           
-          document.getElementById('valid_active').checked = false;
-          document.getElementById('valid_active').disabled = true;
-          document.getElementById('valid_days').disabled = true;
-          document.getElementById('valid_hours').disabled = true;
+          if (document.getElementById('valid_active'))
+          {
+            document.getElementById('valid_active').checked = false;
+            document.getElementById('valid_active').disabled = true;
+            document.getElementById('valid_days').disabled = true;
+            document.getElementById('valid_hours').disabled = true;
+          }
         }
       }
       
@@ -1179,18 +1188,21 @@ $token_new = createtoken ($user);
           return false;
         }
         
-        if (document.getElementById("valid_active").checked == true)
+        if (document.getElementById("valid_active"))
         {
-          var valid_days = document.getElementById("valid_days").value;
-          var valid_hours = document.getElementById("valid_hours").value;
-          
-          if (isIntegerValue(valid_days) == false || isIntegerValue(valid_hours) == false)
+          if (document.getElementById("valid_active").checked == true)
           {
-            alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['period-of-validity-is-not-correct'][$lang]); ?>"));
-            document.getElementById("valid_days").focus();
-            return false;
+            var valid_days = document.getElementById("valid_days").value;
+            var valid_hours = document.getElementById("valid_hours").value;
+            
+            if (isIntegerValue(valid_days) == false || isIntegerValue(valid_hours) == false)
+            {
+              alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['period-of-validity-is-not-correct'][$lang]); ?>"));
+              document.getElementById("valid_days").focus();
+              return false;
+            }
           }
-        }        
+        }       
         
         return true;
       }
@@ -1758,7 +1770,7 @@ $token_new = createtoken ($user);
               <input type="text" name="valid_days" id="valid_days" value="" style="width:40px;" disabled="disabled" /> <?php echo getescapedtext ($hcms_lang['days-and'][$lang]); ?>&nbsp;
               <input type="text" name="valid_hours" id="valid_hours" value="" style="width:40px;" disabled="disabled" /> <?php echo getescapedtext ($hcms_lang['hours'][$lang]); ?>
             </td>
-          </tr>          
+          </tr>
           <tr>
             <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['meta-data'][$lang]); ?>:</td>
             <td align="left" valign="top">

@@ -2588,18 +2588,30 @@ function hcms_crypt ($string, $start=0, $length=0)
 function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
 {
   global $mgmt_config;
-  
+    
   if ($string != "")
   {
-    // define key
-    if ($key == "" && !empty ($mgmt_config['crypt_key'])) $key = $mgmt_config['crypt_key'];
-    else $key = "h1y2p3e4r5c6m7s8";
-    
     // define crypt level
     if ($crypt_level == "" && !empty ($mgmt_config['crypt_level'])) $crypt_level = strtolower ($mgmt_config['crypt_level']);
     else $crypt_level = strtolower ($crypt_level);
+    
+    // define key
+    if ($crypt_level == "strong")
+    {
+      if ($key == "" && !empty ($mgmt_config['aes256_key'])) $key = $mgmt_config['aes256_key'];
+      else $key = "h1y2p3e4r5c6m7s8s9m0c1r2e3p4y5h6";
+      
+      // key of length 32 is required for AES 256
+      if (mb_strlen ($key, '8bit') !== 32) return false;
+    }
+    else
+    {
+      if ($key == "" && !empty ($mgmt_config['crypt_key'])) $key = $mgmt_config['crypt_key'];
+      else $key = "h1y2p3e4r5c6m7s8";
+    }
+    
     // weak
-    // main purpose is to gain a short encrypted string, not recommended for sensitive data or files!
+    // main purpose is to gain a short encrypted string, please don't use it for sensitive data or files!
     if ($crypt_level == "weak")
     {
       $key = sha1 ($key);
@@ -2620,15 +2632,32 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
     // strong (binary-safe)
     elseif ($crypt_level == "strong")
     {
-      // base 64 encode binary data to be binary-safe
-      $string = base64_encode ($string);
-      
-      // MCRYPT_MODE_CBC (cipher block chaining) 
-      // is especially suitable for encrypting files where the security is increased over ECB significantly.
-      $ivSize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
-      $iv = mcrypt_create_iv ($ivSize, MCRYPT_RAND);
-      $hash = mcrypt_encrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_CBC, $iv);
-      $hash = $iv.$hash;
+      // use OpenSSL if available with AES 256 encryption (requires a key with 32 digits)
+      if (function_exists ("openssl_encrypt"))
+      {
+        $method = "aes-256-cbc";
+        $ivsize = openssl_cipher_iv_length ($method);
+        $iv = openssl_random_pseudo_bytes ($ivsize);
+        
+        // Encrypt $data using aes-256-cbc cipher with the given encryption key and 
+        // initialization vector. The 0 gives us the default options, but can
+        // be changed to OPENSSL_RAW_DATA or OPENSSL_ZERO_PADDING
+        $hash = openssl_encrypt ($string, $method, $key, OPENSSL_RAW_DATA, $iv);        
+        $hash = $iv.$hash;
+      }
+      // use PHP Mcrypt with AES 256 encryption (requires a key with 32 digits)
+      else
+      {
+        // base 64 encode binary data to be binary-safe
+        $string = base64_encode ($string);
+        
+        // MCRYPT_MODE_CBC (cipher block chaining) 
+        // is especially suitable for encrypting files where the security is increased over ECB significantly.
+        $ivSize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+        $iv = mcrypt_create_iv ($ivSize, MCRYPT_RAND);
+        $hash = mcrypt_encrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_CBC, $iv);
+        $hash = $iv.$hash;
+      }
     }
     // standard
     else
@@ -2672,13 +2701,24 @@ function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
   
   if ($string != "")
   {
-    // define key
-    if ($key == "" && !empty ($mgmt_config['crypt_key'])) $key = $mgmt_config['crypt_key'];
-    else $key = "h1y2p3e4r5c6m7s8";
-  
     // define crypt level
     if ($crypt_level == "" && !empty ($mgmt_config['crypt_level'])) $crypt_level = strtolower ($mgmt_config['crypt_level']);
     else $crypt_level = strtolower ($crypt_level);
+    
+    // define key
+    if ($crypt_level == "strong")
+    {
+      if ($key == "" && !empty ($mgmt_config['aes256_key'])) $key = $mgmt_config['aes256_key'];
+      else $key = "h1y2p3e4r5c6m7s8s9m0c1r2e3p4y5h6";
+      
+      // key of length 32 is required for AES 256
+      if (mb_strlen ($key, '8bit') !== 32) return false;
+    }
+    else
+    {
+      if ($key == "" && !empty ($mgmt_config['crypt_key'])) $key = $mgmt_config['crypt_key'];
+      else $key = "h1y2p3e4r5c6m7s8";
+    }
 
     // to be used to decode files
     if (strtolower ($encoding) == "base64") $string = base64_decode ($string);
@@ -2706,17 +2746,30 @@ function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
     // strong (binary-safe)
     elseif ($crypt_level == "strong")
     {
-      // MCRYPT_MODE_CBC (cipher block chaining) 
-      // is especially suitable for encrypting files where the security is increased over ECB significantly.
-      $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
-      if (strlen ($string) < $ivsize) return false;
-      $iv = substr ($string, 0, $ivsize);
-      $string = substr ($string, $ivsize);
-      $hash_decrypted = mcrypt_decrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_CBC, $iv);
-      $hash_decrypted = rtrim ($hash_decrypted, "\0");
-      
-      // base 64 decode (binary-safe)
-      $hash_decrypted = base64_decode ($hash_decrypted);
+      // use OpenSSL if available with AES 256 decryption (requires a key with 32 digits)
+      if (function_exists ("openssl_decrypt"))
+      {
+        $method = "aes-256-cbc";
+        $ivsize = openssl_cipher_iv_length ($method);
+        $iv = mb_substr ($string, 0, $ivsize, '8bit');
+        $string = mb_substr ($string, $ivsize, null, '8bit');
+        
+        $hash_decrypted = openssl_decrypt ($string, $method, $key, OPENSSL_RAW_DATA, $iv);
+      }
+      else
+      {
+        // MCRYPT_MODE_CBC (cipher block chaining) 
+        // is especially suitable for encrypting files where the security is increased over ECB significantly.
+        $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+        if (strlen ($string) < $ivsize) return false;
+        $iv = substr ($string, 0, $ivsize);
+        $string = substr ($string, $ivsize);
+        $hash_decrypted = mcrypt_decrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_CBC, $iv);
+        $hash_decrypted = rtrim ($hash_decrypted, "\0");
+        
+        // base 64 decode (binary-safe)
+        $hash_decrypted = base64_decode ($hash_decrypted);
+      }
     }
     // standard
     else
