@@ -266,64 +266,83 @@ if ($usedby == "" || $usedby == $user)
         if (isset ($textc) && is_array ($textc)) $textmeta = array_merge ($textmeta, $textc);
         if (isset ($textd) && is_array ($textd)) $textmeta = array_merge ($textmeta, $textd);
         if (isset ($textk) && is_array ($textk)) $textmeta = array_merge ($textmeta, $textk);
-        
-        $object_mediafile = getmedialocation ($site, $object_info['media'], "abs_path_media").$site."/".$object_info['media'];
-        
-        // write IPTC data to media file
-        $result_iptc = false;
-        
-        if ($mgmt_config['iptc_save'])
-        {
-          $iptc = iptc_create ($site, $textmeta);
 
-          if (is_array ($iptc))
-          {
-            $result_iptc = iptc_writefile ($object_mediafile, $iptc, true);   
-          }
-        }
+        // get media file location and name
+        $mediafile_location = getmedialocation ($site, $object_info['media'], "abs_path_media").$site."/";
+        $mediafile_name = $object_info['media'];
         
-        // write XMP data to media file
-        $result_xmp = false;
+        // create temp file if file is encrypted
+        $temp = createtempfile ($mediafile_location, $mediafile_name);
         
-        if ($mgmt_config['xmp_save'])
+        if ($temp['result'] && $temp['crypted']) $object_mediafile = $temp['templocation'].$temp['tempfile'];
+        else $object_mediafile = $mediafile_location.$mediafile_name;
+        
+        if (is_file ($object_mediafile))
         {
-          $xmp = xmp_create ($site, $textmeta);
-
-          if (is_array ($xmp))
+          // write IPTC data to media file
+          $result_iptc = false;
+          
+          if ($mgmt_config['iptc_save'])
           {
-            $result_xmp = xmp_writefile ($object_mediafile, $xmp, true);   
+            $iptc = iptc_create ($site, $textmeta);
+  
+            if (is_array ($iptc))
+            {
+              $result_iptc = iptc_writefile ($object_mediafile, $iptc, true, false);
+            }
           }
-        }
-        
-        // write ID3 data to media file
-        $result_id3 = false;
-        
-        if ($mgmt_config['id3_save'])
-        {
-          $id3 = id3_create ($site, $textmeta);
-
-          if (is_array ($id3))
+          
+          // write XMP data to media file
+          $result_xmp = false;
+          
+          if ($mgmt_config['xmp_save'])
           {
-            $result_id3 = id3_writefile ($object_mediafile, $id3, true);   
+            $xmp = xmp_create ($site, $textmeta);
+  
+            if (is_array ($xmp))
+            {
+              $result_xmp = xmp_writefile ($object_mediafile, $xmp, true, false);   
+            }
           }
+          
+          // write ID3 data to media file
+          $result_id3 = false;
+          
+          if ($mgmt_config['id3_save'])
+          { 
+            $id3 = id3_create ($site, $textmeta);
+  
+            if (is_array ($id3))
+            {
+              $result_id3 = id3_writefile ($object_mediafile, $id3, true, false);   
+            }
+          }
+          
+          // save media stats and move temp file on success
+          if (!empty ($result_iptc) || !empty ($result_xmp) || !empty ($result_id3))
+          {
+            // write updated media information to DB
+            $container_id = getmediacontainerid ($object_mediafile);
+            
+            if (!empty ($container_id))
+            {
+              $md5_hash = md5_file ($object_mediafile);
+              $filesize = round (@filesize ($object_mediafile) / 1024, 0);
+              rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", $md5_hash);
+            }
+            
+            // encrypt and save file if required
+            if ($temp['result']) movetempfile ($mediafile_location, $mediafile_name, true);
+          }
+          // alternatively touch the file to change the modified date
+          else
+          {
+            touch ($object_mediafile);
+          }
+          
+          // set modified date in DB
+          rdbms_setcontent ($container_id);
         }
-        
-        // alternatively touch the file to change the modified date
-        if (
-             is_file ($object_mediafile) && 
-             (
-               (!$mgmt_config['iptc_save'] && !$mgmt_config['xmp_save'] && !$mgmt_config['id3_save']) || 
-               ($mgmt_config['iptc_save'] && !$result_iptc) ||
-               ($mgmt_config['xmp_save'] && !$result_xmp) ||
-               ($mgmt_config['id3_save'] && !$result_id3)
-             )
-           )
-        {
-          touch ($object_mediafile);
-        }
-        
-        // set modified date in DB
-        rdbms_setcontent ($container_id);
       }
       
       // media content
@@ -496,10 +515,11 @@ if ($usedby == "" || $usedby == $user)
     }
   }
   // if content file isn't available
-  elseif (!file_exists (getcontentlocation ($container_id, 'abs_path_content').$contentfile.".wrk"))
+  elseif (!is_file (getcontentlocation ($container_id, 'abs_path_content').$contentfile.".wrk"))
   {
     // define meta tag
     $add_onload =  "";
+    
     //define message to display
     if ($auto)
     {
@@ -516,7 +536,8 @@ if ($usedby == "" || $usedby == $user)
   else
   {
     // define meta tag
-    $add_onload =  "";
+    $add_onload = "";
+    
     //define message to display
     if ($auto) 
     {
@@ -532,7 +553,8 @@ if ($usedby == "" || $usedby == $user)
 else
 {
   // define meta tag
-  $add_onload =  "";
+  $add_onload = "";
+  
   //define message to display
   if ($auto) 
   {

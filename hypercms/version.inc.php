@@ -1035,11 +1035,34 @@ release 11/2015
 
 version 5.8.2
 release 11/2015
-- implementation of AES 256 encrpytion based on OpenSSL as standard strong encryption with fallback to Mcrypt (CBC)
+- implementation of AES 256 encrpytion based on OpenSSL as standard strong encryption with fallback to Mcrypt (CBC), Mcrypt uses base64 incoding to be binary-safe, this leads to larger encrypted files and is therefore deprecated since version 5.8.2
 - changed encryption of container data to strong as default (same as file encryption)
 - implementation of config setting for the key for AES 256 encrpytion: $mgmt_config['aes256_key']
-- removed base64 encoding from function encryptfile, decryptfile, creattempfile and movetempfile to reduce the size of encrypted files
-- Implementation of binary mode for writing files using function savefile and savelockfile due to encryption without base64 encoding
+- removed base64 encoding from function encryptfile, decryptfile, creattempfile and movetempfile in order to reduce the size of encrypted files
+- implementation of binary mode for writing files using function savefile and savelockfile due to encryption without base64 encoding
+- removed default base64 encoding from standard encryption in function hcms_encrypt
+- improvements in template engine for autosave
+- bug fix: reset of medaview variable in function showmedia has been removed
+- bug fix: medianame has not been converted to UTF-8 for media viewer in template engine 
+- function hcms_encrypt and hcms_decrpyt will base64 en/decode the string if 'url' encoding is requested in order to be binary safe
+- bug fix: the character set of the form has not been set to UTF-8 in the template engine in case of editing media files
+- implementation of file locking in function iptc_writefile
+- implementation of file stats (rdbms_setmedia) in function iptc_writefile, xmp_writefile and id3_writefile to update MD5 hash and filesize in DB
+- bug fix: removed trim of encrypted data from function savecontainer, this is a manipulation of the data string and could lead to decryption issues when handling binary data
+- implementation of additional MD5 hash comparison of encrypted file and temporary unencrypted file in function createtempfile
+- bug fix: function rdbms_setmedia did not update MD5 hash since wrong variable name has been used for value check
+- various improvements in function iptc_writefile, xmp_writefile and id3_writefile
+- bug fix: function xmp_writefile did also write data to file if an error occured
+- bug fix: previous create of temporary unencrypted file has been checked for moving file back into encrpyted version, this caused the file not being encrypted and moved again by function iptc_writefile, xmp_writefile and id3_writefile
+- bug fix: function iptc_writefile did a reset of the input array $iptc
+- bug fix: undefined variables and undefined hidden field for 'filetype' in popup_message
+- bug fix: undefined variable 'mediafile' in template engine
+- implementation of movetempfile input paramter in function iptc_writefile, id3_writefile and xmp_writefile due to file collision when using encryption and moving temporary unencrypted file back to encrypted file 
+- implementation of media file statisticts update and encryption of file into service savecontent
+- bug fix: webdav function _runFuncWithGlobals requires 0 and 1 instead of false and true in order to pass those values to the API function
+- changes in language files
+- implementation of function avoidfilecollision due to issues when manipulating encrypted files with e.g. function createmedia and the shell execute file process has not been finished
+- removed file encryption feature from free to standard and enterprise edition
 */
 
 // current version

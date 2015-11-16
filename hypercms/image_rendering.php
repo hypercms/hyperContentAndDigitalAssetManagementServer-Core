@@ -1181,7 +1181,7 @@ echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'
     <!-- width or height -->
     <div class="cell">
       <div class="row" style="margin-left:20px;">
-        <strong><?php echo getescapedtext ($hcms_lang['pixel-size'][$lang]); ?></strong>
+        <strong><?php echo getescapedtext ($hcms_lang['image-size'][$lang]); ?></strong>
       </div>
       <div class="row">
         <input type="checkbox" id="percentage" name="imageresize" value="percentage" onclick="toggle_percentage();" />

@@ -538,7 +538,7 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
         if ($blue != "") $sql_update[] = 'blue='.intval($blue);
         if ($colorkey != "") $sql_update[] = 'colorkey="'.$colorkey.'"';
         if ($imagetype != "") $sql_update[] = 'imagetype="'.$imagetype.'"';
-        if ($imagetype != "") $sql_update[] = 'md5_hash="'.$md5_hash.'"';
+        if ($md5_hash != "") $sql_update[] = 'md5_hash="'.$md5_hash.'"';
 
         if (sizeof ($sql_update) > 0)
         {

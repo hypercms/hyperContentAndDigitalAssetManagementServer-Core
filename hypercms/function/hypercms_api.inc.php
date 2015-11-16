@@ -87,6 +87,17 @@ if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_connect.inc.php"))
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_connect.inc.php");
 }
 
+// include encryption API (not included in Free Edition)
+if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php");
+}
+// for Free Edition
+elseif (is_file ($mgmt_config['abs_path_cms']."function/hypercms_encryption.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."function/hypercms_encryption.inc.php");
+}
+
 // include update API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_update.inc.php"))
 {

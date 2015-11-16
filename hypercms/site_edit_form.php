@@ -147,6 +147,8 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   if (valid_publicationname ($site_name) && file_exists ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
   {
     include ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
+    
+    if (empty ($mgmt_config[$site_name]['youtube_token'])) $mgmt_config[$site_name]['youtube_token'] = "";
   }
 ?>
 
@@ -223,10 +225,12 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['storage-limit-in-mb'][$lang]); ?>: </td>
       <td nowrap="nowrap"> <input type="text" name="setting[storage]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['storage']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
+    <?php if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php")) {	?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['encrypt-content'][$lang]); ?>: </td>
       <td nowrap="nowrap"> <input type="checkbox" id="crypt_content" name="setting[crypt_content]" value="true" <?php if ($mgmt_config[$site_name]['crypt_content'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
+    <?php } ?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['watermark-options-for-images'][$lang]); ?>: </td>
       <td nowrap="nowrap"> <input type="text" name="setting[watermark_image]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['watermark_image']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
@@ -235,10 +239,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['watermark-options-for-vidoes'][$lang]); ?>: </td>
       <td nowrap="nowrap"> <input type="text" name="setting[watermark_video]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['watermark_video']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
-    <?php 
-  	if (is_file ($mgmt_config['abs_path_cms']."connector/socialmedia/youtube/index.php"))
-  	{
-  	?>
+    <?php if (is_file ($mgmt_config['abs_path_cms']."connector/socialmedia/youtube/index.php")) { ?>
       <tr align="left" valign="top"> 
         <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['social-media-sharing'][$lang]); ?>: </td>
         <td nowrap="nowrap"> <input type="checkbox" id="youtube" name="setting[sharesociallink]" value="true" <?php if ($mgmt_config[$site_name]['sharesociallink'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
@@ -247,15 +248,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
         <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['youtube-upload'][$lang]); ?>: </td>
         <td nowrap="nowrap"> <input type="checkbox" id="youtube" name="setting[youtube]" value="true" <?php if ($mgmt_config[$site_name]['youtube'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
       </tr>
-    <?php 
-  	}
-  	else
-  	{
-  	?>
-  		<input type="hidden" id="youtube" name="setting[youtube]" value="false" />
-    <?php	
-  	}
-  	?>
+    <?php	}	?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['theme'][$lang]); ?>: </td>
       <td nowrap="nowrap">

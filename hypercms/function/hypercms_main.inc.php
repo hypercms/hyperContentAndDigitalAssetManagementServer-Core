@@ -2237,7 +2237,8 @@ function appendfile ($abs_path, $filename, $filedata)
         @flock ($filehandle, LOCK_EX);     
         @fwrite ($filehandle, $filedata);    
         @flock ($filehandle, LOCK_UN);
-        @fclose ($filehandle);        
+        @fclose ($filehandle);
+               
         return true;
       }
       else return false;
@@ -2275,259 +2276,24 @@ function appendfile ($abs_path, $filename, $filedata)
   else return false;
 }
 
-// ---------------------- encryptfile -----------------------------
-// function: encryptfile()
-// input: path to file [string], file name [string], key (optional)
-// output: content of encrypted file / false on error
+// ---------------------- avoidfilecollision -----------------------------
+// function: avoidfilecollision()
+// input: data string (optional)
+// output: true / false on error
 
 // description:
-// encryption of a file if it has not already been encrypted.
-// encryption level is strong since encryption must be binary-safe.
+// appending data to a file ensures that the previous write process is finished (required due to issue when editing encrypted files)
 
-function encryptfile ($location, $file, $key="")
+function avoidfilecollision ($data="tempdata")
 {
-  global $user, $mgmt_config, $hcms_lang, $lang;
+  global $mgmt_config;
   
-  if (valid_locationname ($location) && valid_objectname ($file))
-  {
-    // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
-    
-    if (is_file ($location.$file))
-    {
-      // load file
-      $data = loadfile ($location, $file);
-      
-      // encrypt data if file is not encypted
-      if (!empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") == 0)
-      {
-        // decrpyt content
-        $data = hcms_encrypt ($data, $key, "strong", "");
-          
-        if (!empty ($data)) return "<!-- hyperCMS:encrypted -->".$data;
-        else return false;
-      }
-      else return $data;
-    }
-    else return false;
-  }
+  // save empty temp file initally (to clear previous data)
+  savefile ($mgmt_config['abs_path_temp'], "writefile.tmp", "");
+  
+  // append data to file
+  if (is_file ($mgmt_config['abs_path_temp']."writefile.tmp")) return appendfile ($mgmt_config['abs_path_temp'], "writefile.tmp", $data);
   else return false;
-}
-
-// ---------------------- decryptfile -----------------------------
-// function: decryptfile()
-// input: path to file [string], file name [string], key (optional)
-// output: content of decrypted file / false on error
-
-// description:
-// decrypts of a file if it has not already been decrypted.
-// decryption level is strong since decryption must be binary-safe.
-
-function decryptfile ($location, $file, $key="")
-{
-  global $user, $mgmt_config, $hcms_lang, $lang;
-
-  if (valid_locationname ($location) && valid_objectname ($file))
-  {
-    // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
-
-    if (is_file ($location.$file))
-    {
-      // load file
-      $data = loadfile ($location, $file);
-
-      // decrypt data if file is encypted
-      if (!empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") > 0)
-      {
-        $data = str_replace ("<!-- hyperCMS:encrypted -->", "", $data);
-        $data = hcms_decrypt ($data, $key, "strong", "");
-          
-        if (!empty ($data)) return $data;
-        else return false;
-      }
-      else return $data;
-    }
-    else return false;
-  }
-  else return false;
-}
-
-// ---------------------- createtempfile -----------------------------
-// function: createtempfile()
-// input: path to file [string], file name [string], key (optional)
-// output: saves temporary decrypted file if the files content is encrypted and returns parh to file / false on error
-
-// description:
-// decrypts the provided file if it has not already been decrypted and saves it as temporary file.
-// decryption level is strong since decryption must be binary-safe.
-
-function createtempfile ($location, $file, $key="")
-{
-  global $user, $mgmt_config, $hcms_lang, $lang;
-  
-  $result = array();
-  $result['result'] = false;
-  $result['crypted'] = false;
-  $result['created'] = false;
-  $result['location'] = $location;
-  $result['file'] = $file;
-  $result['templocation'] = "";
-  $result['tempfile'] = "";
-  
-  if (valid_locationname ($location) && valid_objectname ($file) && !empty ($mgmt_config['abs_path_cms']))
-  {    
-    // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
-    
-    // define temporary file location to store decrypted file to
-    $location_temp = $mgmt_config['abs_path_temp'];
-    $file_temp = "stream.".$file;
-    
-    // check if file is encrypted
-    $is_encryptedfile = is_encryptedfile ($location, $file);
-    if ($is_encryptedfile) $result['crypted'] = true;
-
-    // file is not encrypted
-    if (!$is_encryptedfile)
-    {
-      $result['result'] = true;
-    }
-    // file is encrypted and temp file exists already, is newer than encrypted file and temp file is not encrypted
-    elseif ($is_encryptedfile && is_file ($location_temp.$file_temp) && filemtime ($location_temp.$file_temp) >= filemtime ($location.$file) && !is_encryptedfile ($location_temp, $file_temp))
-    {
-      $result['result'] = true;
-      $result['templocation'] = $location_temp;
-      $result['tempfile'] = $file_temp;
-    }
-    // decrypted temporary file must be created (if temporary file does not exist or is older than original file)
-    elseif (
-             $is_encryptedfile && 
-             (
-               !file_exists ($location_temp.$file_temp) || 
-               (
-                 is_file ($location_temp.$file_temp) && 
-                 filemtime ($location_temp.$file_temp) < filemtime ($location.$file)
-               ) || 
-               is_encryptedfile ($location_temp, $file_temp)
-             )
-           )
-    {
-      // load file
-      $data = loadfile ($location, $file);
-
-      // decrypt data if file is encypted
-      if (!empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") > 0)
-      {
-        $data = str_replace ("<!-- hyperCMS:encrypted -->", "", $data);
-        $data = hcms_decrypt ($data, $key, "strong", "");
-        
-        // save decrypted file
-        $save = savefile ($location_temp, $file_temp, $data);
-
-        // file has been encrypted and saved
-        if ($save)
-        {
-          $result['result'] = true;
-          $result['created'] = true;
-          $result['templocation'] = $location_temp;
-          $result['tempfile'] = $file_temp;
-        }
-        else
-        {
-          $result['result'] = false;
-        }
-      }
-      // file is not encrypted because it is empty
-      else
-      {
-        $result['result'] = true;
-      }
-    }
-  }
-
-  // return result
-  return $result;
-}
-
-// ---------------------- movetempfile -----------------------------
-// function: movetempfile()
-// input: path to file [string], file name [string], delete temp file [true/false] (optional), 
-//        force encryption of file [true/false] (optional), key (optional)
-// output: content of encrypted file / false on error
-
-// description:
-// encrypts the temporary file if it exists and copies or moves it to the location.
-// encryption level is strong since encryption must be binary-safe.
-
-function movetempfile ($location, $file, $delete=false, $force_encrypt=false, $key="")
-{
-  global $user, $mgmt_config, $hcms_lang, $lang;
-  
-  $result = array();
-  $result['result'] = false;
-  $result['crypted'] = false;
-  $result['location'] = $location;
-  $result['file'] = $file;
-  
-  // extract publication (get the directory name from location)
-  // only works if file is stored in the repository
-  $site = getobject ($location);
-  
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && !empty ($mgmt_config['abs_path_cms']))
-  {
-    // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
-    
-    // define temporary file location to store decrypted file to
-    $location_temp = $mgmt_config['abs_path_temp'];
-    $file_temp = "stream.".$file;
-    
-    // temp file and source file exists
-    if (is_file ($location_temp.$file_temp))
-    {
-      // load temp file
-      $data = loadfile ($location_temp, $file_temp);
-      
-      // delete temp file
-      if ($delete == true) deletefile ($location_temp, $file_temp);
-      
-      // encrypt data if file is not encypted or is not a thumbnail
-      if (
-           (
-             (isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true) || 
-             $force_encrypt == true
-           ) && 
-           !is_thumbnail ($file_temp) && !empty ($data) && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") == 0
-         )
-      {
-        // encrpyt content
-        $data = hcms_encrypt ($data, $key, "strong", "");
-        
-        // add crypted information to files content
-        if (!empty ($data))
-        {
-          $data = "<!-- hyperCMS:encrypted -->".$data;
-          $result['crypted'] = true;
-        }
-      }
-      
-      // save file  
-      if ($data)
-      {
-        $save = savefile ($location, $file, $data);
-        if ($save) $result['result'] = true;
-      }
-    }
-    // temp file has not been created and does not exist (encryption of content is not enabled)
-    else
-    {
-      $result['result'] = true;
-    }
-  }
-  
-  // return result
-  return $result;
 }
 
 // -------------------------------------- fileversion -------------------------------------------
@@ -2731,7 +2497,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
 
 function downloadfile ($filepath, $name, $force="wrapper", $user="")
 {
-  global $mgmt_config, $is_iphone;
+  global $mgmt_config, $hcms_lang, $lang, $is_iphone;
 
   $allowrange = true;
   $error = array();
@@ -2957,7 +2723,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
 // function: loadcontainer()
 // input: container file name or container id (working container will be loaded by default), optional container type [published, work, version], user name
 // output: XML content of container / false on error
-// requires: config.inc.php to be loaded before
+// requires: config.inc.php
 
 function loadcontainer ($container, $type="work", $user)
 {
@@ -3060,19 +2826,19 @@ function loadcontainer ($container, $type="work", $user)
           $restored = true;
         }
       }
-      
+
       // decrypt container if it is encrypted
       if (!empty ($contentdata) && strpos ("_".$contentdata, "<!-- hyperCMS:encrypted -->") > 0)
       {
         $contentdata = str_replace ("<!-- hyperCMS:encrypted -->", "", $contentdata);
-        $contentdata = hcms_decrypt ($contentdata, "", "strong", "");
-        
+        $contentdata = hcms_decrypt ($contentdata, "", "strong", "none");
+
         // set status to "restored"
         if ($restored) $contentdata = setcontent ($contentdata, "<hyperCMS>", "<contentstatus>", "restored", "", "");
       }
     }
   }
-  
+
   // use temporary cache to reduce I/O if save if disabled
   if (getsession ("hcms_temp_save", "yes") == "no")
   {
@@ -3139,12 +2905,13 @@ function savecontainer ($container, $type="work", $data, $user, $init=false)
       
       // encrypt data
       if (
+           is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && 
            (!empty ($site) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true) && 
            $data != "" && strpos ("_".$data, "<!-- hyperCMS:encrypted -->") == 0
          )
       {
-        $data = hcms_encrypt (trim ($data), "", "strong", "");
-        if (!empty ($data)) $data = "<!-- hyperCMS:encrypted -->".trim ($data); 
+        $data = hcms_encrypt (trim ($data), "", "strong", "none");
+        if (!empty ($data)) $data = "<!-- hyperCMS:encrypted -->".$data; 
       }
 
       // save data
@@ -10762,7 +10529,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
   $show_command = "";
   $result = array();
   $result['result'] = false;
-  
+
   // set default language
   if ($lang == "") $lang = "en";
 
@@ -11381,7 +11148,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
           }
           
           // encrypt and save data
-          if (isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
+          if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
           {
             $data = encryptfile ($media_root.$site."/", $media_update);
             if (!empty ($data)) savefile ($media_root.$site."/", $media_update, $data);
@@ -12027,7 +11794,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user)
           remoteclient ("save", "abs_path_media", $site, $medialocation, "", $mediafile, "");
           
           // encrypt data
-          if (isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
+          if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
           {
             $data = encryptfile ($medialocation, $mediafile);
             if (!empty ($data)) savefile ($medialocation, $mediafile, $data);
@@ -12146,7 +11913,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 //        type of image/video/audio file [thumbnail,origthumb(thumbail made from original video/audio),original,any other string present in $mgmt_imageoptions] (optional)
 // output: result array / false on error (saves original or thumbnail media file of an object, for thumbnail only jpeg format is supported as output), user name
 
-// description: editmediaobject mainly uses function createmedia to render the objects media
+// description: editmediaobject mainly uses function createmedia to render the objects media but at the same time takes care of versioning and the object name if the file extension has changed.
 
 function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbnail", $user)
 {
@@ -12185,10 +11952,10 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
     if ($mediafile_new && $createversion)
     {
       $processresult = true;
-            
+   
       // create new thumbnail
       createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_new, "jpg", "thumbnail");
-      
+
       // get the file extension of the old file      
       $file_ext_old = strtolower (strrchr ($mediafile_orig, "."));
       // get the file extension of the new file

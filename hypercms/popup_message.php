@@ -52,6 +52,9 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+$add_javascript = "";
+$show = "";
+
 // icons and default messages
 if ($action == "accept")
 {
@@ -127,8 +130,7 @@ $token_new = createtoken ($user);
 <form name="message" method="post" action="">
   <input type="hidden" name="action" value="<?php echo $action; ?>">      
   <input type="hidden" name="location" value="<?php echo $location; ?>">
-  <input type="hidden" name="page" value="<?php echo $page; ?>">
-  <input type="hidden" name="filetype" value="<?php echo $filetype; ?>">          
+  <input type="hidden" name="page" value="<?php echo $page; ?>">       
   <input type="hidden" name="wf_token" value="<?php echo $wf_token; ?>">
   <input type="hidden" name="intention" value="send">
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />

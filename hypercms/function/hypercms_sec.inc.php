@@ -2579,7 +2579,7 @@ function hcms_crypt ($string, $start=0, $length=0)
 // ---------------------- hcms_encrypt -----------------------------
 // function: hcms_encrypt()
 // input: string to encode, key of length 16, 24 or 32 (optional), crypt strength level [weak,standard,strong] (optional), 
-//        encoding [base64,url,none] use base64 for files (optional)
+//        encoding [base64,url,none] (optional)
 // output: encoded string / false on error
 
 // description:
@@ -2667,17 +2667,14 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
       $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
       $iv = mcrypt_create_iv ($ivsize, MCRYPT_RAND);
       $hash = mcrypt_encrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB, $iv);
-      
-      // base 64 encode string in order to get a shorter urlencoded string
-      $hash = base64_encode ($hash);
     } 
     
     if ($hash != "")
     {
-      // to be used to encode files
+      // base64 encoding to be used to encode binary files (stronlgy recommended due to issues with OpenSSL encryption and decryption)
       if (strtolower($encoding) == "base64") return base64_encode ($hash);
-      // to be used for short strings passed via GET
-      elseif (strtolower($encoding) == "url") return str_replace ("%", "~", urlencode ($hash));
+      // to be used for strings passed via GET (base64 encoding will be applied as well in order to be binary safe)
+      elseif (strtolower($encoding) == "url") return str_replace ("%", "~", urlencode (base64_encode ($hash)));
       // no encoding
       else return $hash;
     }
@@ -2689,7 +2686,7 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
 // ---------------------- hcms_decrypt -----------------------------
 // function: hcms_decrypt()
 // input: hash-string to decode, key of length 16, 24 or 32 (optional), crypt strength level [weak,standard,strong] (optional), 
-//        encoding [base64,url,none] use base64 for files (optional)
+//        encoding [base64,url,none] (optional)
 // output: decoded string / false on error
 
 // description:
@@ -2722,8 +2719,8 @@ function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
 
     // to be used to decode files
     if (strtolower ($encoding) == "base64") $string = base64_decode ($string);
-    // to be used for short strings passed via GET
-    elseif (strtolower($encoding) == "url") $string = urldecode (str_replace ("~", "%", $string));
+    // to be used for strings passed via GET
+    elseif (strtolower($encoding) == "url") $string = base64_decode (urldecode (str_replace ("~", "%", $string)));
 
     // weak
     if ($crypt_level == "weak")
@@ -2774,9 +2771,6 @@ function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
     // standard
     else
     {
-      // base 64 decode string
-      $string = base64_decode ($string);
-      
       // MCRYPT_MODE_ECB (electronic codebook) 
       // is suitable for random data, such as encrypting other keys. Since data there is short and random, the disadvantages of ECB have a favorable negative effect.
       $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);

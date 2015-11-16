@@ -568,7 +568,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     // display name
     $medianame = getobject ($medianame);
     if ($medianame == "") $medianame = getobject ($mediafile);
-    
+
     // get file info
     // if config file
     if (strpos ($mediafile, ".config.") > 0)
@@ -708,7 +708,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         // if no thumbnail/preview exists
         else
         {
-          $mediaview = "
+          $mediaview .= "
         <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
           <tr><td align=\"left\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" ".$style." /></td></tr>
           <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>";
@@ -778,7 +778,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             // using pdfjs with orig. file via iframe
             $doc_link = cleandomain ($mgmt_config['url_path_cms'])."explorer_wrapper.php?site=".$site."&name=".$medianame."&media=".$site."/".$mediafile_orig."&token=".hcms_crypt ($site."/".$mediafile_orig)."&ts=".time();
-            $mediaview = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
+            $mediaview .= "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
           }
           else
           {
@@ -802,16 +802,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             {
               // using pdfjs with thumbnail file via iframe
               $doc_link = cleandomain ($mgmt_config['url_path_cms'])."explorer_wrapper.php?site=".$site."&name=".$medianame_thumb."&media=".$site."/".$mediafile_thumb."&token=".hcms_crypt ($site."/".$mediafile_thumb)."&ts=".time();
-              $mediaview = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
+              $mediaview .= "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
             }
             // thumb pdf does not exsist
             elseif ($thumb_pdf_exists == false)
             {
               // using original file and wrapper to start conversion in the background
               $doc_link = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".urlencode($site)."&name=".urlencode($medianame_thumb)."&media=".urlencode($site."/".$mediafile)."&token=".hcms_crypt ($site."/".$mediafile)."&type=pdf&ts=".time();
-              
-              $mediaview = "";
-              
+
               // show standard file icon
               if (!empty ($file_info['icon_large'])) $mediaview .= "<div style=\"width:".$width."px; text-align:center;\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /></div>";
               
@@ -822,7 +820,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             else
             {
               $doc_link = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".$site."&name=".$medianame."&media=".$site."/".$mediafile_orig."&token=".hcms_crypt ($site."/".$mediafile_orig)."&ts=".time();
-              $mediaview = "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
+              $mediaview .= "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
             }
           }
         }
@@ -830,7 +828,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           // Not compatible Browser - using google docs
           $doc_link = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&name=".url_encode($medianame)."&media=".url_encode($site."/".$mediafile_orig)."&token=".hcms_crypt ($site."/".$mediafile_orig)."&ts=".time();
-          $mediaview = "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
+          $mediaview .= "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
         }
      
         $mediaview .= "<div style=\"padding:5px 0px 8px 0px; width:".$width."px; text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</div>";
@@ -912,7 +910,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             if ($width > 0 && $height > 0) $style = "style=\"width:".intval($width)."px; height:".intval($height)."px;\"";
             
             // set width and height of media file as file-parameter
-            $mediaview = "
+            $mediaview .= "
             <!-- hyperCMS:width file=\"".$width."\" -->
             <!-- hyperCMS:height file=\"".$height."\" -->";
             
@@ -927,7 +925,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           // if no thumbnail/preview exists
           else
           {
-            $mediaview = "
+            $mediaview .= "
           <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
             <tr><td align=\"left\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /></td></tr>
             <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>";
@@ -936,7 +934,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         // if template media view
         elseif (file_exists ($media_root.$mediafile))
         {
-          $mediaview = "
+          $mediaview .= "
         <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
           <tr><td align=\"left\"><img src=\"".$mgmt_config['url_path_tplmedia'].$site."/".$mediafile."\" ".$id." alt=\"".$mediafile."\" title=\"".$mediafile."\" class=\"".$class."\" ".$style."/></td></tr>
           <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($mediafile, 40, false)."</td></tr>";
@@ -976,7 +974,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           }
         }
         
-        $mediaview = "
+        $mediaview .= "
       <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
         <tr><td align=\"left\">
           <object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" ".$style.">
@@ -1348,7 +1346,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           }
           else $style = "style=\"width:580px; height:620px;\"";   
           
-          if ($viewtype == "template") $mediaview = "<form name=\"editor\" method=\"post\">
+          if ($viewtype == "template") $mediaview .= "<form name=\"editor\" method=\"post\">
           <input type=\"hidden\" name=\"site\" value=\"".$site."\" />
           <input type=\"hidden\" name=\"mediacat\" value=\"tpl\" />
           <input type=\"hidden\" name=\"mediafile\" value=\"".$mediafile."\" />
@@ -1385,7 +1383,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         // get file extension of new file (preview file)
         $file_info['ext'] = strtolower (strrchr ($mediafile, "."));
         
-        $mediaview = "
+        $mediaview .= "
       <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
         <tr><td align=left><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile)."&token=".hcms_crypt($site."/".$mediafile)."&ts=".time()."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" /></td></tr>
         <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";           
@@ -1393,7 +1391,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       // if no thumbnail/preview exists
       else
       {
-        $mediaview = "
+        $mediaview .= "
       <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
         <tr><td align=\"left\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /></td></tr>
         <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";

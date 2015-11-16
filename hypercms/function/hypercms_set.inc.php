@@ -413,7 +413,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
         next ($text);        
       } 
     }
-    
+
     // if link management is enabled
     if ($mgmt_config[$site]['linkengine'] == true)
     {

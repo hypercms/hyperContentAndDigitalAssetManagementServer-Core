@@ -1259,7 +1259,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       
       // get media file
       $mediafile = getfilename ($pagedata, "media");
-      
+
       // get container id
       $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
 
@@ -1521,7 +1521,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $viewstore = str_replace ("document.cookie", "", $viewstore);
       
       // character set must be UTF-8 for media files
-      if ($mediafile != "") $contenttype = "text/html; charset=UTF-8";
+      if (!empty ($mediafile))
+      {
+        $charset = "UTF-8";
+        $contenttype = "text/html; charset=".$charset;
+      }
       
       $viewstore = "<!DOCTYPE html>
       <html>
@@ -2617,7 +2621,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 
                 // set default value given eventually by tag
                 if ($contentbot == "" && $defaultvalue != "") $contentbot = $defaultvalue;
-        
+
                 // un-comment html tags (important for formatted texts)
                 if ($hypertagname == $searchtag."f")
                 {
@@ -3524,7 +3528,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 }                            
               }
             }
-        
+
             // ------------------- publish / insert content -------------------       
             if ($buildview != "template" && $buildview != "formedit" && $buildview != "formmeta" && $buildview != "formlock")
             {
@@ -6111,7 +6115,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             if ($application == "generator")
             {
               // when we are using the generator the generated viewstore will be saved into a file
-              if ($mediafile == "") 
+              if (empty ($mediafile)) 
               {
                 $mediafile_info = getfileinfo ($site, $page, "comp");
                 $mediafile = $mediafile_info['filename']."_hcm".$container_id.$mediafile_info['ext'];
@@ -7207,8 +7211,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         $viewstore .= "<img src=\"".getthemelocation()."img/button_print.gif\" class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"window.print();\" alt=\"".getescapedtext ($hcms_lang['print'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['print'][$lang], $charset, $lang)."\" align=\"absmiddle\" />\n";
         
         // autosave checkbox
-        if (intval ($mgmt_config['autosave']) > 0 && ($buildview == "formedit" || $buildview == "formmeta")) $viewstore .= "<div class=\"hcmsButton\" style=\"height:22px;\">&nbsp;<input type=\"checkbox\" id=\"autosave\" name=\"autosave\" value=\"yes\" checked=\"checked\" /><label for=\"autosave\">&nbsp;".getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang)."</label></div>\n";
-        else $viewstore .= "<div class=\"hcmsButtonOff\" style=\"height:22px;\">&nbsp;<input type=\"checkbox\" id=\"autosave\" name=\"autosave\" value=\"\" disabled=\"disabled\" />&nbsp;".getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang)."</div>\n";
+        if (intval ($mgmt_config['autosave']) > 0 && ($buildview == "formedit" || $buildview == "formmeta")) $viewstore .= "<div class=\"hcmsButton\" style=\"font-weight:normal; height:22px;\">&nbsp;<input type=\"checkbox\" id=\"autosave\" name=\"autosave\" value=\"yes\" checked=\"checked\" /><label for=\"autosave\">&nbsp;".getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang)."</label>&nbsp;</div>\n";
+        else $viewstore .= "<div class=\"hcmsButtonOff\" style=\"font-weight:normal; height:22px;\">&nbsp;<input type=\"checkbox\" id=\"autosave\" name=\"autosave\" value=\"\" disabled=\"disabled\" />&nbsp;".getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang)."&nbsp;</div>\n";
         
         $viewstore .= "</td>\n";
         
@@ -7238,7 +7242,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     <div class=\"hcmsWorkplaceFrame\" style=\"z-index:1;\">
       <table>\n";
         
-        // add preview of media file
+        // add preview of media file (for media view the characters set is always UTF-8)
         if ($mediafile != false && $mediafile != "")
         {
           if ($buildview == "formedit" || $buildview == "formmeta") $mediaview = "preview";
@@ -7345,7 +7349,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   $result['object'] = $page;
   $result['name'] = $name_orig;
   $result['objecttype'] = $filetype;    
-  
+
   return $result;
 }
 

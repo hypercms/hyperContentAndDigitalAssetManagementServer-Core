@@ -247,6 +247,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
   {
+    // appending data to a file ensures that the previous write process is finished (required due to issue when editing encrypted files)
+    avoidfilecollision ($file);
+    
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
     
@@ -258,7 +261,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     
     // save input type in new variable
     $type_memory = $type;
-    
+
     // add slash if not present at the end of the location string
     if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
     if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";
@@ -1856,7 +1859,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     if (!empty ($temp_raw) && $temp_raw['result'] && $temp_raw['created']) deletefile ($temp_raw['templocation'], $temp_raw['tempfile'], 0);
     
     // encrypt and save data if media file is not a thumbnail image
-    if ($force_no_encrypt == false && !empty ($newfile) && !is_thumbnail ($newfile) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
+    if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && $force_no_encrypt == false && !empty ($newfile) && !is_thumbnail ($newfile) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
     {
       // encrypt new file
       $data = encryptfile ($location_dest, $newfile);
@@ -2944,7 +2947,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                   $converted = true;
                   
                   // encrypt and save data
-                  if ($force_no_encrypt == false && !empty ($result_rename) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
+                  if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && $force_no_encrypt == false && !empty ($result_rename) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
                   {
                     $data = encryptfile ($location_dest, $newfile);
                     if (!empty ($data)) savefile ($location_dest, $newfile, $data);

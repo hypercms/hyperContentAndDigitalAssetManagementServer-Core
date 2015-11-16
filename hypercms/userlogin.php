@@ -302,7 +302,7 @@ if (checkuserip (getuserip ()) == true)
   {
     $show = str_replace ("%timeout%", $mgmt_config['logon_timeout'], $login_result['message'])."\n";
   }
-  
+
   // login form
   if ((!isset ($login_result) || $login_result['auth'] != true))
   {    

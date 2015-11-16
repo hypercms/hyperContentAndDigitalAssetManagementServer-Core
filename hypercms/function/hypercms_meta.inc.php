@@ -760,13 +760,13 @@ function id3_getdata ($file)
 
 // ------------------------- id3_writefile -----------------------------
 // function: id3_writefile()
-// input: abs. path to audio file, ID3 tag array, keep existing ID3 data of file [true,false] (optional)
+// input: abs. path to audio file, ID3 tag array, keep existing ID3 data of file [true,false] (optional), move tempoarary file from unecrypted to encrypted [true,false] (optional)
 // output: true / false on error
 
 // description:
 // writes ID3 tags into audio file for supported file types and keeps the existing ID3 tags
 
-function id3_writefile ($file, $id3, $keep_data=true)
+function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
 {
   global $user, $mgmt_config, $mgmt_mediametadata, $hcms_ext;
 
@@ -849,13 +849,30 @@ function id3_writefile ($file, $id3, $keep_data=true)
         if ($tagwriter->WriteTags())
         {
           $result = true;
-                
+     
           // on warning
         	if (!empty ($tagwriter->warnings))
           {
             $errcode = "20280";
             $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|warning|$errcode|There were warnings when writing ID3 tags to file: ".getobject($file)."<br />".implode("<br />", $tagwriter->warnings);
         	}
+          
+          // save media stats and move temp file
+          if ($movetempfile)
+          {
+            // write media information to DB
+            $container_id = getmediacontainerid ($file);
+            
+            if (!empty ($container_id))
+            {
+              $md5_hash = md5_file ($file);
+              $filesize = round (@filesize ($file) / 1024, 0);
+              rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", $md5_hash);
+            }
+            
+            // encrypt and save file if required
+            if ($temp['result']) movetempfile ($location, $media, true);
+          }
         }
         // on error
         else
@@ -864,9 +881,6 @@ function id3_writefile ($file, $id3, $keep_data=true)
           $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write ID3 tags to file: ".getobject($file);
         }
       }
-      
-      // encrypt and save file if required
-      if ($temp['result'] && $temp['created']) movetempfile ($location, $media, true);
       
       // save log
       savelog (@$error);
@@ -916,7 +930,7 @@ function id3_create ($site, $text)
     else
     {
       $errcode = "10109";
-      $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|media mapping of publication '".$site."' could not be loaded";
+      $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Media mapping of publication '".$site."' could not be loaded";
       savelog ($error);
           
       return false;
@@ -1074,13 +1088,13 @@ function xmp_getdata ($file)
 
 // ------------------------- xmp_writefile -----------------------------
 // function: xmp_writefile()
-// input: abs. path to image file, XMP tag array, keep existing XMP data of file [true,false] (optional)
+// input: abs. path to image file, XMP tag array, keep existing XMP data of file [true,false] (optional), move tempoarary file from unecrypted to encrypted [true,false] (optional)
 // output: true / false on error
 
 // description:
 // writes XMP tags into image file for supported file types and keeps the existing XMP tags
 
-function xmp_writefile ($file, $xmp, $keep_data=true)
+function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
 {
   global $user, $mgmt_config, $mgmt_mediametadata, $hcms_ext;
 
@@ -1120,10 +1134,10 @@ function xmp_writefile ($file, $xmp, $keep_data=true)
             if ($errorCode)
             {
               $errcode = "20242";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed for file: ".getobject($file);
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed for XMP injection into file: ".getobject($file);
             }
           }
-  
+
           // inject XMP tags into file
           foreach ($xmp as $tag => $value)
           {
@@ -1138,14 +1152,31 @@ function xmp_writefile ($file, $xmp, $keep_data=true)
               if ($errorCode)
               {
                 $errcode = "20243";
-                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed for file: ".getobject($file);
+                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed for XMP injection into file: ".getobject($file);
               }
             }
           }
+
+          // appending data to a file ensures that the previous write process is finished
+          avoidfilecollision ($media);
           
-          // encrypt and save file if required
-          if ($temp['result'] && $temp['created']) movetempfile ($location, $media, true);
-          
+          // save media stats and move temp file on success
+          if ($movetempfile && empty ($errorCode) || $errorCode < 1)
+          {
+            // write media information to DB
+            $container_id = getmediacontainerid ($file);
+            
+            if (!empty ($container_id))
+            {
+              $md5_hash = md5_file ($file);
+              $filesize = round (@filesize ($file) / 1024, 0);
+              rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", $md5_hash);
+            }
+            
+            // encrypt and save file if required
+            if ($temp['result']) movetempfile ($location, $media, true);
+          }
+
           // save log
           savelog (@$error);
           
@@ -1198,7 +1229,7 @@ function xmp_create ($site, $text)
     else
     {
       $errcode = "10101";
-      $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|media mapping of publication '".$site."' could not be loaded";
+      $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Media mapping of publication '".$site."' could not be loaded";
       savelog ($error);
           
       return false;
@@ -1725,13 +1756,13 @@ function iptc_maketag ($record=2, $tag, $value)
 
 // ------------------------- iptc_writefile -----------------------------
 // function: iptc_writefile()
-// input: abs. path to image file, IPTC tag array, keep existing IPTC data of file [true,false] (optional)
+// input: abs. path to image file, IPTC tag array, keep existing IPTC data of file [true,false] (optional), move tempoarary file from unecrypted to encrypted [true,false] (optional)
 // output: true / false on error
 
 // description:
 // writes IPTC tags into image file for supported file types and keeps the existing IPTC tags
 
-function iptc_writefile ($file, $iptc, $keep_data=true)
+function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
 {
   global $user, $mgmt_config, $mgmt_mediametadata;
 
@@ -1740,7 +1771,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true)
   
   if (is_file ($file) && is_array ($iptc))
   {
-    $iptc = array();
+    // set default encoding to UTF-8
     $encoding = "UTF-8";
 
     // get file info
@@ -1789,7 +1820,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true)
           }
         }
       }
-  
+
       // remove IPTC data from file before embedding IPTC
       if (is_array ($mgmt_mediametadata))
       {
@@ -1809,7 +1840,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true)
             if ($errorCode)
             {
               $errcode = "20242";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed for file: ".getobject($file);
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed for clearing IPTC of file: ".getobject($file);
             }
           }
         }
@@ -1830,19 +1861,45 @@ function iptc_writefile ($file, $iptc, $keep_data=true)
   
       // embed the IPTC data (only JPEG files)
       $content = iptcembed ($data, $file);
-       
+
       // write the new image data to the file
-      $fp = fopen ($file, "wb");
-      
-      if ($fp)
+      if (!empty ($content))
       {
-        fwrite ($fp, $content);
-        fclose ($fp);
-        
-        // encrypt and save file if required
-        if ($temp['result'] && $temp['created']) movetempfile ($location, $media, true);
-        
-        return true;
+        $fp = fopen ($file, "wb");
+
+        if ($fp)
+        {
+          @flock ($fp, LOCK_EX);
+          @fwrite ($fp, $content);
+          @flock ($fp, LOCK_UN);  
+          @fclose ($fp);
+
+          // save media stats and move temp file
+          if ($movetempfile)
+          {
+            // write media information to DB
+            $container_id = getmediacontainerid ($file);
+    
+            if (!empty ($container_id))
+            {
+              $md5_hash = md5_file ($file);
+              $filesize = round (@filesize ($file) / 1024, 0);
+              rdbms_setmedia ($container_id, $filesize, "", "", "", "", "", "", "", "", $md5_hash);
+            }
+  
+            // encrypt and save file if required
+            if ($temp['result']) movetempfile ($location, $media, true);
+          }
+          
+          return true;
+        }
+        else return false;
+      }
+      // on error
+      else
+      {
+        $errcode = "20244";
+        $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|injection of IPTC failed for file: ".getobject($file);
       }
     }
     
