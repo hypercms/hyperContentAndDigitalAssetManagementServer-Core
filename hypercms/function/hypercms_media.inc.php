@@ -204,7 +204,7 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
         if ($fileinfo['ext'] != "" && substr_count ($mediapreview_ext.".", $fileinfo['ext'].".") > 0)
         {
           $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" -ss ".shellcmd_encode ($frame)." -f image2 -vframes 1 \"".shellcmd_encode ($location_dest.$newfile)."\"";
-        
+
           // execute 
           exec ($cmd, $error_array, $errorCode);
         }
@@ -296,7 +296,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       $location_source = $temp_source['templocation'];
       $file = $temp_source['tempfile'];
     }
-    
+
     // get file size of media file in kB
     $filesize_orig = round (@filesize ($location_source.$file) / 1024, 0);
 
@@ -1450,7 +1450,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // join filter options an add to options string
                 if (sizeof ($vfilter) > 0)
                 {
-                  $mgmt_mediaoptions[$mediaoptions_ext] = " -vf \"".implode (" ", $vfilter)."\" ".$mgmt_mediaoptions[$mediaoptions_ext];
+                  $mgmt_mediaoptions[$mediaoptions_ext] = " -vf \"".implode (", ", $vfilter)."\" ".$mgmt_mediaoptions[$mediaoptions_ext];
                 }
                 
                 // video size
@@ -1564,10 +1564,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
                         if ($segment['keep'] == 1)
                         {
-                          $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" -ss ".$segment_starttime." -t ".$segment_duration." -sameq -f mpegts -target ntsc-vcd \"".$mgmt_config['abs_path_temp'].shellcmd_encode ($file_name)."-".$i.".ts\"";
+                          $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" -ss ".$segment_starttime." -t ".$segment_duration." -sameq -f mpegts -target ntsc-vcd \"".$location_temp.shellcmd_encode ($file_name)."-".$i.".ts\"";
 
                           @exec ($cmd, $buffer, $errorCode);
-                        
+
                           // on error
                           if ($errorCode)
                           {
@@ -1577,7 +1577,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                           //
                           else
                           {
-                            $temp_files[] = $mgmt_config['abs_path_temp'].$file_name."-".$i.".ts";
+                            $temp_files[] = $location_temp.$file_name."-".$i.".ts";
                             $i++;
                           }
                         }
@@ -1590,11 +1590,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // join media file slices
                     if (sizeof ($temp_files) > 0)
                     {
-                      $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"concat:".implode ("|", $temp_files)."\" -sameq \"".$mgmt_config['abs_path_temp'].shellcmd_encode ($file)."\"";
+                      $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"concat:".implode ("|", $temp_files)."\" -sameq \"".$location_temp.shellcmd_encode ($file_orig)."\"";
 
                       @exec ($cmd, $buffer, $errorCode);
 
-                      // remove files slices
+                      // remove file slices
                       foreach ($temp_files as $temp_file)
                       {
                         unlink ($temp_file);
@@ -1604,12 +1604,13 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       if ($errorCode)
                       {
                         $errcode = "20240";
-                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;           
+                        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file_orig;           
                       }
                       // reset media file source
                       else
                       {
-                        $location_source = $mgmt_config['abs_path_temp'];
+                        $location_source = $location_temp;
+                        $file = $file_orig;
                       }
                     }
                     // only 1 segment
@@ -1642,7 +1643,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
                 
                 // new file name
-                if ($type == "original") $newfile = $file;
+                if ($type == "original") $newfile = $file_orig;
                 elseif ($type == "thumbnail") $newfile = $file_name.".thumb.".$format_set;
                 elseif ($type == "origthumb") $newfile = $file_name.".orig.".$format_set;
                 else $newfile = $file_name.".media.".$format_set;
@@ -1653,18 +1654,18 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // create version of original media file and container (only works for files in the media content repository)
                 if ($type == "original")
                 {
-                  $createversion = createversion ($site, $file);
+                  $createversion = createversion ($site, $file_orig);
                 }
 
                 // render video
-                $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" ".$mgmt_mediaoptions[$mediaoptions_ext]." \"".shellcmd_encode ($location_dest.$tmpfile)."\"";
+                $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" ".$mgmt_mediaoptions[$mediaoptions_ext]." \"".shellcmd_encode ($location_temp.$tmpfile)."\"";
 
                 @exec ($cmd, $buffer, $errorCode);
 
                 // delete joined slice temp file
-                if (is_file ($mgmt_config['abs_path_temp'].$file_name.$file_ext))
+                if (is_file ($location_temp.$file_orig))
                 {
-                  unlink ($mgmt_config['abs_path_temp'].$file_name.$file_ext);
+                  unlink ($location_temp.$file_orig);
                 }
   
                 // watermarking (using video filters)
@@ -1673,8 +1674,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 {
                   $mgmt_mediaoptions[$mediaoptions_ext] .= " ".$mgmt_config[$site]['watermark_video'];
                 }
-  
-                if (is_file ($location_dest.$tmpfile) && filesize ($location_dest.$tmpfile) > 100 && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-wm ") > 0)
+                
+                // dont watermark original file
+                if ($type != "original" && is_file ($location_temp.$tmpfile) && filesize ($location_temp.$tmpfile) > 100 && strpos ("_".$mgmt_mediaoptions[$mediaoptions_ext], "-wm ") > 0)
                 {
                   // get watermark defined by media option 
                   $watermarking = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-wm");
@@ -1695,19 +1697,19 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if (!empty ($vfilter_wm))
                   {
                     // render video with watermark
-                    $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_dest.$tmpfile)."\" -vf \"".$vfilter_wm."\" \"".shellcmd_encode ($location_dest.$tmpfile2)."\"";
+                    $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_temp.$tmpfile)."\" -vf \"".$vfilter_wm."\" \"".shellcmd_encode ($location_temp.$tmpfile2)."\"";
                   
                     @exec ($cmd, $buffer, $errorCode);
-  
+
                     // replace file
-                    if (is_file ($location_dest.$tmpfile2)) rename ($location_dest.$tmpfile2, $location_dest.$tmpfile);
+                    if (is_file ($location_temp.$tmpfile2)) rename ($location_temp.$tmpfile2, $location_temp.$tmpfile);
                   }
                 }
   
                 // on error or new file is smaller than 100 bytes
-                if ($errorCode || filesize ($location_dest.$tmpfile) < 100)
+                if ($errorCode || filesize ($location_temp.$tmpfile) < 100)
                 {
-                  @unlink ($location_dest.$tmpfile);
+                  @unlink ($location_temp.$tmpfile);
                 
                   $errcode = "20236";
                   $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
@@ -1722,27 +1724,29 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     $tmpfile2 = $file_name.".tmp2.".$format_set;
                     
                     // inject meta data
-                    $cmd = $mgmt_mediametadata['.flv']." -i \"".shellcmd_encode ($location_dest.$tmpfile)."\" -o \"".shellcmd_encode ($location_dest.$tmpfile2)."\"";
+                    $cmd = $mgmt_mediametadata['.flv']." -i \"".shellcmd_encode ($location_temp.$tmpfile)."\" -o \"".shellcmd_encode ($location_temp.$tmpfile2)."\"";
                     
                     @exec ($cmd, $buffer, $errorCode);
+
+                    @unlink ($location_temp.$tmpfile);
                     
-                    @unlink ($location_dest.$tmpfile);
-                    
+                    // on error
                     if ($errorCode)
                     {
                       $errcode = "20237";
                       $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of yamdi (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$newfile;
                     }
+                    // on success
                     else
                     {                  
-                      if (@filesize ($location_dest.$tmpfile2) > 10) 
+                      if (@filesize ($location_temp.$tmpfile2) > 10) 
                       {
                         if (@is_file ($location_dest.$newfile)) @unlink ($location_dest.$newfile);
-                        @rename ($location_dest.$tmpfile2, $location_dest.$newfile);
+                        @rename ($location_temp.$tmpfile2, $location_dest.$newfile);
                       }
                       else 
                       {
-                        @unlink ($location_dest.$tmpfile2);
+                        @unlink ($location_temp.$tmpfile2);
                       }
                     }
                   }
@@ -1750,7 +1754,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   else
                   {
                     if (@is_file ($location_dest.$newfile)) @unlink ($location_dest.$newfile);
-                    @rename ($location_dest.$tmpfile, $location_dest.$newfile);
+                    @rename ($location_temp.$tmpfile, $location_dest.$newfile);
                   }
                 }
                 
@@ -1789,10 +1793,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if ($type == "origthumb" || $type == "original") $config_extension = ".config.orig";
                   else $config_extension = ".config.".$format_set;
                 }
-                
+  
                 // capture screen from video to use as thumbnail image
                 if ($type == "origthumb" || $type == "original") createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
-                          
+     
                 // new video info (only if it is not the thumbnail file of the original file)
                 if ($type != "origthumb" || $type == "original") $videoinfo = getvideoinfo ($location_dest.$newfile);
                 

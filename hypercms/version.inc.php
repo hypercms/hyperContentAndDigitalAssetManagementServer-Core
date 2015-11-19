@@ -1063,6 +1063,13 @@ release 11/2015
 - changes in language files
 - implementation of function avoidfilecollision due to issues when manipulating encrypted files with e.g. function createmedia and the shell execute file process has not been finished
 - removed file encryption feature from free to standard and enterprise edition
+- Improvements in hyperCMS UI
+- bug fix: function creatmedia did not render edited videos proberly if the file has been encrypted
+- bug fix: function creatmedia passed wrong file name to createversion if the file has been encrypted
+- change of watermarking in function createmedia to keep original media file without watermark
+- bug fix: function creatmedia did not use comma as sperator when using multiple FFMPEG video filters at once
+- bug fix: the install script did not empty the %instances% place holder
+- implementation of instances path verification in userlogin
 */
 
 // current version

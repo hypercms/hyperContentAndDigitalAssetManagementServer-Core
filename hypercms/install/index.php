@@ -269,6 +269,8 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
         $config = str_replace ("%smtp_port%", $smtp_port, $config);
         $config = str_replace ("%smtp_sender%", $smtp_sender, $config);
         
+        $config = str_replace ("%instances%", "", $config);
+        
         $result_config = savefile ($mgmt_config['abs_path_cms']."config/", "config.inc.php", $config);
         
         if ($result_config == false) $show .= "<li>Create of config file failed. Please check write permissions of config/config.inc.php.</li>\n";

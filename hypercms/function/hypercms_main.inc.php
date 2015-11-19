@@ -2286,13 +2286,17 @@ function appendfile ($abs_path, $filename, $filedata)
 
 function avoidfilecollision ($data="tempdata")
 {
-  global $mgmt_config;
+  global $mgmt_config, $site;
   
-  // save empty temp file initally (to clear previous data)
-  savefile ($mgmt_config['abs_path_temp'], "writefile.tmp", "");
-  
-  // append data to file
-  if (is_file ($mgmt_config['abs_path_temp']."writefile.tmp")) return appendfile ($mgmt_config['abs_path_temp'], "writefile.tmp", $data);
+  if (!valid_publicationname ($site) || (isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true))
+  {
+    // save empty temp file initally (to clear previous data)
+    savefile ($mgmt_config['abs_path_temp'], "writefile.tmp", "");
+    
+    // append data to file
+    if (is_file ($mgmt_config['abs_path_temp']."writefile.tmp")) return appendfile ($mgmt_config['abs_path_temp'], "writefile.tmp", $data);
+    else return false;
+  }
   else return false;
 }
 

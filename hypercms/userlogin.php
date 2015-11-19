@@ -317,7 +317,7 @@ if (checkuserip (getuserip ()) == true)
             <td class=\"hcmsTextOrange\"><strong>".$show."</strong></td>
           </tr>\n";
           
-    if (!empty ($mgmt_config['instances'])) $show .= "
+    if (!empty ($mgmt_config['instances']) && is_dir ($mgmt_config['instances'])) $show .= "
           <tr id=\"sentinstance_container\">
             <td><b>".getescapedtext ($hcms_lang['instance'][$lang])."</b></td>
             <td>
