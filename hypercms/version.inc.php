@@ -999,12 +999,12 @@ release 11/2015
 - implementation of new JS functions hcms_lockContext and hcms_isLockedContext
 - improvements in JS library for context menu
 - improvements in frameset_main_linking to support search expression recommender, removed dynamical framesets, implementation of sidebar configuration check
-- implementation of max keyword length of 255 digits to avoid long strings that have beem imported as keywords (e.g. Adobe Indesign documents with unreadable keyword strings)
+- implementation of max keyword length of 255 digits to avoid long strings that have been imported as keywords (e.g. Adobe Indesign documents with unreadable keyword strings)
 - bug fix: location has been undefined in popup_status if no folder has been provided as input request
-- changed max search hist from 1000 to 500 in top bar search forms
+- changed max search hits from 1000 to 500 in top bar search forms
 - bug fix: user_sendlink did not define upper case letter in password to fullfill strong password criteria
-- bug fix: user_sendlink did not set all general_error's as array element
-- implementation of a new standard design theme
+- bug fix: user_sendlink did not set all general_errors as array elements
+- implementation of the new standard design theme
 - bug fix: undefined variable $type and $thumb_pdf_exists in function showmedia in hyperCMS UI
 - new set of user manuals
 - implementation of new main JS function hcms_getURLparameter
@@ -1070,8 +1070,14 @@ release 11/2015
 - bug fix: function creatmedia did not use comma as sperator when using multiple FFMPEG video filters at once
 - bug fix: the install script did not empty the %instances% place holder
 - implementation of instances path verification in userlogin
+
+version 5.8.3
+release 12/2015
+- updates in black UI theme
+- updates in colorful UI theme
+- updates in livelink for PHP
 */
 
 // current version
-$version = "Version 5.8.2";
+$version = "Version 5.8.3";
 ?>
