@@ -1076,6 +1076,7 @@ release 12/2015
 - updates in black UI theme
 - updates in colorful UI theme
 - updates in livelink for PHP
+- improvements in language selector styles of template engine to avoid changes in font-style in WYSIWYG inline editing mode
 */
 
 // current version
