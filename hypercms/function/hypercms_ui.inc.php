@@ -2573,7 +2573,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           });
           </script>
         ";
-        $element = "<input title=\"".$labelname.": ".getescapedtext ($hcms_lang['pick-a-date'][$lang], $hcms_charset, $lang)."\"type=\"text\" id=\"hcms_datefield_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" /><br>";
+        $element = "<input title=\"".$labelname.": ".getescapedtext ($hcms_lang['pick-a-date'][$lang], $hcms_charset, $lang)."\"type=\"text\" id=\"hcms_datefield_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\" /><br>";
         break;
         
       // unformatted text
@@ -2711,7 +2711,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         ";
         // Building the select box
         $list = explode ("|", getattribute ($hypertag, "list"));
-        $element = "<select title=\"".$labelname.": ".getescapedtext ($hcms_lang['edit-text-options'][$lang], $hcms_charset, $lang)."\" id=\"hcms_selectbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\">\n";
+        $element = "<select title=\"".$labelname.": ".getescapedtext ($hcms_lang['edit-text-options'][$lang], $hcms_charset, $lang)."\" id=\"hcms_selectbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\">\n";
         
         foreach ($list as $elem)
         {

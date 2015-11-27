@@ -910,14 +910,30 @@ function errorhandler ($source_code, $return_code, $error_identifier)
       $source_code .= "<b>".$i."</b>&nbsp;&nbsp;".$buffer."<br />\n";
     }
     
-    return "
-  <!DOCTYPE html>
-  <html>
-    <body>
-    <font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><font color='red'>".$return_code."</font><br />
-    ".$source_code."</font>
-    </body>
-  </html>";
+    // clean return code for PHP notice
+    if (strlen ($return_code) > 800)
+    {
+      if (strpos ("_".$return_code, "Notice: ") > 0 && strpos ("_".$return_code, " on line ", strpos ($return_code, "Notice: ")) > 0)
+      {
+        $start = strpos ($return_code, "Notice: ");
+        $length = strpos ($return_code, PHP_EOL, strpos ($return_code, "Notice: ")) - $start;
+        $return_code = substr ($return_code, $start, $length);
+      }
+    }
+    
+    return "<!DOCTYPE html>
+<html>
+  <head>
+    <title>hyperCMS:Error</title>
+    <meta charset=\"UTF-8\">
+  </head>
+  <body>
+    <!-- hyperCMS:Error -->
+    <font size=\"2\" face=\"Arial, Helvetica, sans-serif\">
+      <font color='red'>".$return_code."</font><br />
+      ".$source_code."</font>
+  </body>
+</html>";
   }
   else return $return_code;
 }
@@ -6212,321 +6228,325 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           }
         }
         
-        // ======================================== define CSS for components =========================================
-        $line_css = "";
-        
-        $hypertag_array = gethypertag ($viewstore, "compstylesheet", 0);
-
-        if ($hypertag_array != false && sizeof ($hypertag_array) > 0) 
-        {    
-          foreach ($hypertag_array as $hypertag)
-          {
-            $css_array[] = getattribute ($hypertag, "file");
-            $viewstore = str_replace ($hypertag, "", $viewstore);
-          }
-        
-          if ($css_array != false && sizeof ($css_array) > 0) 
-          {
-            foreach ($css_array as $css)
-            {
-              if ($css != "") $line_css .= "<link rel=\"stylesheet\" hypercms_href=\"".$css."\">\n";
-            }
-          }
-        }   
-        
-        // ======================================== insert code for component templates =======================================        
-        if ($buildview == "template")
+        // if nor errror occured
+        if (strpos ("_".$viewstore, "<!-- hyperCMS:Error -->") < 1)
         {
-          // get HTML body-tag
-          if (@substr_count (strtolower ($viewstore), "<body") == 0 && @substr_count (strtolower ($viewstore), ":body") == 0)
-          {
-            $viewstore = "<!DOCTYPE html>
-            <html>
-            <head>
-            <title>hyperCMS</title>
-            <meta http-equiv=\"Content-Type\" content=\"".$contenttype."\" />
-            ".$line_css."
-            </head>
-            <body class=\"hcmsWorkplaceGeneric\">
-            <table class=\"hcmsTemplateField\">
-              <tr>
-                <td>".$viewstore."</td>
-              </tr>
-            </table>
-            </body>
-            </html>";                     
-          }
-        }
-       
-        // ============================ insert buttons after body tag and add body tag preload =================================      
-
-        if ($buildview == "cmsview" || $buildview == "inlineview" || ($buildview == "preview" && $ctrlreload == "yes"))
-        {
-          // define buttons for formedit in cmsview or inlineview
-          if ($objectview != "cmsview" && $objectview != "inlineview") $headstoreform = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."page_view.php?view=formedit&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."\"><img src=\"".getthemelocation()."img/edit_form.gif\" style=\"display:inline-block; width:45px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" /></a>";       
-          else $headstoreform = "";
+          // ======================================== define CSS for components =========================================
+          $line_css = "";
           
-          // check if html tag exists in viewstore (if not it will be treated as a component)
-          if (($buildview == "cmsview" || $buildview == "inlineview") && !isset ($compcontenttype) && !isset ($contenttype)) 
-          {
-            $headstoremeta = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."page_view.php?view=formmeta&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&contenttype=".url_encode($contenttype)."\"><img src=\"".getthemelocation()."img/edit_head.gif\" style=\"display:inline-block; width:45px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" /></a>\n";
-          }         
-
-          // scriptcode
-          $scriptcode = "<script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
-  <script language=\"JavaScript\">
-  <!--
-  ".$bodytag_controlreload."
-  ".$bodytag_popup."
-  -->
-  </script>\n";
-            
-          // get body-tag
-          if (@substr_count (strtolower ($viewstore), "<body") > 0 || @substr_count (strtolower ($viewstore), ":body") > 0)
-          {
-            if (@substr_count (strtolower ($viewstore), "<body") > 0) $bodytagold = gethtmltag ($viewstore, "<body");
-            elseif (@substr_count (strtolower ($viewstore), ":body") > 0) $bodytagold = gethtmltag ($viewstore, ":body");
-            
-            // include JS/CSS code for rich text editor and date picker
-            if ($buildview == "inlineview")
+          $hypertag_array = gethypertag ($viewstore, "compstylesheet", 0);
+  
+          if ($hypertag_array != false && sizeof ($hypertag_array) > 0) 
+          {    
+            foreach ($hypertag_array as $hypertag)
             {
-              $scriptcode .= showinlineeditor_head ($lang).showinlinedatepicker_head ();
+              $css_array[] = getattribute ($hypertag, "file");
+              $viewstore = str_replace ($hypertag, "", $viewstore);
+            }
+          
+            if ($css_array != false && sizeof ($css_array) > 0) 
+            {
+              foreach ($css_array as $css)
+              {
+                if ($css != "") $line_css .= "<link rel=\"stylesheet\" hypercms_href=\"".$css."\">\n";
+              }
+            }
+          }   
+          
+          // ======================================== insert code for component templates =======================================        
+          if ($buildview == "template")
+          {
+            // get HTML body-tag
+            if (@substr_count (strtolower ($viewstore), "<body") == 0 && @substr_count (strtolower ($viewstore), ":body") == 0)
+            {
+              $viewstore = "<!DOCTYPE html>
+              <html>
+              <head>
+              <title>hyperCMS</title>
+              <meta http-equiv=\"Content-Type\" content=\"".$contenttype."\" />
+              ".$line_css."
+              </head>
+              <body class=\"hcmsWorkplaceGeneric\">
+              <table class=\"hcmsTemplateField\">
+                <tr>
+                  <td>".$viewstore."</td>
+                </tr>
+              </table>
+              </body>
+              </html>";                     
+            }
+          }
+         
+          // ============================ insert buttons after body tag and add body tag preload =================================      
+  
+          if ($buildview == "cmsview" || $buildview == "inlineview" || ($buildview == "preview" && $ctrlreload == "yes"))
+          {
+            // define buttons for formedit in cmsview or inlineview
+            if ($objectview != "cmsview" && $objectview != "inlineview") $headstoreform = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."page_view.php?view=formedit&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."\"><img src=\"".getthemelocation()."img/edit_form.gif\" style=\"display:inline-block; width:45px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" /></a>";       
+            else $headstoreform = "";
+            
+            // check if html tag exists in viewstore (if not it will be treated as a component)
+            if (($buildview == "cmsview" || $buildview == "inlineview") && !isset ($compcontenttype) && !isset ($contenttype)) 
+            {
+              $headstoremeta = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."page_view.php?view=formmeta&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&contenttype=".url_encode($contenttype)."\"><img src=\"".getthemelocation()."img/edit_head.gif\" style=\"display:inline-block; width:45px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" /></a>\n";
+            }         
+  
+            // scriptcode
+            $scriptcode = "<script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
+    <script language=\"JavaScript\">
+    <!--
+    ".$bodytag_controlreload."
+    ".$bodytag_popup."
+    -->
+    </script>\n";
+              
+            // get body-tag
+            if (@substr_count (strtolower ($viewstore), "<body") > 0 || @substr_count (strtolower ($viewstore), ":body") > 0)
+            {
+              if (@substr_count (strtolower ($viewstore), "<body") > 0) $bodytagold = gethtmltag ($viewstore, "<body");
+              elseif (@substr_count (strtolower ($viewstore), ":body") > 0) $bodytagold = gethtmltag ($viewstore, ":body");
+              
+              // include JS/CSS code for rich text editor and date picker
+              if ($buildview == "inlineview")
+              {
+                $scriptcode .= showinlineeditor_head ($lang).showinlinedatepicker_head ();
+              }
+              
+              // drag button
+              if ($buildview != "preview" && ($headstoremeta != "" || $headstoreform != "" || $headstoreview != "" || $headstorelang != "")) $headstore = "<div id=\"meta_info\" style=\"position:absolute; padding:0; margin:0; z-index:99999; left:4px; top:4px; border:0; background:none; visibility:visible;\"><img src=\"".getthemelocation()."img/edit_drag.gif\" style=\"display:inline-block; width:18px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" id=\"meta_mover\"/>".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."<script type=\"text/javascript\">hcms_drag(document.getElementById('meta_mover'), document.getElementById('meta_info'));</script></div>";
+            }
+            // no body-tag available
+            else
+            {
+              $viewstore_new = "<!DOCTYPE html>
+  <html>
+  <head>
+  <title>hyperCMS</title>
+  <meta http-equiv=\"Content-Type\" content=\"".$contenttype."\" />
+              ".$line_css;
+              
+              if ($buildview == "inlineview")
+              {
+                $viewstore_new .= showinlineeditor_head ($lang).showinlinedatepicker_head ();
+              }
+              
+              $viewstore_new .= "
+  </head>
+  <body class=\"hcmsWorkplaceGeneric\">\n";
+  
+              if ($buildview != "preview") $viewstore_new .= "<div id=\"meta_info\" style=\"display:block; margin:3px;\">".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."</div>";
+              
+              $viewstore_new .= "".$viewstore."\n</body>\n</html>";
+        
+              $viewstore = $viewstore_new;
+              unset ($viewstore_new);
+              
+              // define body tag
+              $bodytagold = "<body class=\"hcmsWorkplaceGeneric\">";                      
             }
             
-            // drag button
-            if ($buildview != "preview" && ($headstoremeta != "" || $headstoreform != "" || $headstoreview != "" || $headstorelang != "")) $headstore = "<div id=\"meta_info\" style=\"position:absolute; padding:0; margin:0; z-index:99999; left:4px; top:4px; border:0; background:none; visibility:visible;\"><img src=\"".getthemelocation()."img/edit_drag.gif\" style=\"display:inline-block; width:18px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" id=\"meta_mover\"/>".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."<script type=\"text/javascript\">hcms_drag(document.getElementById('meta_mover'), document.getElementById('meta_info'));</script></div>";
-          }
-          // no body-tag available
-          else
-          {
-            $viewstore_new = "<!DOCTYPE html>
-<html>
-<head>
-<title>hyperCMS</title>
-<meta http-equiv=\"Content-Type\" content=\"".$contenttype."\" />
-            ".$line_css;
-            
-            if ($buildview == "inlineview")
-            {
-              $viewstore_new .= showinlineeditor_head ($lang).showinlinedatepicker_head ();
-            }
-            
-            $viewstore_new .= "
-</head>
-<body class=\"hcmsWorkplaceGeneric\">\n";
-
-            if ($buildview != "preview") $viewstore_new .= "<div id=\"meta_info\" style=\"display:block; margin:3px;\">".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."</div>";
-            
-            $viewstore_new .= "".$viewstore."\n</body>\n</html>";
-      
-            $viewstore = $viewstore_new;
-            unset ($viewstore_new);
-            
-            // define body tag
-            $bodytagold = "<body class=\"hcmsWorkplaceGeneric\">";                      
-          }
-          
-          $bodytagnew = str_ireplace ("onload", "lockonload", $bodytagold);
-
-          // form for multiple component manipulation in cmsview
-          if ($buildview != "preview") $bodytagnew = $bodytagnew."        
-  <div style=\"display:none;\">
-  <form name=\"hcms_result\" action=\"".$mgmt_config['url_path_cms']."service/savecontent.php\" method=\"post\">
-    <input type=\"hidden\" name=\"site\" value=\"".$site."\" />
-    <input type=\"hidden\" name=\"cat\" value=\"".$cat."\" />
-    <input type=\"hidden\" name=\"compcat\" value=\"multi\" />
-    <input type=\"hidden\" name=\"location\" value=\"".$location_esc."\" />
-    <input type=\"hidden\" name=\"page\" value=\"".$page."\" />
-    <input type=\"hidden\" name=\"contentfile\" value=\"".$contentfile."\" />
-    <input type=\"hidden\" name=\"db_connect\" value=\"".$db_connect."\" />
-    <input type=\"hidden\" name=\"id\" value=\"\" />
-    <input type=\"hidden\" name=\"tagname\" value=\"\" />
-    <input type=\"hidden\" name=\"component_curr\" value=\"\" />
-    <input type=\"hidden\" name=\"component\" value=\"\" />  
-    <input type=\"hidden\" name=\"condition\" value=\"\" /> 
-    <input type=\"hidden\" name=\"token\" value=\"".$token."\">
-  </form>
-  </div>
-  <div style=\"margin:4px; padding:0; border:0; background:none; visibility:visible;\">".$headstore."</div>\n";
-      
-          // javascript code
-          if ($buildview != "preview") $scriptcode .= "<script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
-  <script language=\"JavaScript\">
-  <!--  
-  function hcms_openWindowComp (winName, features, theURL)
-  { 
-    if (theURL != '')
-    {
-      if (theURL.indexOf('://') == -1)
-      {      
-        position1 = theURL.indexOf('/');
-        position2 = theURL.lastIndexOf('/');
-        location_comp = \"%comp%/\" + theURL.substring (position1+1, position2+1);
-        
-        location_site = theURL.substring (position1+1, theURL.length-position1);              
-        location_site = location_site.substring(0, location_site.indexOf('/'));
-        
-        page_comp = theURL.substr (position2+1, theURL.length);
-        theURL = '".$mgmt_config['url_path_cms']."frameset_content.php?ctrlreload=yes&cat=comp&site=' + location_site + '&location=' + location_comp + '&page=' + page_comp + '&user=".$user."';
-
-        popup = window.open(theURL,winName,features);
-        popup.moveTo(screen.width/2-800/2, screen.height/2-600/2);
-        popup.focus();
-      }
-    }
-    else alert(hcms_entity_decode('".getescapedtext ($hcms_lang['no-component-selected'][$lang], $charset, $lang)."'));  
-  }
+            $bodytagnew = str_ireplace ("onload", "lockonload", $bodytagold);
   
-  var item = new Array();
-  ".$scriptarray."
-  
-  function hcms_changeitem (tagname, id, condition, pos, type)
-  {
-    var component_serialized = '';
-    var component_curr = '';
-    var changes = false;
-    var i = 0;
-    
-    if (tagname.indexOf('art') == 0) art = 'art';
-    else art = '';
-    
-    if (eval (item[id]))
-    {
-      while (i < item[id].length)
+            // form for multiple component manipulation in cmsview
+            if ($buildview != "preview") $bodytagnew = $bodytagnew."        
+    <div style=\"display:none;\">
+    <form name=\"hcms_result\" action=\"".$mgmt_config['url_path_cms']."service/savecontent.php\" method=\"post\">
+      <input type=\"hidden\" name=\"site\" value=\"".$site."\" />
+      <input type=\"hidden\" name=\"cat\" value=\"".$cat."\" />
+      <input type=\"hidden\" name=\"compcat\" value=\"multi\" />
+      <input type=\"hidden\" name=\"location\" value=\"".$location_esc."\" />
+      <input type=\"hidden\" name=\"page\" value=\"".$page."\" />
+      <input type=\"hidden\" name=\"contentfile\" value=\"".$contentfile."\" />
+      <input type=\"hidden\" name=\"db_connect\" value=\"".$db_connect."\" />
+      <input type=\"hidden\" name=\"id\" value=\"\" />
+      <input type=\"hidden\" name=\"tagname\" value=\"\" />
+      <input type=\"hidden\" name=\"component_curr\" value=\"\" />
+      <input type=\"hidden\" name=\"component\" value=\"\" />  
+      <input type=\"hidden\" name=\"condition\" value=\"\" /> 
+      <input type=\"hidden\" name=\"token\" value=\"".$token."\">
+    </form>
+    </div>
+    <div style=\"margin:4px; padding:0; border:0; background:none; visibility:visible;\">".$headstore."</div>\n";
+        
+            // javascript code
+            if ($buildview != "preview") $scriptcode .= "<script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
+    <script language=\"JavaScript\">
+    <!--  
+    function hcms_openWindowComp (winName, features, theURL)
+    { 
+      if (theURL != '')
       {
-        component_curr = component_curr + item[id][i] + '|';  
-        i++;
+        if (theURL.indexOf('://') == -1)
+        {      
+          position1 = theURL.indexOf('/');
+          position2 = theURL.lastIndexOf('/');
+          location_comp = \"%comp%/\" + theURL.substring (position1+1, position2+1);
+          
+          location_site = theURL.substring (position1+1, theURL.length-position1);              
+          location_site = location_site.substring(0, location_site.indexOf('/'));
+          
+          page_comp = theURL.substr (position2+1, theURL.length);
+          theURL = '".$mgmt_config['url_path_cms']."frameset_content.php?ctrlreload=yes&cat=comp&site=' + location_site + '&location=' + location_comp + '&page=' + page_comp + '&user=".$user."';
+  
+          popup = window.open(theURL,winName,features);
+          popup.moveTo(screen.width/2-800/2, screen.height/2-600/2);
+          popup.focus();
+        }
       }
-    } 
-      
-    i = 0;
-      
-    if (type != 'send')
+      else alert(hcms_entity_decode('".getescapedtext ($hcms_lang['no-component-selected'][$lang], $charset, $lang)."'));  
+    }
+    
+    var item = new Array();
+    ".$scriptarray."
+    
+    function hcms_changeitem (tagname, id, condition, pos, type)
     {
+      var component_serialized = '';
+      var component_curr = '';
+      var changes = false;
+      var i = 0;
+      
+      if (tagname.indexOf('art') == 0) art = 'art';
+      else art = '';
+      
       if (eval (item[id]))
       {
         while (i < item[id].length)
         {
-          if (type == 'delete' && i == pos)
-          {
-            changes = true;
-          }
-          else if (pos > 0 && type == 'moveup' && i+1 == pos)
-          {
-            component_serialized = component_serialized + item[id][pos] + '|' + item[id][i] + '|';
-            changes = true;
-            i++;
-          }
-          else if (pos < item[id].length-1 && type == 'movedown' && i == pos)
-          {
-            component_serialized = component_serialized + item[id][i+1] + '|' + item[id][pos] + '|';
-            changes = true;
-            i++;
-          }	
-          else 
-          {
-            component_serialized = component_serialized + item[id][i] + '|';
-          }    
-        
+          component_curr = component_curr + item[id][i] + '|';  
           i++;
         }
-      }
-      
-      document.forms['hcms_result'].attributes['action'].value = 'service/savecontent.php';
-    }
-    else if (type == 'send') 
-    {
-      component_serialized = component_curr;
-      document.forms['hcms_result'].attributes['action'].value = 'frameset_edit_component.php';
-      changes = true;
-    }
-  
-    if (changes == true)
-    {
-      document.forms['hcms_result'].elements['id'].value = id;
-      document.forms['hcms_result'].elements['tagname'].value = tagname;
-      document.forms['hcms_result'].elements['component_curr'].value = component_curr;
-      document.forms['hcms_result'].elements['component'].value = component_serialized;
-      document.forms['hcms_result'].elements['condition'].value = condition;
-
-      if (type != 'send') 
+      } 
+        
+      i = 0;
+        
+      if (type != 'send')
       {
-        document.forms['hcms_result'].elements['component_curr'].name = art + 'component_curr[' + id + ']';
-        document.forms['hcms_result'].elements['component'].name = art + 'component[' + id + ']';
-        document.forms['hcms_result'].elements['condition'].name = art + 'condition[' + id + ']';
-      }
-
-      document.forms['hcms_result'].submit();
-    }
-    
-    return true;
-  }
-  //-->
-  </script>\n";
+        if (eval (item[id]))
+        {
+          while (i < item[id].length)
+          {
+            if (type == 'delete' && i == pos)
+            {
+              changes = true;
+            }
+            else if (pos > 0 && type == 'moveup' && i+1 == pos)
+            {
+              component_serialized = component_serialized + item[id][pos] + '|' + item[id][i] + '|';
+              changes = true;
+              i++;
+            }
+            else if (pos < item[id].length-1 && type == 'movedown' && i == pos)
+            {
+              component_serialized = component_serialized + item[id][i+1] + '|' + item[id][pos] + '|';
+              changes = true;
+              i++;
+            }	
+            else 
+            {
+              component_serialized = component_serialized + item[id][i] + '|';
+            }    
+          
+            i++;
+          }
         }
         
-        // =========================================== inject script code ==============================================
-        if (isset ($scriptcode) && $scriptcode != "")
+        document.forms['hcms_result'].attributes['action'].value = 'service/savecontent.php';
+      }
+      else if (type == 'send') 
+      {
+        component_serialized = component_curr;
+        document.forms['hcms_result'].attributes['action'].value = 'frameset_edit_component.php';
+        changes = true;
+      }
+    
+      if (changes == true)
+      {
+        document.forms['hcms_result'].elements['id'].value = id;
+        document.forms['hcms_result'].elements['tagname'].value = tagname;
+        document.forms['hcms_result'].elements['component_curr'].value = component_curr;
+        document.forms['hcms_result'].elements['component'].value = component_serialized;
+        document.forms['hcms_result'].elements['condition'].value = condition;
+  
+        if (type != 'send') 
         {
-          // include javascript
-          $vendor = "<meta name=\"keyword\" content=\"hyper Content Management Server (http://www.hypercms.com/)\" />";
-          
-          if (preg_match ("/<head/i", $viewstore))
-          {
-            $viewstore = str_ireplace ("<head>", "<head>\n".$vendor, $viewstore);
-            $viewstore = str_ireplace ("</head>", $scriptcode."</head>", $viewstore);
-          }
-          else $bodytagnew = $bodytagnew."\n".$scriptcode;
+          document.forms['hcms_result'].elements['component_curr'].name = art + 'component_curr[' + id + ']';
+          document.forms['hcms_result'].elements['component'].name = art + 'component[' + id + ']';
+          document.forms['hcms_result'].elements['condition'].name = art + 'condition[' + id + ']';
+        }
+  
+        document.forms['hcms_result'].submit();
+      }
       
-          // insert head information into viewstore
-          $viewstore = str_replace ($bodytagold, $bodytagnew, $viewstore);
-        }        
-
-        // ====================================== transform hyperreferences ============================================
-        // for EasyEdit mode excluding component preview inclusions
-        if ($buildview == "cmsview" || $buildview == "inlineview" || ($buildview == "preview" && $ctrlreload == "yes"))
-        {
-          $viewstore = transformlink ($viewstore);        
-          $viewstore = str_replace ("hypercms_href=", "href=", $viewstore);
-        }   
-        // for all other views excluding component preview inclusions (transform protected hyper references)
-        elseif ($buildview == "publish" || $buildview == "template" || $buildview == "preview")
-        {
-          $viewstore = str_replace ("hypercms_href=", "href=", $viewstore);
-        }           
-                
-        // ======================================== add header information =============================================
-        if ($buildview == "publish" && $application != "media")
-        {          
-          // define template and content file pointer
-          $sourcefiles = "\n<!-- hyperCMS:template file=\"".$templatefile."\" -->\n<!-- hyperCMS:content file=\"".$contentfile."\" -->\n";
-          
-          // preserve the name of the file
-          if ($namefile != "") $sourcefiles .= "<!-- hyperCMS:name file=\"".$namefile."\" -->\n";
-          
-          // if a file was generated
-          if ($mediafile != "") $sourcefiles .= "<!-- hyperCMS:media file=\"".$mediafile."\" -->\n";
-          
-          // insert hypercms file pointer comment tags for reference
-          if ($application != "xml")
-          {
-            if (@substr_count (strtolower ($viewstore), "<body") > 0) $bodytagold = gethtmltag ($viewstore, "<body");
-            elseif (@substr_count (strtolower ($viewstore), ":body") > 0) $bodytagold = gethtmltag ($viewstore, ":body");
-            else $bodytagold = false;
+      return true;
+    }
+    //-->
+    </script>\n";
           }
-          else $bodytagold = gethtmltag ($viewstore, "<?xml");
-        
-          if ($bodytagold != false) $viewstore = str_replace ($bodytagold, $bodytagold.$sourcefiles, $viewstore);
-          else $viewstore = $sourcefiles.$viewstore;
           
-          // add livelink function for active link management
-          if ($application != "generator")
+          // =========================================== inject script code ==============================================
+          if (isset ($scriptcode) && $scriptcode != "")
           {
-            // set variables for API programming
-            $tpl_globals = tpl_globals ($application, $contentfile, $charset);
-
-            // insert code        
-            $viewstore = $tpl_globals.$tpl_livelink.$tpl_linkindex.$pagetracking.trim ($viewstore);     
+            // include javascript
+            $vendor = "<meta name=\"keyword\" content=\"hyper Content Management Server (http://www.hypercms.com/)\" />";
+            
+            if (preg_match ("/<head/i", $viewstore))
+            {
+              $viewstore = str_ireplace ("<head>", "<head>\n".$vendor, $viewstore);
+              $viewstore = str_ireplace ("</head>", $scriptcode."</head>", $viewstore);
+            }
+            else $bodytagnew = $bodytagnew."\n".$scriptcode;
+        
+            // insert head information into viewstore
+            $viewstore = str_replace ($bodytagold, $bodytagnew, $viewstore);
+          }        
+  
+          // ====================================== transform hyperreferences ============================================
+          // for EasyEdit mode excluding component preview inclusions
+          if ($buildview == "cmsview" || $buildview == "inlineview" || ($buildview == "preview" && $ctrlreload == "yes"))
+          {
+            $viewstore = transformlink ($viewstore);        
+            $viewstore = str_replace ("hypercms_href=", "href=", $viewstore);
+          }   
+          // for all other views excluding component preview inclusions (transform protected hyper references)
+          elseif ($buildview == "publish" || $buildview == "template" || $buildview == "preview")
+          {
+            $viewstore = str_replace ("hypercms_href=", "href=", $viewstore);
+          }           
+                  
+          // ======================================== add header information =============================================
+          if ($buildview == "publish" && $application != "media")
+          {          
+            // define template and content file pointer
+            $sourcefiles = "\n<!-- hyperCMS:template file=\"".$templatefile."\" -->\n<!-- hyperCMS:content file=\"".$contentfile."\" -->\n";
+            
+            // preserve the name of the file
+            if ($namefile != "") $sourcefiles .= "<!-- hyperCMS:name file=\"".$namefile."\" -->\n";
+            
+            // if a file was generated
+            if ($mediafile != "") $sourcefiles .= "<!-- hyperCMS:media file=\"".$mediafile."\" -->\n";
+            
+            // insert hypercms file pointer comment tags for reference
+            if ($application != "xml")
+            {
+              if (@substr_count (strtolower ($viewstore), "<body") > 0) $bodytagold = gethtmltag ($viewstore, "<body");
+              elseif (@substr_count (strtolower ($viewstore), ":body") > 0) $bodytagold = gethtmltag ($viewstore, ":body");
+              else $bodytagold = false;
+            }
+            else $bodytagold = gethtmltag ($viewstore, "<?xml");
+          
+            if ($bodytagold != false) $viewstore = str_replace ($bodytagold, $bodytagold.$sourcefiles, $viewstore);
+            else $viewstore = $sourcefiles.$viewstore;
+            
+            // add livelink function for active link management
+            if ($application != "generator")
+            {
+              // set variables for API programming
+              $tpl_globals = tpl_globals ($application, $contentfile, $charset);
+  
+              // insert code        
+              $viewstore = $tpl_globals.$tpl_livelink.$tpl_linkindex.$pagetracking.trim ($viewstore);     
+            }
           }
         }
       }

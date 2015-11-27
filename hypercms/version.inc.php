@@ -1077,6 +1077,9 @@ release 12/2015
 - updates in colorful UI theme
 - updates in livelink for PHP
 - improvements in language selector styles of template engine to avoid changes in font-style in WYSIWYG inline editing mode
+- improvements in function errorhandler to support error notices
+- improvements in template engine to skip further execution if an error occured
+- improvements in function showinlineeditor to avoid changes in font-style in WYSIWYG inline editing mode
 */
 
 // current version
