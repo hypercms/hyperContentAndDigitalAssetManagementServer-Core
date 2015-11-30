@@ -2643,13 +2643,13 @@ function gethtmltags ($filedata, $tag)
 
 // ------------------------- getattribute --------------------------------
 // function: getattribute()
-// input: string including attributes, attribute name
+// input: string including attributes, attribute name, secure attribute value reg. XSS (optional)
 // output: attribute value/false on error
 
 // description:
 // get the value of a certain attribute out of a string (...attributname=value....)
 
-function getattribute ($string, $attribute)
+function getattribute ($string, $attribute, $secure=true)
 {
   if ($string != "" && $attribute != "")
   {
@@ -2663,9 +2663,13 @@ function getattribute ($string, $attribute)
       if (!empty ($result[$attribute]))
       {
         $value = $result[$attribute];
+        
         // secure value
-        $value = strip_tags ($value);
-        $value = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $value);     
+        if ($secure)
+        {
+          $value = strip_tags ($value);
+          $value = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $value);
+        } 
       }
       else $value = ""; 
 
@@ -2677,6 +2681,7 @@ function getattribute ($string, $attribute)
       $string = html_decode ($string);
 
       // remove freespaces
+      $freespace_array = array();
       $freespace_array[0] = "   ";
       $freespace_array[1] = "  ";
       $freespace_array[2] = " ";
@@ -2763,8 +2768,11 @@ function getattribute ($string, $attribute)
           }
           
           // secure value
-          $value = strip_tags ($value);
-          $value = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $value);
+          if ($secure)
+          {
+            $value = strip_tags ($value);
+            $value = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $value);
+          }
           
           return $value;
         }

@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['ro'] = "Formate de descărcare";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ro'] = "Cuvintele cheie cu optional listă obligatorie sau deschis";
 $hcms_lang['video-text-track']['ro'] = "Track videotext";
 $hcms_lang['copy-tracks-from-previously-selected-language']['ro'] = "Copia piese din limba selectată anterior?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['ro'] = "Prefixul și sufixul vor fi adăugate la conținut dacă acesta nu este gol";
 ?>

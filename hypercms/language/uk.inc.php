@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['uk'] = "Завантажити форматів"
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['uk'] = "Ключові слова з додатковим обов'язковим або відкритого списку";
 $hcms_lang['video-text-track']['uk'] = "Відео текст трек";
 $hcms_lang['copy-tracks-from-previously-selected-language']['uk'] = "Скопіюйте доріжки з раніше вибраної мови?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['uk'] = "Префікса і суфікса буде додано до вмісту, якщо він не порожній";
 ?>

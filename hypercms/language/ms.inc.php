@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['ms'] = "Muatturun format";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ms'] = "Kata kunci dengan senarai mandatori atau pilihan terbuka";
 $hcms_lang['video-text-track']['ms'] = "Trek teks Video";
 $hcms_lang['copy-tracks-from-previously-selected-language']['ms'] = "Salin trek dari Bahasa yang dipilih sebelum ini?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['ms'] = "Awalan dan akhiran akan ditambah kepada kandungan jika ia tidak kosong";
 ?>

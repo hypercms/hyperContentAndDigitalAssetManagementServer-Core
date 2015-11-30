@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['sk'] = "Download formáty";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['sk'] = "Kľúčové slová s voliteľným povinného alebo otvorený zoznam";
 $hcms_lang['video-text-track']['sk'] = "Video Text skladby";
 $hcms_lang['copy-tracks-from-previously-selected-language']['sk'] = "Kopírovať skladby z predtým zvolenom jazyku?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['sk'] = "Predpona a prípona bude pridaná k obsahu, pokiaľ nie je prázdny";
 ?>

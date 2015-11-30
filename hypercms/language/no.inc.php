@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['no'] = "Last ned formater";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['no'] = "Søkeord med valgfri obligatorisk eller åpen liste";
 $hcms_lang['video-text-track']['no'] = "Video tekstspor";
 $hcms_lang['copy-tracks-from-previously-selected-language']['no'] = "Kopiere spor fra tidligere valgte språket?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['no'] = "Prefiks og suffiks vil bli lagt til innhold hvis det ikke er tomt";
 ?>

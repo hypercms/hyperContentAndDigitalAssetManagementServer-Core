@@ -1313,4 +1313,5 @@ $hcms_lang['download-formats']['sl'] = "Prenesi formate";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['sl'] = "Ključne besede z dodatno obvezno ali odprtem seznamu";
 $hcms_lang['video-text-track']['sl'] = "Video besedilo track";
 $hcms_lang['copy-tracks-from-previously-selected-language']['sl'] = "Kopirate skladbe iz predhodno izbranem jeziku?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['sl'] = "Predpona in pripona bo dodan vsebino, če to ni prazna";
 ?>

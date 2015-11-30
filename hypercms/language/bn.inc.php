@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['bn'] = "সফটওয়্যার ডাউন
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['bn'] = "ঐচ্ছিক বাধ্যতামূলক বা খোলা তালিকা মূলশব্দ";
 $hcms_lang['video-text-track']['bn'] = "ভিডিও টেক্সট ট্র্যাক";
 $hcms_lang['copy-tracks-from-previously-selected-language']['bn'] = "পূর্বে নির্বাচিত ভাষা থেকে কপি গানগুলি?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['bn'] = "এটা খালি না হলে উপসর্গ ও প্রত্যয় কন্টেন্ট যোগ করা হবে";
 ?>

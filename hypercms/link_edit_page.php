@@ -32,6 +32,7 @@ $linkhref_curr = getrequest_esc ("linkhref_curr");
 $linkhref = getrequest_esc ("linkhref");
 $linktext = getrequest_esc ("linktext");
 $linktarget = getrequest_esc ("linktarget");
+$targetlist = getrequest_esc ("targetlist");
 
 // get publication and category
 $site = getpublication ($location);
@@ -351,10 +352,12 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     echo "  <td>\n";
     echo "    <select name=\"linktarget\" style=\"width:220px;\">\n";
 
+    $list_array = array();
+    
     if (substr_count ($targetlist, "|") >= 1) $list_array = explode ("|", $targetlist);
     elseif ($targetlist != "") $list_array[] = $targetlist;
     
-    if (is_array ($list_array) && sizeof ($list_array) > 0)
+    if (sizeof ($list_array) > 0)
     {
       foreach ($list_array as $target)
       {

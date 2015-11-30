@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['ar'] = "تنسيقات التنزيل";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ar'] = "كلمات مع قائمة إلزامية أو اختيارية مفتوحة";
 $hcms_lang['video-text-track']['ar'] = "المسار نص الفيديو";
 $hcms_lang['copy-tracks-from-previously-selected-language']['ar'] = "نسخ المسارات من اللغة المحددة سابقا؟";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['ar'] = "سيتم إضافة البادئة واللاحقة لمحتوى إذا لم تكن فارغة";
 ?>

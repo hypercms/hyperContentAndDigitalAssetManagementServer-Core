@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['so'] = "Download daabacaadan shay";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['so'] = "Erayada furaha liiska khasab ah ama furan optional";
 $hcms_lang['video-text-track']['so'] = "Track text Video";
 $hcms_lang['copy-tracks-from-previously-selected-language']['so'] = "Copy kuwan raadkaygay ka luqadda hore soo xulay?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['so'] = "Horgalaha iyo qadarin ah lagu dari doonaa content haddii aanay madhan";
 ?>

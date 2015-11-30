@@ -9,8 +9,7 @@ function insertlink ($hcms_linkindex, $hcms_id)
 
     foreach ($hcms_linkindex as $hcms_link)
     {
-      $hcms_link = trim ($hcms_link);
-      list ($hcms_cat, $hcms_link_id, $hcms_link_href) = explode ("|", $hcms_link);
+      list ($hcms_cat, $hcms_link_id, $hcms_link_href) = explode ("|", trim ($hcms_link));
 
       if ($hcms_cat == "page" && $hcms_link_id == $hcms_id && $hcms_link_href != "")
       {
@@ -49,8 +48,7 @@ function insertcomponent ($hcms_linkindex, $hcms_id)
 
     foreach ($hcms_linkindex as $hcms_link)
     {
-      $hcms_link = trim ($hcms_link);
-      list ($hcms_cat, $hcms_comp_id, $hcms_component) = explode ("|", $hcms_link);
+      list ($hcms_cat, $hcms_comp_id, $hcms_component) = explode ("|", trim ($hcms_link));
 
       if ($hcms_cat == "comp" && $hcms_comp_id == $hcms_id && $hcms_component != "")
       {
@@ -61,7 +59,7 @@ function insertcomponent ($hcms_linkindex, $hcms_id)
         }
         elseif ($publ_config['publ_os'] == "WIN")
         {
-          if ($publ_config['http_incl'] == true) echo @implode ("", file ($publ_config['url_publ_comp'].$hcms_component));
+          if ($publ_config['http_incl'] == true) echo @file_get_contents ($publ_config['url_publ_comp'].$hcms_component);
           else @include ($publ_config['abs_publ_comp'].$hcms_component);
         }
       }
@@ -89,7 +87,7 @@ function insertcomponent ($hcms_linkindex, $hcms_id)
             }
             elseif ($publ_config['publ_os'] == "WIN")
             {
-              if ($publ_config['http_incl'] == true) echo @implode ("", file ($publ_config['url_publ_comp'].$hcms_component));
+              if ($publ_config['http_incl'] == true) echo @file_get_conetnts ($publ_config['url_publ_comp'].$hcms_component);
               else @include ($publ_config['abs_publ_comp'].$hcms_component);
             }
           }
@@ -110,7 +108,7 @@ function insertcomponent ($hcms_linkindex, $hcms_id)
       }
       elseif ($publ_config['publ_os'] == "WIN")
       {
-        if ($publ_config['http_incl'] == true) echo @implode ("", file ($publ_config['url_publ_comp'].$hcms_component));
+        if ($publ_config['http_incl'] == true) echo @file_get_contents ($publ_config['url_publ_comp'].$hcms_component);
         else @include ($publ_config['abs_publ_comp'].$hcms_component);
       }
 

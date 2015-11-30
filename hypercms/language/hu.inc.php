@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['hu'] = "Letöltési formátumok";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['hu'] = "Kulcsszavak opcionális kötelező vagy nyílt lista";
 $hcms_lang['video-text-track']['hu'] = "Videó szöveget pálya";
 $hcms_lang['copy-tracks-from-previously-selected-language']['hu'] = "Másolni zeneszámokat a korábban kiválasztott nyelven?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['hu'] = "Előtag és az utótag bekerül tartalmat, ha nem üres";
 ?>

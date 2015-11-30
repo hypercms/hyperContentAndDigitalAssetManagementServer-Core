@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['ja'] = "形式をダウンロードする";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ja'] = "オプション必須またはオープンリストとキーワード";
 $hcms_lang['video-text-track']['ja'] = "ビデオテキストトラック";
 $hcms_lang['copy-tracks-from-previously-selected-language']['ja'] = "以前に選択した言語からトラックをコピーしますか？";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['ja'] = "それが空でない場合は接頭辞と接尾辞は、コンテンツに付加され";
 ?>

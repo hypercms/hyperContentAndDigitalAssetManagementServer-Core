@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['fi'] = "Latausmuotoja";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['fi'] = "Avainsanat lisävarusteena pakollisten tai avoin luettelo";
 $hcms_lang['video-text-track']['fi'] = "Video tekstiraita";
 $hcms_lang['copy-tracks-from-previously-selected-language']['fi'] = "Kopioida kappaleita aiemmin valittu kieli?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['fi'] = "Etuliite, ja pääte lisätään sisältö, jos se ei ole tyhjä";
 ?>

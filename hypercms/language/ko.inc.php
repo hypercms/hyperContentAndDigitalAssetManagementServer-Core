@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['ko'] = "다운로드 형식";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ko'] = "선택 필수 또는 개방 목록 키워드";
 $hcms_lang['video-text-track']['ko'] = "비디오 텍스트 트랙";
 $hcms_lang['copy-tracks-from-previously-selected-language']['ko'] = "이전에 선택한 언어에서 트랙을 복사?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['ko'] = "이 비어 있지 않은 경우 접두사 및 접미사 콘텐츠에 추가 될";
 ?>

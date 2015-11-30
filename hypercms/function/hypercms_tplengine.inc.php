@@ -2377,6 +2377,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $label = "";
       $language_info = "";
       $add_submittext = "";
+      $prefix = "";
+      $suffix = "";
       
       foreach ($searchtag_array as $searchtag)
       {
@@ -2445,7 +2447,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $format = getattribute ($hypertag, "format");  
 
             // get active (for comment tags if comments can be added)
-            $active = getattribute ($hypertag, "active");            
+            $active = getattribute ($hypertag, "active");
             
             // get toolbar
             $toolbar = getattribute ($hypertag, "toolbar");            
@@ -2639,36 +2641,39 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 if ($contentbot == "" && $defaultvalue != "") $contentbot = $defaultvalue;
 
                 // un-comment html tags (important for formatted texts)
-                if ($hypertagname == $searchtag."f")
+                if (!empty ($contentbot))
                 {
-                  $contentbot = str_replace ("<![CDATA[", "", $contentbot);
-                  $contentbot = str_replace ("]]>", "", $contentbot);
-                }
-                // replace \r and \n with <br /> (important for non-formatted texts)
-                elseif ($hypertagname == $searchtag."u" && $application != "xml" && $buildview != "formedit" && $buildview != "formmeta" && $buildview != "formlock")
-                {
-                  if (@substr_count ($contentbot, "\r\n") >= 1)
+                  if ($hypertagname == $searchtag."f")
                   {
-                    $contentbot = str_replace ("\r\n", "<br />", $contentbot);
+                    $contentbot = str_replace ("<![CDATA[", "", $contentbot);
+                    $contentbot = str_replace ("]]>", "", $contentbot);
                   }
-                  if (@substr_count ($contentbot, "\n\r") >= 1)
+                  // replace \r and \n with <br /> (important for non-formatted texts)
+                  elseif ($hypertagname == $searchtag."u" && $application != "xml" && $buildview != "formedit" && $buildview != "formmeta" && $buildview != "formlock")
                   {
-                    $contentbot = str_replace ("\n\r", "<br />", $contentbot);
+                    if (@substr_count ($contentbot, "\r\n") >= 1)
+                    {
+                      $contentbot = str_replace ("\r\n", "<br />", $contentbot);
+                    }
+                    if (@substr_count ($contentbot, "\n\r") >= 1)
+                    {
+                      $contentbot = str_replace ("\n\r", "<br />", $contentbot);
+                    }
+                    if (@substr_count ($contentbot, "\n") >= 1)
+                    {
+                      $contentbot = str_replace ("\n", "<br />", $contentbot);
+                    }
+                    if (@substr_count ($contentbot, "\r") >= 1)
+                    {
+                      $contentbot = str_replace ("\r", "<br />", $contentbot);
+                    }
+                    
+                    // escape special characters
+                    if (in_array ($buildview, array("formmeta","formedit","formlock")))
+                    {
+                      $contentbot = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $contentbot);
+                    }          
                   }
-                  if (@substr_count ($contentbot, "\n") >= 1)
-                  {
-                    $contentbot = str_replace ("\n", "<br />", $contentbot);
-                  }
-                  if (@substr_count ($contentbot, "\r") >= 1)
-                  {
-                    $contentbot = str_replace ("\r", "<br />", $contentbot);
-                  }
-                  
-                  // escape special characters
-                  if (in_array ($buildview, array("formmeta","formedit","formlock")))
-                  {
-                    $contentbot = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $contentbot);
-                  }          
                 }
                 
                 // replace img-src with reference to the newly generated image if a colorspace or ICC profile is requested
@@ -3547,10 +3552,21 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
             // ------------------- publish / insert content -------------------       
             if ($buildview != "template" && $buildview != "formedit" && $buildview != "formmeta" && $buildview != "formlock")
-            {
+            {   
+              // prefix and suffix if the content is not empty
+              $prefix = getattribute ($hypertag, "prefix", false);
+              $suffix = getattribute ($hypertag, "suffix", false);
+                  
               // include time management code for article
               if ($buildview == "publish" && $searchtag == "arttext")
               {
+                // reset prefix and suffix if content is empty
+                if (empty ($contentbot))
+                {
+                  $prefix = "";
+                  $suffix = "";
+                }
+              
                 if ($artstatus[$artid] == "timeswitched")
                 {
                   // escape specific characters
@@ -3558,7 +3574,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $contentbot = str_replace ("\$", "\\\$'", $contentbot);
                   $contentbot = str_replace ("\\", "\\\\", $contentbot);
       
-                  $contentbot = tpl_tselement ($application, $artdatefrom[$artid], $artdateto[$artid], $contentbot);
+                  $contentbot = tpl_tselement ($application, $artdatefrom[$artid], $artdateto[$artid], $prefix.$contentbot.$suffix);
                 }
                 elseif ($artstatus[$artid] == "inactive" && $searchtag == "arttext")
                 {
@@ -3575,13 +3591,20 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 $contentbot = showinlineeditor ($site, $hypertag, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $contenttype, $cat, $location_esc, $page, $contentfile, $db_connect, $token);
                 
                 // insert content
-                $viewstore = str_replace ($hypertag, $contentbot, $viewstore);
+                $viewstore = str_replace ($hypertag, $prefix.$contentbot.$suffix, $viewstore);
               }
               // for all other modes
               else
               {
+                // reset prefix and suffix if content is empty
+                if (empty ($contentbot))
+                {
+                  $prefix = "";
+                  $suffix = "";
+                }
+                
                 // insert content
-                if ($onpublish != "hidden") $viewstore = str_replace ($hypertag, $contentbot, $viewstore);
+                if ($onpublish != "hidden") $viewstore = str_replace ($hypertag, $prefix.$contentbot.$suffix, $viewstore);
                 elseif ($onpublish == "hidden") $viewstore = str_replace ($hypertag, "", $viewstore);
               }
             }
@@ -4232,8 +4255,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 else
                 {
                   // if pathytpe == file (absolute path in filesystem)
-                  if (!empty ($mediapathtype[$id][$tagid]) && $mediapathtype[$id][$tagid] == "file") $prefix = "abs";
-                  else $prefix = "url";
+                  if (!empty ($mediapathtype[$id][$tagid]) && $mediapathtype[$id][$tagid] == "file") $path_prefix = "abs";
+                  else $path_prefix = "url";
                     
                   // media path settings (overwrite media pathes with the ones of the publication target)
                   if ($buildview == "publish")
@@ -4241,19 +4264,19 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     // use generated image and temp view directory
                     if (!empty ($mediacolorspace[$id][$tagid]) || !empty ($mediaiccprofile[$id][$tagid]) && is_file ($mgmt_config['abs_path_view'].$mediafilebot[$id][$tagid]))
                     {
-                      $url_media = $mgmt_config[$prefix.'_path_view'];
+                      $url_media = $mgmt_config[$path_prefix.'_path_view'];
                     }
                     else
                     {
-                      $url_media = $publ_config[$prefix.'_publ_media'];
+                      $url_media = $publ_config[$path_prefix.'_publ_media'];
                     }
                     
-                    $url_tplmedia = $publ_config[$prefix.'_publ_tplmedia'];
+                    $url_tplmedia = $publ_config[$path_prefix.'_publ_tplmedia'];
                   }
                   else
                   {
-                    $url_media = getmedialocation ($site, $mediafilebot[$id][$tagid], $prefix."_path_media");
-                    $url_tplmedia = $mgmt_config[$prefix.'_path_tplmedia'];
+                    $url_media = getmedialocation ($site, $mediafilebot[$id][$tagid], $path_prefix."_path_media");
+                    $url_tplmedia = $mgmt_config[$path_prefix.'_path_tplmedia'];
                   }
                 
                   // if pathytpe == abs (absolute path = URL w/o protocol and domain)

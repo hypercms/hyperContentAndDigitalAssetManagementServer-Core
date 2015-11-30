@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['hi'] = "फोरमैट डाउनलोड
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['hi'] = "वैकल्पिक अनिवार्य है या खुला सूची के साथ कीवर्ड";
 $hcms_lang['video-text-track']['hi'] = "वीडियो पाठ ट्रैक";
 $hcms_lang['copy-tracks-from-previously-selected-language']['hi'] = "पहले से चयनित भाषा से पटरियों को कॉपी?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['hi'] = "यह खाली नहीं है, तो उपसर्ग और प्रत्यय सामग्री के लिए जोड़ दिया जाएगा";
 ?>

@@ -1315,4 +1315,5 @@ $hcms_lang['download-formats']['he'] = "תבניות הורדה";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['he'] = "מילות מפתח עם רשימת חובה או פתוחה אופציונלית";
 $hcms_lang['video-text-track']['he'] = "מסלול טקסט וידאו";
 $hcms_lang['copy-tracks-from-previously-selected-language']['he'] = "העתק רצועות מהשפה שנבחרה קודם לכן?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['he'] = "קידומת וסיומת תתווסף לתוכן, אם זה לא ריק";
 ?>

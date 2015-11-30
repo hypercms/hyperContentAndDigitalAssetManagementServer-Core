@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['tr'] = "Yükleme biçimleri";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['tr'] = "İsteğe bağlı zorunlu veya açık liste ile Anahtar Kelimeler";
 $hcms_lang['video-text-track']['tr'] = "Video metin parça";
 $hcms_lang['copy-tracks-from-previously-selected-language']['tr'] = "Önce seçilen dilden şarkıları kopyalayın?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['tr'] = "Boş değilse önek ve sonek içeriğine eklenecektir";
 ?>

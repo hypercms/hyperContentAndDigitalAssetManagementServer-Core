@@ -1315,4 +1315,5 @@ $hcms_lang['download-formats']['el'] = "Μορφές λήψης";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['el'] = "Λέξεις-κλειδιά με προαιρετική υποχρεωτική ή ανοικτή λίστα";
 $hcms_lang['video-text-track']['el'] = "Βίντεο κειμένων κομματιού";
 $hcms_lang['copy-tracks-from-previously-selected-language']['el'] = "Αντιγράψετε τραγούδια από το παρελθόν επιλεγμένη γλώσσα";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['el'] = "Πρόθεμα και επίθεμα θα προστεθεί στο περιεχόμενο, αν δεν είναι άδειο";
 ?>

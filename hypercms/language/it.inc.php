@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['it'] = "Formati di Download";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['it'] = "Parole chiave con lista obbligatoria o facoltativa aperta";
 $hcms_lang['video-text-track']['it'] = "Traccia video del testo";
 $hcms_lang['copy-tracks-from-previously-selected-language']['it'] = "Copiare tracce da lingua selezionata in precedenza?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['it'] = "Prefisso e suffisso saranno aggiunti al contenuto se non è vuoto";
 ?>

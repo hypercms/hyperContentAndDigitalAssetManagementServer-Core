@@ -1315,4 +1315,5 @@ $hcms_lang['download-formats']['id'] = "Format Download";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['id'] = "Kata kunci dengan opsional wajib atau terbuka daftar";
 $hcms_lang['video-text-track']['id'] = "Teks Video lagu";
 $hcms_lang['copy-tracks-from-previously-selected-language']['id'] = "Menyalin trek dari bahasa yang dipilih sebelumnya?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['id'] = "Awalan dan akhiran akan ditambahkan ke konten jika tidak kosong";
 ?>

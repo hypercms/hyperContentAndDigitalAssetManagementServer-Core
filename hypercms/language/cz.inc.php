@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['cz'] = "Stáhnout formáty";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['cz'] = "Klíčová slova s volitelným povinného nebo otevřený seznam";
 $hcms_lang['video-text-track']['cz'] = "Video Text skladby";
 $hcms_lang['copy-tracks-from-previously-selected-language']['cz'] = "Kopírovat skladby z dříve zvoleném jazyce?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['cz'] = "Předpona a přípona bude přidána k obsahu, pokud není prázdný";
 ?>

@@ -123,6 +123,10 @@ checkusersession ($user, false);
     <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['default-value-optional'][$lang]); ?></td>
     <td class="hcmsRowData1">default='...'</td>
   </tr>
+   <tr align="left" valign="top">
+    <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty'][$lang]); ?></td>
+    <td class="hcmsRowData1">prefix='...' suffix='...'</td>
+  </tr>
   <tr align="left" valign="top"> 
     <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['valid-language-value-optional'][$lang]); ?></td>
     <td class="hcmsRowData1">language='...'</td>

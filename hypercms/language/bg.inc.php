@@ -1315,4 +1315,5 @@ $hcms_lang['download-formats']['bg'] = "Изтеглете формати";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['bg'] = "Ключови думи с опция за задължително или отворен списък";
 $hcms_lang['video-text-track']['bg'] = "Video текст песен";
 $hcms_lang['copy-tracks-from-previously-selected-language']['bg'] = "Копиране на песни от предварително избрания език?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['bg'] = "Префикс и суфикс се добавя към съдържанието, ако не е празна";
 ?>

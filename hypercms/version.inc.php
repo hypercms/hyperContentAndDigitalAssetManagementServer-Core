@@ -1080,6 +1080,13 @@ release 12/2015
 - improvements in function errorhandler to support error notices
 - improvements in template engine to skip further execution if an error occured
 - improvements in function showinlineeditor to avoid changes in font-style in WYSIWYG inline editing mode
+- bug fix: targetlist has not been read from the request in link_edit_page
+- bug fix: undefined variable list_array in link_edit_page
+- improvements in template editor
+- implementation of new attribute prefix ans suffix for all hypercms text tags; prefix and suffix will be appended to the not empty text content
+- implementation of third secure input parameter for function getattribute to secure (XSS) return value or not
+- added new prefix and suffix attributes to template_help
+- added new text for prefix and suffix attribute to all language files
 */
 
 // current version

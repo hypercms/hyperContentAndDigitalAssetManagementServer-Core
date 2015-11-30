@@ -1314,4 +1314,5 @@ $hcms_lang['download-formats']['en'] = "Download formats";
 $hcms_lang['keywords-with-optional-mandatory-or-open-list']['en'] = "Keywords with optional mandatory or open list";
 $hcms_lang['video-text-track']['en'] = "Video text track";
 $hcms_lang['copy-tracks-from-previously-selected-language']['en'] = "Copy tracks from previously selected language?";
+$hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['en'] = "Prefix and suffix will be added to content if it is not empty";
 ?>
