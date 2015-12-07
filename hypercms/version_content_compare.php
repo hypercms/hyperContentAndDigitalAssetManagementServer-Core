@@ -123,6 +123,11 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
           if (is_array ($buffer) && $buffer[0] != "") $id = $buffer[0];
           else $id = "";
           
+          $buffer = getcontent ($text, "<textuser>");
+          
+          if (is_array ($buffer) && $buffer[0] != "") $textuser[$id][$i] = $buffer[0];
+          else $textuser[$id][$i] = "";
+          
           $buffer = getcontent ($text, "<textcontent>");
           
           if ($id != "" && is_array ($buffer))
@@ -222,7 +227,7 @@ if (is_array ($content_array))
 
     $result_diff = html_diff ($content[0], $content[1]);
     
-    $result[$id] = "<p><span class=\"hcmsHeadline\">".$id."</span><br /><div style=\"margin:2px; padding:2px; width:760px; border:1px solid #000000; background:#FFFFFF; min-height:18px;\">".$result_diff."</div></p>";
+    $result[$id] = "<p><span class=\"hcmsHeadline\">".$id."</span> (".$hcms_lang['by-user'][$lang].": ".$textuser[$id][0]." &#10095; ".$textuser[$id][1].")<br /><div style=\"margin:2px; padding:2px; width:760px; border:1px solid #000000; background:#FFFFFF; min-height:18px;\">".$result_diff."</div></p>";
   }
   
   // output results

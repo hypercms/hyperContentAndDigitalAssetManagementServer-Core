@@ -1087,6 +1087,12 @@ release 12/2015
 - implementation of third secure input parameter for function getattribute to secure (XSS) return value or not
 - added new prefix and suffix attributes to template_help
 - added new text for prefix and suffix attribute to all language files
+- fixed head edit buttons position for WYSIWYG view modes of template engine
+- implementation of user information in content comparison
+- implementation on new versions of content on save (new configuration paramater $mgmt_config['contentversions_all'])
+- bug fix: function createversion used working container file extension when creating a new version
+- bug fix: original media with and height file parameters have not been correctly set by function showmedia
+- bug fix: reduced minimal thumbnail size from 400 to 10 bytes for thumbnail image file size check due to thumbnails that can be smaller than 400 bytes
 */
 
 // current version

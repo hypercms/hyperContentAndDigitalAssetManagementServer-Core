@@ -97,33 +97,33 @@ var format = '<?php echo $format; ?>';
 // show calendar
 function show_cal (el)
 {
-	if (cal_obj) return;
+  if (cal_obj) return;
   var date_field = document.getElementById("date_field");
 
-	cal_obj = new RichCalendar();
-	cal_obj.start_week_day = 1;
-	cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
-	cal_obj.user_onchange_handler = cal_on_change;
-	cal_obj.user_onautoclose_handler = cal_on_autoclose;
-	cal_obj.parse_date(date_field.value, format);
-	cal_obj.show_at_element(date_field, "adj_left-bottom");
+  cal_obj = new RichCalendar();
+  cal_obj.start_week_day = 1;
+  cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
+  cal_obj.user_onchange_handler = cal_on_change;
+  cal_obj.user_onautoclose_handler = cal_on_autoclose;
+  cal_obj.parse_date(date_field.value, format);
+  cal_obj.show_at_element(date_field, "adj_left-bottom");
 }
 
 // user defined onchange handler
 function cal_on_change (cal, object_code)
 {
-	if (object_code == 'day')
-	{
-		document.getElementById("date_field").value = cal.get_formatted_date(format);
-		cal.hide();
-		cal_obj = null;
-	}
+  if (object_code == 'day')
+  {
+    document.getElementById("date_field").value = cal.get_formatted_date(format);
+    cal.hide();
+    cal_obj = null;
+  }
 }
 
 // user defined onautoclose handler
 function cal_on_autoclose (cal)
 {
-	cal_obj = null;
+  cal_obj = null;
 }
 
 function setsavetype(type)

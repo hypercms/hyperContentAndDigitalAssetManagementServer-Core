@@ -697,8 +697,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if ($height > 0) $style .= "height:".intval($height)."px;";
         if ($style != "") $style = "style=\"".$style."\"";
 
-        // use thumbnail if it is valid (larger than 400 bytes)
-        if (@is_file ($thumb_root.$mediafile_thumb) && @filesize ($thumb_root.$mediafile_thumb) > 400)
+        // use thumbnail if it is valid (larger than 10 bytes)
+        if (@is_file ($thumb_root.$mediafile_thumb) && @filesize ($thumb_root.$mediafile_thumb) > 10)
         {
           $mediaview .= "
         <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
@@ -841,8 +841,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       
         if ($viewtype != "template")
         {
-          // use thumbnail if it is valid (larger than 400 bytes)
-          if (@is_file ($thumb_root.$file_info['filename'].".thumb.jpg") && @filesize ($thumb_root.$file_info['filename'].".thumb.jpg") > 400)
+          // use thumbnail if it is valid (larger than 10 bytes)
+          if (@is_file ($thumb_root.$file_info['filename'].".thumb.jpg") && @filesize ($thumb_root.$file_info['filename'].".thumb.jpg") > 10)
           {
             $viewfolder = $mgmt_config['abs_path_temp'];
             $newext = 'png';
@@ -911,8 +911,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             
             // set width and height of media file as file-parameter
             $mediaview .= "
-            <!-- hyperCMS:width file=\"".$width."\" -->
-            <!-- hyperCMS:height file=\"".$height."\" -->";
+            <!-- hyperCMS:width file=\"".$width_orig."\" -->
+            <!-- hyperCMS:height file=\"".$height_orig."\" -->";
             
             // get file extension of new file (preview file)
             $file_info['ext'] = strtolower (strrchr ($mediafile, "."));
@@ -1375,8 +1375,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     // ----------------------------- show standard file icon ------------------------------- 
     if ($mediaview == "")
     {
-      // use thumbnail if it is valid (larger than 400 bytes)
-      if (file_exists ($thumb_root.$file_info['filename'].".thumb.jpg") && @filesize ($thumb_root.$file_info['filename'].".thumb.jpg") > 400)
+      // use thumbnail if it is valid (larger than 10 bytes)
+      if (file_exists ($thumb_root.$file_info['filename'].".thumb.jpg") && @filesize ($thumb_root.$file_info['filename'].".thumb.jpg") > 10)
       {
         // thumbnail file
         $mediafile = $file_info['filename'].".thumb.jpg";

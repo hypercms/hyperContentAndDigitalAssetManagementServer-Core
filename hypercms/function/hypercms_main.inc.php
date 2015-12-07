@@ -2325,7 +2325,7 @@ function fileversion ($file)
 
 // -------------------------------------- createversion -------------------------------------------
 // function: createversion()
-// input: publication name, media file name
+// input: publication name, media file name or container name
 // output: true / false
 
 // description:
@@ -2383,7 +2383,7 @@ function createversion ($site, $file)
         else return false;
       }
       // try container
-      elseif ($file > 0 || strpos ($file, ".xml") > 0)
+      elseif (intval ($file) > 0 || strpos ($file, ".xml") > 0)
       {
         // get container ID
         if (strpos ($file, ".xml") > 0)
@@ -2396,7 +2396,7 @@ function createversion ($site, $file)
         }
 
         // create new version of file name
-        $file_v = fileversion ($container_id.".xml.wrk");
+        $file_v = fileversion ($container_id.".xml");
 
         // create new version of container
         $contentlocation = getcontentlocation ($container_id, 'abs_path_content');

@@ -353,7 +353,7 @@ function compare_submit ()
     savelog (@$error);     
     ?>
   </table><br />
-  <div style="width:300px; float:left;"><?php echo getescapedtext ($hcms_lang['submit-changes-to-versions'][$lang]); ?> :</div>
+  <div style="width:300px; float:left;"><?php echo getescapedtext ($hcms_lang['submit-changes-to-versions'][$lang]); ?>:</div>
   <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_versions_update();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /><br />
 </form>
 
@@ -371,7 +371,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
   <input type="hidden" name="compare_2" value="" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <div style="width:300px; float:left;"><?php echo getescapedtext ($hcms_lang['compare-selected-versions'][$lang]); ?> :</div>
+  <div style="width:300px; float:left;"><?php echo getescapedtext ($hcms_lang['compare-selected-versions'][$lang]); ?>:</div>
   <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="compare_submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
 </form>
 </div>

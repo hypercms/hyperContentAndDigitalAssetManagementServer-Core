@@ -377,6 +377,12 @@ if ($usedby == "" || $usedby == $user)
     // ----------------------------------- write data into content container --------------------------------------
     if ($contentdatanew != false)
     {
+      // create new version of content on save
+      if (!empty ($mgmt_config['contentversions']) && !empty ($mgmt_config['contentversions_all']))
+      {
+        createversion ($site, $contentfile);
+      }
+    
       // eventsystem
       if ($eventsystem['onsaveobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
       {
@@ -384,7 +390,7 @@ if ($usedby == "" || $usedby == $user)
       
         // check if event returns a string, if so, the event returns the container and not true or false 
         if (!empty ($contentdataevent) && strlen ($contentdataevent) > 10) $contentdatanew = $contentdataevent;
-      } 
+      }
     
       // insert new date into content file
       $contentdatanew = setcontent ($contentdatanew, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");

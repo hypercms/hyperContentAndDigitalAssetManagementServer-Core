@@ -69,7 +69,7 @@ if ($contenttype == "")
 }
 elseif (strpos ($contenttype, "charset") > 0)
 {
-	$charset = getattribute ($contenttype, "charset");
+  $charset = getattribute ($contenttype, "charset");
 }
 else $charset = $mgmt_config[$site]['default_codepage'];
 
@@ -82,16 +82,16 @@ if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['a
   
   if ($db_connect_data != false)
   {
-  	$contentbot = $db_connect_data['text'];
+    $contentbot = $db_connect_data['text'];
   }
   else
   {
-  	$contentbot = false;
+    $contentbot = false;
   }
 }
 else
 {
-	$contentbot = false;
+  $contentbot = false;
 }
 
 // read content from content container
@@ -144,65 +144,65 @@ $token = createtoken ($user);
 ?>
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>hyperCMS</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
-		<meta name="robots" content="noindex, nofollow">
-		<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css"/>
-		<script src="../javascript/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
-		<script type="text/javascript" src="ckeditor/ckeditor.js"></script>
-		<script type="text/javascript" src="../javascript/main.js" ></script>
-		<script type="text/javascript">
-			<!--
-			function setsavetype(type)
-			{
-			  document.forms['hcms_formview'].elements['savetype'].value = type;
-			  document.forms['hcms_formview'].submit();
-        return true;
-			}
-			<?php 
-			if (intval ($mgmt_config['autosave']) > 0) { 
-			?>
-			function autosave ()
+  <head>
+    <title>hyperCMS</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css"/>
+    <script src="../javascript/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="../javascript/main.js" ></script>
+    <script type="text/javascript">
+      <!--
+      function setsavetype(type)
       {
-				var test = $("#autosave").is(":checked");
+        document.forms['hcms_formview'].elements['savetype'].value = type;
+        document.forms['hcms_formview'].submit();
+        return true;
+      }
+      <?php 
+      if (intval ($mgmt_config['autosave']) > 0) { 
+      ?>
+      function autosave ()
+      {
+        var test = $("#autosave").is(":checked");
         
-				if (test == true)
+        if (test == true)
         {
-					for(var i in CKEDITOR.instances)
+          for(var i in CKEDITOR.instances)
           {
-						CKEDITOR.instances[i].updateElement();
-					}
+            CKEDITOR.instances[i].updateElement();
+          }
           
-					hcms_showHideLayers('messageLayer','','show');
-					$("#savetype").val('auto');
+          hcms_showHideLayers('messageLayer','','show');
+          $("#savetype").val('auto');
           
-					$.post(
-						"<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php", 
-						$("#hcms_formview").serialize(), 
-						function(data)
+          $.post(
+            "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php", 
+            $("#hcms_formview").serialize(), 
+            function(data)
             {
-							if(data.message.length !== 0)
+              if(data.message.length !== 0)
               {
-								alert(hcms_entity_decode(data.message));
-							}				
-							setTimeout("hcms_showHideLayers('messageLayer','','hide')", 1500);
-						}, 
-						"json"
-					);
-				}
-				setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
-			}
-			setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
-			<?php 
-			} 
-			?>
-			//-->
-		</script>
-		<?php echo showvideoplayer_head (false); ?>
-	</head>
+                alert(hcms_entity_decode(data.message));
+              }				
+              setTimeout("hcms_showHideLayers('messageLayer','','hide')", 1500);
+            }, 
+            "json"
+          );
+        }
+        setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
+      }
+      setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
+      <?php 
+      } 
+      ?>
+      //-->
+    </script>
+    <?php echo showvideoplayer_head (false); ?>
+  </head>
   
-	<body class="hcmsWorkplaceGeneric" leftmargin="3" topmargin="3" marginwidth="0" marginheight="0">
+  <body class="hcmsWorkplaceGeneric" leftmargin="3" topmargin="3" marginwidth="0" marginheight="0">
 
     <!-- top bar -->
     <?php
@@ -213,58 +213,58 @@ $token = createtoken ($user);
 
     <!-- form for content -->
     <div style="padding:0; width:100%; z-index:1;">
-  		<form action="<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php" method="post" name="hcms_formview" id="hcms_formview">
-  			<input type="hidden" name="contenttype" value="<?php echo $contenttype; ?>"> 
-  			<input type="hidden" name="site" value="<?php echo $site; ?>"> 
-  			<input type="hidden" name="cat" value="<?php echo $cat; ?>"> 
-  			<input type="hidden" name="location" value="<?php echo $location_esc; ?>">
-  			<input type="hidden" name="page" value="<?php echo $page; ?>">
-  			<input type="hidden" name="db_connect" value="<?php echo $db_connect; ?>">
-  			<input type="hidden" name="tagname" value="<?php echo $tagname; ?>"> 
-  			<input type="hidden" name="id" value="<?php echo $id; ?>"> 
-  			<input type="hidden" name="width" value="<?php echo $width; ?>"> 
-  			<input type="hidden" name="height" value="<?php echo $height; ?>">
+      <form action="<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php" method="post" name="hcms_formview" id="hcms_formview">
+        <input type="hidden" name="contenttype" value="<?php echo $contenttype; ?>"> 
+        <input type="hidden" name="site" value="<?php echo $site; ?>"> 
+        <input type="hidden" name="cat" value="<?php echo $cat; ?>"> 
+        <input type="hidden" name="location" value="<?php echo $location_esc; ?>">
+        <input type="hidden" name="page" value="<?php echo $page; ?>">
+        <input type="hidden" name="db_connect" value="<?php echo $db_connect; ?>">
+        <input type="hidden" name="tagname" value="<?php echo $tagname; ?>"> 
+        <input type="hidden" name="id" value="<?php echo $id; ?>"> 
+        <input type="hidden" name="width" value="<?php echo $width; ?>"> 
+        <input type="hidden" name="height" value="<?php echo $height; ?>">
         <input type="hidden" name="toolbar" value="<?php echo $toolbar; ?>"> 
-  			<input type="hidden" id="savetype" name="savetype" value="">
+        <input type="hidden" id="savetype" name="savetype" value="">
         <input type="hidden" name="token" value="<?php echo $token; ?>">
         
-  			<table border="0" cellspacing="2">
-  				<tr>
-  					<td nowrap="nowrap">
-  						<img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" align="absmiddle" />   
-  						<img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" />
-  						<?php 
-  						if (intval ($mgmt_config['autosave']) > 0) {
-  						?>
+        <table border="0" cellspacing="2">
+          <tr>
+            <td nowrap="nowrap">
+              <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" align="absmiddle" />   
+              <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" />
+              <?php 
+              if (intval ($mgmt_config['autosave']) > 0) {
+              ?>
               <div class="hcmsButton" style="height:22px;">
-  						  &nbsp;<input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" /><label for="autosave">&nbsp;<?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?></label>&nbsp;
+                &nbsp;<input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" /><label for="autosave">&nbsp;<?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?></label>&nbsp;
               </div>
-  						<?php 
-  						} 
-  						?>
-  					</td>
-  				</tr>
-  				<tr>
-  					<td colspan="2"> 
+              <?php 
+              } 
+              ?>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2"> 
               <?php echo showeditor ($site, $tagname, $id, $contentbot, $width, $height, $toolbar, $lang, $dpi); ?>
-  					</td>
-  				</tr>
-  			</table>
-  		</form>
+            </td>
+          </tr>
+        </table>
+      </form>
     </div>
     
     <!-- auto save -->
-		<div id="messageLayer" style="position:absolute; width:300px; height:40px; z-index:999999; left: 150px; top: 120px; visibility: hidden">
-  		<table width="300" height="40" border=0 cellspacing=0 cellpadding=3 class="hcmsMessage">
-  			<tr>
-  				<td align="center" valign="top">
-  					<div style="width:100%; height:100%; z-index:10; overflow:auto;">
-  						<?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?>
-  					</div>
-  				</td>
-  			</tr>
-  		</table>
-		</div>
+    <div id="messageLayer" style="position:absolute; width:300px; height:40px; z-index:999999; left: 150px; top: 120px; visibility: hidden">
+      <table width="300" height="40" border=0 cellspacing=0 cellpadding=3 class="hcmsMessage">
+        <tr>
+          <td align="center" valign="top">
+            <div style="width:100%; height:100%; z-index:10; overflow:auto;">
+              <?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
     
-	</body>
+  </body>
 </html>

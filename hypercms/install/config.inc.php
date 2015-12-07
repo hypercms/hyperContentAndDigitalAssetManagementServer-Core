@@ -383,6 +383,9 @@ $mgmt_config['id3_save'] = true;
 // Save versions of published containers and media files (true) or disable versioning (false)
 $mgmt_config['contentversions'] = true;
 
+// Save versions of saved containers and media files (true) or do not create a new version (false)
+$mgmt_config['contentversions_all'] = false;
+
 // Public Download
 // Allow access to download and wrapper links without logon session (true) or not (false)
 // This setting must be enabled if users want to provide wrapper or download links to the public

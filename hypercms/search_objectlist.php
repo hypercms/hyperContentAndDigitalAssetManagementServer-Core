@@ -521,7 +521,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                 createmedia ($item_site, $mediadir.$item_site."/", $mediadir.$item_site."/", $media_info['file'], "", "thumbnail");
               }            
               
-              if (@is_file ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg") && @filesize ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg") > 400)
+              if (@is_file ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg") && @filesize ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg") > 10)
               {
                 $imgsize = getimagesize ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg");
                 

@@ -87,14 +87,14 @@ if (!empty ($mediafile) && $mediafile != "Null_media.gif")
 {
   $file_info = getfileinfo ($site, $mediafile, "comp");
   
-	// define parameters returned to edtor window
+  // define parameters returned to edtor window
   if ($mediacat == "cnt") 
   {
     $mediadir = getmedialocation ($site, $mediafile, "abs_path_media");
     $mediaurl = getmedialocation ($site, $mediafile, "url_path_media");
   }
-	
-	// show media
+  
+  // show media
   $show = showmedia ($mediafile, $object_info['name'], "preview_no_rendering", "", 288);
 
   // extract width and height from content
