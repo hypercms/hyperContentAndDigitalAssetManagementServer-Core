@@ -6271,7 +6271,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             {
               foreach ($css_array as $css)
               {
-                if ($css != "") $line_css .= "<link rel=\"stylesheet\" hypercms_href=\"".$css."\">\n";
+                if ($css != "") $line_css .= "<link rel=\"stylesheet\" hypercms_href=\"".$css."\" />\n";
               }
             }
           }   

@@ -51,6 +51,8 @@ $include_metadata = getrequest ("include_metadata");
 // task
 $create_task = getrequest ("create_task");
 $priority = getrequest ("priority");
+$startdate = getrequest ("startdate");
+$finishdate = getrequest ("finishdate");
 
 $token = getrequest ("token");
 
@@ -283,6 +285,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
         }
         
         $mailer = new HyperMailer();
+        $mailer->IsHTML(true);
         $mailer->CharSet = $hcms_lang_codepage[$lang];
         
         // if the mailserver config entry is empty, the email address of the user will be used for FROM
@@ -508,10 +511,11 @@ if ($intention == "sendmail" && checktoken ($token, $user))
         }
         
         $mail_fullbody .= $mail_signature;
+        $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\">".$mail_fullbody."</span>";
 
         // subject and body
         $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang]);
-        $mailer->Body = html_decode ($mail_fullbody, $hcms_lang_codepage[$lang]);        
+        $mailer->Body = html_decode (nl2br ($mail_fullbody), $hcms_lang_codepage[$lang]);        
         
         foreach ($email_to as $mail_address)
         {
@@ -647,6 +651,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
           
           // send mail to receiver
           $mailer = new HyperMailer();
+          $mailer->IsHTML(true);
           $mailer->CharSet = $hcms_lang_codepage[$lang];
           
           $metadata = "";
@@ -821,6 +826,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
             }
             
             $mail_fullbody .= $mail_signature;
+            $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\">".$mail_fullbody."</span>";
             
             // mail header
             // if the mailserver config entry is empty, the email address of the user will be used for FROM
@@ -880,7 +886,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
             
             // subject and body
             $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang]);
-            $mailer->Body = html_decode ($mail_fullbody, $hcms_lang_codepage[$lang]);
+            $mailer->Body = html_decode (nl2br ($mail_fullbody), $hcms_lang_codepage[$lang]);
             
             // create email recipient array
             $email_to_array = splitstring ($email_to);
@@ -937,7 +943,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
           {
             foreach ($user_login as $user_to)
             {
-              createtask ($site, $user, $email_from, $user_to, "", "user", $objectpath, $mail_title."\n\n".$mail_body, false, $priority);
+              createtask ($site, $user, $email_from, $user_to, "", $startdate, $finishdate, "user", $objectpath, $mail_title, $mail_body, false, $priority);
             }
           }
         }
@@ -961,7 +967,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
       {
         foreach ($user_login as $user_to)
         {
-          createtask ($site, $user, $email_from, $user_to, "", "user", $objectpath, $mail_title."\n\n".$mail_body, false, $priority);
+          createtask ($site, $user, $email_from, $user_to, "", $startdate, $finishdate, "user", $objectpath, $mail_title."\n\n".$mail_body, false, $priority);
         }
       }      
     }
@@ -1045,342 +1051,437 @@ $token_new = createtoken ($user);
     <!-- Jquery and Jquery UI Autocomplete -->
     <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
     <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
+        
+    <link rel="STYLESHEET" type="text/css" href="javascript/rich_calendar/rich_calendar.css">
+    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
+    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
+    <script language="Javascript" src="javascript/rich_calendar/domready.js"></script>
+    <script language="JavaScript" type="text/javascript">
+    <!--
+    var cal_obj_1 = null;
+    var cal_obj_2 = null;
+    
+    var format = '%Y-%m-%d';
+    
+    // show calendar
+    function show_cal_1 (el)
+    {
+    	if (cal_obj_1) return;
+    
+      var text_field_1 = document.getElementById("startdate");
+    
+    	cal_obj_1 = new RichCalendar();
+    	cal_obj_1.start_week_day = 1;
+    	cal_obj_1.show_time = false;
+    	cal_obj_1.language = '<?php echo getcalendarlang ($lang); ?>';
+    	cal_obj_1.user_onchange_handler = cal1_on_change;
+    	cal_obj_1.user_onclose_handler = cal1_on_close;
+    	cal_obj_1.user_onautoclose_handler = cal1_on_autoclose;
+    	cal_obj_1.parse_date(text_field_1.value, format);
+    	cal_obj_1.show_at_element(datepicker1, "adj_right-top");
+    }
+    
+    function show_cal_2 (el)
+    {
+    	if (cal_obj_2) return;
+    
+      var text_field_2 = document.getElementById("finishdate");
+    
+    	cal_obj_2 = new RichCalendar();
+    	cal_obj_2.start_week_day = 1;
+    	cal_obj_2.show_time = false;
+    	cal_obj_2.language = '<?php echo getcalendarlang ($lang); ?>';
+    	cal_obj_2.user_onchange_handler = cal2_on_change;
+    	cal_obj_2.user_onclose_handler = cal2_on_close;
+    	cal_obj_2.user_onautoclose_handler = cal2_on_autoclose;
+    	cal_obj_2.parse_date(text_field_2.value, format);
+    	cal_obj_2.show_at_element(datepicker2, "adj_right-top");
+    }
+    
+    // user defined onchange handler
+    function cal1_on_change(cal, object_code)
+    {
+    	if (object_code == 'day')
+    	{
+    		document.getElementById("startdate").value = cal.get_formatted_date(format);
+    		cal.hide();
+    		cal_obj_1 = null;
+    	}
+    }
+    
+    function cal2_on_change(cal, object_code)
+    {
+    	if (object_code == 'day')
+    	{
+    		document.getElementById("finishdate").value = cal.get_formatted_date(format);
+    		cal.hide();
+    		cal_obj_2 = null;
+    	}
+    }
+    
+    // user defined onclose handler (used in pop-up mode - when auto_close is true)
+    function cal1_on_close(cal)
+    {
+    	cal.hide();
+    	cal_obj_1 = null;
+    }
+    
+    function cal2_on_close(cal)
+    {
+    	cal.hide();
+    	cal_obj_2 = null;
+    }
+    
+    // user defined onautoclose handler
+    function cal1_on_autoclose(cal)
+    {
+    	cal_obj_1 = null;
+    }
+    
+    function cal2_on_autoclose(cal)
+    {
+    	cal_obj_2 = null;
+    }
+    //-->
+    </script>
+    
     <script type="text/javascript">
-      <!--
-      var maxoptions = <?php if (($maxoptions = max (array (sizeof ($mgmt_docoptions), sizeof ($mgmt_imageoptions)))) > 0) echo $maxoptions+1; else "1"; ?>;
-      var singleselect = false;
-      var folderincluded = <?php if ($allow_attachment) echo "0"; else echo "1"; ?>;
-      
-      function selectCheckbox (id_prefix, id)
-      {
-        // select a single checkbox by id
-        if (singleselect)
-        {
-          // uncheck
-          for (var i=1; i<=maxoptions; i++)
-          {
-            if (document.getElementById(id_prefix + i)) document.getElementById(id_prefix + i).checked = false;
-          }
-          
-          // check
-          document.getElementById(id).checked = true;
-        }
-        // select all checkboxes
-        else if (id == "all")
-        {
-          for (var i=0; i<=maxoptions; i++)
-          {
-            // check
-            if (document.getElementById(id_prefix + i)) document.getElementById(id_prefix + i).checked = true;
-          }
-        }
-      }
-      
-      function selectLinkType(id)
+    <!--
+    var maxoptions = <?php if (($maxoptions = max (array (sizeof ($mgmt_docoptions), sizeof ($mgmt_imageoptions)))) > 0) echo $maxoptions+1; else "1"; ?>;
+    var singleselect = false;
+    var folderincluded = <?php if ($allow_attachment) echo "0"; else echo "1"; ?>;
+    
+    function selectCheckbox (id_prefix, id)
+    {
+      // select a single checkbox by id
+      if (singleselect)
       {
         // uncheck
-        if (document.getElementById('type_download')) document.getElementById('type_download').checked = false;
-        if (document.getElementById('type_access')) document.getElementById('type_access').checked = false;
-        if (document.getElementById('type_attachment')) document.getElementById('type_attachment').checked = false;
+        for (var i=1; i<=maxoptions; i++)
+        {
+          if (document.getElementById(id_prefix + i)) document.getElementById(id_prefix + i).checked = false;
+        }
         
         // check
-        if (document.getElementById(id)) document.getElementById(id).checked = true;
+        document.getElementById(id).checked = true;
+      }
+      // select all checkboxes
+      else if (id == "all")
+      {
+        for (var i=0; i<=maxoptions; i++)
+        {
+          // check
+          if (document.getElementById(id_prefix + i)) document.getElementById(id_prefix + i).checked = true;
+        }
+      }
+    }
+    
+    function selectLinkType(id)
+    {
+      // uncheck
+      if (document.getElementById('type_download')) document.getElementById('type_download').checked = false;
+      if (document.getElementById('type_access')) document.getElementById('type_access').checked = false;
+      if (document.getElementById('type_attachment')) document.getElementById('type_attachment').checked = false;
+      
+      // check
+      if (document.getElementById(id)) document.getElementById(id).checked = true;
+    }
+    
+    function initLinkType(id)
+    {
+      // download link -> single select
+      if (document.getElementById('type_download') && document.getElementById('type_download').checked == true)
+      {
+        singleselect = true;
+        selectCheckbox('format_img', 'format_img1');
+        selectCheckbox('format_doc', 'format_doc1');
+        
+        if (folderincluded)
+        {
+          // disable checkboxes except original
+          for (var i=2; i<=maxoptions; i++)
+          {
+            if (document.getElementById('format_img' + i)) document.getElementById('format_img' + i).disabled = true;
+            if (document.getElementById('format_doc' + i)) document.getElementById('format_doc' + i).disabled = true;
+          }
+        }
+        
+        if (document.getElementById('valid_active'))
+        {
+          document.getElementById('valid_active').disabled = false;
+          
+          if (document.getElementById('valid_active').checked == true)
+          {
+            document.getElementById('valid_days').disabled = false;
+            document.getElementById('valid_hours').disabled = false;
+          }
+        }
+      }
+      // access link -> multi select
+      else if (document.getElementById('type_access') && document.getElementById('type_access').checked == true)
+      {
+        singleselect = false;
+        selectCheckbox('format_img', 'all');
+        selectCheckbox('format_doc', 'all');
+        
+        // enable all checkboxes
+        for (var i=1; i<=maxoptions; i++)
+        {
+          if (document.getElementById('format_img' + i)) document.getElementById('format_img' + i).disabled = false;
+          if (document.getElementById('format_doc' + i)) document.getElementById('format_doc' + i).disabled = false;
+        }
+        
+        if (document.getElementById('valid_active'))
+        {
+          document.getElementById('valid_active').disabled = false;
+          
+          if (document.getElementById('valid_active').checked == true)
+          {
+            document.getElementById('valid_days').disabled = false;
+            document.getElementById('valid_hours').disabled = false;
+          }
+        }
+      }
+      // attachment -> single select
+      else if (document.getElementById('type_attachment') && document.getElementById('type_attachment').checked == true)
+      {
+        singleselect = true;
+        selectCheckbox('format_img', 'format_img1');
+        selectCheckbox('format_doc', 'format_doc1');
+        
+        // enable all checkboxes
+        for (var i=1; i<=maxoptions; i++)
+        {
+          if (document.getElementById('format_img' + i)) document.getElementById('format_img' + i).disabled = false;
+          if (document.getElementById('format_doc' + i)) document.getElementById('format_doc' + i).disabled = false;
+        }
+        
+        if (document.getElementById('valid_active'))
+        {
+          document.getElementById('valid_active').checked = false;
+          document.getElementById('valid_active').disabled = true;
+          document.getElementById('valid_days').disabled = true;
+          document.getElementById('valid_hours').disabled = true;
+        }
+      }
+    }
+    
+    function isIntegerValue(value)
+    {
+      if (value != "") return value % 1 == 0;
+      else return true;
+    }
+
+    function checkForm()
+    {  
+      if ($("div#emails div").length < 1 && $("#group_login").val() == "")
+      {
+        alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['add-at-least-one-user-or-email'][$lang]); ?>"));
+        $('input#selector').focus();
+        return false;
       }
       
-      function initLinkType(id)
+      if (document.getElementById("mail_title").value == "")
       {
-        // download link -> single select
-        if (document.getElementById('type_download') && document.getElementById('type_download').checked == true)
-        {
-          singleselect = true;
-          selectCheckbox('format_img', 'format_img1');
-          selectCheckbox('format_doc', 'format_doc1');
-          
-          if (folderincluded)
-          {
-            // disable checkboxes except original
-            for (var i=2; i<=maxoptions; i++)
-            {
-              if (document.getElementById('format_img' + i)) document.getElementById('format_img' + i).disabled = true;
-              if (document.getElementById('format_doc' + i)) document.getElementById('format_doc' + i).disabled = true;
-            }
-          }
-          
-          if (document.getElementById('valid_active'))
-          {
-            document.getElementById('valid_active').disabled = false;
-            
-            if (document.getElementById('valid_active').checked == true)
-            {
-              document.getElementById('valid_days').disabled = false;
-              document.getElementById('valid_hours').disabled = false;
-            }
-          }
-        }
-        // access link -> multi select
-        else if (document.getElementById('type_access') && document.getElementById('type_access').checked == true)
-        {
-          singleselect = false;
-          selectCheckbox('format_img', 'all');
-          selectCheckbox('format_doc', 'all');
-          
-          // enable all checkboxes
-          for (var i=1; i<=maxoptions; i++)
-          {
-            if (document.getElementById('format_img' + i)) document.getElementById('format_img' + i).disabled = false;
-            if (document.getElementById('format_doc' + i)) document.getElementById('format_doc' + i).disabled = false;
-          }
-          
-          if (document.getElementById('valid_active'))
-          {
-            document.getElementById('valid_active').disabled = false;
-            
-            if (document.getElementById('valid_active').checked == true)
-            {
-              document.getElementById('valid_days').disabled = false;
-              document.getElementById('valid_hours').disabled = false;
-            }
-          }
-        }
-        // attachment -> single select
-        else if (document.getElementById('type_attachment') && document.getElementById('type_attachment').checked == true)
-        {
-          singleselect = true;
-          selectCheckbox('format_img', 'format_img1');
-          selectCheckbox('format_doc', 'format_doc1');
-          
-          // enable all checkboxes
-          for (var i=1; i<=maxoptions; i++)
-          {
-            if (document.getElementById('format_img' + i)) document.getElementById('format_img' + i).disabled = false;
-            if (document.getElementById('format_doc' + i)) document.getElementById('format_doc' + i).disabled = false;
-          }
-          
-          if (document.getElementById('valid_active'))
-          {
-            document.getElementById('valid_active').checked = false;
-            document.getElementById('valid_active').disabled = true;
-            document.getElementById('valid_days').disabled = true;
-            document.getElementById('valid_hours').disabled = true;
-          }
-        }
+        alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-define-a-mail-subject'][$lang]); ?>"));
+        $("input#mail_title").focus();
+        return false;
       }
       
-      function isIntegerValue(value)
+      if (document.getElementById("valid_active"))
       {
-        if (value != "") return value % 1 == 0;
-        else return true;
-      }
-
-      function checkForm()
-      {  
-        if ($("div#emails div").length < 1 && $("#group_login").val() == "")
+        if (document.getElementById("valid_active").checked == true)
         {
-          alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['add-at-least-one-user-or-email'][$lang]); ?>"));
-          $('input#selector').focus();
-          return false;
-        }
-        
-        if (document.getElementById("mail_title").value == "")
-        {
-          alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-define-a-mail-subject'][$lang]); ?>"));
-          $("input#mail_title").focus();
-          return false;
-        }
-        
-        if (document.getElementById("valid_active"))
-        {
-          if (document.getElementById("valid_active").checked == true)
+          var valid_days = document.getElementById("valid_days").value;
+          var valid_hours = document.getElementById("valid_hours").value;
+          
+          if (isIntegerValue(valid_days) == false || isIntegerValue(valid_hours) == false)
           {
-            var valid_days = document.getElementById("valid_days").value;
-            var valid_hours = document.getElementById("valid_hours").value;
-            
-            if (isIntegerValue(valid_days) == false || isIntegerValue(valid_hours) == false)
-            {
-              alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['period-of-validity-is-not-correct'][$lang]); ?>"));
-              document.getElementById("valid_days").focus();
-              return false;
-            }
-          }
-        }       
-        
-        return true;
-      }
-
-      function remove_element(elname)
-      {
-        $('#'+elname).remove();
-        
-        if (!$('[id^="email_to_"]').length)
-        {
-          showHideLayers("attention_settings", 'invisible');
-        }
-      }
-
-      // Hides or shows different elements on the page can have unlimited arguments which should be of the following order
-      // Elementname, ("show", "hide", "visible", "invisible")
-      // Example: showHideLayers('element1', 'show', 'element2', 'hide', 'element3', 'invisible', 'element4', 'visible')
-      
-      function showHideLayers()
-      { 
-        var i, show, args=showHideLayers.arguments;
-        
-        for (i=0; i<(args.length-1); i+=2)
-        {
-          var elem = $("#"+args[i]);
-          if (elem)
-          { 
-            show = args[i+1];
-            
-            if (show == 'show') elem.show();
-            else if (show == 'hide') elem.hide();
-            else if (show == 'visible') elem.css({visibility: "visible"});
-            else if (show == 'invisible') elem.css({visibility: "hidden"});
+            alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['period-of-validity-is-not-correct'][$lang]); ?>"));
+            document.getElementById("valid_days").focus();
+            return false;
           }
         }
-      }
-
-      function close_selector()
-      {
-        $("input#selector").autocomplete( "close" );
-      }
+      }       
       
-      $(document).ready(function()
+      return true;
+    }
+
+    function remove_element(elname)
+    {
+      $('#'+elname).remove();
+      
+      if (!$('[id^="email_to_"]').length)
       {
-        initLinkType();
-        
-        <?php 
-        $tmpuser = array();
-        
-        if (is_array ($alluser_array))
+        showHideLayers("attention_settings", 'invisible');
+      }
+    }
+
+    // Hides or shows different elements on the page can have unlimited arguments which should be of the following order
+    // Elementname, ("show", "hide", "visible", "invisible")
+    // Example: showHideLayers('element1', 'show', 'element2', 'hide', 'element3', 'invisible', 'element4', 'visible')
+    
+    function showHideLayers()
+    { 
+      var i, show, args=showHideLayers.arguments;
+      
+      for (i=0; i<(args.length-1); i+=2)
+      {
+        var elem = $("#"+args[i]);
+        if (elem)
+        { 
+          show = args[i+1];
+          
+          if (show == 'show') elem.show();
+          else if (show == 'hide') elem.hide();
+          else if (show == 'visible') elem.css({visibility: "visible"});
+          else if (show == 'invisible') elem.css({visibility: "hidden"});
+        }
+      }
+    }
+
+    function close_selector()
+    {
+      $("input#selector").autocomplete( "close" );
+    }
+    
+    $(document).ready(function()
+    {
+      initLinkType();
+      
+      <?php 
+      $tmpuser = array();
+      
+      if (is_array ($alluser_array))
+      {
+        foreach ($alluser_array as $user_id => $user_login)
         {
-          foreach ($alluser_array as $user_id => $user_login)
+          if (array_key_exists ($user_id, $allemail_array) && !empty ($allemail_array[$user_id]))
           {
-            if (array_key_exists ($user_id, $allemail_array) && !empty ($allemail_array[$user_id]))
-            {
-              $username = (array_key_exists ($user_id, $allrealname_array) && !empty ($allrealname_array[$user_id])) ? $allrealname_array[$user_id] : $user_login;
-              $tmpuser[] = "{ loginname: \"{$user_login}\", id: \"{$user_id}\", username:\"{$username}\", email:\"{$allemail_array[$user_id]}\", label: \"{$username} ({$allemail_array[$user_id]})\" }"; 
-            }
+            $username = (array_key_exists ($user_id, $allrealname_array) && !empty ($allrealname_array[$user_id])) ? $allrealname_array[$user_id] : $user_login;
+            $tmpuser[] = "{ loginname: \"{$user_login}\", id: \"{$user_id}\", username:\"{$username}\", email:\"{$allemail_array[$user_id]}\", label: \"{$username} ({$allemail_array[$user_id]})\" }"; 
           }
         }
-        ?>
-        var userlist = [<?php echo implode (",\n", $tmpuser); ?>];
-        <?php
-        unset ($tmpuser);
-        // id for the special element
-        $idspecial = "-99999999";
-        ?>
+      }
+      ?>
+      var userlist = [<?php echo implode (",\n", $tmpuser); ?>];
+      <?php
+      unset ($tmpuser);
+      // id for the special element
+      $idspecial = "-99999999";
+      ?>
 
-        var noneFound = { id: "<?php echo $idspecial; ?>", label: hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['add-as-recipient'][$lang]); ?>") };
-        
-        $("input#selector").autocomplete(
-          { 
-            source: function(request, response) {
+      var noneFound = { id: "<?php echo $idspecial; ?>", label: hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['add-as-recipient'][$lang]); ?>") };
+      
+      $("input#selector").autocomplete(
+        { 
+          source: function(request, response) {
 
-              var found = $.ui.autocomplete.filter(userlist, request.term);
+            var found = $.ui.autocomplete.filter(userlist, request.term);
 
-              if(found.length) {
-                response(found);
-              } else {
-                response([noneFound]);
-              }
-            },
-            select: function(event, ui)
-            {
-              var inputval = $(this).val();
-              var fieldname = inputval.replace(/([\.\-\@])/g, "_");
+            if(found.length) {
+              response(found);
+            } else {
+              response([noneFound]);
+            }
+          },
+          select: function(event, ui)
+          {
+            var inputval = $(this).val();
+            var fieldname = inputval.replace(/([\.\-\@])/g, "_");
+            
+            if (ui.item.id == "<?php echo $idspecial; ?>")
+            {								
+              var mainname = 'main_'+fieldname;
+              var delname = 'delete_'+fieldname;
+              var inputid = 'email_to_'+fieldname;
+              var divtextid = 'divtext_'+fieldname;
               
-              if (ui.item.id == "<?php echo $idspecial; ?>")
-              {								
-                var mainname = 'main_'+fieldname;
-                var delname = 'delete_'+fieldname;
-                var inputid = 'email_to_'+fieldname;
-                var divtextid = 'divtext_'+fieldname;
-                
-                // We only add persons who aren't on the list already
-                if (!$('#'+mainname).length)
-                {
-                  // Check if e-mail address is valid
-                  var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-                  
-                  if (emailReg.test(inputval))
-                  {
-                    var pre = "";
-                    var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.gif\',1);" title="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_close.gif" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
-                    var input = '<input type="hidden" name="email_to[]" id="'+inputid+'" value="'+inputval+'"/>';
-                    var divtext =  '<div id="'+divtextid+'"style="float:left">'+inputval+'&nbsp;</div>';
-                    $("div#emails").append("<div id=\""+mainname+"\" style=\"width:355px; height:16px;\">"+input+divtext+img+"</br></div>");
-                    showHideLayers("attention_settings", 'visible');
-                    $(this).val("");
-                  }
-                  else
-                  {
-                    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-valid-e-mail-adress'][$lang]); ?>"));
-                  }
-                } 
-                else
-                {
-                  alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['recipient-already-added'][$lang]); ?>"));
-                  $(this).val("");
-                }
-              }
-              else
+              // We only add persons who aren't on the list already
+              if (!$('#'+mainname).length)
               {
-                var mainname = 'main_'+ui.item.loginname;
-                var delname = 'delete_'+ui.item.loginname;
-                var inputid = 'user_login_'+ui.item.loginname;
-                var divtextid = 'divtext_'+ui.item.loginname;
+                // Check if e-mail address is valid
+                var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
                 
-                // only add persons who aren't on the list already
-                if (!$('#'+mainname).length)
+                if (emailReg.test(inputval))
                 {
                   var pre = "";
                   var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.gif\',1);" title="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_close.gif" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
-                  var input = '<input type="hidden" name="user_login[]" id="'+inputid+'" value="'+ui.item.loginname+'"/>';
-                  var divtext =  '<div id="'+divtextid+'" style="float:left" title="'+ui.item.email+'">'+ui.item.username+'&nbsp;</div>';
+                  var input = '<input type="hidden" name="email_to[]" id="'+inputid+'" value="'+inputval+'"/>';
+                  var divtext =  '<div id="'+divtextid+'"style="float:left">'+inputval+'&nbsp;</div>';
                   $("div#emails").append("<div id=\""+mainname+"\" style=\"width:355px; height:16px;\">"+input+divtext+img+"</br></div>");
-                } 
+                  showHideLayers("attention_settings", 'visible');
+                  $(this).val("");
+                }
                 else
                 {
-                  alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['recipient-already-added'][$lang]); ?>"));
+                  alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-valid-e-mail-adress'][$lang]); ?>"));
                 }
+              } 
+              else
+              {
+                alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['recipient-already-added'][$lang]); ?>"));
                 $(this).val("");
               }
-              // Returning false suppresses that the inputfield is updated with the selected value
-              return false;
-            },	
-            minLength: 0,
-            appendTo: '#selectbox',
-            autoFocus: true
-          }
-          )
-          // as soon as there is focus autocomplete window will be opened
-          /*.focus(function()
-        {
-          $(this).autocomplete( "search" , this.value);
-        })*/
-        // only open autocomplete when it's not already shown
-        .click(function()
-        {
-          var elem = $(this);
-          
-          if(elem.autocomplete( "widget").is(":hidden"))
-          {
-            elem.autocomplete( "search" , elem.value);
-          }
-        })
-        ;
-        // call click function for the first tap
-        $("#menu-Recipient").click();
-        
-        $("#mailForm").keypress(function (key) 
-        {
-          if(key.keyCode === 13 &&  key.target.id != 'mail_body') return false;
-          else return true;
+            }
+            else
+            {
+              var mainname = 'main_'+ui.item.loginname;
+              var delname = 'delete_'+ui.item.loginname;
+              var inputid = 'user_login_'+ui.item.loginname;
+              var divtextid = 'divtext_'+ui.item.loginname;
+              
+              // only add persons who aren't on the list already
+              if (!$('#'+mainname).length)
+              {
+                var pre = "";
+                var img = '<div><img onclick="remove_element(\''+mainname+'\')" onmouseout="hcms_swapImgRestore();" onmouseover="hcms_swapImage(\''+delname+'\', \'\', \'<?php echo getthemelocation(); ?>img/button_close_over.gif\',1);" title="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete-recipient'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_close.gif" name="'+delname+'" style="width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;"></div>';
+                var input = '<input type="hidden" name="user_login[]" id="'+inputid+'" value="'+ui.item.loginname+'"/>';
+                var divtext =  '<div id="'+divtextid+'" style="float:left" title="'+ui.item.email+'">'+ui.item.username+'&nbsp;</div>';
+                $("div#emails").append("<div id=\""+mainname+"\" style=\"width:355px; height:16px;\">"+input+divtext+img+"</br></div>");
+              } 
+              else
+              {
+                alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['recipient-already-added'][$lang]); ?>"));
+              }
+              $(this).val("");
+            }
+            // Returning false suppresses that the inputfield is updated with the selected value
+            return false;
+          },	
+          minLength: 0,
+          appendTo: '#selectbox',
+          autoFocus: true
         }
-        );
-      });    
-      //-->
+        )
+        // as soon as there is focus autocomplete window will be opened
+        /*.focus(function()
+      {
+        $(this).autocomplete( "search" , this.value);
+      })*/
+      // only open autocomplete when it's not already shown
+      .click(function()
+      {
+        var elem = $(this);
+        
+        if(elem.autocomplete( "widget").is(":hidden"))
+        {
+          elem.autocomplete( "search" , elem.value);
+        }
+      })
+      ;
+      // call click function for the first tap
+      $("#menu-Recipient").click();
+      
+      $("#mailForm").keypress(function (key) 
+      {
+        if(key.keyCode === 13 &&  key.target.id != 'mail_body') return false;
+        else return true;
+      }
+      );
+    });    
+    //-->
     </script>
   </head>
   
@@ -1745,10 +1846,7 @@ $token_new = createtoken ($user);
               <hr />
             </td>
           </tr>
-          <?php 
-          if ($page != "" || is_array ($multiobject_array))
-          {      
-          ?>
+        <?php if ($page != "" || is_array ($multiobject_array)) { ?>
           <tr>
             <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-files-as'][$lang]); ?>:</td>
             <td align="left" valign="top">
@@ -1778,6 +1876,7 @@ $token_new = createtoken ($user);
               <?php echo getescapedtext ($hcms_lang['include-in-message'][$lang]); ?>
             </td>
           </tr>
+          <?php if (checkrootpermission ('desktoptaskmgmt') && is_file ($mgmt_config['abs_path_cms']."taskmgmt/task_list.php")) { ?>
           <tr>
             <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['create-new-task'][$lang]); ?>:</td>
             <td align="left" valign="top">
@@ -1788,11 +1887,16 @@ $token_new = createtoken ($user);
                 <option value="medium"><?php echo getescapedtext ($hcms_lang['medium'][$lang]); ?></option>
                 <option value="high"><?php echo getescapedtext ($hcms_lang['high'][$lang]); ?></option>
               </select>
+              <div style="margin:2px 0px 2px 0px;">
+                <?php echo getescapedtext ($hcms_lang['start'][$lang]); ?>
+                <input type="text" name="startdate" id="startdate" value="" readonly="readonly" style="width:80px;" />&nbsp;<img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal_1(this);" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" />
+                <?php echo getescapedtext ($hcms_lang['end'][$lang]); ?>
+                <input type="text" name="finishdate" id="finishdate" value="" readonly="readonly" style="width:80px;" />&nbsp;<img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal_2(this);" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" />
+              </div>
             </td>
-          </tr>          
-          <?php 
-          } 
-          ?>
+          </tr>
+          <?php } ?>        
+        <?php } ?>
           <tr>
             <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?>: </td>
             <td align="left" valign="top">

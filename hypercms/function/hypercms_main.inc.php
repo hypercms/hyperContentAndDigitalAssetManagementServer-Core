@@ -2933,24 +2933,25 @@ function savecontainer ($container, $type="work", $data, $user, $init=false)
 
 // ---------------------------------------------- createtask ----------------------------------------------
 // function: createtask()
-// input: publication name, from_user name [string], from_email [email-address], to_user name [string], to_email [email-address], 
-//        category [string], object [string], message [string], sendmail [true/false], priority [high,medium,low] (optional)
+// input: publication name, from_user name [string], from_email [email-address], to_user name [string], to_email [email-address], start date (optional), finish date (optional),
+//        category [string], object [string], task name [string], message (optional) [string], sendmail [true/false], priority [high,medium,low] (optional)
 // output: true/false
 // requires: config.inc.php
 
 // description:
 // set a new user task and send mail (optional)
+// since verion 5.8.4 the data will be stored in RDBMS instead of XML files
 
-function createtask ($site, $from_user, $from_email, $to_user, $to_email, $category, $object, $message, $sendmail, $priority="low")
+function createtask ($site, $from_user, $from_email, $to_user, $to_email, $startdate="", $finishdate="", $category, $object, $taskname, $message="", $sendmail=true, $priority="low")
 {
   global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
   
-    // include hypermailer class
+  // include hypermailer class
   if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");  
 
   // ---------------------------------- create new task -----------------------------------
   // load task file of user, set new task and save task file
-  if (valid_objectname ($to_user) && strlen ($message) < 1600)
+  if (valid_objectname ($to_user) && $taskname != "" && strlen ($taskname) <= 200 && strlen ($message) <= 3600)
   {
     // load user file
     $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
@@ -2986,11 +2987,6 @@ function createtask ($site, $from_user, $from_email, $to_user, $to_email, $categ
     // get local date today (jjjj-mm-dd hh:mm)
     $mgmt_config['today'] = date ("Y-m-d H:i", time());
 
-    // escape special characters (transform all special chararcters into their html/xml equivalents)
-    $message = str_replace ("&", "&amp;", $message);
-    $message = str_replace ("<", "&lt;", $message);
-    $message = str_replace (">", "&gt;", $message);
-
     // convert object path if necessary
     if (substr_count ($object, "%page%") == 0 && substr_count ($object, "%comp%") == 0)
     {
@@ -3007,40 +3003,35 @@ function createtask ($site, $from_user, $from_email, $to_user, $to_email, $categ
     // get object id
     if ($mgmt_config['db_connect_rdbms'] != "") $object_id = rdbms_getobject_id ($object_esc);
     else $object_id = "";
-
-    // task xml schema
-    if ($from_email != "") $email_schema = " [<a href='mailto:".$from_email."'>".$from_email."</a>]";
-    else $email_schema = "";
     
     // check priority
     if (!in_array ($priority, array("high","medium","low"))) $priority = "low";
-    
-    $task_schema_xml = "<task>
-<task_id></task_id>
-<task_cat>".$category."</task_cat>
-<task_date>".$mgmt_config['today']."</task_date>
-<publication>".$site."</publication>
-<object>".$object_esc."</object>
-<object_id>".$object_id."</object_id>
-<priority>".$priority."</priority>
-<description><![CDATA[<strong>".$hcms_lang['new-task-from-user'][$to_lang]." '".$from_user."'".$email_schema.":</strong>\n".$message."]]></description>
-</task>";
+
+    // save task in database
+    $result = rdbms_createtask ($object_id, $from_user, $to_user, $startdate, $finishdate, $category, $taskname, $message, $priority);
 
     // send mail
-    if ($sendmail == true && $to_email != "")
+    if ($result == true && $sendmail == true && !empty ($to_email))
     {
       $location = getlocation ($object_esc);
       $page = getobject ($object_esc);
       $cat = getcategory ($site, $object_esc);
       $object_link = createaccesslink ($site, $location, $page, $cat, "", $to_user, "al");
+      
+      // email schema
+      if ($from_email != "") $email_schema = " [<a href='mailto:".$from_email."'>".$from_email."</a>]";
+      else $email_schema = "";
+      
+      $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\"><strong>".$hcms_lang['new-task-from-user'][$to_lang]." '".$from_user."'".$email_schema.":</strong>\n".$message."\n\n".$object_link."</span>";
   
       $mailer = new HyperMailer();
+      $mailer->IsHTML(true);
       $mailer->AddAddress ($to_email, $to_user);
       $mailer->AddReplyTo ($from_email, $from_user);
       $mailer->From = $from_email;
-      $mailer->Subject = "hyperCMS: ".$hcms_lang['new-task-from-user'][$to_lang]." ".$from_user;
+      $mailer->Subject = "hyperCMS: ".$taskname."-".$hcms_lang['new-task-from-user'][$to_lang]." ".$from_user;
       $mailer->CharSet = $hcms_lang_codepage[$to_lang];
-      $mailer->Body = html_decode ($message."\n\n".$object_link, $hcms_lang_codepage[$to_lang]);
+      $mailer->Body = html_decode (nl2br ($body), $hcms_lang_codepage[$to_lang]);
       
       // send mail
       if ($mailer->Send())
@@ -3057,117 +3048,144 @@ function createtask ($site, $from_user, $from_email, $to_user, $to_email, $categ
       // save log
       savelog (@$error);
     }
-
-    // load and lock file
-    $task_data = loadlockfile ($from_user, $mgmt_config['abs_path_data']."task/", $to_user.".xml.php", 3);
-
-    if ($task_data != false)
-    {
-      $task_id_array = getcontent ($task_data, "<counter>");
-  
-      $task_id = $task_id_array[0];  
-      $task_id++;
-  
-      $task_schema_xml = setcontent ($task_schema_xml, "<task>", "<task_id>", $task_id, "", "");  
-      $task_data = insertcontent ($task_data, $task_schema_xml, "<tasklist>");
-      $task_data = setcontent ($task_data, "<usertasks>", "<counter>", $task_id, "", "");
-  
-      if ($task_data != false || $task_data != "")
-      {
-        $savetask = savelockfile ($from_user, $mgmt_config['abs_path_data']."task/", $to_user.".xml.php", $task_data);
-        
-        if ($savetask == false)
-        {
-          unlockfile ($from_user, $mgmt_config['abs_path_data']."task/", $to_user.".xml.php");
-          return false;
-        }
-        else return true;
-      }
-      else
-      {
-        unlockfile ($from_user, $mgmt_config['abs_path_data']."task/", $to_user.".xml.php");
-        return false;
-      }
-    }
-    else
-    {
-      unlockfile ($from_user, $mgmt_config['abs_path_data']."task/", $to_user.".xml.php");
-      return false;    
-    }
+    
+    return $result;
   }
   else return false;
 }
 
-// ---------------------------------------------- deletetask ----------------------------------------------
-// function: deletetask()
-// input: user name, array of task IDs to be deleted
+// ---------------------------------------------- settask ----------------------------------------------
+// function: settask()
+// input: task ID, to_user name (optional) [string], start date (optional), finish date (optional),
+//        category (optional) [string], task name (optional) [string], message (optional) [string], 
+//        sendmail [true/false], priority [high,medium,low] (optional), status (optional) [0-100], task duration in hh:mm (optional)
 // output: true/false
 // requires: config.inc.php
 
 // description:
-// deletes user tasks.
+// set a new user task and send mail (optional)
+// since verion 5.8.4 the data will be stored in rDBMS instead of XML files
 
-function deletetask ($user, $delete_id)
+function settask ($task_id, $to_user="", $startdate="", $finishdate="", $taskname="", $message="", $sendmail=true, $priority="", $status="", $duration="")
 {
-  global $mgmt_config, $hcms_lang, $lang;
+  global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
   
-    
-  if (is_array ($delete_id) && valid_objectname ($user))
+  // include hypermailer class
+  if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");  
+ 
+  if ($task_id != "")
   {
-     // load task file
-    $task_data = loadlockfile ($user, $mgmt_config['abs_path_data']."task/", $user.".xml.php", 3);
+    // get task
+    $gettask = rdbms_gettask ($task_id);
     
-    if ($task_data != false)
+    if ($to_user == "") $to_user = $gettask[0]['to_user'];
+    $from_user = $gettask[0]['from_user'];
+    $to_user_old = $gettask[0]['to_user'];
+    $object_id = $gettask[0]['object_id'];
+    $startdate_old = $gettask[0]['startdate'];
+    $finishdate_old = $gettask[0]['finishdate'];
+    $taskname_old = $gettask[0]['taskname'];
+    $message_old = $gettask[0]['description'];
+    $priority_old = $gettask[0]['priority'];
+    $status_old = $gettask[0]['status'];
+    $duration_old = $gettask[0]['duration'];
+  
+    // get e-mail of user if the message has been changed
+    if ($sendmail && valid_objectname ($to_user) && ($message != $message_old && $message != "" && strlen ($message) < 3600))
     {
-      if (sizeof ($delete_id) > 0)
-      {
-        // delete tasks
-        foreach ($delete_id as $task_id)
+      // load user file
+      $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+        
+      if ($userdata != "")
+      {       
+        // get user node and extract required information    
+        $usernode = selectcontent ($userdata, "<user>", "<login>", $to_user);
+  
+        if (!empty ($usernode[0]))
         {
-          if ($task_id != "") $task_data = deletecontent ($task_data, "<task>", "<task_id>", $task_id);
+          // email
+          $temp = getcontent ($usernode[0], "<email>");
+          if (!empty ($temp[0])) $to_email = $temp[0];
+          else $to_email = "";
+   
+          // language
+          $temp = getcontent ($usernode[0], "<language>");            
+          if (!empty ($temp[0])) $to_lang = $temp[0];
+          else $to_lang = "en";
         }
-    
-        // save file
-        if ($task_data != "" && $task_data != false)
+        
+        // get user node and extract required information    
+        $usernode = selectcontent ($userdata, "<user>", "<login>", $from_user);
+  
+        if (!empty ($usernode[0]))
         {
-          $test = savelockfile ($user, $mgmt_config['abs_path_data']."task/", $user.".xml.php", trim ($task_data));
+          // email
+          $temp = getcontent ($usernode[0], "<email>");
+          if (!empty ($temp[0])) $from_email = $temp[0];
+          else $from_email = "";
+        }
+      }
+  
+      // load language of user if it has not been loaded
+      if (!empty ($to_lang) && empty ($hcms_lang['new-task-from-user'][$to_lang]))
+      {
+        require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($to_lang));
+      }
+    }
+
+    // check priority
+    if ($priority != "" && !in_array ($priority, array("high","medium","low"))) $priority = "low";
+
+    // if any value has been changed
+    if ($to_user != $to_user_old || $startdate != $startdate_old || $finishdate != $finishdate_old || $taskname != $taskname_old || $message != $message_old || $priority != $priority_old || $status != $status_old || $duration != $duration_old)
+    {
+      $settask = rdbms_settask ($task_id, $to_user, $startdate, $finishdate, $taskname, $message, $priority, $status, $duration);
+      
+      // send mail
+      if ($settask && $sendmail == true && !empty ($to_email))
+      {
+        $object_link = createaccesslink ("", "", "", "", $object_id, $to_user, "al");
+        
+        // email schema
+        if ($from_email != "") $email_schema = " [<a href='mailto:".$from_email."'>".$from_email."</a>]";
+        else $email_schema = "";
+      
+        $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\"><strong>".$hcms_lang['new-task-from-user'][$to_lang]." '".$from_user."'".$email_schema.":</strong>\n".$message."\n\n".$object_link."</span>";
     
-          if ($test != false)
-          {
-            $add_onload = "";
-            $show = "<span class=hcmsHeadline>".$hcms_lang['the-tasks-were-successfully-removed'][$lang]."</span><br />\n";
-          }
-          else
-          {
-            // unlock file
-            unlockfile ($user, $mgmt_config['abs_path_data']."task/", $user.".xml.php");
-            
-            $errcode = "10401";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savelockfile failed for /data/task/".$user.".xml.php"; 
-          }
+        $mailer = new HyperMailer();
+        $mailer->IsHTML(true);
+        $mailer->AddAddress ($to_email, $to_user);
+        $mailer->AddReplyTo ($from_email, $from_user);
+        $mailer->From = $from_email;
+        $mailer->Subject = "hyperCMS: ".$hcms_lang['new-task-from-user'][$to_lang]." ".$from_user;
+        $mailer->CharSet = $hcms_lang_codepage[$to_lang];
+        $mailer->Body = html_decode (nl2br ($body), $hcms_lang_codepage[$to_lang]);
+        
+        // send mail
+        if ($mailer->Send())
+        {
+          $errcode = "00205";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|updated task notification has been sent to ".$to_user." (".$to_email.")"; 
         }
         else
         {
-          // unlock file
-          unlockfile ($user, $mgmt_config['abs_path_data']."task/", $user.".xml.php");
-            
-          $errcode = "10402";  
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletecontent failed for /data/task/".$user.".xml.php"; 
+          $errcode = "50205";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|updated task notification failed for ".$to_user." (".$to_email.")";  
         }
       }
-      else
-      {
-        $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['no-tasks-selected'][$lang]."</span>\n";
-      }
+    }
+    // nothing has changed
+    else $settask = true;
+    
+    if ($settask)
+    {
+      $add_onload = "";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-data-was-saved-successfully'][$lang]."</span>\n";
     }
     else
     {
-      // unlock file
-      unlockfile ($user, $mgmt_config['abs_path_data']."task/", $user.".xml.php");
-      
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['could-not-access-task-list'][$lang]."</span><br />\n".$hcms_lang['task-list-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-data-could-not-be-saved'][$lang]."</span>\n";
     }
   }
   else
@@ -3175,7 +3193,72 @@ function deletetask ($user, $delete_id)
     $add_onload = "";
     $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span>\n";
   }
-     
+  
+  // save log
+  savelog (@$error); 
+  
+  $result = array();
+  
+  $result['add_onload'] = $add_onload;
+  $result['message'] = $show;
+
+  return $result;
+}
+
+// ---------------------------------------------- deletetask ----------------------------------------------
+// function: deletetask()
+// input: task Id or array of task IDs to be deleted
+// output: true/false
+// requires: config.inc.php
+
+// description:
+// deletes user tasks.
+
+function deletetask ($task_id)
+{
+  global $mgmt_config, $hcms_lang, $lang;
+
+  if ($task_id != "" || is_array ($task_id))
+  {
+    if (!is_array ($task_id))
+    {
+      $temp_id = $task_id;
+      $task_id = array();
+      $task_id[0] = $temp_id;
+    }
+  
+    if (is_array ($task_id) && sizeof ($task_id) > 0)
+    {
+      // delete tasks
+      foreach ($task_id as $id)
+      {
+        if ($id != "")
+        {
+          $result = rdbms_deletetask ($id);
+          
+          if ($result == false)
+          {
+            $errcode = "10402";  
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|task with ID ".$task_id." could not be deleted";
+          }
+        }
+      }
+
+      $add_onload = "";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-tasks-were-successfully-removed'][$lang]."</span>\n";
+    }
+    else
+    {
+      $add_onload = "";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['no-tasks-selected'][$lang]."</span>\n";
+    }
+  }
+  else
+  {
+    $add_onload = "";
+    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span>\n";
+  }
+  
   // save log
   savelog (@$error); 
   
@@ -3185,6 +3268,168 @@ function deletetask ($user, $delete_id)
   $result['message'] = $show;
 
   return $result;  
+}
+
+// ---------------------------------------------- tasknotification ----------------------------------------------
+// function: tasknotification()
+// input: date
+// output: true/false
+// requires: config.inc.php
+
+// description:
+// sends e-mail notifications to users if a task starts or ends on the given date
+
+function tasknotification ($date)
+{
+  global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
+  
+  // include hypermailer class
+  if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");  
+ 
+  if ($date != "")
+  {
+    // load user file and define user array
+    $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+    
+    $user_array = array();
+    
+    if ($userdata != "")
+    {       
+      // get user node and extract required information    
+      $usernode = getcontent ($userdata, "<user>");
+    
+      foreach ($usernode as $temp)
+      {
+        if ($temp != "")
+        {
+          $login = getcontent ($temp, "<login>");
+          $email = getcontent ($temp, "<email>");
+          $realname = getcontent ($temp, "<realname>");
+          
+          if (!empty ($login[0]))
+          {
+            $username = $login[0];
+            $user_array[$username]['email'] = $email[0];
+            $user_array[$username]['realname'] = $realname[0];
+          }
+        }
+      }
+    }
+    else
+    {
+      $errcode = "50304";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|user data could not be loaded for task notification";  
+    }
+    
+    if (sizeof ($user_array) > 0)
+    {
+      // send task start notification to users
+      $task_start = rdbms_gettask ("", "", "", "", "", date("Y-m-d"));
+      
+      if (is_array ($task_start))
+      {
+        foreach ($task_start as $task)
+        {
+          $task_id = $task['task_id'];
+          $object_id = $task['object_id'];
+          $taskname = $task['taskname'];
+          $description = $task['description'];
+          $from_user = $task['from_user'];
+          $to_user = $task['to_user'];
+          
+          if ($to_user != "" && !empty ($user_array[$to_user]['email']))
+          {
+            // send mail
+            if ($object_id != "") $object_link = createaccesslink ("", "", "", "", $object_id, $to_user, "al");
+            else $object_link = "";
+            
+            // email schema
+            if ($from_user != "" && !empty ($user_array[$from_user]['email'])) $email_schema = " [<a href='mailto:".$user_array[$from_user]['email']."'>".$user_array[$from_user]['email']."</a>]";
+            else $email_schema = "";
+          
+            $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\"><strong>".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['start'][$to_lang]." '".$taskname."' (".$task_id.")</strong>\n".$hcms_lang['from'][$to_lang]." ".$from_user."'".$email_schema."\n\n".$description."\n\n".$object_link."</span>";
+        
+            $mailer = new HyperMailer();
+            $mailer->IsHTML(true);
+            $mailer->AddAddress ($to_email, $to_user);
+            $mailer->AddReplyTo ($from_email, $from_user);
+            $mailer->From = $from_email;
+            $mailer->Subject = "hyperCMS: ".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['start'][$to_lang]." '".$taskname."' (".$task_id.")";
+            $mailer->CharSet = $hcms_lang_codepage[$to_lang];
+            $mailer->Body = html_decode (nl2br ($body), $hcms_lang_codepage[$to_lang]);
+            
+            // send mail
+            if ($mailer->Send())
+            {
+              $errcode = "00305";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|task start notification has been sent to ".$to_user." (".$to_email.")"; 
+            }
+            else
+            {
+              $errcode = "50305";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|task start notification failed for ".$to_user." (".$to_email.")";  
+            }
+          }
+        }
+      }
+      
+      // send task end notification to users
+      $task_end = rdbms_gettask ("", "", "", "", "", "", date("Y-m-d"));
+      
+      if (is_array ($task_end))
+      {
+        foreach ($task_end as $task)
+        {
+          $task_id = $task['task_id'];
+          $object_id = $task['object_id'];
+          $taskname = $task['taskname'];
+          $description = $task['description'];
+          $from_user = $task['from_user'];
+          $to_user = $task['to_user'];
+          
+          if ($to_user != "" && !empty ($user_array[$to_user]['email']))
+          {
+            // send mail
+            if ($object_id != "") $object_link = createaccesslink ("", "", "", "", $object_id, $to_user, "al");
+            else $object_link = "";
+            
+            // email schema
+            if ($from_user != "" && !empty ($user_array[$from_user]['email'])) $email_schema = " [<a href='mailto:".$user_array[$from_user]['email']."'>".$user_array[$from_user]['email']."</a>]";
+            else $email_schema = "";
+          
+            $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\"><strong>".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['end'][$to_lang]." '".$taskname."' (".$task_id.")</strong>\n".$hcms_lang['from'][$to_lang]." ".$from_user."'".$email_schema."\n\n".$description."\n\n".$object_link."</span>";
+        
+            $mailer = new HyperMailer();
+            $mailer->IsHTML(true);
+            $mailer->AddAddress ($to_email, $to_user);
+            $mailer->AddReplyTo ($from_email, $from_user);
+            $mailer->From = $from_email;
+            $mailer->Subject = "hyperCMS: ".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['end'][$to_lang]." '".$taskname."' (".$task_id.")";
+            $mailer->CharSet = $hcms_lang_codepage[$to_lang];
+            $mailer->Body = html_decode (nl2br ($body), $hcms_lang_codepage[$to_lang]);
+            
+            // send mail
+            if ($mailer->Send())
+            {
+              $errcode = "00306";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|task end notification has been sent to ".$to_user." (".$to_email.")"; 
+            }
+            else
+            {
+              $errcode = "50306";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|task end notification failed for ".$to_user." (".$to_email.")";  
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  // save log
+  savelog (@$error);
+  
+  if (sizeof (@$error) > 0) return false;
+  else return true;
 }
 
 // ========================================= WORKFLOW ============================================
@@ -3954,7 +4199,7 @@ function workflowaccept ($site, $location, $object, $workflow, $item_id, $user, 
                   else $to_email_array[0] = "";
                   $category = "workflow";   
 
-                  createtask ($site, $from_user_array[0], $from_email_array[0], $to_user_array[0], $to_email_array[0], $category, $location.$object, $message, $sendmail, $priority); 
+                  createtask ($site, $from_user_array[0], $from_email_array[0], $to_user_array[0], $to_email_array[0], "", "", $category, $location.$object, $hcms_lang['workflow'][$lang]."-".$item_id, $message, $sendmail, $priority); 
                 }
                 elseif ($to_type_array[0] == "usergroup")
                 {
@@ -3978,7 +4223,7 @@ function workflowaccept ($site, $location, $object, $workflow, $item_id, $user, 
                         $to_email_array = getcontent ($useritem, "<email>");       
                         $category = "workflow";
   
-                        createtask ($site, $from_user_array[0], $from_email_array[0], $to_user_array[0], $to_email_array[0], $category, $location.$object, $message, $sendmail, $priority);                         
+                        createtask ($site, $from_user_array[0], $from_email_array[0], $to_user_array[0], $to_email_array[0], "", "", $category, $location.$object, $hcms_lang['workflow'][$lang]."-".$item_id, $message, $sendmail, $priority);                         
                       }
                     }
                   }        
@@ -4229,7 +4474,7 @@ function workflowreject ($site, $location, $object, $workflow, $item_id, $user, 
                   else $to_email_array[0] = "";
                   $category = "workflow";    
      
-                  createtask ($site, $from_user_array[0], $from_email_array[0], $to_user_array[0], $to_email_array[0], $category, $location.$object, $message, $sendmail, $priority);
+                  createtask ($site, $from_user_array[0], $from_email_array[0], $to_user_array[0], $to_email_array[0], "", "", $category, $location.$object, $hcms_lang['workflow'][$lang]."-".$item_id, $message, $sendmail, $priority);
                 }
                 elseif ($to_type_array[0] == "usergroup")
                 {
@@ -4253,7 +4498,7 @@ function workflowreject ($site, $location, $object, $workflow, $item_id, $user, 
                         $to_email_array = getcontent ($useritem, "<email>");
                         $category = "workflow";   
                         
-                        createtask ($site, $from_user_array[0], $from_email_array[0], $to_user_array[0], $to_email_array[0], $category, $location.$object, $message, $sendmail, $priority);
+                        createtask ($site, $from_user_array[0], $from_email_array[0], $to_user_array[0], $to_email_array[0], "", "", $category, $location.$object, $hcms_lang['workflow'][$lang]."-".$item_id, $message, $sendmail, $priority);
                       }
                     }
                   }
@@ -7583,9 +7828,6 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
       
         if ($show == "" && $userdatanew != false)
         {
-          // create task list file for user
-          $test = @copy ($mgmt_config['abs_path_cms']."xmlschema/task.schema.xml.php", $mgmt_config['abs_path_data']."task/".$login.".xml.php");
-          
           // create checked out file
           if ($test != false) savefile ($mgmt_config['abs_path_data']."checkout/", $login.".dat", "");
 
@@ -8004,8 +8246,14 @@ function deleteuser ($site, $login, $user="sys")
         // delete user
         $userdata = deletecontent ($userdata, "<user>", "<login>", $login);
         
-        // remove task list file of user
-        deletefile ($mgmt_config['abs_path_data']."task/", $login.".xml.php", 0);
+        // remove task list file of user (before version 5.8.4)
+        if (is_file ($mgmt_config['abs_path_data']."task/".$login.".xml.php"))
+        {
+          deletefile ($mgmt_config['abs_path_data']."task/", $login.".xml.php", 0);
+        }
+        
+        // remove task list file of user (since version 5.8.4)
+        rdbms_deletetask ("", "", "", $login);
         
         // remove checked out list file of user
         deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".dat", 0);
@@ -12581,7 +12829,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                         foreach ($page_path_array as $page_path)
                         {                        
                           // set new task for object owner
-                          createtask ($site, "hyperCMS", $from_email, $contentuser, $to_email, "link", $page_path, $message, $mgmt_config[$site]['sendmail'], "medium");
+                          createtask ($site, "hyperCMS", $from_email, $contentuser, $to_email, "", "", "link", $page_path, $hcms_lang['link-management'][$lang], $message, $mgmt_config[$site]['sendmail'], "medium");
                         }
                       }
                     }
@@ -16765,17 +17013,19 @@ function notifyusers ($site, $location, $object, $event, $user_from)
               $mail_fullbody .= ": ".$object_name;
               if ($accesslink != "") $mail_fullbody .=  " (".$accesslink.")";          
               $mail_fullbody .= "\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang_to];
+              $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\">".$mail_fullbody."</span>";
           
               $mailer = new HyperMailer();
              
               // if the mailserver config entry is empty, the email address of the user will be used for FROM
+              $mailer->IsHTML(true);
               $mailer->CharSet = $hcms_lang_codepage[$lang_to]; 
               if (!empty ($mgmt_config[$site]['mailserver'])) $mailer->From = "automailer@".$mgmt_config[$site]['mailserver'];
               else $mailer->From = "automailer@hypercms.net";
               $mailer->FromName = "hyperCMS Automailer";
               $mailer->AddAddress ($email_to);
               $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang_to]);
-              $mailer->Body = html_decode ($mail_fullbody, $hcms_lang_codepage[$lang_to]);
+              $mailer->Body = html_decode (nl2br ($mail_fullbody), $hcms_lang_codepage[$lang_to]);
              
               // send mail
               if ($mailer->Send())
@@ -16882,18 +17132,20 @@ function licensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $
                 $mail_fullbody .= $result['date'].": ".$result['link']."\n";
               }
               
-              $mail_fullbody .= "\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang_to];
+              $mail_fullbody .= "\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang_to];              
+              $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\">".$mail_fullbody."</span>";
              
               $mailer = new HyperMailer();
              
               // if the mailserver config entry is empty, the email address of the user will be used for FROM
+              $mailer->IsHTML(true);
               $mailer->CharSet = $hcms_lang_codepage[$lang]; 
               if (!empty ($mgmt_config[$site]['mailserver'])) $mailer->From = "automailer@".$mgmt_config[$site]['mailserver'];
               else $mailer->From = "automailer@hypercms.net";
               $mailer->FromName = "hyperCMS Automailer";
               $mailer->AddAddress ($email_to);
               $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang]);
-              $mailer->Body = html_decode ($mail_fullbody, $hcms_lang_codepage[$lang]);
+              $mailer->Body = html_decode (nl2br ($mail_fullbody), $hcms_lang_codepage[$lang]);
              
               // send mail
               if ($mailer->Send())

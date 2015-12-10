@@ -1458,7 +1458,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $downloads['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;"><button class="hcmsButtonBlue" onclick="'.$download_link.'">'.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button></td>';
           
           // Youtube upload
-          if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/socialmedia/youtube/index.php"))
+          if (!empty ($mgmt_config[$site]['youtube']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/socialmedia/youtube/index.php"))
           {		
             $youtube_uploads['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;"> 
             <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/socialmedia/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","640","400")\'><img src="'.getthemelocation().'img/button_upload.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button> </td>';
@@ -1554,7 +1554,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       // Download
       if (is_array ($downloads) && sizeof ($downloads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $downloads).'</tr>';
       // Youtube
-      if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/socialmedia/youtube/index.php"))
+      if (!empty ($mgmt_config[$site]['youtube']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/socialmedia/youtube/index.php"))
       {
         if (is_array ($youtube_uploads) && sizeof ($youtube_uploads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $youtube_uploads).'</tr>';
       }

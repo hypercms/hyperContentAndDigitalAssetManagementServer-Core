@@ -526,9 +526,9 @@ else
       $point->addSubPoint($subpoint);
     }
     
-    if (checkrootpermission ('desktoptaskmgmt'))
+    if (checkrootpermission ('desktoptaskmgmt') && is_file ($mgmt_config['abs_path_cms']."taskmgmt/task_list.php"))
     {
-      $subpoint = new hcms_menupoint($hcms_lang['task-management'][$lang], "task_list.php?site=*Null*", 'task.gif');
+      $subpoint = new hcms_menupoint($hcms_lang['task-management'][$lang], "taskmgmt/task_list.php?site=*Null*", 'task.gif');
       $subpoint->setOnClick('changeSelection(this)');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');

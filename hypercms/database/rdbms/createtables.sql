@@ -54,6 +54,26 @@ CREATE TABLE `recipient` (
 
 DROP TABLE IF EXISTS `textnodes`;
 
+DROP TABLE IF EXISTS `task`;
+
+CREATE TABLE `task` (
+  `task_id` int(11) NOT NULL auto_increment,
+  `project_id` int(11) DEFAULT NULL,
+  `object_id` int(11) DEFAULT NULL,
+  `task` varchar(200) NOT NULL DEFAULT 'undefined',
+  `from_user` varchar(200) NOT NULL default '',
+  `to_user` varchar(200) NOT NULL default '',
+  `startdate` date NOT NULL,
+  `finishdate` date DEFAULT NULL,
+  `category` varchar(20) NOT NULL default 'user',
+  `description` varchar(3600),
+  `priority` varchar(10) NOT NULL default 'low',
+  `status` tinyint(3) NOT NULL,
+  `duration` time DEFAULT NULL,
+  PRIMARY KEY  (`task_id`),
+  KEY `task` (`to_user`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 CREATE TABLE `textnodes` (
   `id` int(11) NOT NULL default '0',
   `text_id` varchar(120) NOT NULL default '',

@@ -61,11 +61,21 @@ class hcms_db
   {
     if ($this->_isMySqli())
     {
-      return $this->_db->escape_string($string);
+      if (is_array ($string))
+      {
+        foreach ($string as &$value) $value = $this->_db->escape_string($string);
+        return $string;
+      }
+      else  return $this->_db->escape_string($string);
     }
     elseif ($this->_isODBC())
     {
-      return odbc_escape_string ($this->_db, $string);
+      if (is_array ($string))
+      {
+        foreach ($string as &$value) $value = odbc_escape_string ($this->_db, $string);
+        return $string;
+      }
+      else return odbc_escape_string ($this->_db, $string);
     }
     else
     {
@@ -251,6 +261,7 @@ class hcms_db
 
 // ------------------------------------------------ ODBC escape string ------------------------------------------------
 // alternative to mysql_real_escape_string (PHP odbc_prepare would be optimal)
+
 function odbc_escape_string ($connection, $value)
 {
   if ($value != "")
@@ -263,6 +274,7 @@ function odbc_escape_string ($connection, $value)
 
 // ------------------------------------------------ convert dbcharset ------------------------------------------------
 // some conversions from mySQL charset names to PHP charset names
+
 function convert_dbcharset ($charset)
 {
   if ($charset != "")
@@ -280,6 +292,7 @@ function convert_dbcharset ($charset)
 }
  
 // ------------------------------------------------ create object -------------------------------------------------
+
 function rdbms_createobject ($container_id, $object, $template, $container, $user)
 {
   global $mgmt_config;
@@ -364,6 +377,7 @@ function rdbms_createobject ($container_id, $object, $template, $container, $use
 }
 
 // ----------------------------------------------- set content -------------------------------------------------
+
 function rdbms_setcontent ($container_id, $text_array="", $user="")
 {
   global $mgmt_config;
@@ -402,13 +416,14 @@ function rdbms_setcontent ($container_id, $text_array="", $user="")
       while (list ($key, $text) = each ($text_array))
       {
         $i++;
+        
         if ($key != "") 
         {
           $sql = 'SELECT * FROM textnodes ';
           $sql .= 'WHERE id='.intval ($container_id).' AND text_id="'.$key.'"';
                
-         $errcode = "50004";
-         $done = $db->query ($sql, $errcode, $mgmt_config['today'], $i);
+          $errcode = "50004";
+          $done = $db->query ($sql, $errcode, $mgmt_config['today'], $i);
 
           if ($done)
           {
@@ -457,6 +472,7 @@ function rdbms_setcontent ($container_id, $text_array="", $user="")
 } 
 
 // ----------------------------------------------- set template -------------------------------------------------
+
 function rdbms_settemplate ($object, $template)
 {
   global $mgmt_config;
@@ -489,6 +505,7 @@ function rdbms_settemplate ($object, $template)
 } 
 
 // ----------------------------------------------- set media attributes -------------------------------------------------
+
 function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="", $red="", $green="", $blue="", $colorkey="", $imagetype="", $md5_hash="")
 {
   global $mgmt_config;
@@ -562,6 +579,7 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
 } 
 
 // ------------------------------------------------ get media attributes -------------------------------------------------
+
 function rdbms_getmedia ($container_id, $extended=false)
 {
   global $mgmt_config;
@@ -596,6 +614,7 @@ function rdbms_getmedia ($container_id, $extended=false)
 }
 
 // ------------------------------------------------ get duplicate file -------------------------------------------------
+
 function rdbms_getduplicate_file ($site, $md5_hash)
 {
   global $mgmt_config;
@@ -636,6 +655,7 @@ function rdbms_getduplicate_file ($site, $md5_hash)
 }
 
 // ----------------------------------------------- rename object -------------------------------------------------
+
 function rdbms_renameobject ($object_old, $object_new)
 {
   global $mgmt_config;
@@ -706,6 +726,7 @@ function rdbms_renameobject ($object_old, $object_new)
 } 
 
 // ----------------------------------------------- delete object ------------------------------------------------- 
+
 function rdbms_deleteobject ($object, $object_id="")
 {
   global $mgmt_config;
@@ -797,7 +818,13 @@ function rdbms_deleteobject ($object, $object_id="")
           $sql = 'DELETE FROM accesslink WHERE object_id='.$row_id['object_id'];
 
           $errcode = "50019";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete7');          
+          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete7');
+          
+          // delete task
+          $sql = 'DELETE FROM task WHERE object_id='.$row_id['object_id'];
+
+          $errcode = "50023";
+          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete7');    
         }
         // delete only the object reference and queue entry
         elseif ($row_id && $num_rows > 1)
@@ -832,6 +859,7 @@ function rdbms_deleteobject ($object, $object_id="")
 }
 
 // ----------------------------------------------- delete content -------------------------------------------------
+
 function rdbms_deletecontent ($container_id, $text_id, $user)
 {
   global $mgmt_config;
@@ -860,6 +888,7 @@ function rdbms_deletecontent ($container_id, $text_id, $user)
 }
 
 // ----------------------------------------------- search content ------------------------------------------------- 
+
 function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_from, $date_to, $template, $expression_array, $expression_filename, $filesize, $imagewidth, $imageheight, $imagecolor, $imagetype, $geo_border_sw, $geo_border_ne, $maxhits=1000, $count=false)
 {
   // user will be provided as global for search expression logging
@@ -1281,6 +1310,7 @@ function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_fro
 }
 
 // ----------------------------------------------- replace content ------------------------------------------------- 
+
 function rdbms_replacecontent ($folderpath, $object_type, $date_from, $date_to, $search_expression, $replace_expression, $user="sys")
 {
   global $mgmt_config;
@@ -1526,6 +1556,7 @@ function rdbms_replacecontent ($folderpath, $object_type, $date_from, $date_to, 
 }
 
 // ----------------------------------------------- search user ------------------------------------------------- 
+
 function rdbms_searchuser ($site, $user, $maxhits=1000)
 {
   global $mgmt_config;
@@ -1572,6 +1603,7 @@ function rdbms_searchuser ($site, $user, $maxhits=1000)
 } 
 
 // ----------------------------------------------- get object_id ------------------------------------------------- 
+
 function rdbms_getobject_id ($object)
 {
   global $mgmt_config;
@@ -1642,6 +1674,7 @@ function rdbms_getobject_id ($object)
 }
 
 // ----------------------------------------------- get object_hash ------------------------------------------------- 
+
 function rdbms_getobject_hash ($object="", $container_id="")
 {
   global $mgmt_config;
@@ -1723,6 +1756,7 @@ function rdbms_getobject_hash ($object="", $container_id="")
 } 
 
 // -------------------------------------------- get object by unique id or hash ----------------------------------------------- 
+
 function rdbms_getobject ($object_identifier)
 {
   global $mgmt_config;
@@ -1794,6 +1828,7 @@ function rdbms_getobject ($object_identifier)
 } 
 
 // ----------------------------------------------- get objects by container_id ------------------------------------------------- 
+
 function rdbms_getobjects ($container_id, $template="")
 {
   global $mgmt_config;
@@ -1838,6 +1873,7 @@ function rdbms_getobjects ($container_id, $template="")
 }
 
 // ----------------------------------------------- create accesslink -------------------------------------------------
+
 function rdbms_createaccesslink ($hash, $object_id, $type="al", $user="", $lifetime=0, $formats="")
 {
   global $mgmt_config;
@@ -1877,6 +1913,7 @@ function rdbms_createaccesslink ($hash, $object_id, $type="al", $user="", $lifet
 } 
 
 // ------------------------------------------------ get access info -------------------------------------------------
+
 function rdbms_getaccessinfo ($hash)
 {
   global $mgmt_config;
@@ -1932,6 +1969,7 @@ function rdbms_getaccessinfo ($hash)
 }
 
 // ------------------------------------------------ create recipient -------------------------------------------------
+
 function rdbms_createrecipient ($object, $sender, $user, $email)
 {
   global $mgmt_config;
@@ -1983,6 +2021,7 @@ function rdbms_createrecipient ($object, $sender, $user, $email)
 }
 
 // ------------------------------------------------ get recipients -------------------------------------------------
+
 function rdbms_getrecipients ($object)
 {
   global $mgmt_config;
@@ -2033,6 +2072,7 @@ function rdbms_getrecipients ($object)
 }
 
 // ----------------------------------------------- delete recipient -------------------------------------------------
+
 function rdbms_deleterecipient ($recipient_id)
 {
   global $mgmt_config;
@@ -2059,6 +2099,7 @@ function rdbms_deleterecipient ($recipient_id)
 }
 
 // ----------------------------------------------- create queue entry -------------------------------------------------
+
 function rdbms_createqueueentry ($action, $object, $date, $published_only=0, $user)
 {
   global $mgmt_config;
@@ -2100,6 +2141,7 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only=0, $us
 }
 
 // ------------------------------------------------ get queue entries -------------------------------------------------
+
 function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $object="")
 {
   global $mgmt_config;
@@ -2163,6 +2205,7 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
 }
 
 // ----------------------------------------------- delete queue entry -------------------------------------------------
+
 function rdbms_deletequeueentry ($queue_id)
 {
   global $mgmt_config;
@@ -2191,6 +2234,7 @@ function rdbms_deletequeueentry ($queue_id)
 }
 
 // ----------------------------------------------- create notification -------------------------------------------------
+
 function rdbms_createnotification ($object, $events, $user)
 {
   global $mgmt_config;
@@ -2257,6 +2301,7 @@ function rdbms_createnotification ($object, $events, $user)
 }
 
 // ------------------------------------------------ get notifications -------------------------------------------------
+
 function rdbms_getnotification ($event="", $object="", $user="")
 {
   global $mgmt_config;
@@ -2326,6 +2371,7 @@ function rdbms_getnotification ($event="", $object="", $user="")
 }
 
 // ----------------------------------------------- delete notification -------------------------------------------------
+
 function rdbms_deletenotification ($notify_id, $object="", $user="")
 {
   global $mgmt_config;
@@ -2364,6 +2410,7 @@ function rdbms_deletenotification ($notify_id, $object="", $user="")
 }
 
 // ----------------------------------------------- license notification -------------------------------------------------
+
 function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_end, $format="%Y-%m-%d")
 {
   global $mgmt_config;
@@ -2667,6 +2714,211 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
     if (isset ($result) && is_array ($result)) return $result;
     else return false;
   } 
-  return false;
+  else return false;
+}
+
+// ----------------------------------------------- create task -------------------------------------------------
+
+function rdbms_createtask ($object_id, $from_user="", $to_user, $startdate="", $finishdate="", $category="", $taskname, $description="", $priority="low")
+{
+  global $mgmt_config;
+  
+  if ($object_id != "" && $to_user != "" && $taskname != "" && strlen ($taskname) <= 200 && strlen ($description) <= 3600)
+  {
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
+    
+    // get current date
+    if ($startdate == "") $startdate = date ("Y-m-d H:i:s", time());
+    else $startdate = $db->escape_string ($startdate);
+    
+    // clean input    
+    $object_id = $db->escape_string ($object_id);
+    if ($from_user != "") $from_user = $db->escape_string ($from_user);
+    $to_user = $db->escape_string ($to_user);
+    if ($finishdate != "") $finishdate = $db->escape_string ($finishdate);
+    if ($category != "") $category = $db->escape_string ($category);
+    $taskname = $db->escape_string ($taskname);
+    if ($description != "") $description = $db->escape_string ($description);
+    if ($priority != "") $priority = $db->escape_string ($priority);
+
+    // set user if not defined
+    if ($from_user == "")
+    {
+      if (!empty ($_SESSION['hcms_user'])) $from_user = $_SESSION['hcms_user'];
+      else $from_user = getuserip ();
+    }
+
+    // insert
+    $sql = 'INSERT INTO task (object_id,task,from_user,to_user,startdate,finishdate,category,description,priority,status) VALUES ('.$object_id.',"'.$taskname.'","'.$from_user.'","'.$to_user.'","'.$startdate.'","'.$finishdate.'","'.$category.'","'.$description.'","'.$priority.'", 0)';
+
+    $errcode = "50048";
+    $db->query ($sql, $errcode, $mgmt_config['today'], 'insert');
+
+    // save log
+    savelog ($db->getError());
+    $db->close();
+
+    return true;
+  } 
+  else return false;
+}
+
+// ----------------------------------------------- set task -------------------------------------------------
+
+function rdbms_settask ($task_id, $to_user="", $startdate="", $finishdate="", $taskname="", $description="", $priority="", $status="", $duration="")
+{
+  global $mgmt_config;
+  
+  if ($task_id != "")
+  {
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
+
+    // clean input
+    $sql_update = array();
+    
+    if ($to_user != "") $sql_update[] = 'to_user="'.$db->escape_string ($to_user).'"';
+    if ($startdate != "") $sql_update[] = 'startdate="'.$db->escape_string ($startdate).'"';
+    if ($finishdate != "") $sql_update[] = 'finishdate="'.$db->escape_string ($finishdate).'"';
+    if ($taskname != "") $sql_update[] = 'task="'.$db->escape_string ($taskname).'"';
+    if ($description != "") $sql_update[] = 'description="'.$db->escape_string ($description).'"';
+    if ($priority != "") $sql_update[] = 'priority="'.$db->escape_string ($priority).'"';
+    if ($status != "") $sql_update[] = 'status="'.intval ($status).'"';
+    if ($duration != "") $sql_update[] = 'duration="'.$db->escape_string ($duration).'"';
+
+    // insert
+    $sql = 'UPDATE task SET ';
+    $sql .= implode (", ", $sql_update);
+    $sql .= ' WHERE task_id='.intval($task_id);
+    
+    $errcode = "50058";
+    $db->query ($sql, $errcode, $mgmt_config['today'], 'update');
+
+    // save log
+    savelog ($db->getError());
+    $db->close();
+
+    return true;
+  } 
+  else return false;
+}
+
+// ------------------------------------------------ get task -------------------------------------------------
+
+function rdbms_gettask ($task_id="", $object_id="", $object="", $from_user="", $to_user="", $startdate="", $finishdate="", $order_by="startdate DESC")
+{
+  global $mgmt_config;
+
+  if (is_array ($mgmt_config))
+  {
+    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
+    
+    // deinfe object path
+    if ($object_id == "" && $object != "")
+    {
+      // correct object name 
+      if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
+      // get publication
+      $site = getpublication ($object);
+      $fileinfo = getfileinfo ($site, $object, "");
+      if (getobject ($object) == ".folder") $object = getlocation ($object);
+      // clean input
+      $object = $db->escape_string ($object);
+      $object = str_replace ("%", "*", $object); 
+    }
+    
+    // clean input
+    if ($task_id != "") $task_id = $db->escape_string ($task_id);
+    if ($object_id != "") $object_id = $db->escape_string ($object_id);
+    if ($from_user != "") $from_user = $db->escape_string ($from_user);
+    if ($to_user != "") $to_user = $db->escape_string ($to_user);
+    if ($startdate != "") $startdate = $db->escape_string ($startdate);
+    if ($finishdate != "") $finishdate = $db->escape_string ($finishdate);
+    if ($order_by != "") $order_by = $db->escape_string ($order_by);
+        
+    // get recipients
+    $sql = 'SELECT task.task_id, task.object_id, obj.objectpath, task.task, task.from_user, task.to_user, task.startdate, task.finishdate, task.category, task.description, task.priority, task.status, DATE_FORMAT(task.duration, "%H:%i") AS duration FROM task, object AS obj WHERE obj.object_id=task.object_id';
+    if ($task_id != "") $sql .= ' AND task.task_id='.$task_id;
+    elseif ($object_id != "") $sql .= ' AND task.object_id='.$object_id;
+    elseif ($object != "") $sql .= ' AND (obj.objectpath="'.$object.'" || INSTR("'.$object.'", SUBSTR(obj.objectpath, 1, INSTR(obj.objectpath, ".folder") - 1))>0)';
+    if ($from_user != "") $sql .= ' AND task.from_user="'.$from_user.'"';
+    if ($to_user != "") $sql .= ' AND task.to_user="'.$to_user.'"';
+    if ($startdate != "") $sql .= ' AND task.startdate="'.$startdate.'"';
+    if ($finishdate != "") $sql .= ' AND task.finishdate="'.$finishdate.'"';
+    if ($order_by != "") $sql .= ' ORDER BY '.$order_by;
+
+    $errcode = "50094";
+    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+
+    if ($done)
+    {  
+      $i = 0;
+      // insert recipients
+      while ($row = $db->getResultRow ('select'))
+      {
+        $queue[$i]['task_id'] = $row['task_id'];
+        $queue[$i]['object_id'] = $row['object_id'];
+        $queue[$i]['taskname'] = $row['task'];
+        $queue[$i]['objectpath'] = str_replace ("*", "%", $row['objectpath']);
+        $queue[$i]['from_user'] = $row['from_user']; 
+        $queue[$i]['to_user'] = $row['to_user'];
+        $queue[$i]['startdate'] = $row['startdate'];
+        $queue[$i]['finishdate'] = $row['finishdate'];
+        $queue[$i]['category'] = $row['category'];
+        $queue[$i]['description'] = $row['description'];
+        $queue[$i]['priority'] = $row['priority'];
+        $queue[$i]['status'] = $row['status'];
+        $queue[$i]['duration'] = $row['duration'];
+
+        $i++;
+      }        
+    }
+
+    // save log
+    savelog ($db->getError());    
+    $db->close();
+    
+    if (is_array (@$queue)) return $queue;
+    else return false;
+  }
+  else return false;
+}
+
+// ----------------------------------------------- delete task -------------------------------------------------
+
+function rdbms_deletetask ($task_id="", $object_id="", $object="", $to_user="")
+{
+  global $mgmt_config;
+  
+  if ($task_id != "" || $object_id != "" || $object != "" || $to_user != "")
+  {   
+    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+    
+    if ($object != "")
+    {
+      // check object (can be path or ID)
+      if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0) $object_id = rdbms_getobject_id ($object);
+      elseif (is_numeric ($object)) $object_id = $object;
+      else $object_id = false;
+    }
+    
+    // clean input
+    if (!empty($task_id)) $task_id = $db->escape_string ($task_id);
+    elseif (!empty($object_id)) $object_id = $db->escape_string ($object_id);
+    elseif (!empty($to_user)) $to_user = $db->escape_string ($to_user);
+        
+    if (!empty($task_id)) $sql = 'DELETE FROM task WHERE task_id='.$task_id;
+    elseif (!empty($object_id)) $sql = 'DELETE FROM task WHERE object_id='.$object_id;
+    elseif (!empty($to_user)) $sql = 'DELETE FROM task WHERE to_user="'.$to_user.'"';
+     
+    $errcode = "50098";
+    $db->query ($sql, $errcode, $mgmt_config['today']);
+    
+    // save log
+    savelog ($db->getError ());    
+    $db->close();      
+         
+    return true;
+  }
+  else return false;
 }
 ?>

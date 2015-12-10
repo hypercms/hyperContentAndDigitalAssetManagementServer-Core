@@ -112,7 +112,10 @@ if (sizeof ($config_files) > 0)
       // check disk key
       checkdiskkey ();
       
-      // send license notification to given users
+      // send task notification to users
+      tasknotification (date("Y-m-d"));
+      
+      // send license notification to users
       $config_dir = opendir ($mgmt_config['abs_path_data']."config/");
       
       if ($config_dir)
@@ -189,7 +192,7 @@ if (sizeof ($config_files) > 0)
                       $cat = getcategory ($site, $location);
                       $location = getlocation ($location);
       
-                      $result = licensenotification ($site, $cat, $location, $text_id, $date_begin, $date_end, $user_array, $format);
+                      licensenotification ($site, $cat, $location, $text_id, $date_begin, $date_end, $user_array, $format);
                     }
                   }
                 }
