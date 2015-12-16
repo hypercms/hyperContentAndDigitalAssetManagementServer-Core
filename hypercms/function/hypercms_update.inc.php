@@ -107,7 +107,7 @@ function update_tasks_v584 ()
 
     $db->query ($sql, $errcode, $mgmt_config['today'], 'create');
     
-    if ($handle = opendir ($mgmt_config['abs_path_data']."task/"))
+    if (is_dir ($mgmt_config['abs_path_data']."task/") && $handle = opendir ($mgmt_config['abs_path_data']."task/"))
     {
       while (false !== ($entry = readdir($handle)))
       {
@@ -122,29 +122,32 @@ function update_tasks_v584 ()
             $to_user = substr ($entry, 0, strpos ($entry, ".xml.php"));
           
             $task_array = getcontent ($task_data, "<task>");
-        
-            foreach ($task_array as $task_node)
+            
+            if (is_array ($task_array))
             {
-              $task_id = getcontent ($task_node, "<task_id>");
-              $task_cat = getcontent ($task_node, "<task_cat>");
-              $task_date = getcontent ($task_node, "<task_date>");
-              $task_site = getcontent ($task_node, "<publication>");
-              $task_object = getcontent ($task_node, "<object>");
-              $task_object_id = getcontent ($task_node, "<object_id>");
-              $task_priority = getcontent ($task_node, "<priority>");
-              $task_descr = getcontent ($task_node, "<description>");
-
-              $result = rdbms_createtask ($task_object_id[0], "", $to_user, $task_date[0], "", $task_cat[0], getobject (str_replace ("/.folder", "", $task_object[0])), $task_descr[0], $task_priority[0]);
-              
-              if ($result)
+              foreach ($task_array as $task_node)
               {
-                $errcode = "00101";
-                $error[] = $mgmt_config['today']."|hypercms_update.inc.php|info|$errcode|task ".$task_id[0]." of user ".$to_user." has been updated";
-              }
-              else
-              {
-                $errcode = "50101";
-                $error[] = $mgmt_config['today']."|hypercms_update.inc.php|info|$errcode|task ".$task_id[0]." of user ".$to_user." has not been updated";
+                $task_id = getcontent ($task_node, "<task_id>");
+                $task_cat = getcontent ($task_node, "<task_cat>");
+                $task_date = getcontent ($task_node, "<task_date>");
+                $task_site = getcontent ($task_node, "<publication>");
+                $task_object = getcontent ($task_node, "<object>");
+                $task_object_id = getcontent ($task_node, "<object_id>");
+                $task_priority = getcontent ($task_node, "<priority>");
+                $task_descr = getcontent ($task_node, "<description>");
+  
+                $result = rdbms_createtask ($task_object_id[0], "", $to_user, $task_date[0], "", $task_cat[0], getobject (str_replace ("/.folder", "", $task_object[0])), $task_descr[0], $task_priority[0]);
+                
+                if ($result)
+                {
+                  $errcode = "00101";
+                  $error[] = $mgmt_config['today']."|hypercms_update.inc.php|info|$errcode|task ".$task_id[0]." of user ".$to_user." has been updated";
+                }
+                else
+                {
+                  $errcode = "50101";
+                  $error[] = $mgmt_config['today']."|hypercms_update.inc.php|info|$errcode|task ".$task_id[0]." of user ".$to_user." has not been updated";
+                }
               }
             }
             

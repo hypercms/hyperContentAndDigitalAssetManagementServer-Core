@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['fi'] = "Avainsanat 
 $hcms_lang['video-text-track']['fi'] = "Video tekstiraita";
 $hcms_lang['copy-tracks-from-previously-selected-language']['fi'] = "Kopioida kappaleita aiemmin valittu kieli?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['fi'] = "Etuliite, ja pääte lisätään sisältö, jos se ei ole tyhjä";
+$hcms_lang['loop']['fi'] = "Silmukka";
+$hcms_lang['muted']['fi'] = "Vaimennettu";
+$hcms_lang['controls']['fi'] = "Säätimet";
+$hcms_lang['project']['fi'] = "Projektin";
+$hcms_lang['work-order']['fi'] = "Työtilaus";
 ?>

@@ -1317,4 +1317,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['bg'] = "Ключо�
 $hcms_lang['video-text-track']['bg'] = "Video текст песен";
 $hcms_lang['copy-tracks-from-previously-selected-language']['bg'] = "Копиране на песни от предварително избрания език?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['bg'] = "Префикс и суфикс се добавя към съдържанието, ако не е празна";
+$hcms_lang['loop']['bg'] = "Електрическа верига";
+$hcms_lang['muted']['bg'] = "Приглушената";
+$hcms_lang['controls']['bg'] = "Контрол";
+$hcms_lang['project']['bg'] = "Проект";
+$hcms_lang['work-order']['bg'] = "Работна заявка";
 ?>

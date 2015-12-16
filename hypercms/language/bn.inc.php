@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['bn'] = "ঐচ্�
 $hcms_lang['video-text-track']['bn'] = "ভিডিও টেক্সট ট্র্যাক";
 $hcms_lang['copy-tracks-from-previously-selected-language']['bn'] = "পূর্বে নির্বাচিত ভাষা থেকে কপি গানগুলি?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['bn'] = "এটা খালি না হলে উপসর্গ ও প্রত্যয় কন্টেন্ট যোগ করা হবে";
+$hcms_lang['loop']['bn'] = "লোকাল লুপ";
+$hcms_lang['muted']['bn'] = "muted";
+$hcms_lang['controls']['bn'] = "নিয়ন্ত্রণগুলো";
+$hcms_lang['project']['bn'] = "প্রকল্প";
+$hcms_lang['work-order']['bn'] = "কাজ করার নির্দেশ";
 ?>

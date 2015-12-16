@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['hi'] = "वैक�
 $hcms_lang['video-text-track']['hi'] = "वीडियो पाठ ट्रैक";
 $hcms_lang['copy-tracks-from-previously-selected-language']['hi'] = "पहले से चयनित भाषा से पटरियों को कॉपी?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['hi'] = "यह खाली नहीं है, तो उपसर्ग और प्रत्यय सामग्री के लिए जोड़ दिया जाएगा";
+$hcms_lang['loop']['hi'] = "लूप";
+$hcms_lang['muted']['hi'] = "मद्घिम";
+$hcms_lang['controls']['hi'] = "के नियंत्रण";
+$hcms_lang['project']['hi'] = "परियोजना";
+$hcms_lang['work-order']['hi'] = "कार्य आदेश";
 ?>

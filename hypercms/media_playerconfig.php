@@ -147,25 +147,20 @@ function updateCodeSegment()
 {
   <?php if (!$audio) { ?>
   var title = document.getElementById("title").value;
-  <?php } ?>
-  var autoplay = document.getElementById("autoplay").checked;
-  <?php if (!$audio) { ?>
   var fullscreen = document.getElementById("fullscreen").checked;
-  <?php } ?>
-  <?php if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
-  var keyboard = document.getElementById("keyboard").checked;
-  var pause = document.getElementById("pause").checked;
-  var seek = document.getElementById("seek").checked;
-  <?php }
-  
-  if (!$audio) {
-  ?>
-  
   var logo = document.getElementById("logo").value;
   <?php } ?>
+  var autoplay = document.getElementById("autoplay").checked;
+  <?php if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
+  var pause = document.getElementById("pause").checked;
+  var seek = document.getElementById("seek").checked;
+  <?php } ?>
+  var loop = document.getElementById("loop").checked;
+  var muted = document.getElementById("muted").checked;
+  var controls = document.getElementById("controls").checked;
   
-  var url = "<?php	echo html_encode($url, $hcms_lang_codepage[$lang]); ?>";
-  var code = '<?php	echo html_encode($playercode, $hcms_lang_codepage[$lang]); ?>';
+  var url = "<?php	echo html_encode ($url, $hcms_lang_codepage[$lang]); ?>";
+  var code = '<?php	echo html_encode ($playercode, $hcms_lang_codepage[$lang]); ?>';
   
   var newurl = url;
   
@@ -175,60 +170,35 @@ function updateCodeSegment()
     newurl += '&amp;title='+title;
   }
   <?php } ?>
-  if (autoplay)
-  {
-    newurl += '&amp;autoplay=true';
-  } 
-  else
-  {
-    newurl += '&amp;autoplay=false';
-  }
+  if (autoplay) newurl += '&amp;autoplay=true';
+  else newurl += '&amp;autoplay=false';
+
+  if (loop) newurl += '&amp;loop=true';
+  else newurl += '&amp;loop=false';
   
+  if (muted) newurl += '&amp;muted=true';
+  else newurl += '&amp;muted=false';
+  
+  if (controls) newurl += '&amp;controls=true';
+  else newurl += '&amp;controls=false';
+
   <?php if (!$audio) { ?>
-  if(fullscreen)
-  {
-    newurl += '&amp;fullscreen=true';
-  }
-  else
-  {
-    newurl += '&amp;fullscreen=false';
-  }
+  if (fullscreen) newurl += '&amp;fullscreen=true';
+  else newurl += '&amp;fullscreen=false';
   <?php 
   }
-  if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
-  if (keyboard)
-  {
-    newurl += '&amp;keyboard=true';
-  }
-  else
-  {
-    newurl += '&amp;keyboard=false';
-  }
-  if (pause)
-  {
-    newurl += '&amp;pause=true';
-  }
-  else
-  {
-    newurl += '&amp;pause=false';
-  }
   
-  if (seek)
-  {
-    newurl += '&amp;seek=true';
-  }
-  else
-  {
-    newurl += '&amp;seek=false';
-  }
+  if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
+  if (pause) newurl += '&amp;pause=true';
+  else newurl += '&amp;pause=false';
+  
+  if (seek) newurl += '&amp;seek=true';
+  else newurl += '&amp;seek=false';
   <?php }
    
   if (!$audio) {
   ?>
-  if (logo)
-  {
-    newurl += '&amp;logo='+encodeURIComponent(logo);
-  }
+  if (logo) newurl += '&amp;logo='+encodeURIComponent(logo);
   <?php } ?>
 
   document.getElementById("codesegment").innerHTML = code.replace(url, newurl);
@@ -243,8 +213,7 @@ var CKEDITOR = {
       {  
         if(name == 123) {
           document.getElementById("logo").value = link;
-          updateCodeSegment();
-          
+          updateCodeSegment();          
         }
       } 
   } 
@@ -254,7 +223,7 @@ var CKEDITOR = {
 <?php } ?>
 </head>
     
-<body class="hcmsWorkplaceGeneric" leftmargin=0 topmargin=0 marginwidth=0 marginheight=0>
+<body class="hcmsWorkplaceGeneric">
 
 <!-- top bar -->
 <?php
@@ -284,57 +253,73 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
   ?>
     <div style="margin-left:10px; margin-top:10px; float:left; width:250px;">
       <?php if (!$audio) { ?>
-      <div style="height: 20px">
-        <label for="title"><?php echo getescapedtext ($hcms_lang['title'][$lang]);?>:</label><br/>
+      <div style="height:20px">
+        <label for="title"><?php echo getescapedtext ($hcms_lang['title'][$lang]);?>: </label><br/>
       </div>
       <?php } ?>
-      <div style="height: 20px">
-        <label for="autoplay"><?php echo getescapedtext ($hcms_lang['autoplay'][$lang]);?>:</label>
+      <div style="height:20px">
+        <label for="autoplay"><?php echo getescapedtext ($hcms_lang['autoplay'][$lang]);?>: </label>
       </div>
       <?php if (!$audio) { ?>
-      <div style="height: 20px">
-        <label for="fullscreen"><?php echo getescapedtext ($hcms_lang['enable-fullscreen'][$lang]);?>:</label>
+      <div style="height:20px">
+        <label for="fullscreen"><?php echo getescapedtext ($hcms_lang['enable-fullscreen'][$lang]);?>: </label>
       </div>
-      <?php }
-       
-      if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
-      <div style="height: 20px">
+      <?php } ?>
+      <div style="height:20px">
+        <label for="loop"><?php echo getescapedtext ($hcms_lang['loop'][$lang]);?>: </label>
+      </div>
+      <div style="height:20px">
+        <label for="muted"><?php echo getescapedtext ($hcms_lang['muted'][$lang]);?>: </label>
+      </div>
+      <div style="height:20px">
+        <label for="controls"><?php echo getescapedtext ($hcms_lang['controls'][$lang]);?>: </label>
+      </div>
+      <?php if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
+      <div style="height:20px">
         <label for="keyboard"><?php echo getescapedtext ($hcms_lang['enable-keyboard-input'][$lang]);?>: </label>
       </div>
-      <div style="height: 20px">
+      <div style="height:20px">
         <label for="pause"><?php echo getescapedtext ($hcms_lang['enable-pause'][$lang]);?>: </label>
       </div>
-      <div style="height: 20px">
+      <div style="height:20px">
         <label for="seek"><?php echo getescapedtext ($hcms_lang['enable-seek'][$lang]);?>: </label>
       </div>
       <?php }
        
       if (!$audio) {
       ?>
-      <div style="height: 20px">
+      <div style="height:20px">
         <label for="logo"><?php echo getescapedtext ($hcms_lang['start-image'][$lang]);?>: </label>
       </div>
       <?php } ?>
     </div>
     
-    <div style="float: left; margin-left:10px; margin-top:10px; width: 250px">
+    <div style="float:left; margin-left:10px; margin-top:10px; width: 250px">
       <?php if (!$audio) { ?>
-      <div style="height: 20px">
+      <div style="height:20px">
         <input type="text" onchange="updateCodeSegment();" id="title" />
       </div>
       <?php } ?>
-      <div style="height: 20px">
+      <div style="height:20px">
         <input type="checkbox" onchange="updateCodeSegment();" id="autoplay" />
       </div>
       <?php if (!$audio) { ?>
-      <div style="height: 20px">
+      <div style="height:20px">
         <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="fullscreen" />
       </div>
-      <?php }
-      
-      if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
+      <?php } ?>
       <div style="height:20px">
-      <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="keyboard" />
+        <input type="checkbox" onchange="updateCodeSegment();" id="loop" />
+      </div>
+      <div style="height:20px">
+        <input type="checkbox" onchange="updateCodeSegment();" id="muted" />
+      </div>
+      <div style="height:20px">
+        <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="controls" />
+      </div>
+      <?php if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
+      <div style="height:20px">
+        <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="keyboard" />
       </div>
       <div style="height:20px">
         <input type="checkbox" onchange="updateCodeSegment();" CHECKED id="pause" />
@@ -352,7 +337,7 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
       </div>
       <?php } ?>
     </div>
-    <div style="clear: both"></div>
+    <div style="clear:both"></div>
     <hr>
   <?php
   }

@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['tr'] = "İsteğe ba
 $hcms_lang['video-text-track']['tr'] = "Video metin parça";
 $hcms_lang['copy-tracks-from-previously-selected-language']['tr'] = "Önce seçilen dilden şarkıları kopyalayın?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['tr'] = "Boş değilse önek ve sonek içeriğine eklenecektir";
+$hcms_lang['loop']['tr'] = "Soğutma Çevrimi";
+$hcms_lang['muted']['tr'] = "Kapatılır";
+$hcms_lang['controls']['tr'] = "Kontrolleri";
+$hcms_lang['project']['tr'] = "Proje";
+$hcms_lang['work-order']['tr'] = "Çalışma sırası";
 ?>

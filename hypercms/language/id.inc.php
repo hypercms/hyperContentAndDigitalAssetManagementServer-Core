@@ -1317,4 +1317,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['id'] = "Kata kunci 
 $hcms_lang['video-text-track']['id'] = "Teks Video lagu";
 $hcms_lang['copy-tracks-from-previously-selected-language']['id'] = "Menyalin trek dari bahasa yang dipilih sebelumnya?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['id'] = "Awalan dan akhiran akan ditambahkan ke konten jika tidak kosong";
+$hcms_lang['loop']['id'] = "Lubang gantungan";
+$hcms_lang['muted']['id'] = "Dibungkam";
+$hcms_lang['controls']['id'] = "Mengontrol";
+$hcms_lang['project']['id'] = "Project";
+$hcms_lang['work-order']['id'] = "Urutan Pekerjaan";
 ?>

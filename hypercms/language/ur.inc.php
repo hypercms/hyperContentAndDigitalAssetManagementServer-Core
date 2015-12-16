@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ur'] = "اختیا�
 $hcms_lang['video-text-track']['ur'] = "ویڈیو متن ٹریک";
 $hcms_lang['copy-tracks-from-previously-selected-language']['ur'] = "پہلے منتخب کردہ زبان سے پٹریوں کاپی؟";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['ur'] = "یہ خالی نہیں ہے تو اپسرگ اور لاحقہ مواد پر شامل کیا جائے گا";
+$hcms_lang['loop']['ur'] = "تکمہ";
+$hcms_lang['muted']['ur'] = "muted";
+$hcms_lang['controls']['ur'] = "اختیارات";
+$hcms_lang['project']['ur'] = "منصوبہ";
+$hcms_lang['work-order']['ur'] = "ورک ارڈر";
 ?>

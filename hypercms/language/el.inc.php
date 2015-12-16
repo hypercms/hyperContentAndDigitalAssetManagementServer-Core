@@ -1317,4 +1317,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['el'] = "Λέξει�
 $hcms_lang['video-text-track']['el'] = "Βίντεο κειμένων κομματιού";
 $hcms_lang['copy-tracks-from-previously-selected-language']['el'] = "Αντιγράψετε τραγούδια από το παρελθόν επιλεγμένη γλώσσα";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['el'] = "Πρόθεμα και επίθεμα θα προστεθεί στο περιεχόμενο, αν δεν είναι άδειο";
+$hcms_lang['loop']['el'] = "Βρόχος";
+$hcms_lang['muted']['el'] = "Σίγαση";
+$hcms_lang['controls']['el'] = "Χειριστήρια";
+$hcms_lang['project']['el'] = "Σχέδιο";
+$hcms_lang['work-order']['el'] = "Σειρά Εργασίας";
 ?>

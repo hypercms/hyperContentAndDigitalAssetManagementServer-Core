@@ -34,11 +34,11 @@
     return (variable == null || variable == 0 || variable == '' || variable == 'undefined' || variable == '0');
   }
   
-  function generate_videoplayer_iframe(cmsLink, video, width, height, logo, id, title, autoplay, enableFullScreen, enableKeyBoard) {
+  function generate_videoplayer_iframe(cmsLink, video, width, height, logo, id, title, autoplay, enableFullScreen, enableKeyBoard, enableLoop, enableMuted, enableControls) {
    
     if (isEmpty(id)) id = generateID(100000);
 
-    return '<iframe scrolling="no" frameBorder="0" style="border:0" '+((!isEmpty(title)) ? 'title="'+title+' "' : '')+'id="'+iframePreFix+id+'" width="'+width+'" height="'+height+'" src="'+cmsLink+'videoplayer.php?media='+video+'&width='+width+'&height='+height+'&autoplay='+((autoplay) ? "true" : "false")+'&fullscreen='+((enableFullScreen) ? "true" : "false")+'&keyboard='+((enableKeyBoard) ? "true" : "false")+((!isEmpty(title)) ? '&title='+encodeURIComponent(title) : '')+'&logo='+(!isEmpty(logo) ? encodeURIComponent(logo) : '')+'" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true">';
+    return '<iframe scrolling="no" frameBorder="0" style="border:0" '+((!isEmpty(title)) ? 'title="'+title+' "' : '')+'id="'+iframePreFix+id+'" width="'+width+'" height="'+height+'" src="'+cmsLink+'videoplayer.php?media='+video+'&width='+width+'&height='+height+'&autoplay='+((autoplay) ? "true" : "false")+'&fullscreen='+((enableFullScreen) ? "true" : "false")+'&keyboard='+((enableKeyBoard) ? "true" : "false")+((!isEmpty(title)) ? '&title='+encodeURIComponent(title) : '')+'&logo='+(!isEmpty(logo) ? encodeURIComponent(logo) : '')+'&loop='+((enableLoop) ? "true" : "false")+'&muted='+((enableMuted) ? "true" : "false")+((enableControls) ? "true" : "false")+'" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true">';
   }
   
   function generate_videoplayer_span(cmsLink, video, width, height, logo, id, title, autoplay, enableFullScreen, enableKeyBoard) {
@@ -81,6 +81,9 @@
     var regAutoplay = /\&autoplay\=(true|false)/i;
     var regFullscreen = /\&fullscreen\=(true|false)/i;
     var regKeyboard = /\&keyboard\=(true|false)/i;
+    var regLoop = /\&loop\=(true|false)/i;
+    var regMuted = /\&muted\=(true|false)/i;
+    var regControls = /\&controls\=(true|false)/i;
       
     var data = {};
     
@@ -99,6 +102,18 @@
     // Reading EnableKeyboard
     regKeyboard.exec(link);
     data.enablekeyboard = RegExp.$1;
+    
+    // Reading EnableLoop
+    regLoop.exec(link);
+    data.enableloop = RegExp.$1;
+    
+    // Reading EnableMuted
+    regMuted.exec(link);
+    data.enablemuted = RegExp.$1;
+    
+    // Reading EnableControls
+    regControls.exec(link);
+    data.enablecontrols = RegExp.$1;
     
     // Reading poster
     if(regPoster.exec(link)) {
@@ -120,6 +135,9 @@
     var regAutoplay = /autoplay\: (true|false)/i;
     var regFullscreen = /enableFullscreen\: (true|false)/i;
     var regKeyboard = /EnableKeyboard\: (true|false)/i;
+    var regLoop = /EnableLoop\: (true|false)/i;
+    var regMuted = /EnableMuted\: (true|false)/i;
+    var regControls = /EnableControls\: (true|false)/i;
       
     var data = {};
     
@@ -160,6 +178,18 @@
     // Reading EnableFullscreen
     regFullscreen.exec(html);
     data.enablefullscreen = RegExp.$1;
+    
+    // Reading EnableLoop
+    regLoop.exec(html);
+    data.enableloop = RegExp.$1;
+    
+    // Reading EnableMuted
+    regMuted.exec(html);
+    data.enablemuted = RegExp.$1;
+    
+    // Reading EnableControls
+    regControls.exec(html);
+    data.enablecontrols = RegExp.$1;
     
     // Reading EnableKeyboard
     regKeyboard.exec(html);
@@ -409,6 +439,39 @@
                     }
                   }, {
                     type : 'checkbox',
+                    id : 'loop',
+                    label : editor.lang.hcms_video.tab.adv.enable.loop,
+                    'default' : false,
+                    setup: function( config ) {
+                      this.setValue( (config.enableloop == 'true') );
+                    },
+                    commit: function( config ) {
+                      config.enableloop = this.getValue();
+                    }
+                  }, {
+                    type : 'checkbox',
+                    id : 'muted',
+                    label : editor.lang.hcms_video.tab.adv.enable.muted,
+                    'default' : false,
+                    setup: function( config ) {
+                      this.setValue( (config.enablemuted == 'true') );
+                    },
+                    commit: function( config ) {
+                      config.enablemuted = this.getValue();
+                    }
+                  }, {
+                    type : 'checkbox',
+                    id : 'controls',
+                    label : editor.lang.hcms_video.tab.adv.enable.controls,
+                    'default' : true,
+                    setup: function( config ) {
+                      this.setValue( (config.enablecontrols == 'true') );
+                    },
+                    commit: function( config ) {
+                      config.enablecontrols = this.getValue();
+                    }
+                  }, {
+                    type : 'checkbox',
                     id : 'keyBoard',
                     label : editor.lang.hcms_video.tab.adv.enable.keyBoard,
                     'default' : true,
@@ -427,7 +490,7 @@
               config = { };
               this.commitContent( config );
               
-              var html = generate_videoplayer_iframe(editor.config.cmsLink, config.link, config.width, config.height, config.poster, config.id, config.title, config.autoplay, config.enablefullscreen, config.enablekeyboard);
+              var html = generate_videoplayer_iframe(editor.config.cmsLink, config.link, config.width, config.height, config.poster, config.id, config.title, config.autoplay, config.enablefullscreen, config.enablekeyboard, config.enableloop, config.enablemuted);
               var fakeName = fakeName_iframe;
               videoNode = CKEDITOR.dom.element.createFromHtml(html);
               var extraStyles = { width: config.width+'px', height: config.height+'px' };
@@ -631,7 +694,10 @@
           title : html_entity_decode('Aktivieren/Deaktivieren'),
           autoplay : html_entity_decode('Automatisches Abspielen'),
           fullScreen : html_entity_decode('Vollbild'),
-          keyBoard : html_entity_decode('Keyboard Befehle')
+          loop : html_entity_decode('Schleife'),
+          muted : html_entity_decode('Stumm schalten'),
+          controls : html_entity_decode('Bedienelemente'),
+          keyBoard : html_entity_decode('Tastaturbefehle')
         }
       }
     },
@@ -674,6 +740,9 @@
           title : html_entity_decode('Active/Deactivate'),
           autoplay : html_entity_decode('Autoplay'),
           fullScreen : html_entity_decode('Fullscreen'),
+          loop : html_entity_decode('Loop'),
+          muted : html_entity_decode('Muted'),
+          controls : html_entity_decode('Controls'),
           keyBoard : html_entity_decode('Keyboard Commands')
         }
       }

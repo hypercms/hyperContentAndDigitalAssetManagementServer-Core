@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ro'] = "Cuvintele c
 $hcms_lang['video-text-track']['ro'] = "Track videotext";
 $hcms_lang['copy-tracks-from-previously-selected-language']['ro'] = "Copia piese din limba selectată anterior?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['ro'] = "Prefixul și sufixul vor fi adăugate la conținut dacă acesta nu este gol";
+$hcms_lang['loop']['ro'] = "Buclă";
+$hcms_lang['muted']['ro'] = "Sunetul oprit";
+$hcms_lang['controls']['ro'] = "Comenzi";
+$hcms_lang['project']['ro'] = "Proiect";
+$hcms_lang['work-order']['ro'] = "Ordinea de lucru";
 ?>

@@ -128,7 +128,7 @@ Release 10/2008 - 08/2010
 - Sending multiple files links via e-mail
 - Sending multiple files as attachment via e-mail
 - New content repository structure (new sublevel for 10.000 blocks)
-- Fixed problem: multimedia components from other publications had the wrong publication
+- Fixed problem: Multimedia components from other publications had the wrong publication
 - New media player
 - Media/video rendering based on user settings saved in a media player config file
 - Media/image rendering in size during upload of new image files and manipulation of size and format of existing image files
@@ -181,7 +181,7 @@ Release 07/2012 - 02/2013
 - Daily statistics of file access (new table dailystat)
 - Secure password option to prevent users from using simple passwords
 - Logging and locking of client IP on logon (10 failed attempts lead to banning of the IP)
-- Video converter extended to support the follwing formats: flv, mp4, ogg, webm
+- Video converter extended to support the follwing formats: Flv, mp4, ogg, webm
 - Different video player configs for each formats in new popup
 - Indexing of Excel (xlsx) files and Open Office Text files
 - File based search support removed, search is only supported if a database is in use
@@ -200,10 +200,10 @@ Release 07/2012 - 02/2013
 - Meta data mapping can be freely defined using mapping in tree navigation 'meta data templates'
 - Editing permission for content based on group names (new 'groups' attribute in hyperCMS tags)
 - Advanced search for object-id and container-id
-- Bug fix: media and image rendering buttons can only be seen if localpermission is set
+- Bug fix: Media and image rendering buttons can only be seen if localpermission is set
 - Task management included in send mail-link as option
 - New hyperCMS date tag to support date picker
-- CSRF protection: maximum request per minute and per session
+- CSRF protection: Maximum request per minute and per session
 - Video cut based on video time stamps
 - Improved security by removing the container name in GET requests
 
@@ -261,8 +261,8 @@ Version 5.5.13
 Release 05/2013
 - Seperation of API (hypercms_api.inc.php) and UI elements (hypercms_UI.inc.php)
 - Bug fix in rdbms_searchcontent (db_connect). The SQL syntax used an inner join to the search in textnodes and object names. the search in textnodes and object names uses OR operator.
-- Send mail-links including lifetime / period of validity: time token can be used in access-, download- And wrapper-links.
-- Bug fix: container in content version and buildview was missing
+- Send mail-links including lifetime / period of validity: Time token can be used in access-, download- And wrapper-links.
+- Bug fix: Container in content version and buildview was missing
 - Improvements in RDBMS connectivity. new attribute filetype in table media to avoid the use of lame mySQL string function.
 - New function getvideoinfo in hyperCMS API
 
@@ -275,8 +275,8 @@ Release 05/2013
 - New video player code based on iframe and several new
 - Calculation of file size and number in rdbms_getfilesize, new function getfilesize in hyperCMS API
 - Limited packing of source files in a zip files based on the source file size (see config.inc.php)
-- Bug fix: search for user files didn't work due to missing parameter and missing check of action parameter
-- Bug fix: icon of checked out items are not grey
+- Bug fix: Search for user files didn't work due to missing parameter and missing check of action parameter
+- Bug fix: Icon of checked out items are not grey
 
 Version 5.6.0
 Release 07/2013
@@ -285,20 +285,20 @@ Release 07/2013
 - Document preview based on PDF reader plugin of browsers (google docs service for older browser still in use)
 - Several changes in CSS classes
 - Mobile client for content editing
-- Bug fix: infotype=meta was not set if used in hyperCMS Tag Wizard
-- Bug fix: body end tag to component views was not added in template engine
+- Bug fix: Infotype=meta was not set if used in hyperCMS Tag Wizard
+- Bug fix: Body end tag to component views was not added in template engine
 - Error message for zip-file downloads larger than max. zip-size
 - IPTC meta data injector for image files
 - Alert message when functions in the objectlist control are blocked by the search window
 - New HTML5 multi file upload with drag & drop support, SWFUpload as fallback
 - Component strcuture was renamed to Asset structure
 - Filters for file-types in object list
-- Bug-fix: updating files (change of the file extension) with special characters in their file name resulted into wrong names
+- Bug-fix: Updating files (change of the file extension) with special characters in their file name resulted into wrong names
 - Media viewer based on jquery plugin (images carousel and zoom)
 - If download link exceeds limit an access to the system will be provided using a default user
-- Bug fix: status popup window didn't close automatically
-- Bug fix: problems with tabs and z-index in IE
-- Bug fix: encoding problem in text area of video embed code in IE
+- Bug fix: Status popup window didn't close automatically
+- Bug fix: Problems with tabs and z-index in IE
+- Bug fix: Encoding problem in text area of video embed code in IE
 
 Version 5.6.1
 Release 07/2013
@@ -310,14 +310,14 @@ Release 07/2013
 
 Version 5.6.2
 Release 07/2013
-- Bug fix: file upload in component explorer was using the old file name for the uploader
+- Bug fix: File upload in component explorer was using the old file name for the uploader
 - Show meta information (EXIF, IPTC, XMP) in info-tab
 - Size of media files in 72 dpi and 300 dpi resolution is shown by showmedia
 - New unique and secure hash codes for link access. encryption is not used anymore to create access/download/wrapper links.
-- Bug-fix: imagemagick removed metadata from files, metadata will be restored by EXIFTOOL
+- Bug-fix: Imagemagick removed metadata from files, metadata will be restored by EXIFTOOL
 - Write XMP data to files using EXIFTOOL
 - Web2print
-- Bug fix: clipboard was set to false on cut/copyobject, only one object was copied if more where selected
+- Bug fix: Clipboard was set to false on cut/copyobject, only one object was copied if more where selected
 - New parameter in buildview to execute the script code in templates
 - Public download setting enables/disables download and wrapper links in info-tab, if disabled only mail-links (access/dwonload) can be used
 - Bug fix: view/download buttons in search_objectlist had wrong style-class
@@ -326,28 +326,28 @@ Release 07/2013
 - Create all videos for video player at once
 - New media and image rendering layout with overlapping menu
 - Plugin system
-- Bug fix: function zipfiles used echo and caused bad download
+- Bug fix: Function zipfiles used echo and caused bad download
 - Function settext saves multimedia files saved by editor in the link index
-- Link editing: preview of the selected page
+- Link editing: Preview of the selected page
 - Licensenotfication supports different date formats (same as date picker textd)
 - Sender of mail-links will be stored in table recipients
 
 Version 5.6.3
 Release 08/2013
 - Table recipients includes sender information (user name) and date includes time as well
-- Bug fix: copy & paste of images didn't include all video formats and the video config file
+- Bug fix: Copy & paste of images didn't include all video formats and the video config file
 - New variable %hcms% for the URL of hyperCMS, used for video embedding in editor
 - New function convertimage as wrapper for createmedia. useful to convert images to other color spaces for PDF-rendering
 - Sendlink setting in publication enables and disables the sendlink function as well
 - Bug fix: video player didn't play video, explorer_wrapper optimsation for the straming of videos
 - Converting images for tcpdf to greyscale, CMYK color space
 - Flip/flop images vertically and horizontally, add effects (sharpen, greyscale, sepia-tone, sketch, monochrome) to images, change colorspace (RGB, CMYK, Gray) using imagemagick
-- Bug fix: using non UTF-8 charsets, the special characters in the form view are not properly escaped for links-texts and media-alttexts. convertchars is used in link_edit_page and medie_edit_page
+- Bug fix: Using non UTF-8 charsets, the special characters in the form view are not properly escaped for links-texts and media-alttexts. convertchars is used in link_edit_page and medie_edit_page
 - Allowed IP addresses for media access can be defined in publication settings
 - Theme can be defined in publication settings (global in config.inc.php, publication scope in publication config, user scope in user setting)
-- Bug fix: in createmedia, the buffer file was created for thumbnails if the thumbnail file didn't exist.
+- Bug fix: In createmedia, the buffer file was created for thumbnails if the thumbnail file didn't exist.
 - Access statistics show total hits and filesize
-- Bug fix: manipulateobject could not delete files when link-DB was deactivated ($allow_delete = true;) 
+- Bug fix: Manipulateobject could not delete files when link-DB was deactivated ($allow_delete = true;) 
 - Use alt-key to switch to download links in object lists
 - New windows have the container id of their object
 - New info box for hints regarding the system usage, see function showinfobox
@@ -355,7 +355,7 @@ Release 08/2013
 - OpenSEARCH implementation
 - Bug fix for audio-files
 - Bug fix: zipfiles didn't check access permissions of user
-- Bug fix: download of files using alt-key didn't ceck access permissions of use
+- Bug fix: Download of files using alt-key didn't ceck access permissions of use
 
 Version 5.6.4
 Release 11/2013
@@ -364,7 +364,7 @@ Release 11/2013
 - Gallery view component template
 - 360 image view component template
 - Publish videos to youtube
-- OpenAPI (Webservice for executing functions, like: create/edit/delete of users/folders/objects and file upload/download)
+- OpenAPI (Webservice for executing functions, like: Create/edit/delete of users/folders/objects and file upload/download)
 - Notification alerts to logged in user based on folder settings and events
 
 Version 5.6.5
@@ -379,16 +379,16 @@ Release 02/2014
 - Import/export GUI
 - Bug fix: rdbms_searchcontent ignored text_id in advanced search
 - Bug fix: rdbms_getmedia used wrong refered for SQL-query
-- Bug fix: editing of multiple objects didn't include checking constraints of unformatted fields
-- Bug fix: popups of template_edit submitted forms instead of only calling a js-function(input type of button was "submit") which lead to logout
-- Bug fix: create hidden folders was not performed when super admin logged in
-- Bug fix: check of hidden folders looked in the whole file system path and not only in the root given by the publication (this led to hidden folders that should be visible)
+- Bug fix: Editing of multiple objects didn't include checking constraints of unformatted fields
+- Bug fix: Popups of template_edit submitted forms instead of only calling a js-function(input type of button was "submit") which lead to logout
+- Bug fix: Create hidden folders was not performed when super admin logged in
+- Bug fix: Check of hidden folders looked in the whole file system path and not only in the root given by the publication (this led to hidden folders that should be visible)
 - Bug fix: rdbms_createobject fired before successful creation of a new object file (this led to duplicates of same object in DB)
 
 Version 5.6.6
 Release 03/2014
 - Versioning of media files
-- Bug fix: injectmetadata (CDATA was missing)
+- Bug fix: Injectmetadata (CDATA was missing)
 - CKEditor version 4.3.3 implemented (support of DIV and IFRAME, support for IE 11)
 - Versioning of media files when using workplace integration (WebDAV) to edit and save files (content versioning need to be enabled)
 - Relocation of config.inc.php to config directory
@@ -398,48 +398,48 @@ Version 5.6.7
 Release 05/2014
 - Code improvement (undeclared variables, PHP global in function input)
 - Bug fix: rdbms_getdailystat did compare datetime with time (convert datime to time)
-- Bug fix: duplicate names were not converted to readbale names
-- Bug fix: single file upload produces error message about the same file existing already
+- Bug fix: Duplicate names were not converted to readbale names
+- Bug fix: Single file upload produces error message about the same file existing already
 - Change in createthumbnail_indesign to create a valid thumbnail (use last thumbnail of indesign file)
-- Bug fix: set unset variables (error notices for unset variables in php log)
-- Bug fix: media category could not be deleted
-- Bug fix: the encoding in containers was not set to UTF-8 on media files and folders
-- Bug fix: advanced search didn't get the ownergroup and could therefore not check the content access permissions (attribute groups for hyperCMS tags)
-- Bug fix: search for image size range did include the given width as additional SQL where clause and led to wrong search results
+- Bug fix: Set unset variables (error notices for unset variables in php log)
+- Bug fix: Media category could not be deleted
+- Bug fix: The encoding in containers was not set to UTF-8 on media files and folders
+- Bug fix: Advanced search didn't get the ownergroup and could therefore not check the content access permissions (attribute groups for hyperCMS tags)
+- Bug fix: Search for image size range did include the given width as additional SQL where clause and led to wrong search results
 - Bug fix: name of variable was not correct in WebDAV function deleteGlobal
 
 Version 5.6.8
 Release 07/2014
-- Bug fix: the content of date fields was always converted to the international date format, this led to a wrong format after loading the container
+- Bug fix: The content of date fields was always converted to the international date format, this led to a wrong format after loading the container
 - Bug fix: %comp% was not converted to the component URL in the template engine for single component when onEdit attribute was set to "hidden"
 - Bug fix: %comp% was not converted to the right publication or management component URL depending on the view in the template engine for components when onEdit attribute was set to "hidden"
-- Bug fix: selector layer for download on mobile devices was not properly positioned
-- Bug fix: download of files on iphone is not supported, mime-type was changed to the actual mime-type of the file to show it in the browser
+- Bug fix: Selector layer for download on mobile devices was not properly positioned
+- Bug fix: Download of files on iphone is not supported, mime-type was changed to the actual mime-type of the file to show it in the browser
 - Bug fix: getthemelocation used wrong session variable name, mobile CSS were not used
-- Bug fix: component_curr lead to too long request-URI when editing multiple components. the component_curr request variable was redundant and has been removed to solve the problem.
+- Bug fix: Component_curr lead to too long request-URI when editing multiple components. the component_curr request variable was redundant and has been removed to solve the problem.
 - Improvements in mobile CSS
-- Bug fix: empty inheritance database blocked createpublication
+- Bug fix: Empty inheritance database blocked createpublication
 - Improvements of creating a unique token if a session_id is not available (session_id used for un/locking files)
 - Implementation of installation process including search engine 
-- Bug fix: limit was not set in rdbms_searchcontent
-- Bug fix: template engine issue with language session variable
+- Bug fix: Limit was not set in rdbms_searchcontent
+- Bug fix: Template engine issue with language session variable
 - Improvements in compare content versions, multimedia content from files will be compared as well as meta data (taken from content container)
 - Seperation of template includes (new expression) from page and component templates in the GUI
-- Bug fix: search_objectlist.php used wrong input parameter for function rdbms_searchcontent
+- Bug fix: Search_objectlist.php used wrong input parameter for function rdbms_searchcontent
 - Bug fix: object name was missing in event log when removing objects 
-- Bug fix: the template of folders (should be meta) was set to the wrong category
-- Bug fix: edittemplate did not trim the file extension which could lead to white spaces after the file name end that can hardly be recognized
+- Bug fix: The template of folders (should be meta) was set to the wrong category
+- Bug fix: Edittemplate did not trim the file extension which could lead to white spaces after the file name end that can hardly be recognized
 - Edit and save text based content from template media files
-- Bug fix: edittemplate transformed &amp; not correctly to &
-- Bug fix: control frame has not been reloaded in easy edit mode 
+- Bug fix: Edittemplate transformed &amp; not correctly to &
+- Bug fix: Control frame has not been reloaded in easy edit mode 
 - Bug fix: history buttons for next/previous navigation has been disabled for object and not for files
-- Bug fix: template_editor showed commentu and commentf for component and page templates but should only be used for metadata templates
-- Bug fix: downloadfile did not exit if file ressouce is missing
-- Bug fix: user_edit did not check siteaccess permissions of the user
-- Bug fix: sort of sites in user_edit did not use natural case sort
-- Bug fix: settext did not check the link index properbly which led to wrong entries in error logs
-- Bug fix: undefined varibale hypercms_livelink_set in template engine
-- Bug fix: delete of media reference in media_edit_page did not work for IE
+- Bug fix: Template_editor showed commentu and commentf for component and page templates but should only be used for metadata templates
+- Bug fix: Downloadfile did not exit if file ressouce is missing
+- Bug fix: User_edit did not check siteaccess permissions of the user
+- Bug fix: Sort of sites in user_edit did not use natural case sort
+- Bug fix: Settext did not check the link index properbly which led to wrong entries in error logs
+- Bug fix: Undefined varibale hypercms_livelink_set in template engine
+- Bug fix: Delete of media reference in media_edit_page did not work for IE
 - Implementation of download/upload statistics of all DAM publications on home screen
 
 Version 5.6.9
@@ -448,61 +448,61 @@ Release 08/2014
 - Tranformation of special characters in deconvertpath
 - New checksum in user session file to verify permissions set in session
 - Bug fix: getfileinfo did not set filename_only and published state for files without file extensions
-- Bug fix: wrong variable names led to undefined variables in createpublication
-- Bug fix: several undefined variables 
+- Bug fix: Wrong variable names led to undefined variables in createpublication
+- Bug fix: Several undefined variables 
 - Font of unformatted text remains unchanged when using inline editing (CSS optimization in showinlineeditor_head)
 - Deletepublication removes files in external repository, page and component root folders
 - New cleaning level management config setting to check and clean template code
-- Bug fix: in thumbnail generation using the GD library since aspect ratio has not been preserved, different behaviour compared to resize parameter in ImageMagick
+- Bug fix: In thumbnail generation using the GD library since aspect ratio has not been preserved, different behaviour compared to resize parameter in ImageMagick
 - Automatic resize of textarea in inline editing mode 
-- Bug fix: setmedia replaced publication media path first, which led to wrong media reference since the ediot passes the full path incl. the domain
-- Bug fix: installation prozedure added two / instead of one if a subdirectory is used for the installation root
-- Bug fix: toolbar for editor in DAM mode could not be set
+- Bug fix: Setmedia replaced publication media path first, which led to wrong media reference since the ediot passes the full path incl. the domain
+- Bug fix: Installation prozedure added two / instead of one if a subdirectory is used for the installation root
+- Bug fix: Toolbar for editor in DAM mode could not be set
 - Improvement in function scriptcode_extract (removes comments in scriptcode)
 - Install procedure migration to mysqli
 - Removed trim from all load- And savefile functions since it led to bad behaviour when line break need to be preserved at file end
-- Bug fix: checkout objects did not support sidebar
-- Bug fix: error in function getconnectedobject which caused the creation of working containers for checked out objects (loadcontainer required user as global input)
+- Bug fix: Checkout objects did not support sidebar
+- Bug fix: Error in function getconnectedobject which caused the creation of working containers for checked out objects (loadcontainer required user as global input)
 - Changes in job for licensenotification, monthly: next month will be checked each 1st of the month, weekly: next week will be checked each sunday
 - Support for DPI, colorspace, ICC profiles in formatted texts (textf-tag) and images (mediafile-tag)
-- Bug fix: error in call to js-function hcms_validateform in function showinlineeditor_head
+- Bug fix: Error in call to js-function hcms_validateform in function showinlineeditor_head
 - Bug fix: remove reseting of image size if scaling is used in CKEditor image-plugin
-- Bug fix: inline editing mode issue when onedit and onpublish attributes are used for the same hypercms tag
+- Bug fix: Inline editing mode issue when onedit and onpublish attributes are used for the same hypercms tag
 
 Version 5.6.10
 Release 10/2014
 - Improvements in plugin management
 - New individual button in UI function showtopbar
-- Bug fix: function downloadfile called dailystat for each partial file download (only first partial download triggers dailystat)
+- Bug fix: Function downloadfile called dailystat for each partial file download (only first partial download triggers dailystat)
 - New Simple Statistics plugin (not part of standard software package)
-- Bug fix: exception for CSS and JS files in follow link (page_view)
+- Bug fix: Exception for CSS and JS files in follow link (page_view)
 - New Keyword Statistics plugin (not part of standard software package)
 - Changed order of meta data extraction of files due to issue with Adobe XMP special characters, new order: EXIF, XMP, IPTC
-- Bug fix: function showtopbar did not show individual button
-- Bug fix: function downloadfile did not provide proper dailystat, if requested start bytes were not zero
-- Bug fix: page_multiedit didn't show label names defined in template and applied constraints on unformatted text fields even if they were disabled
+- Bug fix: Function showtopbar did not show individual button
+- Bug fix: Function downloadfile did not provide proper dailystat, if requested start bytes were not zero
+- Bug fix: Page_multiedit didn't show label names defined in template and applied constraints on unformatted text fields even if they were disabled
 - Implementation of multiple hyperCMS instances using different databases, internal and external repositories
 - Implementation of instance manager GUI to manage multiple hyperCMS instances (as part of connector)
 - Implementation of DB connect in multiedit
 - Improvement in notification of user, if user is owner of an object no notification will be sent
-- Bug fix: missing check of globalpermission in explorer_objectlist
-- Bug fix: added removing of IPTC meta data using EXIFTOOL in function iptc_writefile before writing new IPTC data to file
-- Bug fix: function notifyusers used file owner and not current user to compare with the notified user
+- Bug fix: Missing check of globalpermission in explorer_objectlist
+- Bug fix: Added removing of IPTC meta data using EXIFTOOL in function iptc_writefile before writing new IPTC data to file
+- Bug fix: Function notifyusers used file owner and not current user to compare with the notified user
 - Bug fix: new version of FFMPEG requires new option names (e.g. -b:v for the video bit rate instead of -b), options for FFMPEG have been changed in config.inc.php, media_rendering.php and function createmedia
 - Bug fix: new version of FFMPEG does not support an audio sample rate of 44100 Hz for FLV files, changed default to 22050 Hz, options for FFMPEG have been changed in config.inc.php, media_rendering.php and function createmedia
-- Bug fix: deleteobjects did not remove individual video files with sub-file-extension .media
+- Bug fix: Deleteobjects did not remove individual video files with sub-file-extension .media
 - Implementation of new function getoption for extracting values of a string holding options (used for image/audio/video options)
 - Creating a thumbnail image on initial upload of a video file
-- Bug fix: function loadcontainer did not return the container information for versions of a content container
+- Bug fix: Function loadcontainer did not return the container information for versions of a content container
 - Improvements in task management for broken links
 - New theme namend colorful
-- Bug fix: download of other file formats than original did not work
-- Bug fix: undefined variables in several scripts
-- Bug fix: click on object shows wrong object in sidebar if sort has been applied
-- Bug fix: clicking on an object in gallery-view highlights wrong object if sort has been applied
+- Bug fix: Download of other file formats than original did not work
+- Bug fix: Undefined variables in several scripts
+- Bug fix: Click on object shows wrong object in sidebar if sort has been applied
+- Bug fix: Clicking on an object in gallery-view highlights wrong object if sort has been applied
 - Improvements in all object list views
 - Improvements in preview of object / sidebar
-- Bug fix: image brightness was set to -100 for image editing due to a wrong variable name
+- Bug fix: Image brightness was set to -100 for image editing due to a wrong variable name
 - Improvements in object lists regarding alignments of list/gallery items
 - Creating new components when adding components to a page by the component explorer
 - Securing all shell input parameters
@@ -512,26 +512,26 @@ Release 10/2014
 - New home screen and home navigation item in navigator
 - New boxes on home screen for recent tasks and recent objects of logged in user
 - Improvements in mobile style sheets
-- Bug fix: function getfiletype searched for a substring in file extension definitions without a delimiter, this lead to wrong file-type in media table
+- Bug fix: Function getfiletype searched for a substring in file extension definitions without a delimiter, this lead to wrong file-type in media table
 - Bug fix: new function shellcmd_encode to solve tilde issue with function escapeshellcmd in various files
 - Reorganization of functions in the hyperCMS API
 - Implementation of new check permissions functions
 - Bug fix: DB connect RDBMS did not provide hash keys for all search operations
-- Bug fix: permission issues in explorer for publishing queue, log-list and plugins
-- Bug fix: implementation of updated function getbrowserinfo (old function was outdated and did not detect the browsers correctly)
+- Bug fix: Permission issues in explorer for publishing queue, log-list and plugins
+- Bug fix: Implementation of updated function getbrowserinfo (old function was outdated and did not detect the browsers correctly)
 - Implementation of sort order for workflow folder form
 - Bug fix: removed double sort from search result
-- Bug fix: search for user files in user management did not use proper frameset and resulted in an error on click on an object
-- Bug fix: removed : from meta data listing if label is empty
-- Bug fix: checkadminpermission expected input parameter
+- Bug fix: Search for user files in user management did not use proper frameset and resulted in an error on click on an object
+- Bug fix: removed : From meta data listing if label is empty
+- Bug fix: Checkadminpermission expected input parameter
 - Set variable lang to "en" if no value is given
-- Bug fix: link_explorer of editor passed wrong input to function rdbms_searchcontent
+- Bug fix: Link_explorer of editor passed wrong input to function rdbms_searchcontent
 - Improvements in DB connect RDBMS
-- Bug fix: scrolling in link and media explorer did not work due to changes in the CSS class
+- Bug fix: Scrolling in link and media explorer did not work due to changes in the CSS class
 - Implementation of new function checkpublicationpermission
-- Bug fix: convert of formats did not work due to missing convert-type and convert-config inputs in context menu for checkout, queue and search object list
-- Bug fix: set min-height of fields to avoid collapsing of empty fields in version comparison
-- Bug fix: the user edit permission for a specific publication was not checked properly and led to killsession
+- Bug fix: Convert of formats did not work due to missing convert-type and convert-config inputs in context menu for checkout, queue and search object list
+- Bug fix: Set min-height of fields to avoid collapsing of empty fields in version comparison
+- Bug fix: The user edit permission for a specific publication was not checked properly and led to killsession
 
 Version 5.7.0
 Release 11/2014
@@ -539,15 +539,15 @@ Release 11/2014
 - New configuration setting for chat
 - Integration of top in frameset_main and replacement of frames by iframes
 - Implementation of logout on window close (not supported by all browsers)
-- Bug fix: charset declaration was missing in explorer
+- Bug fix: Charset declaration was missing in explorer
 - Removed timeout.js from all controls and js-library
 - Integration of chat in mobile edition
 - Optimizations in main and contextmenu JS library
 - Implementation of new settings for background and alpha when converting PDF to image (due to black background issue)
 - Replacement of all framesets by iframes
-- Bug fix: error messages on group_access_form, worklfow_folder_form were not shown since object IDs and object paths were mixed up
+- Bug fix: Error messages on group_access_form, worklfow_folder_form were not shown since object IDs and object paths were mixed up
 - Implementation of resize function for group_access_explorer
-- Bug fix: search_explorer used wrong inital_dir for the component root
+- Bug fix: Search_explorer used wrong inital_dir for the component root
 - Improvements in inline editing, dynamically adjust width and height of textarea after loading the inline element
 
 Version 5.7.1
@@ -558,29 +558,29 @@ Release 12/2014
 - Propagate all results from function createmediaobject to function uploadfile
 - Function showmedia shows original thumbnail size if the thumbnail is smaller than the defined thumbnail size due to a small original image
 - Improvement of information in main config
-- Bug fix: when using the GD library instead of ImageMagick, the aspect ration of images have been changed when creating other formats
-- Bug fix: undefined variables in indexes in control_queue_menu and function manipulateobject
+- Bug fix: When using the GD library instead of ImageMagick, the aspect ration of images have been changed when creating other formats
+- Bug fix: Undefined variables in indexes in control_queue_menu and function manipulateobject
 - Change personal theme in GUI immediately and not after next logon
 - Removed statistics on home screen of mobile edition
 - Bug fix: hyperCMS API used deprecated JS function hcms_openBrWindow
-- Bug fix: top-bar spacing issues in mobile edition 
+- Bug fix: Top-bar spacing issues in mobile edition 
 - Replacing framesets by iframes in instance manager and import/export manager
 - Define date and time to remove files from system on upload
 - Set default language and lang variable in function userlogin
 - Bug fix: relocation version information on home screen for better support of small mobile screen resolutions
 - Bug fix: JS function hcms_showContextmenu did not disable icons for notfication and chat in context menu if no object has been selected
-- Bug fix: explorer_objectlist did hide notfication and chat completety in context menu if user has no permissions
+- Bug fix: Explorer_objectlist did hide notfication and chat completety in context menu if user has no permissions
 - Improvements in hyperCMS UI document viewer regarding size of view
-- Bug fix: funtion getusersonline returned WebDAV users, these users are not able to chat and must not be returned#
+- Bug fix: Funtion getusersonline returned WebDAV users, these users are not able to chat and must not be returned#
 - Fixed showmessage boxes positioning in GUI
 - Rounded corners of showmessage boxes
 - Improved design of context menu for all themes
 - Removed mobile theme as an option in publication management
-- Bug fix: the template engine did not include the publication configuration if the link management has been disabled, therefore component have not been included by function insertcomponent
-- Bug fix: access permission has not been when using the editor to select a media file. this led to issues with the video preview.
+- Bug fix: The template engine did not include the publication configuration if the link management has been disabled, therefore component have not been included by function insertcomponent
+- Bug fix: Access permission has not been when using the editor to select a media file. this led to issues with the video preview.
 - If the provided thumbnail size of the main config is greater than the original video size the original video size will be used for video rendering
 - Implementation of loading screen for file unzip
-- Bug fix: function deconvertlink removed host name from page links twice. this led to a miss-converted link since the host name has been cut of again without using the function cleandomain.
+- Bug fix: Function deconvertlink removed host name from page links twice. this led to a miss-converted link since the host name has been cut of again without using the function cleandomain.
 
 Version 5.7.2
 Release 01/2015
@@ -589,25 +589,25 @@ Release 01/2015
 - New function loadfile_header to load file partially in order to determine if fill is encrypted
 - Removed Tamino support
 - Removed all $_SERVER['PHP_SELF'] in all forms due to XSS weakness
-- Bug fix: working content container could be checked out by several users
-- Bug fix: function loadcontainer restored working container if it was locked by another user
+- Bug fix: Working content container could be checked out by several users
+- Bug fix: Function loadcontainer restored working container if it was locked by another user
 - Bug fix: CSS issue with chat in IE 8 and 9
 - Function copymetadata has been removed from explorer_download and explorer_wrapper and has been integrated in function createdocument
 - New functions encryptfile and decryptfile
 - Watermarking for images and videos based on image and video options in the main config file
 - Function createmedia supports gamma, sharpness, brightness, contrast and saturation for video editing 
-- Bug fix: impementation of binary-safe encryption and decryption to en/decrypt binary files
-- Bug fix: popup_action did not hide loading layer if an error occured after unzip
+- Bug fix: Impementation of binary-safe encryption and decryption to en/decrypt binary files
+- Bug fix: Popup_action did not hide loading layer if an error occured after unzip
 - 2 new input parameters (object_id, objectpath) for function rdbms_getqeueentries
 - Implementation of information regarding the auto-remove of files/objects in mail form, info tab of objects and sidebar object viewer
 - Function getcontainername supports container ID or container name as input
 - Improved implementations of functions hcms_encrypt and hcms_decrypt for standard and strong en/decryption
 - Function showmedia provides additional information about owner, last published date and date of deletion
 - Implementation of file caching to reduce I/O for action chains that would save data in each step
-- Bug fix: checked out file for user has not been created and deleted in function createuser and deleteuser
+- Bug fix: Checked out file for user has not been created and deleted in function createuser and deleteuser
 - Improvement of page_checkedout that creates checked out user file if it does not exist
 - Using database media information as primary source for all media displays
-- Bug fix: sidebar on checkout objects list was not displayed properly
+- Bug fix: Sidebar on checkout objects list was not displayed properly
 - Freegeoip.net stopped providing it's service, changed to API of ip-api.com
 - Linkengine is automatically disabled in the publication management for DAM configurations
 - Function showmedia support new type "preview_download", which only enables the download in media previews
@@ -626,28 +626,28 @@ Release 01/2015
 Version 5.7.3
 Release 02/2015
 - Add original video files of type MP4, WebM, OGG/OGV to source of HTML5 player
-- Bug fix: encryption level for file must be 'strong' in order to be binary-safe
+- Bug fix: Encryption level for file must be 'strong' in order to be binary-safe
 - Bug fix: video start poster could not be defined if the original file was added as source to the HTML5 video player
 - Update of HTML5 video player to video.js version 4.11.4
-- Bug fix: copy & paste not working, function manipulateobject did not set init-input for function savecontainer
+- Bug fix: Copy & paste not working, function manipulateobject did not set init-input for function savecontainer
 - Function getcontentlocation adds missing zeros to container ID to correct the containers directory name
 - Additional check if object exists when publishing it
 - Improvements of several functions in hypercms_main
-- Bug fix: in order to support older versions, the original source need to be added to the video player, not only in case of an existing config.orig file
+- Bug fix: In order to support older versions, the original source need to be added to the video player, not only in case of an existing config.orig file
 - Function rdbms_getobject_hash supports also object ID and container ID as input
 - Function createdownloadlink and createwrapperlink supports also object ID and container ID as input
 - Change to MP4 format as the standard for video thumbnail files in function createmedia
 - Link for the video start poster of the embed code will be converted to a wrapper link if publication is a DAM in order to have access to the image file
-- Implementation of RAW image support for formats: arw, cr2, crw, dcr, mrw, nef, orf, uyvy
+- Implementation of RAW image support for formats: Arw, cr2, crw, dcr, mrw, nef, orf, uyvy
 - Bug fix: remove _original files from media repository created by EXIFTOOL
 - Redesign of video player with big play button in center
 - Bug fix: ok button of task list was not displayed properly
-- Bug fix: function publishobject did not set init for savecontainer to true
+- Bug fix: Function publishobject did not set init for savecontainer to true
 - Implementation of a new language management system
 - Implementation of new languages. besides English and German the following languages for the UI are now supported: Albanian, Arabic, Bengali, Bulgarian, Chinese (simplified), Czech, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew, Hindi, Hungarian, Indonesian, Italian, Japanese, Korean, Malay, Norwegian, Polish, Portuguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Somali, Swedish, Thai, Turkish, Ukrainian, Urdu
 - New help logic to set 'en' as default help/manual
 - Implementation of function html_encode with multibyte character set support
-- Bug fix: user_sendlink mixed up languages in e-mail message
+- Bug fix: User_sendlink mixed up languages in e-mail message
 - Implementation of new 'flat' design theme
 - Minor changes in other design themes
 
@@ -664,7 +664,7 @@ Release 03/2015
 - New function getescapetext to HTML encode specific texts from the language files (needed when presentation uses other character set than the language file)
 - Implementation of escapetext in template engine and UI instead of converting all texts of a language file
 - Bug fix: html_encode was double encoding if ASCII was selected as encoding
-- Bug fix: content-type has not been set for various input forms
+- Bug fix: Content-type has not been set for various input forms
 - Implementation of management of home boxes for each user on home screen
 - Implementation of new function setboxex and getboxes
 - Implementation of JS function hcms_switchSelector in main.js
@@ -672,20 +672,20 @@ Release 03/2015
 
 Version 5.7.5
 Release 03/2015
-- Bug fix: bulgarian language file used double quote in string
+- Bug fix: Bulgarian language file used double quote in string
 - Bug fix: html_encode used wrong variable name
 - Implementation of media preview for select of multiple objects
 - Select, edit/render and save multiple images and videos
 - Implementation of new services renderimage and rendervideo replace old media rendering logic 
 - Implementation of new service savecontent 
 - Bug fix: richcalender language files needed to be converted to UTF-8
-- Bug fix: function manipultaobject did not check if both page states (published and unpublished) exists already in the same location on rename
-- Bug fix: undefined variable in function rdbms_getobject_id
-- Bug fix: text of JS prompt messages in template_edit was not html decoded
+- Bug fix: Function manipultaobject did not check if both page states (published and unpublished) exists already in the same location on rename
+- Bug fix: Undefined variable in function rdbms_getobject_id
+- Bug fix: Text of JS prompt messages in template_edit was not html decoded
 - Template editor supports include-, script-, workflow-tags for meta data templates
 - Meta data templates for media files will be assigned to the application 'media'
 - Implementation of hyperCMS scripts for multimedia objects
-- Bug fix: correct undefined characters in key names and eliminate double expressions in all language files
+- Bug fix: Correct undefined characters in key names and eliminate double expressions in all language files
 - New uploadfile service that replaces upload_multi
 - Improvements in design themes (CSS)
 - Implementation of transcoding for video files to audio files
@@ -693,20 +693,20 @@ Release 03/2015
 - Implementation of file download from FTP servers
 - Implementation of new function is_date
 - Implementation of date validation in function rdbms_createqueueentry
-- Bug fix: function getmimetype did not return proper mime-type for object/file versions
+- Bug fix: Function getmimetype did not return proper mime-type for object/file versions
 - Implementation of object versions support for function getfileinfo
-- Bug fix: diplay proper file icons in versions tab
-- Bug fix: pop_status failed to authorize the action when publishing the root folder of pages
+- Bug fix: Diplay proper file icons in versions tab
+- Bug fix: Pop_status failed to authorize the action when publishing the root folder of pages
 - Update of TCPDF to version 6.2.6
 - Implementation of download formats for download/access links and attachments
 - Implementation of new function convertmedia (wrapper for createdocument and createmedia)
-- Bug fix: source location input parameter of function createimage was not verified
+- Bug fix: Source location input parameter of function createimage was not verified
 - Implementation of new functions is_document, is_image, is_rawimage, is_video, is_audio
-- Bug fix: function unlockfile, lockfile, savelockfile, loadlockfile used global variable user which overwrites the input variable
-- Bug fix: simple keywords plugin refered to old search objectlist location
+- Bug fix: Function unlockfile, lockfile, savelockfile, loadlockfile used global variable user which overwrites the input variable
+- Bug fix: Simple keywords plugin refered to old search objectlist location
 - Implementation of new function createversion
 - Support for versioning of thumbnail files
-- Bug fix: saving multiple media files was not working when media files are not of same type
+- Bug fix: Saving multiple media files was not working when media files are not of same type
 - Implementation of delete for thumbnail file versions in function manipulateobject and version_content
 - Implementation of video rotation and video flip for video editing
 - Improvements in video editor layout
@@ -719,20 +719,20 @@ Version 5.7.6
 Release 04/2015
 - Implementation of new function checkworkflow in hypercms_main used by function buildworkflow
 - Update of pdf viewer to version 1.0.1040
-- Bug fix: improved CSS definition using filter for hcmsInfoBox due to issues on home screen
-- Bug fix: select media in form view did not work due to missing evaluation of selectbox in JS function getSelectedOption
-- Bug fix: media_view did not validate form fields for width and height in control frame
-- Bug fix: function buildview of templateengine did reset tag variables for each tag found in the template
+- Bug fix: Improved CSS definition using filter for hcmsInfoBox due to issues on home screen
+- Bug fix: Select media in form view did not work due to missing evaluation of selectbox in JS function getSelectedOption
+- Bug fix: Media_view did not validate form fields for width and height in control frame
+- Bug fix: Function buildview of templateengine did reset tag variables for each tag found in the template
 - Implementation of media object evaluation in media_edit_page and link object evaluation in link_edit_page
 - Improvements in function setmedia by using function loadfile_fast for object loading
-- Bug fix: wrong content-type specification in version_template
+- Bug fix: Wrong content-type specification in version_template
 - Update of HTML5 video player to video.js version 4.12.5
-- Bug fix: undefined variables in search_objectlist, hypercms_tplengine, db_connect_rdbms
+- Bug fix: Undefined variables in search_objectlist, hypercms_tplengine, db_connect_rdbms
 - Implementation of new hypercms_tcpdf.class.php file with class hcmsPDF to extend standard TCPDF functionality
 - Implementation of new function drawCropbox in class hcmsPDF
 - Removed deprecated pdfsearch.class.php
-- Bug fix: explorer_download did not check original-type and tried to convert media
-- Bug fix: when providing a colorspace or ICC-profile in media- Or textf-tags the images would have been converted multiple times, depending on the occurrence of the tag in the template
+- Bug fix: Explorer_download did not check original-type and tried to convert media
+- Bug fix: When providing a colorspace or ICC-profile in media- Or textf-tags the images would have been converted multiple times, depending on the occurrence of the tag in the template
 - Implementation of new hyperCMS tag attribute 'pathtype' for media tags to declare path as file system path, URL, absolute path (URL without protocol and domain)
 - Implementation of new media functions mm2px, px2mm, inch2px, px2inch
 - Improved function convertimage which supports new input parameters and rendering features
@@ -756,7 +756,7 @@ Release 05/2015
 - Moved instance configurations to the internal repository (for load balancer)
 - New function createusersession in include/session.inc.php
 - Implementation of main management config in hyperCMS API loader
-- Changed include order for every file: config.inc.php -> hypercms_api.inc.php -> session.inc.php
+- Changed include order for every file: Config.inc.php -> hypercms_api.inc.php -> session.inc.php
 - Implementation of new function writesessiondata for load balancer
 - Function setsession supports 3rd argument to write session data for load balancer
 - Variable $appsupport has been replaced by $mgmt_config['application'] in main configuration
@@ -764,27 +764,27 @@ Release 05/2015
 - Use of function getescapedtext for all text strings used in JS code 
 - Implementation of new ICC profiles for ECI offset 2009
 - Support for transparent background of SVG files
-- Bug fix: frame resizer in control_content did not work
+- Bug fix: Frame resizer in control_content did not work
 
 Version 5.7.8
 Release 06/2015
 - Implementation of multi assets tag for DAM usage
-- Bug fix: correct and optimize html code in form views of template engine
+- Bug fix: Correct and optimize html code in form views of template engine
 - Bug fix: horizontal and vertical flip of images in multiedit mode not working
 - Implementation of new function getobjectid
 - Function setcomplink converts multimedia object paths to object IDs and saves them in the content container (not in the link index) in order to support component links in DAM that is not using a link index
 - Implementation of object ID support for single and multiple components in template engine, component_edit_page_single and component_edit_page_multi
 - Implementation of accesspermissions in function compexplorer for DAM usage
 - Changes in showcase templates in install directory to use the new view directory setting
-- Bug fix: download of original files for access links failed if media file was not an image or document
+- Bug fix: Download of original files for access links failed if media file was not an image or document
 - Optimizations in function rdbms_searchcontent regarding joins of tables
 - Implementation of search format support in search of function compexplorer
-- Bug fix: media_rendering for audio files did verify non-existing fields that caused JS error
-- Bug fix: audio data in config files for ogg files have been missing
+- Bug fix: Media_rendering for audio files did verify non-existing fields that caused JS error
+- Bug fix: Audio data in config files for ogg files have been missing
 - Audio quality setting has been enabled for editing of audio files
 - Validation of theme path in function getthemelocation
 - Various improvements in search_api for website search functionality
-- Bug fix: if no application was defined in the content containers of assets the template engine did not execute the published object
+- Bug fix: If no application was defined in the content containers of assets the template engine did not execute the published object
 
 Version 5.7.9
 Release 07/2015
@@ -796,8 +796,8 @@ Release 07/2015
 - Removed default frequenzy settings for audio rendering in main configuration due to issue with OGA files
 - Corrections in german language files
 - Implementation of getescapetext for all files of the graphical user interface
-- Bug fix: function createmedia did not execute rdbms_setmedia if $mgmt_maxfilesize limit has been reached for a file 
-- Bug fix: installation procedure checked temp and view directory before they were created
+- Bug fix: Function createmedia did not execute rdbms_setmedia if $mgmt_maxfilesize limit has been reached for a file 
+- Bug fix: Installation procedure checked temp and view directory before they were created
 - Update of videoplayer Video JS to version 4.12.7
 - Fullscreen mode in video player has been disabled for side bar
 - Bug fix: Video JS css did not properly support fullscreen when used in iframes, fullscreen is disabled in CMS views
@@ -815,8 +815,8 @@ Release 08/2015
 - Implementation of meta data content from videos into the youtube upload form
 - Removed hypercms_eventsystem file from function directory
 - New youtube video link in page_info in case the video was uploaded to youtube
-- Bug fix: function showvideoplayer created wrapperlink for the video poster image, this caused the video to be loaded as the poster
-- Bug fix: page_multiedit did not fully support keywords (list, file, listonly attributes)
+- Bug fix: Function showvideoplayer created wrapperlink for the video poster image, this caused the video to be loaded as the poster
+- Bug fix: Page_multiedit did not fully support keywords (list, file, listonly attributes)
 - Function showmessage provided id of DIV holding the message (use ID suffix _text)
 - Improvements in import connector regarding special characters in file names
 - Function createpublication creates default media mapping definition file
@@ -830,14 +830,14 @@ Release 08/2015
 - Changed log viewer details popup from GET to POST in order to display longer messages (strings)
 - Impementation of custom log manager in admin node of each publication
 - New text for 'custom-system-events' in all language files
-- Bug fix: the event onpublishobject_pre has not been fired if the application tag of the underlying template was empty
+- Bug fix: The event onpublishobject_pre has not been fired if the application tag of the underlying template was empty
 - Improvements in the eventysystem reg. creating the search index for PDF files
 - Removed location bar from control_objectlist_menu in mobile edition to avoid scrolling on smaller screens
 - Changes in CSS of mobile edition
 - Removed personalization and template management from explorer of mobile edition
 - Added edit button to objects in objectlist for mobile edition
-- Bug fix: delete-favorite icon in context menu has not been grayed out if no object was selected
-- Bug fix: content versions of media files did not point to correct media file if only the meta data has been changed and published
+- Bug fix: Delete-favorite icon in context menu has not been grayed out if no object was selected
+- Bug fix: Content versions of media files did not point to correct media file if only the meta data has been changed and published
 - Support for file name changes in content versioning
 - Function getobjectinfo supports content versions
 - Implementation of function getmediafile
@@ -848,17 +848,17 @@ Release 09/2015
 - Implementation of new function getcontainerversions and gettemplateversions
 - Implementation of WebVTT support for videos including WebVVT editor for videos
 - Renamed text ID for uploade Youtube videos from "youtube_id2 to "Youtube-ID"
-- Bug fix: milliseconds of a video timestamp was not correct for video start
+- Bug fix: Milliseconds of a video timestamp was not correct for video start
 - Implementation of event log entries for sent e-mails of tasks and notifications
 - Update of VIDEO-JS to version 4.12.11 due to issue with WebVTT on all browsers except Chrome
-- Bug fix: function rdbms_searchcontent did not provid correct search for date limits
-- Bug fix: limit max file size in function createdocument
-- Bug fix: function showmedia renames preview pdf files to .thumb.pdf is function createdocument failed to do so
+- Bug fix: Function rdbms_searchcontent did not provid correct search for date limits
+- Bug fix: Limit max file size in function createdocument
+- Bug fix: Function showmedia renames preview pdf files to .thumb.pdf is function createdocument failed to do so
 - Check of storage limit could lead to extensive delays due to function rdbms_getfilesize, memory file filesize.dat is used to store storage size for 24 hours
 - Function getvideoinfo returns duration including milliseconds as well
-- Bug fix: container_id_duplicate has not been defined in function rdbms_createobject
+- Bug fix: Container_id_duplicate has not been defined in function rdbms_createobject
 - Replaced AUDIO JS with VIDEO JS player
-- Bug fix: content compare was not working for multimedia versions due to including .xml as version file extension
+- Bug fix: Content compare was not working for multimedia versions due to including .xml as version file extension
 - Function showaudioplayer support width, height and poster as input parameters
 - New CSS class hcmsButtonMenuActive used for buttons in top bar (see function showtopmenubar)
 - Implementation of additional options button below media player in editing mode
@@ -867,20 +867,20 @@ Release 09/2015
 - Support saving media file as original file with support of file versions
 - Bug fix: version_content displayed .folder instead of folder name
 - Function getobjectinfo provides icon in result array
-- Bug fix: template engine used template media URL from mgmt_config instead of publ_config
+- Bug fix: Template engine used template media URL from mgmt_config instead of publ_config
 - Defined support of conversion to MPEG formats in config.inc.php
-- Bug fix: template_edit used double quote inside the double quote of mouse event of help button
-- Bug fix: set frameBorder=0 for all iframes to support borderless iframes in IE 8
-- Bug fix: sidebar of keyword plugin did not open and close
+- Bug fix: Template_edit used double quote inside the double quote of mouse event of help button
+- Bug fix: Set frameBorder=0 for all iframes to support borderless iframes in IE 8
+- Bug fix: Sidebar of keyword plugin did not open and close
 - Changed character set of folders from UTF-8 (hardcoded like for multimedia assets) to the given characters set of the publication or template
-- Bug fix: doctype generated by template engine included a double quote
+- Bug fix: Doctype generated by template engine included a double quote
 - Reworked graphics for flat design theme
-- Bug fix: mouseover on OK buttons in version_template did not work due to same name
+- Bug fix: Mouseover on OK buttons in version_template did not work due to same name
 - Check of empty search string in general search form in top bar has been implemented
 - Implementation of function getlanguageoptions to get all languages and their 2-digit codes sorted by the language name
-- Bug fix: page_multiedit did not set UTF-8 as character set for multimedia objects
-- Bug fix: implementation of natural case sort for media_edit_explorer
-- Bug fix: template media preview provided by function showmedia dit not present any information of template media files
+- Bug fix: Page_multiedit did not set UTF-8 as character set for multimedia objects
+- Bug fix: Implementation of natural case sort for media_edit_explorer
+- Bug fix: Template media preview provided by function showmedia dit not present any information of template media files
 
 Version 5.7.12
 Release 09/2015
@@ -890,20 +890,20 @@ Release 09/2015
 - Improved CX-showcase-template for gallery viewer in the installation directory
 - Implementation of new home box with the favorites of a user
 - Changed function createinstance to support username of user account and create the user as superuser
-- Bug fix: function createinstance did not check for special characters in the instance name
-- Bug fix: function createinstance tested the CMS config directory for wriote permissions and not the instance directory
-- Bug fix: function copyrecursive did not verify file handler
+- Bug fix: Function createinstance did not check for special characters in the instance name
+- Bug fix: Function createinstance tested the CMS config directory for wriote permissions and not the instance directory
+- Bug fix: Function copyrecursive did not verify file handler
 - Changed setting of strongpassword for new instances to false
-- Bug fix: function registerinstance refered to config and not to the instance directory
-- Bug fix: include of session had to be relocated to API loader in order to load the instance configuration file
-- Bug fix: instances setting of main configuration file has not been set in instance configuration file by function createinstance
+- Bug fix: Function registerinstance refered to config and not to the instance directory
+- Bug fix: Include of session had to be relocated to API loader in order to load the instance configuration file
+- Bug fix: Instances setting of main configuration file has not been set in instance configuration file by function createinstance
 - Improvements in keyword plugin
-- Bug fix: function _loadSiteConfig did not check if config file exists which can cause a fatal error if a publication has been deleted
+- Bug fix: Function _loadSiteConfig did not check if config file exists which can cause a fatal error if a publication has been deleted
 - Bug fix: JS function setVTTtime used wrong player id
-- Bug fix: function showmedia did not provide preview of PSD files
-- Bug fix: function createmedia used the crop option before the source PSD file which led to a wrong result
-- Bug fix: function notifyusers did not load the language of a recipient
-- Bug fix: frameset_main_linking used deprecated logo file
+- Bug fix: Function showmedia did not provide preview of PSD files
+- Bug fix: Function createmedia used the crop option before the source PSD file which led to a wrong result
+- Bug fix: Function notifyusers did not load the language of a recipient
+- Bug fix: Frameset_main_linking used deprecated logo file
 - Improvements in user_sendlink
 - Implementation of language loader for function createtask, notifyuser and licensenotification
 
@@ -920,7 +920,7 @@ Release 10/2015
 - Function medialinks_to_complinks returns only first valid link ressource and not a link array
 - Set default link for function complinks_to_medialinks
 - Index page of the system is using configured domain for redirect in order to avoid session issues with multiple domains used to access the system
-- Bug fix: control_content_menu used 2nd parameter in location.replace, only one parameter is supported
+- Bug fix: Control_content_menu used 2nd parameter in location.replace, only one parameter is supported
 - Failed FFMPEG commands are reported in event log
 - Improvements in function createmedia to create player config file and create media database entry in case the conversion of a media file failed after upload
 - Moved from head tags to text-IDs for meta data in attitude templates
@@ -928,39 +928,39 @@ Release 10/2015
 Version 5.7.14
 Release 10/2015
 - Improvements on mobile home screen
-- Bug fix: user_sendlink did not validate array for email recipients
+- Bug fix: User_sendlink did not validate array for email recipients
 - Improvements in template engine to avoid line break of edit icons in "cmsview" and "inlineview"
 - Improvements in template engine regarding language session handling
-- Bug fix: txt file extension has been defined as clear text format and image format
-- Bug fix: function showmedia did not properly convert non UTF8 strings
+- Bug fix: Txt file extension has been defined as clear text format and image format
+- Bug fix: Function showmedia did not properly convert non UTF8 strings
 - Updated PHPWord library to version 0.12.0
 - Removed unused library charsetconversion
-- Bug fix: function downloadobject did not get page via HTTP view and failed to render it
+- Bug fix: Function downloadobject did not get page via HTTP view and failed to render it
 - Implementation of search expression logging in function rdbms_searchcontent
 - Implementation of search expression statistics plugin
 - Rework of icons in all themes
-- Bug fix: keyword plugin always selected english language version
-- Bug fix: keyword plugin only stores assets or pages keywords in stats file and did not join them
+- Bug fix: Keyword plugin always selected english language version
+- Bug fix: Keyword plugin only stores assets or pages keywords in stats file and did not join them
 - Updates in keyword analysis plugin to support new language file format
-- Bug fix: pagecontenttype select in template engine has not been added to the form item string
+- Bug fix: Pagecontenttype select in template engine has not been added to the form item string
 - Updates in simple stats plugin to support new language file format
 - Updates in test plugin to support new language file format
 
 Version 5.8.0
 Release 11/2015
 - Implementation of search expressions recommender based on the search history of all users
-- Bug fix: deleting folders caused workplace control to display wrong location (folder has been added to location for each step of popup_status)
-- Bug fix: deleting folders using the context menu could cause deleting other folders since the values of the context menu has not been locked for writing
+- Bug fix: Deleting folders caused workplace control to display wrong location (folder has been added to location for each step of popup_status)
+- Bug fix: Deleting folders using the context menu could cause deleting other folders since the values of the context menu has not been locked for writing
 - Implementation of new JS functions hcms_lockContext and hcms_isLockedContext
 - Improvements in JS library for context menu
 - Improvements in frameset_main_linking to support search expression recommender, removed dynamical framesets, implementation of sidebar configuration check
 - Implementation of max keyword length of 255 digits to avoid long strings that have been imported as keywords (e.g. Adobe Indesign documents with unreadable keyword strings)
-- Bug fix: location has been undefined in popup_status if no folder has been provided as input request
+- Bug fix: Location has been undefined in popup_status if no folder has been provided as input request
 - Changed max search hits from 1000 to 500 in top bar search forms
-- Bug fix: user_sendlink did not define upper case letter in password to fullfill strong password criteria
-- Bug fix: user_sendlink did not set all general_errors as array elements
+- Bug fix: User_sendlink did not define upper case letter in password to fullfill strong password criteria
+- Bug fix: User_sendlink did not set all general_errors as array elements
 - Implementation of the new standard design theme
-- Bug fix: undefined variable $type and $thumb_pdf_exists in function showmedia in hyperCMS UI
+- Bug fix: Undefined variable $type and $thumb_pdf_exists in function showmedia in hyperCMS UI
 - New set of user manuals
 - Implementation of new main JS function hcms_getURLparameter
 - Implementation of "Remember me" feature for logon, using the local storage of the browser
@@ -971,13 +971,13 @@ Release 11/2015
 
 Version 5.8.1
 Release 11/2015
-- Bug fix: function checkworkflow did not exclude .folder of the folder path for comparison
+- Bug fix: Function checkworkflow did not exclude .folder of the folder path for comparison
 - Update of CKEditor to version 4.5.4 due to issue with source code view in MS Edge browser
 - Implementation of the YouTube plugin for CKEditor in all toolbar configurations, except DAM and PDF
 - Optimizations in rich text editor UI
 - Implementation of Spellchecker and Scayt plugin for CKEditor in all toolbar configurations, except DAM
 - Implementation of share link generator
-- Implementation of social media share link function in connect API: createsharelink_facebook, createsharelink_twitter, createsharelink_googleplus, createsharelink_linkedin, createsharelink_pinterest
+- Implementation of social media share link function in connect API: Createsharelink_facebook, createsharelink_twitter, createsharelink_googleplus, createsharelink_linkedin, createsharelink_pinterest
 - Implementation of social media sharing for media files in hyperCMS UI
 - Implementation of new publication setting for social media sharing
 - Implementation of JS functions for social share links: hcms_sharelinkFacebook, hcms_sharelinkTwitter, hcms_sharelinkGooglePlus, hcms_sharelinkLinkedin, hcms_sharelinkPinterest
@@ -998,32 +998,32 @@ Release 11/2015
 - Removed default base64 encoding from standard encryption in function hcms_encrypt
 - Improvements in template engine for autosave
 - Bug fix: reset of medaview variable in function showmedia has been removed
-- Bug fix: medianame has not been converted to UTF-8 for media viewer in template engine 
+- Bug fix: Medianame has not been converted to UTF-8 for media viewer in template engine 
 - Function hcms_encrypt and hcms_decrpyt will base64 en/decode the string if 'url' encoding is requested in order to be binary safe
-- Bug fix: the character set of the form has not been set to UTF-8 in the template engine in case of editing media files
+- Bug fix: The character set of the form has not been set to UTF-8 in the template engine in case of editing media files
 - Implementation of file locking in function iptc_writefile
 - Implementation of file stats (rdbms_setmedia) in function iptc_writefile, xmp_writefile and id3_writefile to update MD5 hash and filesize in DB
 - Bug fix: removed trim of encrypted data from function savecontainer, this is a manipulation of the data string and could lead to decryption issues when handling binary data
 - Implementation of additional MD5 hash comparison of encrypted file and temporary unencrypted file in function createtempfile
-- Bug fix: function rdbms_setmedia did not update MD5 hash since wrong variable name has been used for value check
+- Bug fix: Function rdbms_setmedia did not update MD5 hash since wrong variable name has been used for value check
 - Various improvements in function iptc_writefile, xmp_writefile and id3_writefile
-- Bug fix: function xmp_writefile did also write data to file if an error occured
-- Bug fix: previous create of temporary unencrypted file has been checked for moving file back into encrpyted version, this caused the file not being encrypted and moved again by function iptc_writefile, xmp_writefile and id3_writefile
-- Bug fix: function iptc_writefile did a reset of the input array $iptc
-- Bug fix: undefined variables and undefined hidden field for 'filetype' in popup_message
-- Bug fix: undefined variable 'mediafile' in template engine
+- Bug fix: Function xmp_writefile did also write data to file if an error occured
+- Bug fix: Previous create of temporary unencrypted file has been checked for moving file back into encrpyted version, this caused the file not being encrypted and moved again by function iptc_writefile, xmp_writefile and id3_writefile
+- Bug fix: Function iptc_writefile did a reset of the input array $iptc
+- Bug fix: Undefined variables and undefined hidden field for 'filetype' in popup_message
+- Bug fix: Undefined variable 'mediafile' in template engine
 - Implementation of movetempfile input paramter in function iptc_writefile, id3_writefile and xmp_writefile due to file collision when using encryption and moving temporary unencrypted file back to encrypted file 
 - Implementation of media file statisticts update and encryption of file into service savecontent
-- Bug fix: webdav function _runFuncWithGlobals requires 0 and 1 instead of false and true in order to pass those values to the API function
+- Bug fix: Webdav function _runFuncWithGlobals requires 0 and 1 instead of false and true in order to pass those values to the API function
 - Changes in language files
 - Implementation of function avoidfilecollision due to issues when manipulating encrypted files with e.g. function createmedia and the shell execute file process has not been finished
 - Removed file encryption feature from free to standard and enterprise edition
 - Improvements in hyperCMS UI
-- Bug fix: function creatmedia did not render edited videos proberly if the file has been encrypted
-- Bug fix: function creatmedia passed wrong file name to createversion if the file has been encrypted
+- Bug fix: Function creatmedia did not render edited videos proberly if the file has been encrypted
+- Bug fix: Function creatmedia passed wrong file name to createversion if the file has been encrypted
 - Change of watermarking in function createmedia to keep original media file without watermark
-- Bug fix: function creatmedia did not use comma as sperator when using multiple FFMPEG video filters at once
-- Bug fix: the install script did not empty the %instances% place holder
+- Bug fix: Function creatmedia did not use comma as sperator when using multiple FFMPEG video filters at once
+- Bug fix: The install script did not empty the %instances% place holder
 - Implementation of instances path verification in userlogin
 
 Version 5.8.3
@@ -1035,8 +1035,8 @@ Release 12/2015
 - Improvements in function errorhandler to support error notices
 - Improvements in template engine to skip further execution if an error occured
 - Improvements in function showinlineeditor to avoid changes in font-style in WYSIWYG inline editing mode
-- Bug fix: targetlist has not been read from the request in link_edit_page
-- Bug fix: undefined variable list_array in link_edit_page
+- Bug fix: Targetlist has not been read from the request in link_edit_page
+- Bug fix: Undefined variable list_array in link_edit_page
 - Improvements in template editor
 - Implementation of new attribute prefix ans suffix for all hypercms text tags; prefix and suffix will be appended to the not empty text content
 - Implementation of third secure input parameter for function getattribute to secure (XSS) return value or not
@@ -1045,9 +1045,9 @@ Release 12/2015
 - Fixed head edit buttons position for WYSIWYG view modes of template engine
 - Implementation of user information in content comparison
 - Implementation on new versions of content on save (new configuration paramater $mgmt_config['contentversions_all'])
-- Bug fix: function createversion used working container file extension when creating a new version
-- Bug fix: original media with and height file parameters have not been correctly set by function showmedia
-- Bug fix: reduced minimal thumbnail size from 400 to 10 bytes for thumbnail image file size check due to thumbnails that can be smaller than 400 bytes
+- Bug fix: Function createversion used working container file extension when creating a new version
+- Bug fix: Original media with and height file parameters have not been correctly set by function showmedia
+- Bug fix: Reduced minimal thumbnail size from 400 to 10 bytes for thumbnail image file size check due to thumbnails that can be smaller than 400 bytes
 
 Version 5.8.4
 Release 12/2015
@@ -1064,7 +1064,7 @@ Release 12/2015
 - Implementation of an alarm if the finish date of a task has been reached
 - Update of task home box to work with new task functions
 - New text for task management in all language files
-- Bug fix: undefined variable charset in user_sendlink
+- Bug fix: Undefined variable charset in user_sendlink
 - Minor improvements imn hyperCMs UI
 - Changed max. task description length from 1600 to 3600 digits
 - Implementation of HTML support for e-mail notifications and task notifications
@@ -1073,6 +1073,14 @@ Release 12/2015
 - Added support for array in DB Connect function escape_string
 - Implementation of new function tasknotification
 - Implementation of task notification in daily jobs
+- Implementation of support of loop, muted and controls support for videoplayer. New input parameters loop, muted and controls for function showvideoplayer and showaudioplayer.
+- Implementation of loop, muted and controls support in CKEditor Video Plugin.
+- Implementation of loop, muted and controls support in media_playerconfig
+- Removed keyboard controls support for videoplayer (since only supported by PROJEKKTOR)
+- Implementation of new text in all language files
+- Bug fix: If the task has been activated in user_sendlink the access link type has been checked automatically without unchecking all other types
+- Improvements in template engine for comments
+- Improvements in function getmetadata to add space after comma in order to allow automatic line breaks
 */
 
 // current version

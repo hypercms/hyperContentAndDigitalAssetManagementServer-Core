@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['no'] = "Søkeord me
 $hcms_lang['video-text-track']['no'] = "Video tekstspor";
 $hcms_lang['copy-tracks-from-previously-selected-language']['no'] = "Kopiere spor fra tidligere valgte språket?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['no'] = "Prefiks og suffiks vil bli lagt til innhold hvis det ikke er tomt";
+$hcms_lang['loop']['no'] = "Sløyfe";
+$hcms_lang['muted']['no'] = "Dempet";
+$hcms_lang['controls']['no'] = "Kontroller";
+$hcms_lang['project']['no'] = "Prosjekt";
+$hcms_lang['work-order']['no'] = "Arbeidsordre";
 ?>

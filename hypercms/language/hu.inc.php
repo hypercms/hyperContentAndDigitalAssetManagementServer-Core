@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['hu'] = "Kulcsszavak
 $hcms_lang['video-text-track']['hu'] = "Videó szöveget pálya";
 $hcms_lang['copy-tracks-from-previously-selected-language']['hu'] = "Másolni zeneszámokat a korábban kiválasztott nyelven?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['hu'] = "Előtag és az utótag bekerül tartalmat, ha nem üres";
+$hcms_lang['loop']['hu'] = "Hurok";
+$hcms_lang['muted']['hu'] = "Némítva";
+$hcms_lang['controls']['hu'] = "Kezelőszervek";
+$hcms_lang['project']['hu'] = "A projekt";
+$hcms_lang['work-order']['hu'] = "Munkalap";
 ?>

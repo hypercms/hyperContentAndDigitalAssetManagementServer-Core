@@ -1318,4 +1318,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['de'] = "Keywords mi
 $hcms_lang['video-text-track']['de'] = "Video text track";
 $hcms_lang['copy-tracks-from-previously-selected-language']['de'] = "Kopiere Tracks von der zuvor gewählten Sprache?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['de'] = "Präfix und Suffix wird zum Inhalt hinzugefügt, wenn dieser nicht leer ist";
+$hcms_lang['loop']['de'] = "Schleife";
+$hcms_lang['muted']['de'] = "Stumm schalten";
+$hcms_lang['controls']['de'] = "Bedienelemente";
+$hcms_lang['project']['de'] = "Projekt";
+$hcms_lang['work-order']['de'] = "Arbeitsauftrag";
 ?>

@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ko'] = "선택 필�
 $hcms_lang['video-text-track']['ko'] = "비디오 텍스트 트랙";
 $hcms_lang['copy-tracks-from-previously-selected-language']['ko'] = "이전에 선택한 언어에서 트랙을 복사?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['ko'] = "이 비어 있지 않은 경우 접두사 및 접미사 콘텐츠에 추가 될";
+$hcms_lang['loop']['ko'] = "루프";
+$hcms_lang['muted']['ko'] = "음소거됨";
+$hcms_lang['controls']['ko'] = "컨트롤";
+$hcms_lang['project']['ko'] = "프로젝트";
+$hcms_lang['work-order']['ko'] = "작업 지시";
 ?>

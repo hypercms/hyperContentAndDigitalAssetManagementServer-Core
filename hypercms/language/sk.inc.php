@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['sk'] = "Kľúčové
 $hcms_lang['video-text-track']['sk'] = "Video Text skladby";
 $hcms_lang['copy-tracks-from-previously-selected-language']['sk'] = "Kopírovať skladby z predtým zvolenom jazyku?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['sk'] = "Predpona a prípona bude pridaná k obsahu, pokiaľ nie je prázdny";
+$hcms_lang['loop']['sk'] = "Slučky";
+$hcms_lang['muted']['sk'] = "Stlmený";
+$hcms_lang['controls']['sk'] = "Ovládacie prvky";
+$hcms_lang['project']['sk'] = "Projekt";
+$hcms_lang['work-order']['sk'] = "Pracovný príkaz";
 ?>

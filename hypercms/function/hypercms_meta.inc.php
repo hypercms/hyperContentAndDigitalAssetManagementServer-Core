@@ -342,7 +342,7 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
       {
         $metadata = Null;
       
-        // if no template and no lables are given
+        // if no template and no labels are defined
         if (!is_array ($labels))
         {
   				$textnode = getcontent ($contentdata, "<text>");
@@ -364,6 +364,12 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
               
     						$text_content = getcontent ($buffer, "<textcontent>");
     						$text_content[0] = str_replace ("\"", "'", strip_tags ($text_content[0]));
+                
+                // add space after comma
+                if (strpos ($text_content[0], ",") > 0 && strpos ($text_content[0], ", ") < 1)
+                {
+                  $text_content[0] = str_replace (",", ", ", $text_content[0]);
+                }
                 
     						if (strtolower ($seperator) != "array") $metadata .= $label.": ".$text_content[0].$seperator;
                 else $metadata[$label] = $text_content[0];
@@ -387,6 +393,12 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
               {
                 $text_content = getcontent ($textnode[0], "<textcontent>");
                 $text_content[0] = str_replace ("\"", "'", strip_tags ($text_content[0]));
+                
+                // add space after comma
+                if (strpos ($text_content[0], ",") > 0 && strpos ($text_content[0], ", ") < 1)
+                {
+                  $text_content[0] = str_replace (",", ", ", $text_content[0]);
+                }
                 
     						$text_str = $text_content[0];
               }

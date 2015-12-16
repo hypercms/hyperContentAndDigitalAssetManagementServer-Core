@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['sv'] = "Sökord med
 $hcms_lang['video-text-track']['sv'] = "Videotextspår";
 $hcms_lang['copy-tracks-from-previously-selected-language']['sv'] = "Kopiera spår från tidigare valda språket?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['sv'] = "Prefix och suffix kommer att läggas till innehåll om det inte är tom";
+$hcms_lang['loop']['sv'] = "Slinga";
+$hcms_lang['muted']['sv'] = "Avstängt";
+$hcms_lang['controls']['sv'] = "Reglage";
+$hcms_lang['project']['sv'] = "Projekt";
+$hcms_lang['work-order']['sv'] = "Arbetsorder";
 ?>

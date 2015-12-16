@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['uk'] = "Ключо�
 $hcms_lang['video-text-track']['uk'] = "Відео текст трек";
 $hcms_lang['copy-tracks-from-previously-selected-language']['uk'] = "Скопіюйте доріжки з раніше вибраної мови?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['uk'] = "Префікса і суфікса буде додано до вмісту, якщо він не порожній";
+$hcms_lang['loop']['uk'] = "Петля для пояса";
+$hcms_lang['muted']['uk'] = "Звук вимкнено";
+$hcms_lang['controls']['uk'] = "Елементи керування";
+$hcms_lang['project']['uk'] = "Проект";
+$hcms_lang['work-order']['uk'] = "Порядок роботи";
 ?>

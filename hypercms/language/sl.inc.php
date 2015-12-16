@@ -1315,4 +1315,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['sl'] = "Ključne be
 $hcms_lang['video-text-track']['sl'] = "Video besedilo track";
 $hcms_lang['copy-tracks-from-previously-selected-language']['sl'] = "Kopirate skladbe iz predhodno izbranem jeziku?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['sl'] = "Predpona in pripona bo dodan vsebino, če to ni prazna";
+$hcms_lang['loop']['sl'] = "Zanka";
+$hcms_lang['muted']['sl'] = "Izklopljen";
+$hcms_lang['controls']['sl'] = "Kontrole";
+$hcms_lang['project']['sl'] = "Projekt";
+$hcms_lang['work-order']['sl'] = "Delovnega naloga";
 ?>

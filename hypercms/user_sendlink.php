@@ -511,7 +511,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
         }
         
         $mail_fullbody .= $mail_signature;
-        $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\">".$mail_fullbody."</span>";
+        $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">".$mail_fullbody."</span>";
 
         // subject and body
         $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang]);
@@ -826,7 +826,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
             }
             
             $mail_fullbody .= $mail_signature;
-            $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\">".$mail_fullbody."</span>";
+            $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">".$mail_fullbody."</span>";
             
             // mail header
             // if the mailserver config entry is empty, the email address of the user will be used for FROM

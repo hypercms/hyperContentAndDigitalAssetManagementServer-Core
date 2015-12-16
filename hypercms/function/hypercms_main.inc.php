@@ -3022,7 +3022,7 @@ function createtask ($site, $from_user, $from_email, $to_user, $to_email, $start
       if ($from_email != "") $email_schema = " [<a href='mailto:".$from_email."'>".$from_email."</a>]";
       else $email_schema = "";
       
-      $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\"><strong>".$hcms_lang['new-task-from-user'][$to_lang]." '".$from_user."'".$email_schema.":</strong>\n".$message."\n\n".$object_link."</span>";
+      $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\"><strong>".$hcms_lang['new-task-from-user'][$to_lang]." '".$from_user."'".$email_schema.":</strong>\n".$message."\n\n".$object_link."</span>";
   
       $mailer = new HyperMailer();
       $mailer->IsHTML(true);
@@ -3150,7 +3150,7 @@ function settask ($task_id, $to_user="", $startdate="", $finishdate="", $tasknam
         if ($from_email != "") $email_schema = " [<a href='mailto:".$from_email."'>".$from_email."</a>]";
         else $email_schema = "";
       
-        $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\"><strong>".$hcms_lang['new-task-from-user'][$to_lang]." '".$from_user."'".$email_schema.":</strong>\n".$message."\n\n".$object_link."</span>";
+        $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\"><strong>".$hcms_lang['new-task-from-user'][$to_lang]." '".$from_user."'".$email_schema.":</strong>\n".$message."\n\n".$object_link."</span>";
     
         $mailer = new HyperMailer();
         $mailer->IsHTML(true);
@@ -3347,7 +3347,7 @@ function tasknotification ($date)
             if ($from_user != "" && !empty ($user_array[$from_user]['email'])) $email_schema = " [<a href='mailto:".$user_array[$from_user]['email']."'>".$user_array[$from_user]['email']."</a>]";
             else $email_schema = "";
           
-            $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\"><strong>".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['start'][$to_lang]." '".$taskname."' (".$task_id.")</strong>\n".$hcms_lang['from'][$to_lang]." ".$from_user."'".$email_schema."\n\n".$description."\n\n".$object_link."</span>";
+            $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\"><strong>".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['start'][$to_lang]." '".$taskname."' (".$task_id.")</strong>\n".$hcms_lang['from'][$to_lang]." ".$from_user."'".$email_schema."\n\n".$description."\n\n".$object_link."</span>";
         
             $mailer = new HyperMailer();
             $mailer->IsHTML(true);
@@ -3397,7 +3397,7 @@ function tasknotification ($date)
             if ($from_user != "" && !empty ($user_array[$from_user]['email'])) $email_schema = " [<a href='mailto:".$user_array[$from_user]['email']."'>".$user_array[$from_user]['email']."</a>]";
             else $email_schema = "";
           
-            $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\"><strong>".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['end'][$to_lang]." '".$taskname."' (".$task_id.")</strong>\n".$hcms_lang['from'][$to_lang]." ".$from_user."'".$email_schema."\n\n".$description."\n\n".$object_link."</span>";
+            $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\"><strong>".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['end'][$to_lang]." '".$taskname."' (".$task_id.")</strong>\n".$hcms_lang['from'][$to_lang]." ".$from_user."'".$email_schema."\n\n".$description."\n\n".$object_link."</span>";
         
             $mailer = new HyperMailer();
             $mailer->IsHTML(true);
@@ -17006,14 +17006,14 @@ function notifyusers ($site, $location, $object, $event, $user_from)
             
               // mail notification
               $mail_title = $hcms_lang['hypercms-notification'][$lang_to];
-              $mail_fullbody = str_replace ("%user%", $user_from, $text_opt)."\n";
+              $mail_fullbody = "<b>".str_replace ("%user%", $user_from, $text_opt)."</b>\n";
               $mail_fullbody .= $mgmt_config['today']." ";
               if ($cat == "comp") $mail_fullbody .= $hcms_lang['in-assets'][$lang_to];
               elseif ($cat == "page") $mail_fullbody .= $hcms_lang['in-pages'][$lang_to];
               $mail_fullbody .= ": ".$object_name;
               if ($accesslink != "") $mail_fullbody .=  " (".$accesslink.")";          
               $mail_fullbody .= "\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang_to];
-              $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\">".$mail_fullbody."</span>";
+              $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">".$mail_fullbody."</span>";
           
               $mailer = new HyperMailer();
              
@@ -17124,7 +17124,7 @@ function licensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $
 
               // mail notification
               $mail_title = $hcms_lang['hypercms-warning-regarding-copyrights'][$lang_to];
-              $mail_fullbody = $hcms_lang['the-following-copyrights-are-due-shortly'][$lang_to]."\n";
+              $mail_fullbody = "<b>".$hcms_lang['the-following-copyrights-are-due-shortly'][$lang_to]."</b>\n";
               
               foreach ($result_array as $result)
               { 
@@ -17133,7 +17133,7 @@ function licensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $
               }
               
               $mail_fullbody .= "\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang_to];              
-              $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;\">".$mail_fullbody."</span>";
+              $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">".$mail_fullbody."</span>";
              
               $mailer = new HyperMailer();
              

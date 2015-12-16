@@ -2580,7 +2580,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     
                     if (is_array ($bufferarray)) 
                     {
-                      $contentcomment = "<div>\n";
+                      $contentcomment = "
+                      <div style=\"display:block; width:".$sizewidth.(strpos ($sizewidth, "%") > 0 ? "" : "px").";\">";
                       
                       foreach ($bufferarray as $data) 
                       {
@@ -2591,37 +2592,48 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if (!empty ($tmpid[0]) && !empty ($tmpcontent[0])) 
                         {
                           // only for form views
-                          if ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") $contentcomment .= "<div style=\"margin-bottom:2px;\">\n";
-                          elseif ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview") $contentcomment .= "<div class=\"hcms_comment\">\n";
+                          if ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") $contentcomment .= "
+                        <div style=\"margin-bottom:2px;\">";
+                          elseif ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview") $contentcomment .= "
+                        <div class=\"hcms_comment\">";
                           
                           list ($name, $microtime) = explode (":", $tmpid[0]);
                           
                           $date_format = 'Y-m-d H:i:s';
                           if (is_array ($hcms_lang_date) && $hcms_lang_date[$lang] != false) $date_format = $hcms_lang_date[$lang];
                                                     
-                          if ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") $contentcomment .= "<div class=\"hcmsWorkplaceExplorer\" style=\"width:100%; padding:3px;\">".getescapedtext (str_replace(array('%date%', '%user%'), array(date($date_format, $microtime), $tmpuser[0]), $hcms_lang['date-by-user'][$lang]), $charset, $lang);
-                          elseif ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview") $contentcomment .= "<div class=\"hcms_comment_header\">".getescapedtext (str_replace(array('%date%', '%user%'), array(date($date_format, $microtime), $tmpuser[0]), $hcms_lang['date-by-user'][$lang]), $charset, $lang);
+                          if ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") $contentcomment .= "
+                          <div class=\"hcmsWorkplaceExplorer\" style=\"width:100%; height:20px; padding:3px 0px 3px 0px;\">&nbsp;".getescapedtext (str_replace(array('%date%', '%user%'), array(date($date_format, $microtime), $tmpuser[0]), $hcms_lang['date-by-user'][$lang]), $charset, $lang);
+                          elseif ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview") $contentcomment .= "
+                          <div class=\"hcms_comment_header\">".getescapedtext (str_replace(array('%date%', '%user%'), array(date($date_format, $microtime), $tmpuser[0]), $hcms_lang['date-by-user'][$lang]), $charset, $lang);
                           
                           // is the current user allowed to delete a comment
                           if ($tmpuser[0] == $user || checkadminpermission () || checkglobalpermission ($site, 'user'))
                           {
-                            if ($buildview == "formedit" || $buildview == "formmeta") $contentcomment .= "<span style=\"float:right;\"><input id=\"textf_".$tmpid[0]."\" type=\"hidden\" name=\"textf[".$tmpid[0]."]\" DISABLED/><input id='delete_".$tmpid[0]."' type='checkbox' onclick=\"deleteComment(document.getElementById('textf_".$tmpid[0]."'), !this.checked);\"/><label for=\"delete_".$tmpid[0]."\">".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."</label></span>\n";
-                            elseif ($buildview == "cmsview" || $buildview == "inlineview") $contentcomment .= "<span style=\"float:right;\"><a hypercms_href=\"".$mgmt_config['url_path_cms']."service/savecontent.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&textf[".$tmpid[0]."]=&token=".$token."\" /><img src=\"".getthemelocation()."img/button_delete.gif\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a></span>\n";
+                            if ($buildview == "formedit" || $buildview == "formmeta") $contentcomment .= "
+                          <span style=\"float:right;\"><input id=\"textf_".$tmpid[0]."\" type=\"hidden\" name=\"textf[".$tmpid[0]."]\" DISABLED /><input id='delete_".$tmpid[0]."' type='checkbox' onclick=\"deleteComment(document.getElementById('textf_".$tmpid[0]."'), !this.checked);\"/>&nbsp;<label for=\"delete_".$tmpid[0]."\">".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."</label>&nbsp;</span>";
+                            elseif ($buildview == "cmsview" || $buildview == "inlineview") $contentcomment .= "
+                          <span style=\"float:right;\"><a hypercms_href=\"".$mgmt_config['url_path_cms']."service/savecontent.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&textf[".$tmpid[0]."]=&token=".$token."\" /><img src=\"".getthemelocation()."img/button_delete.gif\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a></span> ";
                           }
 
-                          $contentcomment .= "</div>\n";
+                          $contentcomment .= "
+                        </div>";
                           
-                          if ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") $contentcomment .= "<div class=\"hcmsRowData2\" style=\"width:100%; padding:3px;\">".$tmpcontent[0]."</div>\n";
-                          elseif ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview") $contentcomment .= "<div class=\"hcms_comment_content\">".$tmpcontent[0]."</div>\n";
+                          if ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") $contentcomment .= "
+                        <div class=\"hcmsRowData2\" style=\"width:100%; padding:3px 0px 0px 0px;\">".$tmpcontent[0]."</div>\n";
+                          elseif ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview") $contentcomment .= "
+                        <div class=\"hcms_comment_content\">".$tmpcontent[0]."</div>\n";
                           
-                          $contentcomment .= "</div>\n";
+                          $contentcomment .= "
+                      </div>";
                         }
                       }
                       
                       if ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
                         // only for form views
-                        $contentcomment .= "</div>\n";
+                        $contentcomment .= "
+                    </div>";
                       }
                     }
                     
@@ -2842,7 +2854,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <td align=left valign=top>
                             <b>".$labelname."</b>
                           </td>
-                          <td align=left valign=top>
+                          <td align=left valign=top style=\"width:".$sizewidth.(strpos ($sizewidth, "%") > 0 ? "" : "px")."\">
                             <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
                             <input name=\"".$hypertagname."_".$id."\" id=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px;\"".$disabled." value=\"".$contentbot."\" />
                           </td>

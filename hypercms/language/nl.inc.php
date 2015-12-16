@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['nl'] = "Trefwoorden
 $hcms_lang['video-text-track']['nl'] = "Video tekstspoor";
 $hcms_lang['copy-tracks-from-previously-selected-language']['nl'] = "Kopiëren tracks van eerder geselecteerde taal?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['nl'] = "Prefix en suffix zal worden toegevoegd aan de inhoud als het niet leeg is";
+$hcms_lang['loop']['nl'] = "Lus";
+$hcms_lang['muted']['nl'] = "Gedempt";
+$hcms_lang['controls']['nl'] = "Bedieningselementen";
+$hcms_lang['project']['nl'] = "Project";
+$hcms_lang['work-order']['nl'] = "Werkorder";
 ?>

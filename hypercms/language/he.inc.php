@@ -1317,4 +1317,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['he'] = "מילות 
 $hcms_lang['video-text-track']['he'] = "מסלול טקסט וידאו";
 $hcms_lang['copy-tracks-from-previously-selected-language']['he'] = "העתק רצועות מהשפה שנבחרה קודם לכן?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['he'] = "קידומת וסיומת תתווסף לתוכן, אם זה לא ריק";
+$hcms_lang['loop']['he'] = "לופ";
+$hcms_lang['muted']['he'] = "מושתק";
+$hcms_lang['controls']['he'] = "פקדים";
+$hcms_lang['project']['he'] = "Project";
+$hcms_lang['work-order']['he'] = "הזמנות עבודה";
 ?>

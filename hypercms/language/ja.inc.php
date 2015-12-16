@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ja'] = "オプシ�
 $hcms_lang['video-text-track']['ja'] = "ビデオテキストトラック";
 $hcms_lang['copy-tracks-from-previously-selected-language']['ja'] = "以前に選択した言語からトラックをコピーしますか？";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['ja'] = "それが空でない場合は接頭辞と接尾辞は、コンテンツに付加され";
+$hcms_lang['loop']['ja'] = "ループ";
+$hcms_lang['muted']['ja'] = "ミュートに設定されて";
+$hcms_lang['controls']['ja'] = "コントロール";
+$hcms_lang['project']['ja'] = "プロジェクト";
+$hcms_lang['work-order']['ja'] = "作業オーダ";
 ?>

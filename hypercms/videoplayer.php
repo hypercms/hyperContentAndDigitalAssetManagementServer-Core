@@ -25,12 +25,14 @@ $site = getrequest_esc ("site", "publicationname");
 $logo = getrequest_esc ("logo", "url", NULL);
 $title = getrequest_esc ("title", "objectname", NULL);
 $autoplay = getrequest ("autoplay", "bool", false);
-$enableFullScreen = getrequest ("fullscreen", "bool", true);
-$enableKeyBoard = getrequest ("keyboard", "bool", true);
-$enablePause = getrequest ("pause", "bool", true);
-$enableSeek = getrequest ("seek", "bool", true);
+$fullscreen = getrequest ("fullscreen", "bool", true);
+$pause = getrequest ("pause", "bool", true);
+$seek = getrequest ("seek", "bool", true);
 $width = getrequest_esc ("width", "numeric", 0);
 $height = getrequest_esc ("height", "numeric", 0);
+$loop = getrequest ("loop", "bool", false);
+$muted = getrequest ("muted", "bool", false);
+$controls = getrequest ("controls", "bool", false);
 
 // language file
 require ("language/".getlanguagefile ($lang));
@@ -143,8 +145,8 @@ if (is_array ($config))
   // config version 2.0 and up
   if (intval ($config['version']) >= 2) 
   {
-    if ($audio) $playercode = showaudioplayer ($site, $config['mediafiles'], $width, $height, $logo, "", $autoplay, false);
-    else $playercode = showvideoplayer ($site, $config['mediafiles'], $width, $height, $logo, "", $title, $autoplay, $enableFullScreen, $enableKeyBoard, $enablePause, $enableSeek, true);
+    if ($audio) $playercode = showaudioplayer ($site, $config['mediafiles'], $width, $height, $logo, "", $autoplay, $loop, $controls, false);
+    else $playercode = showvideoplayer ($site, $config['mediafiles'], $width, $height, $logo, "", $title, $autoplay, $fullscreen, $pause, $seek, $loop, $muted, $controls, true);
   }
   // player code is embedded in config
   else

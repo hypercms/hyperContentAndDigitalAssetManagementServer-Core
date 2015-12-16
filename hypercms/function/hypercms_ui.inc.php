@@ -1154,7 +1154,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
         
         // generate player code
-        $playercode = showvideoplayer ($site, @$config['mediafiles'], $mediawidth, $mediaheight, "", "cut", "", false, true, true, true, true, false, true);
+        $playercode = showvideoplayer ($site, @$config['mediafiles'], $mediawidth, $mediaheight, "", "cut", "", false, true, true, true, true, false, false, false, true);
       
         $mediaview .= "
         <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
@@ -2838,24 +2838,28 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 // ------------------------- showvideoplayer -----------------------------
 // function: showvideoplayer()
 // input:
-// videoArray (Array) containing the different html sources
-// width (Integer) Width of the video in pixel
-// height (Integer) Height of the video in pixel
-// logo_url (String) Link to the logo which is displayed before you click on play (If the value is null the default logo will be used)
-// id (String) The ID of the video (will be generated when empty)
-// title (String) The title for this video
-// autoplay (Boolean) Should the video be played on load (true), default is false
-// enableFullScreen (Boolean) Is it possible to view the video in fullScreen (true)
-// enableKeyBoard (Boolean) Is it possible to use the Keyboard (true)
-// enablePause (Boolean) Is it possible to pause the video (true)
-// enableSeek (Boolean) Is it possible to seek or to skip the video (true)
-// reload video sources to prevent the browser cache to show the same video even if it has been changed [true,false] (optional)
+// videoArray (Array) containing the different html sources,
+// width (Integer) Width of the video in pixel,
+// height (Integer) Height of the video in pixel,
+// logo_url (String) Link to the logo which is displayed before you click on play (If the value is null the default logo will be used),
+// id (String) The ID of the video (will be generated when empty),
+// title (String) The title for this video,
+// autoplay (Boolean) Should the video be played on load (true), default is false,
+// enableFullScreen (Boolean) Is it possible to view the video in fullScreen (true),
+// enablePause (Boolean) Is it possible to pause the video (true),
+// enableSeek (Boolean) Is it possible to seek or to skip the video (true),
+// play loop (optional) [true,false],
+// muted/no sound (optional) [true,false],
+// player controls (optional) [true,false],
+// use video in iframe (optional) [true,false],
+// reload video sources to prevent the browser cache to show the same video even if it has been changed [true,false] (optional),
+
 // output: HTML code of the video player / false on error
 
 // description:
 // generates a html segment for the video code we use.
 
-function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_url="", $id="", $title="", $autoplay=true, $enableFullScreen=true, $enableKeyBoard=true, $enablePause=true, $enableSeek=true, $iframe=false, $force_reload=false)
+function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_url="", $id="", $title="", $autoplay=true, $enableFullScreen=true, $enablePause=true, $enableSeek=true, $loop=false, $muted=false, $controls=true, $iframe=false, $force_reload=false)
 {
   global $mgmt_config;
   
@@ -2976,7 +2980,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
     if (isset ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor")
     {
       $return = '
-  <video id="hcms_mediaplayer_'.$id.'" class="projekktor"'.((!empty($logo_url)) ? ' poster="'.$logo_url.'" ' : ' ').((!empty($title)) ? ' title="'.$title.'" ' : ' ').'width="'.$width.'" height="'.$height.'" '.($enableFullScreen ? 'allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" ' : '').'controls>'."\n";
+  <video id="hcms_mediaplayer_'.$id.'" class="projekktor"'.(($loop) ? ' loop ' : ' ').(($muted) ? ' muted ' : ' ').((!empty($logo_url)) ? ' poster="'.$logo_url.'" ' : ' ').((!empty($title)) ? ' title="'.$title.'" ' : ' ').'width="'.$width.'" height="'.$height.'" '.($enableFullScreen ? 'allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" ' : '').(($controls) ? ' controls' : '').'>'."\n";
 
       $return .= $sources;
     
@@ -2997,7 +3001,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
       $return .= '
       autoplay: '.(($autoplay) ? 'true' : 'false').',
       enableFullscreen: '.(($enableFullScreen) ? 'true' : 'false').',
-      enableKeyboard: '.(($enableKeyBoard) ? 'true' : 'false').',
+      enableKeyboard: true,
       disablePause: '.(($enablePause) ? 'false' : 'true').',
       disallowSkip: '.(($enableSeek) ? 'false' : 'true').',
       playerFlashMP4: "'.$flashplayer.'"';
@@ -3020,9 +3024,9 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
       if (isset ($user_client['msie']) && $user_client['msie'] > 0) $fallback = ", \"playerFallbackOrder\":[\"flash\", \"html5\", \"links\"]";
       else $fallback = "";
     
-      $return = "  <video id=\"hcms_mediaplayer_".$id."\" class=\"video-js vjs-default-skin\" controls ".(($autoplay) ? "autoplay" : "")." preload=\"auto\" 
-    width=\"".intval($width)."\" height=\"".intval($height)."\" ".(($logo_url != "") ? "poster=\"".$logo_url."\"" : "")."
-    data-setup='{\"loop\":false".$fallback."}' title=\"".$title."\" ".($enableFullScreen ? "allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"" : "").">\n";
+      $return = "  <video id=\"hcms_mediaplayer_".$id."\" class=\"video-js vjs-default-skin\" ".(($controls) ? " controls" : "").(($loop) ? " loop" : "").(($muted) ? " muted" : "").(($autoplay) ? " autoplay" : "")." preload=\"auto\" 
+    width=\"".intval($width)."\" height=\"".intval($height)."\"".(($logo_url != "") ? " poster=\"".$logo_url."\"" : "")."
+    data-setup='{\"loop\":false".$fallback."}' title=\"".$title."\"".($enableFullScreen ? " allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"" : "").">\n";
     
       $return .= $sources;
       
@@ -3099,13 +3103,13 @@ function showvideoplayer_head ($secureHref=true, $enableFullScreen=true)
 // ------------------------- showaudioplayer -----------------------------
 // function: showaudioplayer()
 // input: publication name, audio files as array (Array), ID of the tag (optional),
-//        autoplay (optional), play loop (optional)
+//        autoplay (optional) [true,false], play loop (optional) [true,false], player controls (optional) [true,false]
 // output: String Code for the HTML
 
 // description:
 // Generates a html segment for the video code we use. False on error.
 
-function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url="", $id="", $autoplay=false, $loop=false, $force_reload=false)
+function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url="", $id="", $autoplay=false, $loop=false, $controls=true, $force_reload=false)
 {
   global $mgmt_config;
   
@@ -3222,9 +3226,8 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
     if ($loop == true || $loop == 1 || strtolower ($loop) == "true") $loop = "true";
     else $loop = "false";
     
-    $return = "  <audio id=\"hcms_mediaplayer_".$id."\" class=\"video-js vjs-default-skin\" controls ".(($autoplay) ? "autoplay" : "")." preload=\"auto\" 
-    width=\"".$width."\" height=\"".$height."\" ".(($logo_url != "") ? "poster=\"".$logo_url."\"" : "")."
-    data-setup='{\"loop\":".$loop."".$fallback."}'>\n";
+    $return = "  <audio id=\"hcms_mediaplayer_".$id."\" class=\"video-js vjs-default-skin\"".(($controls) ? " controls" : "").(($autoplay) ? " autoplay" : "")." preload=\"auto\" 
+    width=\"".$width."\" height=\"".$height."\"".(($logo_url != "") ? " poster=\"".$logo_url."\"" : "").(($loop) ? " loop" : "")." data-setup='{\"loop\":".$loop."".$fallback."}'>\n";
 
     $return .= $sources;
     

@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['es'] = "Las palabra
 $hcms_lang['video-text-track']['es'] = "Vídeo pista de texto";
 $hcms_lang['copy-tracks-from-previously-selected-language']['es'] = "Copiar pistas de idioma seleccionado previamente?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['es'] = "Se añadirán prefijo y sufijo al contenido si no está vacío";
+$hcms_lang['loop']['es'] = "Loop";
+$hcms_lang['muted']['es'] = "Silenciado";
+$hcms_lang['controls']['es'] = "Controles";
+$hcms_lang['project']['es'] = "Proyecto";
+$hcms_lang['work-order']['es'] = "Orden de trabajo";
 ?>

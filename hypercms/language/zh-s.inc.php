@@ -1317,4 +1317,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['zh-s'] = "关键词
 $hcms_lang['video-text-track']['zh-s'] = "视频文本轨道";
 $hcms_lang['copy-tracks-from-previously-selected-language']['zh-s'] = "从复制以前选择语言轨道？";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['zh-s'] = "前缀和后缀将被添加到的内容，如果它不是空";
+$hcms_lang['loop']['zh-s'] = "循环";
+$hcms_lang['muted']['zh-s'] = "静音";
+$hcms_lang['controls']['zh-s'] = "控件";
+$hcms_lang['project']['zh-s'] = "项目";
+$hcms_lang['work-order']['zh-s'] = "工作单";
 ?>

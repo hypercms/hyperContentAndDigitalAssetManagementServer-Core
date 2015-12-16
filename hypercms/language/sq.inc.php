@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['sq'] = "Fjalë kyç
 $hcms_lang['video-text-track']['sq'] = "Udhë text Video";
 $hcms_lang['copy-tracks-from-previously-selected-language']['sq'] = "Kopjoni gjurmët nga gjuha e zgjedhur më parë?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['sq'] = "Parashtesë dhe prapashtesë do të shtohet në përmbajtje në qoftë se ajo nuk është e zbrazët";
+$hcms_lang['loop']['sq'] = "Të kthehemi vertikalisht";
+$hcms_lang['muted']['sq'] = "Të heshtur";
+$hcms_lang['controls']['sq'] = "Kontrollon";
+$hcms_lang['project']['sq'] = "Projekti";
+$hcms_lang['work-order']['sq'] = "Puno mënyrë";
 ?>

@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['ru'] = "Ключе�
 $hcms_lang['video-text-track']['ru'] = "Видео текст трек";
 $hcms_lang['copy-tracks-from-previously-selected-language']['ru'] = "Скопируйте дорожки из ранее выбранного языка?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['ru'] = "Префикса и суффикса будет добавлен к содержимому, если он не пустой";
+$hcms_lang['loop']['ru'] = "Холодильный контур";
+$hcms_lang['muted']['ru'] = "Звук отключен";
+$hcms_lang['controls']['ru'] = "Органы управления";
+$hcms_lang['project']['ru'] = "Проект";
+$hcms_lang['work-order']['ru'] = "Порядок работы";
 ?>

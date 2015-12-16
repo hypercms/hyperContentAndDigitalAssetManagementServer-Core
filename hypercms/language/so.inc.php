@@ -1316,4 +1316,9 @@ $hcms_lang['keywords-with-optional-mandatory-or-open-list']['so'] = "Erayada fur
 $hcms_lang['video-text-track']['so'] = "Track text Video";
 $hcms_lang['copy-tracks-from-previously-selected-language']['so'] = "Copy kuwan raadkaygay ka luqadda hore soo xulay?";
 $hcms_lang['prefix-and-suffix-will-be-added-to-content-if-it-is-not-empty']['so'] = "Horgalaha iyo qadarin ah lagu dari doonaa content haddii aanay madhan";
+$hcms_lang['loop']['so'] = "Loop";
+$hcms_lang['muted']['so'] = "Muted";
+$hcms_lang['controls']['so'] = "Taliyo";
+$hcms_lang['project']['so'] = "Mashruuca";
+$hcms_lang['work-order']['so'] = "Amarka Shaqada";
 ?>
