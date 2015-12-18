@@ -511,6 +511,18 @@
   top: 1px;
 }
 
+.hcmsMore
+{
+  border-top: 1px solid #6F6F6F;
+  background-color: #7B7B7B;
+  cursor: pointer; 
+}
+
+.hcmsMore:hover
+{
+  background-color: #3E3E3E;
+}
+
 .hcmsSelector
 {
   margin: 0;

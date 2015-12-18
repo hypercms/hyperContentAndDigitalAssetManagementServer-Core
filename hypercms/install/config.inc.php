@@ -406,7 +406,7 @@ $mgmt_config['strongpassword'] = false;
 
 // Encryption
 // Encryption strength (weak, standard, strong)
-$mgmt_config['crypt_level'] = "standard";
+$mgmt_config['crypt_level'] = "strong";
 
 // Key used for en/decryption of temporary system data (key length must be 8, 16, or 32)
 $mgmt_config['crypt_key'] = "h1y2p3e4r5c6m7s8";

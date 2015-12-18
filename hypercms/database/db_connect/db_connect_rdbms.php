@@ -2745,7 +2745,8 @@ function rdbms_createtask ($object_id, $from_user="", $to_user, $startdate="", $
     if ($from_user == "")
     {
       if (!empty ($_SESSION['hcms_user'])) $from_user = $_SESSION['hcms_user'];
-      else $from_user = getuserip ();
+      elseif (getuserip () != "") $from_user = getuserip ();
+      else $from_user = "System";
     }
 
     // insert

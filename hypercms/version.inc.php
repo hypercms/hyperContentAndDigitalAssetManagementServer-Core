@@ -588,7 +588,7 @@ Release 01/2015
 - New publication setting for container and media file encryption
 - New function loadfile_header to load file partially in order to determine if fill is encrypted
 - Removed Tamino support
-- Removed all $_SERVER['PHP_SELF'] in all forms due to XSS weakness
+- Removed all $_SERVER['PHP_SELF'] in all forms due to XSS
 - Bug fix: Working content container could be checked out by several users
 - Bug fix: Function loadcontainer restored working container if it was locked by another user
 - Bug fix: CSS issue with chat in IE 8 and 9
@@ -1019,10 +1019,10 @@ Release 11/2015
 - Implementation of function avoidfilecollision due to issues when manipulating encrypted files with e.g. function createmedia and the shell execute file process has not been finished
 - Removed file encryption feature from free to standard and enterprise edition
 - Improvements in hyperCMS UI
-- Bug fix: Function creatmedia did not render edited videos proberly if the file has been encrypted
+- Bug fix: Function creatmedia did not render edited videos properly if the file has been encrypted
 - Bug fix: Function creatmedia passed wrong file name to createversion if the file has been encrypted
 - Change of watermarking in function createmedia to keep original media file without watermark
-- Bug fix: Function creatmedia did not use comma as sperator when using multiple FFMPEG video filters at once
+- Bug fix: Function creatmedia did not use comma as separator when using multiple FFMPEG video filters at once
 - Bug fix: The install script did not empty the %instances% place holder
 - Implementation of instances path verification in userlogin
 
@@ -1081,8 +1081,30 @@ Release 12/2015
 - Bug fix: If the task has been activated in user_sendlink the access link type has been checked automatically without unchecking all other types
 - Improvements in template engine for comments
 - Improvements in function getmetadata to add space after comma in order to allow automatic line breaks
+
+Version 5.8.5
+Release 01/2016
+- Bug fix: Sort order in navigation template of demo website did not sort numbers
+- Buf fix: Function showmedia did not apply line break for media name after media view
+- Bug fix: Function showmedia did not activate video player controls
+- Implementation of force_reload in function showmedia
+- Bug fix: Function showvideoplayer did not set loop to true or false for VIDEO.JS player
+- Bug fix: Changed controls to true by default in videoplayer to provide controls if the controls pararmeter has not been set
+- Bug fix: Function url_encode has not been applied on wrapper link parameter wl and download link parameter dl in index.php
+- Changed default crypt_level setting to "strong" in main configuration
+- Bug fix: Function showmedia did read video information from original video config file with preview settings. In order to get the correct video information the original video file need to be analyzed.
+- Display only unfinished tasks in home box
+- Changed escape character from "~" to "." for url encoded strings in function hcms_encrypt and hcms_decrypt, since tilde should not be used in an URL.
+- Improvements in function appendfile to avoid file collision
+- Removed seek and pause support from function showvideoplayer since only PROJEKKTOR supported these features
+- Removed seek and pause support from videoplayer since only PROJEKKTOR supported these features
+- Improvements in task management: superadmin can access all tasks, short object names with full name in href title
+- Implementation of user filter for task management
+- Implementation of paging for task management
+- Added hcmsMore CSS class to main.css
+- Improved user detection of task owner (sender) in function rdbms_createtask
 */
 
 // current version
-$version = "Version 5.8.4";
+$version = "Version 5.8.5";
 ?>

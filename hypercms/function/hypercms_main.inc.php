@@ -139,7 +139,8 @@ function specialchr_decode ($expression)
   if (!is_array ($expression))
   { 
     // replace % to avoid urldecoding 
-    $expression = str_replace ("~", "%", $expression);  
+    $expression = str_replace ("~", "%", $expression);
+    
     // url encoding for file name transformation (replace all special characters according to RFC 1738)
     $expression = rawurldecode ($expression);
     
@@ -1562,9 +1563,7 @@ function loadfile_fast ($abs_path, $filename)
       if ($filehandle != false)
       {
         @flock ($filehandle, LOCK_EX);
-  
         $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
-
         @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);
       }
@@ -1608,9 +1607,7 @@ function loadfile ($abs_path, $filename)
       if ($filehandle != false)
       {
         @flock ($filehandle, LOCK_EX);
-  
         $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
-        
         @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);
       }
@@ -1636,9 +1633,7 @@ function loadfile ($abs_path, $filename)
           if ($filehandle != false)
           {
             @flock ($filehandle, LOCK_EX);
-  
             $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
-
             @flock ($filehandle, LOCK_UN);
             @fclose ($filehandle);
             
@@ -1701,10 +1696,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
         if ($filehandle != false)
         {
           @flock ($filehandle, LOCK_EX);
-    
-          // read file
           $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
-
           @flock ($filehandle, LOCK_UN);
           @fclose ($filehandle);
         }
@@ -1751,10 +1743,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
             if ($filehandle != false)
             {
               @flock ($filehandle, LOCK_EX);
-    
-              // read file
               $filedata = @fread ($filehandle, filesize ($abs_path.$filename));
- 
               @flock ($filehandle, LOCK_UN);
               @fclose ($filehandle);
               
@@ -1888,6 +1877,86 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
       @rename ($abs_path.$filename, $abs_path.$filename_unlocked);
 
       return true;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// -------------------------------------- appendfile -----------------------------------------
+// function: appendfile()
+// input: path to file, file name, file content 
+// output: true/false
+
+// description: 
+// appendfile just appends data to a file but cannot create a new file!
+// files won't be locked and won't be unlocked if the file is already locked.
+
+function appendfile ($abs_path, $filename, $filedata)
+{
+  global $user, $mgmt_config, $hcms_lang, $lang;
+
+  if (valid_locationname ($abs_path) && valid_objectname ($filename) && $filedata != "")
+  {
+    // add slash if not present at the end of the location string
+    if (substr ($abs_path, -1) != "/") $abs_path = $abs_path."/";  
+    
+    // deconvert path 
+    if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
+    {
+      $abs_path = deconvertpath ($abs_path, "file");
+    }
+    
+    // check and correct file
+    $filename_unlocked = $filename;
+    $filename_test = correctfile ($abs_path, $filename, $user);     
+    if ($filename_test != false) $filename = $filename_test; 
+       
+    // if file exists
+    if (@is_file ($abs_path.$filename))
+    {      
+      $filehandle = @fopen ($abs_path.$filename, "a");
+  
+      if ($filehandle != false)
+      {
+        @flock ($filehandle, LOCK_EX);     
+        @fwrite ($filehandle, $filedata);    
+        @flock ($filehandle, LOCK_UN);
+        @fclose ($filehandle);
+               
+        return true;
+      }
+      else return false;
+    }
+    // if file is locked by other user or system, wait 3 seconds
+    elseif ($filename_unlocked != ".folder")
+    {
+      // set time stamp (now + 3 sec)
+      $end = time() + 3;
+  
+      while (time() <= $end)
+      {
+        $filename = $filename_unlocked;
+        $filename = correctfile ($abs_path, $filename, $user);
+    
+        if ($filename != false)
+        {   
+          $filehandle = @fopen ($abs_path.$filename, "a");
+              
+          if ($filehandle != false)
+          {
+            @flock ($filehandle, LOCK_EX);
+            @fwrite ($filehandle, $filedata);
+            @flock ($filehandle, LOCK_UN);
+            @fclose ($filehandle);
+                             
+            return true;
+          }
+          else return false;
+        }
+        // sleep for 0 - 100 milliseconds, to avoid collision and CPU load
+        else usleep (round (rand (0, 100) * 1000));
+      }
     }
     else return false;
   }
@@ -2196,84 +2265,6 @@ function deletemediafiles ($site, $mediafile)
     return true;
   }
   else return false;             
-} 
-
-// -------------------------------------- appendfile -----------------------------------------
-// function: appendfile()
-// input: path to file, file name, file content 
-// output: true/false
-
-// description: 
-// appendfile just appends data to a file but cannot create a new file!
-// files won't be locked and won't be unlocked if the file is already locked.
-
-function appendfile ($abs_path, $filename, $filedata)
-{
-  global $user, $mgmt_config, $hcms_lang, $lang;
-
-  if (valid_locationname ($abs_path) && valid_objectname ($filename) && $filedata != "")
-  {
-    // add slash if not present at the end of the location string
-    if (substr ($abs_path, -1) != "/") $abs_path = $abs_path."/";  
-    
-    // deconvert path 
-    if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
-    {
-      $abs_path = deconvertpath ($abs_path, "file");
-    }
-    
-    // check and correct file
-    $filename_unlocked = $filename;
-    $filename_test = correctfile ($abs_path, $filename, $user);     
-    if ($filename_test != false) $filename = $filename_test; 
-       
-    // if file exists
-    if (@is_file ($abs_path.$filename))
-    {      
-      $filehandle = @fopen ($abs_path.$filename, "a");
-  
-      if ($filehandle != false)
-      {
-        @flock ($filehandle, LOCK_EX);     
-        @fwrite ($filehandle, $filedata);    
-        @flock ($filehandle, LOCK_UN);
-        @fclose ($filehandle);
-               
-        return true;
-      }
-      else return false;
-    }
-    // if file is locked by other user or system, wait 5 seconds
-    elseif ($filename_unlocked != ".folder")
-    {
-      // set time stamp (now + 3 sec)
-      $end = time() + 3;
-  
-      while (time() <= $end)
-      {
-        $filename = $filename_unlocked;
-        $filename = correctfile ($abs_path, $filename, $user);
-    
-        if ($filename != false)
-        {   
-          $filehandle = @fopen ($abs_path.$filename, "a");
-              
-          if ($filehandle != false)
-          {
-            @flock ($filehandle, LOCK_EX);
-            @fwrite ($filehandle, $filedata);
-            @flock ($filehandle, LOCK_UN);
-            @fclose ($filehandle);
-                             
-            return true;
-          }
-          else return false;
-        }
-      }
-    }
-    else return false;
-  }
-  else return false;
 }
 
 // ---------------------- avoidfilecollision -----------------------------
@@ -3080,6 +3071,7 @@ function settask ($task_id, $to_user="", $startdate="", $finishdate="", $tasknam
     
     if ($to_user == "") $to_user = $gettask[0]['to_user'];
     $from_user = $gettask[0]['from_user'];
+    if (filter_var ($from_user, FILTER_VALIDATE_IP)) $from_user = "System";
     $to_user_old = $gettask[0]['to_user'];
     $object_id = $gettask[0]['object_id'];
     $startdate_old = $gettask[0]['startdate'];
@@ -3090,7 +3082,7 @@ function settask ($task_id, $to_user="", $startdate="", $finishdate="", $tasknam
     $status_old = $gettask[0]['status'];
     $duration_old = $gettask[0]['duration'];
   
-    // get e-mail of user if the message has been changed
+    // get e-mail of user if the task description (message) has been changed
     if ($sendmail && valid_objectname ($to_user) && ($message != $message_old && $message != "" && strlen ($message) < 3600))
     {
       // load user file
@@ -10305,6 +10297,9 @@ function createobject ($site, $location, $page, $template, $user)
   
   // set default language
   if ($lang == "") $lang = "en";
+  
+  // include hypermailer class
+  if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");  
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && accessgeneral ($site, $location, "") && strlen ($page) <= $mgmt_config['max_digits_filename'] && valid_objectname ($template) && valid_objectname ($user))
   {
@@ -10589,12 +10584,15 @@ function createobject ($site, $location, $page, $template, $user)
                 $mailer = new HyperMailer();
                 $mailer->AddAddress("support@hypercms.net");
                 $mailer->FromName = "hyperCMS link index failed on server: ".$_SERVER['SERVER_NAME'];
-                $mailer->Body = "Link index is locked!\nhyperCMS Host: ".$_SERVER['SERVER_NAME']."\n";
+                $mailer->Body = "Link index ".$site.".link.dat is locked!\nhyperCMS Host: ".$_SERVER['SERVER_NAME']."\n";
                 $mailer->Send();
                 
                 $result_unlock = false;
                 $result['message'] = $hcms_lang['could-not-insert-into-link-management'][$lang];
                 $auth = false;
+                
+                $errcode = "10885";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|link index file ".$site.".link.dat could not be unlocked";     
               }
         
               if ($result_unlock == true)
@@ -12829,7 +12827,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                         foreach ($page_path_array as $page_path)
                         {                        
                           // set new task for object owner
-                          createtask ($site, "hyperCMS", $from_email, $contentuser, $to_email, "", "", "link", $page_path, $hcms_lang['link-management'][$lang], $message, $mgmt_config[$site]['sendmail'], "medium");
+                          createtask ($site, "System", $from_email, $contentuser, $to_email, "", "", "link", $page_path, $hcms_lang['link-management'][$lang], $message, $mgmt_config[$site]['sendmail'], "medium");
                         }
                       }
                     }

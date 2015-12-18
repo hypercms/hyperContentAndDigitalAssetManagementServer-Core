@@ -1033,7 +1033,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
         
         // generate player code
-        $playercode = showaudioplayer ($site, $config['mediafiles'], $mediawidth, $mediaheight, "", "cut");
+        $playercode = showaudioplayer ($site, $config['mediafiles'], $mediawidth, $mediaheight, "", "cut", false, false, true, true);
       
         $mediaview .= "
         <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
@@ -1042,7 +1042,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             <div id=\"videoplayer_container\" style=\"display:inline-block; text-align:center;\">
               ".$playercode."
               <div id=\"mediaplayer_segmentbar\" style=\"display:none; width:100%; height:22px; background-color:#808080; text-align:left; margin-bottom:8px;\"></div>
-              ".showshorttext($medianame, 40, false)."<br />\n";
+              <div style=\"display:block; margin:3px;\">".showshorttext($medianame, 40, false)."</div>\n";
               
         // audio rendering and embedding (requires the JS function 'setSaveType' provided by the template engine)
         if (is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
@@ -1154,7 +1154,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
         
         // generate player code
-        $playercode = showvideoplayer ($site, @$config['mediafiles'], $mediawidth, $mediaheight, "", "cut", "", false, true, true, true, true, false, false, false, true);
+        $playercode = showvideoplayer ($site, @$config['mediafiles'], $mediawidth, $mediaheight, "", "cut", "", false, true, false, false, true, false, true);
       
         $mediaview .= "
         <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
@@ -1163,7 +1163,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             <div id=\"videoplayer_container\" style=\"display:inline-block; text-align:center;\">
               ".$playercode."
               <div id=\"mediaplayer_segmentbar\" style=\"display:none; width:100%; height:22px; background-color:#808080; text-align:left; margin-bottom:8px;\"></div>
-              ".showshorttext($medianame, 40, false)."<br />\n";
+              <div style=\"display:block; margin:3px;\">".showshorttext($medianame, 40, false)."</div>\n";
               
         // video rendering and embedding (requires the JS function 'setSaveType' provided by the template engine)
         if (is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
@@ -1416,22 +1416,12 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       // is file a video
       if (substr_count (strtolower ($hcms_ext['video']), $file_info['ext']) > 0) $is_video = true;
       else $is_video = false;
-    
-      // get video info for original video config file
-      if (!$is_version)
-      {
-        $mediafile_config = substr ($mediafile_orig, 0, strrpos ($mediafile_orig, ".")).".config.orig";
-        $videoinfo = readmediaplayer_config ($thumb_root, $mediafile_config);
-      }
       
       // get video info from video file
-      if ($is_version || empty ($videoinfo['version']) || floatval ($videoinfo['version']) < 2.2 || $viewtype == "preview_download")
-      {
-        $videoinfo = getvideoinfo ($media_root.$mediafile);
+      $videoinfo = getvideoinfo ($media_root.$mediafile);
         
-        // save duration of original media file in hidden field so it can be accessed for video editing
-        $mediaview .= "<input type=\"hidden\" id=\"mediaplayer_duration\" name=\"mediaplayer_duration\" value=\"".$videoinfo['duration_ms']."\" />";
-      }
+      // save duration of original media file in hidden field so it can be accessed for video editing
+      $mediaview .= "<input type=\"hidden\" id=\"mediaplayer_duration\" name=\"mediaplayer_duration\" value=\"".$videoinfo['duration_ms']."\" />";
       
       // show the values
       if (is_array ($videoinfo))
@@ -2846,8 +2836,6 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 // title (String) The title for this video,
 // autoplay (Boolean) Should the video be played on load (true), default is false,
 // enableFullScreen (Boolean) Is it possible to view the video in fullScreen (true),
-// enablePause (Boolean) Is it possible to pause the video (true),
-// enableSeek (Boolean) Is it possible to seek or to skip the video (true),
 // play loop (optional) [true,false],
 // muted/no sound (optional) [true,false],
 // player controls (optional) [true,false],
@@ -2859,7 +2847,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 // description:
 // generates a html segment for the video code we use.
 
-function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_url="", $id="", $title="", $autoplay=true, $enableFullScreen=true, $enablePause=true, $enableSeek=true, $loop=false, $muted=false, $controls=true, $iframe=false, $force_reload=false)
+function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_url="", $id="", $title="", $autoplay=true, $fullscreen=true, $loop=false, $muted=false, $controls=true, $iframe=false, $force_reload=false)
 {
   global $mgmt_config;
   
@@ -2906,7 +2894,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
           list ($media, $type) = explode (";", $value);
            
           $type = "type=\"".$type."\" ";
-          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt($media).$ts;
+          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt ($media).$ts;
         }
         else $url = "";
       }
@@ -2980,7 +2968,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
     if (isset ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor")
     {
       $return = '
-  <video id="hcms_mediaplayer_'.$id.'" class="projekktor"'.(($loop) ? ' loop ' : ' ').(($muted) ? ' muted ' : ' ').((!empty($logo_url)) ? ' poster="'.$logo_url.'" ' : ' ').((!empty($title)) ? ' title="'.$title.'" ' : ' ').'width="'.$width.'" height="'.$height.'" '.($enableFullScreen ? 'allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" ' : '').(($controls) ? ' controls' : '').'>'."\n";
+  <video id="hcms_mediaplayer_'.$id.'" class="projekktor"'.(($loop) ? ' loop ' : ' ').(($muted) ? ' muted ' : ' ').((!empty($logo_url)) ? ' poster="'.$logo_url.'" ' : ' ').((!empty($title)) ? ' title="'.$title.'" ' : ' ').'width="'.$width.'" height="'.$height.'" '.($fullscreen ? 'allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" ' : '').(($controls) ? ' controls' : '').'>'."\n";
 
       $return .= $sources;
     
@@ -3000,10 +2988,10 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
       
       $return .= '
       autoplay: '.(($autoplay) ? 'true' : 'false').',
-      enableFullscreen: '.(($enableFullScreen) ? 'true' : 'false').',
+      enableFullscreen: '.(($fullscreen) ? 'true' : 'false').',
       enableKeyboard: true,
-      disablePause: '.(($enablePause) ? 'false' : 'true').',
-      disallowSkip: '.(($enableSeek) ? 'false' : 'true').',
+      disablePause: false,
+      disallowSkip: false,
       playerFlashMP4: "'.$flashplayer.'"';
       
       if ($iframe) $return .= ',
@@ -3026,7 +3014,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
     
       $return = "  <video id=\"hcms_mediaplayer_".$id."\" class=\"video-js vjs-default-skin\" ".(($controls) ? " controls" : "").(($loop) ? " loop" : "").(($muted) ? " muted" : "").(($autoplay) ? " autoplay" : "")." preload=\"auto\" 
     width=\"".intval($width)."\" height=\"".intval($height)."\"".(($logo_url != "") ? " poster=\"".$logo_url."\"" : "")."
-    data-setup='{\"loop\":false".$fallback."}' title=\"".$title."\"".($enableFullScreen ? " allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"" : "").">\n";
+    data-setup='{\"loop\":".(($loop) ? "true" : "false").$fallback."}' title=\"".$title."\"".($fullscreen ? " allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"" : "").">\n";
     
       $return .= $sources;
       
@@ -3061,7 +3049,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
 // input: secure hyperreferences by adding 'hypercms_', is it possible to view the video in fullScreen [true,false]
 // output: head for video player / false on error
 
-function showvideoplayer_head ($secureHref=true, $enableFullScreen=true)
+function showvideoplayer_head ($secureHref=true, $fullscreen=true)
 {
   global $mgmt_config;
 
@@ -3094,7 +3082,7 @@ function showvideoplayer_head ($secureHref=true, $enableFullScreen=true)
   <script>
     videojs.options.flash.swf = \"".$mgmt_config['url_path_cms']."javascript/video-js/video-js.swf\";
   </script>\n";
-    if ($enableFullScreen == false) $return .= "  <style> .vjs-fullscreen-control { display: none; } .vjs-default-skin .vjs-volume-control { margin-right: 20px; } </style>";
+    if ($fullscreen == false) $return .= "  <style> .vjs-fullscreen-control { display: none; } .vjs-default-skin .vjs-volume-control { margin-right: 20px; } </style>";
   }
   
   return $return;
@@ -3227,7 +3215,7 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
     else $loop = "false";
     
     $return = "  <audio id=\"hcms_mediaplayer_".$id."\" class=\"video-js vjs-default-skin\"".(($controls) ? " controls" : "").(($autoplay) ? " autoplay" : "")." preload=\"auto\" 
-    width=\"".$width."\" height=\"".$height."\"".(($logo_url != "") ? " poster=\"".$logo_url."\"" : "").(($loop) ? " loop" : "")." data-setup='{\"loop\":".$loop."".$fallback."}'>\n";
+    width=\"".$width."\" height=\"".$height."\"".(($logo_url != "") ? " poster=\"".$logo_url."\"" : "").(($loop) ? " loop" : "")." data-setup='{\"loop\":".(($loop) ? "true" : "false").$fallback."}'>\n";
 
     $return .= $sources;
     

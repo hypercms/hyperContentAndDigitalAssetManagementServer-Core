@@ -390,7 +390,7 @@ function goToURL()
              
           echo "<option value=\"user_objectlist.php?site=*Null*\" ".$selected.">".getescapedtext ($hcms_lang['all-users'][$lang])."</option>\n";
         
-          $inherit_db = inherit_db_read ($user);
+          $inherit_db = inherit_db_read ();
           
           $site_array = array();
           

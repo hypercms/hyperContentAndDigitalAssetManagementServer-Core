@@ -510,6 +510,18 @@
 	top: 1px;
 }
 
+.hcmsMore
+{
+  border-top: 1px solid #C0C0C0;
+  background-color: #E2ECF5;
+  cursor: pointer; 
+}
+
+.hcmsMore:hover
+{
+  background-color: #C7DBED;
+}
+
 .hcmsSelector
 {
   margin: 0;

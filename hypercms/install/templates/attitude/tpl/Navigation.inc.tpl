@@ -124,8 +124,8 @@ function createnavigation ($docroot, $urlroot)
           if (substr_count ($path_now.$file_now, $docroot.$object) == 1) $add_css = $class_active;
           else $add_css = ""; 
 
-          $navitem[$navi['order'].'-'.$i]['item'] = $add_css."|".$urlroot.$object."|".$navi['title'];
-          $navitem[$navi['order'].'-'.$i]['sub'] = "";
+          $navitem[$navi['order'].'.'.$i]['item'] = $add_css."|".$urlroot.$object."|".$navi['title'];
+          $navitem[$navi['order'].'.'.$i]['sub'] = "";
 
           $i++;
         }
@@ -144,7 +144,7 @@ function createnavigation ($docroot, $urlroot)
 
           if (is_array ($subnav))
           {
-            ksort ($subnav, SORT_STRING);
+            ksort ($subnav, SORT_NUMERIC);
             reset ($subnav);
             $j = 1;
 
@@ -152,12 +152,12 @@ function createnavigation ($docroot, $urlroot)
             {
               if ($j == 1)
               {
-                $navitem[$navi['order'].'-'.$i]['item'] = $value['item'];
-                $navitem[$navi['order'].'-'.$i]['sub'] = "";
+                $navitem[$navi['order'].'.'.$i]['item'] = $value['item'];
+                $navitem[$navi['order'].'.'.$i]['sub'] = "";
               }
               else
               {
-                $navitem[$navi['order'].'-'.$i]['sub'][$key] = $value;
+                $navitem[$navi['order'].'.'.$i]['sub'][$key] = $value;
               }
 
               $j++;
@@ -185,7 +185,7 @@ function displaynavigation ($navigation, $level=1)
   $out = "";
   $sub = "";
 
-  ksort ($navigation, SORT_STRING);
+  ksort ($navigation, SORT_NUMERIC);
   reset ($navigation);
   
   if ($level == 1) $out .= str_repeat ("\t", $level)."<ul class=\"root\">\n";

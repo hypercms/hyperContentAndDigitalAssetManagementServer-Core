@@ -26,13 +26,11 @@ $logo = getrequest_esc ("logo", "url", NULL);
 $title = getrequest_esc ("title", "objectname", NULL);
 $autoplay = getrequest ("autoplay", "bool", false);
 $fullscreen = getrequest ("fullscreen", "bool", true);
-$pause = getrequest ("pause", "bool", true);
-$seek = getrequest ("seek", "bool", true);
 $width = getrequest_esc ("width", "numeric", 0);
 $height = getrequest_esc ("height", "numeric", 0);
 $loop = getrequest ("loop", "bool", false);
 $muted = getrequest ("muted", "bool", false);
-$controls = getrequest ("controls", "bool", false);
+$controls = getrequest ("controls", "bool", true);
 
 // language file
 require ("language/".getlanguagefile ($lang));
@@ -107,16 +105,13 @@ elseif ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename']
 elseif ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename'].".config.orig"))
 {
   $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.orig");
-  // We try to detect if we should use audio player
+  
+  // detect audio file
   if (is_array ($config['mediafiles']))
   {
-    list ($test, $duh) = explode (";", reset($config['mediafiles']));
-    $testfinfo = getfileinfo ($site, $test, 'comp');
-    
-    if (is_audio ($testfinfo['ext']))
-    {
-      $audio = true;
-    }
+    list ($test, $rest) = explode (";", reset($config['mediafiles']));
+    $testfinfo = getfileinfo ($site, $test, 'comp');    
+    if (is_audio ($testfinfo['ext'])) $audio = true;
   }
 }
 // 3rd Priority: older versions before 5.5.13
@@ -133,10 +128,10 @@ elseif (is_file ($media_dir.$site."/".$file_info['file']))
   if ($create_media) $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.orig");
 }
 
-// set width of video player
+// reset width of video player by config value
 if ($width < 1 && !empty ($config['width'])) $width = $config['width'];
 
-// set height of video player
+// reset height of video player by config value
 if ($height < 1 && !empty ($config['height'])) $height = $config['height'];
 
 // get video player code
@@ -146,7 +141,7 @@ if (is_array ($config))
   if (intval ($config['version']) >= 2) 
   {
     if ($audio) $playercode = showaudioplayer ($site, $config['mediafiles'], $width, $height, $logo, "", $autoplay, $loop, $controls, false);
-    else $playercode = showvideoplayer ($site, $config['mediafiles'], $width, $height, $logo, "", $title, $autoplay, $fullscreen, $pause, $seek, $loop, $muted, $controls, true);
+    else $playercode = showvideoplayer ($site, $config['mediafiles'], $width, $height, $logo, "", $title, $autoplay, $fullscreen, $loop, $muted, $controls, true);
   }
   // player code is embedded in config
   else

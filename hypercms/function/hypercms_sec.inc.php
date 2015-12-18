@@ -2677,7 +2677,10 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
       // base64 encoding to be used to encode binary files (stronlgy recommended due to issues with OpenSSL encryption and decryption)
       if (strtolower($encoding) == "base64") return base64_encode ($hash);
       // to be used for strings passed via GET (base64 encoding will be applied as well in order to be binary safe)
-      elseif (strtolower($encoding) == "url") return str_replace ("%", "~", urlencode (base64_encode ($hash)));
+      // base64 uses A-z, a-z. 0-9, /, +, = as characters and need to be url encoded.
+      // since we don't want to decode and encode the string again when passing from one to another script, we escape the % character used for url encoding to avoid 
+      // the en- and decoding
+      elseif (strtolower($encoding) == "url") return str_replace ("%", ".", urlencode (base64_encode ($hash)));
       // no encoding
       else return $hash;
     }
@@ -2722,8 +2725,8 @@ function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
 
     // to be used to decode files
     if (strtolower ($encoding) == "base64") $string = base64_decode ($string);
-    // to be used for strings passed via GET
-    elseif (strtolower($encoding) == "url") $string = base64_decode (urldecode (str_replace ("~", "%", $string)));
+    // to be used for strings passed via GET 
+    elseif (strtolower($encoding) == "url") $string = base64_decode (urldecode (str_replace (".", "%", $string)));
 
     // weak
     if ($crypt_level == "weak")

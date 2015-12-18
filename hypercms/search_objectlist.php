@@ -310,26 +310,30 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               $item_info['icon_large'] = "folderlock.png";
             }             
             
-            $listview .= "<tr id=g".$items_row." ".$selectclick." style=\"cursor:pointer\" align=\"left\">
+            $listview .= "
+                         <tr id=g".$items_row." ".$selectclick." style=\"cursor:pointer\" align=\"left\">
                            <td id=h".$items_row."_0 width=\"280\" nowrap=\"nowrap\">
                              <input id=\"objectpath\" type=hidden value=\"".$location_esc.$folder."\">
                              <div ".$hcms_setObjectcontext." ".$style." ".$openFolder." title=\"".$folder_name."\">
                                <img src=\"".getthemelocation()."img/".$item_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".$dlink_start.showshorttext($folder_name, 30).$dlink_end."&nbsp;
                              </div>
-                            </td>\n";
-            if (!$is_mobile) $listview .= "<td id=h".$items_row."_1 width=\"250\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style." title=\"".$item_location."\">&nbsp;".showshorttext($item_location, -32)."</span></td>
+                            </td>";
+            if (!$is_mobile) $listview .= "
+                            <td id=h".$items_row."_1 width=\"250\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style." title=\"".$item_location."\">&nbsp;".showshorttext($item_location, -32)."</span></td>
                             <td id=h".$items_row."_2 width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".@date ("Y-m-d H:i", @filemtime ($location.$folder))."</span></td>
                             <td id=h".$items_row."_3 nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$item_site."</span></td>\n";
-            $listview .= "</tr>\n";
+            $listview .= "
+                         </tr>";
         
-            $galleryview .= "<td id=t".$items_row." style=\"width:".$cell_width."; height:180px; text-align:center; vertical-align:bottom;\">
+            $galleryview .= "
+                            <td id=t".$items_row." style=\"width:".$cell_width."; height:180px; text-align:center; vertical-align:bottom;\">
                               <div ".$selectclick." ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer; display:block;\">".
                                 $dlink_start."
                                   <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$item_info['icon_large']."\" style=\"border:0;\" /></div>
                                   ".showshorttext($folder_name, 18, true)."
                                 ".$dlink_end."
                               </div>
-                            </td>\n";
+                            </td>";
             $items_row++;
           }
         }
@@ -497,17 +501,20 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               $item_info['icon_large'] = "filelock.png";
             }         
             
-            $listview .= "<tr id=g".$items_row." ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
+            $listview .= "
+                         <tr id=g".$items_row." ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
                            <td id=h".$items_row."_0 width=\"280\" nowrap=\"nowrap\">
                              <input id=\"objectpath\" type=hidden value=\"".$location_esc.$object."\" />
                              <div ".$hcms_setObjectcontext." ".$style." ".$openObject." title=\"".$metadata."\">
                                <img src=\"".getthemelocation()."img/".$item_info['icon']."\" align=\"absmiddle\" ".$class_image." />&nbsp;".$dlink_start.showshorttext($object_name, 30).$dlink_end."&nbsp;
                              </div>
-                           </td>\n";
-            if (!$is_mobile) $listview .= "<td id=h".$items_row."_1 width=\"250\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style." title=\"".$item_location."\">&nbsp;&nbsp;".showshorttext($item_location, -32)."</span></td>
+                           </td>";
+            if (!$is_mobile) $listview .= "
+                           <td id=h".$items_row."_1 width=\"250\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style." title=\"".$item_location."\">&nbsp;&nbsp;".showshorttext($item_location, -32)."</span></td>
                            <td id=h".$items_row."_2 width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_time."</span></td>
                            <td id=h".$items_row."_3 nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$item_site."</span></td>\n";
-            $listview .= "</tr>\n";  
+            $listview .= "
+                         </tr>";  
 
             // default value
             $ratio = "Width";
@@ -605,7 +612,8 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               $linking_buttons = "<div style=\"width:".$width."; margin-left:auto; margin-right:auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
             }
 
-            $galleryview .= "<td id=t".$items_row." style=\"width:".$cell_width."; height:180px; text-align:center; vertical-align:bottom;\">
+            $galleryview .= "
+                            <td id=t".$items_row." style=\"width:".$cell_width."; height:180px; text-align:center; vertical-align:bottom;\">
                               <div ".$selectclick." ".$openObject." ".$hcms_setObjectcontext." title=\"".$metadata."\" style=\"cursor:pointer; display:block; text-align:center;\">".
                                 $dlink_start."
                                  ".$thumbnail."
@@ -613,7 +621,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                                 ".$dlink_end."
                               </div>
                               ".$linking_buttons."
-                            </td>\n";
+                            </td>";
                             
             $items_row++;
           }

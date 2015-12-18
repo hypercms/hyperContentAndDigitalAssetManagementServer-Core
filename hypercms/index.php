@@ -19,7 +19,7 @@ $forward = "";
 
 // ----------------------- on access event ----------------------
 
-// call on access event to anaylze request
+// call on access event to analyze request
 if ($eventsystem['onaccess'] == 1) onaccess ($_REQUEST);
 
 // ------------------- access link parameters -------------------
@@ -110,7 +110,7 @@ $wm = getrequest ("wm", "url");
 
 if ($wm != "")
 {
-  $forward = "explorer_wrapper.php?wm=".$wm.$add;
+  $forward = "explorer_wrapper.php?wm=".url_encode($wm).$add;
 }
 
 // new encrypted media string for wrapper-link
@@ -118,7 +118,7 @@ $dm = getrequest ("dm", "url");
 
 if ($dm != "")
 {
-  $forward = "explorer_download.php?dm=".$dm.$add;
+  $forward = "explorer_download.php?dm=".url_encode($dm).$add;
 }
 
 // ------------------------- forward ------------------------------
