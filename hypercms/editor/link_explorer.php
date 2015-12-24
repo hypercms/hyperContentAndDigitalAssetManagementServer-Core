@@ -42,14 +42,36 @@ checkusersession ($user);
 
 $callback = $CKEditorFuncNum;
 
-// define root location if no location data is available
-if (!valid_locationname ($dir)) $dir = $mgmt_config[$site]['abs_path_page'];
-
 // convert path
 $dir = deconvertpath ($dir, "file");
-$dir_esc = convertpath ($site, $dir, "page");
 
-$location_name = getlocationname ($site, $dir, "page", "path");
+// get last location in page structure
+if (!valid_locationname ($dir) && isset ($temp_pagelocation[$site])) 
+{
+  $dir = $temp_pagelocation[$site];
+  
+  if (!is_dir ($dir))
+  {
+    $dir = "";
+    $temp_pagelocation[$site] = null;
+    setsession ('hcms_temp_pagelocation', $temp_pagelocation);
+  }
+}
+elseif (valid_locationname ($dir))
+{
+  $temp_pagelocation[$site] = $dir;
+  setsession ('hcms_temp_pagelocation', $temp_pagelocation);
+}
+
+// define root location if no location data is available
+if (!valid_locationname ($dir))
+{
+  $dir = $mgmt_config[$site]['abs_path_page'];
+}
+
+// convert path
+$dir_esc = convertpath ($site, $dir, "page");
+$location_name = getlocationname ($site, $dir_esc, "page", "path");
 ?>
 <!DOCTYPE html>
 <html>

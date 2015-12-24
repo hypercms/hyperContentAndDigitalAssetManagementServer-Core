@@ -223,7 +223,7 @@ function makestring ($array)
 
 // -------------------------------- splitstring --------------------------------
 // function: splitstring()
-// input: string with ; or , as seperator
+// input: string with ";" or "," as seperator
 // output: array with string splitted into array / false on error
 
 function splitstring ($string)
@@ -3297,12 +3297,14 @@ function tasknotification ($date)
           $login = getcontent ($temp, "<login>");
           $email = getcontent ($temp, "<email>");
           $realname = getcontent ($temp, "<realname>");
+          $language = getcontent ($temp, "<language>");
           
           if (!empty ($login[0]))
           {
             $username = $login[0];
             $user_array[$username]['email'] = $email[0];
             $user_array[$username]['realname'] = $realname[0];
+            $user_array[$username]['language'] = $language[0];
           }
         }
       }
@@ -3319,7 +3321,7 @@ function tasknotification ($date)
       $task_start = rdbms_gettask ("", "", "", "", "", date("Y-m-d"));
       
       if (is_array ($task_start))
-      {
+      { 
         foreach ($task_start as $task)
         {
           $task_id = $task['task_id'];
@@ -3328,9 +3330,13 @@ function tasknotification ($date)
           $description = $task['description'];
           $from_user = $task['from_user'];
           $to_user = $task['to_user'];
-          
+          $to_lang = "en";
+
           if ($to_user != "" && !empty ($user_array[$to_user]['email']))
           {
+            // set language for recipient
+            if (!empty ($user_array[$to_user]['language'])) $to_lang = $user_array[$to_user]['language'];
+          
             // send mail
             if ($object_id != "") $object_link = createaccesslink ("", "", "", "", $object_id, $to_user, "al");
             else $object_link = "";
@@ -3339,13 +3345,13 @@ function tasknotification ($date)
             if ($from_user != "" && !empty ($user_array[$from_user]['email'])) $email_schema = " [<a href='mailto:".$user_array[$from_user]['email']."'>".$user_array[$from_user]['email']."</a>]";
             else $email_schema = "";
           
-            $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\"><strong>".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['start'][$to_lang]." '".$taskname."' (".$task_id.")</strong>\n".$hcms_lang['from'][$to_lang]." ".$from_user."'".$email_schema."\n\n".$description."\n\n".$object_link."</span>";
+            $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\"><strong>".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['start'][$to_lang]." '".$taskname."' (".$task_id.")</strong>\n".$hcms_lang['from'][$to_lang]." '".$from_user."'".$email_schema."\n\n".$description."\n\n".$object_link."</span>";
         
             $mailer = new HyperMailer();
             $mailer->IsHTML(true);
-            $mailer->AddAddress ($to_email, $to_user);
-            $mailer->AddReplyTo ($from_email, $from_user);
-            $mailer->From = $from_email;
+            $mailer->AddAddress ($user_array[$to_user]['email'], $to_user);
+            $mailer->AddReplyTo ($user_array[$from_user]['email'], $from_user);
+            $mailer->From = $user_array[$from_user]['email'];
             $mailer->Subject = "hyperCMS: ".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['start'][$to_lang]." '".$taskname."' (".$task_id.")";
             $mailer->CharSet = $hcms_lang_codepage[$to_lang];
             $mailer->Body = html_decode (nl2br ($body), $hcms_lang_codepage[$to_lang]);
@@ -3354,12 +3360,12 @@ function tasknotification ($date)
             if ($mailer->Send())
             {
               $errcode = "00305";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|task start notification has been sent to ".$to_user." (".$to_email.")"; 
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|task start notification has been sent to ".$to_user." (".$user_array[$to_user]['email'].")"; 
             }
             else
             {
               $errcode = "50305";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|task start notification failed for ".$to_user." (".$to_email.")";  
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|task start notification failed for ".$to_user." (".$user_array[$to_user]['email'].")";  
             }
           }
         }
@@ -3378,9 +3384,13 @@ function tasknotification ($date)
           $description = $task['description'];
           $from_user = $task['from_user'];
           $to_user = $task['to_user'];
+          $to_lang = "en";
           
           if ($to_user != "" && !empty ($user_array[$to_user]['email']))
           {
+            // set language for recipient
+            if (!empty ($user_array[$to_user]['language'])) $to_lang = $user_array[$to_user]['language'];
+            
             // send mail
             if ($object_id != "") $object_link = createaccesslink ("", "", "", "", $object_id, $to_user, "al");
             else $object_link = "";
@@ -3389,13 +3399,13 @@ function tasknotification ($date)
             if ($from_user != "" && !empty ($user_array[$from_user]['email'])) $email_schema = " [<a href='mailto:".$user_array[$from_user]['email']."'>".$user_array[$from_user]['email']."</a>]";
             else $email_schema = "";
           
-            $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\"><strong>".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['end'][$to_lang]." '".$taskname."' (".$task_id.")</strong>\n".$hcms_lang['from'][$to_lang]." ".$from_user."'".$email_schema."\n\n".$description."\n\n".$object_link."</span>";
+            $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\"><strong>".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['end'][$to_lang]." '".$taskname."' (".$task_id.")</strong>\n".$hcms_lang['from'][$to_lang]." '".$from_user."'".$email_schema."\n\n".$description."\n\n".$object_link."</span>";
         
             $mailer = new HyperMailer();
             $mailer->IsHTML(true);
-            $mailer->AddAddress ($to_email, $to_user);
-            $mailer->AddReplyTo ($from_email, $from_user);
-            $mailer->From = $from_email;
+            $mailer->AddAddress ($user_array[$to_user]['email'], $to_user);
+            $mailer->AddReplyTo ($user_array[$from_user]['email'], $from_user);
+            $mailer->From = $user_array[$from_user]['email'];
             $mailer->Subject = "hyperCMS: ".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['end'][$to_lang]." '".$taskname."' (".$task_id.")";
             $mailer->CharSet = $hcms_lang_codepage[$to_lang];
             $mailer->Body = html_decode (nl2br ($body), $hcms_lang_codepage[$to_lang]);
@@ -3404,12 +3414,12 @@ function tasknotification ($date)
             if ($mailer->Send())
             {
               $errcode = "00306";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|task end notification has been sent to ".$to_user." (".$to_email.")"; 
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|task end notification has been sent to ".$to_user." (".$user_array[$to_user]['email'].")"; 
             }
             else
             {
               $errcode = "50306";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|task end notification failed for ".$to_user." (".$to_email.")";  
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|task end notification failed for ".$to_user." (".$user_array[$to_user]['email'].")";  
             }
           }
         }
@@ -14747,6 +14757,7 @@ function publishobject ($site, $location, $page, $user)
   $media = "";
   $template = "";
   $application = "";
+  $result_save = false;
   
   // set default language
   if ($lang == "") $lang = "en";
@@ -14879,6 +14890,15 @@ function publishobject ($site, $location, $page, $user)
                   $application = $result['application'];
                   $pagename = $result['name'];
                   $filetype = $result['objecttype'];
+                  
+                  // error occured
+                  if (isset ($result['view']) && strpos ("_".$result['view'], "<!-- hyperCMS:Error -->") > 0)
+                  {
+                    $viewstore = false;
+                    $release = false;
+                    $add_onload = "";
+                    $show = $hcms_lang['an-error-occured-in-building-the-view'][$lang];
+                  }
                 }
                 else
                 {
@@ -14895,7 +14915,7 @@ function publishobject ($site, $location, $page, $user)
                 // -------------------------------- publish page -------------------------------
                 // if user has the workflow permission to publish or no workflow is attached
                 // for media files the object file will not be touched (application might be empty or "media") or the media generator is used
-                if ($release >= 3 && $application != "" && $application != "media" && ($viewstore != "" || $application == "generator"))
+                if ($show == "" && $release >= 3 && $application != "" && $application != "media" && ($viewstore != "" || $application == "generator"))
                 {                  
                   // get the file extension of the object file
                   $file_info = getfileinfo ($site, $page, $cat);
@@ -14978,7 +14998,7 @@ function publishobject ($site, $location, $page, $user)
             }
   
             // ------------------------------- generate link index and update container ------------------------------
-            if ($release >= 3 && $application != "media"  && ($viewstore != "" || $application == "generator") && $result_save == true)
+            if ($show == "" && $result_save == true && $release >= 3 && $application != "media"  && ($viewstore != "" || $application == "generator"))
             {
               if ($container != false && $template != false)
               {   
@@ -17521,6 +17541,123 @@ function getboxes ($user)
       else return array();
     }
     else return false;
+  }
+  else return false;
+}
+
+// ========================================== URL REWRITING =======================================
+
+// ------------------------------------- rewrite_targetURI ------------------------------------------
+
+// function: rewrite_targetURI ()
+// input: publication name, text ID array (text-ID as key and URL paramaters as value), requested URI as string, exclude path as array (optional), 
+//        rewrite type [none,forward,include] (optional)
+// output: target URI / false on error
+
+function rewrite_targetURI ($site, $text_id, $uri, $exclude_dir_esc="", $rewrite_type="include")
+{
+  global $mgmt_config, $publ_config;
+  
+  if (valid_publicationname ($site) && is_array ($text_id) && $uri != "")
+  {
+    $hypercms_session = array();
+    
+    // include publication target settings
+    $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
+    
+    foreach ($text_id as $id=>$parameter)
+    {
+      if ($id != "")
+      {
+        $search_textnode = array();
+        $search_textnode[$id] = $uri;
+  
+        $object_array = rdbms_searchcontent ("%page%/".$site."/", $exclude_dir_esc, "", "", "", "", $search_textnode);
+        
+        if (is_array ($object_array))
+        {
+          // get first element of array
+          $targetPath = reset ($object_array);
+          
+          if ($targetPath != "")
+          {
+            $targetFile = str_replace ("%page%/".$site."/", $publ_config['abs_publ_page'], $targetPath);
+            $targetURI = str_replace ("%page%/".$site."/", $publ_config['url_publ_page'], $targetPath);
+
+            // add paramaters
+            if ($parameter != "")
+            {
+              // set parameter in hypercms array variable, so it can be set in session later
+              if ($rewrite_type == "include")
+              {
+                parse_str ($parameter, $output);
+                
+                foreach ($output as $key=>$value) $hypercms_session[$key] = $value;
+              }
+              // set GET parameter
+              else $targetURI .= "?".$parameter;
+            }
+            
+            // remove domain
+            $result = cleandomain ($targetURI);
+            
+            if ($result != "") break;
+          }
+        }
+      }
+    }
+
+    if (!empty ($result))
+    {
+      // include page file
+      if ($rewrite_type == "include" && is_file ($targetFile))
+      {
+        include ($targetFile);
+      }
+      // URL forwarding
+      elseif ($rewrite_type == "forward")
+      {
+        header ("Location:".$result);
+      }
+
+      return $result;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// ------------------------------------- rewrite_homepage ------------------------------------------
+
+// function: rewrite_homepage ()
+// input: publication name, rewrite type [none,forward] (optional)
+// output: target URI / false on error
+
+// description: rewrite_homepage used the page root directory of the publication configuration and forwards to the default index page. No page include supported!
+
+function rewrite_homepage ($site, $rewrite_type="forward")
+{
+  global $mgmt_config, $publ_config;
+  
+  if (valid_publicationname ($site))
+  {
+    // include publication target settings
+    $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
+    
+    // remove domain
+    $result = cleandomain ($publ_config['url_publ_page']);
+    $targetFile = $publ_config['abs_publ_page'];
+    
+    if (!empty ($result))
+    {
+      // URL forwarding
+      if ($rewrite_type == "forward")
+      {
+        header ("Location:".$result);
+      }
+      
+      return $result;
+    }
   }
   else return false;
 }

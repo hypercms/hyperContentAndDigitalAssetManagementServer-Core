@@ -3313,4 +3313,206 @@ function debug_getbacktracestring ($valueSeparator, $rowSeparator, $ignoreFuncti
   if (empty($msg)) return "";
   else return implode ($rowSeparator, $msg).$rowSeparator;
 }
+
+// ------------------------- showAPIdocs -----------------------------
+// function: showAPIdocs()
+// input: path to API file, return result as HTML or array [html,array] (optional)
+// output: HTML output of documentation / false on error
+
+// description:
+// generates the documentation of an API file
+
+function showAPIdocs ($file, $return="html")
+{
+  if (is_file ($file))
+  {
+    $data = file ($file);
+    
+    if (is_array ($data))
+    {
+      $name = "";
+      $input = array();
+      $output = array();
+      $description = array();
+      $requires = array();
+      $function = array();
+      $global = array();
+      
+      // collect
+      foreach ($data as $line)
+      {
+        if ($line != "")
+        {
+          if (strpos ("_".$line, "// function:") > 0)
+          {
+            $temp = substr ($line, strlen ("// function:"));
+            $temp = htmlentities ($temp);
+            $name = trim (str_replace (array("(", ")"), "", $temp));
+          }
+          elseif (strpos ("_".$line, "// input:") > 0 && !empty ($name))
+          {
+            $temp = substr ($line, strlen ("// input:"));
+            $input[$name] = trim ($temp)." ";
+            $open = "input";
+          }
+          elseif (strpos ("_".$line, "// output:") > 0 && !empty ($name))
+          {
+            $temp = substr ($line, strlen ("// output:"));
+            $temp = trim (htmlentities ($temp))." ";
+            $output[$name] = $temp;
+            $open = "output";
+          }
+          elseif (strpos ("_".$line, "// description:") > 0 && !empty ($name))
+          {
+            $temp = substr ($line, strlen ("// description:"));
+            $temp = trim (htmlentities ($temp))." ";
+            $description[$name] = $temp;
+            $open = "description";
+          }
+          elseif (strpos ("_".$line, "// requires:") > 0 && !empty ($name))
+          {
+            $temp = substr ($line, strlen ("// requires:"));
+            $temp = trim (htmlentities ($temp))." ";
+            $requires[$name] = $temp;
+            $open = "requires";
+          }
+          elseif (strpos ("_".$line, "// requirements:") > 0 && !empty ($name))
+          {
+            $temp = substr ($line, strlen ("// requirements:"));
+            $temp = trim (htmlentities ($temp));
+            $requires[$name] = $temp;
+            $open = "requires";
+          }
+          // next commented lines
+          elseif (strpos ("_".$line, "//") > 0 && !empty ($name))
+          {
+            $temp = trim (substr (trim ($line), strlen ("//")));
+            $temp = htmlentities ($temp)." ";
+
+            // comma separated list, may have multiple lines
+            if ($open == "input") $input[$name] .= $temp;
+            // one liner, may use commas
+            elseif ($open == "output") $output[$name] .= $temp;
+            // may have multiple lines
+            elseif ($open == "description")
+            {
+              if (trim ($temp) != "") $temp = "\n".$temp;
+              $description[$name] .= $temp;
+            }
+            // may have multiple lines
+            elseif ($open == "requires")
+            {
+              if (trim ($temp) != "") $temp = "\n".$temp;
+              $requires[$name] .= $temp;
+            }
+          }
+          // function
+          elseif (strpos ("_".$line, "function ".$name) > 0 && !empty ($name))
+          {
+            $temp = trim (substr (trim ($line), strlen ("function ")));
+            $temp = htmlentities ($temp);
+            $function[$name] = $temp;
+            $open = "none";
+          }
+          // global variables
+          elseif (strpos ("_".$line, "global ") > 0 && !empty ($name))
+          {
+            $temp = trim (substr (trim ($line), strlen ("global ")));
+            $temp = trim (htmlentities ($temp), ";")." ";
+            $global[$name] = $temp;
+            
+            if (strpos ("_".$line, ";") > 0) $open = "none";
+            else $open = "global";
+          }
+          // next line of global variables
+          elseif ($open == "global" && !empty ($name))
+          {
+            $temp = trim ($line);
+            $temp = trim (htmlentities ($temp), ";")." ";
+            $global[$name] .= $temp;
+
+            if (strpos ("_".$line, ";") > 0) $open = "none";
+            else $open = "global";
+          }
+          else
+          {
+            $open = "none";
+          }
+        }
+      }
+
+      // return as HTML code segment
+      if ($return == "html" && !empty ($function) && sizeof ($function) > 0)
+      {
+        $result = "";
+        
+        foreach ($function as $name=>$value)
+        {
+          $result .= "<h3>".$name."</h3><br/>\n";
+          $result .= "<b>Syntax:</b><br/>\n";
+          $result .= $function[$name]."<br/><br/>\n";
+          
+          $temp = trim (substr ($value, strpos ($value, "(") + 1), ")");
+          $input_vars = explode (", ", trim ($temp));
+          
+          if (is_array ($input_vars) && sizeof ($input_vars) > 0)
+          {
+            $result .= "<b>Input parameters:</b><br/>\n";
+            
+            $var_text = explode (", ", $input[$name]);
+            
+            for ($i=0; $i<count($input_vars); $i++)
+            {
+              if (!empty ($input_vars[$i]))
+              {
+                if (strpos ($input_vars[$i], "=") > 0) list ($var, $default) = explode ("=", $input_vars[$i]);
+                else $var = $input_vars[$i];
+                
+                if (trim ($var) == "") $var = "%";
+                
+                if (!empty ($var_text[$i])) $text = " ... ".trim ($var_text[$i]);
+                else $text = "";
+              
+                $result .= trim ($var).$text."<br/>\n";
+              }
+            }
+            
+            $result .= "<br/>\n";
+          }
+          
+          if (!empty ($global[$name]))
+          {
+            $result .= "<b>global input parameters:</b><br/>\n";
+            $result .= str_replace (", ", "<br/>\n", $global[$name]);
+            $result .= "<br/><br/>\n";
+          }
+          
+          $result .= "<b>Output:</b><br/>\n";
+          $result .= str_replace (", ", "<br/>\n", $output[$name]);
+          $result .= "<br/><br/>\n";
+          
+          if (!empty ($description[$name]))
+          {
+            $result .= "<b>Description:</b><br/>\n";
+            $result .= nl2br (trim ($description[$name]))."<br/><br/>\n";
+          }
+        }
+      }
+      // return as array
+      else
+      {
+        $result = array();
+        
+        $result['function'] = $function;
+        $result['input'] = $input;
+        $result['global'] = $global;
+        $result['output'] = $output;
+        $result['description'] = $description;
+      }
+    }
+    
+    return $result;
+  }
+  else return false;
+}
 ?>

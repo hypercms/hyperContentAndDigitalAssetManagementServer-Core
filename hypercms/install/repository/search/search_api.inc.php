@@ -153,7 +153,7 @@ function createquerypattern ($query)
 
 // ------------------------ searchindex ------------------------
 // input: query as string, start position as string, exclude url as string, language as string, charset as string, query attributes as array
-// output: echo of serach result and true/false
+// output: echo of search result and true/false
 
 function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF-8", $query_attribute=null)
 {
@@ -214,7 +214,26 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
 
           if ($query_check && ($exclude_url == "" || (is_string ($exclude_url) && substr_count ($url, $exclude_url) == 0)))
           {
-            if (strlen ($content) > 0) $hits = preg_match_all ($hquery, $content, $matches, PREG_OFFSET_CAPTURE);
+            if (strlen ($content) > 0 && strlen ($content) < 90000)
+            {
+              $hits = preg_match_all ($hquery, $content, $matches, PREG_OFFSET_CAPTURE);
+            }
+            // split content into pieces
+            elseif (strlen ($content) > 0)
+            {
+              $slice = "init";
+              $slice_count = 0;
+              $hits = 0;
+
+              while (strlen ($slice) > 1)
+              {
+                $slice = @substr ($content, ($slice_count*90000), @strpos ($content, " ", (($slice_count+1)*90000)));
+                $hits_new = preg_match_all ($hquery, $slice, $slice_matches, PREG_OFFSET_CAPTURE);
+                if ($hits_new > 0) $matches = $slice_matches;
+                $hits = $hits + $hits_new;
+                $slice_count++;
+              }
+            }
             else $hits = 0;
   
             if ($hits > 0)
@@ -355,18 +374,22 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
 
 function cleancontent ($content, $charset="UTF-8")
 {
-  if ($content != "" && $charset != "")
+  if ($content != "")
   {
     $content = strip_tags ($content);
-    $content = preg_replace ('/<iframe.*?\/iframe>/i', "", $content);
-    $content = html_entity_decode ($content, ENT_NOQUOTES | ENT_HTML401, $charset);
     $content = str_replace ("\r\n", " ", $content);
     $content = str_replace ("\n\r", " ", $content);
     $content = str_replace ("\n", " ", $content);
-    $content = str_replace ("\t", " ", $content);
-    $content = str_replace ("&nbsp;", " ", $content);
     $content = preg_replace ('/\s+/', " ", $content);
-    $content = preg_replace ('<!--(.*?)-->', "", $content);
+    $content = preg_replace ('<!--(.*?)-->', "", $content);	
+    if ($charset != "") $content = html_entity_decode ($content, ENT_NOQUOTES | ENT_HTML401, $charset);
+    $content = str_replace ("|", "&#124;", $content);
+    $content = str_replace (array(".....", "....", "...", ".."), ".", $content);
+    $content = str_replace (array("+++++", "++++", "+++", "++"), "+", $content);
+    $content = str_replace (array("-----", "----", "---", "--"), "-", $content);
+    $content = str_replace (array("_____", "____", "___", "__"), "_", $content);
+    $content = str_replace (array("#####", "####", "###", "##"), "#", $content);
+    $content = str_replace (array("*****", "****", "***", "**"), "*", $content);
     $content = trim ($content);
 
     return $content;
@@ -509,7 +532,7 @@ function renameindex ($oldurl, $newurl)
           }
           elseif (substr_count ($url, $oldurl) == 1)
           {
-        // delete from index if contains exclude path
+            // delete from index if contains exclude path
             if ($config['exclude_path'] != "" && substr_count ($newurl, $config['exclude_path']) > 0)
             {
               $update = true;
@@ -594,8 +617,26 @@ function collectcontent ($container_content, $text_id="", $component_id="")
     {
       foreach ($text_id as $id)
       {
-        $textnode = selectcontent ($container_content, "<text>", "<text_id>", $id);      
-        if ($textnode != false) $contentslices = getcontent ($textnode[0], "<textcontent>");
+        $textnode = selectcontent ($container_content, "<text>", "<text_id>", $id);
+ 
+        if ($textnode != false && is_array ($textnode)) 
+        {
+          $i = 0;
+
+          foreach ($textnode as $temp)
+          {
+            if ($temp != "")
+            {
+              $textcontent = getcontent ($temp, "<textcontent>");
+
+              if (!empty ($textcontent[0]))
+              {
+                $contentslices[$i] = $textcontent[0];
+                $i++;
+              }
+            }
+          }
+        }
       } 
     }
     else $contentslices = getcontent ($container_content, "<textcontent>");  
@@ -610,8 +651,26 @@ function collectcontent ($container_content, $text_id="", $component_id="")
     {
       foreach ($component_id as $id)
       {
-        $compnode = selectcontent ($container_content, "<component>", "<component_id>", $id);      
-        if ($compnode != false) $compfiles = getcontent ($compnode[0], "<componentfiles>");
+        $compnode = selectcontent ($container_content, "<component>", "<component_id>", $id);
+    
+        if ($compnode != false && is_array ($compnode))
+        {
+          $i = 0;
+
+          foreach ($compnode as $temp)
+          {
+            if ($temp != "")
+            {
+              $componentfiles = getcontent ($temp, "<componentfiles>");
+
+              if (!empty ($componentfiles[0]))
+              {
+                $compfiles[$i] = $componentfiles[0];
+                $i++;
+              }
+            }
+          }
+        }
       }
     }
     else $compfiles = getcontent ($container_content, "<componentfiles>");
@@ -644,6 +703,7 @@ function collectcontent ($container_content, $text_id="", $component_id="")
       }
     }
 
+    // escape "|" since it is used as seperator in the search index
     return $content;
   }
   else return "";

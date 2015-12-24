@@ -14,8 +14,15 @@
 // function setcontent, addcontent, updatecontent, deletecontent will return a XML-string in a single variable
 
 // ------------------------------------ setxmlparameter ----------------------------------------------
+
+// function: setxmlparameter()
+// input: XML content container, paramater name, paramater value
+// output: XML content container / false on error
+
+// description:
 // set parameter values in XML declaration (e.g. encoding):
-// $parameter="$value"
+// encoding="UTF-8"
+
 function setxmlparameter ($xmldata, $parameter, $value)
 {
   if ($xmldata != "" && $parameter != "")
@@ -74,14 +81,17 @@ function setxmlparameter ($xmldata, $parameter, $value)
 
 // ------------------------------------ getcontent ----------------------------------------------
 
-// <tagname>content</tagname>
+// function: getcontent()
+// input: XML content container, tag name
+// output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
+// <tagname>content</tagname>
 // extracts the content between the given $starttagname xml-tags.
 // only this function will decode special characters (&, <, >) in the content and removes CDATA.
 // getcontent will only decode values if they are non-xml and non_html. so content inside child nodes
 // including tags won't be decoded.
-// wild card character "*" can be used at the end of $starttagname
+// wild card character "*" can be used at the end of $starttagname.
 
 function getcontent ($xmldata, $starttagname)
 {
@@ -90,12 +100,13 @@ function getcontent ($xmldata, $starttagname)
   {
     return false;
   }
+  
+  // add < and > for tag name
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
-  if (@substr_count ($starttagname, " ") >= 1)
-    $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") >= 1)
-    $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
+  if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
+  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
   else $endtagname = "</".substr ($starttagname, 1);
   
   // manipulate starttag if wild card character is used for attribute
@@ -163,11 +174,16 @@ function getcontent ($xmldata, $starttagname)
   else return false;
 }
 
-// CASE-Insensitive version (XML parser are always case-sensitive!)
+// ------------------------------------ geticontent ----------------------------------------------
 
-// <tagname>content</tagname>
+// function: geticontent()
+// input: XML content container, tag name
+// output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
+// CASE-Insensitive version (XML parser are however always case-sensitive!)
+//
+// <tagname>content</tagname>
 // extracts the content between the given $starttagname xml-tags.
 // only this function will decode special characters (&, <, >) in the content and removes CDATA.
 // getcontent will only decode values if they are non-xml and non_html. so content inside child nodes
@@ -181,6 +197,9 @@ function geticontent ($xmldata, $starttagname)
   {
     return false;
   }
+  
+  // add < and > for tag name
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
   if (@substr_count ($starttagname, " ") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
@@ -259,6 +278,10 @@ function geticontent ($xmldata, $starttagname)
 
 // ------------------------------------ getxmlcontent ----------------------------------------------
 
+// function: getxmlcontent()
+// input: XML content container, tag name
+// output: result array with the content of the requested XML node (tag) / false on error
+
 // description:
 // <tagname>content</tagname>
 // extracts the content together with the $starttagname xml tags
@@ -273,14 +296,15 @@ function getxmlcontent ($xmldata, $starttagname)
     return false;
   }
   
+  // add < and > for tag name
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
+  
   // hold starttag in buffer
   $buffer = $starttagname;
 
   // define endtag
-  if (@substr_count ($starttagname, " ") >= 1)
-    $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") >= 1)
-    $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
+  if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
+  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
   else $endtagname = "</".substr ($starttagname, 1);
   
   // manipulate starttag if wild card character is used for attribute
@@ -322,9 +346,15 @@ function getxmlcontent ($xmldata, $starttagname)
   else return false;
 }
 
-// CASE-Insensitive version (XML parser are always case-sensitive!)
+// ------------------------------------ getxmlicontent ----------------------------------------------
+
+// function: getxmlicontent()
+// input: XML content container, tag name
+// output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
+// CASE-Insensitive version (XML parser are always case-sensitive!)
+//
 // <tagname>content</tagname>
 // extracts the content together with the $starttagname xml tags
 // this function will NOT decode special characters like function getcontent!
@@ -337,6 +367,9 @@ function getxmlicontent ($xmldata, $starttagname)
   {
     return false;
   }
+  
+  // add < and > for tag name
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
   
   // hold starttag in buffer
   $buffer = $starttagname;
@@ -392,18 +425,22 @@ function getxmlicontent ($xmldata, $starttagname)
 
 // ------------------------------------ selectcontent -------------------------------------
 
+// function: selectcontent()
+// input: XML content container, tag name of requested XML node, tag holding the conditional value inside the given starttagname, conditional value
+// output: result array with the content of the requested XML node (tag) / false on error
+
 // description:
 // <tagname>
 //    .......
 //    <condtag>condvalue</condtag>
 //    .........
 // </tagname>
-
+//
 // extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag
 // value is equal with the target value $condvalue
 // wild card character "*" can be used at the end of $starttagname
 // wild card character "*" can be used at begin and end of $condvalue
-
+//
 // Be Aware: $startcondtag must be a child of $starttagname !!!
 
 function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
@@ -413,12 +450,13 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   {
     return false;
   }
+  
+  // add < and > for tag name
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
-  if (@substr_count ($starttagname, " ") >= 1)
-    $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") >= 1)
-    $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
+  if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
+  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
   else $endtagname = "</".substr ($starttagname, 1);
   
   // manipulate starttag if wild card character is used for attribute
@@ -435,14 +473,14 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     $condvalue = trim (strtolower ($condvalue));
     
     // check if wild card characters are used in condvalue
-    if ($condvalue[0] == "*") 
+    if ($condvalue != "" && $condvalue[0] == "*") 
     {
       $wc_begin = true;
       $condvalue = substr ($condvalue, 1);
     }
     else $wc_begin = false;
     
-    if ($condvalue[strlen ($condvalue) - 1] == "*") 
+    if ($condvalue != "" && $condvalue[strlen ($condvalue) - 1] == "*") 
     {
       $wc_end = true;
       $condvalue = substr ($condvalue, 0, strlen ($condvalue) - 1);
@@ -547,15 +585,21 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   else return false;
 }
 
-// CASE-Insensitive version (XML parser are always case-sensitive!)
+// ------------------------------------ selecticontent -------------------------------------
+
+// function: selecticontent()
+// input: XML content container, tag name of requested XML node, tag holding the conditional value inside the given starttagname, conditional value
+// output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
+// CASE-Insensitive version (XML parser are always case-sensitive!)
+//
 // <tagname>
 //    .......
 //    <condtag>condvalue</condtag>
 //    .........
 // </tagname>
-
+//
 // extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag
 // value is equal with the target value $condvalue
 // wild card character "*" can be used at the end of $starttagname
@@ -570,12 +614,13 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   {
     return false;
   }
+  
+  // add < and > for tag name
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
-  if (@substr_count ($starttagname, " ") >= 1)
-    $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") >= 1)
-    $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
+  if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
+  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
   else $endtagname = "</".substr ($starttagname, 1);
   
   // manipulate starttag if wild card character is used for attribute
@@ -596,14 +641,14 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     $condvalue = trim (strtolower ($condvalue));
     
     // check if wild card characters are used in condvalue
-    if ($condvalue[0] == "*") 
+    if ($condvalue != "" && $condvalue[0] == "*") 
     {
       $wc_begin = true;
       $condvalue = substr ($condvalue, 1);
     }
     else $wc_begin = false;
     
-    if ($condvalue[strlen ($condvalue) - 1] == "*") 
+    if ($condvalue != "" && $condvalue[strlen ($condvalue) - 1] == "*") 
     {
       $wc_end = true;
       $condvalue = substr ($condvalue, 0, strlen ($condvalue) - 1);
@@ -711,17 +756,21 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 
 // ------------------------------------ selectxmlcontent -------------------------------------
 
+// function: selectxmlcontent()
+// input: XML content container, tag name of requested XML node, tag holding the conditional value inside the given starttagname, conditional value
+// output: result array with the content of the requested XML node (tag) / false on error
+
 // description:
 // <tagname>
 //    .......  
 //    <condtag>condvalue</condtag>
 //    .......  
 // </tagname>
-
+//
 // extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag
 // value is equal with the target value $condvalue
 // wild card character "*" can be used at begin and end of $condvalue
-
+//
 // Be Aware: $startcondtag must be a child of $starttagname !!!
 
 function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
@@ -732,14 +781,15 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     return false;
   }
   
+  // add < and > for tag name
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
+  
   // hold starttag in buffer
   $buffer = $starttagname;  
 
   // define endtag
-  if (@substr_count ($starttagname, " ") >= 1)
-    $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") >= 1)
-    $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
+  if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
+  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";  
   else $endtagname = "</".substr ($starttagname, 1);
   
   // manipulate starttag if wild card character is used for attribute
@@ -756,14 +806,14 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     $condvalue = trim (strtolower ($condvalue));
     
     // check if wild card characters are used in condvalue
-    if ($condvalue[0] == "*") 
+    if ($condvalue != "" && $condvalue[0] == "*") 
     {
       $wc_begin = true;
       $condvalue = substr ($condvalue, 1);
     }
     else $wc_begin = false;
     
-    if ($condvalue[strlen ($condvalue) - 1] == "*") 
+    if ($condvalue != "" && $condvalue[strlen ($condvalue) - 1] == "*") 
     {
       $wc_end = true;
       $condvalue = substr ($condvalue, 0, strlen ($condvalue) - 1);
@@ -868,15 +918,21 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   else return false;
 }
 
-// CASE-Insensitive version (XML parser are always case-sensitive!)
+// ------------------------------------ selectxmlicontent -------------------------------------
+
+// function: selectxmlicontent()
+// input: XML content container, tag name of requested XML node, tag holding the conditional value inside the given starttagname, conditional value
+// output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
+// CASE-Insensitive version (XML parser are always case-sensitive!)
+//
 // <tagname>
 //    .......  
 //    <condtag>condvalue</condtag>
 //    .......  
 // </tagname>
-
+//
 // extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag
 // value is equal with the target value $condvalue
 // wild card character "*" can be used at begin and end of $condvalue
@@ -891,14 +947,15 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     return false;
   }
   
+  // add < and > for tag name
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
+  
   // hold starttag in buffer
   $buffer = $starttagname;  
 
   // define endtag
-  if (@substr_count ($starttagname, " ") >= 1)
-    $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
-  elseif (@substr_count ($starttagname, "*") >= 1)
-    $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
+  if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ") - 1).">";
+  elseif (@substr_count ($starttagname, "*") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, "*") - 1).">";    
   else $endtagname = "</".substr ($starttagname, 1);
   
   // manipulate starttag if wild card character is used for attribute
@@ -919,14 +976,14 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     $condvalue = trim (strtolower ($condvalue));
     
     // check if wild card characters are used in condvalue
-    if ($condvalue[0] == "*") 
+    if ($condvalue != "" && $condvalue[0] == "*") 
     {
       $wc_begin = true;
       $condvalue = substr ($condvalue, 1);
     }
     else $wc_begin = false;
     
-    if ($condvalue[strlen ($condvalue) - 1] == "*") 
+    if ($condvalue != "" && $condvalue[strlen ($condvalue) - 1] == "*") 
     {
       $wc_end = true;
       $condvalue = substr ($condvalue, 0, strlen ($condvalue) - 1);
@@ -1031,14 +1088,17 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   else return false;
 }
 
-
 // ------------------------------- deletecontent -------------------------------------------
+
+// function: deletecontent()
+// input: XML content container, tag name of requested XML node, tag holding the conditional value inside the given starttagname, conditional value
+// output: XML content container / false on error
 
 // description:
 // <tagname>
 //    <condtag>condvalue</condtag>
 // </tagname>
-
+//
 // deletes the whole xml content including <tagname>
 // wild card character "*" can be used at begin and end of $condvalue  
 
@@ -1049,7 +1109,7 @@ function deletecontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   {
     return false;
   }
-
+  
   // if condition is set
   if ($startcondtag != "")
   {
@@ -1087,13 +1147,19 @@ function deletecontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   else return false;
 }
 
-// CASE-Insensitive version (XML parser are always case-sensitive!)
+// ------------------------------- deleteicontent -------------------------------------------
+
+// function: deleteicontent()
+// input: XML content container, tag name of requested XML node, tag holding the conditional value inside the given starttagname, conditional value
+// output: XML content container / false on error
 
 // description:
+// CASE-Insensitive version (XML parser are always case-sensitive!)
+//
 // <tagname>
 //    <condtag>condvalue</condtag>
 // </tagname>
-
+//
 // deletes the whole xml content including <tagname>
 // wild card character "*" can be used at begin and end of $condvalue  
   
@@ -1145,19 +1211,23 @@ function deleteicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 
 // --------------------------------- setcontent --------------------------------------------
 
+// function: setcontent()
+// input: XML content container, parent tag name, tag name of XML node for the new content, new XML node to be inserted, tag holding the conditional value inside the given starttagname, conditional value
+// output: XML content container / false on error
+
 // description:
 // <parenttagname>
 //    <condtag>condvalue</condtag>
 //    <tagname>contentnew</tagname>
 // </parenttagname>
-
+//
 // $xmldata = data string to be parsed
-// $startparenttagname = name of the tag that is the parent of starttagname (necessary if condition is set!)
-// $starttagname = name of the tag (child)
+// $startparenttagname = name of the tag that is a parent node of starttagname (necessary if condition has been set!)
+// $starttagname = name of the tag (child node)
 // $contentnew = the content that will be inserted between the child tags $starttagname
 // $startcondtag = child xml tag where condition will be set
 // $condvalue = value of the condition
-
+//
 // wild card character "*" can be used at begin and end of $condvalue  
   
 function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag="", $condvalue="")
@@ -1168,6 +1238,9 @@ function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, 
     return false;
   }
 
+  // add < and > for tag name
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
+  
   // define endtag
   if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ")).">";
   else $endtagname = "</".substr ($starttagname, 1);
@@ -1220,21 +1293,27 @@ function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, 
   }
 }
 
-// CASE-Insensitive version (XML parser are always case-sensitive!)
+// --------------------------------- seticontent --------------------------------------------
+
+// function: seticontent()
+// input: XML content container, parent tag name, tag name of XML node for the new content, new XML node to be inserted, tag holding the conditional value inside the given starttagname, conditional value
+// output: XML content container / false on error
 
 // description:
+// CASE-Insensitive version (XML parser are always case-sensitive!)
+//
 // <parenttagname>
 //    <condtag>condvalue</condtag>
 //    <tagname>contentnew</tagname>
 // </parenttagname>
-
+//
 // $xmldata = data string to be parsed
-// $startparenttagname = name of the tag that is the parent of starttagname (necessary if condition is set!)
-// $starttagname = name of the tag (child)
+// $startparenttagname = name of the tag that is the parent node of starttagname (necessary if condition has been set!)
+// $starttagname = name of the tag (child node)
 // $contentnew = the content that will be inserted between the child tags $starttagname
 // $startcondtag = child xml tag where condition will be set
 // $condvalue = value of the condition
-
+//
 // wild card character "*" can be used at begin and end of $condvalue  
   
 function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag, $condvalue)
@@ -1244,6 +1323,9 @@ function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew,
   {
     return false;
   }
+  
+  // add < and > for tag name
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
   if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ")).">";
@@ -1303,21 +1385,25 @@ function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew,
 
 // --------------------------------- setcontent_fast --------------------------------------------
 
-// function designed for link management, extremely fast but with limitatins (only CASE-Sensitive!)
+// function: setcontent_fast()
+// input: XML content container, parent tag name, tag name of XML node for the new content, new XML node to be inserted, tag holding the conditional value inside the given starttagname, conditional value
+// output: XML content container / false on error
 
 // description:
+// function designed for link management, extremely fast but with limitations (only CASE-Sensitive!)
+//
 // <parenttagname>
 //    <condtag>condvalue</condtag>
 //    <tagname>contentnew</tagname>
 // </parenttagname>
-
+//
 // $xmldata = data string to be parsed
-// $startparenttagname = name of the tag that is the parent of starttagname (necessary if condition is set!)
-// $starttagname = name of the tag (child)
+// $startparenttagname = name of the tag that is the parent node of starttagname (necessary if condition has been set!)
+// $starttagname = name of the tag (child node)
 // $contentnew = the content that will be inserted between the child tags $starttagname
 // $startcondtag = child xml tag where condition will be set
 // $condvalue = value of the condition
-
+//
 // wild card character "*" can be used at begin and end of $condvalue  
   
 function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag="", $condvalue="")
@@ -1327,6 +1413,10 @@ function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $content
   {
     return false;
   }
+  
+  // add < and > for tag name
+  if (@substr_count ($startparenttagname, "<") == 0 && @substr_count ($startparenttagname, ">") == 0) $startparenttagname = "<".trim ($startparenttagname).">";
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
   if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ")).">";
@@ -1374,6 +1464,10 @@ function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $content
 
 // --------------------------------------- updatecontent -----------------------------------------
 
+// function: updatecontent()
+// input: XML content container, XML node to be replaced, new XML node
+// output: XML content container / false on error
+
 // description:
 // updates a given xml string $xmlnode in $xmldata with the content $xmlnodenew.
 // this method provides a faster way to update xml nodes when the node was selected before.
@@ -1393,6 +1487,10 @@ function updatecontent ($xmldata, $xmlnode, $xmlnodenew)
 
 // --------------------------------------- insertcontent -----------------------------------------
 
+// function: insertcontent()
+// input: XML content container, XML node to be inserted in starttagname, tag name of the parent XML node
+// output: XML content container / false on error
+
 // description:
 // .....................
 //    .......................
@@ -1402,7 +1500,7 @@ function updatecontent ($xmldata, $xmlnode, $xmlnodenew)
 //       insertxmldata               <- insertxmldata
 //    </tagname>                     <- list end
 // .....................
-
+//
 // insert $insertxmldata string at the end of all child between the parent $tagname 
 
 function insertcontent ($xmldata, $insertxmldata, $starttagname)
@@ -1412,6 +1510,9 @@ function insertcontent ($xmldata, $insertxmldata, $starttagname)
   {
     return false;
   }
+  
+  // add < and > for tag name
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
   if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ")).">";
@@ -1433,9 +1534,15 @@ function insertcontent ($xmldata, $insertxmldata, $starttagname)
   }
 }
 
-// CASE-Insensitive version (XML parser are always case-sensitive!)
+// --------------------------------------- inserticontent -----------------------------------------
+
+// function: inserticontent()
+// input: XML content container, XML node to be inserted in starttagname, tag name of the parent XML node
+// output: XML content container / false on error
 
 // description:
+// CASE-Insensitive version (XML parser are always case-sensitive!)
+//
 // .....................
 //    .......................
 //    <tagname>                      <- list start
@@ -1444,7 +1551,7 @@ function insertcontent ($xmldata, $insertxmldata, $starttagname)
 //       insertxmldata               <- insertxmldata
 //    </tagname>                     <- list end
 // .....................
-
+//
 // insert $insertxmldata string at the end of all child between the parent $tagname 
   
 function inserticontent ($xmldata, $insertxmldata, $starttagname)
@@ -1454,6 +1561,9 @@ function inserticontent ($xmldata, $insertxmldata, $starttagname)
   {
     return false;
   }
+  
+  // add < and > for tag name
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
   if (@substr_count ($starttagname, " ") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ")).">";
@@ -1481,6 +1591,10 @@ function inserticontent ($xmldata, $insertxmldata, $starttagname)
 
 // ------------------------------------ addcontent ---------------------------------------
 
+// function: addcontent()
+// input: XML content container, xml node to be inserted, grandparent tag name, tag holding the conditional value inside the given starttagname, conditional value, parent tag name, tag name of XML node for the new content, new XML node to be inserted
+// output: XML content container / false on error
+
 // description:
 // <grandtagname>
 //    <condtag>condvalue</condtag>
@@ -1492,9 +1606,9 @@ function inserticontent ($xmldata, $insertxmldata, $starttagname)
 //       ......................            }
 //    </parenttagname>                     <- list end
 // </grandtagname>
-
+//
 // $xmldata = data string to be parsed
-// $sub_xmldata = xml subschema to be inserted
+// $sub_xmldata = xml node to be inserted
 // $startgrandtagname (optional) = name of the grand xml tag of parent xml tag where (article)
 // $startcondtag (optional) = xml tag inside the parent xml tags where condition will be set
 // $condvalue (optional) = value of the condition
@@ -1509,6 +1623,10 @@ function addcontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, 
   {
     return false;
   }
+  
+  // add < and > for tag name
+  if (@substr_count ($startparenttagname, "<") == 0 && @substr_count ($startparenttagname, ">") == 0) $startparenttagname = "<".trim ($startparenttagname).">";
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
   if (@substr_count ($starttagname, " ") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ")).">";
@@ -1564,9 +1682,15 @@ function addcontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, 
   }
 }
 
-// CASE-Insensitive version (XML parser are always case-sensitive!)
+// ------------------------------------ addicontent ---------------------------------------
+
+// function: addicontent()
+// input: XML content container, xml node to be inserted, grandparent tag name, tag holding the conditional value inside the given starttagname, conditional value, parent tag name, tag name of XML node for the new content, new XML node to be inserted
+// output: XML content container / false on error
 
 // description:
+// CASE-Insensitive version (XML parser are always case-sensitive!)
+//
 // <grandtagname>
 //    <condtag>condvalue</condtag>
 //    <parenttagname>                      <- list start
@@ -1577,7 +1701,7 @@ function addcontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, 
 //       ......................            }
 //    </parenttagname>                     <- list end
 // </grandtagname>
-
+//
 // $xmldata = data string to be parsed
 // $sub_xmldata = xml subschema to be inserted
 // $startgrandtagname (optional) = name of the grand xml tag of parent xml tag where (article)
@@ -1594,6 +1718,10 @@ function addicontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag,
   {
     return false;
   }
+  
+  // add < and > for tag name
+  if (@substr_count ($startparenttagname, "<") == 0 && @substr_count ($startparenttagname, ">") == 0) $startparenttagname = "<".trim ($startparenttagname).">";
+  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
   if (@substr_count ($starttagname, " ") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ")).">";
@@ -1648,5 +1776,4 @@ function addicontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag,
     }
   }
 }
-
 ?>

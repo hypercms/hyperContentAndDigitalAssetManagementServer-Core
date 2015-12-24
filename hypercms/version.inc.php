@@ -1103,6 +1103,21 @@ Release 01/2016
 - Implementation of paging for task management
 - Added hcmsMore CSS class to main.css
 - Improved user detection of task owner (sender) in function rdbms_createtask
+- Implementation of new Plugin to display access statistics for the favorites of a user
+- Implementation of URL rewriting, new function rewrite_targetURI and rewrite_homepage, new "rewrite" folder in install directory holding an example configuration for URL rewriting
+- Added support for permament links to function getgooglesitemap
+- Added support for permament links to template engine
+- Bug fix: function publishobject did not check the result of the template engine for errors
+- Implementation of wrapper and download link support for hyperCMS media tags in template engine (use "wrapper" or "download" for pathytpe attribute)
+- Changed "abs" to "uri" as pathtype value in template engine ("abs" still supported by deprecated)
+- Update of all language files
+- Improvement in XML API to support tags and tag names as input
+- Implementation of function showAPIdocs to generate API function documentation based of a file (part of hyperCMS UI)
+- Implementation of page location memory for page explorer of the rich text editor
+- Update of the search_api for websites with improvements and bug fixes in function cleancontent and searchindex
+- Implementation of full hyperCMS API Function Reference generator in help/api_functions
+- Implementation of full hyperCMS API Function Reference in template_help
+- Bug fix: Workflow script help used a wrong reference to the help file
 */
 
 // current version

@@ -117,7 +117,8 @@ function getdescription ($text, $charset="UTF-8")
 
 // --------------------------------------- getgooglesitemap -------------------------------------------
 // function: getgooglesitemap ()
-// input: directory path, URL to directory, GET parameters to use for new versions of the URL as array, frequency of google scrawler [never,weekly,daily], priority [1 or less], 
+// input: publication anme, directory path, URL to directory, GET parameters to use for new versions of the URL as array (optional), permanent links text-ID to use for location as array (optional), 
+//        frequency of google scrawler [never,weekly,daily] (optional), priority [1 or less] (optional), 
 //        ignore file names as array (optional), allowed file types as array (optional), include frequenzy tag [true,false] (optional), include priority tag [true,false] (optional)
 // output: xml sitemap / false on error
 
@@ -125,9 +126,11 @@ function getdescription ($text, $charset="UTF-8")
 // generates a google sitemap xml-output.
 
 // help function
-function collecturlnodes ($dir, $url, $getpara, $chfreq, $prio, $ignore_array, $filetypes_array, $show_freq, $show_prio)
+function collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $prio, $ignore_array, $filetypes_array, $show_freq, $show_prio)
 {
-  if ($dir != "" && is_dir ($dir) && $url != "")
+  global $mgmt_config, $publ_config;
+  
+  if (valid_publicationname ($site) && $dir != "" && is_dir ($dir) && $url != "")
   {
     // add slash if not present at the end of the location string
     if (substr ($dir, -1) != "/") $dir = $dir."/";
@@ -155,7 +158,7 @@ function collecturlnodes ($dir, $url, $getpara, $chfreq, $prio, $ignore_array, $
         
         if (is_dir ($dir.$file))
         {
-          $resultnew_array = collecturlnodes ($dir.$file.'/', $url.$file.'/', $getpara, $chfreq, $prio, $ignore_array, $filetypes_array, $show_freq, $show_prio);
+          $resultnew_array = collecturlnodes ($site, $dir.$file.'/', $url.$file.'/', $getpara, $permalink, $chfreq, $prio, $ignore_array, $filetypes_array, $show_freq, $show_prio);
           if (is_array ($resultnew_array)) $result_array = array_merge ($result_array, $resultnew_array);
         }
 
@@ -180,10 +183,49 @@ function collecturlnodes ($dir, $url, $getpara, $chfreq, $prio, $ignore_array, $
             if ($setprio > 1) $setprio = 1;
           }
           else $setprio = 1;
+          
+          // use file path for location
+          $navlink = array();
+          $navlink[0] = $url.$file;
+
+          // read location of permalink
+          if (sizeof ($permalink) > 0)
+          {
+            $i = 0;
+            
+            // load content container of object
+            $xmldata = getobjectcontainer ($site, $dir, $file, "sys");
+    
+            if ($xmldata != "")
+            {savelog (array("$site, $dir, $file -> "), "aaa");
+              reset ($permalink);
+              
+              foreach ($permalink as $text_id)
+              {
+                $textnode = selectcontent ($xmldata, "<text>", "<text_id>", $text_id);
+
+                if ($textnode != false)
+                {
+                  $textcontent = getcontent ($textnode[0], "<textcontent>");
+      
+                  if (!empty ($textcontent[0]))
+                  {
+                    $navlink[$i] = substr ($url, 0, strpos ($url, "/", 8)).$textcontent[0];
+                    $i++;
+                  }
+                }
+              }
+            }
+          }
 
           // creating the url nodes
-          $result_string = "  <url>
-    <loc>".$url.$file."</loc>
+          if (is_array ($navlink) && sizeof ($navlink) > 0)
+          {
+            foreach ($navlink as $location)
+            {
+              $result_string = "
+  <url>
+    <loc>".$location."</loc>
     <lastmod>".$modified."</lastmod>";
           if ($show_freq) $result_string .= "
     <changefreq>".$chfreq."</changefreq>";
@@ -192,16 +234,19 @@ function collecturlnodes ($dir, $url, $getpara, $chfreq, $prio, $ignore_array, $
           $result_string .= "
   </url>";
   
-          $result_array[] = $result_string;
+              $result_array[] = $result_string;
+            }
+          }
           
           // if GET parameters should be added to create new versions of the URL
-          if (sizeof ($getpara) > 0)
+          if (is_array ($getpara) && sizeof ($getpara) > 0)
           {
             foreach ($getpara as $add)
             {
               if ($add != "") 
               {
-                $result_string = "  <url>
+                $result_string = "
+    <url>
       <loc>".$url.$file."?".$add."</loc>
       <lastmod>".$modified."</lastmod>";
                 if ($show_freq) $result_string .= "
@@ -227,12 +272,14 @@ function collecturlnodes ($dir, $url, $getpara, $chfreq, $prio, $ignore_array, $
   else return false;
 }
 
-function getgooglesitemap ($dir, $url, $getpara=array(), $chfreq="weekly", $prio="", $ignore=array(), $filetypes=array('cfm', 'htm', 'html', 'xhtml', 'asp', 'aspx', 'jsp', 'php', 'pdf'), $show_freq=true, $show_prio=true)
+function getgooglesitemap ($site, $dir, $url, $getpara=array(), $permalink=array(), $chfreq="weekly", $prio="", $ignore=array(), $filetypes=array('cfm','htm','html','xhtml','asp','aspx','jsp','php','pdf'), $show_freq=true, $show_prio=true)
 {
-  if ($dir != "" && is_dir ($dir) && $url != "")
-  {
+  global $mgmt_config, $publ_config;
+  
+  if (valid_publicationname ($site) && $dir != "" && is_dir ($dir) && $url != "")
+  {  
     // cget url nodes
-    $result_array = collecturlnodes ($dir, $url, $getpara, $chfreq, $prio, $ignore, $filetypes, $show_freq, $show_prio);
+    $result_array = collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $prio, $ignore, $filetypes, $show_freq, $show_prio);
 
     if (sizeof ($result_array) > 0)
     {
@@ -243,7 +290,7 @@ function getgooglesitemap ($dir, $url, $getpara=array(), $chfreq="weekly", $prio
   xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9
       http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">\n";
       
-      $result .= implode ("\n", $result_array)."\n";
+      $result .= implode ("", $result_array)."\n";
       
       $result .= "</urlset>";
       

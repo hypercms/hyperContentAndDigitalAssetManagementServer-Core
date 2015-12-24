@@ -24,8 +24,8 @@ Optionally required for full Digital Asset Management (DAM) support on server-si
 - EXIFTOOL (for reading meta data of files)
 
 On client-side:
-- Internet Explorer 8+, Firefox 3+, Chrome 18+, Safari 5+ as well as Opera 9.5+ can be used.
-  hyperCMS is 100% browser based, no additional software is required. 
+- hyperCMS is 100% browser based, no additional software is required
+- Internet Explorer, Firefox, Chrome, Safari, Opera (latest stable release recommended for full support) 
 
 
 Installation:

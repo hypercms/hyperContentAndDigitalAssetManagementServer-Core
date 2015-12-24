@@ -101,7 +101,7 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle, $artstatus, $
 
 // -------------------------------------------- settext -----------------------------------------------
 // function: settext()
-// input: publication name, container (XML), container name, text array, type array or string of text [u,f,l,c,d], article array or string [yes, no], 
+// input: publication name, container (XML), container name, text array, type array or string of text [u,f,l,c,d], article array or string [yes,no], 
 //        text user array or string, user name, character set of text content, add microtime to ID [true,false] used for comments
 // output: updated content container (XML), false on error
 
@@ -256,7 +256,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
             elseif (is_array ($temp_array_src)) $temp_array = $temp_array_src;
 
             // if links were found
-            if (is_array ($temp_array))
+            if (!empty ($temp_array) && is_array ($temp_array))
             {
               $link_array = array();
               
@@ -463,7 +463,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
 
 // -------------------------------------------- setmedia -----------------------------------------------
 // function: setmedia()
-// input: publication name, container (XML), container name, media arrays (some are optional), article array or string [yes, no], content user array or string, user name, chracter set of text content
+// input: publication name, container (XML), container name, media arrays (some are optional), article array or string [yes,no], content user array or string, user name, chracter set of text content
 // output: updated content container (XML), false on error
 
 function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_curr, $mediaobject, $mediaalttext, $mediaalign, $mediawidth, $mediaheight, $art, $mediauser, $user, $charset="")
@@ -637,7 +637,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
 
 // -------------------------------------------- setpagelink -----------------------------------------------
 // function: setpagelink()
-// input: publication name, container (XML), container name, current link array, new link array, link target array, link text array, article array or string [yes, no], content user array or string, user name, chracter set of text content
+// input: publication name, container (XML), container name, current link array, new link array, link target array, link text array, article array or string [yes,no], content user array or string, user name, chracter set of text content
 // output: updated content container (XML), false on error
 
 function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhref, $linktarget, $linktext, $art, $linkuser, $user, $charset="")
@@ -794,7 +794,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhr
 
 // -------------------------------------------- setcomplink -----------------------------------------------
 // function: setcomplink()
-// input: publication name, container (XML), container name, component arrays (some are optional), article array or string [yes, no], content user array or string, user name
+// input: publication name, container (XML), container name, component arrays (some are optional), article array or string [yes,no], content user array or string, user name
 // output: updated content container (XML), false on error
 
 function setcomplink ($site, $contentdata, $contentfile, $component_curr, $component, $condition, $art, $compuser, $user)

@@ -889,7 +889,7 @@ function rdbms_deletecontent ($container_id, $text_id, $user)
 
 // ----------------------------------------------- search content ------------------------------------------------- 
 
-function rdbms_searchcontent ($folderpath, $excludepath, $object_type, $date_from, $date_to, $template, $expression_array, $expression_filename, $filesize, $imagewidth, $imageheight, $imagecolor, $imagetype, $geo_border_sw, $geo_border_ne, $maxhits=1000, $count=false)
+function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", $date_from="", $date_to="", $template="", $expression_array="", $expression_filename="", $filesize="", $imagewidth="", $imageheight="", $imagecolor="", $imagetype="", $geo_border_sw="", $geo_border_ne="", $maxhits=1000, $count=false)
 {
   // user will be provided as global for search expression logging
   global $mgmt_config, $user;
@@ -2536,7 +2536,7 @@ function rdbms_insertdailystat ($activity, $container_id, $user="")
 
 // ----------------------------------------------- get statistics from dailystat -------------------------------------------------
 
-function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $container_id="", $objectpath = "", $user="", $type="media")
+function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $container_id="", $objectpath="", $user="", $type="media")
 {
   global $mgmt_config;
 

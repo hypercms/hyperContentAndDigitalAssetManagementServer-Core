@@ -450,9 +450,10 @@ function tpl_globals ($application, $container, $charset)
 {
   $application = strtolower (trim ($application));
   
+  // URL rewrting is only supported by PHP, no translations to JSP and ASP
   if ($application == "php")
   {
-    return "<?php \$hypercms_contentcontainer = \"$container\"; \$hypercms_today = date (\"YmdHi\", time()); ?>\n";
+    return "<?php \$hypercms_contentcontainer = \"$container\"; \$hypercms_today = date(\"YmdHi\", time()); if (!empty(\$hypercms_session) && is_array(\$hypercms_session)) foreach (\$hypercms_session as \$key=>\$value) \$_SESSION[\$key] = \$value; ?>\n";
   }
   elseif ($application == "jsp")
   { 
@@ -1096,24 +1097,24 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
 // function: buildview()
 // input: publication name, location, object, user, view parameter (optional), reload workplace control frame and add html & body tags if missing [yes,no] (optional), 
 //        template name (optional), container name (optional), 
-//        force category to use different location path for %url_location% or %abs_location% [page,comp] (optional), execute_code [true/false] (optional
-//
-//        buildview parameter may have the following values:
-//        $buildview = "formedit": use form for content editing
-//        $buildview = "formmeta": use form for content viewing only for meta informations (tag-type must be meta)
-//        $buildview = "formlock": use form for content viewing
-//        $buildview = "cmsview": view of page based on template, includes hyperCMS specific code (buttons)
-//        $buildview = "inlineview": view of page based on template, includes hyperCMS specific code (buttons) and inline text editing
-//        $buildview = "publish": view of page for publishing based on template without CMS specific code (buttons)
-//        $buildview = "preview": view of page based on template for preview (inactive hyperlinks) without CMS specific code (buttons)
-//        $buildview = "template": view of template based on template for preview (inactive hyperlinks) without CMS specific code (buttons)
-//
+//        force category to use different location path [page,comp] (optional), execute_code [true/false] (optional)
 // output: result array with view of the content / false on error
 // 
-// requirements:
+// requires:
 // buildview requires the following functions and files: config.inc.php, hypercms_api.inc.php
 // these functions must be inluded before you can use buildview.
 // to be able to save the content, the secure token mus be provided to this function.
+//
+// description:
+// buildview parameter may have the following values:
+// $buildview = "formedit": use form for content editing
+// $buildview = "formmeta": use form for content viewing only for meta informations (tag-type must be meta)
+// $buildview = "formlock": use form for content viewing
+// $buildview = "cmsview": view of page based on template, includes hyperCMS specific code (buttons)
+// $buildview = "inlineview": view of page based on template, includes hyperCMS specific code (buttons) and inline text editing
+// $buildview = "publish": view of page for publishing based on template without CMS specific code (buttons)
+// $buildview = "preview": view of page based on template for preview (inactive hyperlinks) without CMS specific code (buttons)
+// $buildview = "template": view of template based on template for preview (inactive hyperlinks) without CMS specific code (buttons)
 
 function buildview ($site, $location, $page, $user, $buildview="template", $ctrlreload="no", $template="", $container="", $force_cat="", $execute_code=true)
 { 
@@ -3833,7 +3834,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // get colorspace and ICC profile
                 $mediacolorspace[$id][$tagid] = getattribute ($hypertag, "colorspace");
                 $mediaiccprofile[$id][$tagid] = getattribute ($hypertag, "iccprofile");
-                // get path type [file,url,abs]
+                // get path type [file,url,abs,wrapper,download]
                 $mediapathtype[$id][$tagid] = getattribute ($hypertag, "pathtype");
               }                  
               elseif ($hypertagname == $searchtag."alttext")
@@ -4291,8 +4292,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     $url_tplmedia = $mgmt_config[$path_prefix.'_path_tplmedia'];
                   }
                 
-                  // if pathytpe == abs (absolute path = URL w/o protocol and domain)
-                  if (!empty ($mediapathtype[$id][$tagid]) && $mediapathtype[$id][$tagid] == "abs")
+                  // if pathytpe == uri (deprecated value: abs) (URI = URL w/o protocol and domain)
+                  if (!empty ($mediapathtype[$id][$tagid]) && ($mediapathtype[$id][$tagid] == "uri" || $mediapathtype[$id][$tagid] == "abs"))
                   {
                     $url_media = cleandomain ($url_media);
                     $url_tplmedia = cleandomain ($url_tplmedia);
@@ -4315,6 +4316,21 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   }
                   // use original file
                   else $file_media = $mediafilebot[$id][$tagid];
+                  
+                  // if pathytpe == wrapper (wrapper link)
+                  if (!empty ($mediapathtype[$id][$tagid]) && $mediapathtype[$id][$tagid] == "wrapper" && getmediacontainerid ($file_media))
+                  {
+                    $url_media = "";
+                    $file_media = createwrapperlink ("", "", "", "", "", getmediacontainerid ($file_media));
+                    $url_tplmedia = $url_tplmedia;
+                  }
+                  // if pathytpe == download (download link)
+                  elseif (!empty ($mediapathtype[$id][$tagid]) && $mediapathtype[$id][$tagid] == "download" && getmediacontainerid ($file_media))
+                  {
+                    $url_media = "";
+                    $file_media = createdownloadlink ("", "", "", "", "", getmediacontainerid ($file_media));
+                    $url_tplmedia = $url_tplmedia;
+                  }
                 }                 
               
                 if ($buildview != "formedit" && $buildview != "formmeta" && $buildview != "formlock")
@@ -6580,7 +6596,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $tpl_globals = tpl_globals ($application, $contentfile, $charset);
   
               // insert code        
-              $viewstore = $tpl_globals.$tpl_livelink.$tpl_linkindex.$pagetracking.trim ($viewstore);     
+              $viewstore = $pagetracking.$tpl_globals.$tpl_livelink.$tpl_linkindex.trim ($viewstore);     
             }
           }
         }

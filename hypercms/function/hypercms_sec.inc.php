@@ -2581,7 +2581,7 @@ function hcms_crypt ($string, $start=0, $length=0)
 
 // ---------------------- hcms_encrypt -----------------------------
 // function: hcms_encrypt()
-// input: string to encode, key of length 16, 24 or 32 (optional), crypt strength level [weak,standard,strong] (optional), 
+// input: string to encode, key of length 16 or 24 or 32 (optional), crypt strength level [weak,standard,strong] (optional), 
 //        encoding [base64,url,none] (optional)
 // output: encoded string / false on error
 
@@ -2691,7 +2691,7 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
 
 // ---------------------- hcms_decrypt -----------------------------
 // function: hcms_decrypt()
-// input: hash-string to decode, key of length 16, 24 or 32 (optional), crypt strength level [weak,standard,strong] (optional), 
+// input: hash-string to decode, key of length 16 or 24 or 32 (optional), crypt strength level [weak,standard,strong] (optional), 
 //        encoding [base64,url,none] (optional)
 // output: decoded string / false on error
 

@@ -767,7 +767,7 @@ function getobject ($path)
 // output: container name / false on error
 
 // description:
-// extract the container name out of a multimedia file name by using the hcm-ID
+// extract the container name from a multimedia file name by using the hcm-ID
 
 function getmediacontainername ($file)
 {
@@ -793,7 +793,7 @@ function getmediacontainername ($file)
 // output: container ID / false on error
 
 // description:
-// extract the container ID out of a multimedia file name by using the hcms-ID
+// extract the container ID from a multimedia file name by using the hcms-ID
 
 function getmediacontainerid ($file)
 {
@@ -819,7 +819,7 @@ function getmediacontainerid ($file)
 // output: media file name / false on error
 
 // description:
-// extracts the name of the multimedia file by container name or ID in order to get the media file of older content versions.
+// extracts the name from the multimedia file by container name or ID in order to get the media file of older content versions.
 // if the result is false, there is no older media file version.
 
 function getmediafileversion ($container)
