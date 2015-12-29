@@ -1605,7 +1605,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
 // output: result array with file size in kB and file count / false on error
 
 // Attention!
-// this function won't give you a proper result of the file size of multimedia components, if there is no DB in use.
+// This function won't give you a proper result of the file size of multimedia components, if there is no DB in use.
 
 function getfilesize ($file)
 {
@@ -2401,7 +2401,7 @@ function gethypertagname ($tagdata)
 // finds the first html tag start and end position of a nested hyperCMS tag
 // and returns the whole tag including all information.
 // works also if other script tags are nested in the HTML-tag.
-// this function is not case sensitive!
+// This function is not case sensitive!
 
 function gethtmltag ($filedata, $tag)
 {
@@ -2519,7 +2519,7 @@ function gethtmltag ($filedata, $tag)
 // description:
 // finds the nearest html tag start and end position of a nested hyperCMS tag
 // and returns the whole tag including all information.
-// this functions works also for html-tag pairs like <a href></a>, <div></div> and so on.
+// This functions works also for html-tag pairs like <a href></a>, <div></div> and so on.
 
 function gethtmltags ($filedata, $tag)
 {

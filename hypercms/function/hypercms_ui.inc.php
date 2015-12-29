@@ -525,7 +525,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
 // output: html presentation / false
 
 // description:
-// this function requires site, location and cat to be set as global variable in order to validate the access permission of the user
+// This function requires site, location and cat to be set as global variable in order to validate the access permission of the user
 
 function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $height="", $class="hcmsImageItem")
 {
@@ -2275,7 +2275,7 @@ function showinlinedatepicker_head ()
 // function: showinlineeditor ()
 // input: publication name, hypertag, hypertag id, content, width, height of the editor, toolbar set, language, 
 //        content-type, category[page,comp], converted location, object name, container name, DB-connect file name, security token
-// output: message box/false on error
+// output: rich text editor code / false on error
 
 // description:
 // shows the rich text inline editor
@@ -3331,6 +3331,7 @@ function showAPIdocs ($file, $return="html")
     if (is_array ($data))
     {
       $name = "";
+      $open = "";
       $input = array();
       $output = array();
       $description = array();
@@ -3512,6 +3513,344 @@ function showAPIdocs ($file, $return="html")
     }
     
     return $result;
+  }
+  else return false;
+}
+
+// ------------------------- readnavigation -----------------------------
+// function: readnavigation()
+// input: publication name, location, object name, view [see view parameters of function buildview], user name
+// output: navigation item array / false
+
+// description:
+// readnavigation reads the content from the container and collects information about a single navigation item.
+
+function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
+{
+  global $mgmt_config, $navi_config;
+
+  if (valid_publicationname ($site) && valid_locationname ($docroot) && valid_objectname ($object) && valid_objectname ($user))
+  {
+    $xmldata = getobjectcontainer ($site, $docroot, $object, $user);
+  
+    if ($xmldata != false)
+    {
+      // if show/hide navigation text_id has been defined
+      if (!empty ($navi_config['hide_text_id']))
+      {
+        $hidenode = selectcontent ($xmldata, "<text>", "<text_id>", $navi_config['hide_text_id']);
+
+        if ($hidenode != false)
+        {
+          $hide = getcontent ($hidenode[0], "<textcontent>");
+
+          if (!empty ($hide[0])) $hideitem = true;
+          else $hideitem = false;
+        }
+        else $hideitem = false;
+      }
+      else $hideitem = false;
+
+      // if sort order text_id has been defined
+      if (!empty ($navi_config['sort_text_id']))
+      {
+        $sortordernode = selectcontent ($xmldata, "<text>", "<text_id>", $navi_config['sort_text_id']);
+
+        if ($sortordernode != false)
+        {
+          $sortorder = getcontent ($sortordernode[0], "<textcontent>");
+          if (!empty ($sortorder[0])) $sortorder_no = $sortorder[0];
+          else $sortorder_no = "X";
+        }
+        else $sortorder_no = "X";
+      }
+      else $sortorder_no = "X";
+
+      // if text_id has been defined for the navigation title
+      if (!empty ($navi_config['lang_text_id']) && is_array ($navi_config['lang_text_id']))
+      {
+        // collect navigation titles for each language
+        reset ($navi_config['lang_text_id']);
+        $navtitles = "";
+        $links = "";
+
+        while (list ($key, $value) = each ($navi_config['lang_text_id']))
+        {
+          // get title
+          $textnode = selectcontent ($xmldata, "<text>", "<text_id>", $value);
+
+          if ($textnode != false)
+          {
+            $title = getcontent ($textnode[0], "<textcontent>");
+
+            if (!empty ($title[0])) $navtitle = $title[0];
+            else $navtitle = $object;
+          }
+          // use object name
+          else $navtitle = $object;
+ 
+          // if language session variable has been defined
+          if (!empty ($navi_config['lang_session']))
+          {
+            // for publishing
+            if ($navtitle != "" && $view == "publish") $navtitles .= "<?php if (\$_SESSION['".$navi_config['lang_session']."'] == \"".$key."\") { ?>".$navtitle."<?php } ?>";
+            // for all other views
+            elseif ($navtitle != "" && $key == $_SESSION[$navi_config['lang_session']]) $navtitles .= $navtitle;
+          }
+          // only single language support
+          else $navtitles = $navtitle;
+
+          // get PermaLinks
+          if (!empty ($navi_config['permalink_text_id'][$key]))
+          {
+            $textnode = selectcontent ($xmldata, "<text>", "<text_id>", $navi_config['permalink_text_id'][$key]);
+
+            if ($textnode != false)
+            {
+              $permalink = getcontent ($textnode[0], "<textcontent>");
+
+              if (!empty ($permalink[0])) $navlink = $permalink[0];
+              else $navlink = cleandomain (str_replace ($navi_config['root_path'], $navi_config['root_url'], $docroot.$object));
+            }
+            else $navlink = cleandomain (str_replace ($navi_config['root_path'], $navi_config['root_url'], $docroot.$object));
+
+            // if language session variable has been defined
+            if (!empty ($navi_config['lang_session']))
+            {
+              // for publishing
+              if ($navlink != "" && $view == "publish") $links .= "<?php if (\$_SESSION['".$navi_config['lang_session']."'] == \"".$key."\") { ?>".$navlink."<?php } ?>";
+              // only single language support
+              elseif ($navlink != "" && $key == $_SESSION[$navi_config['lang_session']]) $links .= str_replace ($navi_config['root_path'], $navi_config['root_url'], $docroot.$object);
+            }
+            else $links = str_replace ($navi_config['root_path'], $navi_config['root_url'], $docroot.$object);
+          }
+          // use standard link
+          else $links = str_replace ($navi_config['root_path'], $navi_config['root_url'], $docroot.$object);
+        }
+      }
+      // use standard link
+      else
+      {
+        $navtitles = $object;
+        $links = str_replace ($navi_config['root_path'], $navi_config['root_url'], $docroot.$object);
+      }
+
+      // result
+      $result = array();
+      $result['title'] = $navtitles;
+      $result['order'] = $sortorder_no;
+      $result['hide'] = $hideitem;
+      $result['link'] = $links;
+
+      return $result;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// ------------------------- createnavigation -----------------------------
+// function: createnavigation()
+// input: publication name, document root for navigation, URL root for navigation, view [see view parameters of function buildview], path to current object (optional), recursive [true,false] (optional)
+// output: navigation array / false
+
+// description:
+// generates an assoc. array (item => nav-item, sub => array with sub-items)
+
+function createnavigation ($site, $docroot, $urlroot, $view="publish", $currentobject="", $recursive=true)
+{
+  global $mgmt_config, $navi_config;
+
+  if (valid_publicationname ($site) && valid_locationname ($docroot) && $urlroot != "")
+  {
+    // deconvert path
+    if (substr_count ($docroot, "%page%") == 1 || substr_count ($docroot, "%comp%") == 1)
+    {
+      $docroot = deconvertpath ($docroot, "file");
+    }
+    
+    if (substr_count ($currentobject, "%page%") == 1 || substr_count ($currentobject, "%comp%") == 1)
+    {
+      $currentobject = deconvertpath ($currentobject, "file");
+    }
+    
+    // add slash if not present at the end of the location string
+    if (substr ($docroot, -1) != "/") $docroot = $docroot."/";
+    if (substr ($currentobject, -1) != "/") $currentobject = $currentobject."/";
+  
+    // collect navigation data
+    $handler = opendir ($docroot);
+    
+    if ($handler != false)
+    {
+      $i = 0;
+      $fileitem = array(); 
+      $navitem = array();  
+  
+      while ($file = readdir ($handler))
+      {
+        if ($file != "." && $file != ".." && substr ($file, -4) != ".off") $fileitem[] = $file;
+      }
+  
+      if (sizeof ($fileitem) > 0)
+      {
+        natcasesort ($fileitem);
+        reset ($fileitem);
+    
+        foreach ($fileitem as $object)
+        {
+          // PAGE OBJECT -> standard navigation item
+          if (is_file ($docroot.$object) && $object != ".folder")
+          {
+            $navi = readnavigation ($site, $docroot, $object, $view, "sys");
+    
+            if ($navi != false && $navi['hide'] == false)
+            {
+              // navigation display
+              if (substr_count ($currentobject, $docroot.$object) == 1) $add_css = $navi_config['attr_li_active'];
+              else $add_css = ""; 
+    
+              $navitem[$navi['order'].'.'.$i]['item'] = $add_css."|".$navi['link']."|".$navi['title'];
+              $navitem[$navi['order'].'.'.$i]['sub'] = "";
+    
+              $i++;
+            }
+          }
+          // FOLDER -> next navigation level
+          elseif ($recursive && is_dir ($docroot.$object) && !is_emptyfolder ($docroot.$object))
+          {
+            $navi = readnavigation ($site, $docroot, $object, $view, "sys");
+    
+            if (is_array ($navi) && $navi['hide'] == false)
+            {
+              if ($navi['order'] == "X") $navi['order'] = $i;
+    
+              // create main item for sub navigation
+              $navitem[$navi['order'].'.'.$i]['item'] = $navi_config['attr_li_dropdown']."|#|".$navi['title'];
+              $navitem[$navi['order'].'.'.$i]['sub'] = "";
+    
+              // create sub navigation
+              $subnav = createnavigation ($site, $docroot.$object."/", $urlroot.$object."/", $view, $currentobject);
+    
+              if (is_array ($subnav))
+              {
+                ksort ($subnav, SORT_NUMERIC);
+                reset ($subnav);
+                $j = 1;
+    
+                foreach ($subnav as $key => $value)
+                {
+                  if (!empty ($navi_config['use_1st_folderitem']) && $j == 1)
+                  {
+                    $navitem[$navi['order'].'.'.$i]['item'] = $value['item'];
+                    $navitem[$navi['order'].'.'.$i]['sub'] = "";
+                  }
+                  else
+                  {
+                    $navitem[$navi['order'].'.'.$i]['sub'][$key] = $value;
+                  }
+                  
+                  $j++;
+                }
+              }
+    
+              $i++;
+            }
+          }
+        }
+      }
+  
+      closedir ($handler);
+    }
+    
+    if (isset ($navitem) && is_array ($navitem)) return $navitem;
+    else return false;
+  }
+  else return false;
+}
+
+// ------------------------- shownavigation -----------------------------
+// function: shownavigation()
+// input: navigation array (created by function readnavigation), level as integer (optional)
+// output: navigation presentation / false
+
+// description:
+// display navigation as HTML code.
+// 
+// The following example configures the navigation:
+// $navi_config = array();
+// 
+// document root definitions:
+// $navi_config['root_path'] = "%abs_page%/";
+// $navi_config['root_url'] = "%url_page%/";
+// 
+// HTML / CSS class defintions (names between percentage signs are placeholders):
+// $navi_config['attr_ul_top'] = "class=\"nav navbar-nav\"";
+// $navi_config['attr_ul_dropdown'] = "class=\"dropdown-menu\"";
+// $navi_config['attr_li_active'] = "class=\"active\"";
+// $navi_config['attr_li_dropdown'] = "class=\"dropdown\"";
+// $navi_config['attr_href_dropdown'] = "class=\"dropdown-toggle\" data-toggle=\"dropdown\"";
+// $navi_config['tag_li'] = "<li %attr_li%><a href=\"%link%\" %attr_href%>%title%</a>%sub%</li>\n";
+// $navi_config['tag_ul'] = "<ul %attr_ul%>%list%</ul>\n";
+// 
+// language definitions
+// Session variable name that holds the language setting
+// $navi_config['lang_session'] = "langcode";
+// note: key = langcode & value = text_id of textnode
+// $navi_config['lang_text_id']['DE'] = "Titel_DE";
+// $navi_config['lang_text_id']['EN'] = "Titel_EN";
+//
+// PermaLink defintions
+// note: key = langcode & value = text_id of textnode
+// $navi_config['permalink_text_id']['DE'] = "PermaLink_DE";
+// $navi_config['permalink_text_id']['EN'] = "PermaLink_EN";
+// 
+// Navigation hide and sort order defintions
+// $navi_config['hide_text_id'] = "NavigationHide";
+// $navi_config['sort_text_id'] = "NavigationSortOrder";
+// 
+// Use the first item in a folder for the main navigation item and display all following as sub navigation items [true,false]
+// $navi_config['use_1st_folderitem'] = false;
+
+function shownavigation ($navigation, $level=1)
+{
+  global $mgmt_config, $navi_config;
+  
+  if (is_array ($navigation))
+  {
+    $out = "";
+    $sub = "";
+  
+    ksort ($navigation, SORT_NUMERIC);
+    reset ($navigation);
+  
+    list ($tag_ul_start, $tag_ul_end) = explode ("%list%", $navi_config['tag_ul']);
+    
+    if ($level == 1) $out .= str_repeat ("  ", $level) . str_replace ("%attr_ul%", $navi_config['attr_ul_top'], $tag_ul_start."\n");
+    else $out .= str_repeat ("  ", $level) . str_replace ("%attr_ul%", $navi_config['attr_ul_dropdown'], $tag_ul_start."\n");
+  
+    foreach ($navigation as $key => $value)
+    {
+      list ($css, $link, $title) = explode ("|", $value['item']);
+
+      if (is_array ($value['sub']))
+      {
+        $out .= str_repeat ("  ", $level) . str_replace (array("%attr_li%", "%attr_href%", "%link%", "%title%"), array($css, $navi_config['attr_href_dropdown'], $link, $title), $navi_config['tag_li']);
+        $sub = shownavigation ($value['sub'], ($level+1));
+
+        if ($sub != "") $out = str_replace ("%sub%", $sub, $out);
+        else $out = str_replace ("%sub%", "", $out);
+      }
+      else
+      {
+        $out .= str_repeat ("  ", $level) . str_replace (array("%attr_li%", "%attr_href%", "%link%", "%title%"), array($css, "", $link, $title), $navi_config['tag_li']);
+        $out = str_replace ("%sub%", "", $out);
+      }
+    }
+  
+    $out .= $tag_ul_end;
+  
+    return $out;
   }
   else return false;
 }

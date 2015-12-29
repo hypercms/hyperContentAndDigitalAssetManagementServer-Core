@@ -1118,8 +1118,19 @@ Release 01/2016
 - Implementation of full hyperCMS API Function Reference generator in help/api_functions
 - Implementation of full hyperCMS API Function Reference in template_help
 - Bug fix: Workflow script help used a wrong reference to the help file
+
+Version 5.8.6
+Release 01/2016
+- Update of function getdescription to limit description length
+- Implementation of new function is_emptyfolder
+- Implementation of new UI functions readnavigation, createnavigation and shownavigation (gernerating navigations for websites)
+- hyperCMS UI API will be loaded in hyperCMS API and has been removed from all files
+- Updates in Navigation template of demo website to work with new UI navigation functions
+- Implementation of new input paramater to enable and disable search expression logging for function rdbms_searchcontent
+- Improved error handling in template engine to display errors and render document without errors
+- Implementation of search history log for website search
 */
 
 // current version
-$version = "Version 5.8.5";
+$version = "Version 5.8.6";
 ?>

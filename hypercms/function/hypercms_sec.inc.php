@@ -736,7 +736,7 @@ function checklocalpermission ($site, $group, $name)
 
 // description:
 // login of user by sending user and password using the variables: $sentuser, $sentpasswd
-// this procedure will register the user in the hypercms session and in the php session.
+// This procedure will register the user in the hypercms session and in the php session.
 // the procedure will return true or false using the variable $result.
 
 function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_password=false, $locking=true)
@@ -1757,7 +1757,7 @@ function checkdiskkey ($users="", $site="")
 // output: true if passed / error message as string
 
 // description:
-// this function checks the strength of a password and return the error messages or true.
+// This function checks the strength of a password and return the error messages or true.
 
 function checkpassword ($password)
 {
@@ -2159,7 +2159,7 @@ function valid_publicationname ($variable)
 // output: html encoded value as array or string / false on error
 
 // description:
-// this function encodes certain characters (&, <, >, ", ') into their 
+// This function encodes certain characters (&, <, >, ", ') into their 
 // HTML character entity equivalents to protect against XSS.
 
 
@@ -2266,7 +2266,7 @@ function html_encode ($expression, $encoding="", $js_protection=false)
 // output: html decoded value as array or string / false on error
 
 // description:
-// this function decodes all characters which have been converted by html_encode.
+// This function decodes all characters which have been converted by html_encode.
 
 function html_decode ($expression, $encoding="")
 {
@@ -2305,8 +2305,8 @@ function html_decode ($expression, $encoding="")
 // output: escaped content as string / false on error
 
 // description:
-// this function escapes all script tags.
-// this function must be used to clean all user input in the CMS by removing all server side scripts tags.
+// This function escapes all script tags.
+// This function must be used to clean all user input in the CMS by removing all server side scripts tags.
 
 function scriptcode_encode ($content)
 {
@@ -2333,7 +2333,7 @@ function scriptcode_encode ($content)
 // output: script code as array / false on error or if noting was found
 
 // description:
-// this function extracts the script code of a given content.
+// This function extracts the script code of a given content.
 
 function scriptcode_extract ($content, $identifier_start="<?", $identifier_end="?>")
 {
@@ -2389,7 +2389,7 @@ function scriptcode_extract ($content, $identifier_start="<?", $identifier_end="
 // output: result array / false on error
 
 // description:
-// this function removes all dangerous PHP functions.
+// This function removes all dangerous PHP functions.
 
 function scriptcode_clean_functions ($content, $type=3, $application="PHP")
 {
@@ -2466,7 +2466,7 @@ function scriptcode_clean_functions ($content, $type=3, $application="PHP")
 // output: urlencoded value as array or string / false on error
 
 // description:
-// this function encodes all characters.
+// This function encodes all characters.
 
 function url_encode ($variable)
 {
@@ -2494,7 +2494,7 @@ function url_encode ($variable)
 // output: urldecoded value as array or string / false on error
 
 // description:
-// this function decodes all characters which have been converted by url_encode or urlencode (PHP).
+// This function decodes all characters which have been converted by url_encode or urlencode (PHP).
 
 function url_decode ($variable)
 {
@@ -2522,7 +2522,7 @@ function url_decode ($variable)
 // output: encoded value as array or string / false on error
 
 // description:
-// this function encodes/escapes characters to secure the shell comand.
+// This function encodes/escapes characters to secure the shell comand.
 
 function shellcmd_encode ($variable)
 {

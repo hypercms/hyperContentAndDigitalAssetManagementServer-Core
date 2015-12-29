@@ -30,6 +30,8 @@ $config['showurl'] = true;
 $config['exactmatches'] = true;
 // exclude path identifier (string) from indexing
 $config['exclude_path'] = "/_";
+// save search history log, provide location or leave empty
+$config['search_log'] = "%abs_path_rep%/search/index/".$site.".log";
 
 // ---------------------------- text entries for different languages -----------------------------------
 

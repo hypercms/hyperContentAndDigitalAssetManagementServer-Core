@@ -61,8 +61,6 @@ $lang = "en";
 
 // hyperCMS API
 require ("../function/hypercms_api.inc.php");
-// hyperCMS UI
-require ("../function/hypercms_ui.inc.php");
 // version info
 require ("../version.inc.php");
 

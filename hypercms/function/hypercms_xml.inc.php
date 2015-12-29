@@ -285,7 +285,7 @@ function geticontent ($xmldata, $starttagname)
 // description:
 // <tagname>content</tagname>
 // extracts the content together with the $starttagname xml tags
-// this function will NOT decode special characters like function getcontent!
+// This function will NOT decode special characters like function getcontent!
 // wild card character "*" can be used at the end of $starttagname
 
 function getxmlcontent ($xmldata, $starttagname)
@@ -357,7 +357,7 @@ function getxmlcontent ($xmldata, $starttagname)
 //
 // <tagname>content</tagname>
 // extracts the content together with the $starttagname xml tags
-// this function will NOT decode special characters like function getcontent!
+// This function will NOT decode special characters like function getcontent!
 // wild card character "*" can be used at the end of $starttagname
 
 function getxmlicontent ($xmldata, $starttagname)
@@ -1470,7 +1470,7 @@ function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $content
 
 // description:
 // updates a given xml string $xmlnode in $xmldata with the content $xmlnodenew.
-// this method provides a faster way to update xml nodes when the node was selected before.
+// This method provides a faster way to update xml nodes when the node was selected before.
 
 function updatecontent ($xmldata, $xmlnode, $xmlnodenew)
 {

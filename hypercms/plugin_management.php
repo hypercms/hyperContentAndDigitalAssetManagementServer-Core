@@ -13,8 +13,6 @@ define ("SESSION", "create");
 require ("config.inc.php");
 // hyperCMS API
 require ("function/hypercms_api.inc.php");
-// hyperCMS UI
-require ("function/hypercms_ui.inc.php");
 
 // plugin file
 if (file_exists ($mgmt_config['abs_path_data']."config/plugin.conf.php"))

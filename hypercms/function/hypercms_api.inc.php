@@ -98,6 +98,12 @@ elseif (is_file ($mgmt_config['abs_path_cms']."function/hypercms_encryption.inc.
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_encryption.inc.php");
 }
 
+// include UI API
+if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_ui.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."function/hypercms_ui.inc.php");
+}
+
 // include update API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_update.inc.php"))
 {

@@ -165,6 +165,8 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
   
     if ($lang == "") $lang = "en";
     else $lang = htmlspecialchars (strtolower ($lang), ENT_QUOTES | ENT_HTML401, $charset);
+    
+    if (!empty ($config['search_log'])) @file_put_contents ($config['search_log'], date("Y-m-d H:i", time()).";".$query."\n", FILE_APPEND);
 
     if (is_array ($data))
     {
@@ -379,17 +381,13 @@ function cleancontent ($content, $charset="UTF-8")
     $content = strip_tags ($content);
     $content = str_replace ("\r\n", " ", $content);
     $content = str_replace ("\n\r", " ", $content);
-    $content = str_replace ("\n", " ", $content);
-    $content = preg_replace ('/\s+/', " ", $content);
-    $content = preg_replace ('<!--(.*?)-->', "", $content);	
+    $content = str_replace ("\n", " ", $content);	
     if ($charset != "") $content = html_entity_decode ($content, ENT_NOQUOTES | ENT_HTML401, $charset);
+    $content = preg_replace ('/\s+/', " ", $content);
+    $content = preg_replace ('<!--(.*?)-->', "", $content);
     $content = str_replace ("|", "&#124;", $content);
     $content = str_replace (array(".....", "....", "...", ".."), ".", $content);
-    $content = str_replace (array("+++++", "++++", "+++", "++"), "+", $content);
-    $content = str_replace (array("-----", "----", "---", "--"), "-", $content);
     $content = str_replace (array("_____", "____", "___", "__"), "_", $content);
-    $content = str_replace (array("#####", "####", "###", "##"), "#", $content);
-    $content = str_replace (array("*****", "****", "***", "**"), "*", $content);
     $content = trim ($content);
 
     return $content;

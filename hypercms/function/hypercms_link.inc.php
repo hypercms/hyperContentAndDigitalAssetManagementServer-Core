@@ -16,7 +16,7 @@
 // requires: hypercms_api.inc.php, config.inc.php
 
 // description:
-// this function restores a given or all link management index files
+// This function restores a given or all link management index files
 
 function link_db_restore ($site="")
 {
@@ -164,7 +164,7 @@ function link_db_restore ($site="")
 // requires: hypercms_api.inc.php, config.inc.php
 
 // description:
-// this function loads and locks the link management database
+// This function loads and locks the link management database
 // each record of the link management database has the following design:
 // xml-content container :| absolute path to 1-n objects :| 1-m links used by 1-n objects
 // important: the link management database has to saved or closed after loading it.
@@ -224,7 +224,7 @@ function link_db_load ($site, $user)
 // requires: hypercms_api.inc.php, config.inc.php
 
 // description:
-// this function loads the link management database for reading without locking
+// This function loads the link management database for reading without locking
 
 function link_db_read ($site)
 {
@@ -310,7 +310,7 @@ function link_db_close ($site, $user)
 // requires: hypercms_api.inc.php, config.inc.php
 
 // description:
-// this function saves und unlocks the link management database
+// This function saves und unlocks the link management database
 
 function link_db_save ($site, $link_db, $user)
 {
@@ -372,7 +372,7 @@ function link_db_save ($site, $link_db, $user)
 // requires: hypercms_api.inc.php, config.inc.php
 
 // description:
-// this function inserts, updates and removes objects and their links from the link management database (add or update a link)
+// This function inserts, updates and removes objects and their links from the link management database (add or update a link)
 // depending on which link is left empty:
 // link_curr = "": add new link (just one link matching given category!)
 // link_new = "": delete current link in use (just one linkm matching given category!)
@@ -585,7 +585,7 @@ function link_db_update ($site, $link_db, $attribute, $contentfile, $cat, $link_
 // requires: hypercms_api.inc.php, config.inc.php
 
 // description:
-// this function inserts a new record in the link management database
+// This function inserts a new record in the link management database
 // optionally the created object can be also inserted
 
 function link_db_insert ($site, $link_db, $contentfile, $cat, $object)
@@ -638,7 +638,7 @@ function link_db_insert ($site, $link_db, $contentfile, $cat, $object)
 // requires: hypercms_api.inc.php, config.inc.php
 
 // description:
-// this function deletes a record in the link management database
+// This function deletes a record in the link management database
 
 function link_db_delete ($site, $link_db, $contentfile)
 {
@@ -664,7 +664,7 @@ function link_db_delete ($site, $link_db, $contentfile)
 // output: objects [array] / false on error 
 
 // description:
-// this function splits the object string into an array of objects.
+// This function splits the object string into an array of objects.
 
 function link_db_getobject ($multiobject)
 {
@@ -695,7 +695,7 @@ function link_db_getobject ($multiobject)
 // output: true/false 
 
 // description:
-// this function updates the link of the published and working content container and link file
+// This function updates the link of the published and working content container and link file
 
 function link_update ($site, $container, $link_old, $link_new)
 {
@@ -805,7 +805,7 @@ function link_update ($site, $container, $link_old, $link_new)
 // output: objects which link to the given object [array] or true / false
 
 // description:
-// this function gets all objects which link to the given object.
+// This function gets all objects which link to the given object.
 // works with pages (page links) and components (component links) if link management is enabled.
 
 function getlinkedobject ($site, $location, $page, $cat)
@@ -907,7 +907,7 @@ function getlinkedobject ($site, $location, $page, $cat)
 // output: connected objects[array] 
 
 // description:
-// this function gets all objects which use the same content container and are therefore connected.
+// This function gets all objects which use the same content container and are therefore connected.
 
 function getconnectedobject ($container, $type="work")
 {
@@ -979,7 +979,7 @@ function getconnectedobject ($container, $type="work")
 // output: object links [array] / false on error
 
 // description:
-// this function extracts all links based on it's identifier from a text and returns an array of all links
+// This function extracts all links based on it's identifier from a text and returns an array of all links
 
 function extractlinks ($textcontent, $identifier)
 {
@@ -1031,8 +1031,8 @@ function extractlinks ($textcontent, $identifier)
 // output: object links [array] / false on error
 
 // description:
-// this function returns an array of objects by a given media link (used in formatted text)
-// this function can be used to transform all links to media file of the repository into 
+// This function returns an array of objects by a given media link (used in formatted text)
+// This function can be used to transform all links to media file of the repository into 
 // components links.
 
 function medialinks_to_complinks ($link_array)
@@ -1113,8 +1113,8 @@ function medialinks_to_complinks ($link_array)
 // output: media file links [array] / false on error
 
 // description:
-// this function returns an array of objects by a given media link (used in formatted text)
-// this function can be used to transform all links to media file of the repository into components links.
+// This function returns an array of objects by a given media link (used in formatted text)
+// This function can be used to transform all links to media file of the repository into components links.
 
 function complinks_to_medialinks ($link_array)
 {

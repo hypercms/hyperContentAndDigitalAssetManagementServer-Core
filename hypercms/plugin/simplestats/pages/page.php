@@ -14,8 +14,6 @@ define ("SESSION", "create");
 require ("../../../config.inc.php");
 // hyperCMS API
 require ("../../../function/hypercms_api.inc.php");
-// hyperCMS UI
-require ("../../../function/hypercms_ui.inc.php");
 // language file of plugin
 require_once ("../lang/page.inc.php");
 

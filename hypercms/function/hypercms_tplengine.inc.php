@@ -517,7 +517,7 @@ catch (IOException e)
   {
     // in ASP components can only be included via http, so livelink.inc.asp will be loaded each time a object is requested.
     // in ASP/VBScript functions can not be included using absolute paths in #include file.
-    // this means you will have to locate livelink.inc.asp to the root of a virtual directory to include it using 'include virtual.
+    // This means you will have to locate livelink.inc.asp to the root of a virtual directory to include it using 'include virtual.
     // otherwise livelink.inc.asp can not be included. therefore you have to create a virtual directory named "include" in IIS.
     return "<% if (IsNull(hypercms_livelink) and hypercms_livelink <> 1) then %><!--#include virtual=\"/include/livelink.inc.asp\"--><% hypercms_livelink = 1\nend if %>
 <% 
@@ -543,7 +543,7 @@ end if
   {
     // in ASP.net (C#) components can only be included via http, so livelink.inc.asp will be loaded each time a object is requested.
     // in ASP/C# functions can not be included using absolute paths in #include file.
-    // this means you will have to locate livelink.inc.asp to the root of a virtual directory to include it using 'include virtual.
+    // This means you will have to locate livelink.inc.asp to the root of a virtual directory to include it using 'include virtual.
     // otherwise livelink.inc.asp can not be included. therefore you have to create a virtual directory named "include" in IIS.
     return "<% if (IsNull(hypercms_livelink) && hypercms_livelink!=1) { %><!--#include virtual=\"/include/livelink.inc.aspx\"--><% hypercms_livelink=1;\n} %>
 <% 
@@ -922,19 +922,13 @@ function errorhandler ($source_code, $return_code, $error_identifier)
       }
     }
     
-    return "<!DOCTYPE html>
-<html>
-  <head>
-    <title>hyperCMS:Error</title>
-    <meta charset=\"UTF-8\">
-  </head>
-  <body>
-    <!-- hyperCMS:Error -->
+    return "
+    <!-- hyperCMS:ErrorCodeBegin -->
     <font size=\"2\" face=\"Arial, Helvetica, sans-serif\">
       <font color='red'>".$return_code."</font><br />
-      ".$source_code."</font>
-  </body>
-</html>";
+      ".$source_code."
+    </font>
+    <!-- hyperCMS:ErrorCodeEnd -->";
   }
   else return $return_code;
 }
@@ -5856,7 +5850,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                             $container_collection = "live";
                             $container_buffer = $container;
                             $container = null;
-                                                  
+                            
+                            // render compoent
                             if ($buildview == "publish" && $application == "generator") $component_view = buildview ($site, $component_location, $component_file, $user, "publish", "no", "", "", "", false);
                             else $component_view = buildview ($site, $component_location, $component_file, $user, "preview", "no");
                                 
@@ -5874,13 +5869,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                             }    
                             
                             // add buttons
-                            $multicomponent .= $taglink.$component;     
+                            $multicomponent .= $taglink.$component;
                           }                                     
                         }
                       }
                     }
                     else $multicomponent = "";
-          
+                    
+                    // insert component into view store
                     $viewstore = str_replace ($hypertag, $multicomponent, $viewstore);             
                   }
                 }
@@ -6280,7 +6276,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         }
         
         // if nor errror occured
-        if (strpos ("_".$viewstore, "<!-- hyperCMS:Error -->") < 1)
+        if (strpos ("_".$viewstore, "<!-- hyperCMS:ErrorCodeBegin -->") < 1)
         {
           // ======================================== define CSS for components =========================================
           $line_css = "";
@@ -6310,7 +6306,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // get HTML body-tag
             if (@substr_count (strtolower ($viewstore), "<body") == 0 && @substr_count (strtolower ($viewstore), ":body") == 0)
             {
-              $viewstore = "<!DOCTYPE html>
+              $viewstore = "
+              <!DOCTYPE html>
               <html>
               <head>
               <title>hyperCMS</title>
@@ -6333,7 +6330,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           if ($buildview == "cmsview" || $buildview == "inlineview" || ($buildview == "preview" && $ctrlreload == "yes"))
           {
             // define buttons for formedit in cmsview or inlineview
-            if ($objectview != "cmsview" && $objectview != "inlineview") $headstoreform = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."page_view.php?view=formedit&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."\"><img src=\"".getthemelocation()."img/edit_form.gif\" style=\"display:inline-block; width:45px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" /></a>";       
+            if ($objectview != "cmsview" && $objectview != "inlineview") $headstoreform = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."page_view.php?view=formedit&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."\"><img src=\"".getthemelocation()."img/edit_form.gif\" style=\"display:inline-block; width:45px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" /></a>";
             else $headstoreform = "";
             
             // check if html tag exists in viewstore (if not it will be treated as a component)
@@ -6558,12 +6555,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           {
             $viewstore = transformlink ($viewstore);        
             $viewstore = str_replace ("hypercms_href=", "href=", $viewstore);
-          }   
+          }
           // for all other views excluding component preview inclusions (transform protected hyper references)
           elseif ($buildview == "publish" || $buildview == "template" || $buildview == "preview")
           {
             $viewstore = str_replace ("hypercms_href=", "href=", $viewstore);
-          }           
+          }        
                   
           // ======================================== add header information =============================================
           if ($buildview == "publish" && $application != "media")
@@ -6598,6 +6595,35 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               // insert code        
               $viewstore = $pagetracking.$tpl_globals.$tpl_livelink.$tpl_linkindex.trim ($viewstore);     
             }
+          }
+        }
+        // if an error occured in the view
+        else
+        {
+          // insert form button if error occured in direct view (not included component view)
+          if ($ctrlreload == "yes")
+          {
+            $button_formview = "<a href=\"".$mgmt_config['url_path_cms']."page_view.php?view=formedit&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."\"><img src=\"".getthemelocation()."img/edit_form.gif\" style=\"display:inline-block; width:45px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" /></a>";
+            $viewstore = str_replace ("<!-- hyperCMS:ErrorCodeBegin -->", $button_formview, $viewstore);
+            
+            // add html and body tags if missing
+            if (strpos (strtolower ("_".$viewstore, "<html")) < 1)
+            {
+              $viewstore = "
+<!DOCTYPE html>
+<html>
+<head>
+<title>hyperCMS</title>
+<meta charset=\"UTF-8\">
+<body>
+".$viewstore."
+</body>
+</html>";
+            }
+          }
+          else
+          {
+            $viewstore = str_replace ("<!-- hyperCMS:ErrorCodeBegin -->", "", $viewstore);
           }
         }
       }

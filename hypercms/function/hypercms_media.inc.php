@@ -1940,14 +1940,14 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
 // ---------------------- convertimage -----------------------------
 // function: convertimage()
 // input: publication name, path to source image file, path to destination dir, format (file extension w/o dot) of destination file (optional), 
-//        colorspace of new image [CMY, CMYK, Gray, HCL, HCLp, HSB, HSI, HSL, HSV, HWB, Lab, LCHab, LCHuv, LMS, Log, Luv, OHTA, Rec601YCbCr, Rec709YCbCr, RGB, scRGB, sRGB, Transparent, XYZ, YCbCr, YCC, YDbDr, YIQ, YPbPr, YUV] (optional), 
+//        colorspace of new image [CMY,CMYK,Gray,HCL,HCLp,HSB,HSI,HSL,HSV,HWB,Lab,LCHab,LCHuv,LMS,Log,Luv,OHTA,Rec601YCbCr,Rec709YCbCr,RGB,scRGB,sRGB,Transparent,XYZ,YCbCr,YCC,YDbDr,YIQ,YPbPr,YUV] (optional), 
 //        width in pixel/mm/inch (optional), height in pixel/mm/inch (optional), slug in pixel/mm/inch (optional), units for width, height and slug [px,mm,inch] (optional),
 //        dpi (optional), image quality (1 to 100)    
 // output: new file name / false on error
 
 // description:
 // converts and creates a new image from original. the new image keeps will be resized and cropped to fit width and height.
-// this is a wrapper function for createmedia.
+// This is a wrapper function for createmedia.
 
 function convertimage ($site, $file_source, $location_dest, $format="jpg", $colorspace="RGB", $iccprofile="", $width="", $height="", $slug=0, $units="px", $dpi=72, $quality="")
 {

@@ -15,7 +15,7 @@
 // output: keywords sperated by , /false on error
 
 // description:
-// generates a keyword list for meta information. supports german and english stop words lists.
+// generates a keyword list, to be used for meta information. stop word lists are defined in include/stopwords.inc.php
 
 function getkeywords ($text, $language="en", $charset="UTF-8")
 {
@@ -89,7 +89,7 @@ function getkeywords ($text, $language="en", $charset="UTF-8")
 // output: cleanded description of provided text /false on error
 
 // description:
-// generates a keyword list for meta information. supports german and english stop words lists.
+// generates a description from a text, to be used as meta information. stop word lists are defined in include/stopwords.inc.php
 
 function getdescription ($text, $charset="UTF-8")
 {
@@ -108,7 +108,11 @@ function getdescription ($text, $charset="UTF-8")
     $text = preg_replace ("/[\n\r]/", "", $text); 
     
     // shorten text
-    if (strlen ($text) > 1000) $text = substr ($text, 0, 1000);
+    if (strlen ($text) > 155)
+    {
+      if (strpos ($text, ".") > 0) $text = substr ($text, 0, strpos ($text, ".", 125));
+      else $text = substr ($text, 0, strpos ($text, " ", 125));
+    }
     
     return $text;
   }
@@ -197,7 +201,7 @@ function collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $pri
             $xmldata = getobjectcontainer ($site, $dir, $file, "sys");
     
             if ($xmldata != "")
-            {savelog (array("$site, $dir, $file -> "), "aaa");
+            {
               reset ($permalink);
               
               foreach ($permalink as $text_id)
@@ -2794,7 +2798,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   $iptc_info[$key] = strip_tags ($iptc_info[$key]);
                   
                   // importing data from some Mac applications, they may put chr(213) into strings to access a closing quote character.
-                  // this prints as a captial O with a tilde above it in a web browser or on Windows. 
+                  // This prints as a captial O with a tilde above it in a web browser or on Windows. 
                   $iptc_info[$key] = str_replace (chr(213), "'",  $iptc_info[$key]);      
                   
                   // convert string since IPTC supports different charsets      

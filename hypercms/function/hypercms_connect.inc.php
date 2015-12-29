@@ -15,7 +15,7 @@
 // output: true / false on error
 
 // description:
-// this function connects and performs logon to an FTP server
+// This function connects and performs logon to an FTP server
 
 function ftp_userlogon ($server, $user, $passwd, $ssl=false)
 {
@@ -64,7 +64,7 @@ function ftp_userlogon ($server, $user, $passwd, $ssl=false)
 // output: true / false on error
 
 // description:
-// this function disconnects from an FTP server
+// This function disconnects from an FTP server
 
 function ftp_userlogout ($conn_id)
 {
@@ -84,7 +84,7 @@ function ftp_userlogout ($conn_id)
 // output: true / false on error
 
 // description:
-// this function gets a file from the FTP server
+// This function gets a file from the FTP server
 
 function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
 {
@@ -117,7 +117,7 @@ function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
 // output: true / false on error
 
 // description:
-// this function puts a file to the FTP server
+// This function puts a file to the FTP server
 
 function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
 {
@@ -154,7 +154,7 @@ function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
 // output: result array / false on error
 
 // description:
-// this function gets a file/directory listing of the FTP server
+// This function gets a file/directory listing of the FTP server
 
 function ftp_filelist ($conn_id, $path=".", $passive=true)
 {

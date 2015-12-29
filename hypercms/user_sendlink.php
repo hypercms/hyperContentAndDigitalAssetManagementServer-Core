@@ -13,8 +13,6 @@ define ("SESSION", "create");
 require ("config.inc.php");
 // hyperCMS API
 require ("function/hypercms_api.inc.php");
-// hyperCMS UI
-require ("function/hypercms_ui.inc.php");
 // mailer class
 require ("function/hypermailer.class.php");
 
@@ -1880,7 +1878,7 @@ $token_new = createtoken ($user);
           <tr>
             <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['create-new-task'][$lang]); ?>:</td>
             <td align="left" valign="top">
-              <input type="checkbox" name="create_task" value="yes" onclick="document.getElementById('type_access').checked=true;" <?php if ($create_task == "yes") echo "checked=\"checked\""; ?>/> 
+              <input type="checkbox" name="create_task" value="yes" onclick="selectLinkType('type_access'); initLinkType();" <?php if ($create_task == "yes") echo "checked=\"checked\""; ?>/> 
               <?php echo getescapedtext ($hcms_lang['for-the-recipients-with-priority'][$lang]); ?>
               <select name="priority">
                 <option value="low" selected="selected"><?php echo getescapedtext ($hcms_lang['low'][$lang]); ?></option>

@@ -13,8 +13,6 @@ define ("SESSION", "create");
 require ("../config.inc.php");
 // hyperCMS API
 require ("../function/hypercms_api.inc.php");
-// hyperCMS UI
-require ("../function/hypercms_ui.inc.php");
 // formats/file extensions
 require ("../include/format_ext.inc.php");
 
