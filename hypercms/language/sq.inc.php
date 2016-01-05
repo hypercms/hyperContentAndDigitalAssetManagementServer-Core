@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['sq'] = "Të heshtur";
 $hcms_lang['controls']['sq'] = "Kontrollon";
 $hcms_lang['project']['sq'] = "Projekti";
 $hcms_lang['work-order']['sq'] = "Puno mënyrë";
+$hcms_lang['report']['sq'] = "Raport";
+$hcms_lang['report-management']['sq'] = "Raport i kufirit";
+$hcms_lang['add-new-condition']['sq'] = "Shto kusht i ri";
+$hcms_lang['select-fields-of-entities']['sq'] = "Zgjidh fushën e subjekteve";
+$hcms_lang['conditions']['sq'] = "Kushtet";
+$hcms_lang['sql-statement']['sq'] = "Deklaratë SQL";
+$hcms_lang['chart']['sq'] = "Organogrami";
+$hcms_lang['pie-chart']['sq'] = "Grafiku pite";
+$hcms_lang['column-chart']['sq'] = "Kolonë chart";
+$hcms_lang['timeline-chart']['sq'] = "Grafiku kohor";
+$hcms_lang['geo-chart']['sq'] = "Geo chart";
+$hcms_lang['none']['sq'] = "Asnjë";
+$hcms_lang['table']['sq'] = "Tabela";
 ?>

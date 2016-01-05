@@ -1322,4 +1322,17 @@ $hcms_lang['muted']['he'] = "מושתק";
 $hcms_lang['controls']['he'] = "פקדים";
 $hcms_lang['project']['he'] = "Project";
 $hcms_lang['work-order']['he'] = "הזמנות עבודה";
+$hcms_lang['report']['he'] = "דוח";
+$hcms_lang['report-management']['he'] = "ניהול דוח";
+$hcms_lang['add-new-condition']['he'] = "הוסף במצב חדש";
+$hcms_lang['select-fields-of-entities']['he'] = "בחר שדות של ישויות";
+$hcms_lang['conditions']['he'] = "תנאים";
+$hcms_lang['sql-statement']['he'] = "הצהרת SQL";
+$hcms_lang['chart']['he'] = "תרשים";
+$hcms_lang['pie-chart']['he'] = "תרשים עוגה";
+$hcms_lang['column-chart']['he'] = "תרשים עמודות";
+$hcms_lang['timeline-chart']['he'] = "תרשים ציר הזמן";
+$hcms_lang['geo-chart']['he'] = "הגיאו תרשים";
+$hcms_lang['none']['he'] = "אף אחד";
+$hcms_lang['table']['he'] = "טבלה";
 ?>

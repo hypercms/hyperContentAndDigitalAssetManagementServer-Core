@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['sv'] = "Avstängt";
 $hcms_lang['controls']['sv'] = "Reglage";
 $hcms_lang['project']['sv'] = "Projekt";
 $hcms_lang['work-order']['sv'] = "Arbetsorder";
+$hcms_lang['report']['sv'] = "Rapport";
+$hcms_lang['report-management']['sv'] = "Rapporten förvaltning";
+$hcms_lang['add-new-condition']['sv'] = "Lägg till nytt villkor";
+$hcms_lang['select-fields-of-entities']['sv'] = "Välj fält av enheter";
+$hcms_lang['conditions']['sv'] = "Villkor";
+$hcms_lang['sql-statement']['sv'] = "SQL-satsen";
+$hcms_lang['chart']['sv'] = "Diagram";
+$hcms_lang['pie-chart']['sv'] = "Cirkeldiagram";
+$hcms_lang['column-chart']['sv'] = "Stapeldiagram";
+$hcms_lang['timeline-chart']['sv'] = "Timelinediagram";
+$hcms_lang['geo-chart']['sv'] = "Geo diagram";
+$hcms_lang['none']['sv'] = "Ingen";
+$hcms_lang['table']['sv'] = "Tabell";
 ?>

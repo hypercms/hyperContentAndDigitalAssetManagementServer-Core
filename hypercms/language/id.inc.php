@@ -1322,4 +1322,17 @@ $hcms_lang['muted']['id'] = "Dibungkam";
 $hcms_lang['controls']['id'] = "Mengontrol";
 $hcms_lang['project']['id'] = "Project";
 $hcms_lang['work-order']['id'] = "Urutan Pekerjaan";
+$hcms_lang['report']['id'] = "Laporan tersebut";
+$hcms_lang['report-management']['id'] = "Manajemen Laporan";
+$hcms_lang['add-new-condition']['id'] = "Menambahkan kondisi baru";
+$hcms_lang['select-fields-of-entities']['id'] = "Pilih bidang entiti";
+$hcms_lang['conditions']['id'] = "Syarat";
+$hcms_lang['sql-statement']['id'] = "Pernyataan SQL";
+$hcms_lang['chart']['id'] = "Chart";
+$hcms_lang['pie-chart']['id'] = "Diagram Pie";
+$hcms_lang['column-chart']['id'] = "Bagan Kolom";
+$hcms_lang['timeline-chart']['id'] = "Bagan jadwal";
+$hcms_lang['geo-chart']['id'] = "Geo chart";
+$hcms_lang['none']['id'] = "Tidak Ada";
+$hcms_lang['table']['id'] = "Tabel";
 ?>

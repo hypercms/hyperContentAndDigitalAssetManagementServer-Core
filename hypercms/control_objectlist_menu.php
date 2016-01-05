@@ -1298,7 +1298,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 </form>
 </div>
 
-<div id="folderrenameLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:2; left:15px; top:15px; visibility:hidden">
+<div id="folderrenameLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:2; left:15px; top:15px; visibility:hidden;">
 <form name="folder_rename" action="" method="post" onsubmit="return checkForm_folder_rename();">
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
   <input type="hidden" name="folder" value="<?php echo $folder; ?>" />

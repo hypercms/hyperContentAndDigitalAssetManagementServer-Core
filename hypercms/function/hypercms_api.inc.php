@@ -104,6 +104,12 @@ if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_ui.inc.php"))
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_ui.inc.php");
 }
 
+// include Report API
+if (is_file ($mgmt_config['abs_path_cms']."report/hypercms_report.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."report/hypercms_report.inc.php");
+}
+
 // include update API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_update.inc.php"))
 {

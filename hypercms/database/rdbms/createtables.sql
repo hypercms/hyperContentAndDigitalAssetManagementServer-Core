@@ -19,7 +19,7 @@ CREATE TABLE `accesslink` (
   `date` datetime NOT NULL,
   `object_id` int(11) NOT NULL,
   `type` char(2) DEFAULT NULL,
-  `user` char(255) DEFAULT NULL,
+  `user` varchar(600) DEFAULT NULL,
   `deathtime` int(11) DEFAULT NULL,
   `formats` varchar(510) DEFAULT NULL,
   PRIMARY KEY (`hash`)
@@ -45,8 +45,8 @@ CREATE TABLE `recipient` (
   `recipient_id` int(11) NOT NULL auto_increment,
   `object_id` int(11) NOT NULL default '0',
   `date` datetime NOT NULL,
-  `sender` varchar(60) NOT NULL default '',
-  `user` varchar(600) NOT NULL default '',
+  `from_user` char(60) NOT NULL default '',
+  `to_user` varchar(600) NOT NULL default '',
   `email` varchar(80) NOT NULL default '',
   PRIMARY KEY  (`recipient_id`),
   KEY `recipient` (`object_id`)
@@ -61,8 +61,8 @@ CREATE TABLE `task` (
   `project_id` int(11) DEFAULT NULL,
   `object_id` int(11) DEFAULT NULL,
   `task` varchar(200) NOT NULL DEFAULT 'undefined',
-  `from_user` varchar(200) NOT NULL default '',
-  `to_user` varchar(200) NOT NULL default '',
+  `from_user` varchar(60) NOT NULL default '',
+  `to_user` varchar(60) NOT NULL default '',
   `startdate` date NOT NULL,
   `finishdate` date DEFAULT NULL,
   `category` varchar(20) NOT NULL default 'user',
@@ -78,9 +78,12 @@ CREATE TABLE `textnodes` (
   `id` int(11) NOT NULL default '0',
   `text_id` varchar(120) NOT NULL default '',
   `textcontent` text,
+  `object_id` int(11) DEFAULT NULL,
+  `user` char(60) DEFAULT NULL,
   KEY `textnodes_id` (`id`),
   KEY `textnodes_text_id` (`text_id`),
-  FULLTEXT KEY `textnodes_content` (`textcontent`)
+  KEY `textnodes_object_id` (`object_id`),
+  FULLTEXT KEY `textnodes_content` (`text_content`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `queue`;
@@ -94,13 +97,6 @@ CREATE TABLE `queue` (
   `user` char(60) default NULL,
   PRIMARY KEY  (`queue_id`),
   KEY `queue` (`date`,`user`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `linkreference`;
-
-CREATE TABLE `linkreference` (
-  `from_object_id` int(11) default NULL,
-  `to_object_id` int(11) default NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `dailystat`;

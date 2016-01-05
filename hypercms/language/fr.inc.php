@@ -1322,4 +1322,17 @@ $hcms_lang['muted']['fr'] = "En sourdine";
 $hcms_lang['controls']['fr'] = "Contrôle";
 $hcms_lang['project']['fr'] = "Projet";
 $hcms_lang['work-order']['fr'] = "Bon de travail";
+$hcms_lang['report']['fr'] = "Rapport";
+$hcms_lang['report-management']['fr'] = "Gestion des rapports";
+$hcms_lang['add-new-condition']['fr'] = "Ajouter une nouvelle condition";
+$hcms_lang['select-fields-of-entities']['fr'] = "Sélectionnez les champs d'entités";
+$hcms_lang['conditions']['fr'] = "Conditions générales";
+$hcms_lang['sql-statement']['fr'] = "Instruction SQL";
+$hcms_lang['chart']['fr'] = "Graphique";
+$hcms_lang['pie-chart']['fr'] = "Graphique à secteurs";
+$hcms_lang['column-chart']['fr'] = "Graphique à colonnes";
+$hcms_lang['timeline-chart']['fr'] = "Chronologie graphique";
+$hcms_lang['geo-chart']['fr'] = "La géo graphique";
+$hcms_lang['none']['fr'] = "Aucun";
+$hcms_lang['table']['fr'] = "Le tableau";
 ?>

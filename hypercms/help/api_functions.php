@@ -74,6 +74,15 @@ echo showAPIdocs ($file);
 <?php
 $file = "../function/hypercms_plugin.inc.php";
 echo showAPIdocs ($file);
+
+if (is_file ($mgmt_config['abs_path_cms']."report/hypercms_report.php"))
+{
+?>
+<h2>Report API Functions</h2>
+<?php
+  $file = $mgmt_config['abs_path_cms']."report/hypercms_report.inc.php";
+  echo showAPIdocs ($file);
+}
 ?>
 <h2>User Interface API Functions</h2>
 <?php

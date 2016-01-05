@@ -38,6 +38,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 $ownergroup = accesspermission ($site, $location, $cat);
 
 if (!valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($template)) killsession ($user);
+
 // check session of user
 checkusersession ($user);
 
@@ -47,7 +48,7 @@ checkusersession ($user);
 if ($site != "" && $template != "")
 {
   // ---------------------------- call template engine ---------------------------    
-  $viewstore = buildsearchform ($site, $template, $ownergroup);
+  $viewstore = buildsearchform ($site, $template, "", $ownergroup);
 
   // show form
   if ($viewstore != false)
@@ -57,12 +58,12 @@ if ($site != "" && $template != "")
   // check if an error occured during building view
   else
   {
-    echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-    echo "<html>\n";
+    echo "<!DOCTYPE html>\n";
+    echo "<html lang=\"".getsession("hcms_lang", "en")."\">\n";
     echo "<head>\n";
     echo "<title>hyperCMS</title>\n";
-    echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".$mgmt_config[$site]['default_codepage']."\">\n";
-    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
+    echo "<meta charset=\"".$mgmt_config[$site]['default_codepage']."\" />\n";
+    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
     echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-the-object'][$lang])."</p>\n";

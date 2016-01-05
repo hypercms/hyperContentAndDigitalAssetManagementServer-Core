@@ -7761,7 +7761,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
   else $theme = "standard";
     
   // check if sent data is available
-  if (!valid_objectname ($login) || strlen ($login) > 20 || $password == "" || strlen ($password) > 20 || $confirm_password == "")
+  if (!valid_objectname ($login) || strlen ($login) > 60 || $password == "" || strlen ($password) > 20 || $confirm_password == "")
   {
     $add_onload = "";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['necessary-user-information-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-fill-out-all-fields'][$lang]."\n";
@@ -17715,5 +17715,52 @@ function rewrite_homepage ($site, $rewrite_type="forward")
     }
   }
   else return false;
+}
+
+// ------------------------------------- create_csv ------------------------------------------
+
+// function: create_csv ()
+// input: associative data array, file name (optonal), file path for saving the CSV file (optional), delimiter (optional), enclosure (optional), character set (optional)
+// output: true / false on error
+
+// description: creates a CSV file from an associative data array and returns the file as download or writes the file to the file system if a valid path to a directory has been provided.
+
+function create_csv ($assoc_array, $filename="export.csv", $filepath="php://output", $delimiter=";", $enclosure='"', $charset="utf-8")
+{
+  if (!is_dir ($filepath))
+  {
+    ob_clean();
+    header('Pragma: public');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+    header('Cache-Control: private', false);
+    header('Content-Type: text/csv; charset='.$charset);
+    header('Content-Disposition: attachment;filename='.$filename);
+  }
+  
+  if (isset ($assoc_array['0']))
+  {
+    $fp = fopen ($filepath, 'w');
+    
+    if ($fp)
+    {
+      fputcsv ($fp, array_keys ($assoc_array['0']), $delimiter, $enclosure);
+      
+      foreach ($assoc_array as $values)
+      {
+        fputcsv ($fp, $values, $delimiter, $enclosure);
+      }
+      
+      fclose ($fp);
+    }
+    else return false;
+  }
+  
+  if (!is_dir ($filepath))
+  {
+    ob_flush ();
+  }
+  
+  return true;
 }
 ?>

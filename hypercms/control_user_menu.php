@@ -452,7 +452,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <tr>
       <td width="100" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?>: </td>
       <td>
-        <input type="text" name="login" style="width:150px;" maxlength="20" value="" tabindex="1" />
+        <input type="text" name="login" style="width:150px;" maxlength="60" value="" tabindex="1" />
         <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" tabindex="4" />
       </td>
     </tr>

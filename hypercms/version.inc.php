@@ -1109,7 +1109,7 @@ Release 01/2016
 - Added support for permament links to template engine
 - Bug fix: function publishobject did not check the result of the template engine for errors
 - Implementation of wrapper and download link support for hyperCMS media tags in template engine (use "wrapper" or "download" for pathytpe attribute)
-- Changed "abs" to "uri" as pathtype value in template engine ("abs" still supported by deprecated)
+- Changed "abs" to "uri" as pathtype value in template engine ("abs" still supported but deprecated)
 - Update of all language files
 - Improvement in XML API to support tags and tag names as input
 - Implementation of function showAPIdocs to generate API function documentation based of a file (part of hyperCMS UI)
@@ -1119,7 +1119,7 @@ Release 01/2016
 - Implementation of full hyperCMS API Function Reference in template_help
 - Bug fix: Workflow script help used a wrong reference to the help file
 
-Version 5.8.6
+Version 6.0.0
 Release 01/2016
 - Update of function getdescription to limit description length
 - Implementation of new function is_emptyfolder
@@ -1129,8 +1129,31 @@ Release 01/2016
 - Implementation of new input paramater to enable and disable search expression logging for function rdbms_searchcontent
 - Improved error handling in template engine to display errors and render document without errors
 - Implementation of search history log for website search
+- Implementation of adLDAP version 4.0.4 (MS Active Directory support) in the Connector module.
+- Implementation of new function rdbms_gettableinfo in DB-Connect
+- Implementation of new function sql_clean_functions in Security API
+- Implementation of new function rdbms_externalquery in DB-Connect
+- Implementation of new function create_csv in Main API
+- Implementation of new function analyzeSQLselect in Report API
+- Implementation of report management in connector module of Enterprise Edition. The report management can be used to define and generate reports.
+- Implemetation of new functions createreport, editreport, loadreport, deletereport in Report API of Report module
+- Implementation of getrequest_esc for task name and description in task_list
+- Implementation of exact name for value extraction using explode in function readmediaplayer_config
+- Implementation of new functions showpiechart, showcolumnchart, showtimelinechart, showgeolocationchart in Report module
+- Update of all language files to include text for Report module
+- Changed max. length of user name to 60 digits instead of 20
+- Changes in database field length for user
+- Implementation of update function for database to add new fields to table textnodes and alter various other fields in tables
+- Renamed column sender to from_user and user to to_user in table recipient and DB connect
+- Implementation of object_id in table textnodes for object references
+- Implementation of date, media alt-text and link-text in function buildsearchform of template engine
+- Bug fix: removed deprected hidden date field from function buildview in template engine
+- Bug fix: frenach and russian language version or Rich Calendar included wrong characters at the end of the language file
+- Various improvements in template engine regarding the date picker JS functions
+- Implementation of new function getdirectoryfiles
+- Implementation of home box for all reports
 */
 
 // current version
-$version = "Version 5.8.6";
+$version = "Version 6.0.0";
 ?>

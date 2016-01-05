@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['ar'] = "كتم الصوت";
 $hcms_lang['controls']['ar'] = "مفاتيح التحكم";
 $hcms_lang['project']['ar'] = "المشروع";
 $hcms_lang['work-order']['ar'] = "امر العمل";
+$hcms_lang['report']['ar'] = "التقرير";
+$hcms_lang['report-management']['ar'] = "تقرير الادارة";
+$hcms_lang['add-new-condition']['ar'] = "اضافة شرط جديد";
+$hcms_lang['select-fields-of-entities']['ar'] = "حدد مجالات الكيانات";
+$hcms_lang['conditions']['ar'] = "الظروف";
+$hcms_lang['sql-statement']['ar'] = "SQL";
+$hcms_lang['chart']['ar'] = "المخطط";
+$hcms_lang['pie-chart']['ar'] = "دائرى";
+$hcms_lang['column-chart']['ar'] = "العمود";
+$hcms_lang['timeline-chart']['ar'] = "الجدول الزمنى المخطط";
+$hcms_lang['geo-chart']['ar'] = "Geo المخطط";
+$hcms_lang['none']['ar'] = "لا شئ";
+$hcms_lang['table']['ar'] = "الجدول";
 ?>

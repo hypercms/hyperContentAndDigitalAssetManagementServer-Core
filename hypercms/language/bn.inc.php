@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['bn'] = "muted";
 $hcms_lang['controls']['bn'] = "নিয়ন্ত্রণগুলো";
 $hcms_lang['project']['bn'] = "প্রকল্প";
 $hcms_lang['work-order']['bn'] = "কাজ করার নির্দেশ";
+$hcms_lang['report']['bn'] = "প্রতিবেদন";
+$hcms_lang['report-management']['bn'] = "রিপোর্ট ব্যবস্থাপনা";
+$hcms_lang['add-new-condition']['bn'] = "যোগ অবস্থা";
+$hcms_lang['select-fields-of-entities']['bn'] = "আমদানির ক্ষমতাও কম ক্ষেত্র বাছাই";
+$hcms_lang['conditions']['bn'] = "শর্ত";
+$hcms_lang['sql-statement']['bn'] = "এসকিউএল বিবৃতি";
+$hcms_lang['chart']['bn'] = "সূচী";
+$hcms_lang['pie-chart']['bn'] = "দেওয়া কুলী পিঠে সূচী";
+$hcms_lang['column-chart']['bn'] = "কলাম সূচী";
+$hcms_lang['timeline-chart']['bn'] = "সময়সীমা সূচী";
+$hcms_lang['geo-chart']['bn'] = "উর্দূ সূচী";
+$hcms_lang['none']['bn'] = "কেউ";
+$hcms_lang['table']['bn'] = "টেবিল";
 ?>

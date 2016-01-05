@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['ro'] = "Sunetul oprit";
 $hcms_lang['controls']['ro'] = "Comenzi";
 $hcms_lang['project']['ro'] = "Proiect";
 $hcms_lang['work-order']['ro'] = "Ordinea de lucru";
+$hcms_lang['report']['ro'] = "Raport";
+$hcms_lang['report-management']['ro'] = "Raport de administrare";
+$hcms_lang['add-new-condition']['ro'] = "Adăugare condiţie";
+$hcms_lang['select-fields-of-entities']['ro'] = "Selectaţi domeniile de entităţi";
+$hcms_lang['conditions']['ro'] = "Condiţii";
+$hcms_lang['sql-statement']['ro'] = "Declaraţia SQL";
+$hcms_lang['chart']['ro'] = "Diagramă";
+$hcms_lang['pie-chart']['ro'] = "Diagramă de plăcintă";
+$hcms_lang['column-chart']['ro'] = "Diagramă de coloană";
+$hcms_lang['timeline-chart']['ro'] = "Cronologia de localizare pene";
+$hcms_lang['geo-chart']['ro'] = "Geo pene";
+$hcms_lang['none']['ro'] = "Nici unul";
+$hcms_lang['table']['ro'] = "Tabel";
 ?>

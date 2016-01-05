@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['hu'] = "Némítva";
 $hcms_lang['controls']['hu'] = "Kezelőszervek";
 $hcms_lang['project']['hu'] = "A projekt";
 $hcms_lang['work-order']['hu'] = "Munkalap";
+$hcms_lang['report']['hu'] = "Jelentés";
+$hcms_lang['report-management']['hu'] = "A jelentés-kezelés";
+$hcms_lang['add-new-condition']['hu'] = "Új állapot";
+$hcms_lang['select-fields-of-entities']['hu'] = "Válassza ki a mezőt.";
+$hcms_lang['conditions']['hu'] = "Feltételek";
+$hcms_lang['sql-statement']['hu'] = "Az SQL utasítás";
+$hcms_lang['chart']['hu'] = "Folyamatábra";
+$hcms_lang['pie-chart']['hu'] = "Kördiagram";
+$hcms_lang['column-chart']['hu'] = "Az oszlop diagram";
+$hcms_lang['timeline-chart']['hu'] = "Idővonal folyamatábra";
+$hcms_lang['geo-chart']['hu'] = "Geo-táblázat";
+$hcms_lang['none']['hu'] = "Nincs";
+$hcms_lang['table']['hu'] = "Táblázat";
 ?>

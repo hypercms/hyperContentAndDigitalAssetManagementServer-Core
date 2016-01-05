@@ -882,6 +882,9 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
     {
       // update tasks
       update_tasks_v584 ();
+      
+      // update database
+      update_database_v586 ();
     
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
       $charset = getcharset ("", $userdata); 
@@ -2424,6 +2427,65 @@ function scriptcode_clean_functions ($content, $type=3, $application="PHP")
     {
       // find expression followed by (
       if ($name != "" && @preg_match ('/\b'.preg_quote ($name).'\b(.*?)\(/i', $scriptcode))
+      {
+        // found expression
+        $found[] = $name;
+      }
+    }
+    
+    if (sizeof ($found) > 0)
+    {
+      $found_list = implode (", ", $found);
+      $passed = false;
+    }
+    else
+    {
+      $found_list = "";
+      $passed = true;
+    }
+    
+    $result = array();
+    $result['result'] = $passed;
+    $result['content'] = $content;
+    $result['found'] = $found_list;
+    
+    return $result;
+  }
+  // no check
+  else
+  {
+    $result = array();
+    $result['result'] = true;
+    $result['content'] = "";
+    $result['found'] = "";
+    
+    return $result;
+  }
+}
+
+// ------------------------- sql_clean_functions -----------------------------
+// function: sql_clean_functions()
+// input: SQL statement as string
+// output: result array / false on error
+
+// description:
+// This function checks SQL statements for write operations.
+
+function sql_clean_functions ($content)
+{
+  global $mgmt_config;
+  
+  if ($content != "")
+  {
+    $write_functions = array("insert", "update", "create", "delete", "replace", "set", "drop");   
+
+    $found = array();
+
+    // remove functions from content
+    foreach ($write_functions as $name)
+    {
+      // find expression followed by (
+      if ($name != "" && @preg_match ('/\b'.preg_quote ($name).'\b(.*?)\(/i', $content))
       {
         // found expression
         $found[] = $name;

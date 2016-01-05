@@ -73,13 +73,13 @@ if ($templatefile != false || $contentfile != false)
   // if template is empty
   if ($templatedata == "" || $templatedata == false)
   {
-    echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-    echo "<html>\n";
+    echo "<!DOCTYPE html>\n";
+    echo "<html lang=\"".getsession ("hcms_lang", "en")."\">\n";
     echo "<head>\n";
     echo "<title>hyperCMS</title>\n";
-    echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
-    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
-    echo "<script src=\"javascript/click.js\" type=\"text/javascript\">\n";
+    echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
+    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
+    echo "<script src=\"javascript/click.js\" type=\"text/javascript\" />\n";
     echo "</script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
@@ -91,13 +91,13 @@ if ($templatefile != false || $contentfile != false)
   // if content container is empty
   elseif ($contentdata == "" || $contentdata == false)
   {
-    echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-    echo "<html>\n";
+    echo "<!DOCTYPE html>\n";
+    echo "<html lang=\"".getsession ("hcms_lang", "en")."\">\n";
     echo "<head>\n";
     echo "<title>hyperCMS</title>\n";
-    echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
-    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
-    echo "<script src=\"javascript/click.js\" type=\"text/javascript\">\n";
+    echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
+    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
+    echo "<script src=\"javascript/click.js\" type=\"text/javascript\" />\n";
     echo "</script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
@@ -110,11 +110,11 @@ if ($templatefile != false || $contentfile != false)
   // check if an error occured in buildview
   if ($viewstore == false)
   {
-    echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-    echo "<html>\n";
+    echo "<!DOCTYPE html>\n";
+    echo "<html lang=\"".getsession ("hcms_lang", "en")."\">\n";
     echo "<head>\n";
     echo "<title>hyperCMS</title>\n";
-    echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."1\">\n";
+    echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
     echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
@@ -131,17 +131,17 @@ else
 {
   // ---------------------build view of live page-----------------------
 
-  echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-  echo "<html>\n";
+  echo "<!DOCTYPE html>\n";
+  echo "<html lang=\"".getsession ("hcms_lang", "en")."\">\n";
   echo "<head>\n";
   echo "<title>".getescapedtext ($hcms_lang['refresh-view'][$lang])."</title>\n";
-  echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
+  echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
 
   $fowardurl = str_replace ($mgmt_config[$site]['abs_path_page'], $mgmt_config[$site]['url_path_page'], $location).$page;
 
-  echo "<meta http-equiv=\"refresh\" content=\"2; URL=".$fowardurl."\">\n";
+  echo "<meta http-equiv=\"refresh\" content=\"2; URL=".$fowardurl."\" />\n";
 
-  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
+  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
   echo "</head>\n";
 
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";

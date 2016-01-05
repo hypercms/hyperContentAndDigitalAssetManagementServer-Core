@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['ru'] = "Звук отключен";
 $hcms_lang['controls']['ru'] = "Органы управления";
 $hcms_lang['project']['ru'] = "Проект";
 $hcms_lang['work-order']['ru'] = "Порядок работы";
+$hcms_lang['report']['ru'] = "Доклад";
+$hcms_lang['report-management']['ru'] = "Доклад Управления";
+$hcms_lang['add-new-condition']['ru'] = "Добавить новое условие";
+$hcms_lang['select-fields-of-entities']['ru'] = "Выберите поля образований";
+$hcms_lang['conditions']['ru'] = "Условия";
+$hcms_lang['sql-statement']['ru'] = "SQL";
+$hcms_lang['chart']['ru'] = "Диаграммы";
+$hcms_lang['pie-chart']['ru'] = "Круговая диаграмма";
+$hcms_lang['column-chart']['ru'] = "Таблица рулевой колонки";
+$hcms_lang['timeline-chart']['ru'] = "На временной шкале";
+$hcms_lang['geo-chart']['ru'] = "Geo диаграммы";
+$hcms_lang['none']['ru'] = "Нет";
+$hcms_lang['table']['ru'] = "Таблица";
 ?>

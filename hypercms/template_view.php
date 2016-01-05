@@ -60,13 +60,13 @@ $filetype = $result['objecttype'];
 
 if ($templatedata == false || $templatedata == "")
 {
-  echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-  echo "<html>\n";
+  echo "<!DOCTYPE html>\n";
+  echo "<html lang=\"".getsession("hcms_lang", "en")."\">\n";
   echo "<head>\n";
   echo "<title>hyperCMS</title>\n";
-  echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
-  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
-  echo "<script src=\"javascript/click.js\" type=\"text/javascript\">\n";
+  echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
+  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
+  echo "<script src=\"javascript/click.js\" type=\"text/javascript\" />\n";
   echo "</script>\n";
   echo "</head>\n";
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
@@ -77,13 +77,13 @@ if ($templatedata == false || $templatedata == "")
 // check if an error occured during inclusions
 elseif ($viewstore == false)
 {
-  echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-  echo "<html>\n";
+  echo "<!DOCTYPE html>\n";
+  echo "<html lang=\"".getsession("hcms_lang", "en")."\">\n";
   echo "<head>\n";
   echo "<title>hyperCMS</title>\n";
-  echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
-  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
-  echo "<script src=\"javascript/click.js\" type=\"text/javascript\">\n";
+  echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
+  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
+  echo "<script src=\"javascript/click.js\" type=\"text/javascript\" />\n";
   echo "</script>\n";
   echo "</head>\n";
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";

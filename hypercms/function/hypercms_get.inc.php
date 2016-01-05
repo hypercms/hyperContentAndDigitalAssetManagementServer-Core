@@ -3047,4 +3047,42 @@ function getfirstkey ($array)
   }
   else return false;
 }
+
+// ------------------------------ getdirectoryfiles ----------------------------------
+// function: getdirectoryfiles()
+// input: path to directory, pattern as string (optional)
+// output: sorted array of all files macthing the pattern / false on error
+
+function getdirectoryfiles ($dir, $pattern="")
+{
+  if (is_dir ($dir))
+  {
+    $dir_item = @dir ($dir);
+    $item_files = array();
+
+    if ($dir_item != false)
+    {
+      while ($entry = $dir_item->read())
+      {
+        if ($entry != "." && $entry != ".." && is_file ($dir.$entry))
+        {
+          if ($pattern != "" && strpos ("_".$entry, $pattern) > 0) $item_files[] = $entry;
+          else $item_files[] = $entry;
+        }
+      }
+
+      $dir_item->close();
+
+      if (sizeof ($item_files) > 0)
+      {
+         natcasesort ($item_files);
+         reset ($item_files);
+      }
+      
+      return $item_files;
+    }
+    else return false;
+  }
+  else return false;
+}
 ?>

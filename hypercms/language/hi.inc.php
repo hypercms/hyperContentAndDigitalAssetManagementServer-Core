@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['hi'] = "मद्घिम";
 $hcms_lang['controls']['hi'] = "के नियंत्रण";
 $hcms_lang['project']['hi'] = "परियोजना";
 $hcms_lang['work-order']['hi'] = "कार्य आदेश";
+$hcms_lang['report']['hi'] = "प्रतिवेदन";
+$hcms_lang['report-management']['hi'] = "प्रतिवेदन प्रबंधन";
+$hcms_lang['add-new-condition']['hi'] = "नई स्थिति पर जोड़ें";
+$hcms_lang['select-fields-of-entities']['hi'] = "1406के क्षेत्रों का चयन करें";
+$hcms_lang['conditions']['hi'] = "शर्तों";
+$hcms_lang['sql-statement']['hi'] = "SQL विवरण";
+$hcms_lang['chart']['hi'] = "चार्ट";
+$hcms_lang['pie-chart']['hi'] = "वाम मोर्चा चार्ट";
+$hcms_lang['column-chart']['hi'] = "स्तंभ चार्ट";
+$hcms_lang['timeline-chart']['hi'] = "Timeline चार्ट";
+$hcms_lang['geo-chart']['hi'] = "भू चार्ट";
+$hcms_lang['none']['hi'] = "कोई नहीं";
+$hcms_lang['table']['hi'] = "तालिका";
 ?>

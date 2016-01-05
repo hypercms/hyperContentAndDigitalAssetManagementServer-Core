@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['no'] = "Dempet";
 $hcms_lang['controls']['no'] = "Kontroller";
 $hcms_lang['project']['no'] = "Prosjekt";
 $hcms_lang['work-order']['no'] = "Arbeidsordre";
+$hcms_lang['report']['no'] = "Rapport";
+$hcms_lang['report-management']['no'] = "Rapportadministrasjon";
+$hcms_lang['add-new-condition']['no'] = "Legg til ny tilstand";
+$hcms_lang['select-fields-of-entities']['no'] = "Velg felt av enheter";
+$hcms_lang['conditions']['no'] = "Betingelser";
+$hcms_lang['sql-statement']['no'] = "SQL uttrykk";
+$hcms_lang['chart']['no'] = "Diagram";
+$hcms_lang['pie-chart']['no'] = "Sektordiagrammet";
+$hcms_lang['column-chart']['no'] = "Kolonnen diagram";
+$hcms_lang['timeline-chart']['no'] = "Tidslinjen diagram";
+$hcms_lang['geo-chart']['no'] = "Geo-diagram";
+$hcms_lang['none']['no'] = "Ingen";
+$hcms_lang['table']['no'] = "Tabell";
 ?>

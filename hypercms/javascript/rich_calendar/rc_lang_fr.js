@@ -75,4 +75,3 @@ text['make_first'] = "1<sup>er</sup> jour %s";
 
 
 RichCalendar.rc_lang_data['fr'] = text;
-js    

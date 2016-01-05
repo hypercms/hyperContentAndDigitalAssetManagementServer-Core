@@ -1322,4 +1322,17 @@ $hcms_lang['muted']['bg'] = "Приглушената";
 $hcms_lang['controls']['bg'] = "Контрол";
 $hcms_lang['project']['bg'] = "Проект";
 $hcms_lang['work-order']['bg'] = "Работна заявка";
+$hcms_lang['report']['bg'] = "Доклад";
+$hcms_lang['report-management']['bg'] = "Доклад за управление";
+$hcms_lang['add-new-condition']['bg'] = "Добавяне на ново условие";
+$hcms_lang['select-fields-of-entities']['bg'] = "Изберете полетата на субекти";
+$hcms_lang['conditions']['bg'] = "Условия";
+$hcms_lang['sql-statement']['bg'] = "Изявлението на SQL";
+$hcms_lang['chart']['bg'] = "Диаграма";
+$hcms_lang['pie-chart']['bg'] = "Таблица на радиалното разпределение";
+$hcms_lang['column-chart']['bg'] = "Колона диаграма";
+$hcms_lang['timeline-chart']['bg'] = "Таблица за календар";
+$hcms_lang['geo-chart']['bg'] = "Таблица за гео";
+$hcms_lang['none']['bg'] = "Никой";
+$hcms_lang['table']['bg'] = "Таблица";
 ?>

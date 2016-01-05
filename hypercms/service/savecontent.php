@@ -209,10 +209,11 @@ if ($usedby == "" || $usedby == $user)
           // check if date-from is greater than date-to
           if ($artdatetocheck < $artdatefromcheck)
           {
-            echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-            echo "<html>\n<head>\n";
+            echo "<!DOCTYPE html>\n";
+            echo "<html lang=\"".getsession("hcms_lang", "en")."\">\n";
+            echo "<head>\n";
             echo "<title>hyperCMS</title>\n";
-            echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">\n";
+            echo "<meta charset=\"".getcodepage($lang)."\" />\n";
             echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">\n";
             echo "</head>\n";
             echo "<body class=\"hcmsWorkplaceGeneric\">\n";

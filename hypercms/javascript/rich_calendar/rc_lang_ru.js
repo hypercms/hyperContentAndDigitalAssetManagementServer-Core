@@ -70,5 +70,3 @@ text['make_first'] = "Начать с: %s";
 
 
 RichCalendar.rc_lang_data['ru'] = text;
-
-

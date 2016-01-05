@@ -732,15 +732,15 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 ?>
 <!-- form used by send_link function -->
 <form target="_blank" method="post" action="" name="pagemenu_object">
-<input type="hidden" name="action" value="">
-<input type="hidden" name="force" value="start">
-<input type="hidden" name="site" value="<?php echo $site; ?>">
-<input type="hidden" name="cat" value="<?php echo $cat; ?>">
-<input type="hidden" name="location" value="<?php echo $location_esc; ?>">
-<input type="hidden" name="page" value="<?php echo $cat; ?>">
-<input type="hidden" name="pagename" value="<?php echo $pagename; ?>">
-<input type="hidden" name="folder" value="<?php echo $folder; ?>">
-<input type="hidden" name="token" value="<?php echo $token_new; ?>" >
+  <input type="hidden" name="action" value="">
+  <input type="hidden" name="force" value="start">
+  <input type="hidden" name="site" value="<?php echo $site; ?>">
+  <input type="hidden" name="cat" value="<?php echo $cat; ?>">
+  <input type="hidden" name="location" value="<?php echo $location_esc; ?>">
+  <input type="hidden" name="page" value="<?php echo $cat; ?>">
+  <input type="hidden" name="pagename" value="<?php echo $pagename; ?>">
+  <input type="hidden" name="folder" value="<?php echo $folder; ?>">
+  <input type="hidden" name="token" value="<?php echo $token_new; ?>" >
 </form>
 
 <div id="objcreateLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:60px; z-index:4; left:15px; top:15px; visibility:<?php if ($page != "") echo "hidden"; else echo "visible"; ?>">

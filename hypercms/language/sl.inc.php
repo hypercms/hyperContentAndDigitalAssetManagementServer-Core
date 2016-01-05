@@ -1320,4 +1320,17 @@ $hcms_lang['muted']['sl'] = "Izklopljen";
 $hcms_lang['controls']['sl'] = "Kontrole";
 $hcms_lang['project']['sl'] = "Projekt";
 $hcms_lang['work-order']['sl'] = "Delovnega naloga";
+$hcms_lang['report']['sl'] = "Poročilo";
+$hcms_lang['report-management']['sl'] = "Poročilo uprave";
+$hcms_lang['add-new-condition']['sl'] = "Dodaj nov pogoj";
+$hcms_lang['select-fields-of-entities']['sl'] = "Izberite polja subjektov";
+$hcms_lang['conditions']['sl'] = "Pogoji";
+$hcms_lang['sql-statement']['sl'] = "Izjava SQL";
+$hcms_lang['chart']['sl'] = "Grafikon";
+$hcms_lang['pie-chart']['sl'] = "Tortni grafikon";
+$hcms_lang['column-chart']['sl'] = "Stolpčni grafikon";
+$hcms_lang['timeline-chart']['sl'] = "Časovnica grafikon";
+$hcms_lang['geo-chart']['sl'] = "Geo grafikon";
+$hcms_lang['none']['sl'] = "Ne obstaja";
+$hcms_lang['table']['sl'] = "Preglednica";
 ?>

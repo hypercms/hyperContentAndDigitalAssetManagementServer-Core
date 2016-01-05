@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['cz'] = "Ztlumený";
 $hcms_lang['controls']['cz'] = "Ovládací prvky";
 $hcms_lang['project']['cz'] = "Projekt";
 $hcms_lang['work-order']['cz'] = "Pracovní příkaz";
+$hcms_lang['report']['cz'] = "Zpráva";
+$hcms_lang['report-management']['cz'] = "Zpráva vedení";
+$hcms_lang['add-new-condition']['cz'] = "Přidat nový stav";
+$hcms_lang['select-fields-of-entities']['cz'] = "Vyberte pole subjektů";
+$hcms_lang['conditions']['cz'] = "Podmínky";
+$hcms_lang['sql-statement']['cz'] = "Příkaz SQL";
+$hcms_lang['chart']['cz'] = "Pro lokalizaci poruch";
+$hcms_lang['pie-chart']['cz'] = "Výsečový graf";
+$hcms_lang['column-chart']['cz'] = "Sloupcový graf";
+$hcms_lang['timeline-chart']['cz'] = "Časová Osa pro lokalizaci poruch";
+$hcms_lang['geo-chart']['cz'] = "Tabulka Geo";
+$hcms_lang['none']['cz'] = "Žádný";
+$hcms_lang['table']['cz'] = "Tabulka";
 ?>

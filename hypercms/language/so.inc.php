@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['so'] = "Muted";
 $hcms_lang['controls']['so'] = "Taliyo";
 $hcms_lang['project']['so'] = "Mashruuca";
 $hcms_lang['work-order']['so'] = "Amarka Shaqada";
+$hcms_lang['report']['so'] = "Warbixinta";
+$hcms_lang['report-management']['so'] = "Maamulka warbixinta";
+$hcms_lang['add-new-condition']['so'] = "Ku dar xaaladda cusub";
+$hcms_lang['select-fields-of-entities']['so'] = "War ururinta bandhigidooda soocda "";
+$hcms_lang['conditions']['so'] = "Shuruudaha";
+$hcms_lang['sql-statement']['so'] = "Bayaanka SQL";
+$hcms_lang['chart']['so'] = "Jadwalka";
+$hcms_lang['pie-chart']['so'] = "Pie jadwalka";
+$hcms_lang['column-chart']['so'] = "Aad geliso safka munaasibka jadwalka";
+$hcms_lang['timeline-chart']['so'] = "Timeline jadwalka";
+$hcms_lang['geo-chart']['so'] = "Geo jadwalka";
+$hcms_lang['none']['so'] = "Ma jiro.";
+$hcms_lang['table']['so'] = "Miiska";
 ?>

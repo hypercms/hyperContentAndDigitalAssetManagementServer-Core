@@ -192,24 +192,6 @@ function checkForm (expression)
   }   
 }
 
-function replace (string, text, by) 
-{
-  // Replaces text with by in string
-  var strLength = string.length, txtLength = text.length;
-  if ((strLength == 0) || (txtLength == 0)) return string;
-
-  var i = string.indexOf(text);
-  if ((!i) && (text != string.substring(0,txtLength))) return string;
-  if (i == -1) return string;
-
-  var newstr = string.substring(0,i) + by;
-
-  if (i+txtLength < strLength)
-      newstr += replace(string.substring(i+txtLength,strLength),text,by);
-
-  return newstr;
-}
-
 function insertAtCaret (aTag, eTag)
 {
   var input = document.forms['template_edit'].elements['contentfield'];
@@ -292,23 +274,23 @@ function insertAtCaret (aTag, eTag)
 
 function format_tag (format)
 {
-  if (eval (document.forms['template_edit'].elements['artid'])) artid = document.forms['template_edit'].elements['artid'].value;
-  else artid = "";
+  if (eval (document.forms['template_edit'].elements['artid'])) var artid = document.forms['template_edit'].elements['artid'].value;
+  else var artid = "";
   
-  if (eval (document.forms['template_edit'].elements['tagid'])) tagid = document.forms['template_edit'].elements['tagid'].value;
-  else tagid = "";
+  if (eval (document.forms['template_edit'].elements['tagid'])) var tagid = document.forms['template_edit'].elements['tagid'].value;
+  else var tagid = "";
   
-  if (eval (document.forms['template_edit'].elements['onpublish']) && document.forms['template_edit'].elements['onpublish'].checked) onpublish = " onPublish='hidden'";  
-  else onpublish = ""; 
+  if (eval (document.forms['template_edit'].elements['onpublish']) && document.forms['template_edit'].elements['onpublish'].checked) var onpublish = " onPublish='hidden'";  
+  else var onpublish = ""; 
   
-  if (eval (document.forms['template_edit'].elements['onedit']) && document.forms['template_edit'].elements['onedit'].checked) onedit = " onEdit='hidden'";  
-  else onedit = "";
+  if (eval (document.forms['template_edit'].elements['onedit']) && document.forms['template_edit'].elements['onedit'].checked) var onedit = " onEdit='hidden'";  
+  else var onedit = "";
   
-  if (eval (document.forms['template_edit'].elements['infotype']) && document.forms['template_edit'].elements['infotype'].checked) infotype = " infotype='meta'";
-  else if (eval (document.forms['template_edit'].elements['infotype_media']) && document.forms['template_edit'].elements['infotype_media'].value == "meta") infotype = " infotype='meta'";  
-  else infotype = "";
+  if (eval (document.forms['template_edit'].elements['infotype']) && document.forms['template_edit'].elements['infotype'].checked) var infotype = " infotype='meta'";
+  else if (eval (document.forms['template_edit'].elements['infotype_media']) && document.forms['template_edit'].elements['infotype_media'].value == "meta") var infotype = " infotype='meta'";  
+  else var infotype = "";
     
-  constraint = "";
+  var constraint = "";
   
   if (format == "textu" && document.forms['template_edit'].elements['constraints'].value != "") 
   {
@@ -349,6 +331,72 @@ function format_tag (format)
       }
       else alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-fill-in-a-content-identification-name'][$lang], $charset, $lang); ?>"));
     } 
+  }
+}
+
+function format_tag_attr(format)
+{
+  if (eval (document.forms['template_edit'].artid)) var artid = document.forms['template_edit'].elements['artid'].value;
+  else var artid = "";
+  
+  if (eval (document.forms['template_edit'].tagid)) var tagid = document.forms['template_edit'].elements['tagid'].value;
+  else var tagid = "";
+  
+  if (eval (document.forms['template_edit'].onpublish) && document.forms['template_edit'].elements['onpublish'].checked) var onpublish = " onPublish='hidden'";  
+  else var onpublish = ""; 
+  
+  if (eval (document.forms['template_edit'].onedit) && document.forms['template_edit'].elements['onedit'].checked) var onedit = " onEdit='hidden'";  
+  else var onedit = "";
+  
+  if (eval (document.forms['template_edit'].infotype) && document.forms['template_edit'].elements['infotype'].checked) var infotype = " infotype='meta'";
+  else var infotype = "";  
+  
+  if (tagid == "" || tagid == null)
+  {
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-fill-in-a-content-identification-name'][$lang], $charset, $lang); ?>"));
+  }
+  else
+  {    
+    if (format == "textl") var list = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-enter-the-text-options-eg'][$lang], $charset, $lang); ?>"), "");
+    else if (format == "linktarget") var list = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['enter-frame-names-for-target-specification-eg'][$lang], $charset, $lang); ?>"), "");
+    else var list = "";
+
+    if (list != "")
+    {
+      list = list.replace (';', '|');
+      list = list.replace ('&', '&amp;');
+      list = list.replace ('<', '&lt;');
+      list = list.replace ('>', '&gt;');
+    }  
+  
+    if (artid == "")
+    {
+      idtest = checkForm(tagid);
+     
+      if (idtest != false)
+      {
+        if (tagid != "" && tagid != null)
+        {
+          code = "[hyperCMS:"+format+" id='"+tagid+"' list='"+list+"'"+onpublish+onedit+infotype+"]";
+          insertAtCaret (code, '');
+        }
+        else alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-fill-in-a-content-identification-name'][$lang], $charset, $lang); ?>"));
+      }  
+    }
+    else if (artid != "" && artid != null)
+    {
+      idtest = checkForm(tagid);
+     
+      if (idtest != false)
+      {  
+        if (tagid != "" && tagid != null)
+        {
+          code = "[hyperCMS:art"+format+" id='"+artid+":"+tagid+"' list='"+list+"'"+onpublish+onedit+infotype+"]";
+          insertAtCaret (code, '');
+        }
+        else alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-fill-in-a-content-identification-name'][$lang], $charset, $lang); ?>"));
+      } 
+    }
   }
 }
 
@@ -398,7 +446,7 @@ function language()
   var language_sessionvar = document.forms['template_edit'].elements['language_sessionvar'].value;
   var language_sessionvalues = document.forms['template_edit'].elements['language_sessionvalues'].value;
   
-  list = replace (language_sessionvalues, ';', '|');
+  list = language_sessionvalues.replace (';', '|');
   
   code = "[hyperCMS:language name='"+language_sessionvar+"' list='"+list+"']";
   insertAtCaret (code, '');
@@ -455,68 +503,6 @@ function include(format)
   if (filename != null && format == "") {code = "[hyperCMS:tplinclude file='"+filename+".inc.tpl']";}
 
   if (filename != null) insertAtCaret (code, '');
-}
-
-function format_tag_attr(format)
-{
-  if (eval (document.forms['template_edit'].artid)) artid = document.forms['template_edit'].elements['artid'].value;
-  else artid = "";
-  
-  if (eval (document.forms['template_edit'].tagid)) tagid = document.forms['template_edit'].elements['tagid'].value;
-  else tagid = "";
-  
-  if (eval (document.forms['template_edit'].onpublish) && document.forms['template_edit'].elements['onpublish'].checked) onpublish = " onPublish='hidden'";  
-  else onpublish = ""; 
-  
-  if (eval (document.forms['template_edit'].onedit) && document.forms['template_edit'].elements['onedit'].checked) onedit = " onEdit='hidden'";  
-  else onedit = "";
-  
-  if (eval (document.forms['template_edit'].infotype) && document.forms['template_edit'].elements['infotype'].checked) infotype = " infotype='meta'";
-  else infotype = "";  
-  
-  if (tagid == "" || tagid == null)
-  {
-    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-fill-in-a-content-identification-name'][$lang], $charset, $lang); ?>"));
-  }
-  else
-  {    
-    if (format == "textl") list = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-enter-the-text-options-eg'][$lang], $charset, $lang); ?>"), "");
-    else if (format == "linktarget") list = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['enter-frame-names-for-target-specification-eg'][$lang], $charset, $lang); ?>"), "");
-  
-    list = replace (list, ';', '|');
-    list = replace (list, '&', '&amp;');
-    list = replace (list, '<', '&lt;');
-    list = replace (list, '>', '&gt;');    
-  
-    if (artid == "")
-    {
-      idtest = checkForm(tagid);
-     
-      if (idtest != false)
-      {
-        if (tagid != "" && tagid != null)
-        {
-          code = "[hyperCMS:"+format+" id='"+tagid+"' list='"+list+"'"+onpublish+onedit+infotype+"]";
-          insertAtCaret (code, '');
-        }
-        else alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-fill-in-a-content-identification-name'][$lang], $charset, $lang); ?>"));
-      }  
-    }
-    else if (artid != "" && artid != null)
-    {
-      idtest = checkForm(tagid);
-     
-      if (idtest != false)
-      {  
-        if (tagid != "" && tagid != null)
-        {
-          code = "[hyperCMS:art"+format+" id='"+artid+":"+tagid+"' list='"+list+"'"+onpublish+onedit+infotype+"]";
-          insertAtCaret (code, '');
-        }
-        else alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-fill-in-a-content-identification-name'][$lang], $charset, $lang); ?>"));
-      } 
-    }
-  }
 }
 
 function savetemplate(mode)

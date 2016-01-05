@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['sr'] = "Prigušena";
 $hcms_lang['controls']['sr'] = "Kontrola";
 $hcms_lang['project']['sr'] = "Projekat";
 $hcms_lang['work-order']['sr'] = "Rad kako bi";
+$hcms_lang['report']['sr'] = "Izveštaj";
+$hcms_lang['report-management']['sr'] = "Izveštaj upravljanje";
+$hcms_lang['add-new-condition']['sr'] = "Dodavanje nove uslov";
+$hcms_lang['select-fields-of-entities']['sr'] = "Odaberite oblasti entiteta";
+$hcms_lang['conditions']['sr'] = "Uslovi";
+$hcms_lang['sql-statement']['sr'] = "SQL Izjava";
+$hcms_lang['chart']['sr'] = "Sistemska šema";
+$hcms_lang['pie-chart']['sr'] = "Pie tabela";
+$hcms_lang['column-chart']['sr'] = "Kolona tabela";
+$hcms_lang['timeline-chart']['sr'] = "Raspored tabela";
+$hcms_lang['geo-chart']['sr'] = "Geo tabela";
+$hcms_lang['none']['sr'] = "Nijedan";
+$hcms_lang['table']['sr'] = "Sto";
 ?>

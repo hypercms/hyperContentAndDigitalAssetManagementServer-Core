@@ -13,8 +13,8 @@
 // is done by these functions.  
 
 // --------------------------------------- template functions -----------------------------------------------
-// these functions are used for creating the desired output depending on the presentation technology.
-// the functions are used by buildview and viewinclusions.
+// These functions are used for creating the desired output depending on the presentation technology.
+// The functions are used by buildview and viewinclusions.
 
 // inclusions of files (depending on OS)
 function tpl_compinclude ($application, $file, $os_cms)
@@ -2439,7 +2439,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $defaultvalue = getattribute ($hypertag, "default");
             
             // get format (if date)
-            $format = getattribute ($hypertag, "format");  
+            $format = getattribute ($hypertag, "format");
+            if ($format == "") $format = "%Y-%m-%d";
 
             // get active (for comment tags if comments can be added)
             $active = getattribute ($hypertag, "active");
@@ -3398,9 +3399,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 {
                   $repl_offset = 0;
                   $viewstore_offset = $viewstore;
-                  
-                  if ($format == "") $format = "%Y-%m-%d";
-        
+
                   while (@substr_count ($viewstore_offset, $hypertag) > 0)
                   {                                
                     if ($searchtag == "text")
@@ -3412,7 +3411,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       }
                       elseif (($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") && isset ($foundtxt[$id]) && $foundtxt[$id] == true)
                       {                        
-                        if ($disabled == "") $showcalendar = "onclick=\"show_cal_".$id."(this);\"";
+                        if ($disabled == "") $showcalendar = "onclick=\"show_cal (this, 'datefield_".$id."', '".$format."');\"";
                         else $showcalendar = "";
                         
                         $formitem[$key] = "
@@ -3421,47 +3420,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <b>".$labelname."</b>
                         </td>
                         <td align=left valign=top>
-                          <input type=\"text\" id=\"datefield_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" ".$disabled." />
-                          <img name=\"datepicker\" src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />
-                          <script language=\"JavaScript\" type=\"text/javascript\">
-                          <!--
-                           var cal_obj_".$id." = null;
-                           var format_".$id." = '".$format."';
-                           
-                           function show_cal_".$id." (el)
-                           {
-                             if (cal_obj_".$id.") return;
-                             var datefield_".$id." = document.getElementById('datefield_".$id."');  
-                             
-                             cal_obj_".$id." = new RichCalendar();
-                             cal_obj_".$id.".start_week_day = 1;
-                             cal_obj_".$id.".show_time = false;
-                             cal_obj_".$id.".language = '".getcalendarlang ($lang)."';
-                             cal_obj_".$id.".user_onchange_handler = cal_on_change_".$id.";
-                             cal_obj_".$id.".user_onautoclose_handler = cal_on_autoclose_".$id.";
-                             cal_obj_".$id.".parse_date(datefield_".$id.".value, format_".$id.");
-                             cal_obj_".$id.".show_at_element(datefield_".$id.", 'adj_left-bottom');
-                           }
-                           
-                           // onchange handler
-                           function cal_on_change_".$id." (cal, object_code)
-                           {
-                             if (object_code == 'day')
-                             {
-                               document.getElementById('datefield_".$id."').value = cal.get_formatted_date(format_".$id.");
-                               document.getElementById('textfield_".$id."').value = cal.get_formatted_date(format_".$id.");
-                               cal.hide();
-                               cal_obj_".$id." = null;
-                             }
-                           }
-                            
-                           // onautoclose handler
-                           function cal_on_autoclose_".$id." (cal)
-                           {
-                             cal_obj_".$id." = null;
-                           }
-                          -->
-                          </script>                                           
+                          <input type=\"text\" id=\"datefield_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" readonly=\"readonly\" ".$disabled." />
+                          <img name=\"datepicker\" src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />                                          
                         </td>
                       </tr>";
                       }
@@ -3488,7 +3448,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       }
                       elseif (($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") && isset ($foundtxt[$id]) && $foundtxt[$id] == true)
                       {                     
-                        if ($disabled == "") $showcalendar = "onclick=\"show_cal_".$artid."_".$elementid."(this);\"";
+                        if ($disabled == "") $showcalendar = "onclick=\"show_cal_".$artid."_".$elementid."(this, 'datefield_".$artid."_".$elementid."', '".$format."');\"";
                         else $showcalendar = "";
                                               
                         $formitem[$key] = "
@@ -3497,46 +3457,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <b>".$labelname."</b> ".$arttaglink[$artid]."
                         </td>
                         <td align=left valign=top>
-                          <input type=\"hidden\" id=\"datefield_".$artid."_".$elementid."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
-                          <input type=\"text\" id=\"textfield_".$artid."_".$elementid."\" value=\"".$contentbot."\" ".$disabled." /><img name=\"datepicker\" src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />
-                          <script language=\"JavaScript\" type=\"text/javascript\">
-                          <!--
-                           var cal_obj_".$artid."_".$elementid." = null;
-                           var format_".$artid."_".$elementid." = '".$format."';
-                           
-                           function show_cal_".$artid."_".$elementid." (el) {
-                             if (cal_obj_".$artid."_".$elementid.") return;
-                             var datefield_".$artid."_".$elementid." = document.getElementById('datefield_".$artid."_".$elementid."');  
-                             
-                             cal_obj_".$artid."_".$elementid." = new RichCalendar();
-                             cal_obj_".$artid."_".$elementid.".start_week_day = 1;
-                             cal_obj_".$artid."_".$elementid.".show_time = false;
-                             cal_obj_".$artid."_".$elementid.".language = '".getcalendarlang ($lang)."';
-                             cal_obj_".$artid."_".$elementid.".user_onchange_handler = cal_on_change_".$artid."_".$elementid.";
-                             cal_obj_".$artid."_".$elementid.".user_onautoclose_handler = cal_on_autoclose_".$artid."_".$elementid.";
-                             cal_obj_".$artid."_".$elementid.".parse_date(datefield_".$artid."_".$elementid.".value, format_".$artid."_".$elementid.");
-                             cal_obj_".$artid."_".$elementid.".show_at_element(datefield_".$artid."_".$elementid.", 'adj_left-bottom');
-                           }
-                           
-                           // onchange handler
-                           function cal_on_change_".$artid."_".$elementid." (cal, object_code)
-                           {
-                             if (object_code == 'day')
-                             {
-                               document.getElementById('datefield_".$artid."_".$elementid."').value = cal.get_formatted_date(format_".$artid."_".$elementid.");
-                               document.getElementById('textfield_".$artid."_".$elementid."').value = cal.get_formatted_date(format_".$artid."_".$elementid.");
-                               cal.hide();
-                               cal_obj_".$artid."_".$elementid." = null;
-                             }
-                           }
-                            
-                           // onautoclose handler
-                           function cal_on_autoclose_".$artid."_".$elementid." (cal)
-                           {
-                             cal_obj_".$artid."_".$elementid." = null;
-                           }                                           
-                          -->
-                          </script>                                            
+                          <input type=\"text\" id=\"datefield_".$artid."_".$elementid."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" readonly=\"readonly\" ".$disabled." />
+                          <img name=\"datepicker\" src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />                                           
                         </td>
                       </tr>";
                       }                      
@@ -6607,7 +6529,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $viewstore = str_replace ("<!-- hyperCMS:ErrorCodeBegin -->", $button_formview, $viewstore);
             
             // add html and body tags if missing
-            if (strpos (strtolower ("_".$viewstore, "<html")) < 1)
+            if (strpos (strtolower ("_".$viewstore), "<html") < 1)
             {
               $viewstore = "
 <!DOCTYPE html>
@@ -6658,6 +6580,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 <head>
   <title>hyperCMS</title>
   <base href=\"".$mgmt_config['url_path_cms']."editor/\" />
+  <meta charset=\"".getcodepage ($lang)."\" />
   <meta http-equiv=\"Content-Type\" content=\"".$contenttype."\" />
   <meta name=\"robots\" content=\"noindex, nofollow\" />
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css\" />
@@ -6670,6 +6593,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>
   <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
   <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_de.js\"></script>
+  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_fr.js\"></script>
+  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_pt.js\"></script>
+  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_ru.js\"></script>
   <script language=\"Javascript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/domready.js\"></script>
   <script language=\"Javascript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/tag-it/tag-it.min.js\"></script>
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/tag-it/jquery.tagit.css\" />
@@ -6681,6 +6607,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   if ($buildview != "formlock") $viewstore .= "
   ".$bodytag_popup."
 
+  // ----- Validation -----
   function validateForm() 
   {
     var i,p,q,nm,test,num,min,max,errors='',args=validateForm.arguments;
@@ -6772,6 +6699,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     else return '';
   }  
   
+  // ----- Get, move and delete values -----
   function getValue(selectname, defaultvalue)
   {
     if (document.forms['hcms_formview'].elements[selectname] && document.forms['hcms_formview'].elements[selectname].value)
@@ -6821,6 +6749,60 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     }
   }
   
+  function moveBoxEntry(fbox, tbox)
+  {
+    var arrFbox = new Array();
+    var arrTbox = new Array();
+    var arrLookup = new Array();
+    var i;
+  
+    for (i = 0; i < tbox.options.length; i++)
+    {
+      arrLookup[tbox.options[i].text] = tbox.options[i].value;
+      arrTbox[i] = tbox.options[i].text;
+    }
+  
+    var fLength = 0;
+    var tLength = arrTbox.length;
+  
+    for(i = 0; i < fbox.options.length; i++)
+    {
+      arrLookup[fbox.options[i].text] = fbox.options[i].value;
+      if (fbox.options[i].selected && fbox.options[i].value != '')
+      {
+        arrTbox[tLength] = fbox.options[i].text;
+        tLength++;
+      }
+      else
+      {
+        arrFbox[fLength] = fbox.options[i].text;
+        fLength++;
+      }
+    }
+  
+    arrFbox.sort();
+    arrTbox.sort();
+    fbox.length = 0;
+    tbox.length = 0;
+    var c;
+  
+    for(c = 0; c < arrFbox.length; c++)
+    {
+      var no = new Option();
+      no.value = arrLookup[arrFbox[c]];
+      no.text = arrFbox[c];
+      fbox[c] = no;
+    }
+  
+    for(c = 0; c < arrTbox.length; c++)
+    {
+      var no = new Option();
+      no.value = arrLookup[arrTbox[c]];
+      no.text = arrTbox[c];
+      tbox[c] = no;
+    }
+  }
+  
   function deleteEntry(select)
   {
     select.value = '';
@@ -6855,6 +6837,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     return newstr;
   }
   
+  // ----- Open window -----
   function openBrWindowLink(select, winName, features, type)
   {
     var select_temp = eval(\"document.forms['hcms_formview'].elements['temp_\" + select.name + \"']\");
@@ -6958,6 +6941,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     else alert(hcms_entity_decode('".getescapedtext ($hcms_lang['no-component-selected'][$lang], $charset, $lang)."'));  
   } 
   
+  // ----- Prepare form fields for submit -----
   function submitText(selectname, targetname)
   {
     document.forms['hcms_formview'].elements[targetname].value = document.forms['hcms_formview'].elements[selectname].value;
@@ -7044,60 +7028,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     return true;
   }
   
-  function moveBoxEntry(fbox, tbox)
-  {
-    var arrFbox = new Array();
-    var arrTbox = new Array();
-    var arrLookup = new Array();
-    var i;
-  
-    for (i = 0; i < tbox.options.length; i++)
-    {
-      arrLookup[tbox.options[i].text] = tbox.options[i].value;
-      arrTbox[i] = tbox.options[i].text;
-    }
-  
-    var fLength = 0;
-    var tLength = arrTbox.length;
-  
-    for(i = 0; i < fbox.options.length; i++)
-    {
-      arrLookup[fbox.options[i].text] = fbox.options[i].value;
-      if (fbox.options[i].selected && fbox.options[i].value != '')
-      {
-        arrTbox[tLength] = fbox.options[i].text;
-        tLength++;
-      }
-      else
-      {
-        arrFbox[fLength] = fbox.options[i].text;
-        fLength++;
-      }
-    }
-  
-    arrFbox.sort();
-    arrTbox.sort();
-    fbox.length = 0;
-    tbox.length = 0;
-    var c;
-  
-    for(c = 0; c < arrFbox.length; c++)
-    {
-      var no = new Option();
-      no.value = arrLookup[arrFbox[c]];
-      no.text = arrFbox[c];
-      fbox[c] = no;
-    }
-  
-    for(c = 0; c < arrTbox.length; c++)
-    {
-      var no = new Option();
-      no.value = arrLookup[arrTbox[c]];
-      no.text = arrTbox[c];
-      tbox[c] = no;
-    }
-  }
-  
   function submitLanguage(selectname, targetname)
   {
     var content = '' ;
@@ -7120,12 +7050,53 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     return true;
   }
   
+  // ----- Rich Calendar -----
+  var cal_obj = null;
+  var cal_format = null;
+  var cal_field = null;
+  
+  function show_cal (el, field_id, format)
+  {
+    if (cal_obj) return;
+    
+    cal_field = field_id;
+    cal_format = format;
+    var datefield = document.getElementById(field_id);
+    
+    cal_obj = new RichCalendar();
+    cal_obj.start_week_day = 1;
+    cal_obj.show_time = false;
+    cal_obj.language = '".getcalendarlang ($lang)."';
+    cal_obj.user_onchange_handler = cal_on_change;
+    cal_obj.user_onautoclose_handler = cal_on_autoclose;
+    cal_obj.parse_date(datefield.value, cal_format);
+    cal_obj.show_at_element(datefield, 'adj_left-bottom');
+  }
+  
+  // onchange handler
+  function cal_on_change (cal, object_code)
+  {
+    if (object_code == 'day')
+    {
+      document.getElementById(cal_field).value = cal.get_formatted_date(cal_format);
+      cal.hide();
+      cal_obj = null;
+    }
+  }
+  
+  // onautoclose handler
+  function cal_on_autoclose (cal)
+  {
+    cal_obj = null;
+  }
 
+  // ----- Comment -----
   function deleteComment(element, value)
   {
     element.disabled = value;
   }  
   
+  // ----- Save -----
   function setSaveType(type, url)
   {
     var checkcontent = true;
@@ -7452,40 +7423,45 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
 // --------------------------------- buildsearchform -------------------------------------------
 // function: buildsearchform()
-// input: publication name, template name, group access as array
-// output: form view
+// input: publication name (optional for report), template name (optional), or report name (optional), group access as array (optional)
+// output: form view / false on error
 
-function buildsearchform ($site, $template, $ownergroup="")
+function buildsearchform ($site="", $template="", $report="", $ownergroup="")
 { 
   global $user, $mgmt_config, $mgmt_lang_shortcut_default, $hcms_charset, $hcms_lang_name, $hcms_lang_shortcut, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang;    
              
   // ----------------------------------- build view of page -----------------------------------------
 
-  // =================================================== load template =================================================  
-  // load associated template xml file and read information
-  $result = loadtemplate ($site, $template); 
- 
-  $templatedata = $result['content'];
-  $templatesite = $result['publication'];
-
-  $bufferdata = getcontent ($templatedata, "<content>");
-  
-  // add newline at the begin to correct errors in tag-search
-  $viewstore = "\n".$bufferdata[0];
-
-  if ($viewstore != "")
+  // load template
+  if (valid_publicationname ($site) && valid_objectname ($template))
   {
-    // =============================== get content-type and character set ===============================
-    $result = getcharset ($site, $viewstore);
+    // load template xml file and read information
+    $result = loadtemplate ($site, $template); 
+   
+    $templatedata = $result['content'];
+    $templatesite = $result['publication'];
+  
+    $bufferdata = getcontent ($templatedata, "<content>");
     
-    $contenttype = $result['contenttype'];
-    $hcms_charset = $charset = $result['charset'];  
-      
+    // add newline at the begin to correct errors in tag-search
+    if (!empty ($bufferdata[0])) $viewstore = "\n".$bufferdata[0];
+  }
+  // load report
+  elseif (valid_objectname ($report))
+  {
+    // load report file and read information
+    $result = loadreport ($report);
+    
+    if (!empty ($result['sql'])) $viewstore = $result['sql'];
+  }
+
+  if (!empty ($viewstore))
+  {      
     // =================================================== text content ===================================================
     $searchtag_array[0] = "arttext";
     $searchtag_array[1] = "text";
-    $infotype = "";
-    $value = "";
+    $searchtag_array[2] = "linkhref";
+    $searchtag_array[3] = "mediafile";
     $id_array = array();
     
     foreach ($searchtag_array as $searchtag)
@@ -7505,21 +7481,19 @@ function buildsearchform ($site, $template, $ownergroup="")
           
           // get tag id
           $id = getattribute ($hypertag, "id");
-
-          // get article id
-          $artid = getartid ($id);
           
-          // element id
-          $elementid = getelementid ($id);                     
-          
-          // get type of content
-          $infotype = getattribute (strtolower ($hypertag), "infotype");
+          // extract text list
+          $list = getattribute ($hypertag, "list");
           
           // extract text value of checkbox
           $value = getattribute ($hypertag, "value");      
           
           // get label
           $label = getattribute ($hypertag, "label");
+          
+          // get format (if date)
+          $format = getattribute ($hypertag, "format");
+          if ($format == "") $format = "%Y-%m-%d";
 
           // get group access
           $groupaccess = getattribute ($hypertag, "groups");
@@ -7534,74 +7508,81 @@ function buildsearchform ($site, $template, $ownergroup="")
             // search field for formatted and unformatted text
             if ($hypertagname == $searchtag."u" || $hypertagname == $searchtag."f" || $hypertagname == $searchtag."k")
             {
-              // loop for unique media names for rollover effect
-              if (@substr_count ($viewstore, $hypertag) >= 1)
-              {    
-                if ($searchtag == "text")
-                {
-                  $formitem[$key] = "<tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><input name=\"search_textnode[".$id."]\" size=30 /></td></tr>\n";
-                }
-                elseif ($searchtag == "arttext")
-                {                        
-                  $formitem[$key] = "<tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><input name=\"search_textnode[".$id."]\" size=30 /></td></tr>\n";
-                }           
+              if (@substr_count ($viewstore, $hypertag) > 0)
+              {
+                $formitem[$key] = "
+            <tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><input name=\"search_textnode[".$id."]\" value=\"\" size=\"30\" /></td></tr>";         
               }
             }
             // search field for text lists (options)
             elseif ($hypertagname == $searchtag."l")
             {
-              if (@substr_count ($viewstore, $hypertag) >= 1)
+              if (@substr_count ($viewstore, $hypertag) > 0 && $list != "")
               {
-                // extract text list
-                $list = getattribute ($hypertag, "list");
+                // get list entries
+                $list_array = explode ("|", $list);
+
+                $formitem[$key] = "
+            <tr>
+              <td align=left valign=top width=180 nowrap>".$label." </td>
+              <td align=left valign=top>
+                <select name=\"search_textnode[".$id."]\">";
                 
-                if ($searchtag == "text")
+                foreach ($list_array as $list_entry)
                 {
-                  // get list entries
-                  $list_array = null;
-                  $list_array = explode ("|", $list);
-  
-                  $formitem[$key] = "<tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><select name=\"search_textnode[".$id."]\">\n";
-                  
-                  foreach ($list_array as $list_entry)
-                  {
-                    $formitem[$key] .= "<option value=\"".$list_entry."\">".$list_entry."</option>\n";
-                  }
-                                 
-                  $formitem[$key] .= "</select></td></tr>\n";
+                  $formitem[$key] .= "
+                  <option value=\"".$list_entry."\">".$list_entry."</option>";
                 }
-                elseif ($searchtag == "arttext")
-                {
-                  // get list entries
-                  $list_array = explode ("|", $list);
-  
-                  $formitem[$key] = "<tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><select name=\"search_textnode[".$id."]\">\n";
-                  
-                  foreach ($list_array as $list_entry)
-                  {
-                    $formitem[$key] .= "<option value=\"".$list_entry."\">".$list_entry."</option>\n";
-                  }
-                                 
-                  $formitem[$key] .= "</select></td></tr>\n";
-                }            
+                               
+                $formitem[$key] .= "
+                </select>
+              </td>
+            </tr>";           
               }
             }
             // search field for checked values
             elseif ($hypertagname == $searchtag."c")
             {
-              if (@substr_count ($viewstore, $hypertag) >= 1)
-              {                    
-                if ($searchtag == "text")
-                {                  
-                  $formitem[$key] = "<tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><input type=\"checkbox\" name=\"search_textnode[".$id."]\" value=\"".$value."\"> ".$value."</td></tr>\n";
-                }
-                elseif ($searchtag == "arttext")
-                {
-                  $formitem[$key] = "<tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><input type=\"checkbox\" name=\"search_textnode[".$id."]\" value=\"".$value."\"> ".$value."</td></tr>\n";
-                }               
+              if (@substr_count ($viewstore, $hypertag) > 0)
+              {                               
+                $formitem[$key] = "
+            <tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><input type=\"checkbox\" name=\"search_textnode[".$id."]\" value=\"".$value."\"> ".$value."</td></tr>";
               }
-            } 
-          }  
+            }
+            // search field for date
+            elseif ($hypertagname == $searchtag."d")
+            {
+              if (@substr_count ($viewstore, $hypertag) > 0)
+              {
+                $formitem[$key] = "
+            <tr>
+              <td align=left valign=top width=180 nowrap>".$label." </td>
+              <td align=left valign=top>
+                <input type=\"text\" id=\"datefield_".$id."\" name=\"search_textnode[".$id."]\" value=\"\" readonly=\"readonly\" />
+                <img name=\"datepicker\" src=\"".getthemelocation()."img/button_datepicker.gif\" onclick=\"show_cal(this, 'datefield_".$id."', '".$format."');\" align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" />                                        
+              </td>
+            </tr>";
+              }
+            }
+            // search field for media alternative text
+            elseif ($hypertagname == "mediaalttext")
+            {
+              if (@substr_count ($viewstore, $hypertag) > 0)
+              {
+                $formitem["media:".$key] = "
+            <tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><input name=\"search_textnode[media:".$id."]\" value=\"\" size=\"30\" /></td></tr>";         
+              }
+            }
+            // search field for link text
+            elseif ($hypertagname == "linktext")
+            {
+              if (@substr_count ($viewstore, $hypertag) > 0)
+              {
+                $formitem["link:".$key] = "
+            <tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><input name=\"search_textnode[link:".$id."]\" value=\"\" size=\"30\" /></td></tr>";         
+              }
+            }
+          }
           
           // collect id
           $id_array[] = $id;            
@@ -7610,16 +7591,66 @@ function buildsearchform ($site, $template, $ownergroup="")
     }
             
     $viewstore = "<!DOCTYPE html>
-    <html>
-    <head>
-    <title>hyperCMS</title>
-    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">
-    <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">
-    </head>
-    <body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" onload=\"parent.hcms_showPage('contentLayer');\" leftmargin=\"3\" topmargin=\"3\" marginwidth=\"0\" marginheight=\"0\">
-    <table width=\"100%\" cellspacing=2 cellpadding=0>
-      <tr>
-        <td align=\"left\" valign=\"middle\">\n";
+<html>
+<head lang=\"".$lang."\">
+  <title>hyperCMS</title>
+  <meta charset=\"".getcodepage ($lang)."\">
+  <meta name=\"robots\" content=\"noindex, nofollow\" />
+  <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css\" />
+  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/main.js\"></script>
+  <link  rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.css\" />
+  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>
+  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
+  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_de.js\"></script>
+  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_fr.js\"></script>
+  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_pt.js\"></script>
+  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_ru.js\"></script>
+  <script language=\"Javascript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/domready.js\"></script>
+  <script language=\"JavaScript\">
+  var cal_obj = null;
+  var cal_format = null;
+  var cal_field = null;
+  
+  function show_cal (el, field_id, format)
+  {
+    if (cal_obj) return;
+    
+    cal_field = field_id;
+    cal_format = format;
+    var datefield = document.getElementById(field_id);
+    
+    cal_obj = new RichCalendar();
+    cal_obj.start_week_day = 1;
+    cal_obj.show_time = false;
+    cal_obj.language = '".getcalendarlang ($lang)."';
+    cal_obj.user_onchange_handler = cal_on_change;
+    cal_obj.user_onautoclose_handler = cal_on_autoclose;
+    cal_obj.parse_date(datefield.value, cal_format);
+    cal_obj.show_at_element(datefield, 'adj_left-top');
+  }
+  
+  // onchange handler
+  function cal_on_change (cal, object_code)
+  {
+    if (object_code == 'day')
+    {
+      document.getElementById(cal_field).value = cal.get_formatted_date(cal_format);
+      cal.hide();
+      cal_obj = null;
+    }
+  }
+  
+  // onautoclose handler
+  function cal_on_autoclose (cal)
+  {
+    cal_obj = null;
+  } 
+  </script>
+</head>
+<body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" ".($template != "" ? "onload=\"parent.hcms_showPage('contentLayer');\"" : "").">
+".($report != "" ? "<form action=\"".$mgmt_config['url_path_cms']."report/\" methode=\"post\">\n <input type=\"hidden\" name=\"reportname\" value=\"".$report."\" />" : "")."
+<table width=\"100%\" cellspacing=2 cellpadding=0>
+    ";
 
     if (isset ($formitem) && is_array ($formitem))
     {
@@ -7633,7 +7664,17 @@ function buildsearchform ($site, $template, $ownergroup="")
       }
     }  
     
-    $viewstore .= "</table>\n</body>\n</html>";
+    if ($report != "") $viewstore .= "
+  <tr>
+    <td align=left valign=top colspan=2><button class=\"hcmsButtonGreen\">".getescapedtext ($hcms_lang['forward'][$lang])."</button></td>
+  </tr>
+  ";
+  
+  $viewstore .= "
+</table>
+".($report != "" ? "</form>" : "")."
+</body>
+</html>";
     
     return $viewstore;
   }

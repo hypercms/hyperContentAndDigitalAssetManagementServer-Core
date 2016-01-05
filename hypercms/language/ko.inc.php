@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['ko'] = "음소거됨";
 $hcms_lang['controls']['ko'] = "컨트롤";
 $hcms_lang['project']['ko'] = "프로젝트";
 $hcms_lang['work-order']['ko'] = "작업 지시";
+$hcms_lang['report']['ko'] = "보고서";
+$hcms_lang['report-management']['ko'] = "보고서 관리";
+$hcms_lang['add-new-condition']['ko'] = "새 조건 추가";
+$hcms_lang['select-fields-of-entities']['ko'] = "모집단 필드 선택";
+$hcms_lang['conditions']['ko'] = "조건";
+$hcms_lang['sql-statement']['ko'] = "SQL 문의";
+$hcms_lang['chart']['ko'] = "차트";
+$hcms_lang['pie-chart']['ko'] = "원형 차트";
+$hcms_lang['column-chart']['ko'] = "열 차트";
+$hcms_lang['timeline-chart']['ko'] = "타임라인 차트";
+$hcms_lang['geo-chart']['ko'] = "Geo 차트";
+$hcms_lang['none']['ko'] = "없음";
+$hcms_lang['table']['ko'] = "테이블";
 ?>

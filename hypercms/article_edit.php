@@ -295,7 +295,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     <tr>
       <td><?php echo getescapedtext ($hcms_lang['save-release-settings'][$lang], $charset, $lang); ?>:</td>
       <td>
-        &nbsp;<img border="0" name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" onClick="submitform();" />        
+        &nbsp;<img name="Button" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" onClick="submitform();" />        
       </td>
     </tr>
   </table>

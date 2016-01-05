@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['th'] = "ปิดเสียง";
 $hcms_lang['controls']['th'] = "การควบคุม";
 $hcms_lang['project']['th'] = "โปรเจค";
 $hcms_lang['work-order']['th'] = "ใบสั่งซื้อสินค้างาน";
+$hcms_lang['report']['th'] = "รายงาน";
+$hcms_lang['report-management']['th'] = "การจัดการรายงาน";
+$hcms_lang['add-new-condition']['th'] = "เพิ่มเงื่อนไขใหม่";
+$hcms_lang['select-fields-of-entities']['th'] = "เลือกเขตข้อมูลขององค์กรที่ได้รับการ";
+$hcms_lang['conditions']['th'] = "เงื่อนไข";
+$hcms_lang['sql-statement']['th'] = "คำสั่ง SQL";
+$hcms_lang['chart']['th'] = "แผนภูมิ";
+$hcms_lang['pie-chart']['th'] = "แผนภูมิวงกลม";
+$hcms_lang['column-chart']['th'] = "แผนภูมิคอลัมน์";
+$hcms_lang['timeline-chart']['th'] = "แผนภูมิ Timeline";
+$hcms_lang['geo-chart']['th'] = "แผนภูมิการใส่ข้อมูลพิกัดทางภูมิศาสตร์";
+$hcms_lang['none']['th'] = "ไม่มี";
+$hcms_lang['table']['th'] = "ตารางที่";
 ?>

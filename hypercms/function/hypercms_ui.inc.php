@@ -152,7 +152,7 @@ function objectfilter ($file)
 }
 
 // --------------------------------------- showshorttext -------------------------------------------
-// function: showmessage ()
+// function: showshorttext ()
 // input: text as string, max. length of text (minus length starting from the end) (optional),
 //        line break instead of cut [true,false] only if length is positive (optional)
 // output: shorten text if possible
@@ -200,7 +200,7 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $indiv
 {
   global $mgmt_config, $hcms_charset, $hcms_lang;
         
-  if ($show != "" && strlen ($show) < 600 && $lang != "")
+  if ($show != "" && strlen ($show) < 600 && $lang != "" && $id != "")
   {
     $close_button_code = "";
     $individual_button_code = "";
@@ -242,7 +242,7 @@ function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_
 {
   global $mgmt_config, $hcms_charset, $hcms_lang;
         
-  if ($show != "" && is_array ($menu_array) && strlen ($show) < 600 && $lang != "")
+  if ($show != "" && is_array ($menu_array) && strlen ($show) < 600 && $lang != "" && $id != "")
   {
     // define close button
     if ($close_link != "")
@@ -284,24 +284,26 @@ function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_
 // description:
 // shows the standard message box with close button
 
-function showmessage ($show, $width=580, $height=70, $lang="en", $style="", $id="hcms_messageLayer")
+function showmessage ($show, $width="580px", $height="70px", $lang="en", $style="", $id="hcms_messageLayer")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang;
     
-  if ($show != "" && strlen ($show) < 2400 && $lang != "")
+  if ($show != "" && strlen ($show) < 2400 && $lang != "" && $id != "")
   {
     // check mobile setting
     if ($_SESSION['hcms_mobile']) $width = "90%";
     
     // given width - icon width - paddings
-    if (is_int ($width)) $width_message = $width - 22 - 12; 
-    
-    return "  <div id=\"".$id."\" class=\"hcmsMessage\" style=\"".$style." width:".$width."px; height:".$height."px; z-index:999; padding:0; margin:5px; visibility:visible;\">
-    <div id=\"".$id."_text\" style=\"width:".$width_message."px; height:100%; margin:0; padding:3px; z-index:99999; overflow:auto; float:left;\">
+    if (is_int ($width)) $width = $width."px";
+    if (is_int ($height)) $height = $height."px";
+
+    return "
+  <div id=\"".$id."\" class=\"hcmsMessage\" style=\"".$style." width:".$width."; height:".$height."; z-index:1000; padding:0; margin:5px; visibility:visible;\">
+    <div id=\"".$id."_text\" style=\"position:absolute; top:3px; bottom:3px; left:3px; right:3px; margin:0; padding:0; z-index:1001; overflow:auto;\">
       ".$show."
     </div>
-    <div style=\"margin:0; padding:3px; z-index:91; overflow:auto; float:left;\">
-      <img name=\"hcms_mediaClose\" src=\"".getthemelocation()."img/button_close.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.gif',1);\" onClick=\"hcms_showHideLayers('".$id."','','hide');\" />
+    <div style=\"position:absolute; top:3px; right:3px; z-index:1002;\">
+      <img name=\"".$id."Close\" src=\"".getthemelocation()."img/button_close.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('".$id."Close','','".getthemelocation()."img/button_close_over.gif',1);\" onClick=\"hcms_showHideLayers('".$id."','','hide');\" />
     </div>
   </div>\n";
   }
@@ -355,7 +357,7 @@ function showinfobox ($show, $lang="en", $sec=4, $style="", $id="hcms_infoLayer"
 {
   global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang;
      
-  if ($mgmt_config['showinfobox'] && $show != "" && strlen ($show) < 2400 && $lang != "")
+  if ($mgmt_config['showinfobox'] && $show != "" && strlen ($show) < 2400 && $lang != "" && $id != "")
   {
     return "  <script language=\"JavaScript\">window.onload = function(){ hcms_showInfo('".$id."', ".($sec*1000).") };</script>
   <div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"display:none; ".$style."\">".
@@ -377,7 +379,7 @@ function showsharelinks ($link, $lang="en", $style="", $id="hcms_shareLayer")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang;
      
-  if (is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/") && $link != "" && $lang != "")
+  if (is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/") && $link != "" && $lang != "" && $id != "")
   {
     return "<div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"".$style."\">".
     getescapedtext ($hcms_lang['share'][$lang])."<br />
@@ -3851,6 +3853,48 @@ function shownavigation ($navigation, $level=1)
     $out .= $tag_ul_end;
   
     return $out;
+  }
+  else return false;
+}
+
+// ------------------------- showselect -----------------------------
+// function: showselect()
+// input: values array (array-key = value, array-value = text), use values of array as option value and text [true,false] (optional), selected value (optional), attributes of select tags like name or id or events (optional)
+// output: select presentation / false
+
+function showselect ($value_array, $only_text=false, $selected_value="", $id="", $attributes="")
+{
+  if (is_array ($value_array) && ($attributes == "" || (strpos ("_".$attributes, "<") < 1 && strpos ("_".$attributes, ">") < 1)))
+  {
+    if ($id != "" && strpos ("_".$id, "<") < 1 && strpos ("_".$id, ">") < 1) $id = " id=\"".$id."\"";
+  
+    $result = "  <select".$id." ".$attributes.">\n";
+    
+    foreach ($value_array as $value=>$text)
+    {
+      // use option values and text
+      if (!$only_text)
+      {
+        $value = " value=\"".$value."\"";
+        
+        if ($value == $selected_value) $selected = " selected";
+        else $selected = "";
+      }
+      // use only option text
+      else
+      {
+        $value = "";
+        
+        if ($text == $selected_value) $selected = " selected";
+        else $selected = "";
+      }
+      
+      $result .= "    <option".$value.$selected.">".getescapedtext($text)."</option>\n";
+    }
+    
+    $result .= "  </select>\n";
+    
+    return $result;
   }
   else return false;
 }

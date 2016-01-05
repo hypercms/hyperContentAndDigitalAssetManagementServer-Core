@@ -51,6 +51,15 @@ checkusersession ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css">
 <script src="javascript/main.js" type="text/javascript"></script>
+<!-- Rich calendar -->
+<link  rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
+<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
+<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
+<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_fr.js"></script>
+<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_pt.js"></script>
+<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_ru.js"></script>
+<script language="Javascript" type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
 <!-- Jquery and Jquery UI Autocomplete -->
 <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
 <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
@@ -98,7 +107,7 @@ function checkDate(select, min, max)
   
   val = select.value;
 
-  if (val<min || max<val) errors+='<?php echo getescapedtext ($hcms_lang['entry-must-contain-a-number-between'][$lang]); ?> '+min+' <?php echo getescapedtext ($hcms_lang['and'][$lang]); ?> '+max+' <?php echo getescapedtext ($hcms_lang['be'][$lang]); ?>.\n';
+  if (val<min || max<val) errors+='<?php echo getescapedtext ($hcms_lang['entry-must-contain-a-number-between'][$lang]); ?> '+min+' <?php echo getescapedtext ($hcms_lang['and'][$lang]); ?> '+max+' <?php if (!empty ($hcms_lang['be'][$lang])) echo getescapedtext ($hcms_lang['be'][$lang]); ?>.\n';
   
   if (errors) 
   {
@@ -173,7 +182,46 @@ $(document).ready(function()
   $("#image_expression").autocomplete({
     source: available_expressions
   });
-});   
+});
+
+var cal_obj = null;
+var cal_format = null;
+var cal_field = null;
+
+function show_cal (el, field_id, format)
+{
+  if (cal_obj) return;
+  
+  cal_field = field_id;
+  cal_format = format;
+  var datefield = document.getElementById(field_id);
+  
+  cal_obj = new RichCalendar();
+  cal_obj.start_week_day = 1;
+  cal_obj.show_time = false;
+  cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
+  cal_obj.user_onchange_handler = cal_on_change;
+  cal_obj.user_onautoclose_handler = cal_on_autoclose;
+  cal_obj.parse_date(datefield.value, cal_format);
+  cal_obj.show_at_element(datefield, 'adj_left-top');
+}
+
+// onchange handler
+function cal_on_change (cal, object_code)
+{
+  if (object_code == 'day')
+  {
+    document.getElementById(cal_field).value = cal.get_formatted_date(cal_format);
+    cal.hide();
+    cal_obj = null;
+  }
+}
+
+// onautoclose handler
+function cal_on_autoclose (cal)
+{
+  cal_obj = null;
+} 
 //-->
 </script>
 
@@ -599,7 +647,7 @@ elseif ($cat == "comp") $template = "default.comp.tpl";
 			      <tr align="left" valign="middle"> 
               <td nowrap="nowrap"><img src="<?php echo getthemelocation(); ?>img/blank.gif" width=1 height=150 /></td>
               <td>
-                <iframe id="contentFRM" name="contentFRM" width="0px" height="0px" frameborder="0"></iframe> 
+                <iframe id="contentFRM" name="contentFRM" width="0" height="0" frameborder="0"></iframe> 
                 <div id="contentLayer" class="hcmsWorkplaceExplorer" style="position:absolute; border:1px solid #000000; width:486px; height:150px; z-index:8; left:6px; top:80px; overflow:auto; visibility:hidden;"></div>              
               </td>			  
             </tr>

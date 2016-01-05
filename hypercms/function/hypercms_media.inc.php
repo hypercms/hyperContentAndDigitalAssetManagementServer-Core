@@ -2559,7 +2559,7 @@ function readmediaplayer_config ($location, $configfile)
         elseif ($key == 1)
         {
           // V2.2
-          if (strpos ("_".$value, "width=") > 0) list ($name, $config['width']) = explode ("=", $value);
+          if (strpos ("_".$value, "width=") > 0) list ($name, $config['width']) = explode ("width=", $value);
           // V2.1
           else $config['width'] = $value;
         }
@@ -2567,14 +2567,14 @@ function readmediaplayer_config ($location, $configfile)
         elseif ($key == 2)
         {
           // V2.2
-          if (strpos ("_".$value, "height=") > 0) list ($name, $config['height']) = explode ("=", $value);
+          if (strpos ("_".$value, "height=") > 0) list ($name, $config['height']) = explode ("height=", $value);
           // V2.1
           else $config['height'] = $value;
         }
         // dimension in width x height
         elseif (strpos ("_".$value, "dimension=") > 0)
         {
-          list ($name, $config['dimension']) = explode ("=", $value);
+          list ($name, $config['dimension']) = explode ("dimension=", $value);
           
           if (!empty ($config['dimension']) && strpos ($config['dimension'], "px") == 0) $config['dimension'] = $config['dimension']." px";
         }
@@ -2586,39 +2586,39 @@ function readmediaplayer_config ($location, $configfile)
         // file size in kB
         elseif (strpos ("_".$value, "filesize=") > 0)
         {
-          list ($name, $config['filesize']) = explode ("=", $value);
+          list ($name, $config['filesize']) = explode ("filesize=", $value);
           
           if (!empty ($config['filesize']) && strpos ($config['filesize'], "MB") == 0) $config['filesize'] = $config['filesize']." MB";
         }
         // duration in hh:mm:ss
         elseif (strpos ("_".$value, "duration=") > 0)
         {
-          list ($name, $config['duration']) = explode ("=", $value);
+          list ($name, $config['duration']) = explode ("duration=", $value);
         }
         // bitrate in kb/s
         elseif (strpos ("_".$value, "videobitrate=") > 0)
         {
-          list ($name, $config['videobitrate']) = explode ("=", $value);
+          list ($name, $config['videobitrate']) = explode ("videobitrate=", $value);
         }
         // image type
         elseif (strpos ("_".$value, "imagetype=") > 0)
         {
-          list ($name, $config['imagetype']) = explode ("=", $value);
+          list ($name, $config['imagetype']) = explode ("imagetype=", $value);
         }
         // audio bitrate in kb/s
         elseif (strpos ("_".$value, "audiobitrate=") > 0)
         {
-          list ($name, $config['audiobitrate']) = explode ("=", $value);
+          list ($name, $config['audiobitrate']) = explode ("audiobitrate=", $value);
         }
         // audio frequenzy in Hz
         elseif (strpos ("_".$value, "audiofrequenzy=") > 0)
         {
-          list ($name, $config['audiofrequenzy']) = explode ("=", $value);
+          list ($name, $config['audiofrequenzy']) = explode ("audiofrequenzy=", $value);
         }
         // audio frequenzy in Hz
         elseif (strpos ("_".$value, "audiochannels=") > 0)
         {
-          list ($name, $config['audiochannels']) = explode ("=", $value);
+          list ($name, $config['audiochannels']) = explode ("audiochannels=", $value);
         }
         // video sources (V2.1+: video-file;mime-type)
         elseif (strpos ($value, ";") > 0)

@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['uk'] = "Звук вимкнено";
 $hcms_lang['controls']['uk'] = "Елементи керування";
 $hcms_lang['project']['uk'] = "Проект";
 $hcms_lang['work-order']['uk'] = "Порядок роботи";
+$hcms_lang['report']['uk'] = "Звіт";
+$hcms_lang['report-management']['uk'] = "Звіт менеджмент";
+$hcms_lang['add-new-condition']['uk'] = "Додати нових умов";
+$hcms_lang['select-fields-of-entities']['uk'] = "Виберіть поля об'єктів";
+$hcms_lang['conditions']['uk'] = "Умови";
+$hcms_lang['sql-statement']['uk'] = "SQL";
+$hcms_lang['chart']['uk'] = "Діаграма сумісності";
+$hcms_lang['pie-chart']['uk'] = "Додає кругову діаграму";
+$hcms_lang['column-chart']['uk'] = "Колонка діаграми";
+$hcms_lang['timeline-chart']['uk'] = "3.1. діаграми";
+$hcms_lang['geo-chart']['uk'] = "Діаграми геоекології";
+$hcms_lang['none']['uk'] = "Ні";
+$hcms_lang['table']['uk'] = "Таблиці";
 ?>

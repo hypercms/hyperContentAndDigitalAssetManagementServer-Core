@@ -1322,4 +1322,17 @@ $hcms_lang['muted']['zh-s'] = "静音";
 $hcms_lang['controls']['zh-s'] = "控件";
 $hcms_lang['project']['zh-s'] = "项目";
 $hcms_lang['work-order']['zh-s'] = "工作单";
+$hcms_lang['report']['zh-s'] = "报告";
+$hcms_lang['report-management']['zh-s'] = "报告管理";
+$hcms_lang['add-new-condition']['zh-s'] = "添加新条件";
+$hcms_lang['select-fields-of-entities']['zh-s'] = "选择字段的实体";
+$hcms_lang['conditions']['zh-s'] = "条件";
+$hcms_lang['sql-statement']['zh-s'] = "SQL语句。";
+$hcms_lang['chart']['zh-s'] = "图表";
+$hcms_lang['pie-chart']['zh-s'] = "饼图。";
+$hcms_lang['column-chart']['zh-s'] = "列表";
+$hcms_lang['timeline-chart']['zh-s'] = "时间线图";
+$hcms_lang['geo-chart']['zh-s'] = "地理图表";
+$hcms_lang['none']['zh-s'] = "无";
+$hcms_lang['table']['zh-s'] = "表";
 ?>

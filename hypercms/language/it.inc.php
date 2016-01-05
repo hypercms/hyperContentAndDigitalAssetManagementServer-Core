@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['it'] = "Audio disattivato";
 $hcms_lang['controls']['it'] = "Controlla";
 $hcms_lang['project']['it'] = "Progetto";
 $hcms_lang['work-order']['it'] = "Ordine di lavoro";
+$hcms_lang['report']['it'] = "Relazione";
+$hcms_lang['report-management']['it'] = "La gestione dei report";
+$hcms_lang['add-new-condition']['it'] = "Aggiungi nuova condizione";
+$hcms_lang['select-fields-of-entities']['it'] = "Selezionare i campi di entità";
+$hcms_lang['conditions']['it'] = "Condizioni";
+$hcms_lang['sql-statement']['it'] = "Istruzione SQL";
+$hcms_lang['chart']['it'] = "Grafico";
+$hcms_lang['pie-chart']['it'] = "Grafico a torta";
+$hcms_lang['column-chart']['it'] = "Grafico a colonne";
+$hcms_lang['timeline-chart']['it'] = "Tabella Timeline";
+$hcms_lang['geo-chart']['it'] = "Geo grafico";
+$hcms_lang['none']['it'] = "Nessuno";
+$hcms_lang['table']['it'] = "Tabella";
 ?>

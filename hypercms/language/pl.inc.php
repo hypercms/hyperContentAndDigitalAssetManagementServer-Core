@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['pl'] = "Wyciszony";
 $hcms_lang['controls']['pl'] = "Elementy sterujące";
 $hcms_lang['project']['pl'] = "Projekt";
 $hcms_lang['work-order']['pl'] = "Zlecenie robocze";
+$hcms_lang['report']['pl'] = "Raport";
+$hcms_lang['report-management']['pl'] = "Raport zarządzanie";
+$hcms_lang['add-new-condition']['pl'] = "Dodaj nowy warunek";
+$hcms_lang['select-fields-of-entities']['pl'] = "Zaznacz pola jednostek";
+$hcms_lang['conditions']['pl'] = "Warunki";
+$hcms_lang['sql-statement']['pl'] = "Wyrażenie SQL";
+$hcms_lang['chart']['pl'] = "Drzewko lokalizacji usterek";
+$hcms_lang['pie-chart']['pl'] = "Wykres kołowy";
+$hcms_lang['column-chart']['pl'] = "Kolumnowego";
+$hcms_lang['timeline-chart']['pl'] = "Timeline chart";
+$hcms_lang['geo-chart']['pl'] = "Drzewko Geo";
+$hcms_lang['none']['pl'] = "Brak";
+$hcms_lang['table']['pl'] = "Tabela";
 ?>

@@ -526,9 +526,9 @@ else
       $point->addSubPoint($subpoint);
     }
     
-    if (checkrootpermission ('desktoptaskmgmt') && is_file ($mgmt_config['abs_path_cms']."taskmgmt/task_list.php"))
+    if (checkrootpermission ('desktoptaskmgmt') && is_file ($mgmt_config['abs_path_cms']."task/task_list.php"))
     {
-      $subpoint = new hcms_menupoint($hcms_lang['task-management'][$lang], "taskmgmt/task_list.php?site=*Null*", 'task.gif');
+      $subpoint = new hcms_menupoint($hcms_lang['task-management'][$lang], "task/task_list.php?site=*Null*", 'task.gif');
       $subpoint->setOnClick('changeSelection(this)');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -680,6 +680,15 @@ else
           if (is_file ($mgmt_config['abs_path_cms']."connector/imexport/frameset_imexport.php") && $site != "hcms_empty" && checkrootpermission ('site'))
           {
             $subpoint = new hcms_menupoint($hcms_lang['importexport'][$lang], "connector/imexport/frameset_imexport.php?site=*Null*", 'imexport.gif');
+            $subpoint->setOnClick('changeSelection(this)');
+            $subpoint->setTarget('workplFrame');
+            $subpoint->setOnMouseOver('hcms_resetContext();');
+            $point->addSubPoint($subpoint);
+          }
+
+          if (is_file ($mgmt_config['abs_path_cms']."report/frameset_report.php") && $site != "hcms_empty" && checkrootpermission ('site'))
+          {
+            $subpoint = new hcms_menupoint($hcms_lang['report-management'][$lang], "report/frameset_report.php?site=*Null*", 'template.gif');
             $subpoint->setOnClick('changeSelection(this)');
             $subpoint->setTarget('workplFrame');
             $subpoint->setOnMouseOver('hcms_resetContext();');

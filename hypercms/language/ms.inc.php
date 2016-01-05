@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['ms'] = "Disenyapkan";
 $hcms_lang['controls']['ms'] = "Kawalan";
 $hcms_lang['project']['ms'] = "Projek";
 $hcms_lang['work-order']['ms'] = "Bekerja tertib";
+$hcms_lang['report']['ms'] = "Laporan";
+$hcms_lang['report-management']['ms'] = "Laporan pengurusan";
+$hcms_lang['add-new-condition']['ms'] = "Tambah baru syarat";
+$hcms_lang['select-fields-of-entities']['ms'] = "Pilih medan entiti";
+$hcms_lang['conditions']['ms'] = "Syarat";
+$hcms_lang['sql-statement']['ms'] = "Penyataan SQL";
+$hcms_lang['chart']['ms'] = "Carta";
+$hcms_lang['pie-chart']['ms'] = "Penanda garis";
+$hcms_lang['column-chart']['ms'] = "Lajur carta";
+$hcms_lang['timeline-chart']['ms'] = "Timeline carta";
+$hcms_lang['geo-chart']['ms'] = "Geo carta";
+$hcms_lang['none']['ms'] = "Tiada";
+$hcms_lang['table']['ms'] = "Jadual";
 ?>

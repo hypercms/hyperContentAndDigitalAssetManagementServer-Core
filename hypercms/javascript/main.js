@@ -523,9 +523,9 @@ function hcms_stripHTML (_str)
   var _str2;
   var _reg=/<.*?>/gi;
   
-  while(_str.match(_reg)!=null)
+  while (_str.match(_reg)!=null)
   {
-    _str=_str.replace(_reg,"");
+    _str=_str.replace(_reg, "");
   }
   
   return _str;
@@ -534,19 +534,19 @@ function hcms_stripHTML (_str)
 // sort table array hcms_detailview by column number _c
 function hcms_bubbleSort (c, _ud, _isNumber)
 {
-  for(var i=0;i<hcms_detailview.length;i++)
+  for (var i=0; i<hcms_detailview.length; i++)
   {
-    for(var j=i;j<hcms_detailview.length;j++)
+    for (var j=i; j<hcms_detailview.length; j++)
     {
       var _left=hcms_stripHTML(hcms_detailview[i][c]);
       var _right=hcms_stripHTML(hcms_detailview[j][c]);
       var _sign=_ud?">":"<";
       var _yes=false;
       
-      if(_isNumber)
+      if (_isNumber)
       {
-         _left = _left.replace(".","");
-         _right = _right.replace(".","");
+         _left = _left.replace(".", "");
+         _right = _right.replace(".", "");
          if(_ud && (parseInt(_left)-parseInt(_right)>0))_yes=true;
          if(!_ud && (parseInt(_left)-parseInt(_right)<0))_yes=true;
       }
@@ -556,10 +556,10 @@ function hcms_bubbleSort (c, _ud, _isNumber)
         if(!_ud && _left.toLowerCase() < _right.toLowerCase())_yes=true;
       }
       
-      if(_yes)
+      if (_yes)
       {
         // swap rows for detailed view
-        for(var x=0;x<hcms_detailview[i].length;x++)
+        for(var x=0; x<hcms_detailview[i].length; x++)
         {
           var _t=hcms_detailview[i][x];
           hcms_detailview[i][x]=hcms_detailview[j][x];

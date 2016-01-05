@@ -665,6 +665,9 @@ $mgmt_config['youtube_appname'] = "";
 $mgmt_config['dropbox_appname'] = "";
 $mgmt_config['dropbox_appkey'] = "";
 
+// Google Maps integration
+$mgmt_config['googlemaps_appkey'] = "";
+
 // -------------------------------------- LDAP Connectivity -------------------------------------------
 
 // If you are using LDAP, you can specify the ldap_connect.php file where you can connect to an LDAP directory

@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['fi'] = "Vaimennettu";
 $hcms_lang['controls']['fi'] = "Säätimet";
 $hcms_lang['project']['fi'] = "Projektin";
 $hcms_lang['work-order']['fi'] = "Työtilaus";
+$hcms_lang['report']['fi'] = "Raportti";
+$hcms_lang['report-management']['fi'] = "Mietintö hallinta";
+$hcms_lang['add-new-condition']['fi'] = "Lisää uusi ehto";
+$hcms_lang['select-fields-of-entities']['fi'] = "Valitse kenttiä yhteensovittamisesta annetun direktiivin 93/38/ETY muuttamisesta";
+$hcms_lang['conditions']['fi'] = "Edellytykset";
+$hcms_lang['sql-statement']['fi'] = "SQL-lause";
+$hcms_lang['chart']['fi'] = "Kaavio";
+$hcms_lang['pie-chart']['fi'] = "Ympyräkaavion";
+$hcms_lang['column-chart']['fi'] = "Sarakkeessa kaavio";
+$hcms_lang['timeline-chart']['fi'] = "Aikajana kaavio";
+$hcms_lang['geo-chart']['fi'] = "Geo-kaavio";
+$hcms_lang['none']['fi'] = "Mikään";
+$hcms_lang['table']['fi'] = "Taulukko";
 ?>

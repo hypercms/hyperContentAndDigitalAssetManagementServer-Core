@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['ur'] = "muted";
 $hcms_lang['controls']['ur'] = "اختیارات";
 $hcms_lang['project']['ur'] = "منصوبہ";
 $hcms_lang['work-order']['ur'] = "ورک ارڈر";
+$hcms_lang['report']['ur'] = "رپورٹ";
+$hcms_lang['report-management']['ur'] = "رپورٹ مینجمنٹ";
+$hcms_lang['add-new-condition']['ur'] = "نیا اضافہ کریں حالت";
+$hcms_lang['select-fields-of-entities']['ur'] = "منتخب شعبوں میں موجودگیاں";
+$hcms_lang['conditions']['ur'] = "حالات";
+$hcms_lang['sql-statement']['ur'] = "Sql بیان";
+$hcms_lang['chart']['ur'] = "چارٹ";
+$hcms_lang['pie-chart']['ur'] = "پائی چارٹ";
+$hcms_lang['column-chart']['ur'] = "کالم چارٹ";
+$hcms_lang['timeline-chart']['ur'] = "اس قسم کی ٹائم لائن دینے کیخاف چارٹ";
+$hcms_lang['geo-chart']['ur'] = "جیو چارٹ";
+$hcms_lang['none']['ur'] = "نہیں";
+$hcms_lang['table']['ur'] = "جدول";
 ?>

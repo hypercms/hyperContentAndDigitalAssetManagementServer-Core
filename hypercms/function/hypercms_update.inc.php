@@ -9,8 +9,8 @@
  
 // ======================================== UPDATE FUNCTIONS ============================================
 
-// ------------------------------------------ update_groups ----------------------------------------------
-// function: update_groups()
+// ------------------------------------------ update_usergroups_v564 ----------------------------------------------
+// function: update_usergroups_v564()
 // input: publication name, user group data (XML)
 // output: updated user group data (XML), false on error
 
@@ -65,11 +65,11 @@ function update_usergroups_v564 ($site, $data)
 }
 
 // ------------------------------------------ update_tasks ----------------------------------------------
-// function: update_groups()
+// function: update_tasks_v584()
 // input: %
 // output: updated tasks data (from XML to RDBMS), false on error
 
-// description: update tasks to version 5.8.4
+// description: update of tasks to version 5.8.4
 
 function update_tasks_v584 ()
 {
@@ -106,14 +106,19 @@ function update_tasks_v584 ()
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
     $db->query ($sql, $errcode, $mgmt_config['today'], 'create');
+      
+    // save log
+    savelog ($db->getError ());    
+    $db->close();
     
+    // move data from XML to RDBMS
     if (is_dir ($mgmt_config['abs_path_data']."task/") && $handle = opendir ($mgmt_config['abs_path_data']."task/"))
     {
       while (false !== ($entry = readdir($handle)))
       {
         if (strpos ($entry, ".xml.php") > 0)
         {
-          //load task file and get all task entries
+          // load task file and get all task entries
           $task_data = loadfile ($mgmt_config['abs_path_data']."task/", $entry);
         
           // get all tasks
@@ -163,5 +168,123 @@ function update_tasks_v584 ()
     }
   }
   else return true;
+}
+
+// ------------------------------------------ update_database_v586 ----------------------------------------------
+// function: update_database_v586()
+// input: %
+// output: updated database, false on error
+
+// description: update of database to version 5.8.6
+
+function update_database_v586 ()
+{
+  global $mgmt_config;
+  
+  // connect to MySQL
+  $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+  
+  // check for new column
+  $sql = "SHOW COLUMNS FROM textnodes LIKE 'user'";
+  
+  $errcode = "50004";
+  $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'show');
+  
+  if ($done)
+  {
+    $num_rows = $db->getNumRows ('show');
+    
+    // column does not exist
+    if ($num_rows < 1)
+    { 
+      // alter table textnodes
+      $sql = "ALTER TABLE textnodes ADD object_id INT(11) AFTER textcontent;";
+      
+      $errcode = "50006";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      
+      $sql = "ALTER TABLE textnodes ADD user CHAR(60) AFTER object_id;";
+      
+      $errcode = "50006";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      
+      $sql = "ALTER TABLE textnodes ADD INDEX `textnodes_object_id` (`object_id`)";
+      
+      $errcode = "500021";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      
+      // alter table accesslink
+      $sql = "ALTER TABLE accesslink MODIFY user VARCHAR(600);";
+      
+      $errcode = "50007";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      
+      // alter table recipient
+      $sql = "ALTER TABLE recipient CHANGE sender from_user CHAR(60);";
+      
+      $errcode = "50007";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      
+      $sql = "ALTER TABLE recipient CHANGE user to_user VARCHAR(600);";
+      
+      $errcode = "50008";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      
+      // alter table container
+      $sql = "ALTER TABLE container MODIFY user CHAR(60);";
+      
+      $errcode = "50009";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      
+      // alter table queue
+      $sql = "ALTER TABLE queue MODIFY user CHAR(60);";
+      
+      $errcode = "50010";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      
+      // alter table dailystat
+      $sql = "ALTER TABLE dailystat MODIFY user CHAR(60);";
+      
+      $errcode = "50011";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      
+      // alter table notify
+      $sql = "ALTER TABLE notify MODIFY user CHAR(60);";
+      
+      $errcode = "50012";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      
+      // add users to new field
+      $sql = "UPDATE textnodes INNER JOIN container ON textnodes.id = container.id SET textnodes.user = container.user;";
+      
+      $errcode = "50013";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      
+      // drop unused linkreference table
+      $sql = "DROP TABLE IF EXISTS `linkreference`;";
+      
+      $errcode = "50014";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'drop');
+      
+      // create report data directory
+      if (!is_dir ($mgmt_config['abs_path_data']."report"))
+      {
+        $mkdir = @mkdir ($mgmt_config['abs_path_data']."report", $mgmt_config['fspermission']);
+        
+        if (!$mkdir)
+        {
+          $errcode = "00201";
+          $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|$errcode|report directory could not be created";
+        }
+      }
+    }
+  }
+  
+  // save log
+  savelog ($db->getError ());
+  savelog (@$error);
+  $db->close();
+  
+  return true;
 }
 ?>

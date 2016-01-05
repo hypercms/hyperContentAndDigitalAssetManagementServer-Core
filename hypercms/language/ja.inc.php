@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['ja'] = "ミュートに設定されて";
 $hcms_lang['controls']['ja'] = "コントロール";
 $hcms_lang['project']['ja'] = "プロジェクト";
 $hcms_lang['work-order']['ja'] = "作業オーダ";
+$hcms_lang['report']['ja'] = "レポート";
+$hcms_lang['report-management']['ja'] = "レポートの管理";
+$hcms_lang['add-new-condition']['ja'] = "新しい条件を追加します。";
+$hcms_lang['select-fields-of-entities']['ja'] = "エンティティのフィールドを選択します。";
+$hcms_lang['conditions']['ja'] = "条件";
+$hcms_lang['sql-statement']['ja'] = "SQL 文";
+$hcms_lang['chart']['ja'] = "グラフ";
+$hcms_lang['pie-chart']['ja'] = "円グラフ";
+$hcms_lang['column-chart']['ja'] = "カラムチャート";
+$hcms_lang['timeline-chart']['ja'] = "タイムライングラフ";
+$hcms_lang['geo-chart']['ja'] = "Geo のグラフ";
+$hcms_lang['none']['ja'] = "なし";
+$hcms_lang['table']['ja'] = "テーブル";
 ?>

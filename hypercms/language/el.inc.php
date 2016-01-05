@@ -1322,4 +1322,17 @@ $hcms_lang['muted']['el'] = "Σίγαση";
 $hcms_lang['controls']['el'] = "Χειριστήρια";
 $hcms_lang['project']['el'] = "Σχέδιο";
 $hcms_lang['work-order']['el'] = "Σειρά Εργασίας";
+$hcms_lang['report']['el'] = "Έκθεση";
+$hcms_lang['report-management']['el'] = "Έκθεση διαχείρισης";
+$hcms_lang['add-new-condition']['el'] = "Προσθέστε νέα κατάσταση";
+$hcms_lang['select-fields-of-entities']['el'] = "Επιλέξτε τα πεδία των φορέων";
+$hcms_lang['conditions']['el'] = "Συνθήκες";
+$hcms_lang['sql-statement']['el'] = "Δήλωση της SQL.";
+$hcms_lang['chart']['el'] = "Διάγραμμα";
+$hcms_lang['pie-chart']['el'] = "Διάγραμμα πίτας";
+$hcms_lang['column-chart']['el'] = "Το διάγραμμα στήλης";
+$hcms_lang['timeline-chart']['el'] = "Το διάγραμμα της γραμμής χρόνου";
+$hcms_lang['geo-chart']['el'] = "Geo διάγραμμα";
+$hcms_lang['none']['el'] = "Κανένα";
+$hcms_lang['table']['el'] = "Πίνακας";
 ?>

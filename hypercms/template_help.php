@@ -83,7 +83,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     </tr>
     <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['date'][$lang]).", ".getescapedtext ($hcms_lang['date-format-optional'][$lang]); ?></td>
-      <td class="hcmsRowData1">[hyperCMS:textd id='...' format='...']</td>
+      <td class="hcmsRowData1">[hyperCMS:textd id='...' format='%Y-%m-%d']</td>
     </tr>
     <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['keywords-with-optional-mandatory-or-open-list'][$lang]); ?></td>

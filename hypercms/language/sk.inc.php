@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['sk'] = "Stlmený";
 $hcms_lang['controls']['sk'] = "Ovládacie prvky";
 $hcms_lang['project']['sk'] = "Projekt";
 $hcms_lang['work-order']['sk'] = "Pracovný príkaz";
+$hcms_lang['report']['sk'] = "Správa";
+$hcms_lang['report-management']['sk'] = "Riadenie";
+$hcms_lang['add-new-condition']['sk'] = "Pridať nový stav";
+$hcms_lang['select-fields-of-entities']['sk'] = "Vyberte polia pre subjekty";
+$hcms_lang['conditions']['sk'] = "Podmienky";
+$hcms_lang['sql-statement']['sk'] = "Príkaz SQL";
+$hcms_lang['chart']['sk'] = "Graf";
+$hcms_lang['pie-chart']['sk'] = "Koláčovým grafom";
+$hcms_lang['column-chart']['sk'] = "Stĺpcový graf";
+$hcms_lang['timeline-chart']['sk'] = "Časovej osi grafu";
+$hcms_lang['geo-chart']['sk'] = "Geo graf";
+$hcms_lang['none']['sk'] = "Žiadne";
+$hcms_lang['table']['sk'] = "Tabuľka";
 ?>

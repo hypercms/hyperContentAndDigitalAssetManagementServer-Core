@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['nl'] = "Gedempt";
 $hcms_lang['controls']['nl'] = "Bedieningselementen";
 $hcms_lang['project']['nl'] = "Project";
 $hcms_lang['work-order']['nl'] = "Werkorder";
+$hcms_lang['report']['nl'] = "Rapport";
+$hcms_lang['report-management']['nl'] = "Rapportbeheer";
+$hcms_lang['add-new-condition']['nl'] = "Nieuwe voorwaarde toevoegen";
+$hcms_lang['select-fields-of-entities']['nl'] = "Velden selecteren van entiteiten";
+$hcms_lang['conditions']['nl'] = "Voorwaarden";
+$hcms_lang['sql-statement']['nl'] = "SQL-instructie";
+$hcms_lang['chart']['nl'] = "Grafiek";
+$hcms_lang['pie-chart']['nl'] = "Cirkeldiagram";
+$hcms_lang['column-chart']['nl'] = "Kolomdiagram";
+$hcms_lang['timeline-chart']['nl'] = "Tijdlijn";
+$hcms_lang['geo-chart']['nl'] = "Geo-grafiek";
+$hcms_lang['none']['nl'] = "Geen";
+$hcms_lang['table']['nl'] = "Tabel";
 ?>

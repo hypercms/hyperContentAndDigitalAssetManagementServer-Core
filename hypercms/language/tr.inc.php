@@ -1321,4 +1321,17 @@ $hcms_lang['muted']['tr'] = "Kapatılır";
 $hcms_lang['controls']['tr'] = "Kontrolleri";
 $hcms_lang['project']['tr'] = "Proje";
 $hcms_lang['work-order']['tr'] = "Çalışma sırası";
+$hcms_lang['report']['tr'] = "Raporu";
+$hcms_lang['report-management']['tr'] = "Rapor yönetimi";
+$hcms_lang['add-new-condition']['tr'] = "Yeni ekle durumu";
+$hcms_lang['select-fields-of-entities']['tr'] = "Seçim alanları, tüzel";
+$hcms_lang['conditions']['tr'] = "Koşullar";
+$hcms_lang['sql-statement']['tr'] = "SQL Bildirimi";
+$hcms_lang['chart']['tr'] = "Çizelgesi";
+$hcms_lang['pie-chart']['tr'] = "Pasta grafik";
+$hcms_lang['column-chart']['tr'] = "Sütun grafik";
+$hcms_lang['timeline-chart']['tr'] = "Zaman çizelgesi";
+$hcms_lang['geo-chart']['tr'] = "Geo çizelgesi";
+$hcms_lang['none']['tr'] = "Yok";
+$hcms_lang['table']['tr'] = "Masa";
 ?>

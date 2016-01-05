@@ -622,8 +622,16 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
       // relational DB connectivity
       if ($mgmt_config['db_connect_rdbms'] != "")
       {
-        $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));        
-        while (list ($key, $val) = each ($mediaalttext)) $text_array["media:".$key] = $val;
+        $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
+                
+        while (list ($key, $val) = each ($mediaalttext))
+        {
+          // get object ID
+          if (!empty ($mediaobject[$key])) $object_id = $mediaobject[$key]."|";
+          else $object_id = "";
+          
+          $text_array["media:".$key] = $object_id.$val;
+        }
                      
         rdbms_setcontent ($container_id, $text_array, $user);                     
       }      
@@ -779,8 +787,16 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhr
       // relational DB connectivity
       if ($mgmt_config['db_connect_rdbms'] != "")
       {
-        $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
-        while (list ($key, $val) = each ($linktext)) $text_array["link:".$key] = $val;
+        $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
+        
+        while (list ($key, $val) = each ($linktext))
+        {
+          // get object ID
+          if (!empty ($linkhref[$key])) $object_id = $linkhref[$key]."|";
+          else $object_id = "";
+          
+          $text_array["link:".$key] = $object_id.$val;
+        }
                 
         rdbms_setcontent ($container_id, $text_array, $user);                     
       }  
