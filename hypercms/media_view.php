@@ -60,8 +60,8 @@ if ($save == "yes" && valid_objectname ($mediafile) && checktoken ($token, $user
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<meta charset="<?php echo getcodepage ($lang); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 </head>
 

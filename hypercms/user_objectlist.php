@@ -226,7 +226,7 @@ else $objects_counted = 0;
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
+<meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" language="JavaScript" type="text/javascript"></script>

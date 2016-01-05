@@ -1542,8 +1542,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       <html>
       <head>
       <title>hyperCMS</title>
-      <meta http-equiv=\"Content-Type\" content=\"".$contenttype."\">
-      <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">
+      <meta charset=\"".$charset."\" />
+      <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
       </head>
       <body class=\"hcmsWorkplaceGeneric\">
       <div class=\"hcmsWorkplaceFrame\">".$viewstore."</div>
@@ -2523,10 +2523,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               <html>
               <head>
               <title>hyperCMS</title>
-              <meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">
-              <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">
-              <script src=\"".$mgmt_config['url_path_cms']."javascript/click.js\" type=\"text/javascript\">
-              </script>
+              <meta charset=\"".getcodepage ($lang)."\" />
+              <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+              <script src=\"".$mgmt_config['url_path_cms']."javascript/click.js\" type=\"text/javascript\"></script>
               </head>
               <body class=\"hcmsWorkplaceGeneric\">
                 <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [".$tagu."], [".$tagf."], [".$tagl."], [".$tagc."], [".$tagd."] ".$hcms_lang['and-or'][$lang]." [".$tagk."] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
@@ -5036,10 +5035,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               <html>
               <head>
               <title>hyperCMS</title>
-              <meta http-equiv=\"Content-Type\" content=\"text/html; charset=".$hcms_lang_codepage[$lang]."\">
-              <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">
-              <script src=\"javascript/click.js\" type=\"".$mgmt_config['url_path_cms']."text/javascript\">
-              </script>
+              <meta charset=\"".$hcms_lang_codepage[$lang]."\" />
+              <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+              <script src=\"javascript/click.js\" type=\"".$mgmt_config['url_path_cms']."text/javascript\"></script>
               </head>
               <body class=\"hcmsWorkplaceGeneric\">
                 <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [$tags] ".$hcms_lang['and-or'][$lang]." [$tagm] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
@@ -6233,7 +6231,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               <html>
               <head>
               <title>hyperCMS</title>
-              <meta http-equiv=\"Content-Type\" content=\"".$contenttype."\" />
+              <meta charset=\"".$charset."\" />
               ".$line_css."
               </head>
               <body class=\"hcmsWorkplaceGeneric\">
@@ -6292,7 +6290,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <html>
   <head>
   <title>hyperCMS</title>
-  <meta http-equiv=\"Content-Type\" content=\"".$contenttype."\" />
+  <meta charset=\"".$charset."\" />
               ".$line_css;
               
               if ($buildview == "inlineview")
@@ -6580,8 +6578,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 <head>
   <title>hyperCMS</title>
   <base href=\"".$mgmt_config['url_path_cms']."editor/\" />
-  <meta charset=\"".getcodepage ($lang)."\" />
-  <meta http-equiv=\"Content-Type\" content=\"".$contenttype."\" />
+  <meta charset=\"".$charset."\" />
   <meta name=\"robots\" content=\"noindex, nofollow\" />
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css\" />
   <script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>

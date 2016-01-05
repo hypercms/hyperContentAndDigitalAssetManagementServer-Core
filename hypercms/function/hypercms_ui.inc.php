@@ -328,10 +328,9 @@ function showinfopage ($show, $lang="en")
   <html>
   <head>
   <title>hyperCMS</title>
-  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=".getcodepage ($lang)."\">
-  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">
-  <script src=\"".$mgmt_config['url_path_cms']."javascript/click.js\" type=\"text/javascript\">
-  </script>
+  <meta charset=\"".getcodepage ($lang)."\">
+  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+  <script src=\"".$mgmt_config['url_path_cms']."javascript/click.js\" type=\"text/javascript\"></script>
   </head>
   
   <body class=\"hcmsWorkplaceGeneric\">

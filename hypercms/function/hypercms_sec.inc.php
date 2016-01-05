@@ -1976,7 +1976,7 @@ function checkusersession ($user="sys", $CSRF_detection=true)
     <html>
     <head>
     <title>hyperCMS</title>
-    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">
+    <meta charset=\"UTF-8\">
     <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">
     </head>
     <body class=\"hcmsWorkplaceGeneric\" leftmargin=0 topmargin=0 marginwidth=0 marginheight=0 onLoad=\"top.location.href='".$mgmt_config['url_path_cms']."userlogout.php';\">

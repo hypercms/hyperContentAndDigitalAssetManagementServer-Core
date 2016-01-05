@@ -100,12 +100,10 @@ $component_curr = getobjectlink ($component_curr);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
-<script src="javascript/main.js" type="text/javascript">
-</script>
-<script src="javascript/click.js" type="text/javascript">
-</script>
+<meta charset="<?php echo getcodepage ($lang); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+<script src="javascript/main.js" type="text/javascript"></script>
+<script src="javascript/click.js" type="text/javascript"></script>
 <script language="JavaScript">
 <!--
 function correctnames ()

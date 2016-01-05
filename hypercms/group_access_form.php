@@ -83,8 +83,8 @@ if ($group_name != false && $group_name != "")
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<meta charset="<?php echo getcodepage ($lang); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>

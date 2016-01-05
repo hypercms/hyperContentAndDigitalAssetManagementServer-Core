@@ -74,12 +74,12 @@ if (@is_file ($mgmt_config['abs_path_data']."check.dat"))
   {
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset=UTF-8" />
 <meta name="viewport" content="width=device-width; initial-scale=0.7; maximum-scale=1.0; user-scalable=1;" />
-<link rel="stylesheet" href="../theme/standard/css/main.css">
+<link rel="stylesheet" href="../theme/standard/css/main.css" />
 </head>
 <body class="hcmsWorkplaceGeneric">
 <div class="hcmsHeadline" style="width:380px; margin: 20px auto 20px auto;">

@@ -2787,7 +2787,7 @@ function getattribute ($string, $attribute, $secure=true)
 // ----------------------------- getoption --------------------------------
 // function: getoption()
 // input: string including options, option name
-// output: option value/false on error
+// output: option value / false on error
 
 // description:
 // get the value of a certain option out of a string (-c:v value -ar 44100)
@@ -2834,30 +2834,45 @@ function getcharset ($site, $data)
     $contenttype = false;
   
     // if HTML page and no pagecontentype can be defined by the editor
-    if (@substr_count (strtolower ($data), " http-equiv=") > 0 && @substr_count (strtolower ($data), "content-type") > 0 && @substr_count (strtolower ($data), "pagecontenttype") == 0)
+    if (strpos (strtolower ($data), "pagecontenttype") == 0)
     {
-      // get tag defined by the value of attribute http-equiv="content-type"
-      $contenttypetag = gethtmltag (strtolower ($data), "content-type");
-  
-      if ($contenttypetag != false)
+      // meta tag http-equiv
+      if (strpos (strtolower ($data), " http-equiv=") > 0 && strpos (strtolower ($data), "content-type") > 0)
       {
-        $start = strpos ($contenttypetag, "content=") + strlen ("content=");
+        // get tag defined by the value of attribute http-equiv="content-type"
+        $contenttypetag = gethtmltag (strtolower ($data), "content-type");
     
-        if (substr_count (substr ($contenttypetag, $start), "\"") > 0) $quotes = "\"";
-        elseif (substr_count (substr ($contenttypetag, $start), "'") > 0) $quotes = "'";
-        
-        $end = strrpos ($contenttypetag, $quotes);
-        $length = $end - $start;
-        $contenttype = trim (substr ($contenttypetag, $start, $length));
-        $contenttype = str_replace ($quotes, "", $contenttype);
-        
-        if (strpos ($contenttype, "charset") > 0) $charset = getattribute ($contenttype, "charset");
-        else $charset = trim ($contenttype);            
-      }    
-    }   
+        if ($contenttypetag != false)
+        {
+          $start = strpos ($contenttypetag, "content=") + strlen ("content=");
+      
+          if (substr_count (substr ($contenttypetag, $start), "\"") > 0) $quotes = "\"";
+          elseif (substr_count (substr ($contenttypetag, $start), "'") > 0) $quotes = "'";
+          
+          $end = strrpos ($contenttypetag, $quotes);
+          $length = $end - $start;
+          $contenttype = trim (substr ($contenttypetag, $start, $length));
+          $contenttype = str_replace ($quotes, "", $contenttype);
+          
+          if (strpos ($contenttype, "charset") > 0) $charset = getattribute ($contenttype, "charset");
+          else $charset = trim ($contenttype);            
+        }    
+      }
+      // meta tag charset (HTML5)
+      elseif (strpos (strtolower ($data), " charset=") > 0)
+      {
+        // get tag defined by the value of attribute charset=""
+        $contenttypetag = gethtmltag (strtolower ($data), "charset");
+    
+        if ($contenttypetag != false)
+        {
+          $charset = getattribute ($data, "charset");
+        }
+      }
+    } 
  
     // if hypertag is used to set the character set (e.g. components)
-    if ($contenttype == false && @substr_count (strtolower ($data), "compcontenttype") > 0)
+    if ($contenttype == false && strpos (strtolower ($data), "compcontenttype") > 0)
     {
       // get content-type from component template, if set
       $hypertag_array = gethypertag ($data, "compcontenttype", 0);

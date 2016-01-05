@@ -120,9 +120,9 @@ elseif ($action == "delete" && checktoken ($token, $user) && is_array ($notify_i
 <html>
 <head>
 <title>hyperCMS</title>
-<meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;">
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;" />
+<meta charset="<?php echo getcodepage ($lang); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 
 <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css">

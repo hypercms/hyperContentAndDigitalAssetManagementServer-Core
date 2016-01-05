@@ -22,7 +22,7 @@ require ("version.inc.php");
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=380; initial-scale=0.9; maximum-scale=1.0; user-scalable=0;">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 </head>

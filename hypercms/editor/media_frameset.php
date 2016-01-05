@@ -29,7 +29,7 @@ checkusersession ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>" />
+<meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=800; initial-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>

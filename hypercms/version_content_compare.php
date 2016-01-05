@@ -168,7 +168,7 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
 <head>
 <title>hyperCMS</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <?php 
 if (is_audio ($page)) echo showaudioplayer_head (false);

@@ -1152,8 +1152,14 @@ Release 01/2016
 - Various improvements in template engine regarding the date picker JS functions
 - Implementation of new function getdirectoryfiles
 - Implementation of home box for all reports
+
+Version 6.0.1
+Release 01/2016
+- Update of old http-equiv meta tags with new charset meta tags
+- Implementation of new charset support in function getcharset
+- Bug fix: function buildview of the template engine included two charset meta tags
 */
 
 // current version
-$version = "Version 6.0.0";
+$version = "Version 6.0.1";
 ?>

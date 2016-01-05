@@ -47,8 +47,8 @@ checkusersession ($user);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
+<meta charset="<?php echo getcodepage ($lang); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css">
 <script src="javascript/main.js" type="text/javascript"></script>
 <!-- Rich calendar -->

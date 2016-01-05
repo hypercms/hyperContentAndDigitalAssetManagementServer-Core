@@ -966,7 +966,7 @@ else
 <html>
   <head>
     <title>hyperCMS</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo getcodepage ($lang); ?>">
+    <meta charset="<?php echo getcodepage ($lang); ?>" />
     <meta name="viewport" content="width=260; initial-scale=1.0; user-scalable=0;">
     <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.cookie.js"></script>
