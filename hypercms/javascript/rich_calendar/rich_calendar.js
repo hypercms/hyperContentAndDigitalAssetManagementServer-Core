@@ -7,8 +7,7 @@
 
 Author:
 -------
-Vyacheslav Smolin (http://www.richarea.com, http://html2xhtml.richarea.com,
-re@richarea.com)
+Vyacheslav Smolin (http://www.richarea.com, http://html2xhtml.richarea.com, re@richarea.com)
 
 About the script:
 -----------------
@@ -23,8 +22,7 @@ Pop-up mode (calendar closes on mouse click outside it).
 
 Requirements:
 -------------
-Rich Calendar works in IE, Mozilla-based browsers such as Firefox, Opera 9+,
-and Safari 3.0.
+Rich Calendar works in IE, Mozilla-based browsers such as Firefox, Opera 9+, and Safari 3.0.
 
 Usage:
 ------
@@ -43,7 +41,6 @@ We'd appreciate if you place a direct link to us somewhere on your site.
 
 // Rich Calendar
 RichCalendar = function(target_obj, show_time) {
-
 	// value
 	this.value = '';
 
@@ -83,13 +80,12 @@ RichCalendar = function(target_obj, show_time) {
 
 	// current date
 	this.date = new Date();
-/*
-this.date.setFullYear(2008);
-this.date.setMonth(1);
-this.date.setDate(29);
-*/
-//this.date.setMonth(11);
-//this.date.setDate(31);
+  
+  /*
+  this.date.setFullYear(2008);
+  this.date.setMonth(1);
+  this.date.setDate(29);
+  */
 
 	// calendar skin name
 	this.skin = '';
@@ -103,15 +99,14 @@ this.date.setDate(29);
 
 	// specifies calendar positioning - absolute by default
 	this.position = null;
-
 }
 
 RichCalendar.is_ie = /msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent);
 
 // Static functions
 RichCalendar.get_iframe_styles = function() {
-var i;
-var j;
+  var i;
+  var j;
 
 	var styles = document.styleSheets;
 	var sheets_num = styles.length;
@@ -154,7 +149,6 @@ var j;
 
 
 RichCalendar.attach_event = function(obj, event, handler) {
-
 	if (obj.addEventListener) {
 		obj.addEventListener(event, handler, false);
 	} else {
@@ -166,7 +160,6 @@ RichCalendar.attach_event = function(obj, event, handler) {
 
 
 RichCalendar.detach_event = function(obj, event, handler) {
-
 	if (obj.removeEventListener) {
 		obj.removeEventListener(event, handler, false);
 	} else {
@@ -195,25 +188,19 @@ RichCalendar.detach_events = function(obj) {
 
 // calendar onclick event handler
 RichCalendar.onclick = function(e) {
-
-//alert(e + ' => ' + e.srcElement + ' => ' + e.target + ' => ' + window.event);
-//for (var i in e) alert(i + ' => ' + e[i]);
-
-var event = RichCalendar.get_event(e);
-var obj = RichCalendar.get_target_object(e);
+  var event = RichCalendar.get_event(e);
+  var obj = RichCalendar.get_target_object(e);
 
 	if (!obj) return;
 
-var cal = obj.calendar;
+  var cal = obj.calendar;
+  
+  var cur_year = cal.date.getFullYear();
+  var cur_month = cal.date.getMonth();
+  var cur_day = cal.date.getDate();
 
-var cur_year = cal.date.getFullYear();
-var cur_month = cal.date.getMonth();
-var cur_day = cal.date.getDate();
-
-//alert(obj.rc_object_code);
 	switch (obj.rc_object_code) {
 		case 'day':
-//			alert(obj.day_num);
 			cal.date.setDate(obj.day_num);
 			break;
 		case 'prev_year':
@@ -297,14 +284,12 @@ var cur_day = cal.date.getDate();
 			cal.onclose_handler();
 			break;
 		case 'week_day':
-//alert(obj.innerHTML);
 			cal.start_week_day = obj.week_day_num;
 			cal.show_date();
 			break;
 		default:
 			break;
 	}
-
 
 	// handle close request
 	if (obj.rc_object_code != 'week_day') {
@@ -313,29 +298,23 @@ var cur_day = cal.date.getDate();
 
 	// handle date change
 
-
 	// hide all other auto closing calendars
 	RichCalendar.hide_auto_close(cal);
-
 }
 
 
 // calendar onmouseover event handler
 RichCalendar.onmouseover = function(e) {
-
-//alert(e + ' => ' + e.srcElement + ' => ' + e.target + ' => ' + window.event);
-//for (var i in e) alert(i + ' => ' + e[i]);
-
-var event = RichCalendar.get_event(e);
-var obj = RichCalendar.get_target_object(e);
+  var event = RichCalendar.get_event(e);
+  var obj = RichCalendar.get_target_object(e);
 
 	if (!obj) return;
 
-var cal = obj.calendar;
-
-var cur_year = cal.date.getFullYear();
-var cur_month = cal.date.getMonth();
-var cur_day = cal.date.getDate();
+  var cal = obj.calendar;
+  
+  var cur_year = cal.date.getFullYear();
+  var cur_month = cal.date.getMonth();
+  var cur_day = cal.date.getDate();
 
 	switch (obj.rc_object_code) {
 		case 'day':
@@ -372,41 +351,34 @@ var cur_day = cal.date.getDate();
 			cal.set_footer_text(cal.text('footerDefaultText'));
 			break;
 	}
-
 }
-
 
 // calendar onmouseout event handler
 RichCalendar.onmouseout = function(e) {
-
-//alert(e + ' => ' + e.srcElement + ' => ' + e.target + ' => ' + window.event);
-//for (var i in e) alert(i + ' => ' + e[i]);
-
-var event = RichCalendar.get_event(e);
-var obj = RichCalendar.get_target_object(e);
+  var event = RichCalendar.get_event(e);
+  var obj = RichCalendar.get_target_object(e);
 
 	if (!obj) return;
 
-var cal = obj.calendar;
+  var cal = obj.calendar;
 
 	cal.set_footer_text(cal.text('footerDefaultText'));
 
 	// un-highlight day cell and its row
 	RichCalendar.remove_class(obj, "rc_highlight");
 	RichCalendar.remove_class(obj.parentNode, "rc_highlight");
-
 }
 
 
 // document onmousedown event handler
 RichCalendar.document_onmousedown = function(e) {
-var event = RichCalendar.get_event(e);
-var obj = RichCalendar.get_target_object(e);
+  var event = RichCalendar.get_event(e);
+  var obj = RichCalendar.get_target_object(e);
 
 	if (!obj) return;
 
-var el = obj;
-var cal = null;
+  var el = obj;
+  var cal = null;
 
 	while (el) {
 		if (el.className && el.className.match(/^rc_iframe_body/) &&
@@ -420,15 +392,14 @@ var cal = null;
 
 	// close all not active calendars
 	RichCalendar.hide_auto_close(cal);
-
 }
 
 
 // hide all calendars that should autoclose except cal and remove
 // them from RichCalendar.active_calendars
 RichCalendar.hide_auto_close = function(cal) {
-var active_cals = [];
-var i;
+  var active_cals = [];
+  var i;
 
 	for (i=0; i<RichCalendar.active_calendars.length; i++) {
 		var cur_cal = RichCalendar.active_calendars[i];
@@ -452,8 +423,8 @@ var i;
 // remove calendar cal from list RichCalendar.active_calendars of active
 // calendars
 RichCalendar.make_inactive = function(cal) {
-var active_cals = [];
-var i;
+  var active_cals = [];
+  var i;
 
 	for (i=0; i<RichCalendar.active_calendars.length; i++) {
 		var cur_cal = RichCalendar.active_calendars[i];
@@ -468,17 +439,13 @@ var i;
 
 // returns event object
 RichCalendar.get_event = function(e) {
-
 	return e||window.event;
-
 }
 
 
 // returns event target object
 RichCalendar.get_target_object = function(e) {
-
 	return e.target?e.target:(e.srcElement?e.srcElement:window.event.srcElement);
-
 }
 
 
@@ -490,7 +457,7 @@ RichCalendar.skin_suffix = function(skin) {
 
 // return number of days in month
 RichCalendar.get_month_days = function(date, month) {
-var year = date.getFullYear();
+  var year = date.getFullYear();
 
 	if (month) {
 		month = parseInt(month);
@@ -507,7 +474,6 @@ var year = date.getFullYear();
 //alert(month + ' -> ' + RichCalendar.month_days[month]);
 		return RichCalendar.month_days[month];
 	}
-
 }
 
 
@@ -519,29 +485,25 @@ RichCalendar.is_leap_year = function(year) {
 
 // return day of the year
 RichCalendar.get_day_of_year = function(date) {
-var now = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
-var year_start = new Date(date.getFullYear(), 0, 0, 0, 0, 0);
-
-// milliseconds in day
-var day_in_msecs = 24*60*60*1000;
+  var now = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
+  var year_start = new Date(date.getFullYear(), 0, 0, 0, 0, 0);
+  
+  // milliseconds in day
+  var day_in_msecs = 24*60*60*1000;
 
 	return Math.floor((now - year_start) / day_in_msecs);
-
 }
 
 
 // add class to element
 RichCalendar.add_class = function(el, class_name) {
-
 	RichCalendar.remove_class(el, class_name);
 	el.className += " " + class_name;
-
 }
 
 
 // remove class from element
 RichCalendar.remove_class = function(el, class_name) {
-
 	if (!el || !el.className) return
 
 	var new_class_parts = [];
@@ -576,9 +538,7 @@ RichCalendar.get_obj_pos = function(obj, stop_obj){
 		}
 
 		obj = obj.offsetParent;
-
 	}
-
 
 	var obj = iniObj;
 
@@ -594,7 +554,7 @@ RichCalendar.get_obj_pos = function(obj, stop_obj){
 
 // return current style value
 RichCalendar.get_style = function (el, name) {
-var view = document.defaultView;
+  var view = document.defaultView;
 
 	if (view && view.getComputedStyle) {
 		var st = view.getComputedStyle(el, "");
@@ -604,6 +564,7 @@ var view = document.defaultView;
 //		if (document.defaultView.getComputedStyle(obj, '').getPropertyValue('position') == 'absolute') break;
 
 	var v;
+  
 	if (v = el.currentStyle) {
 		return v[name];
 	}
@@ -611,7 +572,6 @@ var view = document.defaultView;
 	if (v = el.style[name]) {
 		return v;
 	}
-
 }
 
 // array of text data in various languages
@@ -629,11 +589,9 @@ RichCalendar.handlert_set = false;
 
 // Calendar API
 
-
 // show calendar inside/before/after (defined by argument position) element el
 // if any specified or in the point specified (if any)
 RichCalendar.prototype.show = function(x, y, el, position) {
-
 	if (!this.value_el) {
 		this.value_el = el;
 	}
@@ -682,7 +640,6 @@ RichCalendar.prototype.show = function(x, y, el, position) {
 		this.iframe_obj.value = this.value;
 
 		document.body.appendChild(this.iframe_obj);
-
 	}
 
 	// styles to add to iframe
@@ -698,15 +655,12 @@ RichCalendar.prototype.show = function(x, y, el, position) {
 '</body></html>' +
 	'';
 
-
 	this.iframe_doc = this.iframe_obj.contentWindow.document;
 	this.iframe_doc.open();
 	this.iframe_doc.write(iframe_content);
 	this.iframe_doc.close();
 
 	RichCalendar.attach_event(this.iframe_doc, 'mousedown', RichCalendar.document_onmousedown);
-
-
 
 	this.body_obj = this.iframe_doc.getElementById('rc_body');
 	this.body_obj.calendar = this;
@@ -729,17 +683,13 @@ RichCalendar.prototype.show = function(x, y, el, position) {
 	this.clear_td.calendar = this;
 	RichCalendar.attach_events(this.clear_td);
 
-//this.clear_td.className = 'rc_head_tr';
 	this.head_td = this.head_tr.insertCell(1);
-//this.head_td.className = 'rc_head_tr';
 	this.head_td.colSpan = 5;
-//this.head_td.innerHTML = 'asdf';
 	this.close_td = this.head_tr.insertCell(2);
 	this.close_td.innerHTML = 'x';
 	this.close_td.rc_object_code = 'close';
 	this.close_td.calendar = this;
 	RichCalendar.attach_events(this.close_td);
-//this.close_td.className = 'rc_head_tr';
 
 	// navigation row
 	this.nav_tr = this.table_obj.insertRow(1);
@@ -781,21 +731,14 @@ RichCalendar.prototype.show = function(x, y, el, position) {
 	this.wd_tr.className = 'rc_wd_tr';
 
 	var i;
-//	var day_names = this.text('dayNamesShort');
+
 	for (i=0; i<7; i++) {
-//		var wd = (i+this.start_week_day)%7;
 
 		var td = this.wd_tr.insertCell(i);
 		td.rc_object_code = 'week_day';
 		td.calendar = this;
 		RichCalendar.attach_events(td);
-//		td.innerHTML = day_names[wd];
-
-//		if (typeof(weekend_days[wd]) != "undefined") {
-//			td.className = "rc_weekend_head";
-//		}
 	}
-
 
 	// calendar rows (initially create min number of rows necessary - 4)
 	var rows_num = 4;
@@ -805,17 +748,7 @@ RichCalendar.prototype.show = function(x, y, el, position) {
 
 	for (row_indx=0; row_indx<rows_num; row_indx++) {
 		this.create_cal_row(row_indx);
-/*
-		this.cal_tr[row_indx] = this.table_obj.insertRow(3+row_indx);
-		this.cal_tr[row_indx].className = 'rc_cal_tr';
-
-		for (cell_indx=0; cell_indx<7; cell_indx++) {
-			var td = this.cal_tr[row_indx].insertCell(cell_indx);
-			td.innerHTML = row_indx + '-' + cell_indx;
-		}
-*/
 	}
-
 
 	if (this.show_time) {
 		// create time row if necessary
@@ -879,8 +812,6 @@ RichCalendar.prototype.show = function(x, y, el, position) {
 
 	// store this calendar in array of active calendars
 	RichCalendar.active_calendars[RichCalendar.active_calendars.length] = this;
-
-//alert(this.body_obj.innerHTML);
 }
 
 
@@ -898,7 +829,6 @@ RichCalendar.prototype.hide = function() {
 // show calendar inside/before/after (defined by argument position) element el
 // ie relative to element el or 
 RichCalendar.prototype.show_at_element = function(el, position) {
-
 	if (typeof(el) != "object" || !el) return;
 
 	// relative positioning
@@ -906,17 +836,6 @@ RichCalendar.prototype.show_at_element = function(el, position) {
 		this.show(null, null, el, position);
 		return;
 	}
-/*
-	switch (position) {
-		case "before":
-		case "after":
-		case "child":
-			this.show(null, null, el, position);
-			return;
-		default:
-			break;
-	}
-*/
 
 	// absolute positioning
 	var el_pos = RichCalendar.get_obj_pos(el);
@@ -927,18 +846,11 @@ RichCalendar.prototype.show_at_element = function(el, position) {
 	var y = -1000;
 
 	this.show(x, y, el, position);
-
-
-	// fix position (need to do this later then calendar is shown as
-	// size of calendar could change in this.show(x, y)
-//	var cal = this;
-//	window.setTimeout(function(){cal.fix_position(el, position)}, 5);
-
 }
 
 // fix position of calendar
 RichCalendar.prototype.fix_position = function(el) {
-var position = this.position;
+  var position = this.position;
 
 	if (this.is_relative_position(position)) {
 		return;
@@ -954,7 +866,6 @@ var position = this.position;
 	if (aligns.length == 2) {
 
 		var el_pos = RichCalendar.get_obj_pos(el);
-//alert(el_pos + ' => ' + el.offsetHeight);
 		var x = el_pos[0];
 		var y = el_pos[1] + el.offsetHeight;
 
@@ -964,7 +875,6 @@ var position = this.position;
 		var cal_width = parseInt(this.iframe_obj.width) + 2*border_width;
 		var cal_height = parseInt(this.iframe_obj.height) + 2*border_width;
 
-//alert('!: ' + cal_width + ' => ' + cal_height);
 		// horizontal alignment
 		switch (aligns[0]) {
 			case "left":
@@ -1002,7 +912,6 @@ var position = this.position;
 
 		this.iframe_obj.style.left = x + 'px';
 		this.iframe_obj.style.top = y + 'px';
-
 		this.iframe_obj.style.visibility = 'visible';
 	}
 
@@ -1024,8 +933,7 @@ RichCalendar.prototype.is_relative_position = function(position) {
 
 // creates an element in iframe
 RichCalendar.prototype.createElement = function(tagName, parent) {
-
-var el = this.iframe_doc.createElement(tagName);
+  var el = this.iframe_doc.createElement(tagName);
 
 	if (parent) {
 		parent.appendChild(el);
@@ -1037,7 +945,6 @@ var el = this.iframe_doc.createElement(tagName);
 
 // return text data desired
 RichCalendar.prototype.text = function(name, language) {
-
 	if (typeof(language) == "undefined") {
 		language = this.language;
 	}
@@ -1047,7 +954,6 @@ RichCalendar.prototype.text = function(name, language) {
 	}
 
 	return typeof(RichCalendar.rc_lang_data[this.default_language][name]) != "undefined"?RichCalendar.rc_lang_data[this.default_language][name]:'';
-
 }
 
 // show date in calendar
@@ -1071,39 +977,30 @@ RichCalendar.prototype.show_date = function() {
 			td.className = "";
 		}
 
-//		td.rc_object_code = 'week_day';
-//		td.calendar = this;
 		td.week_day_num = wd;
-//		RichCalendar.attach_events(td);
 	}
 
+  var month_days = RichCalendar.get_month_days(this.date);
 
-var month_days = RichCalendar.get_month_days(this.date);
-//	alert(month_days);
-
-// first day of the same month and year as this.date
-var date = new Date(this.date);
+  // first day of the same month and year as this.date
+  var date = new Date(this.date);
 	date.setDate(1);
-var week_day = (date.getDay()+7-this.start_week_day)%7+1;
-//	alert(week_day);
-
-// current data
-var cur_year = this.date.getFullYear();
-var cur_month = this.date.getMonth();
-var cur_day = this.date.getDate();
-//alert(cur_year + ' => ' + cur_month + ' => ' + cur_day);
-
-// today
-var today = new Date();
-var today_year = today.getFullYear();
-var today_month = today.getMonth();
-var today_day = today.getDate();
-
-// 
+  var week_day = (date.getDay()+7-this.start_week_day)%7+1;
+  
+  
+  // current data
+  var cur_year = this.date.getFullYear();
+  var cur_month = this.date.getMonth();
+  var cur_day = this.date.getDate();
+  
+  // today
+  var today = new Date();
+  var today_year = today.getFullYear();
+  var today_month = today.getMonth();
+  var today_day = today.getDate();
 
 	var month_names = this.text('monthNames');
 	this.head_td.innerHTML = month_names[cur_month] + ', ' + cur_year;
-
 
 	var row;
 	var day;
@@ -1134,8 +1031,6 @@ var today_day = today.getDate();
 
 			if (row==0 && day+1 < week_day || days == month_days) {
 				var td_text = '&nbsp;';
-
-//				RichCalendar.detach_events(cell);
 			} else {
 				var day_num = days+1;
 				var td_text = day_num;
@@ -1157,7 +1052,6 @@ var today_day = today.getDate();
 					cur_year == today_year) {
 					RichCalendar.add_class(cell, "rc_today");
 				}
-
 
 				var wd = (day+this.start_week_day)%7;
 
@@ -1190,38 +1084,30 @@ var today_day = today.getDate();
 	}
 
 	// change size of the iframe to fit to its content
-/*
-	var table_obj = this.iframe_doc.getElementById('rc_iframe_table');
-	this.iframe_obj.width = table_obj.offsetWidth;
-	this.iframe_obj.height = table_obj.offsetHeight;
-*/
 	var cal = this;
 	window.setTimeout(function(){cal.fit_to_content()}, 1);
 
 	// fix position (need to do this later then calendar is shown as
 	// size of calendar could change in this.show(x, y)
 	window.setTimeout(function(){cal.fix_position()}, 5);
-
 }
 
 // change size of the iframe to fit to its content
 RichCalendar.prototype.fit_to_content = function() {
-try {
-	var table_obj = this.iframe_doc.getElementById('rc_iframe_table');
-	this.iframe_obj.width = table_obj.offsetWidth;
-	this.iframe_obj.height = table_obj.offsetHeight;
-
-//alert(this.iframe_obj.width + ' => ' + this.iframe_obj.height);
-	// sometimes IE return 0 values, so need to use another approach to
-	// determine size of the calendar
-	if (!parseInt(this.iframe_obj.width) || !parseInt(this.iframe_obj.height)) {
-		this.size_div.innerHTML = this.body_obj.innerHTML;
-//alert(this.size_div.offsetWidth + ' => ' + this.size_div.offsetHeight);
-	this.iframe_obj.width = this.size_div.offsetWidth;
-	this.iframe_obj.height = this.size_div.offsetHeight;
-	}
-
-}catch(e){}
+  try {
+  	var table_obj = this.iframe_doc.getElementById('rc_iframe_table');
+  	this.iframe_obj.width = table_obj.offsetWidth;
+  	this.iframe_obj.height = table_obj.offsetHeight;
+  
+  	// sometimes IE return 0 values, so need to use another approach to
+  	// determine size of the calendar
+  	if (!parseInt(this.iframe_obj.width) || !parseInt(this.iframe_obj.height)) {
+  		this.size_div.innerHTML = this.body_obj.innerHTML;
+  	  this.iframe_obj.width = this.size_div.offsetWidth;
+  	  this.iframe_obj.height = this.size_div.offsetHeight;
+  	}
+  
+  }catch(e){}
 }
 
 
@@ -1233,7 +1119,6 @@ var row = this.table_obj.insertRow(3+index);
 	var cell_indx;
 	for (cell_indx=0; cell_indx<7; cell_indx++) {
 		var td = row.insertCell(cell_indx);
-//		td.innerHTML = index + '-' + cell_indx;
 	}
 
 	this.cal_tr[index] = row;
@@ -1258,7 +1143,6 @@ RichCalendar.prototype.change_skin = function(skin) {
 
 // returns formatted date (chars recognized are alike used by PHP function date)
 RichCalendar.prototype.get_formatted_date = function(format, date) {
-
 	if (!date) date = this.date;
 	if (!format) format = this.get_date_format();
 
@@ -1268,23 +1152,23 @@ RichCalendar.prototype.get_formatted_date = function(format, date) {
 		var mins = this.date.setMinutes(this.mins_obj.value);
 	}
 
-var y = date.getFullYear();
-var m = date.getMonth();
-var d = date.getDate();
-var wd = date.getDay();
-var hr = date.getHours();
-var mins = date.getMinutes();
-var secs = date.getSeconds();
-
-var month_names_short = this.text('monthNamesShort');
-var month_names = this.text('monthNames');
-var day_names_short = this.text('dayNamesShort');
-var day_names = this.text('dayNames');
-
-var am = hr < 12 ? true : false;
-var hr12 = hr > 12 ? hr - 12 : (hr == 0 ? 12 : hr);
-
-var f = [];
+  var y = date.getFullYear();
+  var m = date.getMonth();
+  var d = date.getDate();
+  var wd = date.getDay();
+  var hr = date.getHours();
+  var mins = date.getMinutes();
+  var secs = date.getSeconds();
+  
+  var month_names_short = this.text('monthNamesShort');
+  var month_names = this.text('monthNames');
+  var day_names_short = this.text('dayNamesShort');
+  var day_names = this.text('dayNames');
+  
+  var am = hr < 12 ? true : false;
+  var hr12 = hr > 12 ? hr - 12 : (hr == 0 ? 12 : hr);
+  
+  var f = [];
 
 	f["%a"] = am?'am':'pm';
 	f["%A"] = am?'AM':'PM';
@@ -1321,7 +1205,6 @@ var f = [];
 	}
 
 	return f_date;
-
 }
 
 
@@ -1335,10 +1218,10 @@ RichCalendar.prototype.set_footer_text = function(text) {
 
 // return array with keys - weekend days
 RichCalendar.prototype.get_weekend_days = function() {
-var weekend_days = this.text('weekend');
-var weekend_parts = weekend_days.split(",");
-var i;
-var result = [];
+  var weekend_days = this.text('weekend');
+  var weekend_parts = weekend_days.split(",");
+  var i;
+  var result = [];
 
 	for (i=0; i<weekend_parts.length; i++) {
 		result[weekend_parts[i]] = true;
@@ -1350,19 +1233,16 @@ var result = [];
 
 // calendar on close handler; returns true if operation successfull
 RichCalendar.prototype.onclose_handler = function() {
-
 	if (this.user_onclose_handler) {
 		this.user_onclose_handler(this);
 	} else {
 		this.hide();
 	}
-
 }
 
 
 // calendar on change handler
 RichCalendar.prototype.onchange_handler = function(object_code) {
-
 	if (this.user_onchange_handler) {
 		this.user_onchange_handler(this, object_code);
 	} else {
@@ -1372,11 +1252,8 @@ RichCalendar.prototype.onchange_handler = function(object_code) {
 
 			if (this.auto_close) this.hide();
 
-		} else {
-
 		}
 	}
-
 }
 
 
@@ -1401,23 +1278,20 @@ RichCalendar.prototype.parse_date = function(str, format) {
 
 	if (!format) format = this.get_date_format();
 
-
-//alert(format);
-var today = new Date();
-var year = 0;
-var month = -1;
-var day = 0;
-var hours = 0;
-var mins = 0;
-var seconds = 0;
-
-var month_names = this.text('monthNames');
-var short_month_names = this.text('monthNamesShort');
-
-var en_month_names = this.text('monthNames', 'en');
-var en_short_month_names = this.text('monthNamesShort', 'en');
-
-//alert(month_names);
+  var today = new Date();
+  var year = 0;
+  var month = -1;
+  var day = 0;
+  var hours = 0;
+  var mins = 0;
+  var seconds = 0;
+  
+  var month_names = this.text('monthNames');
+  var short_month_names = this.text('monthNamesShort');
+  
+  var en_month_names = this.text('monthNames', 'en');
+  var en_short_month_names = this.text('monthNamesShort', 'en');
+  
 	// national chars are not recognized as symbols in regular expressions =>
 	// replace them with english month names
 	for (j=0; j<month_names.length; j++) {
@@ -1428,14 +1302,13 @@ var en_short_month_names = this.text('monthNamesShort', 'en');
 		var re = new RegExp(short_month_names[j], 'gi');
 		str = str.replace(re, en_short_month_names[j]);
 	}
+  
+  var p = String(str).split(/\W+/g);
+  var f_p = String(format).match(/%./g);
+  var i;
+  var j;
+  var k;
 
-var p = String(str).split(/\W+/g);
-var f_p = String(format).match(/%./g);
-var i;
-var j;
-var k;
-
-//alert(p + ' => ' + f_p);
 	for (i=0; i<f_p.length; i++) {
 
 		if (!p[i]) continue;
@@ -1507,7 +1380,6 @@ var k;
 			default:
 				break;
 		}
-
 	}
 
 	if (isNaN(year) || year <= 0) year = today.getFullYear();
@@ -1517,7 +1389,5 @@ var k;
 	if (isNaN(mins) || mins < 0 || mins > 59) mins = today.getMinutes();
 	if (isNaN(seconds) || seconds < 0 || seconds > 59) seconds = today.getSeconds();
 
-//alert(year + ' => ' + month + ' => ' + day + ' => ' + hours + ' => ' + mins + ' => ' + seconds);
 	this.date = new Date(year, month, day, hours, mins, seconds);
-
 }

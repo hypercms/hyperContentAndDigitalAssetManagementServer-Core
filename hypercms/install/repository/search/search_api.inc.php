@@ -163,7 +163,7 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
   {
     $data = loadindex ();
   
-    if ($lang == "") $lang = "en";
+    if ($lang == "" || !is_string ($lang)) $lang = "en";
     else $lang = htmlspecialchars (strtolower ($lang), ENT_QUOTES | ENT_HTML401, $charset);
     
     if (!empty ($config['search_log'])) @file_put_contents ($config['search_log'], date("Y-m-d H:i", time()).";".$query."\n", FILE_APPEND);
@@ -229,7 +229,9 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
 
               while (strlen ($slice) > 1)
               {
-                $slice = @substr ($content, ($slice_count*90000), @strpos ($content, " ", (($slice_count+1)*90000)));
+                if (strlen ($content) > (($slice_count+1)*90000)) $slice = @substr ($content, ($slice_count*90000), @strpos ($content, " ", (($slice_count+1)*90000)));
+                else $slice = @substr ($content, ($slice_count*90000));
+                
                 $hits_new = preg_match_all ($hquery, $slice, $slice_matches, PREG_OFFSET_CAPTURE);
                 if ($hits_new > 0) $matches = $slice_matches;
                 $hits = $hits + $hits_new;

@@ -1158,6 +1158,15 @@ Release 01/2016
 - Update of old http-equiv meta tags with new charset meta tags
 - Implementation of new charset support in function getcharset
 - Bug fix: function buildview of the template engine included two charset meta tags
+- Improvements in function gethtmltag
+- Improvements in function searchindex (search engine for websites)
+- Changed default zoom parameter for function showgelocationchart from 10 to 4
+- Bug fix: Function showcolumnchart did not verify the 2nd and 3rd y-values if their titles have been defined
+_ Display title on top of table in reports
+- Bug fix: Function buildview of template engine did use JS function name for show the rich calendar for articles
+- Bug fix: user_sendlink referred to old "taskmgmt" directory
+- Improvements for date picker (rich calender functions) for articel_edit, user_sendlink, opup_publish and function buildview
+- Improvements in rich calendar JS library
 */
 
 // current version

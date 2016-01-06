@@ -3329,8 +3329,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <b>".$labelname."</b>
                         </td>
                         <td align=left valign=top>
-                          <input type=\"hidden\" name=\"".$hypertagname."[".$id."]"."\" value=\"\">
-                          <input type=\"checkbox\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".$checked.$disabled."> ".$value."
+                          <input type=\"hidden\" name=\"".$hypertagname."[".$id."]"."\" value=\"\" />
+                          <input type=\"checkbox\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".$checked.$disabled." /> ".$value."
                         </td>
                       </tr>";
                       }
@@ -3366,8 +3366,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <b>".$labelname."</b> ".$arttaglink[$artid]."
                         </td>
                         <td align=left valign=top>
-                          <input type=\"hidden\" name=\"".$hypertagname."[".$id."]"."\" value=\"\">
-                          <input type=\"checkbox\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".$checked.$disabled."> ".$value."
+                          <input type=\"hidden\" name=\"".$hypertagname."[".$id."]"."\" value=\"\" />
+                          <input type=\"checkbox\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".$checked.$disabled." /> ".$value."
                         </td>
                       </tr>";
                       }                      
@@ -3410,7 +3410,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       }
                       elseif (($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") && isset ($foundtxt[$id]) && $foundtxt[$id] == true)
                       {                        
-                        if ($disabled == "") $showcalendar = "onclick=\"show_cal (this, 'datefield_".$id."', '".$format."');\"";
+                        if ($disabled == "") $showcalendar = "onclick=\"show_cal(this, 'datefield_".$id."', '".$format."');\"";
                         else $showcalendar = "";
                         
                         $formitem[$key] = "
@@ -3447,7 +3447,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       }
                       elseif (($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock") && isset ($foundtxt[$id]) && $foundtxt[$id] == true)
                       {                     
-                        if ($disabled == "") $showcalendar = "onclick=\"show_cal_".$artid."_".$elementid."(this, 'datefield_".$artid."_".$elementid."', '".$format."');\"";
+                        if ($disabled == "") $showcalendar = "onclick=\"show_cal(this, 'datefield_".$artid."_".$elementid."', '".$format."');\"";
                         else $showcalendar = "";
                                               
                         $formitem[$key] = "
@@ -6331,7 +6331,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       <input type=\"hidden\" name=\"component_curr\" value=\"\" />
       <input type=\"hidden\" name=\"component\" value=\"\" />  
       <input type=\"hidden\" name=\"condition\" value=\"\" /> 
-      <input type=\"hidden\" name=\"token\" value=\"".$token."\">
+      <input type=\"hidden\" name=\"token\" value=\"".$token."\" />
     </form>
     </div>
     <div style=\"margin:4px; padding:0; border:0; background:none; visibility:visible;\">".$headstore."</div>\n";
@@ -7065,6 +7065,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     cal_obj.show_time = false;
     cal_obj.language = '".getcalendarlang ($lang)."';
     cal_obj.user_onchange_handler = cal_on_change;
+    cal_obj.user_onclose_handler = cal_on_close;
     cal_obj.user_onautoclose_handler = cal_on_autoclose;
     cal_obj.parse_date(datefield.value, cal_format);
     cal_obj.show_at_element(datefield, 'adj_left-bottom');
@@ -7081,10 +7082,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     }
   }
   
-  // onautoclose handler
-  function cal_on_autoclose (cal)
+  // user defined onclose handler (used in pop-up mode - when auto_close is true)
+  function cal_on_close(cal)
   {
-    cal_obj = null;
+  	cal.hide();
+  	cal_obj = null;
+  }
+  
+  // user defined onautoclose handler
+  function cal_on_autoclose(cal)
+  {
+  	cal_obj = null;
   }
 
   // ----- Comment -----
@@ -7250,8 +7258,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     <input type=\"hidden\" name=\"db_connect\" value=\"".$db_connect."\" />
     <input type=\"hidden\" id=\"savetype\" name=\"savetype\" value=\"\" />
     <input type=\"hidden\" name=\"forward\" value=\"\" />
-    <input type=\"hidden\" name=\"wf_token\" value=\"".$wf_token."\">
-    <input type=\"hidden\" name=\"token\" value=\"".$token."\">";
+    <input type=\"hidden\" name=\"wf_token\" value=\"".$wf_token."\" />
+    <input type=\"hidden\" name=\"token\" value=\"".$token."\" />";
     
     $viewstore .= "
     <!-- top bar -->

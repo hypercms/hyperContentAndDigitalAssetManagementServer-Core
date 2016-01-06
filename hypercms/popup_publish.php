@@ -125,23 +125,27 @@ if ($action != "" && valid_publicationname ($site) && $cat != "" && valid_locati
 <script language="JavaScript" type="text/javascript">
 <!--
 var cal_obj = null;
-var format = '%Y-%m-%d %H:%i';
+var cal_format = '%Y-%m-%d %H:%i';
+var cal_field = null;
 
 // show calendar
-function show_cal (el)
+function show_cal (el, field_id, format)
 {
-	if (cal_obj) return;
-
-  var text_field = document.getElementById("text_field");
+  if (cal_obj) return;
+  
+  cal_field = field_id;
+  cal_format = format;
+  var datefield = document.getElementById(field_id);
 
 	cal_obj = new RichCalendar();
 	cal_obj.start_week_day = 1;
 	cal_obj.show_time = true;
 	cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
 	cal_obj.user_onchange_handler = cal_on_change;
+  cal_obj.user_onclose_handler = cal_on_close;
 	cal_obj.user_onautoclose_handler = cal_on_autoclose;
-	cal_obj.parse_date(text_field.value, format);
-	cal_obj.show_at_element(text_field, "adj_left-bottom");
+	cal_obj.parse_date(datefield.value, cal_format);
+	cal_obj.show_at_element(datefield, "adj_left-bottom");
 }
 
 // user defined onchange handler
@@ -149,15 +153,21 @@ function cal_on_change (cal, object_code)
 {
 	if (object_code == 'day')
 	{
-		document.getElementById("text_field").value = cal.get_formatted_date(format);
-		document.getElementById("publishdate").value = cal.get_formatted_date(format);
+		document.getElementById(cal_field).value = cal.get_formatted_date(cal_format);
 		cal.hide();
 		cal_obj = null;
 	}
 }
 
+// user defined onclose handler (used in pop-up mode - when auto_close is true)
+function cal_on_close(cal)
+{
+	cal.hide();
+	cal_obj = null;
+}
+
 // user defined onautoclose handler
-function cal_on_autoclose (cal)
+function cal_on_autoclose(cal)
 {
 	cal_obj = null;
 }
@@ -218,9 +228,8 @@ echo showtopbar ($headline, $lang);
     <tr> 
       <td align="left">		
         <input name="publish" type="radio" value="later" /> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?> 
-        <input type="hidden" name="publishdate" id="publishdate" value="<?php echo $publishdate; ?>" />
-        <input type="text" id="text_field" value="<?php echo $publishdate; ?>" disabled="disabled" />
-        <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
+        <input type="text" name="publishdate" id="publishdate" readonly="readonly" value="<?php echo $publishdate; ?>" />
+        <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'publishdate', '%Y-%m-%d %H:%i');" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
 	    </td>
     </tr>
     <?php if ($action == "publish") { ?>

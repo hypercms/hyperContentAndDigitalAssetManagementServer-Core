@@ -2430,21 +2430,24 @@ function gethtmltag ($filedata, $tag)
            
           while ($pos > 0 && $tags < 3)
           {
-            // found HTML tag
-            if ($filedata_lower[$pos] == "<" && $intag == 0)
+            if (!empty ($filedata_lower[$pos]))
             {
-              $found = $pos;
-              break;
-            }
-            // if some script tag <...> is nested in an HTML tag
-            elseif ($filedata_lower[$pos] == ">" && $intag == 0)
-            {
-              $intag++;
-              $tags++;
-            }
-            elseif ($filedata_lower[$pos] == "<" && $intag > 0)
-            {
-              $intag--;
+              // found HTML tag
+              if ($filedata_lower[$pos] == "<" && $intag == 0)
+              {
+                $found = $pos;
+                break;
+              }
+              // if some script tag <...> is nested in an HTML tag
+              elseif ($filedata_lower[$pos] == ">" && $intag == 0)
+              {
+                $intag++;
+                $tags++;
+              }
+              elseif ($filedata_lower[$pos] == "<" && $intag > 0)
+              {
+                $intag--;
+              }
             }
       
             $pos--;
@@ -2469,21 +2472,24 @@ function gethtmltag ($filedata, $tag)
           
           while ($pos <= $abslen && $tags < 3)
           {
-            // found HTML tag
-            if ($filedata_lower[$pos] == ">" && $intag == 0)
+            if (!empty ($filedata_lower[$pos]))
             {
-              $found = $pos;
-              break;
-            }
-            // if some script tag <...> is nested in an HTML tag
-            elseif ($filedata_lower[$pos] == "<" && $intag == 0)
-            {
-              $intag++;
-              $tags++;
-            }
-            elseif ($filedata_lower[$pos] == ">" && $intag > 0)
-            {
-              $intag--;
+              // found HTML tag
+              if ($filedata_lower[$pos] == ">" && $intag == 0)
+              {
+                $found = $pos;
+                break;
+              }
+              // if some script tag <...> is nested in an HTML tag
+              elseif ($filedata_lower[$pos] == "<" && $intag == 0)
+              {
+                $intag++;
+                $tags++;
+              }
+              elseif ($filedata_lower[$pos] == ">" && $intag > 0)
+              {
+                $intag--;
+              }
             }
   
             $pos++;

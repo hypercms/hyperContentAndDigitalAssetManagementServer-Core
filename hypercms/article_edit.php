@@ -95,91 +95,52 @@ if ($label == "") $label = $artid;
 <script language="Javascript" src="javascript/rich_calendar/domready.js"></script>
 <script language="JavaScript" type="text/javascript">
 <!--
-var cal_obj_1 = null;
-var cal_obj_2 = null;
-
-var format = '%Y-%m-%d %H:%i';
+var cal_obj = null;
+var cal_format = '%Y-%m-%d %H:%i';
+var cal_field = null;
 
 // show calendar
-function show_cal_1 (el)
+function show_cal (el, field_id, format)
 {
-	if (cal_obj_1) return;
+  if (cal_obj) return;
+  
+  cal_field = field_id;
+  cal_format = format;
+  var datefield = document.getElementById(field_id);
 
-  var text_field_1 = document.getElementById("text_field_1");
-
-	cal_obj_1 = new RichCalendar();
-	cal_obj_1.start_week_day = 1;
-	cal_obj_1.show_time = true;
-	cal_obj_1.language = '<?php echo getcalendarlang ($lang); ?>';
-	cal_obj_1.user_onchange_handler = cal1_on_change;
-	cal_obj_1.user_onclose_handler = cal1_on_close;
-	cal_obj_1.user_onautoclose_handler = cal1_on_autoclose;
-	cal_obj_1.parse_date(text_field_1.value, format);
-	cal_obj_1.show_at_element(datepicker1, "adj_left-bottom");
-}
-
-function show_cal_2 (el)
-{
-	if (cal_obj_2) return;
-
-  var text_field_2 = document.getElementById("text_field_2");
-
-	cal_obj_2 = new RichCalendar();
-	cal_obj_2.start_week_day = 1;
-	cal_obj_2.show_time = true;
-	cal_obj_2.language = '<?php echo getcalendarlang ($lang); ?>';
-	cal_obj_2.user_onchange_handler = cal2_on_change;
-	cal_obj_2.user_onclose_handler = cal2_on_close;
-	cal_obj_2.user_onautoclose_handler = cal2_on_autoclose;
-	cal_obj_2.parse_date(text_field_2.value, format);
-	cal_obj_2.show_at_element(datepicker2, "adj_left-bottom");
+	cal_obj = new RichCalendar();
+	cal_obj.start_week_day = 1;
+	cal_obj.show_time = true;
+	cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
+  cal_obj.user_onchange_handler = cal_on_change;
+  cal_obj.user_onclose_handler = cal_on_close;
+  cal_obj.user_onautoclose_handler = cal_on_autoclose;
+  cal_obj.parse_date(datefield.value, cal_format);
+	cal_obj.show_at_element(datefield, "adj_left-bottom");
 }
 
 // user defined onchange handler
-function cal1_on_change(cal, object_code)
+function cal_on_change(cal, object_code)
 {
 	if (object_code == 'day')
 	{
-		document.getElementById("text_field_1").value = cal.get_formatted_date(format);
-		document.getElementById("artdatefrom").value = cal.get_formatted_date(format);
+		document.getElementById(cal_field).value = cal.get_formatted_date(cal_format);
 		cal.hide();
-		cal_obj_1 = null;
-	}
-}
-
-function cal2_on_change(cal, object_code)
-{
-	if (object_code == 'day')
-	{
-		document.getElementById("text_field_2").value = cal.get_formatted_date(format);
-		document.getElementById("artdateto").value = cal.get_formatted_date(format);
-		cal.hide();
-		cal_obj_2 = null;
+		cal_obj = null;
 	}
 }
 
 // user defined onclose handler (used in pop-up mode - when auto_close is true)
-function cal1_on_close(cal)
+function cal_on_close(cal)
 {
 	cal.hide();
-	cal_obj_1 = null;
-}
-
-function cal2_on_close(cal)
-{
-	cal.hide();
-	cal_obj_2 = null;
+	cal_obj = null;
 }
 
 // user defined onautoclose handler
-function cal1_on_autoclose(cal)
+function cal_on_autoclose(cal)
 {
-	cal_obj_1 = null;
-}
-
-function cal2_on_autoclose(cal)
-{
-	cal_obj_2 = null;
+	cal_obj = null;
 }
 
 function validateForm(select, min, max) 
@@ -285,11 +246,11 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
         <input type="radio" name="artstatus[<?php echo $artid; ?>]" value="timeswitched" <?php if ($artstatus == "timeswitched") {echo "checked=\"checked\"";} ?> />
         <?php echo getescapedtext ($hcms_lang['active-from'][$lang], $charset, $lang); ?></td>
       <td>
-        <input type="hidden" name="artdatefrom" id="artdatefrom" value="<?php echo $artdatefrom; ?>" />
-        <input type="text" id="text_field_1" value="<?php echo $artdatefrom; ?>" disabled="disabled" />&nbsp;<img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal_1(this);" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" align="top" />
+        <input type="text" name="artdatefrom" id="artdatefrom" readonly="readonly" value="<?php echo $artdatefrom; ?>" />
+        &nbsp;<img name="datepicker1" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'artdatefrom', '%Y-%m-%d %H:%i');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" align="top" />
         <?php echo getescapedtext ($hcms_lang['to'][$lang], $charset, $lang); ?>
-        <input type="hidden" name="artdateto" id="artdateto" value="<?php echo $artdateto; ?>" />
-        <input type="text" id="text_field_2" value="<?php echo $artdateto; ?>" disabled="disabled" />&nbsp;<img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal_2(this);" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" align="top" />
+        <input type="text" name="artdateto" id="artdateto" readonly="readonly" value="<?php echo $artdateto; ?>" />
+        &nbsp;<img name="datepicker2" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'artdateto', '%Y-%m-%d %H:%i');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" align="top" />
       </td>
     </tr>
     <tr>

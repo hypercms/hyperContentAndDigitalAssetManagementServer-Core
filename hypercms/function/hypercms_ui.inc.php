@@ -2296,7 +2296,10 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
   $constraint = getattribute ($hypertag, "constraint");
   
   // get tag id
-  $id = getattribute ($hypertag, "id"); 
+  $id = getattribute ($hypertag, "id");
+  
+  // correct Ids of article
+  if ($id != "" && strpos ("_".$id, ":") > 0) $id = str_replace (":", "_", $id);
   
   // get label text
   $label = getattribute ($hypertag, "label");  
@@ -2400,13 +2403,11 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               form.css('display', 'inline');
               
               checkbox.focus();
-            
             });
-            jq_inline('#hcms_checkbox_".$hypertagname."_".$id."').click(function(event)
-            {
+            
+            jq_inline('#hcms_checkbox_".$hypertagname."_".$id."').click(function(event) {
               event.stopPropagation();
-            }).blur(function()
-            {
+            }).blur(function() {
               checkbox = jq_inline(this);
               form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
               elem = jq_inline('#".$hypertagname."_".$id."');
@@ -2415,24 +2416,26 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               
               if (oldcheck_".$hypertagname."_".$id." != newcheck".$confirm_save.")
               {
-                  oldcheck_".$hypertagname."_".$id." = newcheck;
-                  jq_inline.post(
-                    \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
-                    jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
-                    function(data)
-                      {
-                        if(data.message.length !== 0)
-                        {
-                          alert(hcms_entity_decode(data.message));
-                        }				
-                      }, 
-                    \"json\"
-                    );
-                  elem.text((newcheck == \"&nbsp;\" ? '' : newcheck));
+                oldcheck_".$hypertagname."_".$id." = newcheck;
+                jq_inline.post(
+                  \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
+                  jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
+                  function(data) {
+                    if(data.message.length !== 0)
+                    {
+                      alert(hcms_entity_decode(data.message));
+                    }				
+                  }, 
+                  \"json\"
+                );
                 
-              } else {
+                elem.text((newcheck == \"&nbsp;\" ? '' : newcheck));
+              }
+              else
+              {
                 checkbox.prop('checked', (oldcheck_".$hypertagname."_".$id." == \"\" ? false : true));
               }
+              
               form.hide();
               elem.show();
             });
@@ -2454,12 +2457,19 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           
           jq_inline().ready(function() 
           {
-            // onclose Handler (do nothing)
-            var cal_on_close_".$hypertagname."_".$id." = function (cal) { }
+            // onclose handler
+            var cal_on_close_".$hypertagname."_".$id." = function (cal) {
+              form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
+              form.hide();
+              cal_obj_".$hypertagname."_".$id.".hide();
+              elem = jq_inline('#".$hypertagname."_".$id."');
+              elem.show();
+            }
            
             // handling the saving
             var date_save_".$hypertagname."_".$id." = function () {
-              if(preventSave_".$hypertagname."_".$id." == false) {
+              if(preventSave_".$hypertagname."_".$id." == false)
+              {
                 datefield = jq_inline('#hcms_datefield_".$hypertagname."_".$id."');
                 form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
                 elem = jq_inline('#".$hypertagname."_".$id."');
@@ -2467,30 +2477,32 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 newdate = jq_inline.trim(datefield.val());
                 var check = true;
                 
-                // Confirm the changes
+                // confirm the changes
                 if (olddate_".$hypertagname."_".$id." != newdate".$confirm_save.") 
                 {  
-                    olddate_".$hypertagname."_".$id." = newdate;
-                    jq_inline.post(
-                      \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
-                      jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
-                      function(data)
-                        {
-                          if(data.message.length !== 0)
-                          {
-                            alert(hcms_entity_decode(data.message));
-                          }				
-                        }, 
-                      \"json\"
-                      );
-                    elem.html(newdate == \"\" ? '".$defaultText."' : newdate);
+                  olddate_".$hypertagname."_".$id." = newdate;
+                  jq_inline.post(
+                    \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
+                    jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
+                    function(data) {
+                      if(data.message.length !== 0)
+                      {
+                        alert(hcms_entity_decode(data.message));
+                      }				
+                    }, 
+                    \"json\"
+                  );
+                  
+                  elem.html(newdate == \"\" ? '".$defaultText."' : newdate);
                 }
                 else if (!check)
                 {
                   datefield.focus();
-                  // We jump out without changing anything
+                  
+                  // jump out without changing anything
                   return false;
                 }
+                
                 form.hide();
                 cal_obj_".$hypertagname."_".$id.".hide();
                 elem.show();
@@ -2510,23 +2522,27 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
             
             function show_cal_".$hypertagname."_".$id." ()
             {
-              
               var datefield_".$hypertagname."_".$id." = document.getElementById('hcms_datefield_".$hypertagname."_".$id."');  
-              var form = document.getElementById('hcms_form_".$hypertagname."_".$id."');  
-              if (cal_obj_".$hypertagname."_".$id.") {
+              var form = document.getElementById('hcms_form_".$hypertagname."_".$id."');
+              
+              if (cal_obj_".$hypertagname."_".$id.")
+              {
                 cal_obj_".$hypertagname."_".$id.".parse_date(datefield_".$hypertagname."_".$id.".value, format_".$hypertagname."_".$id.");
                 cal_obj_".$hypertagname."_".$id.".show_at_element(form, 'child');
-              } else {
+              }
+              else
+              {
                 cal_obj_".$hypertagname."_".$id." = new RichCalendar();
                 cal_obj_".$hypertagname."_".$id.".start_week_day = 1;
                 cal_obj_".$hypertagname."_".$id.".show_time = false;
                 cal_obj_".$hypertagname."_".$id.".language = '".getcalendarlang ($lang)."';
-                cal_obj_".$hypertagname."_".$id.".auto_close = false
+                cal_obj_".$hypertagname."_".$id.".auto_close = false;
                 cal_obj_".$hypertagname."_".$id.".user_onchange_handler = cal_on_change_".$hypertagname."_".$id.";
                 cal_obj_".$hypertagname."_".$id.".user_onclose_handler = cal_on_close_".$hypertagname."_".$id.";
                 cal_obj_".$hypertagname."_".$id.".parse_date(datefield_".$hypertagname."_".$id.".value, format_".$hypertagname."_".$id.");
                 cal_obj_".$hypertagname."_".$id.".show_at_element(form, 'child');
               }
+              
               jq_inline('form#hcms_form_".$hypertagname."_".$id." iframe.rc_calendar').mouseover( function() {
                 preventSave_".$hypertagname."_".$id." = true;
               }).mouseout( function() {
@@ -2539,32 +2555,32 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
             var olddate_".$hypertagname."_".$id." = \"\";
             
             jq_inline('#".$hypertagname."_".$id."').click(function(event) {
-            event.stopPropagation();
-          
-            elem = jq_inline(this);
-            datefield = jq_inline('#hcms_datefield_".$hypertagname."_".$id."');
-            form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
+              event.stopPropagation();
             
-            olddate_".$hypertagname."_".$id." = datefield.val();
-            
-            if (olddate_".$hypertagname."_".$id." == '".$defaultText."') olddate_".$hypertagname."_".$id." = '';
-            
-            elem.hide();
-            form.css('display', 'inline');
-            
-            datefield.val('');
-            datefield.focus();
-            datefield.val(olddate_".$hypertagname."_".$id.");
-            show_cal_".$hypertagname."_".$id."();
+              elem = jq_inline(this);
+              datefield = jq_inline('#hcms_datefield_".$hypertagname."_".$id."');
+              form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
+              
+              olddate_".$hypertagname."_".$id." = datefield.val();
+              
+              if (olddate_".$hypertagname."_".$id." == '".$defaultText."') olddate_".$hypertagname."_".$id." = '';
+              
+              elem.hide();
+              form.css('display', 'inline');
+              
+              datefield.val('');
+              datefield.focus();
+              datefield.val(olddate_".$hypertagname."_".$id.");
+              show_cal_".$hypertagname."_".$id."();
             });
-            jq_inline('#hcms_datefield_".$hypertagname."_".$id."').click(function(event)
-            {
+            
+            jq_inline('#hcms_datefield_".$hypertagname."_".$id."').click(function(event) {
               event.stopPropagation();
             }).blur(date_save_".$hypertagname."_".$id.");
           });
           </script>
         ";
-        $element = "<input title=\"".$labelname.": ".getescapedtext ($hcms_lang['pick-a-date'][$lang], $hcms_charset, $lang)."\"type=\"text\" id=\"hcms_datefield_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\" /><br>";
+        $element = "<input title=\"".$labelname.": ".getescapedtext ($hcms_lang['pick-a-date'][$lang], $hcms_charset, $lang)."\" type=\"text\" id=\"hcms_datefield_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\" /><br>";
         break;
         
       // unformatted text
