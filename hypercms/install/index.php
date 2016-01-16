@@ -123,6 +123,7 @@ $convert = getrequest_esc ("convert");
 $ffmpeg = getrequest_esc ("ffmpeg");
 $yamdi = getrequest_esc ("yamdi");
 $exiftool = getrequest_esc ("exiftool");
+$tesseract = getrequest_esc ("tesseract");
 
 $setup_publication = getrequest_esc ("setup_publication");
 
@@ -255,6 +256,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
         $config = str_replace ("%ffmpeg%", $ffmpeg, $config);
         $config = str_replace ("%yamdi%", $yamdi, $config);
         $config = str_replace ("%exiftool%", $exiftool, $config);
+        $config = str_replace ("%tesseract%", $tesseract, $config);
         
         $config = str_replace ("%dbhost%", $db_host, $config);
         $config = str_replace ("%dbuser%", $db_username, $config);
@@ -908,6 +910,12 @@ $(document).ready(function(){
         <input type="text" id="exiftool" name="exiftool" placeholder="/usr/bin/exiftool" value="<?php if ($exiftool != "") echo $exiftool; elseif (@is_executable ("/usr/bin/exiftool"))  echo "/usr/bin/exiftool" ?>" style="width:200px;" />
       </td>
     </tr>
+    <tr>
+      <td nowrap="nowrap">Define path to Tesseract OCR (tesseract): </td>
+      <td align="left">
+        <input type="text" id="tesseract" name="tesseract" placeholder="/usr/bin/tesseract" value="<?php if ($yamdi != "") echo $yamdi; elseif (@is_executable ("/usr/bin/tesseract")) echo "/usr/bin/tesseract" ?>" style="width:200px;" />
+      </td>
+    </tr> 
     <tr>
       <td colspan="2" nowrap="nowrap">&nbsp;</td>
     </tr>

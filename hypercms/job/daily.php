@@ -113,7 +113,7 @@ if (sizeof ($config_files) > 0)
       checkdiskkey ();
       
       // send task notification to users
-      tasknotification (date("Y-m-d"));
+      if (function_exists ("tasknotification")) tasknotification (date("Y-m-d"));
       
       // send license notification to users
       $config_dir = opendir ($mgmt_config['abs_path_data']."config/");

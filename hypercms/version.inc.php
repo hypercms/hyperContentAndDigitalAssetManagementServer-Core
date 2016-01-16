@@ -1167,8 +1167,47 @@ _ Display title on top of table in reports
 - Bug fix: user_sendlink referred to old "taskmgmt" directory
 - Improvements for date picker (rich calender functions) for articel_edit, user_sendlink, opup_publish and function buildview
 - Improvements in rich calendar JS library
+- Implementation of object creation for database in case the object hash could not be retrieved by function getwrapperlink and getdownloadlink
+- Bug fix: Function rdbms_getfilesize did use DISTINCT in count function when counting objects which led to zero as result
+- Bug fix: Funtion rdbms_searchcontent did include the publication twice for the search in objectpath when searching for a location 
+- Added new column "planned" effort and renamed "duration" to "actual" effort in table "task"
+- Implementation of new field for planned effort into task management
+- Implementation of function update_database_v601 for update to version 6.0.1
+- Implementation of new main management configuration setting $mgmt_config['taskunit']
+- Implementation of function correctnumber
+- Bug fix: Removed task management permission from group_edit_form if task management module is not installed
+- Moved workflow functions to separate file
+- Moved task functions to separate file
+- Joined object and object_id as input parameter for DB Connect functions rdbms_createtask, rdbms_settask and rdbms_gettask due to new support for object path as input
+- Removed publication and location column from task management tables and added this information as mouseover title to object
+- Added date picker to task management
+- Improvements in function createtoken
+- Implementation of OCR (based on tesseract) to index the text in any kind of images, implemented in main confi file, installation routine and function indexcontent
+- Moved function inexcontent and unindexcontent from main to media API
+- Implementation of new main configuration setting for tables including into report management: $mgmt_config['report_tables']
+- Implementation of search feature in explorer
+- Replaced all single dates fields in all search forms with date picker
+- Improved search result sorting in function rdbms_searchcontent by sorting only the object names and not the object path
+- Bug fix: table sorting JS funtion hcms_sortTable die not clean html tags proberly if a line break was used in a tag. JS function hcms_stripHTML removes all line breaks before stripping the tags from the string.
+- New input paramater for CSS-display in function buildsearchform in template engine
+- Bug fix: Function createuser did still check for file system based task list of user
+
+Version 6.0.2
+Release 01/2016
+- Implementation of new project management feature
+- Implementation of new RDBMS functions rdbms_createproject, rdbms_setproject, rdbms_getproject, rdbms_deleteproject
+- Update of all language files for new project management feature
+- Implementation of new permission "desktopprojectmgmt" in group_edit_form, function editgroup and rootpermission
+- Updates in xmlschema/usergroup for new project management permissions in all default groups
+- Integration of project management in explorer
+- Removed sensor from Google Maps API loader
+- Bug fix: serach_form_rdbms did load default page template without checking if it exists
+- Various improvements in function rdbms_searchcontent in DB Connect
+- Implementation of new help bubble info for workplace controls
+- Added various video file extensions to include/format_ext
+- Removed maximum number of results from search form
 */
 
 // current version
-$version = "Version 6.0.1";
+$version = "Version 6.0.2";
 ?>

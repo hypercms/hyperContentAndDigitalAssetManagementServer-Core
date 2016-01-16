@@ -3419,8 +3419,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <b>".$labelname."</b>
                         </td>
                         <td align=left valign=top>
-                          <input type=\"text\" id=\"datefield_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" readonly=\"readonly\" ".$disabled." />
-                          <img name=\"datepicker\" src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />                                          
+                          <input type=\"text\" id=\"datefield_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" readonly=\"readonly\" ".$disabled." /><img src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />                                          
                         </td>
                       </tr>";
                       }
@@ -3456,8 +3455,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <b>".$labelname."</b> ".$arttaglink[$artid]."
                         </td>
                         <td align=left valign=top>
-                          <input type=\"text\" id=\"datefield_".$artid."_".$elementid."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" readonly=\"readonly\" ".$disabled." />
-                          <img name=\"datepicker\" src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />                                           
+                          <input type=\"text\" id=\"datefield_".$artid."_".$elementid."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" readonly=\"readonly\" ".$disabled." /><img src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />                                           
                         </td>
                       </tr>";
                       }                      
@@ -5840,7 +5838,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         // ================================ javascript for control frame call ================================
         if ($ctrlreload == "yes")
         {
-          $bodytag_controlreload = "if (eval (parent.frames['controlFrame'])) parent.frames['controlFrame'].location.hypercms_href='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';";
+          $bodytag_controlreload = "if (eval (parent.frames['controlFrame'])) parent.frames['controlFrame'].location.hypercms_href='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."'; ";
         }
         else $bodytag_controlreload = "";      
                    
@@ -6553,7 +6551,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         // ================================ javascript for control frame call ================================
         if ($ctrlreload == "yes")
         {
-          $bodytag_controlreload = "if (eval (parent.frames['controlFrame'])) parent.frames['controlFrame'].location.href='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';";
+          $bodytag_controlreload = "if (eval (parent.frames['controlFrame'])) parent.frames['controlFrame'].location.href='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."'; ";
         }
         else $bodytag_controlreload = "";     
               
@@ -7428,10 +7426,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
 // --------------------------------- buildsearchform -------------------------------------------
 // function: buildsearchform()
-// input: publication name (optional for report), template name (optional), or report name (optional), group access as array (optional)
+// input: publication name (optional for report), template name (optional), or report name (optional), group access as array (optional), CSS display value for label tag (optional)
 // output: form view / false on error
 
-function buildsearchform ($site="", $template="", $report="", $ownergroup="")
+function buildsearchform ($site="", $template="", $report="", $ownergroup="", $css_display="inline-block")
 { 
   global $user, $mgmt_config, $mgmt_lang_shortcut_default, $hcms_charset, $hcms_lang_name, $hcms_lang_shortcut, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang;    
              
@@ -7516,7 +7514,8 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="")
               if (@substr_count ($viewstore, $hypertag) > 0)
               {
                 $formitem[$key] = "
-            <tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><input name=\"search_textnode[".$id."]\" value=\"\" size=\"30\" /></td></tr>";         
+            <label for=\"text_".$id."\" style=\"display:".$css_display."; width:180px;\">".$label." </label>
+            <input id=\"text_".$id."\" name=\"search_textnode[".$id."]\" value=\"\" style=\"display:inline-block; width:220px; margin:1px;\" /><br />";         
               }
             }
             // search field for text lists (options)
@@ -7528,21 +7527,17 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="")
                 $list_array = explode ("|", $list);
 
                 $formitem[$key] = "
-            <tr>
-              <td align=left valign=top width=180 nowrap>".$label." </td>
-              <td align=left valign=top>
-                <select name=\"search_textnode[".$id."]\">";
-                
-                foreach ($list_array as $list_entry)
-                {
-                  $formitem[$key] .= "
-                  <option value=\"".$list_entry."\">".$list_entry."</option>";
-                }
-                               
-                $formitem[$key] .= "
-                </select>
-              </td>
-            </tr>";           
+            <label for=\"textl_".$id."\" style=\"display:".$css_display."; width:180px;\">".$label." </label>
+            <select id=\"textl_".$id."\" name=\"search_textnode[".$id."]\" style=\"display:inline-block; width:220px; margin:1px;\">";
+            
+            foreach ($list_array as $list_entry)
+            {
+              $formitem[$key] .= "
+              <option value=\"".$list_entry."\">".$list_entry."</option>";
+            }
+                           
+            $formitem[$key] .= "
+            </select><br />";           
               }
             }
             // search field for checked values
@@ -7551,7 +7546,8 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="")
               if (@substr_count ($viewstore, $hypertag) > 0)
               {                               
                 $formitem[$key] = "
-            <tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><input type=\"checkbox\" name=\"search_textnode[".$id."]\" value=\"".$value."\"> ".$value."</td></tr>";
+            <label for=\"textc_".$id."\" style=\"display:".$css_display."; width:180px;\">".$label." </label>
+            <input type=\"checkbox\" id=\"textc_".$id."\" name=\"search_textnode[".$id."]\" value=\"".$value."\" style=\"margin:1px;\" /> ".$value."<br />";
               }
             }
             // search field for date
@@ -7560,13 +7556,8 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="")
               if (@substr_count ($viewstore, $hypertag) > 0)
               {
                 $formitem[$key] = "
-            <tr>
-              <td align=left valign=top width=180 nowrap>".$label." </td>
-              <td align=left valign=top>
-                <input type=\"text\" id=\"datefield_".$id."\" name=\"search_textnode[".$id."]\" value=\"\" readonly=\"readonly\" />
-                <img name=\"datepicker\" src=\"".getthemelocation()."img/button_datepicker.gif\" onclick=\"show_cal(this, 'datefield_".$id."', '".$format."');\" align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" />                                        
-              </td>
-            </tr>";
+            <label for=\"datefield_".$id."\" style=\"display:".$css_display."; width:180px;\">".$label." </label>
+            <input type=\"text\" id=\"datefield_".$id."\" name=\"search_textnode[".$id."]\" value=\"\" readonly=\"readonly\" style=\"display:inline-block; margin:1px;\" /><img src=\"".getthemelocation()."img/button_datepicker.gif\" onclick=\"show_cal(this, 'datefield_".$id."', '".$format."');\" align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" /><br />";
               }
             }
             // search field for media alternative text
@@ -7575,7 +7566,8 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="")
               if (@substr_count ($viewstore, $hypertag) > 0)
               {
                 $formitem["media:".$key] = "
-            <tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><input name=\"search_textnode[media:".$id."]\" value=\"\" size=\"30\" /></td></tr>";         
+            <label for=\"media_".$id."\" style=\"display:".$css_display."; width:180px;\">".$label." </label>
+            <input id=\"media_".$id."\" name=\"search_textnode[media:".$id."]\" value=\"\" style=\"display:inline-block; width:220px; margin:1px;\" /><br />";         
               }
             }
             // search field for link text
@@ -7584,7 +7576,8 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="")
               if (@substr_count ($viewstore, $hypertag) > 0)
               {
                 $formitem["link:".$key] = "
-            <tr><td align=left valign=top width=180 nowrap>".$label." </td><td align=left valign=top><input name=\"search_textnode[link:".$id."]\" value=\"\" size=\"30\" /></td></tr>";         
+            <label for=\"link_".$id."\" style=\"display:".$css_display."; width:180px;\">".$label." </label>
+            <input id=\"link_".$id."\" name=\"search_textnode[link:".$id."]\" value=\"\" style=\"display:inline-block; width:220px; margin:1px;\" /><br />";         
               }
             }
           }

@@ -9,6 +9,38 @@
  
 // ============================================ MAIN FUNCTIONS ========================================
 
+// ========================================== NUMBERS =======================================
+
+// ------------------------------------- correctnumber ------------------------------------------
+
+// function: correctnumber ()
+// input: formated number
+// output: correct mathematical number / false on error
+
+function correctnumber ($number)
+{
+  global $mgmt_config;
+  
+  if ($number != "")
+  {
+    $comma = strpos ($number, ",");
+    $dot = strpos ($number, ".");
+  
+    // example: 1.200,50 => 1200.50
+    if ($comma > $dot)
+    {
+      return floatval (str_replace (',', '.', str_replace ('.', '', $number)));
+    }
+    // example: 1,200.50 => 1200.50
+    elseif ($dot > $comma)
+    {
+      return floatval (str_replace (',', '', $number));
+    }
+    else return intval ($number);
+  }
+  else return false;
+}
+
 // ========================================== SPECIALCHARACTERS =======================================
 
 // ------------------------------------- convertchars ------------------------------------------
@@ -1210,10 +1242,26 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
         $location = $location.$object."/";
         $object = ".folder";
       } 
-        
-      // get object id
+      
       $objectpath = convertpath ($site, $location.$object, $cat);
+      
+      // get object id
       $object_hash = rdbms_getobject_hash ($objectpath);
+      
+      // try to recreate object entry in database
+      if ($object_hash == false)
+      {
+        $object_info = getobjectinfo ($site, $location, $object, $user);
+        
+        if (!empty ($object_info['container_id']) && !empty ($object_info['template']))
+        {
+          $container_id = $object_info['container_id'];
+          rdbms_createobject ($object_info['container_id'], $objectpath, $object_info['template'], $object_info['content'], $user);
+          
+          // get object id
+          $object_hash = rdbms_getobject_hash ($objectpath);
+        }
+      }
     }
     // if object id
     elseif ($object_id != "")
@@ -1272,10 +1320,26 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
         $location = $location.$object."/";
         $object = ".folder";
       } 
-        
-      // get object id
+
       $objectpath = convertpath ($site, $location.$object, $cat);
+      
+      // get object id
       $object_hash = rdbms_getobject_hash ($objectpath);
+      
+      // try to recreate object entry in database
+      if ($object_hash == false)
+      {
+        $object_info = getobjectinfo ($site, $location, $object, $user);
+        
+        if (!empty ($object_info['container_id']) && !empty ($object_info['template']))
+        {
+          $container_id = $object_info['container_id'];
+          rdbms_createobject ($object_info['container_id'], $objectpath, $object_info['template'], $object_info['content'], $user);
+          
+          // get object id
+          $object_hash = rdbms_getobject_hash ($objectpath);
+        }
+      }
     }
     // if object id
     elseif ($object_id != "")
@@ -2974,903 +3038,7 @@ function savecontainer ($container, $type="work", $data, $user, $init=false)
   else return false;
 }
 
-// ========================================= TASKMANAGEMENT ============================================
-
-// ---------------------------------------------- createtask ----------------------------------------------
-// function: createtask()
-// input: publication name, from_user name [string], from_email [email-address], to_user name [string], to_email [email-address], start date (optional), finish date (optional),
-//        category [string], object [string], task name [string], message (optional) [string], sendmail [true/false], priority [high,medium,low] (optional)
-// output: true/false
-// requires: config.inc.php
-
-// description:
-// Set a new user task and send optional e-mail to user.
-// Since verion 5.8.4 the data will be stored in RDBMS instead of XML files.
-
-function createtask ($site, $from_user, $from_email, $to_user, $to_email, $startdate="", $finishdate="", $category, $object, $taskname, $message="", $sendmail=true, $priority="low")
-{
-  global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
-  
-  // include hypermailer class
-  if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");  
-
-  // ---------------------------------- create new task -----------------------------------
-  // load task file of user, set new task and save task file
-  if (valid_objectname ($to_user) && $taskname != "" && strlen ($taskname) <= 200 && strlen ($message) <= 3600)
-  {
-    // load user file
-    $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-      
-    if ($userdata != "")
-    {       
-      // get user node and extract required information    
-      $usernode = selectcontent ($userdata, "<user>", "<login>", $to_user);
-
-      if (!empty ($usernode[0]))
-      {
-        // email
-        if ($to_email == "")
-        {
-          $temp = getcontent ($usernode[0], "<email>");
-          if (!empty ($temp[0])) $to_email = $temp[0];
-          else $to_email = "";
-        }
- 
-        // language
-        $temp = getcontent ($usernode[0], "<language>");            
-        if (!empty ($temp[0])) $to_lang = $temp[0];
-        else $to_lang = "en";
-      }
-    }
-
-    // load language of user if it has not been loaded
-    if (!empty ($to_lang) && empty ($hcms_lang['new-task-from-user'][$to_lang]))
-    {
-      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($to_lang));
-    }
-
-    // get local date today (jjjj-mm-dd hh:mm)
-    $mgmt_config['today'] = date ("Y-m-d H:i", time());
-
-    // convert object path if necessary
-    if (substr_count ($object, "%page%") == 0 && substr_count ($object, "%comp%") == 0)
-    {
-      $object_esc = convertpath ($site, $object, "");  
-    }
-    else
-    {
-      $object_esc = $object; 
-    }
-    
-    // deconvert object path
-    $object_url = deconvertpath ($object_esc, "url");
-    
-    // get object id
-    if ($mgmt_config['db_connect_rdbms'] != "") $object_id = rdbms_getobject_id ($object_esc);
-    else $object_id = "";
-    
-    // check priority
-    if (!in_array ($priority, array("high","medium","low"))) $priority = "low";
-
-    // save task in database
-    $result = rdbms_createtask ($object_id, $from_user, $to_user, $startdate, $finishdate, $category, $taskname, $message, $priority);
-
-    // send mail
-    if ($result == true && $sendmail == true && !empty ($to_email))
-    {
-      $location = getlocation ($object_esc);
-      $page = getobject ($object_esc);
-      $cat = getcategory ($site, $object_esc);
-      $object_link = createaccesslink ($site, $location, $page, $cat, "", $to_user, "al");
-      
-      // email schema
-      if ($from_email != "") $email_schema = " [<a href='mailto:".$from_email."'>".$from_email."</a>]";
-      else $email_schema = "";
-      
-      $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\"><strong>".$hcms_lang['new-task-from-user'][$to_lang]." '".$from_user."'".$email_schema.":</strong>\n".$message."\n\n".$object_link."</span>";
-  
-      $mailer = new HyperMailer();
-      $mailer->IsHTML(true);
-      $mailer->AddAddress ($to_email, $to_user);
-      $mailer->AddReplyTo ($from_email, $from_user);
-      $mailer->From = $from_email;
-      $mailer->Subject = "hyperCMS: ".$taskname."-".$hcms_lang['new-task-from-user'][$to_lang]." ".$from_user;
-      $mailer->CharSet = $hcms_lang_codepage[$to_lang];
-      $mailer->Body = html_decode (nl2br ($body), $hcms_lang_codepage[$to_lang]);
-      
-      // send mail
-      if ($mailer->Send())
-      {
-        $errcode = "00202";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|task notification has been sent to ".$to_user." (".$to_email.") on object ".$object_esc; 
-      }
-      else
-      {
-        $errcode = "50202";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|task notification failed for ".$to_user." (".$to_email.") on object ".$object_esc." (mail could not be sent)";  
-      }
-      
-      // save log
-      savelog (@$error);
-    }
-    
-    return $result;
-  }
-  else return false;
-}
-
-// ---------------------------------------------- settask ----------------------------------------------
-// function: settask()
-// input: task ID, to_user name (optional) [string], start date (optional), finish date (optional),
-//        category (optional) [string], task name (optional) [string], message (optional) [string], 
-//        sendmail [true/false], priority [high,medium,low] (optional), status (optional) [0-100], task duration in hh:mm (optional)
-// output: true/false
-// requires: config.inc.php
-
-// description:
-// Set a new user task and send optional e-mail to user.
-// Since verion 5.8.4 the data will be stored in RDBMS instead of XML files.
-
-function settask ($task_id, $to_user="", $startdate="", $finishdate="", $taskname="", $message="", $sendmail=true, $priority="", $status="", $duration="")
-{
-  global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
-  
-  // include hypermailer class
-  if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");  
- 
-  if ($task_id != "")
-  {
-    // get task
-    $gettask = rdbms_gettask ($task_id);
-    
-    if ($to_user == "") $to_user = $gettask[0]['to_user'];
-    $from_user = $gettask[0]['from_user'];
-    if (filter_var ($from_user, FILTER_VALIDATE_IP)) $from_user = "System";
-    $to_user_old = $gettask[0]['to_user'];
-    $object_id = $gettask[0]['object_id'];
-    $startdate_old = $gettask[0]['startdate'];
-    $finishdate_old = $gettask[0]['finishdate'];
-    $taskname_old = $gettask[0]['taskname'];
-    $message_old = $gettask[0]['description'];
-    $priority_old = $gettask[0]['priority'];
-    $status_old = $gettask[0]['status'];
-    $duration_old = $gettask[0]['duration'];
-  
-    // get e-mail of user if the task description (message) has been changed
-    if ($sendmail && valid_objectname ($to_user) && ($message != $message_old && $message != "" && strlen ($message) < 3600))
-    {
-      // load user file
-      $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-        
-      if ($userdata != "")
-      {       
-        // get user node and extract required information    
-        $usernode = selectcontent ($userdata, "<user>", "<login>", $to_user);
-  
-        if (!empty ($usernode[0]))
-        {
-          // email
-          $temp = getcontent ($usernode[0], "<email>");
-          if (!empty ($temp[0])) $to_email = $temp[0];
-          else $to_email = "";
-   
-          // language
-          $temp = getcontent ($usernode[0], "<language>");            
-          if (!empty ($temp[0])) $to_lang = $temp[0];
-          else $to_lang = "en";
-        }
-        
-        // get user node and extract required information    
-        $usernode = selectcontent ($userdata, "<user>", "<login>", $from_user);
-  
-        if (!empty ($usernode[0]))
-        {
-          // email
-          $temp = getcontent ($usernode[0], "<email>");
-          if (!empty ($temp[0])) $from_email = $temp[0];
-          else $from_email = "";
-        }
-      }
-  
-      // load language of user if it has not been loaded
-      if (!empty ($to_lang) && empty ($hcms_lang['new-task-from-user'][$to_lang]))
-      {
-        require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($to_lang));
-      }
-    }
-
-    // check priority
-    if ($priority != "" && !in_array ($priority, array("high","medium","low"))) $priority = "low";
-
-    // if any value has been changed
-    if ($to_user != $to_user_old || $startdate != $startdate_old || $finishdate != $finishdate_old || $taskname != $taskname_old || $message != $message_old || $priority != $priority_old || $status != $status_old || $duration != $duration_old)
-    {
-      $settask = rdbms_settask ($task_id, $to_user, $startdate, $finishdate, $taskname, $message, $priority, $status, $duration);
-      
-      // send mail
-      if ($settask && $sendmail == true && !empty ($to_email))
-      {
-        $object_link = createaccesslink ("", "", "", "", $object_id, $to_user, "al");
-        
-        // email schema
-        if ($from_email != "") $email_schema = " [<a href='mailto:".$from_email."'>".$from_email."</a>]";
-        else $email_schema = "";
-      
-        $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\"><strong>".$hcms_lang['new-task-from-user'][$to_lang]." '".$from_user."'".$email_schema.":</strong>\n".$message."\n\n".$object_link."</span>";
-    
-        $mailer = new HyperMailer();
-        $mailer->IsHTML(true);
-        $mailer->AddAddress ($to_email, $to_user);
-        $mailer->AddReplyTo ($from_email, $from_user);
-        $mailer->From = $from_email;
-        $mailer->Subject = "hyperCMS: ".$hcms_lang['new-task-from-user'][$to_lang]." ".$from_user;
-        $mailer->CharSet = $hcms_lang_codepage[$to_lang];
-        $mailer->Body = html_decode (nl2br ($body), $hcms_lang_codepage[$to_lang]);
-        
-        // send mail
-        if ($mailer->Send())
-        {
-          $errcode = "00205";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|updated task notification has been sent to ".$to_user." (".$to_email.")"; 
-        }
-        else
-        {
-          $errcode = "50205";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|updated task notification failed for ".$to_user." (".$to_email.")";  
-        }
-      }
-    }
-    // nothing has changed
-    else $settask = true;
-    
-    if ($settask)
-    {
-      $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['the-data-was-saved-successfully'][$lang]."</span>\n";
-    }
-    else
-    {
-      $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['the-data-could-not-be-saved'][$lang]."</span>\n";
-    }
-  }
-  else
-  {
-    $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span>\n";
-  }
-  
-  // save log
-  savelog (@$error); 
-  
-  $result = array();
-  
-  $result['add_onload'] = $add_onload;
-  $result['message'] = $show;
-
-  return $result;
-}
-
-// ---------------------------------------------- deletetask ----------------------------------------------
-// function: deletetask()
-// input: task Id or array of task IDs to be deleted
-// output: true/false
-// requires: config.inc.php
-
-// description:
-// Deletes user tasks.
-
-function deletetask ($task_id)
-{
-  global $mgmt_config, $hcms_lang, $lang;
-
-  if ($task_id != "" || is_array ($task_id))
-  {
-    if (!is_array ($task_id))
-    {
-      $temp_id = $task_id;
-      $task_id = array();
-      $task_id[0] = $temp_id;
-    }
-  
-    if (is_array ($task_id) && sizeof ($task_id) > 0)
-    {
-      // delete tasks
-      foreach ($task_id as $id)
-      {
-        if ($id != "")
-        {
-          $result = rdbms_deletetask ($id);
-          
-          if ($result == false)
-          {
-            $errcode = "10402";  
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|task with ID ".$task_id." could not be deleted";
-          }
-        }
-      }
-
-      $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['the-tasks-were-successfully-removed'][$lang]."</span>\n";
-    }
-    else
-    {
-      $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['no-tasks-selected'][$lang]."</span>\n";
-    }
-  }
-  else
-  {
-    $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span>\n";
-  }
-  
-  // save log
-  savelog (@$error); 
-  
-  $result = array();
-  
-  $result['add_onload'] = $add_onload;
-  $result['message'] = $show;
-
-  return $result;  
-}
-
-// ---------------------------------------------- tasknotification ----------------------------------------------
-// function: tasknotification()
-// input: date
-// output: true/false
-// requires: config.inc.php
-
-// description:
-// Sends e-mail notifications to users if a task starts or ends on the given date.
-
-function tasknotification ($date)
-{
-  global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
-  
-  // include hypermailer class
-  if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");  
- 
-  if ($date != "")
-  {
-    // load user file and define user array
-    $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-    
-    $user_array = array();
-    
-    if ($userdata != "")
-    {       
-      // get user node and extract required information    
-      $usernode = getcontent ($userdata, "<user>");
-    
-      foreach ($usernode as $temp)
-      {
-        if ($temp != "")
-        {
-          $login = getcontent ($temp, "<login>");
-          $email = getcontent ($temp, "<email>");
-          $realname = getcontent ($temp, "<realname>");
-          $language = getcontent ($temp, "<language>");
-          
-          if (!empty ($login[0]))
-          {
-            $username = $login[0];
-            $user_array[$username]['email'] = $email[0];
-            $user_array[$username]['realname'] = $realname[0];
-            $user_array[$username]['language'] = $language[0];
-          }
-        }
-      }
-    }
-    else
-    {
-      $errcode = "50304";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|user data could not be loaded for task notification";  
-    }
-    
-    if (sizeof ($user_array) > 0)
-    {
-      // send task start notification to users
-      $task_start = rdbms_gettask ("", "", "", "", "", date("Y-m-d"));
-      
-      if (is_array ($task_start))
-      { 
-        foreach ($task_start as $task)
-        {
-          $task_id = $task['task_id'];
-          $object_id = $task['object_id'];
-          $taskname = $task['taskname'];
-          $description = $task['description'];
-          $from_user = $task['from_user'];
-          $to_user = $task['to_user'];
-          $to_lang = "en";
-
-          if ($to_user != "" && !empty ($user_array[$to_user]['email']))
-          {
-            // set language for recipient
-            if (!empty ($user_array[$to_user]['language'])) $to_lang = $user_array[$to_user]['language'];
-          
-            // send mail
-            if ($object_id != "") $object_link = createaccesslink ("", "", "", "", $object_id, $to_user, "al");
-            else $object_link = "";
-            
-            // email schema
-            if ($from_user != "" && !empty ($user_array[$from_user]['email'])) $email_schema = " [<a href='mailto:".$user_array[$from_user]['email']."'>".$user_array[$from_user]['email']."</a>]";
-            else $email_schema = "";
-          
-            $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\"><strong>".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['start'][$to_lang]." '".$taskname."' (".$task_id.")</strong>\n".$hcms_lang['from'][$to_lang]." '".$from_user."'".$email_schema."\n\n".$description."\n\n".$object_link."</span>";
-        
-            $mailer = new HyperMailer();
-            $mailer->IsHTML(true);
-            $mailer->AddAddress ($user_array[$to_user]['email'], $to_user);
-            $mailer->AddReplyTo ($user_array[$from_user]['email'], $from_user);
-            $mailer->From = $user_array[$from_user]['email'];
-            $mailer->Subject = "hyperCMS: ".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['start'][$to_lang]." '".$taskname."' (".$task_id.")";
-            $mailer->CharSet = $hcms_lang_codepage[$to_lang];
-            $mailer->Body = html_decode (nl2br ($body), $hcms_lang_codepage[$to_lang]);
-            
-            // send mail
-            if ($mailer->Send())
-            {
-              $errcode = "00305";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|task start notification has been sent to ".$to_user." (".$user_array[$to_user]['email'].")"; 
-            }
-            else
-            {
-              $errcode = "50305";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|task start notification failed for ".$to_user." (".$user_array[$to_user]['email'].")";  
-            }
-          }
-        }
-      }
-      
-      // send task end notification to users
-      $task_end = rdbms_gettask ("", "", "", "", "", "", date("Y-m-d"));
-      
-      if (is_array ($task_end))
-      {
-        foreach ($task_end as $task)
-        {
-          $task_id = $task['task_id'];
-          $object_id = $task['object_id'];
-          $taskname = $task['taskname'];
-          $description = $task['description'];
-          $from_user = $task['from_user'];
-          $to_user = $task['to_user'];
-          $to_lang = "en";
-          
-          if ($to_user != "" && !empty ($user_array[$to_user]['email']))
-          {
-            // set language for recipient
-            if (!empty ($user_array[$to_user]['language'])) $to_lang = $user_array[$to_user]['language'];
-            
-            // send mail
-            if ($object_id != "") $object_link = createaccesslink ("", "", "", "", $object_id, $to_user, "al");
-            else $object_link = "";
-            
-            // email schema
-            if ($from_user != "" && !empty ($user_array[$from_user]['email'])) $email_schema = " [<a href='mailto:".$user_array[$from_user]['email']."'>".$user_array[$from_user]['email']."</a>]";
-            else $email_schema = "";
-          
-            $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\"><strong>".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['end'][$to_lang]." '".$taskname."' (".$task_id.")</strong>\n".$hcms_lang['from'][$to_lang]." '".$from_user."'".$email_schema."\n\n".$description."\n\n".$object_link."</span>";
-        
-            $mailer = new HyperMailer();
-            $mailer->IsHTML(true);
-            $mailer->AddAddress ($user_array[$to_user]['email'], $to_user);
-            $mailer->AddReplyTo ($user_array[$from_user]['email'], $from_user);
-            $mailer->From = $user_array[$from_user]['email'];
-            $mailer->Subject = "hyperCMS: ".$hcms_lang['task-management'][$to_lang]."-".$hcms_lang['end'][$to_lang]." '".$taskname."' (".$task_id.")";
-            $mailer->CharSet = $hcms_lang_codepage[$to_lang];
-            $mailer->Body = html_decode (nl2br ($body), $hcms_lang_codepage[$to_lang]);
-            
-            // send mail
-            if ($mailer->Send())
-            {
-              $errcode = "00306";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|task end notification has been sent to ".$to_user." (".$user_array[$to_user]['email'].")"; 
-            }
-            else
-            {
-              $errcode = "50306";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|task end notification failed for ".$to_user." (".$user_array[$to_user]['email'].")";  
-            }
-          }
-        }
-      }
-    }
-  }
-  
-  // save log
-  savelog (@$error);
-  
-  if (sizeof (@$error) > 0) return false;
-  else return true;
-}
-
 // ========================================= WORKFLOW ============================================
-
-// ------------------------- createworfklow -----------------------------
-// function: createworfklow()
-// input: publication name, worfklow name, category [man,script], max. users, max. scripts
-// output: result array
-
-// description:
-// This function creates a new workflow.
-
-function createworkflow ($site, $wf_name, $cat, $usermax=2, $scriptmax=0)
-{
-  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
-  
-  $add_onload = "";
-  $show = "";
-  
-  // set default language
-  if ($lang == "") $lang = "en";
-  
-  if (!valid_publicationname ($site) || !valid_objectname ($wf_name) || strlen ($wf_name) > 100 || $cat == "")
-  {
-    $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['a-name-is-required'][$lang]."</span>\n";
-  }
-  else
-  {
-    // check category and define extension and category name
-    if ($cat == "man")
-    {
-      $ext = ".xml";
-    }
-    elseif ($cat == "script")
-    {
-      $ext = ".inc.php";
-    }
-
-    // create pers file name
-    $wf_name = trim ($wf_name);
-    $wf_file = $site.".".$wf_name.$ext;
-
-    // upload workflow file
-    if (@is_file ($mgmt_config['abs_path_data']."workflow_master/".$wf_file))
-    {
-      $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-name'][$lang]."\n";
-    }
-    else
-    {
-      if ($cat == "man")
-      {
-        $workflow_data = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
-<workflow>
-<name>".$wf_name."</name>
-<usermax>".$usermax."</usermax>
-<scriptmax>".$scriptmax."</scriptmax>
-<items>
-</items>
-</workflow>";
-
-        // save workflow file
-        $test = savefile ($mgmt_config['abs_path_data']."workflow_master/", $wf_file, $workflow_data);
-
-        if ($test == false)
-        {
-          $add_onload = "";
-          $show = "<span class=hcmsHeadline>".$item_type." '".$wf_name."' ".$hcms_lang['the-workflow-object-could-not-be-created'][$lang]."</span>\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
-        }
-        else
-        {
-          $add_onload = "parent.frames['mainFrame'].location.href='workflow_manager.php?site=".url_encode($site)."&wf_name=".url_encode($wf_name)."'; ";
-          $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-was-created'][$lang]."</span>\n";
-        }
-      }
-      elseif ($cat == "script")
-      {
-        // save workflow file
-        $test = savefile ($mgmt_config['abs_path_data']."workflow_master/", $wf_file, "");
-
-        if ($test == false)
-        {
-          $add_onload = "";
-          $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
-        }
-        else
-        {
-          $add_onload = "parent.frames['mainFrame'].location.href='workflow_script_form.php?site=".url_encode($site)."&cat=".url_encode($cat)."&save=no&preview=no&wf_file=".url_encode($wf_file)."'; ";
-          $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-was-created'][$lang]."</span>\n";
-        }
-      }
-    }
-  }
-
-  $result = array();
-  
-  $result['add_onload'] = $add_onload;
-  $result['message'] = $show;
-
-  return $result;
-}
-
-// ------------------------- deleteworkflow -----------------------------
-// function: deleteworkflow()
-// input: publication name, worfklow name, category [man,script]
-// output: result array
-
-// description:
-// This function deletes a workflow.
-
-function deleteworkflow ($site, $wf_name, $cat)
-{
-  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
-
-  $add_onload = "";
-  $show = "";
-  
-  // set default language
-  if ($lang == "") $lang = "en";
-  
-  if (!valid_publicationname ($site) || !valid_objectname ($wf_name) || $cat == "")
-  {
-    $add_onload = "";
-    $show = "<span class=hcmsHeadline>".$hcms_lang['a-name-is-required'][$lang]."</span>\n";
-  }
-  else
-  {
-    // check if file name is an attribute of a sent string
-    if (strpos ($wf_name, ".php?") > 0)
-    {
-      // extract file name
-      $wf_file = getattribute ($wf_name, "wf_file");
-    }
-    // check if file is given
-    elseif (strpos ($wf_name, ".xml") > 0 || strpos ($wf_name, ".inc.php") > 0)
-    {
-      $wf_file = $wf_name;
-    }
-    // check if name is given
-    elseif ($cat == "man")
-    {
-      $wf_file = $site.".".$wf_name.".xml";
-    }
-    elseif ($cat == "script")
-    {
-      $wf_file = $site.".".$wf_name.".inc.php";
-    }    
-
-    // define category name and extract pers name
-    if ($cat == "man")
-    {
-      $wf_name = substr ($wf_file, strpos ($wf_file, ".")+1);
-      $wf_name = substr ($wf_name, 0, strpos ($wf_name, ".xml"));
-    }
-    elseif ($cat == "script")
-    {
-      $wf_name = substr ($wf_file, strpos ($wf_file, ".")+1);
-      $wf_name = substr ($wf_name, 0, strpos ($wf_name, ".inc.php"));
-    }
-    
-    if (@fopen ($mgmt_config['abs_path_data']."workflow_master/".$wf_file, 'r+'))
-    {
-      $deletefile = deletefile ($mgmt_config['abs_path_data']."workflow_master/", $wf_file, 0);
-    
-      if ($deletefile == true)
-      {
-        $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-was-removed'][$lang]."</span>\n";
-      }
-      else
-      {
-        $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-could-not-be-removed'][$lang]."</span><br />\n".$hcms_lang['the-workflow-object-does-not-exist-or-you-do-not-have-write-permissions'][$lang]."\n";
-      }  
-    }
-    else
-    {
-      $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['the-workflow-object-could-not-be-removed'][$lang]."</span><br />\n".$hcms_lang['the-workflow-object-does-not-exist-or-you-do-not-have-write-permissions'][$lang]."\n";
-    }
-  }
-
-  $result = array();
-  
-  $result['add_onload'] = $add_onload;
-  $result['message'] = $show;
-
-  return $result;
-}
-
-// --------------------------------------- buildworkflow -----------------------------------------
-// function: buildworkflow()
-// input: workflow [2 dim. Array]
-// output: workflow item
-// requires: editcontent
-
-function buildworkflow ($workflow_data)
-{
-  if ($workflow_data != "")
-  {
-    // get inactive/passive items
-    $wfusermax_array = getcontent ($workflow_data, "<usermax>"); 
-    $wfusermax = $wfusermax_array[0];
-    $scriptmax_array = getcontent ($workflow_data, "<scriptmax>"); 
-    $scriptmax = $scriptmax_array[0];
-    
-    $activeitem_user_array = selectxmlcontent ($workflow_data, "<item>", "<type>", "user*");
-
-    $activeid_user_array = array();
-    $passiveid_user_array = array();
-    $activeid_script_array = array();
-    $passiveid_script_array = array();
-  
-    if ($activeitem_user_array != false)
-    {
-      // count active users
-      $item_user_count = sizeof ($activeitem_user_array); 
-    
-      foreach ($activeitem_user_array as $activeitem_user)
-      { 
-        $activeid = getcontent ($activeitem_user, "<id>");
-        $activeid_user_array[] = $activeid[0];
-      }
-    }
-    else 
-    {
-      $activeid_user_array[0] = "";
-      $item_user_count = 0;
-    }
-    
-    $activeitem_script_array = selectxmlcontent ($workflow_data, "<item>", "<type>", "script");
-    
-    if ($activeitem_script_array != false)
-    {
-      // count active users
-      $item_script_count = sizeof ($activeitem_script_array); 
-        
-      foreach ($activeitem_script_array as $activeitem_script)
-      { 
-        $activeid = getcontent ($activeitem_script, "<id>");
-        $activeid_script_array[] = $activeid[0];
-      }
-    }  
-    else 
-    {
-      $activeid_script_array[0] = "";
-      $item_script_count = 0;
-    }
-    
-    $passiveid_script_array = array();
-  
-    for ($i = 1; $i <= $wfusermax; $i++)
-    {
-      if (!in_array ("u.".$i, $activeid_user_array) && $item_user_count < $wfusermax) 
-      {
-        $passiveid_user_array[] = "u.".$i;
-        $item_user_count++;
-      }
-    }
-    
-    for ($i = 1; $i <= $scriptmax; $i++)
-    {
-      if (!in_array ("s.".$i, $activeid_script_array) && $item_script_count < $scriptmax) 
-      {
-        $passiveid_script_array[] = "s.".$i;
-        $item_script_count++;
-      }
-    }
-    
-    // build workflow stage arrays
-    // get inactive items
-    if ($passiveid_user_array != false && sizeof ($passiveid_user_array) >= 1)
-    {
-      foreach ($passiveid_user_array as $passiveid_user)
-      {
-        $item_array_unique[0][] = "<item>
-<id>".$passiveid_user."</id>
-<pre></pre>
-<suc></suc>
-<type>user</type>
-<user></user>
-<group></group>
-<role></role>
-<script></script>
-<passed></passed>
-<date>-</date>
-</item>"; 
-      }
-    }
-  
-    if ($passiveid_script_array != false && sizeof ($passiveid_script_array) >= 1)
-    {
-      foreach ($passiveid_script_array as $passiveid_script)
-      {
-        $item_array_unique[0][] = "<item>
-<id>".$passiveid_script."</id>
-<pre></pre>
-<suc></suc>
-<type>script</type>
-<user></user>
-<group></group>
-<role></role>
-<script></script>
-<passed></passed>
-<date>-</date>
-</item>"; 
-      } 
-    }   
-
-    // get start item 
-    $item_array[1] = selectxmlcontent ($workflow_data, "<item>", "<id>", "u.1");  
-    $stage = 1;          
-    $stop = false;
-
-    if ($item_array != false)
-    {
-      // get items of next instances
-      for ($i=1; $stop==false; $i++)
-      {     
-        // get items of next instance   
-        if (isset ($item_array[$stage]) && is_array ($item_array[$stage]) && sizeof ($item_array[$stage]) >= 1)
-        {
-          // increase stage
-          $stage++;
-
-          foreach ($item_array[$stage-1] as $item)
-          {
-            // get id of item
-            $id = getcontent ($item, "<id>");
-            
-            // get next items
-            if ($id != false && $id[0] != "")
-            {
-              $new_item_array[$stage] = selectxmlcontent ($workflow_data, "<item>", "<pre>", $id[0]);
-              
-              if ($new_item_array[$stage] != false && sizeof ($new_item_array[$stage]) >= 1)
-              {
-                if (isset ($item_array[$stage]) && sizeof ($item_array[$stage]) >= 1)
-                {
-                  $item_array[$stage] = array_merge ($item_array[$stage], $new_item_array[$stage]);
-                }
-                else $item_array[$stage] = $new_item_array[$stage];
-              }
-            }
-          }
-        }
-        // stop if no items were found
-        else $stop = true;
-      }
-    }
-    
-    // set stage_max
-    $stage_max = $stage - 1;
-    
-    $id_collect = array ();
-    
-    // collect unique item (id)
-    for ($stage=$stage_max; $stage>=1; $stage--)
-    {
-      foreach ($item_array[$stage] as $item)
-      {
-        $id = getcontent ($item, "<id>");    
-        
-        if (!in_array ($id[0], $id_collect)) 
-        {
-          $item_array_unique[$stage][] = $item;
-        }
-        
-        $id_collect[] = $id[0];
-      }
-    }
-    
-    // return result, 2-dimensional array item[stage][items in stage] or false if fails to build workflow
-    // 1st dimension [stage]:
-    // stage = 0: items not used in the workflow
-    // stage = 1...n: stages in workflow with 1 to m items
-    // 2nd dimension [item]:
-    // item = 0...m: item 1 to item m
-    
-    if (isset ($item_array_unique)) return $item_array_unique;
-    else return false;
-  }
-  else return false;
-} 
 
 // -------------------------------------- getworkflowitem ----------------------------------------
 // function: getworkflowitem()
@@ -4027,624 +3195,6 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
   else return false;
 }
 
-// -------------------------------------------- workflowaccept -------------------------------------------
-// function: workflowaccept()
-// input: publication name [string], location name [string], object name [string], workflow [XML-string], item id [string], user name [string], task message [string], sendmail [true,false], priority [high,medium,low]
-// output: workflow [XML-string]/false
-// requires: config.inc.php, editcontent, fileoperation
-
-function workflowaccept ($site, $location, $object, $workflow, $item_id, $user, $message, $sendmail=true, $priority="medium")
-{
-  global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
-  
-  // set default language
-  if ($lang == "") $lang = "en";
-  
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $workflow != "" && $item_id != "" && in_array ($priority, array("high","medium","low")))
-  {
-    // reset workflow is start user accepts and forwards 
-    if ($item_id == "u.1")
-    {   
-      // load master workflow and update current workflow with the master
-      $name_array = getcontent ($workflow, "<name>");
-      
-      if ($name_array != false && $name_array[0] != "")
-      {
-        // get current start user     
-        $start_item_array = selectcontent ($workflow, "<item>", "<id>", $item_id);  
-        
-        $starttype_array = getcontent ($start_item_array[0], "<type>"); 
-        
-        if ($starttype_array[0] == "user")
-        {
-          $startuser_array = getcontent ($start_item_array[0], "<user>");      
-        }
-        elseif ($starttype_array[0] == "usergroup")
-        {
-          $startgroup_array = getcontent ($start_item_array[0], "<group>");  
-        }
-      
-        // load master workflow
-        $workflow_reset = loadfile ($mgmt_config['abs_path_data']."workflow_master/", $site.".".$name_array[0].".xml");
-        
-        if ($workflow_reset != false && $workflow_reset != "") $workflow = $workflow_reset; 
-        
-        // get start user
-        $setitem_array = selectcontent ($workflow, "<item>", "<id>", "u.1");
-        
-        if ($start_item_array != false) 
-        {
-          $settype_array = getcontent ($setitem_array[0], "<type>"); 
-          
-          if ($settype_array[0] == "user")
-          {
-            $setuser_array = getcontent ($setitem_array[0], "<user>");      
-          }
-          elseif ($settype_array[0] == "usergroup")
-          {
-            $setgroup_array = getcontent ($setitem_array[0], "<group>");  
-          }      
-        }                
-        
-        // the member types of master workflow and current workflow are equal
-        if ($settype_array[0] == $starttype_array[0])
-        {
-          if ($settype_array[0] == "user") 
-          {      
-            if ($setuser_array[0] == "" && $startuser_array[0] != "")
-            {
-              // set start user in workflow if was not set already
-              $workflow = setcontent ($workflow, "<item>", "<user>", $startuser_array[0], "<id>", $item_id);               
-              
-              $access = true;
-            }    
-            elseif ($setuser_array[0] == $startuser_array[0]) $access = true;
-            elseif ($setuser_array[0] != $startuser_array[0]) $access = false; 
-          } 
-          elseif ($settype_array[0] == "usergroup") 
-          {      
-            if ($setgroup_array[0] == "" && $startgroup_array[0] != "")
-            {
-              // set start user in workflow if was not set already
-              $workflow = setcontent ($workflow, "<item>", "<group>", $startgroup_array[0], "<id>", $item_id);               
-              
-              $access = true;
-            } 
-            elseif ($setgroup_array[0] == $startgroup_array[0]) $access = true;     
-            elseif ($setgroup_array[0] != $startgroup_array[0]) $access = false; 
-          }   
-        }    
-        // the member types set in master workflow and in current workflow are not equal
-        else
-        {
-          if ($settype_array[0] == "user") 
-          {      
-            if ($setuser_array[0] == "" && valid_objectname ($user))
-            {
-              // set start user in workflow if was not set already
-              $workflow = setcontent ($workflow, "<item>", "<user>", $user, "<id>", $item_id);               
-              
-              $access = true;
-            }    
-            elseif ($setuser_array[0] == $user) $access = true;
-            elseif ($setuser_array[0] != $user) $access = false; 
-          } 
-          elseif ($settype_array[0] == "usergroup") 
-          {      
-            // get the group of the current user
-            $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-            $useritem_array = selectcontent ($userdata, "<user>", "<login>", "$user");
-            $memberofitem_array = selectcontent ($useritem_array[0], "<memberof>", "<publication>", "$site");
-            $usergroup_array = getcontent ($memberofitem_array[0], "<usergroup>");          
-          
-            if ($setgroup_array[0] == "" && $usergroup_array[0] != "")
-            {
-              // set start user in workflow if was not set already
-              $workflow = setcontent ($workflow, "<item>", "<group>", $usergroup_array[0], "<id>", $item_id);               
-              
-              $access = true;
-            } 
-            elseif (in_array ($setgroup_array[0], $usergroup_array)) $access = true;     
-            elseif (!in_array ($setgroup_array[0], $usergroup_array)) $access = false; 
-          }       
-        } 
-      }  
-      else $access = true;                
-  
-      // reset passed status in workflow
-      if ($access == true) 
-      {
-        $workflow = setcontent ($workflow, "<item>", "<passed>", 0, "", "");
-        $workflow = setcontent ($workflow, "<item>", "<date>", "-", "", "");
-      }                              
-    }   
-    else $access = true;   
-      
-    // if user may access workflow
-    if ($access == true)
-    {  
-      // set passed value for current item
-      $workflow = setcontent ($workflow, "<item>", "<passed>", 1, "<id>", $item_id);
-      $workflow = setcontent ($workflow, "<item>", "<date>", $mgmt_config['today'], "<id>", $item_id);
-  
-      // get next item in workflow
-      if ($workflow != false && $workflow != "") 
-      {
-        // get actual user and email address or script
-        $currentitem_array = selectcontent ($workflow, "<item>", "<id>", $item_id);
-        $from_type_array = getcontent ($currentitem_array[0], "<type>");     
-      
-        // get current item data      
-        if ($from_type_array[0] == "user")
-        {
-          // get user name from item
-          $from_user_array = getcontent ($currentitem_array[0], "<user>");   
-                   
-          // load user information
-          if (!isset ($userdata) || $userdata == "")
-          {
-            $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-            $userdata_array = selectxmlcontent ($userdata, "<user>", "<publication>", $site);
-            
-            if ($userdata_array != false) $userdata = implode ("\n", $userdata_array);
-            else $userdata = false;
-          }     
-               
-          // get e-mail from user data  
-          $userdata_array = selectcontent ($userdata, "<user>", "<login>", $from_user_array[0]);
-          $from_email_array = getcontent ($userdata_array[0], "<email>");              
-        }
-        elseif ($from_type_array[0] == "usergroup")
-        {
-          // load user information
-          if (!isset ($userdata) || $userdata == "")
-          {
-            $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-            $userdata_array = selectxmlcontent ($userdata, "<user>", "<publication>", $site);
-            
-            if ($userdata_array != false) $userdata = implode ("\n", $userdata_array);
-            else $userdata = false;
-          }  
-                     
-          // get e-mail of current user from user data  
-          $from_user_array[0] = $user;
-          $userdata_array = selectcontent ($userdata, "<user>", "<login>", $from_user_array[0]);
-          $from_email_array = getcontent ($userdata_array[0], "<email>"); 
-        }      
-        elseif ($from_type_array[0] == "script") 
-        {
-          $from_user_array[0] = "hyperCMS";
-
-          if (!empty ($mgmt_config[$site]['mailserver'])) $from_email_array[0] = "hyperCMS@".$mgmt_config[$site]['mailserver'];
-          else $from_email_array[0] = "automailer@hypercms.net";
-        }
-        
-        // get next workflow instance (predecessor = current user)
-        $preitem_array = selectcontent ($workflow, "<item>", "<pre>", $item_id);
-     
-        if ($preitem_array != false && sizeof ($preitem_array) >= 1)
-        { 
-          // set task and notify user (items) of next instance 
-          foreach ($preitem_array as $useritem)
-          {  
-            // collect item information             
-            $to_type_array = getcontent ($useritem, "<type>");
-           
-            if ($to_type_array[0] == "user" || $to_type_array[0] == "usergroup")  
-            { 
-              if (!isset ($userdata) || $userdata == "")
-              {
-                // load user information
-                $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-                $useritem_array = selectxmlcontent ($userdata, "<user>", "<publication>", $site);
-                
-                if (is_array ($useritem_array)) $userdata = implode ("\n", $useritem_array);
-                else $userdata = false;
-              }
-   
-              if ($userdata != "")
-              {  
-                if ($to_type_array[0] == "user")
-                {
-                  // user defined in workflow
-                  $to_user_array = getcontent ($useritem, "<user>");
-
-                  // get user node
-                  $userdata_array = selectcontent ($userdata, "<user>", "<login>", $to_user_array[0]);
-                  if (!empty ($userdata_array[0])) $to_email_array = getcontent ($userdata_array[0], "<email>");
-                  else $to_email_array[0] = "";
-                  $category = "workflow";   
-
-                  createtask ($site, $from_user_array[0], $from_email_array[0], $to_user_array[0], $to_email_array[0], "", "", $category, $location.$object, $hcms_lang['workflow'][$lang]."-".$item_id, $message, $sendmail, $priority); 
-                }
-                elseif ($to_type_array[0] == "usergroup")
-                {
-                  // group defined in workflow
-                  $to_group_array = getcontent ($useritem, "<group>");
-                  // get all user nodes  
-                  $useritem_array = getcontent ($userdata, "<user>");                   
-                  
-                  foreach ($useritem_array as $useritem)
-                  {
-                    // check publication and group membership
-                    $memberof_array = selectcontent ($useritem, "<memberof>", "<usergroup>", "*|".$to_group_array[0]."|*");
-                              
-                    foreach ($memberof_array as $memberof)
-                    {
-                      $publication_array = getcontent ($memberof, "<publication>");
-                      
-                      if (is_array ($publication_array) && $publication_array[0] == $site)
-                      {
-                        $to_user_array = getcontent ($useritem, "<login>");
-                        $to_email_array = getcontent ($useritem, "<email>");       
-                        $category = "workflow";
-  
-                        createtask ($site, $from_user_array[0], $from_email_array[0], $to_user_array[0], $to_email_array[0], "", "", $category, $location.$object, $hcms_lang['workflow'][$lang]."-".$item_id, $message, $sendmail, $priority);                         
-                      }
-                    }
-                  }        
-                }
-              }
-            }
-            elseif ($to_type_array[0] == "script")
-            {
-              $script_array = getcontent ($useritem, "<script>");
-              
-              // include workflow script function
-              if ($script_array != false && $script_array[0] != "") 
-              {
-                @include ($mgmt_config['abs_path_data']."workflow_master/".$script_array[0]);
-                
-                // execute workflow script function
-                $script_result = execute_script ($site, $location, $object);
-                
-                $scriptid_array = getcontent ($useritem, "<id>");
-                
-                if (isset ($script_result) && $script_result == true)
-                {
-                  $workflow = workflowaccept ($site, $location, $object, $workflow, $scriptid_array[0], $user, $message, $sendmail, $priority);
-                }
-                else
-                {
-                  // include page reject language file
-                                    
-                  $message = $hcms_lang['onsubtext1'][$lang];
-                  
-                  $workflow = workflowreject ($site, $location, $object, $workflow, $scriptid_array[0], $user, $message, $sendmail, $priority);
-                }
-              }
-            }  
-          }
-          
-          return $workflow;
-        }
-        // actual item is the last one in the workflow
-        else return $workflow;
-      }
-      else return false;
-    }
-    else return false; 
-  }
-  else return false;
-}
-
-// -------------------------------------------- acceptobject -------------------------------------------
-// function: acceptobject()
-// input: publication name [string], location name [string], object name [string], current item id [string], current user [string], task message [string], sendmail, priority [high,medium,low]
-// output: array/false
-// requires: config.inc.php, fileoperation
-
-function acceptobject ($site, $location, $object, $item_id, $user, $message, $sendmail, $priority="medium")
-{
-  global $mgmt_config, $contentfile, $hcms_lang_codepage, $hcms_lang, $lang;
-
-  $add_onload = "";
-  $show = "";
-  
-  // set default language
-  if ($lang == "") $lang = "en";
-  
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $item_id != "" && in_array ($priority, array("high","medium","low")))
-  {  
-        
-    // read actual file info (to get associated template and content)
-    if (!isset ($contentfile)) 
-    {
-      $object = correctfile ($location, $object, $user);
-      $objectstore = loadfile ($location, $object);
-      $contentfile = getfilename ($objectstore, "content");
-    }  
-    
-    // load workflow
-    if (@is_file ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile))
-    {
-      $workflow = loadfile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile); 
-      
-      // set workflow accept      
-      $workflow = workflowaccept ($site, $location, $object, $workflow, $item_id, $user, $message, $sendmail, $priority);
-    
-      if ($workflow != false) $test = savefile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile, $workflow);
-      else $test = false;
-      
-      if ($test == true)
-      {
-        $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['content-has-been-forwarded-to-next-instance'][$lang]."</span><br />\n";
-        
-        $error_switch = "no";
-      }
-      else
-      {
-        $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['workflow-could-not-be-saved'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
-      }  
-    }
-    else
-    {
-      $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['workflow-access-is-missing'][$lang]."</span><br />\n".$hcms_lang['worklfow-doesnt-exist-or-could-not-be-loaded'][$lang]."\n";
-    }
-  }
-  
-    
-  // return results
-  $result = array();
-  
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
-  $result['add_onload'] = $add_onload;
-  $result['message'] = $show;
-  $result['object'] = $page;
-  
-  return $result;
-}
-
-// -------------------------------------------- workflowreject -------------------------------------------
-// function: workflowreject()
-// input: publication name [string], location name [string], object name [string], workflow [XML-string], item id [string], user, task message [string], send mail [true,false], priority[high,medium,low]
-// output: workflow [XML-string]/false
-// requires: config.inc.php, editcontent
-
-function workflowreject ($site, $location, $object, $workflow, $item_id, $user, $message, $sendmail, $priority="medium")
-{
-  global $mgmt_config, $hcms_lang, $lang;
-  
-  // set default language
-  if ($lang == "") $lang = "en";
-  
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $workflow != "" && $item_id != "" && in_array ($priority, array("high","medium","low")))
-  {  
-    // set passed value for current item
-    $workflow = setcontent ($workflow, "<item>", "<passed>", 0, "<id>", $item_id);
-    $workflow = setcontent ($workflow, "<item>", "<date>", $mgmt_config['today'], "<id>", $item_id);
-
-    // get next item in workflow
-    if ($workflow != false && $workflow != "") 
-    {
-      // get actual user and email address
-      $currentitem_array = selectcontent ($workflow, "<item>", "<id>", $item_id);
-      $from_type_array = getcontent ($currentitem_array[0], "<type>");  
-    
-      // get current item data  
-      if ($from_type_array[0] == "user")
-      {
-        // get user name from item
-        $from_user_array = getcontent ($currentitem_array[0], "<user>");  
-          
-        // load user information
-        if (!isset ($userdata) || $userdata == "")
-        {              
-          $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-          $userdata_array = selectxmlcontent ($userdata, "<user>", "<publication>", "$site");
-          
-          if ($userdata_array != false) $userdata = implode ("\n", $userdata_array);
-          else $userdata = false;
-        }       
-          
-        // get e-mail from user data  
-        $userdata_array = selectcontent ($userdata, "<user>", "<login>", $from_user_array[0]);
-        $from_email_array = getcontent ($userdata_array[0], "<email>");
-      }
-      elseif ($from_type_array[0] == "usergroup")
-      {
-        // load user information
-        if (!isset ($userdata) || $userdata == "")
-        {              
-          $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-          $userdata_array = selectxmlcontent ($userdata, "<user>", "<publication>", "$site");
-  
-          if ($userdata_array != false) $userdata = implode ("\n", $userdata_array);
-          else $userdata = false;        
-        }    
-                          
-        // get e-mail from user data  
-        $from_user_array[0] = $user;
-        $userdata_array = selectcontent ($userdata, "<user>", "<login>", $from_user_array[0]);
-        $from_email_array = getcontent ($userdata_array[0], "<email>");      
-      }
-      elseif ($from_type_array[0] == "script") 
-      {
-        $from_user_array[0] = "hyperCMS";
-        if ($mgmt_config[$site]['mailserver'] != "") $from_email_array[0] = "hyperCMS@".$mgmt_config[$site]['mailserver'];
-        else $from_email_array[0] = "automailer@hypercms.net";        
-      }   
-      
-      // get next workflow instance (successor if defined or predecessors if no send back user was defined)
-      $sucid_array = getcontent ($currentitem_array[0], "<suc>");
-      
-      if ($sucid_array == false || $sucid_array[0] == "") 
-        $sucid_array = getcontent ($currentitem_array[0], "<pre>");
-       
-      if ($sucid_array != false && $sucid_array[0] != "") 
-      {   
-        foreach ($sucid_array as $sucid)  
-        {
-          // get successor items
-          $new_sucitem_array = selectcontent ($workflow, "<item>", "<id>", $sucid); 
-          
-          // set passed value of successor
-          $workflow = setcontent ($workflow, "<item>", "<passed>", 0, "<id>", $sucid);            
-          
-          if ($new_sucitem_array != false && sizeof ($new_sucitem_array) >= 1)
-          {           
-            // collect successor items
-            if (isset ($sucitem_array) && sizeof ($sucitem_array) >= 1)
-            {
-              $sucitem_array = array_merge ($sucitem_array, $new_sucitem_array);
-            }
-            else $sucitem_array = $new_sucitem_array;
-          }
-        }    
-  
-        if ($sucitem_array != false && sizeof ($sucitem_array) >= 1)
-        { 
-          // set task and notify next instance 
-          foreach ($sucitem_array as $useritem)
-          {    
-            // collect item information         
-            $to_type_array = getcontent ($useritem, "<type>");
-           
-            // set task to users (script robots are excluded)
-            if ($to_type_array[0] == "user" || $to_type_array[0] == "usergroup")  
-            {
-              if (!isset ($userdata) || $userdata == "")
-              {
-                // load user information
-                $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-                $userdata_array = selectxmlcontent ($userdata, "<user>", "<publication>", $site);
-  
-                if ($userdata_array != false) $userdata = implode ("\n", $userdata_array);
-                else $userdata = false;
-              }
-               
-              if ($userdata != false)
-              {
-                if ($to_type_array[0] == "user")
-                {
-                  // user defined in workflow
-                  $to_user_array = getcontent ($useritem, "<user>");
-
-                  // get user node
-                  $userdata_array = selectcontent ($userdata, "<user>", "<login>", $to_user_array[0]);
-                  if (!empty ($userdata_array[0])) $to_email_array = getcontent ($userdata_array[0], "<email>");
-                  else $to_email_array[0] = "";
-                  $category = "workflow";    
-     
-                  createtask ($site, $from_user_array[0], $from_email_array[0], $to_user_array[0], $to_email_array[0], "", "", $category, $location.$object, $hcms_lang['workflow'][$lang]."-".$item_id, $message, $sendmail, $priority);
-                }
-                elseif ($to_type_array[0] == "usergroup")
-                {
-                  // group defined in workflow
-                  $to_group_array = getcontent ($useritem, "<group>");
-                  // get all user nodes  
-                  $useritem_array = getcontent ($userdata, "<user>");                   
-                  
-                  foreach ($useritem_array as $useritem)
-                  {
-                    // check publication and group membership
-                    $memberof_array = selectcontent ($useritem, "<memberof>", "<usergroup>", "*|".$to_group_array[0]."|*");
-                    
-                    foreach ($memberof_array as $memberof)
-                    {
-                      $publication_array = getcontent ($memberof, "<publication>");
-                        
-                      if (is_array ($publication_array) && $publication_array[0] == $site)
-                      {
-                        $to_user_array = getcontent ($useritem, "<login>");
-                        $to_email_array = getcontent ($useritem, "<email>");
-                        $category = "workflow";   
-                        
-                        createtask ($site, $from_user_array[0], $from_email_array[0], $to_user_array[0], $to_email_array[0], "", "", $category, $location.$object, $hcms_lang['workflow'][$lang]."-".$item_id, $message, $sendmail, $priority);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-          
-          return $workflow;
-        }
-        // actual item is the last one in the workflow
-        else return $workflow;
-      }
-      else return $workflow;
-    }
-    else return false;
-  }
-  else return false;  
-}
-
-// -------------------------------------------- rejectobject -------------------------------------------
-// function: rejectobject()
-// input: publication name [string], location name [string], object name [string], workflow [XML-string], item id [string], user, task message [string], send mail [true,false], priority[high,medium,low]
-// output: array/false
-// requires: config.inc.php, fileoperation
-
-function rejectobject ($site, $location, $object, $item_id, $user, $message, $sendmail, $priority="medium")
-{
-  global $mgmt_config, $contentfile, $hcms_lang, $lang;
- 
-  $add_onload = "";
-  $show = "";
- 
-  // set default language
-  if ($lang == "") $lang = "en";
-  
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $item_id != "" && in_array ($priority, array("high","medium","low")))
-  {  
-        
-    // read actual file info (to get associated template and content)
-    if (!isset ($contentfile)) 
-    {
-      $object = correctfile ($location, $object, $user);
-      $objectstore = loadfile ($location, $object);
-      $contentfile = getfilename ($objectstore, "content");
-    }  
-    
-    // load workflow
-    if (@is_file ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile))
-    {
-      $workflow = loadfile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile); 
-      
-      // set workflow accept      
-      $workflow = workflowreject ($site, $location, $object, $workflow, $item_id, $user, $message, $sendmail, $priority);
-    
-      if ($workflow != false) $test = savefile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile, $workflow, $priority);
-      else $test = false;
-      
-      if ($test == true)
-      {
-        $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['content-has-been-send-back'][$lang]."</span><br />\n";
-        
-        $error_switch = "no";
-      }
-      else
-      {
-        $add_onload = "";
-        $show = "<span class=\"hcmsHeadline\">".$hcms_lang['workflow-could-not-be-saved'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
-      }  
-    }
-    else
-    {
-      $add_onload = "";
-      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['workflow-access-is-missing'][$lang]."</span><br />\n".$hcms_lang['worklfow-doesnt-exist-or-could-not-be-loaded'][$lang]."\n";
-    }
-  }
-  
-  // return result
-  $result = array();
-  
-  if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
-  else $result['result'] = false;
-  $result['add_onload'] = $add_onload;
-  $result['message'] = $show;
-  $result['object'] = $page;
-  
-  return $result;
-}
-
 // -------------------------------------------- checkworkflow -------------------------------------------
 // function: checkworkflow()
 // input: publication name [string], location [string], object name [string], category [page,comp] (optional), container name [string] (optional), container [XML string] (optional), view name [string] (optional), view store [string] (optional), user name [string]
@@ -4670,10 +3220,7 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && ($contentfile == "" || strpos ("_".strrchr ($contentfile, "."), ".v_") == 0) && $buildview != "" && valid_objectname ($user))
   {
     // check category
-    if ($cat == "")
-    {
-      $cat = getcategory ($site, $location);
-    }
+    if ($cat == "") $cat = getcategory ($site, $location);
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
@@ -5914,13 +4461,13 @@ function createpublication ($site_name, $user="sys")
   // check if sent data is available
   if (!valid_publicationname ($site_name) || strlen ($site_name) > 100 || !valid_objectname ($user))
   {
-    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'); ";
+    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=hcmsHeadline>".$hcms_lang['required-publication-name-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-enter-a-name'][$lang]."\n";
   }
   // test if site name includes special characters
   elseif (specialchr ($site_name, "-_") == true)
   {
-    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'); ";
+    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
   }
   else
@@ -5947,7 +4494,7 @@ function createpublication ($site_name, $user="sys")
             inherit_db_close ($user);
             
             // return message if site exists already
-            $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'); ";
+            $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
             $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
                   
             break;
@@ -7131,7 +5678,7 @@ function deletepublication ($site_name, $user="sys")
         // unlock file
         inherit_db_close ($user);
     
-        $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'); ";
+        $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
         $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-cannot-be-removed'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       }
     }
@@ -7140,7 +5687,7 @@ function deletepublication ($site_name, $user="sys")
       // unlock file
       inherit_db_close ($user);
     
-      $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'); ";
+      $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
       $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
@@ -7884,37 +6431,23 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
       
         if ($show == "" && $userdatanew != false)
         {
-          // create checked out file
-          if ($test != false) savefile ($mgmt_config['abs_path_data']."checkout/", $login.".dat", "");
-
-          if ($test == false)
+          // save user xml file
+          $test = savelockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", $userdatanew);     
+      
+          if ($show == "" && $test != false)
           {
-            // unlock file
-            unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
-                
-            $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['task-list-for-user-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-have-no-write-permission'][$lang]."\n";
+            // eventsystem
+            if ($eventsystem['oncreateuser_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+              oncreateuser_post ($login, $user);              
+          
+            $add_onload = "parent.frames['mainFrame'].location.reload(); window.open('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."','','status=yes,scrollbars=no,resizable=yes,width=500,height=500'); ";
+            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-new-user-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-user'][$lang]."<br />\n";              
+            $error_switch = "no";
           }
           else
           {
-            // save user xml file
-            $test = savelockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", $userdatanew);     
-        
-            if ($show == "" && $test != false)
-            {
-              // eventsystem
-              if ($eventsystem['oncreateuser_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
-                oncreateuser_post ($login, $user);              
-            
-              $add_onload = "parent.frames['mainFrame'].location.reload(); window.open('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."','','status=yes,scrollbars=no,resizable=yes,width=500,height=500'); ";
-              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-new-user-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-user'][$lang]."<br />\n";              
-              $error_switch = "no";
-            }
-            else
-            {
-              // unlock file
-              unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
-            }
+            // unlock file
+            unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
           }
         }
         else 
@@ -8405,13 +6938,13 @@ function creategroup ($site, $group_name, $user="sys")
   // check if sent data is available
   if (!valid_publicationname ($site) || !valid_objectname ($group_name) || strlen ($group_name) > 100 || !valid_objectname ($user))
   {
-    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'); ";
+    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=hcmsHeadline>".$hcms_lang['necessary-group-name-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-enter-a-name'][$lang]."\n";
   }
   // test if group name includes special characters
   elseif (specialchr ($group_name, "-_") == true)
   {
-    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'); ";
+    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
   }
   else
@@ -8553,9 +7086,10 @@ function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $
       if (!isset ($permission['desktoptaskmgmt']) || $permission['desktoptaskmgmt'] != 1) {$permission['desktoptaskmgmt'] = 0;}
       if (!isset ($permission['desktopcheckedout']) || $permission['desktopcheckedout'] != 1) {$permission['desktopcheckedout'] = 0;}
       if (!isset ($permission['desktoptimetravel']) || $permission['desktoptimetravel'] != 1) {$permission['desktoptimetravel'] = 0;}
-      if (!isset ($permission['desktopfavorites']) || $permission['desktopfavorites'] != 1) {$permission['desktopfavorites'] = 0;} 
+      if (!isset ($permission['desktopfavorites']) || $permission['desktopfavorites'] != 1) {$permission['desktopfavorites'] = 0;}
+      if (!isset ($permission['desktopprojectmgmt']) || $permission['desktopprojectmgmt'] != 1) {$permission['desktopprojectmgmt'] = 0;} // added in version 6.0.1
       
-      $desktoppermissions = "desktop=".$permission['desktopglobal'].$permission['desktopsetting'].$permission['desktoptaskmgmt'].$permission['desktopcheckedout'].$permission['desktoptimetravel'].$permission['desktopfavorites'];      
+      $desktoppermissions = "desktop=".$permission['desktopglobal'].$permission['desktopsetting'].$permission['desktoptaskmgmt'].$permission['desktopcheckedout'].$permission['desktoptimetravel'].$permission['desktopfavorites'].$permission['desktopprojectmgmt'];      
 
       // user permissions
       if (!isset ($permission['userglobal']) || $permission['userglobal'] != 1) {$permission['userglobal'] = 0;}
@@ -9554,7 +8088,7 @@ function deletefrommediacat ($site, $mediafile)
       {
         unlockfile ($session_id, $mgmt_config['abs_path_data']."media/", $datafile);
           
-        $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php?site=".url_encode($site)."';";
+        $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php?site=".url_encode($site)."'; ";
     
         $show = "<table width=\"400\" border=0 cellspacing=1 cellpadding=3 class=\"hcmsMessage\">
         <tr>
@@ -11498,540 +10032,6 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
   }
 }
 
-// ---------------------------------------- indexcontent --------------------------------------------
-// function: indexcontent()
-// input: publication name, path to multimedia file, multimedia file name (file to be indexed), container name or ID, container XML-content (optional), user name
-// output: result array
-
-// description:
-// This function extracts the text content of multimedia objects and writes it the text to the container.
-// the given charset of the publication (not set by default), container or publication (not set by default) will be used.
-// the default character set of default.meta.tpl is UTF-8, so all content should be saved in UTF-8.
-
-function indexcontent ($site, $location, $file, $container="", $container_content="", $user)
-{
-  global $mgmt_config, $mgmt_parser, $mgmt_uncompress, $hcms_ext, $hcms_lang, $lang;
-
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($user))
-  {
-    $usedby = "";
-    
-    // load file extensions
-    if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-    
-    // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";            
-  
-    // get file extension
-    $file_ext = strtolower (strrchr ($file, "."));
-    
-    // get container from media file
-    if (!valid_objectname ($container))
-    {
-      $container = getmediacontainername ($file);
-    }
-    
-    // get container id
-    if (substr_count ($container, ".xml") > 0)
-    {
-      $container_id = substr ($container, 0, strpos ($container, ".xml"));
-    }
-    elseif (is_numeric ($container))
-    {
-      $container_id = $container;
-      $container = $container.".xml";
-    }
-    
-    // read content container
-    if ($container_content == "")
-    {
-      $result = getcontainername ($container);
-
-      if (!empty ($result['container']))
-      {
-        $container = $result['container'];
-        $usedby = $result['user'];
-        $container_content = loadcontainer ($container, "work", $user);
-      }
-    }
-
-    if (!empty ($container_content) && ($usedby == "" || $usedby == $user) && $file_ext != "")
-    {
-      // create temp file if file is encrypted
-      $temp = createtempfile ($location, $file);
-      
-      if ($temp['crypted'])
-      {
-        $location = $temp['templocation'];
-        $file = $temp['tempfile'];
-      }
-    
-      // set injected for functions which will inject meta data directly
-      $injected = false;
-      
-      // ------------------------ Adobe PDF -----------------------
-      // get file content from PDF
-      if (($file_ext == ".pdf" || $file_ext == ".ai") && $mgmt_parser['.pdf'] != "")
-      {
-        // use of XPDF to parse PDF files.
-        // please note: the executable "pdftotext" must be copied to "bin" directory!
-        // as pdftotext ist compiled for several platforms you have to know which
-        // OS you are using for the content management server.
-        // known problems: MS IIS causes troubles executing XPDF (unable to fork...), set permissions for cmd.exe  
-        // the second argument "-" tells XPDF to output the text to stdout.
-        // content should be provided using UTF-8 as charset.
-        @exec ($mgmt_parser['.pdf']." -enc UTF-8 \"".shellcmd_encode ($location.$file)."\" -", $file_content, $errorCode); 
-
-        if ($errorCode)
-        {
-          $file_content = "";
-          
-          $errcode = "20132";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|exec of pdftotext (code:$errorCode) failed in indexcontent for file: ".$location.$file;   
-        }
-        elseif (is_array ($file_content))
-        {
-          $file_content = implode ("\n", $file_content);
-        }
-        else $file_content = "";  
-      }
-      
-      // ------------------------ OPEN OFFICE -----------------------
-      // get file content from Open Office Text (odt) in UTF-8
-      elseif (($file_ext == ".odt" || $file_ext == ".ods" || $file_ext == ".odp") && $mgmt_uncompress['.zip'] != "")   
-      {
-        // temporary directory for extracting file
-        $temp_name = uniqid ("index");
-        $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
-        
-        // create temporary directory for extraction
-        @mkdir ($temp_dir, $mgmt_config['fspermission']);
-          
-        // .odt is a ZIP-file with the content placed in the file content.xml
-        $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" content.xml -d \"".shellcmd_encode ($temp_dir)."\"";
-        
-        @exec ($cmd, $error_array);
-
-        if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
-        {
-          $errcode = "20133";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array);   
-        } 
-        else
-        {
-          $file_content = loadfile ($temp_dir, "content.xml");
-          
-          if ($file_content != false)
-          {
-            // add whitespaces before newline
-            $file_content = str_replace ("</", " </", $file_content);
-            
-            // replace paragraph and newline with real newlines
-            $file_content = str_replace (array ("</text:p>", "<text:line-break/>"), array ("\n\n", "\n"), $file_content);
-            
-            // remove multiple white spaces
-            $file_content = preg_replace ('/\s+/', ' ', $file_content);
-          }
-   
-          // remove temp directory
-          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
-        }
-      }      
-      // ------------------------ MS WORD -----------------------
-      // get file content from MS Word before 2007 (doc) in UTF-8
-      elseif (($file_ext == ".doc") && $mgmt_parser['.doc'] != "")
-      {
-        @exec ($mgmt_parser['.doc']." -t -i 1 -m UTF-8.txt \"".shellcmd_encode ($location.$file)."\"", $file_content, $errorCode); 
-
-        if ($errorCode)
-        {
-          $file_content = ""; 
-          
-          $errcode = "20134";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|exec of antiword (code:$errorCode) failed in indexcontent for file: ".$location.$file;   
-        }
-        elseif (is_array ($file_content))
-        {
-          $file_content = implode ("\n", $file_content);
-        }
-        else $file_content = "";        
-      }
-      // get file content from MS Word 2007+ (docx) in UTF-8
-      elseif (($file_ext == ".docx") && $mgmt_uncompress['.zip'] != "")
-      {
-        // temporary directory for extracting file
-        $temp_name = uniqid ("index");
-        $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
-        
-        // create temporary directory for extraction
-        @mkdir ($temp_dir, $mgmt_config['fspermission']);
-        
-        // docx is a ZIP-file with the content placed in the file word/document.xml
-        $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" word/document.xml -d \"".shellcmd_encode ($temp_dir)."\"";
-        
-        @exec ($cmd, $error_array);
-
-        if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
-        {
-          $errcode = "20134";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array);   
-        } 
-        else
-        {
-          $file_content = loadfile ($temp_dir."word/", "document.xml");
-          
-          if ($file_content != false)
-          {
-            // add whitespaces before newline
-            $file_content = str_replace ("</", " </", $file_content);
-            
-            // replace paragraph and newline with real newlines
-            $file_content = str_replace (array ("</w:p>", "<w:br/>"), array ("\n\n", "\n"), $file_content);
-            
-            // remove multiple white spaces
-            $file_content = preg_replace ('/\s+/', ' ', $file_content);
-          }
-   
-          // remove temp directory
-          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
-        }             
-      }
-      // ------------------------ MS EXCEL -----------------------
-      // get file content from MS EXCEL 2007 (xlsx) in UTF-8
-      elseif (($file_ext == ".xlsx") && $mgmt_uncompress['.zip'] != "")
-      {
-        // temporary directory for extracting file
-        $temp_name = uniqid ("index");
-        $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
-        
-        // create temporary directory for extraction
-        @mkdir ($temp_dir, $mgmt_config['fspermission']);
-        
-        // xlsx is a ZIP-file with the content placed in the file xl/sharedStrings.xml
-        $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" xl/sharedStrings.xml -d \"".shellcmd_encode ($temp_dir)."\"";
-        
-        @exec ($cmd, $error_array);
-
-        if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
-        {
-          $errcode = "20134";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array);   
-        } 
-        else
-        {
-          $file_content = loadfile ($temp_dir."xl/", "sharedStrings.xml");
-          
-          if ($file_content != false)
-          {
-            // add whitespaces
-            $file_content = str_replace ("</", " </", $file_content);
-          }
-   
-          // remove temp directory
-          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
-        }             
-      }      
-      // ------------------------ MS Powerpoint -----------------------
-      // get file content from MS Powerpoint before 2007 (ppt) in UTF-8
-      elseif ($file_ext == ".ppt" || $file_ext == ".pps")
-      {
-        // This approach uses detection of the string "chr(0f).Hex_value.chr(0x00).chr(0x00).chr(0x00)" to find text strings, 
-        // which are then terminated by another NUL chr(0x00). [1] Get text between delimiters [2] 
-        $filehandle = fopen ($location.$file, "r");
-        
-        if ($filehandle != false)
-        {
-          $line = @fread ($filehandle, filesize ($location.$file));
-          $lines = explode (chr(0x0f), $line);
-          
-          foreach ($lines as $thisline)
-          {
-            if (strpos ($thisline, chr(0x00).chr(0x00).chr(0x00)) == 1)
-            {
-              $text_line = substr ($thisline, 4);
-              $end_pos   = strpos ($text_line, chr(0x00));
-              $text_line = substr ($text_line, 0, $end_pos);              
-              $text_line = preg_replace ("/[^a-zA-Z0-9Ã€ÃÃ‚ÃƒÃ„Ã…Ã†Ã‡ÃˆÃ‰ÃŠÃ‹ÃŒÃÃŽÃÃÃ‘Ã’Ã“Ã”Ã•Ã–Ã™ÃšÃ›ÃœÃÃŸÃ Ã¡Ã¢Ã£Ã¤Ã¥Ã¦Ã§Ã¨Ã©ÃªÃ«Ã¬Ã­Ã®Ã¯Ã±Ã²Ã³Ã´ÃµÃ¶Ã¹ÃºÃ»Ã¼Ã½Ã¾Ã¿\s\,\.\-\n\r\t@\/\_\(\)]/", "", $text_line);
-              
-              if (strlen ($text_line) > 1)
-              {
-                $file_content .= substr ($text_line, 0, $end_pos)."\n";
-              }
-            }
-          } 
-        }  
-        
-        if ($file_content != "")
-        {        
-          // detect charset
-          if (function_exists ("mb_detect_encoding")) $charset_source = mb_detect_encoding ($file_content);
-          elseif (is_latin1 ($file_content)) $charset_source = "ISO-8859-1";
-          
-          // convert to UTF-8
-          if ($charset_source != "" && $charset_source != "UTF-8")
-          {
-            $file_content = convertchars ($file_content, $charset_source, "UTF-8");
-          }
-        }
-        else
-        {
-          $errcode = "20135";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|extraction of content from powerpoint failed in indexcontent for file: ".$location.$file;   
-        }           
-      }      
-      // get file content from MS Powerpoint 2007 (pptx) in UTF-8
-      elseif (($file_ext == ".pptx" || $file_ext == ".ppsx") && $mgmt_uncompress['.zip'] != "")
-      {
-        // temporary directory for extracting file
-        $temp_name = uniqid ("index");
-        $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
-        
-        // create temporary directory for extraction
-        @mkdir ($temp_dir, $mgmt_config['fspermission']);
-        
-        // pptx is a ZIP-file with the content placed in the file ppt/slides/slide#.xml (# ... number of the slide)
-        $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" ppt/slides/slide* -d \"".shellcmd_encode ($temp_dir)."\"";
-        
-        @exec ($cmd, $error_array);
-
-        if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
-        {
-          $errcode = "20136";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array);   
-        } 
-        else
-        {
-          $dir = @opendir ($temp_dir."ppt/slides/");
-      
-          if ($dir != false)
-          {
-            // collect source files
-            while ($file = @readdir ($dir))
-            { 
-              if (substr_count ($file, ".xml") == 1)
-              {    
-                $file_temp = loadfile ($temp_dir."ppt/slides/", $file);
-                
-                if ($file_temp != false)
-                {
-                  // add whitespaces
-                  $file_temp = str_replace ("</", " </", $file_temp);
-                  $file_content = $file_content." ".strip_tags ($file_temp);
-                }
-              }
-            }
-          }
-   
-          // remove temp directory
-          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
-        }             
-      }
-      // ------------------------ TEXT -----------------------    
-      // get file content from readable formats
-      elseif ($file_ext != "" && substr_count (strtolower ($hcms_ext['cleartxt']).".", $file_ext.".") > 0)
-      {
-        $file_content = loadfile_fast ($location, $file);
-        
-        // detect charset
-        if (function_exists ("mb_detect_encoding")) $charset_source = strtoupper (mb_detect_encoding ($file_content));
-        elseif (is_latin1 ($file_content)) $charset_source = "ISO-8859-1";
-        
-        // convert to UTF-8
-        if ($charset_source != "" && $charset_source != "UTF-8")
-        {
-          $file_content = convertchars ($file_content, $charset_source, "UTF-8");
-        }        
-      }
-      // --------------------- HTML/SCRIPTS --------------------    
-      // get file content from html/script formats
-      elseif ($file_ext != "" && substr_count (strtolower ($hcms_ext['cms']).".", $file_ext.".") > 0)
-      {
-        $file_content = loadfile_fast ($location, $file);
-        
-        // detect charset
-        if (function_exists ("mb_detect_encoding")) $charset_source = strtoupper (mb_detect_encoding ($file_content));
-        elseif (is_latin1 ($file_content)) $charset_source = "ISO-8859-1";
-        
-        // convert to UTF-8
-        if ($charset_source != "" && $charset_source != "UTF-8")
-        {
-          $file_content = convertchars ($file_content, $charset_source, "UTF-8");
-        }        
-      }    
-      // ------------------------ AUDIO, IMAGES, VIDEOS -----------------------   
-      // SPECIAL CASE: the meta data attributes found in the file will be saved using a mapping.
-      // get file content from image formats holding meta data using setmetadata
-      elseif ($file_ext != "" && substr_count (strtolower ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video']).".", $file_ext.".") > 0)
-      {
-        $injected = setmetadata ($site, "", "", $file, "", $user);
-      } 
-      else $file_content = "";
-      
-      // delete temp file
-      if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
- 
-      // if not already saved in the content container (by a function setmetadata)
-      if ($injected == false)
-      {
-        // write to content container
-        if (!empty ($file_content))
-        {
-          // remove all tags
-          $file_content = strip_tags ($file_content);
-          $file_content = trim ($file_content);
-          $file = trim ($file);
-          
-          // escape special characters using UTF-8
-          $insert_content = htmlentities ($file_content, ENT_IGNORE, "UTF-8");
-          if ($insert_content == "") $insert_content = $file_content;
-              
-          // get destination character set
-          $charset_array = getcharset ($site, $container_content);
-          
-          // or set to UTF-8 if not available
-          if (is_array ($charset_array)) $charset_dest = strtoupper ($charset_array['charset']);
-          else $charset_dest = "UTF-8";
-          
-          // get encoding/charset of container
-          $xml_encoding = gethtmltag ($container_content, "?xml");
-              
-          if ($xml_encoding != false) $charset_container = getattribute ($xml_encoding, "encoding");
-          else $charset_container = "";
-                 
-          // set character set / encoding of content container of not set already
-          if ($charset_container == "" || $charset_container != $charset_dest)
-          {
-            $container_content = setxmlparameter ($container_content, "encoding", $charset_dest);
-          }
-          
-          // set array to save content as UTF-8 in database before converting it
-          $text_array[$file] = $insert_content;
-          
-          // convert content if destination charset is not UTF-8     
-          if ($charset_dest != "UTF-8")
-          {
-            $insert_content = convertchars ($insert_content, "UTF-8", $charset_dest);
-          }
-  
-          // update existing content
-          $container_contentnew = setcontent ($container_content, "<multimedia>", "<file>", $file, "", "");
-          
-          if ($container_contentnew != false)
-          {          
-            $container_contentnew = setcontent ($container_contentnew, "<multimedia>", "<content>", "<![CDATA[".$insert_content."]]>", "", "");
-          }
-          // insert new multimedia xml-node
-          else
-          {
-            $multimedia_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "multimedia.schema.xml.php"));
-            
-            $multimedia_node = setcontent ($multimedia_schema_xml, "<multimedia>", "<file>", $file, "", "");
-            $multimedia_node = setcontent ($multimedia_node, "<multimedia>", "<content>", "<![CDATA[".$insert_content."]]>", "", "");
-                    
-            if ($multimedia_node != false) $container_contentnew = insertcontent ($container_content, $multimedia_node, "<container>");
-          }
-  
-          // save log
-          savelog (@$error);
-          
-          // save container
-          if ($container_contentnew != false)
-          {
-            // relational DB connectivity
-            if ($mgmt_config['db_connect_rdbms'] != "")
-            {
-              rdbms_setcontent ($container_id, $text_array, $user);                    
-            }
-            
-            // set modified date in container
-            $container_contentnew = setcontent ($container_contentnew, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
-            if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
-            
-            // save container
-            if ($container_contentnew != false) return savecontainer ($container, "work", $container_contentnew, $user);
-            else return false;
-          }
-          else return false;
-        }
-        // if there is no full text to index, save user and date information
-        else
-        {
-          // relational DB connectivity
-          if ($mgmt_config['db_connect_rdbms'] != "")
-          {
-            rdbms_setcontent ($container_id, "", $user);                    
-          }
-          
-          // set modified date in container
-          $container_content = setcontent ($container_content, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
-          if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
-          
-          // save container
-          if ($container_content != false)
-          {
-            return savecontainer ($container, "work", $container_content, $user);
-          }
-        }
-      }
-      // if already injected
-      else return true;
-    }
-  }
-  
-  return false;
-}
-
-// ---------------------------------------- unindexcontent --------------------------------------------
-// function: unindexcontent()
-// input: publication name, file location, file name, multimedia file to index, container name or ID, container XML-content, user name
-// output: true/false
-
-// description:
-// This function removes media objects from the container
-
-function unindexcontent ($site, $location, $file, $container, $container_content, $user)
-{
-  global $mgmt_config, $mgmt_parser, $hcms_lang, $lang;
-  
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($container))
-  {    
-    // get container id
-    if (substr_count ($container, ".xml") > 0)
-    {
-      $container_id = substr ($container, 0, strpos ($container, ".xml"));
-    }
-    elseif (is_numeric ($container))
-    {
-      $container_id = $container;
-      $container = $container.".xml";
-    }
-    
-    // read working content container if no container is provided
-    if ($container_content == "")
-    {
-      $result = getcontainername ($container);
-      $container = $result['container'];
-      $usedby = $result['user'];
-      $container_content = loadcontainer ($container_id, "work", $user);
-    }
-
-    if ($container_content != false && $container_content != "" && ($usedby == "" || $usedby == $user))
-    {
-      $container_contentnew = deletecontent ($container_content, "<multimedia>", "", "");
-      
-      // relational DB connectivity
-      if ($mgmt_config['db_connect_rdbms'] != "")
-      {
-        rdbms_deletecontent ($container_id, $file, $user);
-      }
-
-      // save container
-      if ($container_contentnew != false) return savecontainer ($container, "version", $container_contentnew, $user);
-      else return false;
-    }  
-  }
-}
-
 // ---------------------------------------- createmediaobject --------------------------------------------
 // function: createmediaobject()
 // input: site, destination location, file name, path to source multimedia file (uploaded file in temp directory), user
@@ -12459,12 +10459,12 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
     }
     elseif ($action == "page_paste")
     {
-      if (isset ($_SESSION['hcms_temp_clipboard']) && isset ($temp_clipboard))
+      if (isset ($_SESSION['hcms_temp_clipboard']) || isset ($temp_clipboard))
       {
         // the clipboard has the following structure:
         // method|site|cat|location|object|object name|filetype  
         if (!empty ($_SESSION['hcms_temp_clipboard'])) $clipboard = $_SESSION['hcms_temp_clipboard'];
-        elseif ($temp_clipboard != "") $clipboard != $temp_clipboard;
+        elseif ($temp_clipboard != "") $clipboard = $temp_clipboard;
         else $clipboard = "";
 
         if ($clipboard != "")
@@ -12891,7 +10891,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                         foreach ($page_path_array as $page_path)
                         {                        
                           // set new task for object owner
-                          createtask ($site, "System", $from_email, $contentuser, $to_email, "", "", "link", $page_path, $hcms_lang['link-management'][$lang], $message, $mgmt_config[$site]['sendmail'], "medium");
+                          if (function_exists ("createtask")) createtask ($site, "System", $from_email, $contentuser, $to_email, "", "", "link", $page_path, $hcms_lang['link-management'][$lang], $message, $mgmt_config[$site]['sendmail'], "medium");
                         }
                       }
                     }
@@ -14435,7 +12435,7 @@ function pasteobject ($site, $location, $user)
 // output: array
 
 // description:
-// This function locks a page or component
+// This function locks a page or asset
 
 function lockobject ($site, $location, $page, $user)
 {      
@@ -14511,7 +12511,7 @@ function lockobject ($site, $location, $page, $user)
           // add new checked out object to list
           if ($test == true)
           {
-            if (@is_file ($mgmt_config['abs_path_data']."checkout/".$user.".dat"))
+            if (@is_file ($dir.$file))
             {
               $test = appendfile ($dir, $file, $object);
             }

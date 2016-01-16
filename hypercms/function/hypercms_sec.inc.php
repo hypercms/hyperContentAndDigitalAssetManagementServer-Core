@@ -31,10 +31,11 @@ function rootpermission ($site_name, $site_admin, $permission_str)
   {
     if (!isset ($rootpermission['desktop'])) $rootpermission['desktop'] = 0;
     if (!isset ($rootpermission['desktopsetting'])) $rootpermission['desktopsetting'] = 0;
+    if (!isset ($rootpermission['desktopprojectmgmt'])) $rootpermission['desktopprojectmgmt'] = 0; 
     if (!isset ($rootpermission['desktoptaskmgmt'])) $rootpermission['desktoptaskmgmt'] = 0;
     if (!isset ($rootpermission['desktopcheckedout'])) $rootpermission['desktopcheckedout'] = 0; 
     if (!isset ($rootpermission['desktoptimetravel'])) $rootpermission['desktoptimetravel'] = 0;
-    if (!isset ($rootpermission['desktopfavorites'])) $rootpermission['desktopfavorites'] = 0;     
+    if (!isset ($rootpermission['desktopfavorites'])) $rootpermission['desktopfavorites'] = 0; 
       
     if (!isset ($rootpermission['site'])) $rootpermission['site'] = 0;
     if (!isset ($rootpermission['sitecreate'])) $rootpermission['sitecreate'] = 0;
@@ -61,7 +62,8 @@ function rootpermission ($site_name, $site_admin, $permission_str)
         if ($rootpermission['desktoptaskmgmt'] == 0 && $desktop[2] == 1) $rootpermission['desktoptaskmgmt'] = 1;
         if ($rootpermission['desktopcheckedout'] == 0 && $desktop[3] == 1) $rootpermission['desktopcheckedout'] = 1;       
         if ($rootpermission['desktoptimetravel'] == 0 && $desktop[4] == 1) $rootpermission['desktoptimetravel'] = 1;
-        if ($rootpermission['desktopfavorites'] == 0 && $desktop[5] == 1) $rootpermission['desktopfavorites'] = 1;    
+        if ($rootpermission['desktopfavorites'] == 0 && $desktop[5] == 1) $rootpermission['desktopfavorites'] = 1;
+        if ($rootpermission['desktopprojectmgmt'] == 0 && $desktop[2] == 1) $rootpermission['desktopprojectmgmt'] = 1; // new in version 6.0.1
 
         if ($site_admin == true)
         {
@@ -885,6 +887,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       
       // update database
       update_database_v586 ();
+      update_database_v601 ();
     
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
       $charset = getcharset ("", $userdata); 
@@ -977,8 +980,8 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
           $inherit_db = inherit_db_read ();
 
           // set permissions and group name
-          if ($user != "hcms_download") $permission_str_admin = "desktop=111111&site=1111&user=1111&group=1111&pers=111111111&workflow=1111111111&template=11111&media=111111&component=11111111111&page=111111111";
-          else $permission_str_admin = "desktop=00000&site=0000&user=0000&group=0000&pers=000000000&workflow=0000000000&template=00000&media=000000&component=10100000000&page=000000000";
+          if ($user != "hcms_download") $permission_str_admin = "desktop=1111111&site=1111&user=1111&group=1111&pers=111111111&workflow=1111111111&template=11111&media=111111&component=11111111111&page=111111111";
+          else $permission_str_admin = "desktop=0000000&site=0000&user=0000&group=0000&pers=000000000&workflow=0000000000&template=00000&media=000000&component=10100000000&page=000000000";
           
           if ($user != "hcms_download")
           {
@@ -2918,8 +2921,12 @@ function createtoken ($user="sys", $lifetime=0, $secret=4)
     if ($lifetime == 0)
     {
       // default lifetime of token (valid for one day from now)
-      if ($mgmt_config['token_lifetime'] < 60) $lifetime = 86400;
-      else $lifetime = intval ($mgmt_config['token_lifetime']);
+      if (!empty ($mgmt_config['token_lifetime']))
+      {
+        if ($mgmt_config['token_lifetime'] < 60) $lifetime = 86400;
+        else $lifetime = intval ($mgmt_config['token_lifetime']);
+      }
+      else $lifetime = 86400;
     }    
     // create token
     $timetoken = createtimetoken ($lifetime, $secret);

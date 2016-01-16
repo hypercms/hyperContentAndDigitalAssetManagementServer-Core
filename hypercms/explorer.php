@@ -526,9 +526,18 @@ else
       $point->addSubPoint($subpoint);
     }
     
-    if (checkrootpermission ('desktoptaskmgmt') && is_file ($mgmt_config['abs_path_cms']."task/task_list.php"))
+    if (checkrootpermission ('desktopprojectmgmt') && is_file ($mgmt_config['abs_path_cms']."project/project_list.php") && $mgmt_config['db_connect_rdbms'] != "")
     {
-      $subpoint = new hcms_menupoint($hcms_lang['task-management'][$lang], "task/task_list.php?site=*Null*", 'task.gif');
+      $subpoint = new hcms_menupoint($hcms_lang['project-management'][$lang], "project/project_list.php", 'project.gif');
+      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setTarget('workplFrame');
+      $subpoint->setOnMouseOver('hcms_resetContext();');
+      $point->addSubPoint($subpoint);
+    }
+    
+    if (checkrootpermission ('desktoptaskmgmt') && is_file ($mgmt_config['abs_path_cms']."task/task_list.php") && $mgmt_config['db_connect_rdbms'] != "")
+    {
+      $subpoint = new hcms_menupoint($hcms_lang['task-management'][$lang], "task/task_list.php", 'task.gif');
       $subpoint->setOnClick('changeSelection(this)');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');
@@ -967,125 +976,414 @@ else
   <head>
     <title>hyperCMS</title>
     <meta charset="<?php echo getcodepage ($lang); ?>" />
-    <meta name="viewport" content="width=260; initial-scale=1.0; user-scalable=0;">
+    <meta name="viewport" content="width=260; initial-scale=1.0; user-scalable=0;" />
+    
+    <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" />
+    <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
+    
     <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.10.2.min.js"></script>  
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.cookie.js"></script>
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.hotkeys.js"></script>
     <script type="text/javascript" src="javascript/jstree/jquery.jstree.js"></script>
     <script type="text/javascript" src="javascript/main.js"></script>
     <script type="text/javascript" src="javascript/contextmenu.js"></script>
+    <!-- Rich calendar -->
+    <link  rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
+    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
+    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
+    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_fr.js"></script>
+    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_pt.js"></script>
+    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_ru.js"></script>
+    <script language="Javascript" type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
+    <!-- Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php echo $mgmt_config['googlemaps_appkey']; ?>"></script>
+
     <script type="text/javascript">
-    <!--
-      // Variable where lastSelected element is stored
-      var lastSelected = "";
+    // Variable where lastSelected element is stored
+    var lastSelected = "";
 
-      // set contect menu option
-      var contextxmove = 0;
-      var contextymove = 1;
-      var contextenable = 1;
+    // set contect menu option
+    var contextxmove = 0;
+    var contextymove = 1;
+    var contextenable = 1;
 
-      // define global variable for popup window name used in contextmenu.js
-      var session_id = '<?php session_id(); ?>';
+    // define global variable for popup window name used in contextmenu.js
+    var session_id = '<?php session_id(); ?>';
+    
+    $(function ()
+    {
+      // We need to fix the html of the existing menupoint for jstree to work correctly (no newline and no more than one space)
+      var html = $('#menupointlist').html();
+      html = html.replace('\n', '');
+      html = html.replace(/ {2,}/, '');
       
-      $(function ()
-      {
-        // We need to fix the html of the existing menupoint for jstree to work correctly (no newline and no more than one space)
-        var html = $('#menupointlist').html();
-        html = html.replace('\n', '');
-        html = html.replace(/ {2,}/, '');
-        
-        // JS-TREE Configuration
-        $("#menu").jstree({
-          "plugins" : ["themes", "html_data"],
-          "html_data" : {
-            "data" : html,
-            "ajax" : {
-              "url" : function(node) {
-                // Setting up the ajax link to gather the subfolders
-                var pagelink = '<?php echo $mgmt_config['url_path_cms']; ?>explorer.php';
-                var id = node.attr('id');
-                
-                var location = $('#ajax_location_'+id).text();
-                pagelink += '?location='+location;
-                
-                var rnr = $('#ajax_rnr_'+id).text();
-                pagelink += '&rnr='+rnr;
-                
-                return pagelink;
-              },
-              "cache" : false,
-              "dataType" : 'html',
-              "type" : 'GET',
-              "async" : true
-            }
-          },
-          "themes" : {
-            "theme" : "hypercms",
-            "dots" : false
+      // JS-TREE Configuration
+      $("#menu").jstree({
+        "plugins" : ["themes", "html_data"],
+        "html_data" : {
+          "data" : html,
+          "ajax" : {
+            "url" : function(node) {
+              // Setting up the ajax link to gather the subfolders
+              var pagelink = '<?php echo $mgmt_config['url_path_cms']; ?>explorer.php';
+              var id = node.attr('id');
+              
+              var location = $('#ajax_location_'+id).text();
+              pagelink += '?location='+location;
+              
+              var rnr = $('#ajax_rnr_'+id).text();
+              pagelink += '&rnr='+rnr;
+              
+              return pagelink;
+            },
+            "cache" : false,
+            "dataType" : 'html',
+            "type" : 'GET',
+            "async" : true
           }
-          // Whenever a node is opened we reload the node as data could have changed
-        }).bind("open_node.jstree", function (e, data) {
-          reloadNode(data.args[0]);
-        })
-      });
-      
-      // toggle a single node 
-      function hcms_jstree_toggle(nodeName) 
-      {
-        $("#menu").jstree("toggle_node","#"+nodeName);
-        changeSelection($("#"+nodeName).children('a'));
-      }
-      
-      function hcms_jstree_toggle_preventDefault(nodeName, event) 
-      {
-        hcms_jstree_toggle(nodeName);
-        event.preventDefault();
-      }
-      
-      // just open a single node
-      function hcms_jstree_open(nodeName) 
-      {
-        // We need to reload here because the content could have changed
-        reloadNode("#"+nodeName);
-        $("#menu").jstree("open_node","#"+nodeName);
-        changeSelection($("#"+nodeName).children('a'));
-      }
-      
-      function hcms_jstree_open_preventDefault(nodeName, event) 
-      {
-        hcms_jstree_open(nodeName);
-        event.preventDefault();
-      }
-      
-      // Reloads the data for a node via jstree functions if the node has the class jstree-reload
-      function reloadNode(node) 
-      {
-        if($(node).hasClass('jstree-reload') && $(node).has('ul').length != 0)
-        {
-          $("#menu").jstree('refresh', node);
+        },
+        "themes" : {
+          "theme" : "hypercms",
+          "dots" : false
         }
+        // Whenever a node is opened we reload the node as data could have changed
+      }).bind("open_node.jstree", function (e, data) {
+        reloadNode(data.args[0]);
+      })
+    });
+    
+    // toggle a single node 
+    function hcms_jstree_toggle(nodeName) 
+    {
+      $("#menu").jstree("toggle_node","#"+nodeName);
+      changeSelection($("#"+nodeName).children('a'));
+    }
+    
+    function hcms_jstree_toggle_preventDefault(nodeName, event) 
+    {
+      hcms_jstree_toggle(nodeName);
+      event.preventDefault();
+    }
+    
+    // just open a single node
+    function hcms_jstree_open(nodeName) 
+    {
+      // We need to reload here because the content could have changed
+      reloadNode("#"+nodeName);
+      $("#menu").jstree("open_node","#"+nodeName);
+      changeSelection($("#"+nodeName).children('a'));
+    }
+    
+    function hcms_jstree_open_preventDefault(nodeName, event) 
+    {
+      hcms_jstree_open(nodeName);
+      event.preventDefault();
+    }
+    
+    // Reloads the data for a node via jstree functions if the node has the class jstree-reload
+    function reloadNode(node) 
+    {
+      if($(node).hasClass('jstree-reload') && $(node).has('ul').length != 0)
+      {
+        $("#menu").jstree('refresh', node);
+      }
+    }
+    
+    // Changes the class so the node appears to be selected and the old node is unselected
+    function changeSelection(node)
+    {
+      if(lastSelected != "")
+      {
+        lastSelected.children("span").removeClass('hcmsObjectSelected');
       }
       
-      // Changes the class so the node appears to be selected and the old node is unselected
-      function changeSelection(node)
+      lastSelected = $(node);
+      lastSelected.children("span").addClass('hcmsObjectSelected');
+    }
+      
+    function checkForm(select)
+    {
+      if (select.elements['search_expression'].value == "")
       {
-        if(lastSelected != "")
+        alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-search-expression'][$lang]); ?>"));
+        select.elements['search_expression'].focus();
+        return false;
+      }
+      
+      select.submit();
+    }
+    
+    function loadForm ()
+    {
+      selectbox = document.forms['searchform_advanced'].elements['template'];
+      template = selectbox.options[selectbox.selectedIndex].value;
+      
+      if (template != "")
+      {
+        hcms_loadPage('contentLayer',null,'search_form_advanced.php?template=' + template + '&css_display=block');
+        return true;
+      }
+      else return false;
+    }
+    
+    function initMap ()
+    {
+      // Google Maps JavaScript API v3: Map Simple
+      var map;
+      var bounds = null;
+      
+      var mapOptions = {
+        zoom: 0,
+        center: new google.maps.LatLng(0, 0),
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+      
+      map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+      // start drag rectangle
+      var shiftPressed = false;
+    
+      $(window).keydown(function (evt)
+      {
+        if (evt.which === 16) shiftPressed = true;
+      }).keyup(function (evt)
+      {
+        if (evt.which === 16) shiftPressed = false;
+      });
+    
+      var mouseDownPos, gribBoundingBox = null,
+          mouseIsDown = 0;
+      var themap = map;
+    
+      google.maps.event.addListener(themap, 'mousemove', function (e)
+      {
+        if (mouseIsDown && shiftPressed)
         {
-          lastSelected.children("span").removeClass('hcmsObjectSelected');
+          // box exists
+          if (gribBoundingBox !== null)
+          {
+            bounds.extend(e.latLng);
+            // if this statement is enabled, you lose mouseUp events           
+            gribBoundingBox.setBounds(bounds);
+          }
+          // create bounding box
+          else
+          {
+            bounds = new google.maps.LatLngBounds();
+            bounds.extend(e.latLng);
+            gribBoundingBox = new google.maps.Rectangle({
+              map: themap,
+              bounds: bounds,
+              fillOpacity: 0.15,
+              strokeWeight: 0.9,
+              clickable: false
+            });
+          }
+        }
+      });
+    
+      google.maps.event.addListener(themap, 'mousedown', function (e)
+      {
+        if (shiftPressed)
+        {
+          mouseIsDown = 1;
+          mouseDownPos = e.latLng;
+          themap.setOptions({
+            draggable: false
+          });
+        }
+      });
+    
+      google.maps.event.addListener(themap, 'mouseup', function (e)
+      {
+        if (mouseIsDown && shiftPressed)
+        {
+          mouseIsDown = 0;
+          
+          // box exists
+          if (gribBoundingBox !== null)
+          {
+            var boundsSelectionArea = new google.maps.LatLngBounds(gribBoundingBox.getBounds().getSouthWest(), gribBoundingBox.getBounds().getNorthEast());                
+            var borderSW = gribBoundingBox.getBounds().getSouthWest();
+            var borderNE = gribBoundingBox.getBounds().getNorthEast();
+            
+            document.forms['searchform_advanced'].elements['geo_border_sw'].value = borderSW;
+            document.forms['searchform_advanced'].elements['geo_border_ne'].value = borderNE;
+            
+            // remove the rectangle
+            gribBoundingBox.setMap(null); 
+          }
+          
+          gribBoundingBox = null;
+        }
+    
+        themap.setOptions({
+          draggable: true
+        });
+      });
+    }
+
+    function startSearch ()
+    {
+      // iframe for search result
+      var iframe = parent.frames['workplFrame'].frames['mainFrame'];
+      
+      // search form
+      var form = document.forms['searchform_advanced'];
+    
+      if (form)
+      {
+        if (!iframe)
+        {
+          parent.frames['workplFrame'].location = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_objectlist.php';
         }
         
-        lastSelected = $(node);
-        lastSelected.children("span").addClass('hcmsObjectSelected');
+        // check if all file-types have been checked
+        var filetypeLayer = document.getElementById('filetypeLayer');
+        
+        if (filetypeLayer && filetypeLayer.style.display != "none")
+        {
+          var unchecked = false;
+          var childs = filetypeLayer.getElementsByTagName('*');
+          
+          for (var i=0; i<childs.length; i++)
+          {
+            // found unchecked element
+            if (childs[i].tagName == "INPUT" && childs[i].checked == false)
+            {
+              unchecked = true;
+            }
+          }
+          
+          // disable checkboxes for file-type
+          if (unchecked == false)
+          {
+            for (var i=0; i<childs.length; i++)
+            {
+              if (childs[i].tagName == "INPUT")
+              {
+                childs[i].disabled = true;
+              }
+            }
+          }
+        }
+        
+        // if iframe is loaded
+        if (iframe && iframe.location != "")
+        {
+          // submit form
+          form.submit();
+          
+          // enable checkboxes for file-type
+          if (filetypeLayer && filetypeLayer.style.display != "none")
+          {
+            for (var i=0; i<childs.length; i++)
+            {
+              if (childs[i].tagName == "INPUT")
+              {
+                childs[i].disabled = false;
+              }
+            }
+          }
+          
+          return true;
+        }
+        // wait 100 ms
+        else window.setTimeout(startSearch, 100);
       }
-    -->
+      else return false;
+    }
+
+    var cal_obj = null;
+    var cal_format = null;
+    var cal_field = null;
+    
+    function show_cal (el, field_id, format)
+    {
+      if (cal_obj) return;
+      
+      cal_field = field_id;
+      cal_format = format;
+      var datefield = document.getElementById(field_id);
+      
+      cal_obj = new RichCalendar();
+      cal_obj.start_week_day = 1;
+      cal_obj.show_time = false;
+      cal_obj.language = '<?php echo getcalendarlang ($lang); ?>';
+      cal_obj.user_onchange_handler = cal_on_change;
+      cal_obj.user_onautoclose_handler = cal_on_autoclose;
+      cal_obj.parse_date(datefield.value, cal_format);
+      cal_obj.show_at_element(datefield, 'adj_left-top');
+    }
+    
+    // onchange handler
+    function cal_on_change (cal, object_code)
+    {
+      if (object_code == 'day')
+      {
+        document.getElementById(cal_field).value = cal.get_formatted_date(cal_format);
+        cal.hide();
+        cal_obj = null;
+      }
+    }
+    
+    // onautoclose handler
+    function cal_on_autoclose (cal)
+    {
+      cal_obj = null;
+    }
+
+    // Google Maps JavaScript API v3: Map Simple
+    var map;
+    var bounds = null;
+    
+    $(document).ready(function ()
+    {
+      // initialize form
+      hcms_showInfo('fulltextLayer',0);
+      hcms_hideInfo('advancedLayer');
+      hcms_hideInfo('imageLayer');
+      hcms_showInfo('filetypeLayer',0);
+      hcms_hideInfo('mapLayer');
+    
+      // search history
+      <?php
+      $keywords = array();
+      
+      if (is_file ($mgmt_config['abs_path_data']."log/search.log"))
+      {
+        // load search log
+        $data = file ($mgmt_config['abs_path_data']."log/search.log");
+      
+        if (is_array ($data))
+        {
+          foreach ($data as $record)
+          {
+            list ($date, $user, $keyword_add) = explode ("|", $record);
+      
+            $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
+          }
+          
+          // only unique expressions
+          $keywords = array_unique ($keywords);
+        }
+      }
+      ?>
+      var available_expressions = [<?php echo implode (",\n", $keywords); ?>];
+    
+      $("#search_expression").autocomplete({
+        source: available_expressions
+      });      
+    });
     </script>
-    <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
   </head>
   
   <body class="hcmsWorkplaceExplorer">
   
   <?php if (!$is_mobile) { ?>
-  <div style="position:fixed; right:0; top:45%; margin:0; padding:0;">
+  <div style="position:fixed; z-index:1000; right:0; top:45%; margin:0; padding:0;">
     <img onclick="parent.minNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
     <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
   </div>
@@ -1131,13 +1429,221 @@ else
       </table>
     </form>
     </div>
+    
+    <!-- buttons -->
+    <div style="position:fixed; top:4px; right:4px; z-index:200;">
+      <img onClick="hcms_showInfo('menu',0); hcms_hideInfo('search');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_explorer.png" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
+      <img onClick="hcms_showInfo('search',0); hcms_hideInfo('menu');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_search.png" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+    </div>
 
-    <div id="menu" style="margin-top:4px;">
+    <!-- navigator -->
+    <div id="menu" style="position:absolute; top:4px; left:0px;">
       <ul id="menupointlist">
         <?php echo $maintree.$tree; ?>
       </ul>
     </div>
+    
+    <!-- search form -->
+    <div id="search" style="position:absolute; top:12px; left:4px; right:4px; text-align:top; display:none;">
+      <form name="searchform_advanced" method="post" action="search_objectlist.php" target="mainFrame">
+        <input type="hidden" name="action" value="base_search" />
+        <input type="hidden" name="search_dir" value="" />
+        <input type="hidden" name="maxhits" value="500" />
 
+        <div style="display:block; margin-bottom:3px;">
+          <b><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></b>
+          <img onClick="hcms_showInfo('fulltextLayer',0); hcms_hideInfo('advancedLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+        </div>
+        <div id="fulltextLayer"> 
+          <label for="search_expression"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?></label><br />
+          <input type="text" id="search_expression" name="search_expression" style="width:220px;" maxlength="200" /><br />
+          <label><input type="checkbox" name="search_cat" value="file" /><?php echo getescapedtext ($hcms_lang['only-object-names'][$lang]); ?></label><br />
+        </div>
+        <hr />
+        
+        <div style="display:block; margin-bottom:3px;">
+          <b><?php echo getescapedtext ($hcms_lang['advanced-search'][$lang]); ?></b>
+          <img onClick="hcms_hideInfo('fulltextLayer'); hcms_showInfo('advancedLayer',0); hcms_hideInfo('imageLayer'); hcms_showInfo('filetypeLayer',0);" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+        </div>
+        <div id="advancedLayer" style="display:none;">
+          <label for="template"><?php echo getescapedtext ($hcms_lang['based-on-template'][$lang]); ?></label><br />
+          <select id="template" name="template" style="width:220px;" onChange="loadForm();">
+            <option value="">&nbsp;</option>
+          <?php
+          if (!empty ($siteaccess) && is_array ($siteaccess))
+          {
+            $template_array = array();
+            
+            foreach ($siteaccess as $site)
+            {
+              // load publication inheritance setting
+              if ($mgmt_config[$site]['inherit_tpl'] == true)
+              {
+                $inherit_db = inherit_db_read ();
+                $site_array = inherit_db_getparent ($inherit_db, $site);
+                
+                // add own publication
+                $site_array[] = $site;
+              }
+              else $site_array[] = $site;
+              
+              foreach ($site_array as $site_source)
+              {
+                $dir_template = dir ($mgmt_config['abs_path_template'].$site_source."/");
+      
+                if ($dir_template != false)
+                {
+                  while ($entry = $dir_template->read())
+                  {
+                    if ($entry != "." && $entry != ".." && !is_dir ($entry) && !preg_match ("/.inc.tpl/", $entry) && !preg_match ("/.tpl.v_/", $entry))
+                    {
+                      $template_array[] = $site_source."/".$entry;                
+                    }
+                  }
+      
+                  $dir_template->close();
+                }
+              }
+            }
+    
+            if (is_array ($template_array) && sizeof ($template_array) > 0)
+            {
+              // remove double entries (double entries due to parent publications won't be listed)
+              $template_array = array_unique ($template_array);
+              natcasesort ($template_array);
+              reset ($template_array);
+              
+              foreach ($template_array as $value)
+              {
+                if (strpos ($value, ".page.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".page.tpl"))." (".getescapedtext ($hcms_lang['page'][$lang]).")";
+                elseif (strpos ($value, ".comp.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".comp.tpl"))." (".getescapedtext ($hcms_lang['component'][$lang]).")";
+                elseif (strpos ($value, ".meta.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".meta.tpl"))." (".getescapedtext ($hcms_lang['meta-data'][$lang]).")";
+                
+                echo "<option value=\"".$value."\">".$tpl_name."</option>\n";
+              }
+            }
+            else 
+            {
+              echo "<option value=\"\">&nbsp;</option>\n";
+            }
+          }
+          ?>
+          </select><br />
+
+          <iframe id="contentFRM" name="contentFRM" width="0" height="0" frameborder="0"></iframe> 
+          <div id="contentLayer" class="hcmsObjectSelected" style="border:1px solid #000000; width:245px; height:200px; padding:2px; overflow:auto;"></div><br />
+        </div>
+        <hr />
+        
+        <div style="display:block; margin-bottom:3px;">
+          <b><?php echo getescapedtext ($hcms_lang['image-search'][$lang]); ?></b>
+          <img onClick="hcms_showInfo('fulltextLayer',0); hcms_hideInfo('advancedLayer'); hcms_showInfo('imageLayer',0); hcms_hideInfo('filetypeLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+        </div>
+        <div id="imageLayer" style="display:none;">
+             
+          <label for="search_imagesize"><?php echo getescapedtext ($hcms_lang['image-size'][$lang]); ?></label><br />
+          <select id="search_imagesize" name="search_imagesize" style="width:220px;" onchange="if (this.options[this.selectedIndex].value=='exact') document.getElementById('searchfield_imagesize').style.display='block'; else document.getElementById('searchfield_imagesize').style.display='none';">
+            <option value="" selected="selected"><?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></option>
+            <option value="1024-9000000"><?php echo getescapedtext ($hcms_lang['big-1024px'][$lang]); ?></option>
+            <option value="640-1024"><?php echo getescapedtext ($hcms_lang['medium-640-1024px'][$lang]); ?></option>
+            <option value="0-640"><?php echo getescapedtext ($hcms_lang['small'][$lang]); ?></option>
+            <option value="exact"><?php echo getescapedtext ($hcms_lang['exact-w-x-h'][$lang]); ?></option>
+          </select><br />
+          <div id="searchfield_imagesize" style="display:none; margin:3px 0px 0px 0px;">
+            <input type="text" name="search_imagewidth" style="width:40px;" maxlength="8" /> x 
+            <input type="text" name="search_imageheight" style="width:40px;" maxlength="8" /> px
+            <br />
+          </div>
+          <br />
+            
+          <label><?php echo getescapedtext ($hcms_lang['image-color'][$lang]); ?></label><br />
+          <div style="display:block;">
+            <div style="width:240px; margin:1px; padding:0; float:left;"><div style="float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="" checked="checked" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></div>
+            <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#000000; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="K" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['black'][$lang]); ?></div>
+            <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FFFFFF; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="W" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['white'][$lang]); ?></div>
+            <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#808080; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="E" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['grey'][$lang]); ?></div>
+            <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FF0000; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="R" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['red'][$lang]); ?></div>
+            <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#00C000; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="G" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['green'][$lang]); ?></div>
+            <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#0000FF; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="B" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['blue'][$lang]); ?></div>
+            <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#00FFFF; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="C" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['cyan'][$lang]); ?></div>
+            <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FF0090; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="M" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['magenta'][$lang]); ?></div>
+            <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FFFF00; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="Y" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['yellow'][$lang]); ?></div>
+            <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FF8A00; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="O" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['orange'][$lang]); ?></div>
+            <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FFCCDD; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="P" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['pink'][$lang]); ?></div>
+            <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#A66500; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="N" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['brown'][$lang]); ?></div>
+            <div style="clear:both;"></div>
+          </div><br />
+          
+          <label for="search_imagetype"><?php echo getescapedtext ($hcms_lang['image-type'][$lang]); ?></label><br />
+          <select id="search_imagetype" name="search_imagetype" style="width:220px;">
+            <option value="" selected="selected"><?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></option>
+            <option value="landscape"><?php echo getescapedtext ($hcms_lang['landscape'][$lang]); ?></option>
+            <option value="portrait"><?php echo getescapedtext ($hcms_lang['portrait'][$lang]); ?></option>
+            <option value="square"><?php echo getescapedtext ($hcms_lang['square'][$lang]); ?></option>
+          </select><br />
+        </div>
+        <hr />
+          
+        <div style="display:block; margin-bottom:3px;">
+          <b><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?></b>
+          <img onClick="hcms_hideInfo('imageLayer'); hcms_showInfo('filetypeLayer',0);" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+        </div>
+        <div id="filetypeLayer" style="display:inline;">
+          <input type="checkbox" id="search_format_page" name="search_format[]" value="page" checked="checked" />&nbsp;<label for="search_format_page"><?php echo getescapedtext ($hcms_lang['page'][$lang]); ?></label><br />
+          <input type="checkbox" id="search_format_comp" name="search_format[]" value="comp" checked="checked" />&nbsp;<label for="search_format_comp"><?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label><br />
+          <input type="checkbox" id="search_format_image" name="search_format[]" value="image" checked="checked" />&nbsp;<label for="search_format_image"><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label><br />
+          <input type="checkbox" id="search_format_document" name="search_format[]" value="document" checked="checked" />&nbsp;<label for="search_format_document"><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></label><br />
+          <input type="checkbox" id="search_format_video" name="search_format[]" value="video" checked="checked" />&nbsp;<label for="search_format_video"><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label><br />
+          <input type="checkbox" id="search_format_audio" name="search_format[]" value="audio" checked="checked" />&nbsp;<label for="search_format_audio"><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label><br />
+        </div>
+        <hr />
+
+        <div style="display:block; margin-bottom:3px;">
+          <b><?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?></b>
+          <img onClick="hcms_switchInfo('mapLayer'); initMap();" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+        </div>
+        <div id="mapLayer" style="display:none;">
+          <div style="position:relative; left:190px; top:15px; width:22px; height:22px; z-index:1000;"><img src="<?php echo getthemelocation(); ?>img/info.gif" title="<?php echo getescapedtext ($hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag'][$lang]); ?>" /></div>
+          <div id="map" style="width:222px; height:180px; margin-top:-15px; margin-bottom:3px; border:1px solid grey;" title="<?php echo getescapedtext ($hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag'][$lang]); ?>"></div>
+          <label for="geo_border_sw"><?php echo getescapedtext ($hcms_lang['sw-coordinates'][$lang]); ?></label><br />
+          <input type="text" id="geo_border_sw" name="geo_border_sw" style="width:220px;" maxlength="100" /><br />
+          <label for="geo_border_ne"><?php echo getescapedtext ($hcms_lang['ne-coordinates'][$lang]); ?></label><br />
+          <input type="text" id="geo_border_ne" name="geo_border_ne" style="width:220px;" maxlength="100" /><br />
+        </div>
+        <hr />
+        
+        <label><b><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?></b></label><br />
+        <table border="0" cellspacing="0" cellpadding="2">     
+          <tr>
+            <td> 
+              <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>:&nbsp;&nbsp;
+            </td>
+            <td>
+              <input type="text" name="date_from" id="date_from" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'date_from', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+            <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>:&nbsp;&nbsp; 
+            </td>
+            <td>
+              <input type="text" name="date_to" id="date_to" readonly="readonly" value="" style="width:80px;" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'date_to', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
+            </td>
+          </tr>
+        </table>
+        <hr />
+        
+        <label nowrap="object_id"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></label><br />
+        <input type="text" id="object_id" name="object_id" value="" style="width:220px;" /><br />         
+        <label nowrap="container_id"><?php echo getescapedtext ($hcms_lang['container-id'][$lang]); ?></label><br />
+        <input type="text" id="container_id" name="container_id" value="" style="width:220px;" /><br />
+        <hr />
+
+        <label><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?>:</label>
+    	  <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="startSearch();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+      </form>
+    </div>
+    
   </body>
 </html>
 <?php 

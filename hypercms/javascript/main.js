@@ -239,20 +239,6 @@ function hcms_openWindow (theURL, winName, features, width, height)
   popup.focus();
 }
 
-function hcms_switchSelector (id)
-{
-  if (eval (id))
-  {
-    var selector = document.getElementById(id);
-    
-    if (selector.style.visibility == 'hidden') selector.style.visibility = 'visible';
-    else selector.style.visibility = 'hidden';
-    
-    return true;
-  }
-  else return false;
-}
-
 function hcms_openChat ()
 {
   // standard browser (open/close chat)
@@ -468,6 +454,18 @@ function hcms_showInfo (id, sec)
 {
   document.getElementById(id).style.display="inline";
   
+  // enable all form elements
+  var nodes = document.getElementById(id).getElementsByTagName('*');
+  
+  for (var i = 0; i < nodes.length; i++)
+  {
+    if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
+    {
+      nodes[i].disabled = false;
+    }
+  }
+  
+  // hide element
   if (sec > 0)
   {
     var function_hide = "hcms_hideInfo('" + id + "')";
@@ -478,6 +476,75 @@ function hcms_showInfo (id, sec)
 function hcms_hideInfo (id)
 {
   document.getElementById(id).style.display="none";
+  
+  // disable all form elements
+  var nodes = document.getElementById(id).getElementsByTagName('*');
+  
+  for (var i = 0; i < nodes.length; i++)
+  {
+    if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
+    {
+      nodes[i].disabled = true;
+    }
+  }
+}
+
+function hcms_switchInfo (id)
+{
+  // uses display
+  if (eval (id))
+  {
+    var info = document.getElementById(id);
+    
+    if (info.style.display == 'none')
+    {
+      info.style.display = 'inline';
+      
+      // enable all form elements
+      var nodes = document.getElementById(id).getElementsByTagName('*');
+      
+      for (var i = 0; i < nodes.length; i++)
+      {
+        if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
+        {
+          nodes[i].disabled = false;
+        }
+      }
+    }
+    else
+    {
+      info.style.display = 'none';
+      
+      // disable all form elements
+      var nodes = document.getElementById(id).getElementsByTagName('*');
+      
+      for (var i = 0; i < nodes.length; i++)
+      {
+        if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
+        {
+          nodes[i].disabled = true;
+        }
+      }
+    }
+    
+    return true;
+  }
+  else return false;
+}
+
+function hcms_switchSelector (id)
+{
+  // uses visibilty
+  if (eval (id))
+  {
+    var selector = document.getElementById(id);
+    
+    if (selector.style.visibility == 'hidden') selector.style.visibility = 'visible';
+    else selector.style.visibility = 'hidden';
+    
+    return true;
+  }
+  else return false;
 }
 
 // ------------------------------ element style functions -------------------------------
@@ -520,13 +587,18 @@ function hcms_stripHTML (_str)
 {
   if(!_str)return;
 
-  var _str2;
+  // remove all 3 types of line breaks
+  _str = _str.replace(/(\r\n|\n|\r)/gm, "");
+
   var _reg=/<.*?>/gi;
   
   while (_str.match(_reg)!=null)
   {
     _str=_str.replace(_reg, "");
   }
+  
+  // replace non-breaking-space
+  _str = _str.replace("&nbps;", "");
   
   return _str;
 }
@@ -540,6 +612,7 @@ function hcms_bubbleSort (c, _ud, _isNumber)
     {
       var _left=hcms_stripHTML(hcms_detailview[i][c]);
       var _right=hcms_stripHTML(hcms_detailview[j][c]);
+
       var _sign=_ud?">":"<";
       var _yes=false;
       

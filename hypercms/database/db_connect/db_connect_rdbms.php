@@ -912,10 +912,9 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
   global $mgmt_config, $user;
 
   // set object_type if the search is image or video related
-  if (!is_array ($object_type) && (!empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype) || !empty ($filesize)))
+  if (!is_array ($object_type) && (!empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype)))
   {
-    if (!is_array ($object_type)) $object_type = array();
-    array_push ($object_type, "image", "video");
+    $object_type = array("image", "video", "flash");
   }
   
   if (!empty ($folderpath) || is_array ($object_type) || !empty ($date_from) || !empty ($date_to) || !empty ($template) || is_array ($expression_array) || !empty ($expression_filename) || !empty ($filesize) || !empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype))
@@ -944,6 +943,9 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     }
     else $operator = "AND";
     
+    $sql_table = array();
+    $sql_where = array();
+
     // folder path => consider folderpath only when there is no filenamecheck
     if (!empty ($folderpath))
     {
@@ -1002,53 +1004,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     {
       $expression_filename = $expression_array[0];
     }
-    
-    // define query for 
-    
-    // object type (only if less than 5 of total 5 arguments (component, audio, video, document, image), otherwise we look for all object types/formats).
-    // for media reference the search can also include binary, flash, compressed and text.
-    if (is_array ($object_type) && sizeof ($object_type) > 0 && sizeof ($object_type) < 5)
-    {
-      // add media table
-      $sql_table['media'] = "";
-      $sql_where['format'] = "";
-      $sql_where['object'] = "";
-      
-      foreach ($object_type as $search_type)
-      {
-        if ($search_type == "page" || $search_type == "comp") 
-        {
-          if ($sql_where['object'] != "") $sql_where['object'] .= " OR ";
-          $sql_where['object'] .= 'obj.template LIKE "%.'.$search_type.'.tpl"';
-        }
 
-        // file-type (audio, document, text, image, video, compressed, flash, binary)
-        if (in_array ($search_type, array("audio","document","text","image","video","compressed","flash","binary"))) 
-        {
-          if (!empty ($sql_where['format'])) $sql_where['format'] .= " OR ";
-          $sql_where['format'] .= 'med.filetype="'.$search_type.'"';
-        }
-      }
-
-      // add meta as object type if formats are set
-      if (!empty ($sql_where['format']))
-      {
-        if (!empty ($sql_where['object'])) $sql_where['object'] .= " OR ";
-        $sql_where['object'] .= 'obj.template LIKE "%.meta.tpl"';
-      }
-      
-      // add () for OR operators
-      if (!empty ($sql_where['object'])) $sql_where['object'] = "(".$sql_where['object'].")";
-      else unset ($sql_where['object']);
-      
-      if (!empty ($sql_where['format'])) $sql_where['format'] = "(".$sql_where['format'].")";
-      else unset ($sql_where['format']);
-      
-      // join media table
-      if (!empty ($sql_where['format'])) $sql_table['media'] = 'LEFT JOIN media AS med on obj.id=med.id';
-    }     
-    
-    // file name
+    // query file name
     if (!empty ($expression_filename))
     {
       $expression_filename = str_replace ("*", "-hcms_A-", $expression_filename); 
@@ -1063,32 +1020,11 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       if (substr_count ($expression_filename_conv, "%") == 0) $expression_filename_conv = "%".$expression_filename_conv."%";
       
       $expression_filename_conv = $db->escape_string ($expression_filename_conv);
-      
-       // folder path
-      if (!empty ($folderpath))
-      {
-        if (!is_array ($folderpath )) $folderpath = array ($folderpath);
-        
-        $sql_puffer = array();
-        
-        foreach ($folderpath as $path)
-        {
-          //escape characters depending on dbtype
-          $path = $db->escape_string ($path);
-          // replace %
-          $path = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $path);
-          // where clause for folderpath
-          if (substr ($expression_filename_conv, 0, 1) != "%") $folderpath_conv = $path."%";
-          else $folderpath_conv = $path;
-          
-          $sql_puffer[] = 'obj.objectpath LIKE _utf8"'.$folderpath_conv.$expression_filename_conv.'"';
-        }
-        
-        if (is_array ($sql_puffer) && sizeof ($sql_puffer) > 0) $sql_where['filename'] = '('.implode (" OR ", $sql_puffer).')';
-      }
+
+      $sql_where['filename'] = 'obj.objectpath LIKE _utf8"'.$expression_filename_conv.'"';
     }   
     
-    // dates and geo locatiojn (add table container)
+    // query dates and geo location (add table container)
     if ((!empty ($date_from) || !empty ($date_to)) || (!empty ($geo_border_sw) && !empty ($geo_border_ne)))
     {
       $sql_table['container'] = "LEFT JOIN container AS cnt ON obj.id=cnt.id";
@@ -1118,13 +1054,13 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       }
     }
 
-    // template
+    // query template
     if (!empty ($template))
     {
       $sql_where['template'] = 'obj.template="'.$template.'"';
     }
     
-    // search expression
+    // query search expression
     $sql_table['textnodes'] = "";
     $sql_expr_advanced = array();
     $sql_expr_general = "";
@@ -1196,27 +1132,83 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       if (!empty ($sql_where_textnodes) && !empty ($sql_where_filename)) $sql_where['textnodes'] = "(".$sql_where_textnodes." AND ".$sql_where_filename.")";
       elseif (!empty ($sql_where_textnodes)) $sql_where['textnodes'] = $sql_where_textnodes;
       elseif (!empty ($sql_where_filename)) $sql_where['textnodes'] = $sql_where_filename;
+      
+      // add table textnodes
+      if ((is_array ($sql_expr_advanced) && sizeof ($sql_expr_advanced) > 0) || !empty ($sql_expr_general))
+      {
+        $sql_table['textnodes'] = "LEFT JOIN textnodes AS tn1 ON obj.id=tn1.id ".$sql_table['textnodes'];
+      }
     }
-    
-    // add table textnodes
-    if (is_array ($sql_expr_advanced) || is_array ($sql_expr_general))
+
+    // query object type
+    if ($filesize > 0 || is_array ($object_type) && sizeof ($object_type) > 0)
     {
-      $sql_table['textnodes'] = "LEFT JOIN textnodes AS tn1 ON obj.id=tn1.id ".$sql_table['textnodes'];
+      // add media table
+      $sql_table['media'] = "";
+      $sql_where['format'] = "";
+      $sql_where['object'] = "";
+      
+      if (is_array ($object_type) && sizeof ($object_type) > 0)
+      {
+        foreach ($object_type as $search_type)
+        {
+          $search_type = strtolower ($search_type);
+          
+          // page or component object
+          if ($search_type == "page" || $search_type == "comp") 
+          {
+            if ($sql_where['object'] != "") $sql_where['object'] .= " OR ";
+            $sql_where['object'] .= 'obj.template LIKE "%.'.$search_type.'.tpl"';
+          }
+  
+          // media file-type (audio, document, text, image, video, compressed, flash, binary, unknown)
+          if (in_array ($search_type, array("audio","document","text","image","video","compressed","flash","binary","unknown"))) 
+          {
+            if (!empty ($sql_where['format'])) $sql_where['format'] .= " OR ";
+            $sql_where['format'] .= 'med.filetype="'.$search_type.'"';
+          }
+        }
+      }
+
+      // add brackets for OR operators for media format
+      if (!empty ($sql_where['format']))
+      {
+        // add meta as object type if formats are set
+        $sql_where['format'] = '(('.$sql_where['format'].') AND obj.template LIKE "%.meta.tpl")';
+        
+        if (!empty ($sql_where['object']))
+        {
+          $sql_where['format'] = '('.$sql_where['format'].' OR ('.$sql_where['object'].'))';
+          unset ($sql_where['object']);
+        }
+      }
+      else unset ($sql_where['format']);
+      
+      // if object conditions still exist, use brackets
+      if (!empty ($sql_where['object']))
+      {
+        $sql_where['object'] = '('.$sql_where['object'].')';
+      }
+      
+      // join media table
+      if (!empty ($sql_where['format']) || $filesize > 0) $sql_table['media'] = 'LEFT JOIN media AS med on obj.id=med.id';
     }
     
-    // add table media
+    $sql_where['media'] = "";
+    
+    // query file size
+    if (!empty ($filesize) && $filesize > 0)
+    {
+      if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
+      
+      $sql_where['media'] .= 'med.filesize>='.intval($filesize);
+    }
+    
+    // query image and video
     if (isset ($object_type) && is_array ($object_type) && (in_array ("image", $object_type) || in_array ("video", $object_type)))
     {
       if (!empty ($filesize) || !empty ($imagewidth) || !empty ($imageheight) || (isset ($imagecolor) && is_array ($imagecolor)) || !empty ($imagetype))
-      {      
-        if (isset ($filesize) && $filesize > 0)
-        {
-          if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
-          else $sql_where['media'] = "";
-          
-          $sql_where['media'] .= 'med.filesize>='.intval($filesize);
-        }
-        
+      {
         // parameter imagewidth can be used as general image size parameter, only if height = ""
         // search for image_size (area)
         if (!empty ($imagewidth) && substr_count ($imagewidth, "-") == 1)
@@ -1230,7 +1222,6 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           if (!empty ($imagewidth) && $imagewidth > 0)
           {
             if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
-            else $sql_where['media'] = "";
             
             $sql_where['media'] .= 'med.width='.intval($imagewidth);
           }
@@ -1239,7 +1230,6 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           if (!empty ($imageheight) && $imageheight > 0)
           {
             if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
-            else $sql_where['media'] = "";
             
             $sql_where['media'] .= 'med.height='.intval($imageheight);
           }
@@ -1250,7 +1240,6 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           foreach ($imagecolor as $colorkey)
           {
             if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
-            else $sql_where['media'] = "";
             
             $sql_where['media'] .= 'INSTR(med.colorkey,"'.$colorkey.'")>0';
           }
@@ -1259,23 +1248,25 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         if (!empty ($imagetype))
         {
           if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
-          else $sql_where['media'] = "";
           
           $sql_where['media'] .= 'med.imagetype="'.$imagetype.'"';
         }
       }
     }
     
+    // remove empoty array elements
+    $sql_table = array_filter ($sql_table);
+    $sql_where = array_filter ($sql_where);
+
     // build SQL statement
     $sql = 'SELECT DISTINCT obj.objectpath, obj.hash FROM object AS obj';
-    if (isset ($sql_table) && is_array ($sql_table)) $sql .= ' '.implode (' ', $sql_table);
-    $sql .= ' WHERE ';
-    if (isset ($sql_where) && is_array ($sql_where)) $sql .= implode (' AND ', $sql_where);
-    $sql .= ' ORDER BY obj.objectpath';
- 
+    if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= ' '.implode (' ', $sql_table);
+    if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' WHERE '.implode (' AND ', $sql_where);
+    $sql .= ' ORDER BY SUBSTRING_INDEX(obj.objectpath,"/",-1)';
+
     if (isset ($starthits) && intval($starthits) >= 0 && isset ($endhits) && intval($endhits) > 0) $sql .= ' LIMIT '.intval($starthits).','.intval($endhits);
     elseif (isset ($maxhits) && intval($maxhits) > 0) $sql .= ' LIMIT 0,'.intval($maxhits);
-    
+
     $errcode = "50022";
     $done = $db->query ($sql, $errcode, $mgmt_config['today']);
 
@@ -1345,48 +1336,59 @@ function rdbms_replacecontent ($folderpath, $object_type, $date_from, $date_to, 
     // replace %
     $folderpath = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $folderpath);
     
-    // define query for 
-    
-    // object type (only if less than 5 of total 5 arguments (component, audio, video, document, image), otherwise we look for all object types/formats).
-    // for media reference the search can also include binary, flash, compressed and text.
-    if (is_array ($object_type) && sizeof ($object_type) < 5)
+    // query object type
+    if ($filesize > 0 || is_array ($object_type) && sizeof ($object_type) > 0)
     {
-      $sql_where['object'] = "";
-      $sql_where['format'] = "";
-      
       // add media table
-      $sql_table = ', media AS med'.$sql_table;        
-      $sql_where['media'] = 'obj.id=med.id';          
+      $sql_table['media'] = "";
+      $sql_where['format'] = "";
+      $sql_where['object'] = "";
       
-      foreach ($object_type as $search_type)
+      if (is_array ($object_type) && sizeof ($object_type) > 0)
       {
-        if ($search_type == "page" || $search_type == "comp")
+        foreach ($object_type as $search_type)
         {
-          if ($sql_where['object'] != "") $sql_where['object'] .= " OR ";
-          $sql_where['object'] .= 'obj.template LIKE "%.'.$search_type.'.tpl"';
-        }
-        
-        // file-type (audio, document, text, image, video, compressed, flash, binary)
-        if (in_array ($search_type, array("audio","document","text","image","video","compressed","flash","binary")))
-        {
-          if ($sql_where['format'] != "") $sql_where['format'] .= " OR ";        
-          $sql_where['format'] .= 'med.filetype="'.$search_type.'"';
+          $search_type = strtolower ($search_type);
+          
+          // page or component object
+          if ($search_type == "page" || $search_type == "comp") 
+          {
+            if ($sql_where['object'] != "") $sql_where['object'] .= " OR ";
+            $sql_where['object'] .= 'obj.template LIKE "%.'.$search_type.'.tpl"';
+          }
+  
+          // media file-type (audio, document, text, image, video, compressed, flash, binary, unknown)
+          if (in_array ($search_type, array("audio","document","text","image","video","compressed","flash","binary","unknown"))) 
+          {
+            if (!empty ($sql_where['format'])) $sql_where['format'] .= " OR ";
+            $sql_where['format'] .= 'med.filetype="'.$search_type.'"';
+          }
         }
       }
-      
-      // add meta as object type if formats are set
+
+      // add brackets for OR operators for media format
       if (!empty ($sql_where['format']))
       {
-        if ($sql_where['object'] != "") $sql_where['object'] .= " OR ";
-        $sql_where['object'] .= 'obj.template LIKE "%.meta.tpl"';
+        // add meta as object type if formats are set
+        $sql_where['format'] = '(('.$sql_where['format'].') AND obj.template LIKE "%.meta.tpl")';
+        
+        if (!empty ($sql_where['object']))
+        {
+          $sql_where['format'] = '('.$sql_where['format'].' OR ('.$sql_where['object'].'))';
+          unset ($sql_where['object']);
+        }
+      }
+      else unset ($sql_where['format']);
+      
+      // if object conditions still exist, use brackets
+      if (!empty ($sql_where['object']))
+      {
+        $sql_where['object'] = '('.$sql_where['object'].')';
       }
       
-      // add () for OR operators
-      if ($sql_where['object'] != "") $sql_where['object'] = "(".$sql_where['object'].")";
-      else unset ($sql_where['object']);
-      if ($sql_where['format'] != "") $sql_where['format'] = "(".$sql_where['format'].")";
-      else unset ($sql_where['format']);
-    }    
+      // join media table
+      if (!empty ($sql_where['format']) || $filesize > 0) $sql_table['media'] = 'LEFT JOIN media AS med on obj.id=med.id';
+    }  
     
     // folder path
     $sql_where['filename'] = 'obj.objectpath LIKE _utf8"'.$folderpath.'%" COLLATE utf8_bin';
@@ -2567,20 +2569,23 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   if ($container_id != "") $container_id = $db->escape_string (intval($container_id));
   if ($user != "") $user = $db->escape_string ($user);
   
+  // get object info
+  if ($objectpath != "")
+  {
+    $site = getpublication ($objectpath);
+    $cat = getcategory ($site, $objectpath);
+    $object_info = getfileinfo ($site, $objectpath, $cat);
+    if (getobject ($objectpath) == ".folder") $location = getlocation ($objectpath);
+  }
+  
   // media file
   if ($type == "media")
   {
     if ($objectpath != "")
     {
-      $site = getpublication ($objectpath);
-      $cat = getcategory ($site, $objectpath);
-      $object_info = getfileinfo ($site, $objectpath, $cat);
-      
       $objectpath = $db->escape_string ($objectpath);
       $objectpath = str_replace ('%', '*', $objectpath);
-      
-      if (getobject ($objectpath) == ".folder") $location = getlocation ($objectpath);
-      
+
       $sqlfilesize = ', SUM(media.filesize) filesize';
       $sqltable = ", media, object";
       $sqlwhere = " WHERE dailystat.id = media.id";
@@ -2708,11 +2713,11 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
       $result['filesize'] = $row['filesize'];
       $result['count'] = 1;
     }
-    
+
     // count files
-    if ($objectpath != "" && isset ($object_info['type']) && $object_info['type'] == "Folder")
+    if ($objectpath != "" && !empty ($object_info['type']) && $object_info['type'] == "Folder")
     {
-      $sql = 'SELECT count(DISTINCT objectpath) AS count FROM object WHERE objectpath LIKE "'.$objectpath.'%"'; 
+      $sql = 'SELECT count(objectpath) AS count FROM object WHERE objectpath LIKE "'.$objectpath.'%"'; 
 
       $errcode = "50042";
       $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'selectcount');
@@ -2736,24 +2741,34 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
 
 // ----------------------------------------------- create task -------------------------------------------------
 
-function rdbms_createtask ($object_id, $from_user="", $to_user, $startdate="", $finishdate="", $category="", $taskname, $description="", $priority="low")
+function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user, $startdate="", $finishdate="", $category="", $taskname, $description="", $priority="low")
 {
   global $mgmt_config;
   
-  if ($object_id != "" && $to_user != "" && $taskname != "" && strlen ($taskname) <= 200 && strlen ($description) <= 3600)
+  if ($taskname != "" && strlen ($taskname) <= 200 && strlen ($description) <= 3600)
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
+    
+    // try to get object_id from object path
+    if ($object_id != "" && intval ($object_id) < 1)
+    {      
+      $object_id = rdbms_getobject_id ($object_id);
+    }
     
     // get current date
     if ($startdate == "") $startdate = date ("Y-m-d H:i:s", time());
     else $startdate = $db->escape_string ($startdate);
     
     // clean input    
-    $object_id = $db->escape_string ($object_id);
+    if ($object_id != "") $object_id = intval ($object_id);
+    else $object_id = 0;
+    if ($project_id != "") $project_id = intval ($project_id);
+    else $project_id = 0;
     if ($from_user != "") $from_user = $db->escape_string ($from_user);
-    $to_user = $db->escape_string ($to_user);
+    if ($to_user != "") $to_user = $db->escape_string ($to_user);
     if ($finishdate != "") $finishdate = $db->escape_string ($finishdate);
     if ($category != "") $category = $db->escape_string ($category);
+    else $category = "user";
     $taskname = $db->escape_string ($taskname);
     if ($description != "") $description = $db->escape_string ($description);
     if ($priority != "") $priority = $db->escape_string ($priority);
@@ -2767,7 +2782,7 @@ function rdbms_createtask ($object_id, $from_user="", $to_user, $startdate="", $
     }
 
     // insert
-    $sql = 'INSERT INTO task (object_id,task,from_user,to_user,startdate,finishdate,category,description,priority,status) VALUES ('.$object_id.',"'.$taskname.'","'.$from_user.'","'.$to_user.'","'.$startdate.'","'.$finishdate.'","'.$category.'","'.$description.'","'.$priority.'", 0)';
+    $sql = 'INSERT INTO task (object_id,project_id,task,from_user,to_user,startdate,finishdate,category,description,priority,status) VALUES ('.$object_id.','.$project_id.',"'.$taskname.'","'.$from_user.'","'.$to_user.'","'.$startdate.'","'.$finishdate.'","'.$category.'","'.$description.'","'.$priority.'", 0)';
 
     $errcode = "50048";
     $db->query ($sql, $errcode, $mgmt_config['today'], 'insert');
@@ -2783,7 +2798,7 @@ function rdbms_createtask ($object_id, $from_user="", $to_user, $startdate="", $
 
 // ----------------------------------------------- set task -------------------------------------------------
 
-function rdbms_settask ($task_id, $to_user="", $startdate="", $finishdate="", $taskname="", $description="", $priority="", $status="", $duration="")
+function rdbms_settask ($task_id, $project_id="", $to_user="", $startdate="", $finishdate="", $taskname="", $description="", $priority="", $status="", $planned="", $actual="")
 {
   global $mgmt_config;
   
@@ -2794,6 +2809,7 @@ function rdbms_settask ($task_id, $to_user="", $startdate="", $finishdate="", $t
     // clean input
     $sql_update = array();
     
+    if ($project_id != "") $sql_update[] = 'project_id="'.intval($project_id).'"';
     if ($to_user != "") $sql_update[] = 'to_user="'.$db->escape_string ($to_user).'"';
     if ($startdate != "") $sql_update[] = 'startdate="'.$db->escape_string ($startdate).'"';
     if ($finishdate != "") $sql_update[] = 'finishdate="'.$db->escape_string ($finishdate).'"';
@@ -2801,13 +2817,14 @@ function rdbms_settask ($task_id, $to_user="", $startdate="", $finishdate="", $t
     if ($description != "") $sql_update[] = 'description="'.$db->escape_string ($description).'"';
     if ($priority != "") $sql_update[] = 'priority="'.$db->escape_string ($priority).'"';
     if ($status != "") $sql_update[] = 'status="'.intval ($status).'"';
-    if ($duration != "") $sql_update[] = 'duration="'.$db->escape_string ($duration).'"';
+    if ($planned != "") $sql_update[] = 'planned="'.correctnumber($planned).'"';
+    if ($actual != "") $sql_update[] = 'actual="'.correctnumber($actual).'"';
 
     // insert
     $sql = 'UPDATE task SET ';
     $sql .= implode (", ", $sql_update);
     $sql .= ' WHERE task_id='.intval($task_id);
-    
+
     $errcode = "50058";
     $db->query ($sql, $errcode, $mgmt_config['today'], 'update');
 
@@ -2822,7 +2839,7 @@ function rdbms_settask ($task_id, $to_user="", $startdate="", $finishdate="", $t
 
 // ------------------------------------------------ get task -------------------------------------------------
 
-function rdbms_gettask ($task_id="", $object_id="", $object="", $from_user="", $to_user="", $startdate="", $finishdate="", $order_by="startdate DESC")
+function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="", $to_user="", $startdate="", $finishdate="", $order_by="startdate DESC")
 {
   global $mgmt_config;
 
@@ -2830,23 +2847,16 @@ function rdbms_gettask ($task_id="", $object_id="", $object="", $from_user="", $
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
     
-    // deinfe object path
-    if ($object_id == "" && $object != "")
-    {
-      // correct object name 
-      if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
-      // get publication
-      $site = getpublication ($object);
-      $fileinfo = getfileinfo ($site, $object, "");
-      if (getobject ($object) == ".folder") $object = getlocation ($object);
-      // clean input
-      $object = $db->escape_string ($object);
-      $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object); 
+    // try to get object_id from object path
+    if ($object_id != "" && intval ($object_id) < 1)
+    {      
+      $object_id = rdbms_getobject_id ($object_id);
     }
     
     // clean input
-    if ($task_id != "") $task_id = $db->escape_string ($task_id);
-    if ($object_id != "") $object_id = $db->escape_string ($object_id);
+    if ($task_id != "") $task_id = intval ($task_id);
+    if ($object_id != "") $object_id = intval ($object_id);
+    if ($project_id != "") $project_id = intval ($project_id);
     if ($from_user != "") $from_user = $db->escape_string ($from_user);
     if ($to_user != "") $to_user = $db->escape_string ($to_user);
     if ($startdate != "") $startdate = $db->escape_string ($startdate);
@@ -2854,14 +2864,21 @@ function rdbms_gettask ($task_id="", $object_id="", $object="", $from_user="", $
     if ($order_by != "") $order_by = $db->escape_string ($order_by);
         
     // get recipients
-    $sql = 'SELECT task.task_id, task.object_id, obj.objectpath, task.task, task.from_user, task.to_user, task.startdate, task.finishdate, task.category, task.description, task.priority, task.status, DATE_FORMAT(task.duration, "%H:%i") AS duration FROM task, object AS obj WHERE obj.object_id=task.object_id';
-    if ($task_id != "") $sql .= ' AND task.task_id='.$task_id;
-    elseif ($object_id != "") $sql .= ' AND task.object_id='.$object_id;
-    elseif ($object != "") $sql .= ' AND (obj.objectpath="'.$object.'" || INSTR("'.$object.'", SUBSTR(obj.objectpath, 1, INSTR(obj.objectpath, ".folder") - 1))>0)';
-    if ($from_user != "") $sql .= ' AND task.from_user="'.$from_user.'"';
-    if ($to_user != "") $sql .= ' AND task.to_user="'.$to_user.'"';
-    if ($startdate != "") $sql .= ' AND task.startdate="'.$startdate.'"';
-    if ($finishdate != "") $sql .= ' AND task.finishdate="'.$finishdate.'"';
+    $sql = 'SELECT task.task_id, task.object_id, task.project_id, obj.objectpath, task.task, task.from_user, task.to_user, task.startdate, task.finishdate, task.category, task.description, task.priority, task.status, task.planned, "%H:%i", task.actual FROM task, object AS obj WHERE task.object_id IS NULL OR task.object_id=obj.object_id';
+    
+    if ($task_id != "")
+    {
+      $sql .= ' AND task.task_id='.$task_id;
+    }
+    else
+    {
+      if ($object_id != "") $sql .= ' AND task.object_id='.$object_id;
+      if ($project_id != "") $sql .= ' AND task.project_id='.$project_id;  
+      if ($from_user != "") $sql .= ' AND task.from_user="'.$from_user.'"';
+      if ($to_user != "") $sql .= ' AND task.to_user="'.$to_user.'"';
+      if ($startdate != "") $sql .= ' AND task.startdate="'.$startdate.'"';
+      if ($finishdate != "") $sql .= ' AND task.finishdate="'.$finishdate.'"';
+    }
     if ($order_by != "") $sql .= ' ORDER BY '.$order_by;
 
     $errcode = "50094";
@@ -2869,25 +2886,27 @@ function rdbms_gettask ($task_id="", $object_id="", $object="", $from_user="", $
 
     if ($done)
     {
-      $queue = array();
+      $result = array();
       $i = 0;
       
       // insert recipients
       while ($row = $db->getResultRow ('select'))
       {
-        $queue[$i]['task_id'] = $row['task_id'];
-        $queue[$i]['object_id'] = $row['object_id'];
-        $queue[$i]['taskname'] = $row['task'];
-        $queue[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
-        $queue[$i]['from_user'] = $row['from_user']; 
-        $queue[$i]['to_user'] = $row['to_user'];
-        $queue[$i]['startdate'] = $row['startdate'];
-        $queue[$i]['finishdate'] = $row['finishdate'];
-        $queue[$i]['category'] = $row['category'];
-        $queue[$i]['description'] = $row['description'];
-        $queue[$i]['priority'] = $row['priority'];
-        $queue[$i]['status'] = $row['status'];
-        $queue[$i]['duration'] = $row['duration'];
+        $result[$i]['task_id'] = $row['task_id'];
+        $result[$i]['object_id'] = $row['object_id'];
+        $result[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+        $result[$i]['project_id'] = $row['project_id'];
+        $result[$i]['taskname'] = $row['task'];
+        $result[$i]['from_user'] = $row['from_user']; 
+        $result[$i]['to_user'] = $row['to_user'];
+        $result[$i]['startdate'] = $row['startdate'];
+        $result[$i]['finishdate'] = $row['finishdate'];
+        $result[$i]['category'] = $row['category'];
+        $result[$i]['description'] = $row['description'];
+        $result[$i]['priority'] = $row['priority'];
+        $result[$i]['status'] = $row['status'];
+        $result[$i]['planned'] = $row['planned'];
+        $result[$i]['actual'] = $row['actual'];
 
         $i++;
       }        
@@ -2897,7 +2916,7 @@ function rdbms_gettask ($task_id="", $object_id="", $object="", $from_user="", $
     savelog ($db->getError());    
     $db->close();
     
-    if (!empty ($queue) && is_array (@$queue)) return $queue;
+    if (!empty ($result) && is_array (@$result)) return $result;
     else return false;
   }
   else return false;
@@ -2905,32 +2924,228 @@ function rdbms_gettask ($task_id="", $object_id="", $object="", $from_user="", $
 
 // ----------------------------------------------- delete task -------------------------------------------------
 
-function rdbms_deletetask ($task_id="", $object_id="", $object="", $to_user="")
+function rdbms_deletetask ($task_id="", $object_id="", $to_user="")
 {
   global $mgmt_config;
   
-  if ($task_id != "" || $object_id != "" || $object != "" || $to_user != "")
+  if ($task_id != "" || $object_id != "" || $to_user != "")
   {   
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    if ($object != "")
-    {
-      // check object (can be path or ID)
-      if (substr_count ($object, "%page%") > 0 || substr_count ($object, "%comp%") > 0) $object_id = rdbms_getobject_id ($object);
-      elseif (is_numeric ($object)) $object_id = $object;
-      else $object_id = false;
+    // try to get object_id from object path
+    if ($object_id != "" && intval ($object_id) < 1)
+    {      
+      $object_id = rdbms_getobject_id ($object_id);
     }
     
     // clean input
-    if (!empty($task_id)) $task_id = $db->escape_string ($task_id);
-    elseif (!empty($object_id)) $object_id = $db->escape_string ($object_id);
-    elseif (!empty($to_user)) $to_user = $db->escape_string ($to_user);
+    if (!empty ($task_id)) $task_id = intval ($task_id);
+    elseif (!empty ($object_id)) $object_id = intval ($object_id);
+    elseif (!empty ($to_user)) $to_user = $db->escape_string ($to_user);
         
-    if (!empty($task_id)) $sql = 'DELETE FROM task WHERE task_id='.$task_id;
-    elseif (!empty($object_id)) $sql = 'DELETE FROM task WHERE object_id='.$object_id;
-    elseif (!empty($to_user)) $sql = 'DELETE FROM task WHERE to_user="'.$to_user.'"';
+    if (!empty ($task_id)) $sql = 'DELETE FROM task WHERE task_id='.$task_id;
+    elseif (!empty ($object_id)) $sql = 'DELETE FROM task WHERE object_id='.$object_id;
+    elseif (!empty ($to_user)) $sql = 'DELETE FROM task WHERE to_user="'.$to_user.'"';
      
     $errcode = "50098";
+    $db->query ($sql, $errcode, $mgmt_config['today']);
+    
+    // save log
+    savelog ($db->getError ());    
+    $db->close();      
+         
+    return true;
+  }
+  else return false;
+}
+
+// ----------------------------------------------- create project -------------------------------------------------
+
+function rdbms_createproject ($subproject_id, $object_id, $user="", $projectname, $description="")
+{
+  global $mgmt_config;
+  
+  if ($projectname != "" && strlen ($projectname) <= 200 && strlen ($description) <= 3600)
+  {
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
+    
+    // try to get object_id from object path
+    if ($object_id != "" && intval ($object_id) < 1)
+    {      
+      $object_id = rdbms_getobject_id ($object_id);
+    }
+    
+    // clean input
+    if ($subproject_id != "") $subproject_id = intval ($subproject_id);
+    else $subproject_id = 0;
+    if ($object_id != "") $object_id = intval ($object_id);
+    else $object_id = 0;
+    if ($user != "") $user = $db->escape_string ($user);
+    $projectname = $db->escape_string ($projectname);
+    if ($description != "") $description = $db->escape_string ($description);
+
+    // set user if not defined
+    if ($user == "")
+    {
+      if (!empty ($_SESSION['hcms_user'])) $user = $_SESSION['hcms_user'];
+      elseif (getuserip () != "") $user = getuserip ();
+      else $user = "System";
+    }
+
+    // insert
+    $sql = 'INSERT INTO project (subproject_id,object_id,createdate,project,user,description) VALUES ('.$subproject_id.','.$object_id.',"'.date ("Y-m-d H:i:s", time()).'","'.$projectname.'","'.$user.'","'.$description.'")';
+
+    $errcode = "50068";
+    $db->query ($sql, $errcode, $mgmt_config['today'], 'insert');
+
+    // save log
+    savelog ($db->getError());
+    $db->close();
+
+    return true;
+  } 
+  else return false;
+}
+
+// ----------------------------------------------- set project -------------------------------------------------
+
+function rdbms_setproject ($project_id, $subproject_id, $object_id="", $user="", $projectname="", $description="")
+{
+  global $mgmt_config;
+  
+  if ($project_id != "")
+  {
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
+
+    // try to get object_id from object path
+    if ($object_id != "" && intval ($object_id) < 1)
+    {      
+      $object_id = rdbms_getobject_id ($object_id);
+    }
+    
+    // clean input
+    $sql_update = array();
+    
+    if ($subproject_id != "") $sql_update[] = 'subproject_id="'.intval($subproject_id).'"';
+    if ($object_id != "") $sql_update[] = 'object_id="'.intval ($object_id).'"';
+    if ($user != "") $sql_update[] = 'user="'.$db->escape_string ($user).'"';
+    if ($projectname != "") $sql_update[] = 'project="'.$db->escape_string ($projectname).'"';
+    if ($description != "") $sql_update[] = 'description="'.$db->escape_string ($description).'"';
+
+    // insert
+    $sql = 'UPDATE project SET ';
+    $sql .= implode (", ", $sql_update);
+    $sql .= ' WHERE project_id='.intval($task_id);
+    
+    $errcode = "50068";
+    $db->query ($sql, $errcode, $mgmt_config['today'], 'update');
+
+    // save log
+    savelog ($db->getError());
+    $db->close();
+
+    return true;
+  } 
+  else return false;
+}
+
+// ------------------------------------------------ get project -------------------------------------------------
+
+function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $user="", $order_by="project")
+{
+  global $mgmt_config;
+
+  if (is_array ($mgmt_config))
+  {
+    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
+    
+    // try to get object_id from object path
+    if ($object_id != "" && intval ($object_id) < 1)
+    {      
+      $object_id = rdbms_getobject_id ($object_id);
+    }
+    
+    // clean input
+    if ($project_id != "") $project_id = intval ($project_id);
+    if ($subproject_id != "") $subproject_id = intval ($subproject_id);
+    if ($object_id != "") $object_id = intval ($object_id);
+    if ($user != "") $user = $db->escape_string ($user);
+    if ($order_by != "") $order_by = $db->escape_string ($order_by);
+        
+    // get recipients
+    if ($object_id != "") $sql = 'SELECT project.project_id, project.subproject_id, project.object_id, object.objectpath, project.project, project.user, project.description FROM project, object WHERE object.object_id=project.object_id';
+    else $sql = 'SELECT project_id, subproject_id, object_id, project, user, description FROM project WHERE 1=1';
+    
+    if ($project_id != "" && $subproject_id == "") $sql .= ' AND project.project_id='.$project_id;
+    elseif ($project_id == "" && $subproject_id != "") $sql .= ' AND project.subproject_id='.$subproject_id;
+    elseif ($project_id != "" && $subproject_id != "") $sql .= ' AND (project.project_id='.$project_id.' OR project.subproject_id='.$subproject_id.')';
+    
+    if ($object_id != "") $sql .= ' AND project.object_id='.$object_id;    
+    if ($user != "") $sql .= ' AND project.user="'.$user.'"';
+    if ($order_by != "") $sql .= ' ORDER BY '.$order_by;
+
+    $errcode = "50064";
+    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+
+    if ($done)
+    {
+      $result = array();
+      $i = 0;
+      
+      // insert recipients
+      while ($row = $db->getResultRow ('select'))
+      {
+        $result[$i]['project_id'] = $row['project_id'];
+        $result[$i]['subproject_id'] = $row['subproject_id'];
+        $result[$i]['object_id'] = $row['object_id'];
+        if (!empty ($row['objectpath'])) $result[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+        else $result[$i]['objectpath'] = "";
+        $result[$i]['projectname'] = $row['project'];
+        $result[$i]['user'] = $row['user']; 
+        $result[$i]['description'] = $row['description'];
+        if ($row['subproject_id'] > 0) $result[$i]['type'] = "Subproject";
+        else $result[$i]['type'] = "Project";
+
+        $i++;
+      }        
+    }
+
+    // save log
+    savelog ($db->getError());    
+    $db->close();
+    
+    if (!empty ($result) && is_array ($result)) return $result;
+    else return false;
+  }
+  else return false;
+}
+
+// ----------------------------------------------- delete project -------------------------------------------------
+
+function rdbms_deleteproject ($project_id="", $object_id="", $user="")
+{
+  global $mgmt_config;
+  
+  if ($project_id != "" || $object_id != "" || $user != "")
+  {   
+    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+    
+    // try to get object_id from object path
+    if ($object_id != "" && intval ($object_id) < 1)
+    {      
+      $object_id = rdbms_getobject_id ($object_id);
+    }
+    
+    // clean input
+    if (!empty ($project_id)) $project_id = intval ($project_id);
+    elseif (!empty ($object_id)) $object_id = intval ($object_id);
+    elseif (!empty ($user)) $user = $db->escape_string ($user);
+        
+    if (!empty ($task_id)) $sql = 'DELETE FROM project WHERE project_id='.$task_id;
+    elseif (!empty ($object_id)) $sql = 'DELETE FROM project WHERE object_id='.$object_id;
+    elseif (!empty ($to_user)) $sql = 'DELETE FROM project WHERE user="'.$user.'"';
+     
+    $errcode = "50068";
     $db->query ($sql, $errcode, $mgmt_config['today']);
     
     // save log

@@ -72,7 +72,7 @@ if ($intention == "send" && ($action == "accept" || $action == "reject") && chec
   if ($message == "") $message = $message_default;
 
   // workflow accept
-  if ($action == "accept") 
+  if ($action == "accept" && function_exists ("acceptobject")) 
   {
     if ($wf_role >= 3 && $wf_role <= 4)
     {
@@ -88,7 +88,7 @@ if ($intention == "send" && ($action == "accept" || $action == "reject") && chec
     $show = $result['message'];  
   }
   // workflow reject
-  elseif ($action == "reject") 
+  elseif ($action == "reject" && function_exists ("rejectobject")) 
   {
     $result = rejectobject ($site, $location, $page, $wf_id, $user, $message, $mgmt_config[$site]['sendmail'], $priority);
     

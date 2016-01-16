@@ -103,20 +103,25 @@ if (is_array ($queue_array) && @sizeof ($queue_array) >= 1)
         if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
         else $class_image = "class=\"hcmsIconList\"";
   
-        $listview .= "<tr id=g".$items_row." align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
-                <td id=h".$items_row."_0 width=\"180\" nowrap=\"nowrap\">
+        $listview .= "
+              <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
+                <td id=\"h".$items_row."_0\" width=\"180\" nowrap=\"nowrap\">
                   <input id=\"queue_id\" type=\"hidden\" value=\"".$queue_id."\" />
                   <div ".$hcms_setObjectcontext." ".$openObject." >
                       <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." align=\"absmiddle\" />&nbsp;
                       <span title=\"".$object_name."\">".showshorttext($object_name, 20)."</span>&nbsp;
                   </div>
-                </td>\n";
-        if (!$is_mobile) $listview .= "<td id=h".$items_row."_1 width=\"100\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." title=\"".$site."\">&nbsp;&nbsp;".showshorttext($site, 20)."</span></td>
-                <td id=h".$items_row."_2 width=\"200\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." title=\"".$location_name."\">&nbsp;&nbsp;".showshorttext($location_name, 20)."</span></td>
-                <td id=h".$items_row."_3 width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$date."</span></td>
-                <td id=h".$items_row."_4 width=\"60\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$action."</span></td>
-                <td id=h".$items_row."_5 nowrap=\"nowrap\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>\n";
-        $listview .= "</tr>\n";
+                </td>";
+                
+        if (!$is_mobile) $listview .= "
+                <td id=\"h".$items_row."_1\" width=\"100\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." title=\"".$site."\">&nbsp;&nbsp;".showshorttext($site, 20)."</span></td>
+                <td id=\"h".$items_row."_2\" width=\"200\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." title=\"".$location_name."\">&nbsp;&nbsp;".showshorttext($location_name, 20)."</span></td>
+                <td id=\"h".$items_row."_3\" width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$date."</span></td>
+                <td id=\"h".$items_row."_4\" width=\"60\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$action."</span></td>
+                <td id=\"h".$items_row."_5\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>";
+                
+        $listview .= "
+              </tr>";
     
         $items_row++;  
       }
@@ -203,7 +208,7 @@ function buttonaction (action)
 </div>
 
 <div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; margin:0px; padding:0px; width:100%; z-index:3; visibility:visible;">
-  <table cellpadding="0" cellspacing="0" cols="6" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
+  <table cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
       <td width="180" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
         &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>

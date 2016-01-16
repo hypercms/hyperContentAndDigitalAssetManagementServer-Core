@@ -9,6 +9,612 @@
   
 // ========================================== MEDIA FUNCTIONS =======================================
 
+// ---------------------------------------- indexcontent --------------------------------------------
+// function: indexcontent()
+// input: publication name, path to multimedia file, multimedia file name (file to be indexed), container name or ID, container XML-content (optional), user name
+// output: result array
+
+// description:
+// This function extracts the text content of multimedia objects and writes it the text to the container.
+// the given charset of the publication (not set by default), container or publication (not set by default) will be used.
+// the default character set of default.meta.tpl is UTF-8, so all content should be saved in UTF-8.
+
+function indexcontent ($site, $location, $file, $container="", $container_content="", $user)
+{
+  global $mgmt_config, $mgmt_parser, $mgmt_uncompress, $hcms_ext, $hcms_lang, $lang;
+
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($user))
+  {
+    $usedby = "";
+    
+    // load file extensions
+    if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+    
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";            
+  
+    // get file extension
+    $file_ext = strtolower (strrchr ($file, "."));
+    
+    // get container from media file
+    if (!valid_objectname ($container))
+    {
+      $container = getmediacontainername ($file);
+    }
+    
+    // get container id
+    if (substr_count ($container, ".xml") > 0)
+    {
+      $container_id = substr ($container, 0, strpos ($container, ".xml"));
+    }
+    elseif (is_numeric ($container))
+    {
+      $container_id = $container;
+      $container = $container.".xml";
+    }
+    
+    // read content container
+    if ($container_content == "")
+    {
+      $result = getcontainername ($container);
+
+      if (!empty ($result['container']))
+      {
+        $container = $result['container'];
+        $usedby = $result['user'];
+        $container_content = loadcontainer ($container, "work", $user);
+      }
+    }
+
+    if (!empty ($container_content) && ($usedby == "" || $usedby == $user) && $file_ext != "")
+    {
+      // create temp file if file is encrypted
+      $temp = createtempfile ($location, $file);
+      
+      if ($temp['crypted'])
+      {
+        $location = $temp['templocation'];
+        $file = $temp['tempfile'];
+      }
+    
+      // set injected for functions which will inject meta data directly
+      $injected = false;
+      
+      // ------------------------ Adobe PDF -----------------------
+      // get file content from PDF
+      if (($file_ext == ".pdf" || $file_ext == ".ai") && $mgmt_parser['.pdf'] != "")
+      {
+        // use of XPDF to parse PDF files.
+        // please note: the executable "pdftotext" must be copied to "bin" directory!
+        // as pdftotext ist compiled for several platforms you have to know which
+        // OS you are using for the content management server.
+        // known problems: MS IIS causes troubles executing XPDF (unable to fork...), set permissions for cmd.exe  
+        // the second argument "-" tells XPDF to output the text to stdout.
+        // content should be provided using UTF-8 as charset.
+        @exec ($mgmt_parser['.pdf']." -enc UTF-8 \"".shellcmd_encode ($location.$file)."\" -", $file_content, $errorCode); 
+
+        if ($errorCode)
+        {
+          $file_content = "";
+          
+          $errcode = "20132";
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of pdftotext (code:$errorCode) failed in indexcontent for file: ".$location.$file;   
+        }
+        elseif (is_array ($file_content))
+        {
+          $file_content = implode ("\n", $file_content);
+        }
+        else $file_content = "";  
+      }
+      
+      // ------------------------ OPEN OFFICE -----------------------
+      // get file content from Open Office Text (odt) in UTF-8
+      elseif (($file_ext == ".odt" || $file_ext == ".ods" || $file_ext == ".odp") && $mgmt_uncompress['.zip'] != "")   
+      {
+        // temporary directory for extracting file
+        $temp_name = uniqid ("index");
+        $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
+        
+        // create temporary directory for extraction
+        @mkdir ($temp_dir, $mgmt_config['fspermission']);
+          
+        // .odt is a ZIP-file with the content placed in the file content.xml
+        $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" content.xml -d \"".shellcmd_encode ($temp_dir)."\"";
+        
+        @exec ($cmd, $error_array);
+
+        if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
+        {
+          $errcode = "20133";
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array);   
+        } 
+        else
+        {
+          $file_content = loadfile ($temp_dir, "content.xml");
+          
+          if ($file_content != false)
+          {
+            // add whitespaces before newline
+            $file_content = str_replace ("</", " </", $file_content);
+            
+            // replace paragraph and newline with real newlines
+            $file_content = str_replace (array ("</text:p>", "<text:line-break/>"), array ("\n\n", "\n"), $file_content);
+            
+            // remove multiple white spaces
+            $file_content = preg_replace ('/\s+/', ' ', $file_content);
+          }
+   
+          // remove temp directory
+          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
+        }
+      }      
+      // ------------------------ MS WORD -----------------------
+      // get file content from MS Word before 2007 (doc) in UTF-8
+      elseif (($file_ext == ".doc") && $mgmt_parser['.doc'] != "")
+      {
+        @exec ($mgmt_parser['.doc']." -t -i 1 -m UTF-8.txt \"".shellcmd_encode ($location.$file)."\"", $file_content, $errorCode); 
+
+        if ($errorCode)
+        {
+          $file_content = ""; 
+          
+          $errcode = "20134";
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of antiword (code:$errorCode) failed in indexcontent for file: ".$location.$file;   
+        }
+        elseif (is_array ($file_content))
+        {
+          $file_content = implode ("\n", $file_content);
+        }
+        else $file_content = "";        
+      }
+      // get file content from MS Word 2007+ (docx) in UTF-8
+      elseif (($file_ext == ".docx") && $mgmt_uncompress['.zip'] != "")
+      {
+        // temporary directory for extracting file
+        $temp_name = uniqid ("index");
+        $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
+        
+        // create temporary directory for extraction
+        @mkdir ($temp_dir, $mgmt_config['fspermission']);
+        
+        // docx is a ZIP-file with the content placed in the file word/document.xml
+        $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" word/document.xml -d \"".shellcmd_encode ($temp_dir)."\"";
+        
+        @exec ($cmd, $error_array);
+
+        if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
+        {
+          $errcode = "20134";
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array);   
+        } 
+        else
+        {
+          $file_content = loadfile ($temp_dir."word/", "document.xml");
+          
+          if ($file_content != false)
+          {
+            // add whitespaces before newline
+            $file_content = str_replace ("</", " </", $file_content);
+            
+            // replace paragraph and newline with real newlines
+            $file_content = str_replace (array ("</w:p>", "<w:br/>"), array ("\n\n", "\n"), $file_content);
+            
+            // remove multiple white spaces
+            $file_content = preg_replace ('/\s+/', ' ', $file_content);
+          }
+   
+          // remove temp directory
+          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
+        }             
+      }
+      // ------------------------ MS EXCEL -----------------------
+      // get file content from MS EXCEL 2007 (xlsx) in UTF-8
+      elseif (($file_ext == ".xlsx") && $mgmt_uncompress['.zip'] != "")
+      {
+        // temporary directory for extracting file
+        $temp_name = uniqid ("index");
+        $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
+        
+        // create temporary directory for extraction
+        @mkdir ($temp_dir, $mgmt_config['fspermission']);
+        
+        // xlsx is a ZIP-file with the content placed in the file xl/sharedStrings.xml
+        $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" xl/sharedStrings.xml -d \"".shellcmd_encode ($temp_dir)."\"";
+        
+        @exec ($cmd, $error_array);
+
+        if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
+        {
+          $errcode = "20134";
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array);   
+        } 
+        else
+        {
+          $file_content = loadfile ($temp_dir."xl/", "sharedStrings.xml");
+          
+          if ($file_content != false)
+          {
+            // add whitespaces
+            $file_content = str_replace ("</", " </", $file_content);
+          }
+   
+          // remove temp directory
+          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
+        }             
+      }      
+      // ------------------------ MS Powerpoint -----------------------
+      // get file content from MS Powerpoint before 2007 (ppt) in UTF-8
+      elseif ($file_ext == ".ppt" || $file_ext == ".pps")
+      {
+        // This approach uses detection of the string "chr(0f).Hex_value.chr(0x00).chr(0x00).chr(0x00)" to find text strings, 
+        // which are then terminated by another NUL chr(0x00). [1] Get text between delimiters [2] 
+        $filehandle = fopen ($location.$file, "r");
+        
+        if ($filehandle != false)
+        {
+          $line = @fread ($filehandle, filesize ($location.$file));
+          $lines = explode (chr(0x0f), $line);
+          
+          foreach ($lines as $thisline)
+          {
+            if (strpos ($thisline, chr(0x00).chr(0x00).chr(0x00)) == 1)
+            {
+              $text_line = substr ($thisline, 4);
+              $end_pos   = strpos ($text_line, chr(0x00));
+              $text_line = substr ($text_line, 0, $end_pos);              
+              $text_line = preg_replace ("/[^a-zA-Z0-9Ã€ÃÃ‚ÃƒÃ„Ã…Ã†Ã‡ÃˆÃ‰ÃŠÃ‹ÃŒÃÃŽÃÃÃ‘Ã’Ã“Ã”Ã•Ã–Ã™ÃšÃ›ÃœÃÃŸÃ Ã¡Ã¢Ã£Ã¤Ã¥Ã¦Ã§Ã¨Ã©ÃªÃ«Ã¬Ã­Ã®Ã¯Ã±Ã²Ã³Ã´ÃµÃ¶Ã¹ÃºÃ»Ã¼Ã½Ã¾Ã¿\s\,\.\-\n\r\t@\/\_\(\)]/", "", $text_line);
+              
+              if (strlen ($text_line) > 1)
+              {
+                $file_content .= substr ($text_line, 0, $end_pos)."\n";
+              }
+            }
+          } 
+        }  
+        
+        if ($file_content != "")
+        {        
+          // detect charset
+          if (function_exists ("mb_detect_encoding")) $charset_source = mb_detect_encoding ($file_content);
+          elseif (is_latin1 ($file_content)) $charset_source = "ISO-8859-1";
+          
+          // convert to UTF-8
+          if ($charset_source != "" && $charset_source != "UTF-8")
+          {
+            $file_content = convertchars ($file_content, $charset_source, "UTF-8");
+          }
+        }
+        else
+        {
+          $errcode = "20135";
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|extraction of content from powerpoint failed in indexcontent for file: ".$location.$file;   
+        }           
+      }      
+      // get file content from MS Powerpoint 2007 (pptx) in UTF-8
+      elseif (($file_ext == ".pptx" || $file_ext == ".ppsx") && $mgmt_uncompress['.zip'] != "")
+      {
+        // temporary directory for extracting file
+        $temp_name = uniqid ("index");
+        $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
+        
+        // create temporary directory for extraction
+        @mkdir ($temp_dir, $mgmt_config['fspermission']);
+        
+        // pptx is a ZIP-file with the content placed in the file ppt/slides/slide#.xml (# ... number of the slide)
+        $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location.$file)."\" ppt/slides/slide* -d \"".shellcmd_encode ($temp_dir)."\"";
+        
+        @exec ($cmd, $error_array);
+
+        if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
+        {
+          $errcode = "20136";
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzip failed for: ".$location.$file."<br />".implode ("<br />", $error_array);   
+        } 
+        else
+        {
+          $dir = @opendir ($temp_dir."ppt/slides/");
+      
+          if ($dir != false)
+          {
+            // collect source files
+            while ($file = @readdir ($dir))
+            { 
+              if (substr_count ($file, ".xml") == 1)
+              {    
+                $file_temp = loadfile ($temp_dir."ppt/slides/", $file);
+                
+                if ($file_temp != false)
+                {
+                  // add whitespaces
+                  $file_temp = str_replace ("</", " </", $file_temp);
+                  $file_content = $file_content." ".strip_tags ($file_temp);
+                }
+              }
+            }
+          }
+   
+          // remove temp directory
+          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
+        }             
+      }
+      // -------------------------- TEXT -------------------------    
+      // get file content from readable formats
+      elseif ($file_ext != "" && substr_count (strtolower ($hcms_ext['cleartxt']).".", $file_ext.".") > 0)
+      {
+        $file_content = loadfile_fast ($location, $file);
+        
+        // detect charset
+        if (function_exists ("mb_detect_encoding")) $charset_source = strtoupper (mb_detect_encoding ($file_content));
+        elseif (is_latin1 ($file_content)) $charset_source = "ISO-8859-1";
+        
+        // convert to UTF-8
+        if ($charset_source != "" && $charset_source != "UTF-8")
+        {
+          $file_content = convertchars ($file_content, $charset_source, "UTF-8");
+        }        
+      }
+      // ----------------------- HTML/SCRIPTS ----------------------    
+      // get file content from html/script formats
+      elseif ($file_ext != "" && substr_count (strtolower ($hcms_ext['cms']).".", $file_ext.".") > 0)
+      {
+        $file_content = loadfile_fast ($location, $file);
+        
+        // detect charset
+        if (function_exists ("mb_detect_encoding")) $charset_source = strtoupper (mb_detect_encoding ($file_content));
+        elseif (is_latin1 ($file_content)) $charset_source = "ISO-8859-1";
+        
+        // convert to UTF-8
+        if ($charset_source != "" && $charset_source != "UTF-8")
+        {
+          $file_content = convertchars ($file_content, $charset_source, "UTF-8");
+        }        
+      }
+      // -------------------------- OCR FOR IMAGES -------------------------
+      // get file content from image formats using OCR
+      elseif ($file_ext != "" && substr_count (strtolower ($hcms_ext['image']).".", $file_ext.".") > 0 && !empty ($mgmt_parser) && is_array ($mgmt_parser))
+      {
+        foreach ($mgmt_parser as $ext_parser=>$parser)
+        {
+          if (substr_count (strtolower ($ext_parser).".", $file_ext.".") > 0)
+          {
+            // temporary directory for extracting file
+            $temp_name = uniqid ("index");
+            $temp_dir = $mgmt_config['abs_path_temp'];
+        
+            // convert image to TIFF since Tesseract can only scan TIFF images
+            if (($file_ext != ".tif" || $file_ext != ".tiff") && !empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
+            {
+              // find image converter
+              foreach ($mgmt_imagepreview as $ext_image=>$converter)
+              {
+                if (substr_count (strtolower ($ext_image).".", $file_ext.".") > 0)
+                {
+                  $cmd = $converter." \"".shellcmd_encode ($location.$file)."\" -auto-level -compress none \"".shellcmd_encode ($temp_dir.$temp_name).".tif\"";
+                  break;
+                }
+              }
+              
+              @exec ($cmd, $error_array);
+              
+              // on error
+              if ($errorCode || !is_file ($temp_dir.$temp_name.".tif"))
+              {
+                $errcode = "20531";
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in indexcontent for file: ".$file;
+              }
+              // on success
+              else
+              {
+                $location_source = $temp_dir;
+                $file_source = $temp_name.".tif";
+              }
+            }
+            // image is already of TIFF format
+            else
+            {
+              $location_source = $location;
+              $file_source = $file;
+            }
+
+            // extract text from image using OCR
+            if (is_file ($location_source.$file_source))
+            {
+              // create temp text file from TIFF image
+              $cmd = $parser." \"".shellcmd_encode ($location_source.$file_source)."\" \"".shellcmd_encode ($temp_dir.$temp_name)."\"";
+              
+              @exec ($cmd);
+
+              // on error
+              if (!is_file ($temp_dir.$temp_name.".txt"))
+              {
+                $errcode = "20532";
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of tesseract (command:$cmd) failed in indexcontent for file: ".$file;
+              }
+              // on success
+              else
+              {
+                $file_content = loadfile_fast ($temp_dir, $temp_name.".txt");
+                
+                // remove temp files
+                if (is_file ($temp_dir.$temp_name.".tif")) deletefile ($temp_dir, $temp_name.".tif", 0);
+                if (is_file ($temp_dir.$temp_name.".txt")) deletefile ($temp_dir, $temp_name.".txt", 0);
+                
+                break;
+              }
+            }
+          }
+        }
+      }
+      else $file_content = "";
+
+      // ------------------------ AUDIO, IMAGES, VIDEOS -----------------------   
+      // SPECIAL CASE: the meta data attributes found in the file will be saved using a mapping.
+      // get file content from image formats holding meta data using setmetadata
+      if ($file_ext != "" && substr_count (strtolower ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video']).".", $file_ext.".") > 0)
+      {
+        // function setmetadata saves metadata in the content container
+        $injected = setmetadata ($site, "", "", $file, "", $user);
+      } 
+
+      // delete temp file
+      if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+
+      // write to content container
+      if (!empty ($file_content))
+      {
+        // remove all tags
+        $file_content = strip_tags ($file_content);
+        $file_content = trim ($file_content);
+        $file = trim ($file);
+        
+        // escape special characters using UTF-8
+        $insert_content = htmlentities ($file_content, ENT_IGNORE, "UTF-8");
+        if ($insert_content == "") $insert_content = $file_content;
+            
+        // get destination character set
+        $charset_array = getcharset ($site, $container_content);
+        
+        // or set to UTF-8 if not available
+        if (is_array ($charset_array)) $charset_dest = strtoupper ($charset_array['charset']);
+        else $charset_dest = "UTF-8";
+        
+        // get encoding/charset of container
+        $xml_encoding = gethtmltag ($container_content, "?xml");
+            
+        if ($xml_encoding != false) $charset_container = getattribute ($xml_encoding, "encoding");
+        else $charset_container = "";
+               
+        // set character set / encoding of content container of not set already
+        if ($charset_container == "" || $charset_container != $charset_dest)
+        {
+          $container_content = setxmlparameter ($container_content, "encoding", $charset_dest);
+        }
+        
+        // set array to save content as UTF-8 in database before converting it
+        $text_array[$file] = $insert_content;
+        
+        // convert content if destination charset is not UTF-8     
+        if ($charset_dest != "UTF-8")
+        {
+          $insert_content = convertchars ($insert_content, "UTF-8", $charset_dest);
+        }
+
+        // update existing content
+        $container_contentnew = setcontent ($container_content, "<multimedia>", "<file>", $file, "", "");
+        
+        if ($container_contentnew != false)
+        {          
+          $container_contentnew = setcontent ($container_contentnew, "<multimedia>", "<content>", "<![CDATA[".$insert_content."]]>", "", "");
+        }
+        // insert new multimedia xml-node
+        else
+        {
+          $multimedia_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "multimedia.schema.xml.php"));
+          
+          $multimedia_node = setcontent ($multimedia_schema_xml, "<multimedia>", "<file>", $file, "", "");
+          $multimedia_node = setcontent ($multimedia_node, "<multimedia>", "<content>", "<![CDATA[".$insert_content."]]>", "", "");
+                  
+          if ($multimedia_node != false) $container_contentnew = insertcontent ($container_content, $multimedia_node, "<container>");
+        }
+
+        // save log
+        savelog (@$error);
+
+        // save container
+        if ($container_contentnew != false)
+        {
+          // relational DB connectivity
+          if ($mgmt_config['db_connect_rdbms'] != "")
+          {
+            rdbms_setcontent ($container_id, $text_array, $user);                    
+          }
+          
+          // set modified date in container
+          $container_contentnew = setcontent ($container_contentnew, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
+          if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
+          
+          // save container
+          if ($container_contentnew != false) return savecontainer ($container, "work", $container_contentnew, $user);
+          else return false;
+        }
+        else return false;
+      }
+      // if not content has been extracted, save user and date information
+      else
+      {
+        // relational DB connectivity
+        if ($mgmt_config['db_connect_rdbms'] != "")
+        {
+          rdbms_setcontent ($container_id, "", $user);                    
+        }
+        
+        // set modified date in container
+        $container_content = setcontent ($container_content, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
+        if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
+        
+        // save container
+        if ($container_content != false)
+        {
+          return savecontainer ($container, "work", $container_content, $user);
+        }
+      }
+    }
+  }
+  
+  return false;
+}
+
+// ---------------------------------------- unindexcontent --------------------------------------------
+// function: unindexcontent()
+// input: publication name, file location, file name, multimedia file to index, container name or ID, container XML-content, user name
+// output: true/false
+
+// description:
+// This function removes media objects from the container
+
+function unindexcontent ($site, $location, $file, $container, $container_content, $user)
+{
+  global $mgmt_config, $mgmt_parser, $hcms_lang, $lang;
+  
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($container))
+  {    
+    // get container id
+    if (substr_count ($container, ".xml") > 0)
+    {
+      $container_id = substr ($container, 0, strpos ($container, ".xml"));
+    }
+    elseif (is_numeric ($container))
+    {
+      $container_id = $container;
+      $container = $container.".xml";
+    }
+    
+    // read working content container if no container is provided
+    if ($container_content == "")
+    {
+      $result = getcontainername ($container);
+      $container = $result['container'];
+      $usedby = $result['user'];
+      $container_content = loadcontainer ($container_id, "work", $user);
+    }
+
+    if ($container_content != false && $container_content != "" && ($usedby == "" || $usedby == $user))
+    {
+      $container_contentnew = deletecontent ($container_content, "<multimedia>", "", "");
+      
+      // relational DB connectivity
+      if ($mgmt_config['db_connect_rdbms'] != "")
+      {
+        rdbms_deletecontent ($container_id, $file, $user);
+      }
+
+      // save container
+      if ($container_contentnew != false) return savecontainer ($container, "version", $container_contentnew, $user);
+      else return false;
+    }  
+  }
+}
+
 // ---------------------- createthumbnail_indesign -----------------------------
 // function: createthumbnail_indesign()
 // input: publication, path to source dir, path to destination dir, file name
@@ -218,7 +824,7 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
     {
       $errcode = "20241";
       
-      $error = array($mgmt_config['today'].'|hypercms_main.inc.php|error|'.$errcode.'|exec of ffmpeg (code:'.$errorCode.') (command:'.$cmd.') failed in createthumbnail_video for file '.$file.' and frame '.$frame);
+      $error = array($mgmt_config['today'].'|hypercms_media.inc.php|error|'.$errcode.'|exec of ffmpeg (code:'.$errorCode.') (command:'.$cmd.') failed in createthumbnail_video for file '.$file.' and frame '.$frame);
       // save log
       savelog (@$error);
       return false;

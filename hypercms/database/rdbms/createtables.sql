@@ -32,7 +32,7 @@ CREATE TABLE `object` (
   `hash` char(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL default '',
   `id` int(11) NOT NULL default '0',
   `objectpath` varchar(21000) NOT NULL default '',
-  `template` varchar(60) NOT NULL default '',
+  `template` char(60) NOT NULL default '',
   PRIMARY KEY  (`object_id`),
   UNIQUE KEY `objecthash` (`hash`),
   KEY `object` (`id`,`template`),
@@ -47,36 +47,51 @@ CREATE TABLE `recipient` (
   `date` datetime NOT NULL,
   `from_user` char(60) NOT NULL default '',
   `to_user` varchar(600) NOT NULL default '',
-  `email` varchar(80) NOT NULL default '',
+  `email` char(80) NOT NULL default '',
   PRIMARY KEY  (`recipient_id`),
   KEY `recipient` (`object_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `textnodes`;
+DROP TABLE IF EXISTS `project`;
+
+CREATE TABLE `project` (
+  `project_id` int(11) NOT NULL auto_increment,
+  `subproject_id` int(11) NOT NULL default '0',
+  `object_id` int(11) NOT NULL default '0',
+  `createdate` datetime NOT NULL, 
+  `project` char(200) NOT NULL DEFAULT 'undefined',
+  `description` varchar(3600),
+  `user` char(60) NOT NULL default '',
+  PRIMARY KEY  (`project_id`),
+  KEY `project` (`user`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `task`;
 
 CREATE TABLE `task` (
   `task_id` int(11) NOT NULL auto_increment,
-  `project_id` int(11) DEFAULT NULL,
-  `object_id` int(11) DEFAULT NULL,
-  `task` varchar(200) NOT NULL DEFAULT 'undefined',
-  `from_user` varchar(60) NOT NULL default '',
-  `to_user` varchar(60) NOT NULL default '',
+  `project_id` int(11) NOT NULL default '0',
+  `object_id` int(11) NOT NULL default '0',
+  `task` char(200) NOT NULL DEFAULT 'undefined',
+  `from_user` char(60) NOT NULL default '',
+  `to_user` char(60) NOT NULL default '',
   `startdate` date NOT NULL,
   `finishdate` date DEFAULT NULL,
-  `category` varchar(20) NOT NULL default 'user',
+  `category` char(20) NOT NULL default 'user',
   `description` varchar(3600),
-  `priority` varchar(10) NOT NULL default 'low',
+  `priority` char(10) NOT NULL default 'low',
   `status` tinyint(3) NOT NULL,
-  `duration` time DEFAULT NULL,
+  `planned` float(6,2) DEFAULT NULL,
+  `actual` float(6,2) DEFAULT NULL,
   PRIMARY KEY  (`task_id`),
   KEY `task` (`to_user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `textnodes`;
+
 CREATE TABLE `textnodes` (
   `id` int(11) NOT NULL default '0',
-  `text_id` varchar(120) NOT NULL default '',
+  `text_id` char(120) NOT NULL default '',
   `textcontent` text,
   `object_id` int(11) DEFAULT NULL,
   `user` char(60) DEFAULT NULL,

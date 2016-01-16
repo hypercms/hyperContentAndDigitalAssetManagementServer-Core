@@ -27,19 +27,19 @@ $search_expression = getrequest ("search_expression");
 $replace_expression = getrequest ("replace_expression");
 $search_cat = getrequest ("search_cat", "objectname");
 $search_format = getrequest ("search_format", "array");
-$date_modified = getrequest ("date_modified");
-$year_from = getrequest ("year_from", "numeric");
-$month_from = getrequest ("month_from", "numeric");
-$day_from = getrequest ("day_from", "numeric");
-$year_to = getrequest ("year_to", "numeric");
-$month_to = getrequest ("month_to", "numeric");
-$day_to = getrequest ("day_to", "numeric");
+$search_filesize = getrequest ("search_filesize", "numeric");
+$date_from = getrequest ("date_from");
+$date_to = getrequest ("date_to");
 $template = getrequest ("template", "objectname");
 $object_id = getrequest ("object_id");
 $container_id = getrequest ("container_id");
 $geo_border_sw = getrequest ("geo_border_sw");
 $geo_border_ne = getrequest ("geo_border_ne");
 $maxhits = getrequest ("maxhits", "numeric");
+
+// extract publication and template name
+if (substr_count ($template, "/") == 1) list ($site, $template) = explode ("/", $template);
+
 // just for image search
 $search_imagesize = getrequest ("search_imagesize");
 
@@ -61,7 +61,7 @@ $search_imagetype = getrequest ("search_imagetype");
 
 // get publication and category
 if ($action != "user_files" && $action != "base_search") $site = getpublication ($search_dir);
-$cat = getcategory ($site, $search_dir); 
+$cat = getcategory ($site, $search_dir);
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -87,9 +87,7 @@ checkusersession ($user);
 
 $object_array = array();
 $search_dir_esc = array ();
-$exclude_dir_esc = array (); 
-$date_from = "";
-$date_to = "";
+$exclude_dir_esc = array ();
 $search_filename = "";
 
 // create secure token
@@ -123,13 +121,6 @@ elseif ($container_id != "")
 // search for expression in content
 elseif ($action == "base_search" || $search_dir != "")
 {
-  // modified date
-  if ($date_modified == "yes")
-  {
-    $date_from = $year_from."-".$month_from."-".$day_from;
-    $date_to = $year_to."-".$month_to."-".$day_to;
-  }
-  
   // object name based search
   if ($search_cat == "file")
   {
@@ -195,7 +186,7 @@ elseif ($action == "base_search" || $search_dir != "")
     elseif (empty ($maxhits)) $maxhits = 100;
 
     // start search
-    if ($replace_expression == "") $object_array = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search_format, $date_from, $date_to, $template, $search_textnode, $search_filename, "", $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $maxhits);
+    if ($replace_expression == "") $object_array = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search_format, $date_from, $date_to, $template, $search_textnode, $search_filename, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $maxhits);
     // start search and replace
     elseif ($setlocalpermission['create'] == 1) $object_array = rdbms_replacecontent ($search_dir_esc, $search_format, $date_from, $date_to, $search_expression, $replace_expression, $user);
   }
@@ -500,17 +491,19 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             }         
             
             $listview .= "
-                         <tr id=g".$items_row." ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
-                           <td id=h".$items_row."_0 width=\"280\" nowrap=\"nowrap\">
+                         <tr id=\"g".$items_row."\" style=\"text-align:left; cursor:pointer;\" ".$selectclick.">
+                           <td id=\"h".$items_row."_0\" width=\"280\" nowrap=\"nowrap\">
                              <input id=\"objectpath\" type=hidden value=\"".$location_esc.$object."\" />
                              <div ".$hcms_setObjectcontext." ".$style." ".$openObject." title=\"".$metadata."\">
                                <img src=\"".getthemelocation()."img/".$item_info['icon']."\" align=\"absmiddle\" ".$class_image." />&nbsp;".$dlink_start.showshorttext($object_name, 30).$dlink_end."&nbsp;
                              </div>
                            </td>";
+                           
             if (!$is_mobile) $listview .= "
-                           <td id=h".$items_row."_1 width=\"250\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style." title=\"".$item_location."\">&nbsp;&nbsp;".showshorttext($item_location, -32)."</span></td>
-                           <td id=h".$items_row."_2 width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_time."</span></td>
-                           <td id=h".$items_row."_3 nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$item_site."</span></td>\n";
+                           <td id=\"h".$items_row."_1\" width=\"250\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style." title=\"".$item_location."\">&nbsp;&nbsp;".showshorttext($item_location, -32)."</span></td>
+                           <td id=\"h".$items_row."_2\" width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_time."</span></td>
+                           <td id=\"h".$items_row."_3\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$item_site."</span></td>";
+                           
             $listview .= "
                          </tr>";  
 
@@ -611,11 +604,11 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             }
 
             $galleryview .= "
-                            <td id=t".$items_row." style=\"width:".$cell_width."; height:180px; text-align:center; vertical-align:bottom;\">
-                              <div ".$selectclick." ".$openObject." ".$hcms_setObjectcontext." title=\"".$metadata."\" style=\"cursor:pointer; display:block; text-align:center;\">".
+                            <td id=\"t".$items_row."\" style=\"width:".$cell_width."; height:180px; text-align:center; vertical-align:bottom;\">
+                              <div ".$selectclick." ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"cursor:pointer; display:block; text-align:center;\">".
                                 $dlink_start."
-                                 ".$thumbnail."
-                                 ".showshorttext($object_name, 18, true)."
+                                  ".$thumbnail."
+                                  ".showshorttext($object_name, 18, true)."
                                 ".$dlink_end."
                               </div>
                               ".$linking_buttons."
@@ -644,7 +637,8 @@ if ($object_array != false && @sizeof ($object_array) > 0)
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
+<meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" language="JavaScript" type="text/javascript"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
@@ -718,7 +712,7 @@ function sendtochat (text)
 }
 
 // load control frame
-parent.frames['controlFrame'].location.href='control_objectlist_menu.php?virtual=1&from_page=search';
+parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&from_page=search';
 //-->
 </script>
 </head>
@@ -785,8 +779,9 @@ parent.frames['controlFrame'].location.href='control_objectlist_menu.php?virtual
   </form>
 </div>
 
-<div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:0px; width:100%; z-index:1; visibility:visible;">
-  <table cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; height:20px; table-layout:fixed;">
+<!-- Detail View -->
+<div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:0px; margin:0; padding:0; width:100%; z-index:1; visibility:visible;">
+  <table cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;">
     <tr>
       <td width="280" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
         &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
@@ -808,32 +803,36 @@ parent.frames['controlFrame'].location.href='control_objectlist_menu.php?virtual
     </tr>
   </table>
 
-  <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:0px; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
+  <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:0px; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
     <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; table-layout:fixed;">
-<?php 
-echo $listview;
-?>
+    <?php 
+    echo $listview;
+    ?>
     </table>
-    <br /><div style="width:100%; height:2px; z-index:3; visibility:visible;" onMouseOver="hcms_hideContextmenu();"></div>
+    <br /><div id="detailviewReset" style="width:100%; height:2px; z-index:3; visibility:visible;" onMouseOver="hcms_hideContextmenu();"></div>
   </div>
 </div>
 
+<!-- Gallery View -->
 <div id="galleryviewLayer" style="position:fixed; top:0px; left:0px; bottom:0px; width:100%; z-index:1; visibility:hidden; overflow-y:scroll;">
 <?php
 if ($galleryview != "")
 {
-  echo "<table id=\"objectgallery\" name=\"objectgallery\" border=\"0\" cellpadding=\"5\" width=\"98%\" align=\"center\">\n";
-  echo "<tr>\n"; 
+  echo "
+  <table id=\"objectgallery\" name=\"objectgallery\" border=\"0\" cellpadding=\"5\" width=\"98%\" align=\"center\">
+    <tr>"; 
   
   while (!is_int ($items_row / $table_cells))
   {
     $items_row++;
-    $galleryview .= "<td>&nbsp;</td>\n";
+    $galleryview .= "
+      <td onMouseOver=\"hcms_resetContext();\">&nbsp;</td>";
   }
   
   echo $galleryview;
-  echo "</tr>\n";
-  echo "</table>\n";
+  echo "
+    </tr>
+  </table>";
 }
 ?>
   <br /><div style="width:100%; height:2px; z-index:0; visibility:visible;" onMouseOver="hcms_hideContextmenu();"></div>

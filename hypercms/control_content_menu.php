@@ -212,7 +212,7 @@ elseif ($page == ".folder")
 }
 else
 {
-  $pagecomp = getescapedtext ($hcms_lang['file'][$lang]);
+  $pagecomp = getescapedtext ($hcms_lang['asset'][$lang]);
 }
 
 // create secure token
@@ -376,6 +376,8 @@ function escapevalue (value)
 
 <body class="hcmsWorkplaceControlWallpaper">
 
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, 3, "position:fixed; top:10px; right:20px;"); ?>
+
 <?php if (!$is_mobile) { ?>
 <div style="position:absolute; right:0; top:0; margin:0; padding:0;">
   <img onclick="parent.minControlFrame()" class="hcmsButtonTinyBlank" style="width:18px; height:18px;" alt="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" /><br />
@@ -394,16 +396,11 @@ if ($page == ".folder")
 }
 
 // define object name
-if ($page != "" && $page != ".folder")
+if ($page != "")
 {
   $item = $pagecomp.":";
   $object_name = $pagename;
-}
-elseif ($page == ".folder")
-{
-  $item = getescapedtext ($hcms_lang['folder'][$lang]).":";
-  $object_name = $pagename;
-}    
+}  
 // no object declared
 else
 {

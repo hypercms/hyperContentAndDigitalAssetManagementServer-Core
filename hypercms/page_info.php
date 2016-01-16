@@ -214,7 +214,7 @@ if ($pagestore != false)
     $filecount = number_format ($filecount, 0, "", ".");
   
     if ($filesize > 0) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['file-size'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filesize."</td></tr>\n";
-    if ($filecount > 1) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['number-of-files'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filecount."</td></tr>\n";
+    if ($filecount > 0) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['number-of-files'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filecount."</td></tr>\n";
   
     // links
     if ($mgmt_config['publicdownload'] == true && ($cat == "page" || $setlocalpermission['download'] == 1))

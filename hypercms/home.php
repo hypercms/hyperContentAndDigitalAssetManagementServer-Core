@@ -182,13 +182,13 @@ function submitHomeBoxes ()
   
   <!-- plus/minus button -->
   <?php if (!$is_mobile) { ?>
-  <div id="plusminus" style="position:fixed; top:10px; right:30px; z-index:200;">
-    <img id="button_plusminus" onClick="hcms_switchSelector('menubox');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_plusminus.gif" />
+  <div id="plusminus" style="position:fixed; top:5px; right:25px; z-index:200;">
+    <img id="button_plusminus" onClick="hcms_switchInfo('menubox');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" alt="+/-" title="+/-" />
   </div>
   <?php } ?>
   
   <!-- add / remove boxes menu -->
-  <div id="menubox" class="hcmsInfoBox" style="position:fixed; top:38px; right:30px; z-index:200; visibility:hidden;">
+  <div id="menubox" class="hcmsInfoBox" style="position:fixed; top:32px; right:25px; z-index:200; display:none;">
     <form id="box_form" name="box_form" action="" method="post">
       <input type="hidden" name="action" value="save" />
       <input type="hidden" name="homeboxes" value="" />

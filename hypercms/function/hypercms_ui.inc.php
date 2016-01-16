@@ -217,7 +217,8 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $indiv
       $individual_button_code = "<td style=\"width:26px; text-align:right; vertical-align:middle;\">".$individual_button."</td>";
     }
     
-    return "  <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
+    return "
+  <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
     <table style=\"width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
         <td class=\"hcmsHeadline\" style=\"text-align:left; vertical-align:middle; padding:0; margin:0; white-space:nowrap;\">&nbsp;".$show."&nbsp;</td>".
@@ -262,7 +263,8 @@ function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_
       $id++;
     }
     
-    return "  <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
+    return "
+  <div id=\"".$id."\" class=\"hcmsWorkplaceBar\">
     <table style=\"width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
         <td class=\"hcmsHeadline\" style=\"width:80px; text-align:left; vertical-align:middle; padding:0; margin:0; white-space:nowrap;\">&nbsp;".$show."&nbsp;</td>
@@ -287,24 +289,31 @@ function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_
 function showmessage ($show, $width="580px", $height="70px", $lang="en", $style="", $id="hcms_messageLayer")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang;
-    
-  if ($show != "" && strlen ($show) < 2400 && $lang != "" && $id != "")
+
+  if ($show != "" && strlen ($show) < 2400 && $lang != "")
   {
     // check mobile setting
     if ($_SESSION['hcms_mobile']) $width = "90%";
     
-    // given width - icon width - paddings
+    // add unit if not set
     if (is_int ($width)) $width = $width."px";
     if (is_int ($height)) $height = $height."px";
-
+    
+    // define unique name for close button
+    $close_id = uniqid();
+    
     return "
-  <div id=\"".$id."\" class=\"hcmsMessage\" style=\"".$style." width:".$width."; height:".$height."; z-index:1000; padding:0; margin:5px; visibility:visible;\">
-    <div id=\"".$id."_text\" style=\"position:absolute; top:3px; bottom:3px; left:3px; right:3px; margin:0; padding:0; z-index:1001; overflow:auto;\">
-      ".$show."
-    </div>
-    <div style=\"position:absolute; top:3px; right:3px; z-index:1002;\">
-      <img name=\"".$id."Close\" src=\"".getthemelocation()."img/button_close.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('".$id."Close','','".getthemelocation()."img/button_close_over.gif',1);\" onClick=\"hcms_showHideLayers('".$id."','','hide');\" />
-    </div>
+  <div id=\"".$id."\" class=\"hcmsMessage\" style=\"".$style." width:".$width."; height:".$height."; z-index:9999; padding:0; margin:5px; visibility:visible;\">
+    <table style=\"width:100%; height:100%; padding:0; border:0; border-spacing:0; border-collapse:collapse;\">
+      <tr>
+        <td style=\"text-align:left; vertical-align:top; padding:3px; margin:0;\">
+          ".$show."
+        </td>
+        <td style=\"width:22px; text-align:right; vertical-align:top; padding:3px; margin:0;\">
+          <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.gif',1);\" onClick=\"hcms_showHideLayers('".$id."','','hide');\" />
+        </td>
+      <tr>
+    </table>
   </div>\n";
   }
   else return false;
@@ -325,21 +334,20 @@ function showinfopage ($show, $lang="en")
   if ($show != "" && strlen ($show) < 2400 && $lang != "")
   {    
     return "<!DOCTYPE html>
-  <html>
+<html>
   <head>
-  <title>hyperCMS</title>
-  <meta charset=\"".getcodepage ($lang)."\">
-  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
-  <script src=\"".$mgmt_config['url_path_cms']."javascript/click.js\" type=\"text/javascript\"></script>
-  </head>
-  
+    <title>hyperCMS</title>
+    <meta charset=\"".getcodepage ($lang)."\">
+    <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+    <script src=\"".$mgmt_config['url_path_cms']."javascript/click.js\" type=\"text/javascript\"></script>
+  </head>  
   <body class=\"hcmsWorkplaceGeneric\">
     <div style=\"padding:20px;\">
     <img src=\"".getthemelocation()."img/info.gif\" align=\"absmiddle\" /><span class=\"hcmsHeadline\">Info</span><br \>
     <div style=\"display:block; padding:0px 0px 0px 28px;\">".$show."</div>
     </div>
   </body>
-  </html>";
+</html>";
   }
   else return false;
 }
@@ -356,12 +364,13 @@ function showinfobox ($show, $lang="en", $sec=4, $style="", $id="hcms_infoLayer"
 {
   global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang;
      
-  if ($mgmt_config['showinfobox'] && $show != "" && strlen ($show) < 2400 && $lang != "" && $id != "")
+  if (!empty ($mgmt_config['showinfobox']) && $show != "" && strlen ($show) < 2400 && $lang != "" && $id != "")
   {
-    return "  <script language=\"JavaScript\">window.onload = function(){ hcms_showInfo('".$id."', ".($sec*1000).") };</script>
+    return "
+  <script language=\"JavaScript\">window.onload = function(){ hcms_showInfo('".$id."', ".($sec*1000).") };</script>
   <div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"display:none; ".$style."\">".
     $show."
-  </div>";
+  </div>\n";
   }
   else return false;
 }
@@ -380,7 +389,8 @@ function showsharelinks ($link, $lang="en", $style="", $id="hcms_shareLayer")
      
   if (is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/") && $link != "" && $lang != "" && $id != "")
   {
-    return "<div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"".$style."\">".
+    return "
+  <div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"".$style."\">".
     getescapedtext ($hcms_lang['share'][$lang])."<br />
     <img src=\"".getthemelocation()."img/icon_facebook.png\" title=\"Facebook\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkFacebook('".$link."') == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />
     <img src=\"".getthemelocation()."img/icon_twitter.png\" title=\"Twitter\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkTwitter('".$link."', hcms_getcontentByName('textu_Description')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />

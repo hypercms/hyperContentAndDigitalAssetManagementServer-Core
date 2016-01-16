@@ -941,7 +941,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
           {
             foreach ($user_login as $user_to)
             {
-              createtask ($site, $user, $email_from, $user_to, "", $startdate, $finishdate, "user", $objectpath, $mail_title, $mail_body, false, $priority);
+              if (function_exists ("createtask")) createtask ($site, $user, $email_from, $user_to, "", $startdate, $finishdate, "user", $objectpath, $mail_title, $mail_body, false, $priority);
             }
           }
         }
@@ -965,7 +965,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
       {
         foreach ($user_login as $user_to)
         {
-          createtask ($site, $user, $email_from, $user_to, "", $startdate, $finishdate, "user", $objectpath, $mail_title."\n\n".$mail_body, false, $priority);
+          if (function_exists ("createtask")) createtask ($site, $user, $email_from, $user_to, "", $startdate, $finishdate, "user", $objectpath, $mail_title."\n\n".$mail_body, false, $priority);
         }
       }      
     }

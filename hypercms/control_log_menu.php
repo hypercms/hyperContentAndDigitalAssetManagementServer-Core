@@ -70,9 +70,9 @@ function warning_delete()
 
 <body class="hcmsWorkplaceControlWallpaper" onload="<?php echo $add_onload; ?>">
 
-<?php
-echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
-?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, 3, "position:fixed; top:10px; right:20px;"); ?>
+
+<?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
 
 <div class="hcmsLocationBar">
   <table border=0 cellspacing=0 cellpadding=0>

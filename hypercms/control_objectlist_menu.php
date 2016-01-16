@@ -268,7 +268,7 @@ else
   $pagename = "";
 }
 
-// define object category name and check directory and component access rights of user
+// define object category name
 if ($filetype == "Page")
 {
   $pagecomp = getescapedtext ($hcms_lang['page'][$lang]);
@@ -277,13 +277,9 @@ elseif ($filetype == "Component")
 {
   $pagecomp = getescapedtext ($hcms_lang['component'][$lang]);
 }
-elseif ($cat == "webdav")
-{
-  $pagecomp = getescapedtext ($hcms_lang['webdav'][$lang]);
-}
 else
 {
-  $pagecomp = getescapedtext ($hcms_lang['file'][$lang]);
+  $pagecomp = getescapedtext ($hcms_lang['asset'][$lang]);
 }
 
 // create secure token
@@ -645,6 +641,8 @@ function sendtochat (text)
 
 <body class="hcmsWorkplaceControlWallpaper" onLoad="<?php echo $add_onload; ?>">
 
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, 3, "position:fixed; top:10px; right:20px;"); ?>
+
 <?php
 // define location name
 if ($cat == "page")
@@ -664,7 +662,7 @@ else
 }
 
 // define object name
-if (($page != "" && $page != ".folder") || $multiobject )
+if (($page != "" && $page != ".folder") || $multiobject)
 {
   $item = $pagecomp.":";
   $object_name = $pagename;
@@ -686,22 +684,26 @@ else
   <table border=0 cellspacing=0 cellpadding=0>
     <tr>
       <?php
-      // define location name
+      // location name
       if ($cat == "page" || $cat == "comp")
       {
-        echo "    <td class=\"hcmsHeadline\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['location'][$lang]).": </td>
+        echo "
+      <td class=\"hcmsHeadline\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['location'][$lang]).": </td>
       <td class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">".$location_name."</td>\n";
       }
       else 
       {
-        echo "    <td class=\"hcmsHeadline\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['location'][$lang]).": </td>
-      <td class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">".$pagecomp."</td>\n";    
+        echo "
+      <td class=\"hcmsHeadline\" nowrap=\"nowrap\">&nbsp;</td>
+      <td class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">&nbsp;</td>\n";    
       }
       ?>
     </tr>
     <tr>
       <?php
-      echo "    <td class=\"hcmsHeadline\" nowrap=\"nowrap\">".$item."</td>
+      // object name
+      echo "
+      <td class=\"hcmsHeadline\" nowrap=\"nowrap\">".$item."</td>
       <td class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">".$object_name."</td>\n";
       ?>
     </tr>
@@ -1224,7 +1226,7 @@ else
   <div class="hcmsToolbarBlock">
     <?php
     // if link references to an object and not a folder, disable search
-    if ((!is_array ($hcms_linking) || $hcms_linking['type'] != "Object") && $from_page == "" && $mgmt_config['db_connect_rdbms'] != "") echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"if (locklayer == false) parent.mainFrame.location.href='frameset_search.php?location=".url_encode($location_esc)."';\" name=\"pic_obj_search\" src=\"".getthemelocation()."img/button_search.gif\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />\n";
+    if ((!is_array ($hcms_linking) || $hcms_linking['type'] != "Object") && $location != "" && $mgmt_config['db_connect_rdbms'] != "") echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"if (locklayer == false) parent.mainFrame.location.href='search_form.php?location=".url_encode($location_esc)."';\" name=\"pic_obj_search\" src=\"".getthemelocation()."img/button_search.gif\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />\n";
     else echo "<img src=\"".getthemelocation()."img/button_search.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     ?>    
   </div>

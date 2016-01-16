@@ -8,7 +8,7 @@ The following technical prerequisites must be fullfilled before installing hyper
 
 On server-side:
 - Operating System: Linux, UNIX-Derivates, MS Windows
-- WebServer: Apache, Iplanet or MS IIS with PHP-Modul Version 5.3+
+- WebServer: Apache, Iplanet or MS IIS with PHP-Modul Version 5.3+ with mcrypt extension
 - RDBMS (Database): MySQL 5+ (required for installation script), any database with ODBC support (not supported by installation script)
 
 Optionally required for full Digital Asset Management (DAM) support on server-side:
@@ -22,6 +22,7 @@ Optionally required for full Digital Asset Management (DAM) support on server-si
 - GUNZIP (for unpacking files)
 - UNOCONV (for converting office files)
 - EXIFTOOL (for reading meta data of files)
+- TESSERACT (for OCR)
 
 On client-side:
 - hyperCMS is 100% browser based, no additional software is required

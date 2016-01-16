@@ -465,17 +465,19 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
         } 
 
         $listview .= "
-                      <tr id=\"g".$items_row."\" align=\"left\" style=\"text-align:left; cursor:pointer;\" ".$selectclick.">
+                      <tr id=\"g".$items_row."\" style=\"text-align:left; cursor:pointer;\" ".$selectclick.">
                         <td id=\"h".$items_row."_0\" width=\"360\" nowrap=\"nowrap\">
                           <input id=\"objectpath\" type=\"hidden\" value=\"".$location_esc.$object."\" />
                           <div ".$hcms_setObjectcontext." ".$style." ".$openObject." title=\"".$metadata."\">
                             <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" ".$class_image." />&nbsp;".$dlink_start.showshorttext($object_name, 40).$dlink_end."&nbsp;   
                           </div>
                         </td>";
+                        
         if (!$is_mobile) $listview .= "
-                        <td id=h".$items_row."_1 width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_time."</span></td>
-                        <td id=h".$items_row."_2 width=\"120\" nowrap=\"nowrap\"><div align=\"right\" ".$hcms_setObjectcontext." ".$style.">".$file_size."&nbsp;</div></td>
-                        <td id=h".$items_row."_3 nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_type."</span></td>";
+                        <td id=\"h".$items_row."_1\" width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_time."</span></td>
+                        <td id=\"h".$items_row."_2\" width=\"120\" nowrap=\"nowrap\"><div align=\"right\" ".$hcms_setObjectcontext." ".$style.">".$file_size."&nbsp;</div></td>
+                        <td id=\"h".$items_row."_3\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_type."</span></td>";
+                        
         $listview .= "
                       </tr>"; 
         
@@ -580,8 +582,8 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
                           <div ".$selectclick." ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"cursor:pointer; display:block; text-align:center;\">".
                             $dlink_start."
                               ".$thumbnail."
-                              ".showshorttext($object_name, 18, true).
-                            $dlink_end."
+                              ".showshorttext($object_name, 18, true)."
+                            ".$dlink_end."
                           </div>
                           ".$linking_buttons."
                         </td>";
@@ -609,7 +611,7 @@ else $objects_counted = 0;
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" language="JavaScript" type="text/javascript"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
@@ -722,12 +724,12 @@ function sendtochat (text)
           <a href=# id="_href_cmsview" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" id="_img_cmsview" align="absmiddle" border=0 class="hcmsIconOff">&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br /> 
           <?php } ?>
           <?php if ($setlocalpermission['root'] == 1) { ?>
-          <a href=# id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="img_notify" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />
+          <a href=# id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="img_notify" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />
           <?php } else { ?>
           <a href=# id="_href_notify" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="_img_notify" align="absmiddle" border=0 class="hcmsIconOff">&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br /> 
           <?php } ?>
           <?php if ($setlocalpermission['root'] == 1 && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
-          <a href=# id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.gif" id="img_chat" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo getescapedtext ($hcms_lang['send-to-chat'][$lang]); ?></a><br />
+          <a href=# id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.gif" id="img_chat" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['send-to-chat'][$lang]); ?></a><br />
           <?php } ?>
           <hr />
           <?php if ($setlocalpermission['root'] == 1 && $setlocalpermission['delete'] == 1 && $setlocalpermission['folderdelete'] == 1) { ?>
@@ -740,7 +742,7 @@ function sendtochat (text)
           <a href=# id="href_delete" onClick="if (checktype('folder')==true) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.gif" id="img_delete" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
           <hr />
           <?php } else { ?>
-          <a href=# id="_href_delete" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_delete.gif" id="_img_delete" align="absmiddle" border=0 class="hcmsIconOff">&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
+          <a href=# id="_href_delete" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_delete.gif" id="_img_delete" align="absmiddle" border=0 class="hcmsIconOff" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
           <hr />
           <?php } ?>     
           <?php if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1 && $setlocalpermission['folderrename'] == 1) { ?>
@@ -786,10 +788,10 @@ function sendtochat (text)
 
 <!-- Detail View -->
 <div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; margin:0; padding:0; width:100%; z-index:1; visibility:visible;">
-  <table cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
+  <table cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
       <td width="360" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
-      &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
+        &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
       </td>
       <?php if (!$is_mobile) { ?>
       <td width="120" onClick="hcms_sortTable(1);" class="hcmsTableHeader" nowrap="nowrap">
@@ -801,7 +803,7 @@ function sendtochat (text)
       <td onClick="hcms_sortTable(3);" class="hcmsTableHeader" nowrap="nowrap">
         &nbsp; <?php echo getescapedtext ($hcms_lang['type'][$lang]); ?>
       </td>
-      <td width="16" class="hcmsTableHeader" nowrap="nowrap">
+      <td width="16" class="hcmsTableHeader">
         &nbsp;
       </td>
       <?php } ?> 
@@ -823,19 +825,22 @@ function sendtochat (text)
 <?php
 if ($galleryview != "")
 {
-  echo "<table id=\"objectgallery\" name=\"objectgallery\" border=\"0\" cellpadding=\"5\" width=\"98%\" align=\"center\">\n";
-  echo "<tr>\n";
+  echo "
+  <table id=\"objectgallery\" name=\"objectgallery\" border=\"0\" cellpadding=\"5\" width=\"98%\" align=\"center\">
+    <tr>";
   
   // add table cells till tabel row adds up to defined tabel cells in a row
   while (!is_int ($items_row / $table_cells))
   {
     $items_row++;
-    $galleryview .= "<td onMouseOver=\"hcms_resetContext();\">&nbsp;</td>\n";
+    $galleryview .= "
+      <td onMouseOver=\"hcms_resetContext();\">&nbsp;</td>";
   }
   
   echo $galleryview;
-  echo "</tr>\n";
-  echo "</table>\n";
+  echo "
+    </tr>
+  </table>";
 }
 ?>
   <br /><div id="galleryviewReset" style="width:100%; height:3px; z-index:0; visibility:visible;" onMouseOver="hcms_hideContextmenu();"></div>

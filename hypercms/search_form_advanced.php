@@ -18,16 +18,23 @@ require ("function/hypercms_tplengine.inc.php");
 
 
 // input parameters
-$template = getrequest_esc ("template", "objectname");
-$location = getrequest_esc ("location", "locationname");
+$template = getrequest ("template", "objectname");
+$location = getrequest ("location", "locationname");
+$css_display = getrequest ("css_display", "objectname");
 
-// get publication and category
-$site = getpublication ($location);
-$cat = getcategory ($site, $location); 
+// extract publication and template name
+if (substr_count ($template, "/") == 1) list ($site, $template) = explode ("/", $template);
 
-// convert location
-$location = deconvertpath ($location, "file");
-$location_esc = convertpath ($site, $location, $cat);
+if ($location != "")
+{
+  // get publication and category
+  $site = getpublication ($location);
+  $cat = getcategory ($site, $location); 
+  
+  // convert location
+  $location = deconvertpath ($location, "file");
+  $location_esc = convertpath ($site, $location, $cat);
+}
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -35,9 +42,10 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check access permissions
-$ownergroup = accesspermission ($site, $location, $cat);
+if ($location != "") $ownergroup = accesspermission ($site, $location, $cat);
+else $ownergroup = "";
 
-if (!valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($template)) killsession ($user);
+if (!valid_publicationname ($site) || !valid_objectname ($template)) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -48,7 +56,7 @@ checkusersession ($user);
 if ($site != "" && $template != "")
 {
   // ---------------------------- call template engine ---------------------------    
-  $viewstore = buildsearchform ($site, $template, "", $ownergroup);
+  $viewstore = buildsearchform ($site, $template, "", $ownergroup, $css_display);
 
   // show form
   if ($viewstore != false)

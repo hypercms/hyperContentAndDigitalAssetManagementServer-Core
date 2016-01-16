@@ -112,7 +112,7 @@ function update_tasks_v584 ()
     $db->close();
     
     // move data from XML to RDBMS
-    if (is_dir ($mgmt_config['abs_path_data']."task/") && $handle = opendir ($mgmt_config['abs_path_data']."task/"))
+    if (function_exists ("createtask") && is_dir ($mgmt_config['abs_path_data']."task/") && $handle = opendir ($mgmt_config['abs_path_data']."task/"))
     {
       while (false !== ($entry = readdir($handle)))
       {
@@ -141,7 +141,7 @@ function update_tasks_v584 ()
                 $task_priority = getcontent ($task_node, "<priority>");
                 $task_descr = getcontent ($task_node, "<description>");
   
-                $result = rdbms_createtask ($task_object_id[0], "", $to_user, $task_date[0], "", $task_cat[0], getobject (str_replace ("/.folder", "", $task_object[0])), $task_descr[0], $task_priority[0]);
+                $result = rdbms_createtask ($task_object_id[0], 0, "", $to_user, $task_date[0], "", $task_cat[0], getobject (str_replace ("/.folder", "", $task_object[0])), $task_descr[0], $task_priority[0]);
                 
                 if ($result)
                 {
@@ -277,6 +277,70 @@ function update_database_v586 ()
           $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|$errcode|report directory could not be created";
         }
       }
+    }
+  }
+  
+  // save log
+  savelog ($db->getError ());
+  savelog (@$error);
+  $db->close();
+  
+  return true;
+}
+
+// ------------------------------------------ update_database_v601 ----------------------------------------------
+// function: update_database_v601()
+// input: %
+// output: updated database, false on error
+
+// description: update of database to version 6.0.1
+
+function update_database_v601 ()
+{
+  global $mgmt_config;
+  
+  // connect to MySQL
+  $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+  
+  // check for new column
+  $sql = "SHOW COLUMNS FROM task LIKE 'planned'";
+  
+  $errcode = "50060";
+  $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'show');
+  
+  if ($done)
+  {
+    $num_rows = $db->getNumRows ('show');
+    
+    // column does not exist
+    if ($num_rows < 1)
+    { 
+      // alter table task
+      $sql = "ALTER TABLE task CHANGE duration actual float(6,2);";
+      
+      $errcode = "50061";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      
+      $sql = "ALTER TABLE task ADD planned float(6,2) AFTER status;";
+      
+      $errcode = "50062";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
+      
+      // create new table project
+      $sql = "CREATE TABLE `project` (
+  `project_id` int(11) NOT NULL auto_increment,
+  `subproject_id` int(11) NOT NULL default '0',
+  `object_id` int(11) NOT NULL default '0',
+  `createdate` datetime NOT NULL, 
+  `project` char(200) NOT NULL DEFAULT 'undefined',
+  `description` varchar(3600),
+  `user` char(60) NOT NULL default '', 
+  PRIMARY KEY  (`project_id`),
+  KEY `project` (`user`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+  
+      $errcode = "50063";
+      $db->query ($sql, $errcode, $mgmt_config['today'], 'create');
     }
   }
   
