@@ -1206,6 +1206,8 @@ Release 01/2016
 - Implementation of new help bubble info for workplace controls
 - Added various video file extensions to include/format_ext
 - Removed maximum number of results from search form
+- Improvements in main.js regarding the evaluation of the input paramaters of Js functions
+- Excluded geo location search for mobile edition
 */
 
 // current version

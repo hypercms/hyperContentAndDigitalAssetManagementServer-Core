@@ -1598,6 +1598,7 @@ else
         </div>
         <hr />
 
+        <?php if (!$is_mobile) { ?>
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?></b>
           <img onClick="hcms_switchInfo('mapLayer'); initMap();" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
@@ -1611,6 +1612,7 @@ else
           <input type="text" id="geo_border_ne" name="geo_border_ne" style="width:220px;" maxlength="100" /><br />
         </div>
         <hr />
+        <?php } ?>
         
         <label><b><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?></b></label><br />
         <table border="0" cellspacing="0" cellpadding="2">     

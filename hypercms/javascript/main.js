@@ -268,20 +268,21 @@ function hcms_openChat ()
 }
 
 function hcms_findObj (n, d) 
-{ //v4.01
+{
   var p,i,x;  
   
-  if(!d) d=document; 
+  if (!d) d=document; 
   
-  if((p=n.indexOf("?"))>0&&parent.frames.length) 
+  if ((p=n.indexOf("?"))>0&&parent.frames.length) 
   {
     d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);
   }
   
-  if(!(x=d[n])&&d.all) x=d.all[n]; 
+  if (!(x=d[n])&&d.all) x=d.all[n]; 
   for (i=0; !x&&i<d.forms.length; i++) x=d.forms[i][n];
-  for(i=0; !x&&d.layers&&i<d.layers.length; i++) x=hcms_findObj(n,d.layers[i].document);
-  if(!x && d.getElementById) x=d.getElementById(n); 
+  for (i=0; !x&&d.layers&&i<d.layers.length; i++) x=hcms_findObj(n,d.layers[i].document);
+  if (!x && d.getElementById) x=d.getElementById(n);
+  
   return x;
 }
 
@@ -289,19 +290,26 @@ function hcms_swapImgRestore ()
 {
   var i,x,a=document.sr;
   
-  for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+  for (i=0; a&&i<a.length&&(x=a[i])&&x.oSrc; i++) x.src=x.oSrc;
 }
 
 function hcms_preloadImages ()
 {
   var d=document;
 
-  if(d.images)
+  if (d.images)
   {
-    if(!d.p) d.p=new Array();
+    if (!d.p) d.p=new Array();
     var i,j=d.p.length,a=hcms_preloadImages.arguments;
-    for(i=0; i<a.length; i++)
-    if (a[i].indexOf("#")!=0){ d.p[j]=new Image; d.p[j++].src=a[i];}
+    
+    for (i=0; i<a.length; i++)
+    {
+      if (a[i].indexOf("#")!=0)
+      {
+        d.p[j]=new Image;
+        d.p[j++].src=a[i];
+      }
+    }
   }
 }
 
@@ -310,43 +318,78 @@ function hcms_swapImage ()
   var i,j=0,x,a=hcms_swapImage.arguments;
   
   document.sr=new Array;
+  
   for(i=0;i<(a.length-2);i+=3)
-   if ((x=hcms_findObj(a[i]))!=null){document.sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+  {
+    if ((x=hcms_findObj(a[i]))!=null)
+    {
+      document.sr[j++]=x;
+      if(!x.oSrc) x.oSrc=x.src;
+      x.src=a[i+2];
+    }
+  }
 }
 
 function hcms_scanStyles (obj, prop)
-{ //v9.0
+{
   var inlineStyle = null; var ccProp = prop; var dash = ccProp.indexOf("-");
-  while (dash != -1){ccProp = ccProp.substring(0, dash) + ccProp.substring(dash+1,dash+2).toUpperCase() + ccProp.substring(dash+2); dash = ccProp.indexOf("-");}
+  
+  while (dash != -1)
+  {
+    ccProp = ccProp.substring(0, dash) + ccProp.substring(dash+1,dash+2).toUpperCase() + ccProp.substring(dash+2);
+    dash = ccProp.indexOf("-");
+  }
+  
   inlineStyle = eval("obj.style." + ccProp);
-  if(inlineStyle) return inlineStyle;
+  if (inlineStyle) return inlineStyle;
+  
   var ss = document.styleSheets;
-  for (var x = 0; x < ss.length; x++) { var rules = ss[x].cssRules;
-  for (var y = 0; y < rules.length; y++) { var z = rules[y].style;
-    if(z[prop] && (rules[y].selectorText == '*[ID"' + obj.id + '"]' || rules[y].selectorText == '#' + obj.id)) {
+  
+  for (var x = 0; x < ss.length; x++)
+  {
+    var rules = ss[x].cssRules;
+    
+    for (var y = 0; y < rules.length; y++)
+    {
+      var z = rules[y].style;
+    
+      if (z[prop] && (rules[y].selectorText == '*[ID"' + obj.id + '"]' || rules[y].selectorText == '#' + obj.id))
+      {
         return z[prop];
-  }  }  }  return "";
+      }
+    }
+  }
+  
+  return "";
 }
 
 function hcms_getProp (obj, prop)
-{ //v8.0
+{
   if (!obj) return ("");
+  
   if (prop == "L") return obj.offsetLeft;
   else if (prop == "T") return obj.offsetTop;
   else if (prop == "W") return obj.offsetWidth;
   else if (prop == "H") return obj.offsetHeight;
-  else {
-    if (typeof(window.getComputedStyle) == "undefined") {
-      if (typeof(obj.currentStyle) == "undefined"){
+  else
+  {
+    if (typeof(window.getComputedStyle) == "undefined")
+    {
+      if (typeof(obj.currentStyle) == "undefined")
+      {
         if (prop == "P") return hcms_scanStyles(obj,"position");
         else if (prop == "Z") return hcms_scanStyles(obj,"z-index");
         else if (prop == "V") return hcms_scanStyles(obj,"visibility");
-      } else {
+      }
+      else
+      {
         if (prop == "P") return obj.currentStyle.position;
         else if (prop == "Z") return obj.currentStyle.zIndex;
         else if (prop == "V") return obj.currentStyle.visibility;
       }
-    } else {
+    }
+    else
+    {
       if (prop == "P") return window.getComputedStyle(obj,null).getPropertyValue("position");
       else if (prop == "Z") return window.getComputedStyle(obj,null).getPropertyValue("z-index");
       else if (prop == "V") return window.getComputedStyle(obj,null).getPropertyValue("visibility");
@@ -378,12 +421,8 @@ function hcms_drag (elem, moveelem)
     var startx = parseInt(this.hcms_move.elem.style.left, 10);
     var starty = parseInt(this.hcms_move.elem.style.top, 10);
     
-    if(isNaN(startx)) {
-      startx = 0;
-    }
-    if(isNaN(starty)) {
-      starty = 0;
-    }
+    if (isNaN(startx)) startx = 0;
+    if (isNaN(starty)) starty = 0;
 
     // Calculcate the difference from current cursor to the moving element
     document.hcms_move.diffx = event.clientX - startx;
@@ -406,8 +445,7 @@ function hcms_drag (elem, moveelem)
       // Cross Browser
       var event = e || window.event;
       
-      document.onmousemove = function() {
-      }
+      document.onmousemove = function() {}
       document.hcms_move.diffx = 0;
       document.hcms_move.diffy = 0;
       document.hcms_move.elem = 'undefined';
@@ -417,7 +455,8 @@ function hcms_drag (elem, moveelem)
 }
 
 function hcms_showHideLayers () 
-{ //v6.0
+{
+  // uses visibilty
   var i,p,v,obj;
   var args=hcms_showHideLayers.arguments;
   
@@ -452,56 +491,74 @@ function hcms_jumpMenuGo (selName,targ,restore)
 
 function hcms_showInfo (id, sec)
 {
-  document.getElementById(id).style.display="inline";
+  // uses display
+  var info = document.getElementById(id);
   
-  // enable all form elements
-  var nodes = document.getElementById(id).getElementsByTagName('*');
-  
-  for (var i = 0; i < nodes.length; i++)
+  if (info)
   {
-    if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
+    info.style.display="inline";
+    
+    // enable all form elements
+    var nodes = info.getElementsByTagName('*');
+    
+    for (var i = 0; i < nodes.length; i++)
     {
-      nodes[i].disabled = false;
+      if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
+      {
+        nodes[i].disabled = false;
+      }
     }
+    
+    // hide element
+    if (sec > 0)
+    {
+      var function_hide = "hcms_hideInfo('" + id + "')";
+      setTimeout (function_hide, sec);
+    }
+    
+    return true;
   }
-  
-  // hide element
-  if (sec > 0)
-  {
-    var function_hide = "hcms_hideInfo('" + id + "')";
-    setTimeout (function_hide, sec);
-  }
+  else return false;
 }
 
 function hcms_hideInfo (id)
 {
-  document.getElementById(id).style.display="none";
+  // uses display
+  var info = document.getElementById(id);
   
-  // disable all form elements
-  var nodes = document.getElementById(id).getElementsByTagName('*');
-  
-  for (var i = 0; i < nodes.length; i++)
+  if (info)
   {
-    if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
+    info.style.display="none";
+    
+    // disable all form elements
+    var nodes = info.getElementsByTagName('*');
+    
+    for (var i = 0; i < nodes.length; i++)
     {
-      nodes[i].disabled = true;
+      if (nodes[i].tagName == "INPUT" || nodes[i].tagName == "SELECT" || nodes[i].tagName == "TEXTAREA" || nodes[i].tagName == "BUTTON")
+      {
+        nodes[i].disabled = true;
+      }
     }
+    
+    return true;
   }
+  else return false;
 }
 
 function hcms_switchInfo (id)
 {
   // uses display
-  if (eval (id))
+  var info = document.getElementById(id);
+  
+  if (info)
   {
-    var info = document.getElementById(id);
-    
     if (info.style.display == 'none')
     {
       info.style.display = 'inline';
       
       // enable all form elements
-      var nodes = document.getElementById(id).getElementsByTagName('*');
+      var nodes = info.getElementsByTagName('*');
       
       for (var i = 0; i < nodes.length; i++)
       {
@@ -516,7 +573,7 @@ function hcms_switchInfo (id)
       info.style.display = 'none';
       
       // disable all form elements
-      var nodes = document.getElementById(id).getElementsByTagName('*');
+      var nodes = info.getElementsByTagName('*');
       
       for (var i = 0; i < nodes.length; i++)
       {
@@ -535,10 +592,10 @@ function hcms_switchInfo (id)
 function hcms_switchSelector (id)
 {
   // uses visibilty
-  if (eval (id))
+  var selector = document.getElementById(id);
+  
+  if (selector)
   {
-    var selector = document.getElementById(id);
-    
     if (selector.style.visibility == 'hidden') selector.style.visibility = 'visible';
     else selector.style.visibility = 'hidden';
     
@@ -560,18 +617,18 @@ function hcms_ElementStyle (Element, ElementClass)
 // uses an html element to decode
 function hcms_entity_decode(str)
 {
-  var ta = document.createElement("textarea");    
-  // We need a html element to convert special characters
+  var ta = document.createElement("textarea");
+  // html element to convert special characters
   ta.innerHTML = str;
   return ta.value;
 }
 
 // encodes the html entities in the str (e.x.: ä => &auml; but for the corresponding charset
-// uses an html element to decode
+// uses an html element to encode
 function hcms_entity_encode(str)
 {
-  var ta = document.createElement("textarea");    
-  // We need a html element to convert special characters
+  var ta = document.createElement("textarea");
+  // html element to convert special characters
   ta.innerHTML = str;
   return ta.innerHTML;
 }
