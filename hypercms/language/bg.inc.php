@@ -1352,4 +1352,6 @@ $hcms_lang['create-new-subproject']['bg'] = "Създаване на нови su
 $hcms_lang['navigate']['bg'] = "Навигация";
 $hcms_lang['asset']['bg'] = "Актив";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['bg'] = "Преместете показалеца на мишката върху икони, за да получите повече информация";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['bg'] = "Потребителят трябва да предостави метаданни за прехвърляне на файлове";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['bg'] = "Моля, въведете метаданни за вашия качване";
 ?>

@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['hi'] = "नया बनाएं subprojec
 $hcms_lang['navigate']['hi'] = "पर नेविगेट करें.";
 $hcms_lang['asset']['hi'] = "सम्पत्ति";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['hi'] = "आप को इस के बारे में अधिक जानकारी के लिए, आइकन पर माउस को ले जाने के लिए";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['hi'] = "उपयोगकर्ता अवश्य प्रदान करने के लिए फ़ाइल metadata अपलोड";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['hi'] = "कृपया अपने लिए metadata अपलोड";
 ?>

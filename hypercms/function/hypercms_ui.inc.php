@@ -354,23 +354,39 @@ function showinfopage ($show, $lang="en")
 
 // --------------------------------------- showinfobox -------------------------------------------
 // function: showinfobox ()
-// input: message, language code (optional), display for seconds (optional), additional style definitions  of div-layer (optional), ID of div-layer (optional)
+// input: message, language code (optional), additional style definitions  of div-layer (optional), ID of div-layer (optional)
 // output: message in div layer / false on error
 
 // description:
-// shows infobox for a few seconds
+// shows infobox as long as it has not been closed. Saves the close event in localstorage of browser.
 
-function showinfobox ($show, $lang="en", $sec=4, $style="", $id="hcms_infoLayer")
+function showinfobox ($show, $lang="en", $style="", $id="hcms_infoboxLayer")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang;
-     
+
   if (!empty ($mgmt_config['showinfobox']) && $show != "" && strlen ($show) < 2400 && $lang != "" && $id != "")
   {
+    // define unique name for close button
+    $close_id = uniqid();
+    
     return "
-  <script language=\"JavaScript\">window.onload = function(){ hcms_showInfo('".$id."', ".($sec*1000).") };</script>
-  <div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"display:none; ".$style."\">".
-    $show."
-  </div>\n";
+  <div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"display:none; ".$style."\">
+    <table style=\"padding:0; border:0; border-spacing:0; border-collapse:collapse;\">
+      <tr>
+        <td style=\"text-align:left; vertical-align:top; padding:1px; margin:0;\">
+          ".$show."
+        </td>
+        <td style=\"width:22px; text-align:right; vertical-align:top; padding:0; margin:0;\">
+          <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.gif',1);\" onClick=\"localStorage.setItem('".$id."','no'); hcms_showHideLayers('".$id."','','hide');\" />
+        </td>
+      <tr>
+    </table>
+  </div>
+  <script type=\"text/javascript\">
+  var hcms_showinfobox = localStorage.getItem('".$id."') || 'yes';
+  if (hcms_showinfobox=='yes') document.getElementById('".$id."').style.display='inline';
+  else document.getElementById('".$id."').style.display='none';
+  </script>\n";
   }
   else return false;
 }
@@ -397,7 +413,7 @@ function showsharelinks ($link, $lang="en", $style="", $id="hcms_shareLayer")
     <img src=\"".getthemelocation()."img/icon_linkedin.png\" title=\"LinkedIn\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkLinkedin('".$link."', hcms_getcontentByName('textu_Title'), hcms_getcontentByName('textu_Description'), hcms_getcontentByName('Creator')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />
     <img src=\"".getthemelocation()."img/icon_pinterest.png\" title=\"Pinterest\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkPinterest('".$link."', hcms_getcontentByName('textu_Title'), hcms_getcontentByName('textu_Description')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />
     <img src=\"".getthemelocation()."img/icon_googleplus.png\" title=\"Google+\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkGooglePlus('".$link."') == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />
-  </div>";
+  </div>\n";
   }
   else return false;
 }
@@ -1808,7 +1824,7 @@ function showOptions()
       
       $result .= "
       <div style=\"align:center; padding:2px; width:100%;\">
-        <input name=\"UploadButton\" class=\"hcmsButtonGreen\" style=\"width:198px; float:left;\" type=\"button\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms'].$popup_upload."?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."','','status=yes,scrollbars=no,resizable=yes,width=600,height=400','600','400');\" value=\"".getescapedtext ($hcms_lang['upload-file'][$lang], $hcms_charset, $lang)."\" />
+        <input name=\"UploadButton\" class=\"hcmsButtonGreen\" style=\"width:198px; float:left;\" type=\"button\" onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms'].$popup_upload."?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."','','status=yes,scrollbars=no,resizable=yes,width=800,height=600','800','600');\" value=\"".getescapedtext ($hcms_lang['upload-file'][$lang], $hcms_charset, $lang)."\" />
         <img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" />
       </div>
       <div style=\"clear:both;\"></div>\n";

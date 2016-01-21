@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['cz'] = "Vytvořit nový subprojekt";
 $hcms_lang['navigate']['cz'] = "Procházení";
 $hcms_lang['asset']['cz'] = "Aktiva";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['cz'] = "Přesuňte kurzor myši nad ikony získáte další informace";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['cz'] = "Uživatel musí poskytnout metadata pro odesílání souborů";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['cz'] = "Zadejte metadata pro vaše odesílání";
 ?>

@@ -84,8 +84,8 @@ if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0
   }
 }
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" >
+<!DOCTYPE html>
+<html>
 <head>
 <title>hyperCMS</title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;" />
@@ -94,7 +94,6 @@ if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/jquery-fileupload.css" type="text/css">
 
 <script src="javascript/main.js" type="text/javascript"></script>
-<!-- <script src="javascript/click.js" type="text/javascript"></script> -->
 
 <!-- JQuery -->
 <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
@@ -111,6 +110,90 @@ if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0
 
 <!-- File Upload Code -->
 <script type="text/javascript">
+
+// memory for uploaded objects
+var editobjects = [];
+
+// Reloads all needed frames
+function frameReload (newpage, timeout)
+{
+  // reload main frame (upload by control objectlist)
+  if (eval (opener.parent.frames['mainFrame']))
+  {
+    opener.parent.frames['mainFrame'].location.reload();
+  }
+  
+  // reload explorer frame (upload by component explorer)
+  if (eval (opener.parent.frames['navFrame2']))
+  {
+    opener.parent.frames['navFrame2'].location.reload();
+  }
+  // reload object frame (upload by control content)
+  else if (eval (opener.parent.frames['objFrame']))
+  {
+    if (newpage == "") opener.parent.frames['objFrame'].location.reload();
+    else opener.parent.frames['objFrame'].location.href='page_view.php?ctrlreload=yes&location=<?php echo html_encode($location_esc); ?>&page='+newpage;
+    
+    setTimeout('window.close()', timeout);
+  }
+}
+
+function openEditWindow (newpage)
+{
+  // add objectpath to array
+  editobjects.push('<?php echo $location_esc; ?>'+newpage);
+  
+  var window = document.getElementById('editwindow');
+  var iframe = document.getElementById('editiframe');
+
+  // open edit window for first object
+  if (window.style.display == 'none')
+  {
+    iframe.src='page_view.php?ctrlreload=yes&location=<?php echo html_encode($location_esc); ?>&page='+newpage;
+    window.style.display='inline';
+    
+    // remove first array element
+    editobjects.shift();
+  }
+}
+
+function nextEditWindow ()
+{
+  var window = document.getElementById('editwindow');
+  var iframe = document.getElementById('editiframe');
+    
+  if (editobjects.length > 0)
+  {
+    // get and remove first array element
+    var objectpath = editobjects.shift();
+
+    // get location and object
+    var index = objectpath.lastIndexOf("/") + 1;
+    var location = objectpath.substring(0, index);
+    var newpage = objectpath.substr(index);
+    
+    // load next object
+    iframe.src='page_view.php?ctrlreload=yes&location='+location+'&page='+newpage;
+    
+    if (window.style.display == 'none')
+    {
+      window.style.display='inline';
+    }
+  }
+  else
+  {
+    window.style.display='none';
+    iframe.src='';
+  }
+}
+
+// if user closes window while still in edit mode
+window.onbeforeunload = function() {
+  if (document.getElementById('editwindow') && document.getElementById('editwindow').style.display != "none")
+  {
+    return "<?php echo getescapedtext ($hcms_lang['please_enter-the-metadata-for-your-uploads'][$lang]); ?>";
+  }
+}
   
 // when document is ready
 $(document).ready(function ()
@@ -155,7 +238,7 @@ $(document).ready(function ()
   // Function that generate a jquery span field containing the name of the file
   function getFileNameSpan (name)
   {
-    var maxLen = 49;
+    var maxLen = 39;
     var moreThanMaxLen = '...';
     
     var span = $('<div></div>');
@@ -274,30 +357,6 @@ $(document).ready(function ()
        .removeClass('file_error file_success')
        .addClass('file file_normal');
   }
-    
-  // Reloads all needed frames
-  function frameReload (newpage, timeout)
-  {
-    // reload main frame (upload by control objectlist)
-    if (eval (opener.parent.frames['mainFrame']))
-    {
-      opener.parent.frames['mainFrame'].location.reload();
-    }
-    
-    // reload explorer frame (upload by component explorer)
-    if (eval (opener.parent.frames['navFrame2']))
-    {
-      opener.parent.frames['navFrame2'].location.reload();
-    }
-    // reload object frame (upload by control content)
-    else if (eval (opener.parent.frames['objFrame']))
-    {
-      if (newpage == "") opener.parent.frames['objFrame'].location.reload();
-      else opener.parent.frames['objFrame'].location.href='page_view.php?ctrlreload=yes&site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&location=<?php echo $location_esc; ?>&page='+newpage;
-      
-      setTimeout('window.close()', timeout);
-    }
-  }
    
   $('#inputSelectFile').fileupload({
     dataType: 'html',
@@ -354,13 +413,18 @@ $(document).ready(function ()
     // Put out message if possible
     if(data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.UNSENT)
     {
-      text = ajax.responseText;
+      var text = ajax.responseText;
       
       if(text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1) {
         file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
         text = text.substr (0, filepos1);
       }
-        
+      
+      <?php if (!empty ($mgmt_config[$site]['upload_userinput']) && $mgmt_config[$site]['upload_userinput'] == true && $uploadmode != "single") { ?>
+      // open meta data edit window in iframe
+      openEditWindow(file);
+      <?php } ?>
+      
       buildFileMessage(data, text, true);
     }       
     
@@ -1039,7 +1103,7 @@ function cal_on_autoclose (cal)
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 marginwidth=0 marginheight=0>
+<body class="hcmsWorkplaceGeneric">
 
 <!-- top bar -->
 <?php
@@ -1130,5 +1194,16 @@ echo showtopbar ($title.": ".$object_name, $lang);
 
   </form>
 </div>
+
+<!-- Edit Window -->
+<div id="editwindow" style="display:none; position:fixed; top:0px; bottom:0px; left:0px; right:0px; margin:0; padding:0; z-index:1000;">
+  <div class="hcmsPriorityHigh" style="width:100%; height:28px;">
+    <div style="padding:4px;"><b><?php echo getescapedtext ($hcms_lang['please_enter-the-metadata-for-your-uploads'][$lang]); ?></b></div>
+  </div>
+  <div class="hcmsWorkplaceGeneric" style="position:fixed; top:28px; bottom:0px; left:0px; right:0px; margin:0; padding:0; z-index:1001;">
+    <iframe id="editiframe" scrolling="auto" src="" style="width:100%; height:95%; border-bottom:1px solid #000000; margin:0; padding:0;" frameborder="0"></iframe>
+  </div>
+</div>
+
 </body>
 </html>

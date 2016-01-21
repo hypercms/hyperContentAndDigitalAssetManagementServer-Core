@@ -502,7 +502,7 @@ $hcms_lang['personalization']['de'] = "Personalisierung";
 $hcms_lang['customer-profiles']['de'] = "Kundenprofile";
 $hcms_lang['workflow-management']['de'] = "Workflow Management";
 $hcms_lang['workflow-scripts']['de'] = "Workflow Scripts";
-$hcms_lang['checked-out-items']['de'] = "Ausgecheckte Objekte";
+$hcms_lang['checked-out-items']['de'] = "ausgecheckte Objekte";
 $hcms_lang['system-events']['de'] = "Systemereignisse";
 $hcms_lang['custom-system-events']['de'] = "Personalisierte Systemereignisse";
 $hcms_lang['templates']['de'] = "Vorlagen";
@@ -1353,4 +1353,6 @@ $hcms_lang['create-new-subproject']['de'] = "Neues Teilprojekt erstellen";
 $hcms_lang['navigate']['de'] = "Navigieren";
 $hcms_lang['asset']['de'] = "Asset";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['de'] = "Bewegen Sie die Maus über die Symbole, um weitere Informationen zu erhalten";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['de'] = "Benutzer müssen Metadaten für Dateiuploads eingeben";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['de'] = "Bitte geben Sie die Metadaten für Ihre Uploads ein";
 ?>

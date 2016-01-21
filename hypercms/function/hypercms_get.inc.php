@@ -3106,4 +3106,92 @@ function getdirectoryfiles ($dir, $pattern="")
   }
   else return false;
 }
+
+// ---------------------------------------------- getuserinformation ----------------------------------------------
+// function: getuserinformation()
+// input: %
+// output: assoziative array with basic user information [publication->username->attribute] / false
+// requires: config.inc.php
+
+// description:
+// This function creates an assoziative array with user information for the user select box
+
+function getuserinformation ()
+{
+  global $mgmt_config;
+
+  // load user file
+  $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+  
+  $user_array = array();
+  
+  if ($userdata != "")
+  {
+    // get publications
+    $inherit_db = inherit_db_read ();  
+    $site_array = array();
+    
+    if ($inherit_db != false && sizeof ($inherit_db) > 0)
+    {
+      foreach ($inherit_db as $inherit_db_record)
+      {
+        if ($inherit_db_record['parent'] != "")
+        {
+          $site_array[] = $inherit_db_record['parent'];
+        }
+      }
+    }
+  
+    // get user node and extract required information    
+    $usernode = getcontent ($userdata, "<user>");
+  
+    foreach ($usernode as $temp)
+    {
+      if ($temp != "")
+      {
+        $login = getcontent ($temp, "<login>");
+        $admin = getcontent ($temp, "<admin>");
+        $email = getcontent ($temp, "<email>");
+        $realname = getcontent ($temp, "<realname>");
+        $signature = getcontent ($temp, "<signature>");
+        $language = getcontent ($temp, "<language>");
+        $publication = getcontent ($temp, "<publication>");
+        
+        // standard user
+        if (!empty ($login[0]) && (empty ($admin[0]) || $admin[0] == 0) && is_array ($publication))
+        {
+          foreach ($publication as $pub_temp)
+          {
+            if ($pub_temp != "")
+            {
+              $username = $login[0];
+              $user_array[$pub_temp][$username]['email'] = $email[0];
+              $user_array[$pub_temp][$username]['realname'] = $realname[0];
+              $user_array[$pub_temp][$username]['signature'] = $signature[0];
+              $user_array[$pub_temp][$username]['language'] = $language[0];
+            }
+          }
+        }
+        // super user
+        elseif (!empty ($login[0]) && !empty ($admin[0]) && $admin[0] == 1)
+        {
+          foreach ($site_array as $pub_temp)
+          {
+            if ($pub_temp != "")
+            {
+              $username = $login[0];
+              $user_array[$pub_temp][$username]['email'] = $email[0];
+              $user_array[$pub_temp][$username]['realname'] = $realname[0];
+              $user_array[$pub_temp][$username]['signature'] = $signature[0];
+              $user_array[$pub_temp][$username]['language'] = $language[0]; 
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  if (!empty ($user_array) && is_array ($user_array)) return $user_array;
+  else return false;
+}
 ?>

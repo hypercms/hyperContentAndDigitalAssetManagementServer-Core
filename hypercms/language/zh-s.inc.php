@@ -1352,4 +1352,6 @@ $hcms_lang['create-new-subproject']['zh-s'] = "创建新的子项目";
 $hcms_lang['navigate']['zh-s'] = "浏览";
 $hcms_lang['asset']['zh-s'] = "资产";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['zh-s'] = "将鼠标移到图标上方以获取更多信息。";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['zh-s'] = "用户必须提供元数据文件上传";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['zh-s'] = "请输入元数据为您上传";
 ?>

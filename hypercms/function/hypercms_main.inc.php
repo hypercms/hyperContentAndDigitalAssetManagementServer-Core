@@ -4417,7 +4417,7 @@ function deleteinstance ($instance_name, $user="sys")
         ondeleteinstance_post ($instance_name, $user); 
     
       $result_ok = true;
-      $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+      $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
       $show = "<span class=hcmsHeadline>".$hcms_lang['the-instance-was-deleted-successfully'][$lang]."</span><br />\n".$hcms_lang['all-instance-entries-were-removed-successfully'][$lang]."\n";
     }
   }
@@ -4461,13 +4461,13 @@ function createpublication ($site_name, $user="sys")
   // check if sent data is available
   if (!valid_publicationname ($site_name) || strlen ($site_name) > 100 || !valid_objectname ($user))
   {
-    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+    $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=hcmsHeadline>".$hcms_lang['required-publication-name-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-enter-a-name'][$lang]."\n";
   }
   // test if site name includes special characters
   elseif (specialchr ($site_name, "-_") == true)
   {
-    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+    $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
   }
   else
@@ -4494,7 +4494,7 @@ function createpublication ($site_name, $user="sys")
             inherit_db_close ($user);
             
             // return message if site exists already
-            $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+            $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
             $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
                   
             break;
@@ -4777,7 +4777,7 @@ function createpublication ($site_name, $user="sys")
               if ($eventsystem['oncreatepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
                 oncreatepublication_post ($site_name, $user);            
              
-              $add_onload = "parent.frames['mainFrame'].location.href='site_edit_form.php?site=*Null*&preview=no&site_name=".url_encode($site_name)."'; setTimeout (function(){parent.frames['controlFrame'].location.href='control_site_menu.php?site=".url_encode($site_name)."'}, 1000); ";
+              $add_onload = "parent.frames['mainFrame'].location='site_edit_form.php?site=*Null*&preview=no&site_name=".url_encode($site_name)."'; setTimeout (function(){parent.frames['controlFrame'].location='control_site_menu.php?site=".url_encode($site_name)."'}, 1000); ";
               $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-was-created-successfully'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-publication'][$lang]."\n";
               
               // success
@@ -4788,7 +4788,7 @@ function createpublication ($site_name, $user="sys")
               // unlock file
               inherit_db_close ($user);
               
-              $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+              $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
               $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";          
             }
           }
@@ -4797,7 +4797,7 @@ function createpublication ($site_name, $user="sys")
             // unlock file
             inherit_db_close ($user);
         
-            $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+            $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
             $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['an-error-occured-in-the-data-manipulation'][$lang]."\n";
           }
         }
@@ -4813,7 +4813,7 @@ function createpublication ($site_name, $user="sys")
       // unlock file
       inherit_db_close ($user);
     
-      $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+      $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
       $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
@@ -4879,6 +4879,9 @@ function editpublication ($site_name, $setting, $user="sys")
     
     if (array_key_exists ('dam', $setting) && $setting['dam'] == true) $dam_new = "true";
     else $dam_new = "false";
+    
+    if (array_key_exists ('upload_userinput', $setting) && $setting['upload_userinput'] == true) $upload_userinput = "true";
+    else $upload_userinput = "false";
     
     if (array_key_exists ('crypt_content', $setting) && $setting['crypt_content'] == true) $crypt_content = "true";
     else $crypt_content = "false";
@@ -5037,6 +5040,10 @@ function editpublication ($site_name, $setting, $user="sys")
 // Use only as DAM
 // enable (false) or disable (true) restricted system usage as DAM
 \$mgmt_config['".$site_name."']['dam'] = ".$dam_new.";
+
+// User must provide metadata for file uploads
+// enable (true) or disable (false) user input for metadata right after file upload
+\$mgmt_config['".$site_name."']['upload_userinput'] = ".$upload_userinput.";
 
 // Storage limit
 // storage limit for all multimedia files (assets) in MB
@@ -5449,13 +5456,13 @@ function deletepublication ($site_name, $user="sys")
 
   if ($file_count > 0)
   {
-    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+    $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-cannot-be-removed'][$lang]."</span><br />\n".$hcms_lang['the-publication-still-holds-folders-or-objects'][$lang]."\n";
   }
   // check if sent data is available
   elseif (!valid_publicationname ($site_name) || !valid_objectname ($user))
   {
-    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+    $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=hcmsHeadline>".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-select-a-publication'][$lang]."\n";
   }
   else
@@ -5661,7 +5668,7 @@ function deletepublication ($site_name, $user="sys")
           if ($eventsystem['oncreatepublication_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
             ondeletepublication_post ($site_name, $user);        
         
-          $add_onload = "top.frames['navFrame'].location.href='explorer.php?refresh=1'; parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+          $add_onload = "top.frames['navFrame'].location='explorer.php?refresh=1'; parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
           $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-was-deleted-successfully'][$lang]."</span><br />\n".$hcms_lang['all-publication-entries-were-removed-successfully'][$lang]."<br>\n";
           
           // success
@@ -5678,7 +5685,7 @@ function deletepublication ($site_name, $user="sys")
         // unlock file
         inherit_db_close ($user);
     
-        $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+        $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
         $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-cannot-be-removed'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
       }
     }
@@ -5687,7 +5694,7 @@ function deletepublication ($site_name, $user="sys")
       // unlock file
       inherit_db_close ($user);
     
-      $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+      $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
       $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['the-publication-information-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
     }
   }
@@ -5756,7 +5763,7 @@ function createpersonalization ($site, $pers_name, $cat)
       }
       else
       {
-        $add_onload = "parent.frames['mainFrame'].location.href='pers_form.php?site=".url_encode($site)."&cat=".url_encode($cat)."&save=no&preview=no&persfile=".url_encode($persfile)."'; ";
+        $add_onload = "parent.frames['mainFrame'].location='pers_form.php?site=".url_encode($site)."&cat=".url_encode($cat)."&save=no&preview=no&persfile=".url_encode($persfile)."'; ";
         $show = "<span class=hcmsHeadline>".$hcms_lang['the-object-was-created-successfully'][$lang]."</span>\n";
         
         // success
@@ -5835,7 +5842,7 @@ function deletepersonalization ($site, $pers_name, $cat)
     
       if ($test == true)
       {
-        $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+        $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
         $show = "<span class=hcmsHeadline>".$hcms_lang['the-object-was-removed'][$lang]."</span>\n";
         
         // success
@@ -5938,7 +5945,7 @@ function createtemplate ($site, $template, $cat)
       }
       else
       {
-        $add_onload = "parent.frames['mainFrame'].location.href='frameset_template_edit.php?site=".url_encode($site)."&cat=".url_encode($cat)."&save=no&template=".url_encode($template)."'; ";
+        $add_onload = "parent.frames['mainFrame'].location='frameset_template_edit.php?site=".url_encode($site)."&cat=".url_encode($cat)."&save=no&template=".url_encode($template)."'; ";
         $show = "<span class=hcmsHeadline>".$hcms_lang['the-template-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-template'][$lang]."\n";
         
         // success
@@ -6251,7 +6258,7 @@ function deletetemplate ($site, $template, $cat)
       
       if ($test == true)
       {
-        $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+        $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
         $show = "<span class=hcmsHeadline>".$hcms_lang['the-template-was-removed'][$lang]."</span>\n";
         
         // success
@@ -6440,7 +6447,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
             if ($eventsystem['oncreateuser_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
               oncreateuser_post ($login, $user);              
           
-            $add_onload = "parent.frames['mainFrame'].location.reload(); window.open('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."','','status=yes,scrollbars=no,resizable=yes,width=500,height=500'); ";
+            $add_onload = "window.open('user_edit.php?site=".url_encode($site)."&login=".url_encode($login)."','','status=yes,scrollbars=no,resizable=yes,width=500,height=500'); parent.frames['mainFrame'].location.reload(); ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-new-user-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-user'][$lang]."<br />\n";              
             $error_switch = "no";
           }
@@ -6938,13 +6945,13 @@ function creategroup ($site, $group_name, $user="sys")
   // check if sent data is available
   if (!valid_publicationname ($site) || !valid_objectname ($group_name) || strlen ($group_name) > 100 || !valid_objectname ($user))
   {
-    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+    $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=hcmsHeadline>".$hcms_lang['necessary-group-name-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-enter-a-name'][$lang]."\n";
   }
   // test if group name includes special characters
   elseif (specialchr ($group_name, "-_") == true)
   {
-    $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+    $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=hcmsHeadline>".$hcms_lang['special-characters-in-expressions-are-not-allowed'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-expression'][$lang]."\n";
   }
   else
@@ -6968,7 +6975,7 @@ function creategroup ($site, $group_name, $user="sys")
         //unlock file
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
             
-        $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+        $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
         $show = "<span class=hcmsHeadline>".$hcms_lang['the-group-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-another-name'][$lang]."\n";
       }
       else
@@ -6995,7 +7002,7 @@ function creategroup ($site, $group_name, $user="sys")
               
             $usergroupdata = $usergroupdatanew;
             
-            $add_onload = "parent.frames['mainFrame'].location.href='group_edit_form.php?site=".url_encode($site)."&preview=no&group_name=".url_encode($group_name)."'; ";
+            $add_onload = "parent.frames['mainFrame'].location='group_edit_form.php?site=".url_encode($site)."&preview=no&group_name=".url_encode($group_name)."'; ";
             $show = "<span class=hcmsHeadline>".$hcms_lang['group'][$lang]." '".$group_name."' ".$hcms_lang['was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-group'][$lang]."<br />\n";            
             $error_switch = "no";
           }
@@ -7004,7 +7011,7 @@ function creategroup ($site, $group_name, $user="sys")
             //unlock file
             unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
             
-            $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+            $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
             $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-cannot-be-saved'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";          
           }
         }
@@ -7013,7 +7020,7 @@ function creategroup ($site, $group_name, $user="sys")
           //unlock file
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
           
-          $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+          $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
           $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-could-not-be-inserted'][$lang]."</span>\n";         
         }
       }  
@@ -7023,7 +7030,7 @@ function creategroup ($site, $group_name, $user="sys")
       //unlock file
       unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
     
-      $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+      $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
       $show = "<span class=hcmsHeadline>".$hcms_lang['group-information-cannot-be-accessed'][$lang]."</span><br />\n".$hcms_lang['group-information-is-missing-or-you-do-not-have-read-permission'][$lang]."\n";
     }
   }
@@ -7373,7 +7380,7 @@ function deletegroup ($site, $group_name, $user)
             
               $usergroupdata = $usergroupdatanew;
             
-              $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+              $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
               $show = "<span class=hcmsHeadline>".$hcms_lang['the-group-was-removed'][$lang]."</span><br />\n".$hcms_lang['all-group-information-was-successfully-removed'][$lang]."\n";
               $error_switch = "no";
             }
@@ -8088,7 +8095,7 @@ function deletefrommediacat ($site, $mediafile)
       {
         unlockfile ($session_id, $mgmt_config['abs_path_data']."media/", $datafile);
           
-        $add_onload = "parent.frames['mainFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php?site=".url_encode($site)."'; ";
+        $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php?site=".url_encode($site)."'; ";
     
         $show = "<table width=\"400\" border=0 cellspacing=1 cellpadding=3 class=\"hcmsMessage\">
         <tr>
@@ -8917,7 +8924,7 @@ function createobject ($site, $location, $page, $template, $user)
     //  check if location exists
     if (!is_dir ($location))
     {
-      $add_onload = "parent.frames['objFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+      $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-item'][$lang]."</span><br />\n".$hcms_lang['the-location-holding-the-new-object-does-not-exist'][$lang]."\n";
     }      
     
@@ -9038,7 +9045,7 @@ function createobject ($site, $location, $page, $template, $user)
             {
               unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
               
-              $add_onload = "parent.frames['objFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+              $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['contentcount-failure'][$lang]."\n";
             }  
           }
@@ -9047,13 +9054,13 @@ function createobject ($site, $location, $page, $template, $user)
             // unlock file
             unlockfile ($user, $mgmt_config['abs_path_data'], "contentcount.dat");
        
-            $add_onload = "parent.frames['objFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+            $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['contentcount-failure'][$lang]."\n";
           }
         }
         else
         {
-            $add_onload = "parent.frames['objFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+            $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-name'][$lang]."\n";
         }
         
@@ -9149,7 +9156,7 @@ function createobject ($site, $location, $page, $template, $user)
           }
           else
           {
-            $add_onload = "parent.frames['objFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+            $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['could-not-create-new-content-container'][$lang]."\n";
           }            
     
@@ -9203,7 +9210,7 @@ function createobject ($site, $location, $page, $template, $user)
     
             if ($link_db_append == false)
             {
-              $add_onload = "parent.frames['objFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+              $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-insert-into-link-management'][$lang]."</span><br />\n".$hcms_lang['link-management-file-is-missing-or-you-do-not-have-write-permissions'][$lang]."\n";
             }
           }
@@ -9274,7 +9281,7 @@ function createobject ($site, $location, $page, $template, $user)
               // if object file could not be saved
               if ($savefile == false)
               {
-                $add_onload = "parent.frames['objFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+                $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
                 $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-item'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
               }
               // on success
@@ -9288,7 +9295,7 @@ function createobject ($site, $location, $page, $template, $user)
               
                 $page = $pagefile;
       
-                $add_onload = "parent.frames['objFrame'].location.href='page_view.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&pagename=".url_encode($page_orig)."'; ";
+                $add_onload = "parent.frames['objFrame'].location='page_view.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&pagename=".url_encode($page_orig)."'; ";
                 $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-created'][$lang]."</span><br />\n".$hcms_lang['now-you-can-edit-the-content'][$lang]."\n";
                 
                 // remote client
@@ -9306,28 +9313,28 @@ function createobject ($site, $location, $page, $template, $user)
             }
             else
             {
-              $add_onload = "parent.frames['objFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+              $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-content-container'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";            
             }
           }
           // if user has no access to the workflow or link management failed
           else
           {
-            $add_onload = "parent.frames['objFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+            $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-create-new-item'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-workflow-access-permissions'][$lang]."\n";        
           } 
         }     
       }
       else
       {
-        $add_onload = "parent.frames['objFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+        $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-selected-no-template'][$lang]."</span><br />\n".$hcms_lang['please-select-a-template'][$lang]."\n";
       }      
     }
   }
   else
   {
-    $add_onload = "parent.frames['objFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php'; ";
+    $add_onload = "parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-fill-in-a-name'][$lang]."\n";
   }   
   
@@ -10016,6 +10023,9 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
     
     // remove temp file downloaded from Dropbox or FTP server
     if (is_file ($temp_file)) unlink ($temp_file);
+    
+    // include object name in message
+    if (empty ($show_command)) $show_command = "[".$result['object']."]";
   
     // return message and command to flash object
     $result['result'] = true;
@@ -10317,7 +10327,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
             $show = $hcms_lang['the-file-was-processed-successfully'][$lang];
             
             // add onload
-            $add_onload = "parent.frames['controlFrame'].location.href='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
+            $add_onload = "parent.frames['controlFrame'].location='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
           }
           // on error
           else
@@ -11304,7 +11314,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
   
         if ($test != false)
         {
-          $add_onload = "if (eval (opener.parent.frames['mainFrame'])) {opener.parent.frames['controlFrame'].location.href='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; opener.parent.frames['mainFrame'].location.reload();} else if (eval (opener.parent.frames['objFrame'])) {opener.parent.frames['controlFrame'].location.href='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&wf_token=".url_encode($wf_token)."'; opener.parent.frames['objFrame'].location.href='".$mgmt_config['url_path_cms']."empty.php';}";
+          $add_onload = "if (opener.parent.frames['mainFrame']) {opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; opener.parent.frames['mainFrame'].location.reload();} else if (opener.parent.frames['objFrame']) {opener.parent.frames['controlFrame'].location='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&wf_token=".url_encode($wf_token)."'; opener.parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php';}";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-deleted'][$lang]."</span><br />\n";
   
           // log delete
@@ -11369,7 +11379,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           $pagename = $pagenewname;
           $pagename_orig = $pagenewname_orig;
           
-          $add_onload = "if (eval (parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload(); else if (eval (parent.frames['objFrame'])) parent.frames['objFrame'].location.href='page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."'; ";
+          $add_onload = "if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload(); else if (parent.frames['objFrame']) parent.frames['objFrame'].location='page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."'; ";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-renamed'][$lang]."</span><br />\n";
           
           $error_switch = "no";
@@ -11433,7 +11443,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           $page = $pagenew;
           $pagename = $pagenewname;
   
-          $add_onload = "opener.parent.frames['controlFrame'].location.reload(); if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload();";
+          $add_onload = "opener.parent.frames['controlFrame'].location.reload(); if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-unpublished'][$lang]."</span><br />\n";
         
           $error_switch = "no";
@@ -11501,7 +11511,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
   
         if ($test != false)
         {
-          $add_onload = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload(); ";
+          $add_onload = "if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload(); ";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-cut-and-pasted'][$lang]."</span><br />\n";
           
           $error_switch = "no";
@@ -11588,7 +11598,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
     
             if ($test != false)
             {
-              $add_onload = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload(); ";
+              $add_onload = "if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload(); ";
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-copied-and-pasted'][$lang]."</span><br />\n";              
               $page = $page_sec;
               
@@ -11884,7 +11894,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
 
             if ($test != false)
             {
-              $add_onload = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload(); ";
+              $add_onload = "if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload(); ";
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-copied-and-pasted'][$lang]."</span><br />\n";
   
               $page = $page_sec;
@@ -11913,7 +11923,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             // remote client
             remoteclient ("copy", "abs_path_".$cat, $site, $location_source, $location, $page, $page_sec);             
           
-            $add_onload = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload(); ";
+            $add_onload = "if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload(); ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-copied-and-pasted'][$lang]."</span><br />\n";
             
             $page = $page_sec;
@@ -12751,9 +12761,9 @@ function unlockobject ($site, $location, $page, $user)
       
       if ($test != false)
       {
-        $add_onload = "if (eval(opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload();
-if (eval(parent.frames['objFrame'])) parent.frames['objFrame'].location.reload();
-if (eval(parent.frames['mainFrame'])) parent.frames['mainFrame'].location.reload();";
+        $add_onload = "if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();
+if (parent.frames['objFrame']) parent.frames['objFrame'].location.reload();
+if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-is-checked-in'][$lang]."</span><br />";
         
         $usedby = "";
@@ -13162,7 +13172,7 @@ function publishobject ($site, $location, $page, $user)
                   }
                   
                   // show message
-                  $add_onload = "opener.parent.frames['controlFrame'].location.reload(); if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload();";
+                  $add_onload = "opener.parent.frames['controlFrame'].location.reload(); if (opener.parent.frames['mainFrame']) opener.parent.frames['mainFrame'].location.reload();";
                   $show = "<span class=\"hcmsHeadline\">".$hcms_lang['published-item-successfully'][$lang]."</span><br />\n";
                     
                   $error_switch = "no";
@@ -14931,7 +14941,7 @@ function deletelog ($logname="")
   
     if ($test == true)
     {
-      $add_onload = "parent.frames['mainFrame'].location.href='log_list.php'; ";
+      $add_onload = "parent.frames['mainFrame'].location='log_list.php'; ";
       $show = "<span class=hcmsHeadline>".$hcms_lang['cleared-all-events-from-list'][$lang]."</span>\n";
     }
     else

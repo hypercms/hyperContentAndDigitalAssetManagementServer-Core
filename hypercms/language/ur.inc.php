@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['ur'] = "نیا بنائیں Subproject";
 $hcms_lang['navigate']['ur'] = "جہاز رانی کرنا";
 $hcms_lang['asset']['ur'] = "موجودات";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ur'] = "چوہے کا مزید معلومات حاصل کرنے کے شبیہیں";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['ur'] = "صارف فراہم کرنا مسل Uploads میٹا ڈیٹا کے لئے";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['ur'] = "آپ کے لئے داخل کی میٹا ڈیٹا Uploads";
 ?>

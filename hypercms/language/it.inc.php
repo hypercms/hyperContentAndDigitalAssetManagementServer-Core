@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['it'] = "Crea nuovo sottoprogetto.";
 $hcms_lang['navigate']['it'] = "Navigare";
 $hcms_lang['asset']['it'] = "Asset";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['it'] = "Spostare il mouse sulle icone per ottenere ulteriori informazioni";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['it'] = "L'utente deve fornire i metadati per il caricamento di file";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['it'] = "Si prega di inserire i metadati per i tuoi upload";
 ?>

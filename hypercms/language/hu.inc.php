@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['hu'] = "Új alprojekt";
 $hcms_lang['navigate']['hu'] = "Navigálás";
 $hcms_lang['asset']['hu'] = "Az eszköz";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['hu'] = "Mozgassa az egeret az ikonok fölé további információk.";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['hu'] = "A metaadatok a felhasználónak meg kell adnia a fájl feltöltések";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['hu'] = "Adja meg a metaadatokat a feltöltések";
 ?>

@@ -93,6 +93,12 @@ if (is_file ($mgmt_config['abs_path_cms']."task/hypercms_task.inc.php"))
   require_once ($mgmt_config['abs_path_cms']."task/hypercms_task.inc.php");
 }
 
+// include Project API (not included in Free Edition)
+if (is_file ($mgmt_config['abs_path_cms']."project/hypercms_project.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."project/hypercms_project.inc.php");
+}
+
 // include Workflow API (not included in Free Edition)
 if (is_file ($mgmt_config['abs_path_cms']."workflow/hypercms_workflow.inc.php"))
 {

@@ -546,30 +546,30 @@ function setlocalpermission ($site, $group_array, $cat)
       // component permissions
       if ($cat == "comp")
       {
-        if ($setlocalpermission['root'] == 0 && $localpermission[$site][$group]['component'] == 1) $setlocalpermission['root'] = 1;
-        if ($setlocalpermission['upload'] == 0 && $localpermission[$site][$group]['compupload'] == 1) $setlocalpermission['upload'] = 1;
-        if ($setlocalpermission['download'] == 0 && $localpermission[$site][$group]['compdownload'] == 1) $setlocalpermission['download'] = 1;
-        if ($setlocalpermission['sendlink'] == 0 && $localpermission[$site][$group]['compsendlink'] == 1) $setlocalpermission['sendlink'] = 1;  
-        if ($setlocalpermission['foldercreate'] == 0 && $localpermission[$site][$group]['compfoldercreate'] == 1) $setlocalpermission['foldercreate'] = 1;
-        if ($setlocalpermission['folderdelete'] == 0 && $localpermission[$site][$group]['compfolderdelete'] == 1) $setlocalpermission['folderdelete'] = 1;
-        if ($setlocalpermission['folderrename'] == 0 && $localpermission[$site][$group]['compfolderrename'] == 1) $setlocalpermission['folderrename'] = 1;
-        if ($setlocalpermission['create'] == 0 && $localpermission[$site][$group]['compcreate'] == 1) $setlocalpermission['create'] = 1; 
-        if ($setlocalpermission['delete'] == 0 && $localpermission[$site][$group]['compdelete'] == 1) $setlocalpermission['delete'] = 1;
-        if ($setlocalpermission['rename'] == 0 && $localpermission[$site][$group]['comprename'] == 1) $setlocalpermission['rename'] = 1;
-        if ($setlocalpermission['publish'] == 0 && $localpermission[$site][$group]['comppublish'] == 1) $setlocalpermission['publish'] = 1;
+        if ($setlocalpermission['root'] == 0 && @$localpermission[$site][$group]['component'] == 1) $setlocalpermission['root'] = 1;
+        if ($setlocalpermission['upload'] == 0 && @$localpermission[$site][$group]['compupload'] == 1) $setlocalpermission['upload'] = 1;
+        if ($setlocalpermission['download'] == 0 && @$localpermission[$site][$group]['compdownload'] == 1) $setlocalpermission['download'] = 1;
+        if ($setlocalpermission['sendlink'] == 0 && @$localpermission[$site][$group]['compsendlink'] == 1) $setlocalpermission['sendlink'] = 1;  
+        if ($setlocalpermission['foldercreate'] == 0 && @$localpermission[$site][$group]['compfoldercreate'] == 1) $setlocalpermission['foldercreate'] = 1;
+        if ($setlocalpermission['folderdelete'] == 0 && @$localpermission[$site][$group]['compfolderdelete'] == 1) $setlocalpermission['folderdelete'] = 1;
+        if ($setlocalpermission['folderrename'] == 0 && @$localpermission[$site][$group]['compfolderrename'] == 1) $setlocalpermission['folderrename'] = 1;
+        if ($setlocalpermission['create'] == 0 && @$localpermission[$site][$group]['compcreate'] == 1) $setlocalpermission['create'] = 1; 
+        if ($setlocalpermission['delete'] == 0 && @$localpermission[$site][$group]['compdelete'] == 1) $setlocalpermission['delete'] = 1;
+        if ($setlocalpermission['rename'] == 0 && @$localpermission[$site][$group]['comprename'] == 1) $setlocalpermission['rename'] = 1;
+        if ($setlocalpermission['publish'] == 0 && @$localpermission[$site][$group]['comppublish'] == 1) $setlocalpermission['publish'] = 1;
       }      
       // content permissions
       elseif ($cat == "page")
       {      
-        if ($setlocalpermission['root'] == 0 && $localpermission[$site][$group]['page'] == 1) $setlocalpermission['root'] = 1;
-        if ($setlocalpermission['sendlink'] == 0 && $localpermission[$site][$group]['pagesendlink'] == 1) $setlocalpermission['sendlink'] = 1;
-        if ($setlocalpermission['foldercreate'] == 0 && $localpermission[$site][$group]['pagefoldercreate'] == 1) $setlocalpermission['foldercreate'] = 1;
+        if ($setlocalpermission['root'] == 0 && @$localpermission[$site][$group]['page'] == 1) $setlocalpermission['root'] = 1;
+        if ($setlocalpermission['sendlink'] == 0 && @$localpermission[$site][$group]['pagesendlink'] == 1) $setlocalpermission['sendlink'] = 1;
+        if ($setlocalpermission['foldercreate'] == 0 && @@$localpermission[$site][$group]['pagefoldercreate'] == 1) $setlocalpermission['foldercreate'] = 1;
         if ($setlocalpermission['folderdelete'] == 0 && $localpermission[$site][$group]['pagefolderdelete'] == 1) $setlocalpermission['folderdelete'] = 1;
-        if ($setlocalpermission['folderrename'] == 0 && $localpermission[$site][$group]['pagefolderrename'] == 1) $setlocalpermission['folderrename'] = 1;
-        if ($setlocalpermission['create'] == 0 && $localpermission[$site][$group]['pagecreate'] == 1) $setlocalpermission['create'] = 1;
-        if ($setlocalpermission['delete'] == 0 && $localpermission[$site][$group]['pagedelete'] == 1) $setlocalpermission['delete'] = 1;
-        if ($setlocalpermission['rename'] == 0 && $localpermission[$site][$group]['pagerename'] == 1) $setlocalpermission['rename'] = 1;
-        if ($setlocalpermission['publish'] == 0 && $localpermission[$site][$group]['pagepublish'] == 1) $setlocalpermission['publish'] = 1;
+        if ($setlocalpermission['folderrename'] == 0 && @$localpermission[$site][$group]['pagefolderrename'] == 1) $setlocalpermission['folderrename'] = 1;
+        if ($setlocalpermission['create'] == 0 && @$localpermission[$site][$group]['pagecreate'] == 1) $setlocalpermission['create'] = 1;
+        if ($setlocalpermission['delete'] == 0 && @$localpermission[$site][$group]['pagedelete'] == 1) $setlocalpermission['delete'] = 1;
+        if ($setlocalpermission['rename'] == 0 && @$localpermission[$site][$group]['pagerename'] == 1) $setlocalpermission['rename'] = 1;
+        if ($setlocalpermission['publish'] == 0 && @$localpermission[$site][$group]['pagepublish'] == 1) $setlocalpermission['publish'] = 1;
       }   
     }
   }

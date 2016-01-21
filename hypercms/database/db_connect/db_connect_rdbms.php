@@ -1262,7 +1262,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     $sql = 'SELECT DISTINCT obj.objectpath, obj.hash FROM object AS obj';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= ' '.implode (' ', $sql_table);
     if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' WHERE '.implode (' AND ', $sql_where);
-    $sql .= ' ORDER BY SUBSTRING_INDEX(obj.objectpath,"/",-1)';
+    // removed order by due to poor DB performance and moved to array sort
+    // $sql .= ' ORDER BY SUBSTRING_INDEX(obj.objectpath,"/",-1)';
 
     if (isset ($starthits) && intval($starthits) >= 0 && isset ($endhits) && intval($endhits) > 0) $sql .= ' LIMIT '.intval($starthits).','.intval($endhits);
     elseif (isset ($maxhits) && intval($maxhits) > 0) $sql .= ' LIMIT 0,'.intval($maxhits);
@@ -1311,7 +1312,14 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     savelog ($db->getError ());    
     $db->close();
     
-    if (isset ($objectpath) && is_array ($objectpath)) return $objectpath;
+    if (isset ($objectpath) && is_array ($objectpath))
+    {
+      // sort result by objectpath (groups result by location and does not present a sort by object name)
+      natcasesort ($objectpath);
+      reset ($objectpath);
+      
+      return $objectpath;
+    }
     else return false;
   }
   else return false;
@@ -1419,7 +1427,6 @@ function rdbms_replacecontent ($folderpath, $object_type, $date_from, $date_to, 
     if (!empty ($sql_table)) $sql .= $sql_table.' ';
     $sql .= 'WHERE obj.id=cnt.id AND cnt.id=tn1.id AND ';    
     $sql .= implode (" AND ", $sql_where);
-    $sql .= " ORDER BY id, text_id";
 
     $errcode = "50023";
     $done = $db->query ($sql, $errcode, $mgmt_config['today'], "select");
@@ -2741,17 +2748,18 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
 
 // ----------------------------------------------- create task -------------------------------------------------
 
-function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user, $startdate="", $finishdate="", $category="", $taskname, $description="", $priority="low")
+function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user, $startdate="", $finishdate="", $category="", $taskname, $description="", $priority="low", $planned="")
 {
   global $mgmt_config;
-  
-  if ($taskname != "" && strlen ($taskname) <= 200 && strlen ($description) <= 3600)
+
+  if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php") && $taskname != "" && strlen ($taskname) <= 200 && strlen ($description) <= 3600 && in_array (strtolower ($priority), array("low","medium","high")))
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
     
     // try to get object_id from object path
     if ($object_id != "" && intval ($object_id) < 1)
-    {      
+    {
+      // get object id
       $object_id = rdbms_getobject_id ($object_id);
     }
     
@@ -2771,7 +2779,8 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user, $
     else $category = "user";
     $taskname = $db->escape_string ($taskname);
     if ($description != "") $description = $db->escape_string ($description);
-    if ($priority != "") $priority = $db->escape_string ($priority);
+    if ($priority != "") $priority = $db->escape_string (strtolower ($priority));
+    if ($planned != "") $planned = $db->escape_string (correctnumber ($planned));
 
     // set user if not defined
     if ($from_user == "")
@@ -2782,7 +2791,7 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user, $
     }
 
     // insert
-    $sql = 'INSERT INTO task (object_id,project_id,task,from_user,to_user,startdate,finishdate,category,description,priority,status) VALUES ('.$object_id.','.$project_id.',"'.$taskname.'","'.$from_user.'","'.$to_user.'","'.$startdate.'","'.$finishdate.'","'.$category.'","'.$description.'","'.$priority.'", 0)';
+    $sql = 'INSERT INTO task (object_id,project_id,task,from_user,to_user,startdate,finishdate,category,description,priority,planned,status) VALUES ('.$object_id.','.$project_id.',"'.$taskname.'","'.$from_user.'","'.$to_user.'","'.$startdate.'","'.$finishdate.'","'.$category.'","'.$description.'","'.$priority.'","'.$planned.'",0)';
 
     $errcode = "50048";
     $db->query ($sql, $errcode, $mgmt_config['today'], 'insert');
@@ -2802,7 +2811,7 @@ function rdbms_settask ($task_id, $project_id="", $to_user="", $startdate="", $f
 {
   global $mgmt_config;
   
-  if ($task_id != "")
+  if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php") && $task_id != "" && ($taskname == "" || strlen ($taskname) <= 200) && ($description == "" || strlen ($description) <= 3600) && ($priority == "" || in_array (strtolower ($priority), array("low","medium","high"))))
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
 
@@ -2815,7 +2824,7 @@ function rdbms_settask ($task_id, $project_id="", $to_user="", $startdate="", $f
     if ($finishdate != "") $sql_update[] = 'finishdate="'.$db->escape_string ($finishdate).'"';
     if ($taskname != "") $sql_update[] = 'task="'.$db->escape_string ($taskname).'"';
     if ($description != "") $sql_update[] = 'description="'.$db->escape_string ($description).'"';
-    if ($priority != "") $sql_update[] = 'priority="'.$db->escape_string ($priority).'"';
+    if ($priority != "") $sql_update[] = 'priority="'.$db->escape_string (strtolower ($priority)).'"';
     if ($status != "") $sql_update[] = 'status="'.intval ($status).'"';
     if ($planned != "") $sql_update[] = 'planned="'.correctnumber($planned).'"';
     if ($actual != "") $sql_update[] = 'actual="'.correctnumber($actual).'"';
@@ -2843,20 +2852,21 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
 {
   global $mgmt_config;
 
-  if (is_array ($mgmt_config))
+  if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php") && is_array ($mgmt_config))
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
     
     // try to get object_id from object path
     if ($object_id != "" && intval ($object_id) < 1)
-    {      
+    {
+      // get object id
       $object_id = rdbms_getobject_id ($object_id);
     }
     
     // clean input
-    if ($task_id != "") $task_id = intval ($task_id);
-    if ($object_id != "") $object_id = intval ($object_id);
-    if ($project_id != "") $project_id = intval ($project_id);
+    if ($task_id > 0) $task_id = intval ($task_id);
+    if ($object_id > 0) $object_id = intval ($object_id);
+    if ($project_id > 0) $project_id = intval ($project_id);
     if ($from_user != "") $from_user = $db->escape_string ($from_user);
     if ($to_user != "") $to_user = $db->escape_string ($to_user);
     if ($startdate != "") $startdate = $db->escape_string ($startdate);
@@ -2864,20 +2874,21 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
     if ($order_by != "") $order_by = $db->escape_string ($order_by);
         
     // get recipients
-    $sql = 'SELECT task.task_id, task.object_id, task.project_id, obj.objectpath, task.task, task.from_user, task.to_user, task.startdate, task.finishdate, task.category, task.description, task.priority, task.status, task.planned, "%H:%i", task.actual FROM task, object AS obj WHERE task.object_id IS NULL OR task.object_id=obj.object_id';
+    $sql = 'SELECT task_id, object_id, project_id, task, from_user, to_user, startdate, finishdate, category, description, priority, status, planned, actual FROM task';
     
-    if ($task_id != "")
+    if ($task_id > 0)
     {
-      $sql .= ' AND task.task_id='.$task_id;
+      $sql .= ' WHERE task_id='.$task_id;
     }
     else
     {
-      if ($object_id != "") $sql .= ' AND task.object_id='.$object_id;
-      if ($project_id != "") $sql .= ' AND task.project_id='.$project_id;  
-      if ($from_user != "") $sql .= ' AND task.from_user="'.$from_user.'"';
-      if ($to_user != "") $sql .= ' AND task.to_user="'.$to_user.'"';
-      if ($startdate != "") $sql .= ' AND task.startdate="'.$startdate.'"';
-      if ($finishdate != "") $sql .= ' AND task.finishdate="'.$finishdate.'"';
+      $sql .= ' WHERE 1=1';
+      if ($object_id > 0) $sql .= ' AND object_id='.$object_id;
+      if ($project_id > 0) $sql .= ' AND project_id='.$project_id;  
+      if ($from_user != "") $sql .= ' AND from_user="'.$from_user.'"';
+      if ($to_user != "") $sql .= ' AND to_user="'.$to_user.'"';
+      if ($startdate != "") $sql .= ' AND startdate="'.$startdate.'"';
+      if ($finishdate != "") $sql .= ' AND finishdate="'.$finishdate.'"';
     }
     if ($order_by != "") $sql .= ' ORDER BY '.$order_by;
 
@@ -2894,7 +2905,7 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
       {
         $result[$i]['task_id'] = $row['task_id'];
         $result[$i]['object_id'] = $row['object_id'];
-        $result[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+        $result[$i]['objectpath'] = rdbms_getobject($row['object_id']);
         $result[$i]['project_id'] = $row['project_id'];
         $result[$i]['taskname'] = $row['task'];
         $result[$i]['from_user'] = $row['from_user']; 
@@ -2928,13 +2939,14 @@ function rdbms_deletetask ($task_id="", $object_id="", $to_user="")
 {
   global $mgmt_config;
   
-  if ($task_id != "" || $object_id != "" || $to_user != "")
+  if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php") && $task_id != "" || $object_id != "" || $to_user != "")
   {   
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     // try to get object_id from object path
     if ($object_id != "" && intval ($object_id) < 1)
-    {      
+    {
+      // get object id
       $object_id = rdbms_getobject_id ($object_id);
     }
     
@@ -2961,17 +2973,18 @@ function rdbms_deletetask ($task_id="", $object_id="", $to_user="")
 
 // ----------------------------------------------- create project -------------------------------------------------
 
-function rdbms_createproject ($subproject_id, $object_id, $user="", $projectname, $description="")
+function rdbms_createproject ($subproject_id, $object_id=0, $user="", $projectname, $description="")
 {
   global $mgmt_config;
-  
-  if ($projectname != "" && strlen ($projectname) <= 200 && strlen ($description) <= 3600)
+
+  if (is_file ($mgmt_config['abs_path_cms']."project/project_list.php") && $projectname != "" && strlen ($projectname) <= 200 && strlen ($description) <= 3600)
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
     
     // try to get object_id from object path
     if ($object_id != "" && intval ($object_id) < 1)
-    {      
+    {
+      // get object id
       $object_id = rdbms_getobject_id ($object_id);
     }
     
@@ -3009,11 +3022,11 @@ function rdbms_createproject ($subproject_id, $object_id, $user="", $projectname
 
 // ----------------------------------------------- set project -------------------------------------------------
 
-function rdbms_setproject ($project_id, $subproject_id, $object_id="", $user="", $projectname="", $description="")
+function rdbms_setproject ($project_id, $subproject_id=0, $object_id="", $user="", $projectname="", $description="")
 {
   global $mgmt_config;
   
-  if ($project_id != "")
+  if (is_file ($mgmt_config['abs_path_cms']."project/project_list.php") && $project_id > 0 && ($projectname == "" || strlen ($projectname) <= 200) && ($description == "" || strlen ($description) <= 3600))
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
 
@@ -3035,7 +3048,7 @@ function rdbms_setproject ($project_id, $subproject_id, $object_id="", $user="",
     // insert
     $sql = 'UPDATE project SET ';
     $sql .= implode (", ", $sql_update);
-    $sql .= ' WHERE project_id='.intval($task_id);
+    $sql .= ' WHERE project_id='.intval($project_id);
     
     $errcode = "50068";
     $db->query ($sql, $errcode, $mgmt_config['today'], 'update');
@@ -3055,7 +3068,7 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
 {
   global $mgmt_config;
 
-  if (is_array ($mgmt_config))
+  if (is_file ($mgmt_config['abs_path_cms']."project/project_list.php") && is_array ($mgmt_config))
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
     
@@ -3067,21 +3080,20 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
     
     // clean input
     if ($project_id != "") $project_id = intval ($project_id);
-    if ($subproject_id != "") $subproject_id = intval ($subproject_id);
+    if (is_int ($subproject_id)) $subproject_id = intval ($subproject_id);
     if ($object_id != "") $object_id = intval ($object_id);
     if ($user != "") $user = $db->escape_string ($user);
     if ($order_by != "") $order_by = $db->escape_string ($order_by);
         
     // get recipients
-    if ($object_id != "") $sql = 'SELECT project.project_id, project.subproject_id, project.object_id, object.objectpath, project.project, project.user, project.description FROM project, object WHERE object.object_id=project.object_id';
-    else $sql = 'SELECT project_id, subproject_id, object_id, project, user, description FROM project WHERE 1=1';
+    $sql = 'SELECT project_id, subproject_id, object_id, project, user, description FROM project WHERE 1=1';
     
-    if ($project_id != "" && $subproject_id == "") $sql .= ' AND project.project_id='.$project_id;
-    elseif ($project_id == "" && $subproject_id != "") $sql .= ' AND project.subproject_id='.$subproject_id;
-    elseif ($project_id != "" && $subproject_id != "") $sql .= ' AND (project.project_id='.$project_id.' OR project.subproject_id='.$subproject_id.')';
+    if ($project_id > 0 && $subproject_id < 1) $sql .= ' AND project_id='.$project_id;
+    elseif ($project_id < 1 && $subproject_id >= 0) $sql .= ' AND subproject_id='.$subproject_id;
+    elseif ($project_id > 0 && $subproject_id >= 0) $sql .= ' AND (project_id='.$project_id.' OR subproject_id='.$subproject_id.')';
     
-    if ($object_id != "") $sql .= ' AND project.object_id='.$object_id;    
-    if ($user != "") $sql .= ' AND project.user="'.$user.'"';
+    if ($object_id != "") $sql .= ' AND object_id='.$object_id;    
+    if ($user != "") $sql .= ' AND user="'.$user.'"';
     if ($order_by != "") $sql .= ' ORDER BY '.$order_by;
 
     $errcode = "50064";
@@ -3098,8 +3110,7 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
         $result[$i]['project_id'] = $row['project_id'];
         $result[$i]['subproject_id'] = $row['subproject_id'];
         $result[$i]['object_id'] = $row['object_id'];
-        if (!empty ($row['objectpath'])) $result[$i]['objectpath'] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
-        else $result[$i]['objectpath'] = "";
+        $result[$i]['objectpath'] = rdbms_getobject ($row['object_id']);
         $result[$i]['projectname'] = $row['project'];
         $result[$i]['user'] = $row['user']; 
         $result[$i]['description'] = $row['description'];
@@ -3126,7 +3137,7 @@ function rdbms_deleteproject ($project_id="", $object_id="", $user="")
 {
   global $mgmt_config;
   
-  if ($project_id != "" || $object_id != "" || $user != "")
+  if (is_file ($mgmt_config['abs_path_cms']."project/project_list.php") && $project_id != "" || $object_id != "" || $user != "")
   {   
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     

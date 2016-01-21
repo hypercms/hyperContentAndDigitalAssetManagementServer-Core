@@ -1352,4 +1352,6 @@ $hcms_lang['create-new-subproject']['he'] = "צור חדש subproject";
 $hcms_lang['navigate']['he'] = "נווט";
 $hcms_lang['asset']['he'] = "נכסים";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['he'] = "הזז את העכבר מעל סמלים כדי לקבל מידע נוסף";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['he'] = "המשתמש חייב לספק metadata עבור טעינת קבצים";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['he'] = "הזן את המטה של העלאות שלך";
 ?>

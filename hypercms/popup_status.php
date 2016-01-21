@@ -264,16 +264,12 @@ setTimeout('closepopup()', 1000);
 <body class="hcmsWorkplaceGeneric">
 
 <div align="center">
-  <p align="center"><span class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?>: </span><?php echo $status; ?></p>
+  <p align="center" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?>: <?php echo $status; ?></p>
   
-  <table width="80%" border="1" cellspacing="1" cellpadding="0" bgcolor="#CCCCCC">
+  <table style="width:80%; padding:0; border:1px solid #000000; border-collapse:collapse;">
     <tr> 
       <td>
-        <table width="<?php echo $progress; ?>%" border="0" cellspacing="0" cellpadding="0">
-          <tr> 
-            <td bgcolor="#0033CC">&nbsp;</td>
-          </tr>
-        </table>
+        <div class="hcmsRowHead1" style="width:<?php echo $progress; ?>%; height:16px;"></div>
       </td>
     </tr>
   </table><br />

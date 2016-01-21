@@ -749,7 +749,7 @@ function checkgroupaccess ($groupaccess, $ownergroup)
 // --------------------------------------- transformlink -----------------------------------------------
 // function: transformlink()
 // input: view of object
-// output: view with transformed links inside publication for easyedit mode
+// output: view with transformed links for easyedit mode
 
 function transformlink ($viewstore)
 {
@@ -781,6 +781,14 @@ function transformlink ($viewstore)
   $link_array[21] = "location.replace ='";
   $link_array[22] = "location.replace= '";
   $link_array[23] = "location.replace='";
+  $link_array[24] = "location = \"";
+  $link_array[25] = "location =\"";
+  $link_array[26] = "location= \"";
+  $link_array[27] = "location=\"";
+  $link_array[28] = "location = '";
+  $link_array[29] = "location ='";
+  $link_array[30] = "location= '";
+  $link_array[31] = "location='";
   
   // escape all javascript calls and anchors
   // so they won't be followed by hyperCMS.
@@ -7097,9 +7105,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   function deleteComment(element, value)
   {
     element.disabled = value;
-  }  
+  }
   
-  // ----- Save -----
+  // ----- Save only -----
+  function saveContent()
+  {
+    if (document.forms['hcms_formview']) document.forms['hcms_formview'].submit();
+  }
+  
+  // ----- Set save type and save -----
   function setSaveType(type, url)
   {
     var checkcontent = true;
@@ -7115,7 +7129,21 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       ".$add_submitlink."
       ".$add_submitcomp."
       hcms_stringifyVTTrecords();
-      document.forms['hcms_formview'].submit();
+      
+      // save content
+      if (type == 'form_sc') saveContent();
+      else var save = autoSave(true);
+      
+      // for file upload and meta data editing
+      if (typeof parent.nextEditWindow == 'function' && save == true)
+      {
+        parent.nextEditWindow();
+      }
+      else if (save == false)
+      {
+        saveContent();
+      }
+      
       return true;
     }  
     else return false;
@@ -7126,7 +7154,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   if (intval ($mgmt_config['autosave']) > 0)
   {
     $autosave_active = "var active = $(\"#autosave\").is(\":checked\");";
-    $autosave_timer = "setTimeout ('autosave()', ".(intval ($mgmt_config['autosave']) * 1000).");";
+    $autosave_timer = "setTimeout ('autoSave(false)', ".(intval ($mgmt_config['autosave']) * 1000).");";
   }
   else
   {
@@ -7135,11 +7163,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   }
   
   if ($buildview != "formlock") $viewstore .= "
-  function autosave ()
+  // ----- Autosave -----
+  function autoSave (override)
   {
     ".$autosave_active."
       
-    if (active == true)
+    if (active == true || override == true)
     {  
       var checkcontent = true;
           
@@ -7161,23 +7190,29 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         hcms_showHideLayers ('messageLayer','','show');
         $(\"#savetype\").val('auto');
             
-        $.post(
-          \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
-          $(\"#hcms_formview\").serialize(), 
-          function (data)
+        $.ajax({
+          type: 'POST',
+          url: \"".$mgmt_config['url_path_cms']."service/savecontent.php\",
+          data: $(\"#hcms_formview\").serialize(),
+          success: function (data)
           {
             if (data.message.length !== 0)
             {
               alert (hcms_entity_decode(data.message));
             }				
             setTimeout (\"hcms_showHideLayers('messageLayer','','hide')\", 1500);
-          }, 
-          \"json\"
-        );
+          },
+          dataType: \"json\",
+          async: false
+        });
+        
+        return true;
       }
     }
     
     ".$autosave_timer."
+    
+    return false;
   }
   
   ".$autosave_timer."
@@ -7232,16 +7267,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
 <body class=\"hcmsWorkplaceGeneric\">
   
-  <div id=\"messageLayer\" style=\"position:absolute; width:350px; height:40px; z-index:6; left:150px; top:120px; visibility:hidden;\">
-    <table width=\"350\" height=\"40\" border=0 cellspacing=0 cellpadding=3 class=\"hcmsMessage\">
-      <tr>
-        <td align=\"center\" valign=\"top\">
-          <div style=\"width:100%; height:100%; z-index:10; overflow:auto;\">
-          ".getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang)."
-          </div>
-        </td>
-      </tr>
-    </table>
+  <div id=\"messageLayer\" class=\"hcmsMessage\" style=\"position:fixed; width:250px; height:40px; z-index:6; left:50%; top:50%; margin-left:-125px; margin-top:-20px; text-align:center; visibility:hidden;\">
+    ".getescapedtext ($hcms_lang['save'][$lang], $charset, $lang)."<br />
+    <img src=\"".getthemelocation()."img/loading.gif\" />
   </div>";
   
   if ($buildview != "formlock") $viewstore .= "
@@ -7528,12 +7556,23 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 
                 $formitem[$key] = "
             <label for=\"textl_".$id."\" style=\"display:".$css_display."; width:180px;\">".$label." </label>
-            <select id=\"textl_".$id."\" name=\"search_textnode[".$id."]\" style=\"display:inline-block; width:220px; margin:1px;\">";
+            <select id=\"textl_".$id."\" name=\"search_textnode[".$id."]\" style=\"display:inline-block; width:220px; margin:1px;\">
+              <option value=\"\">&nbsp;</option>";
             
             foreach ($list_array as $list_entry)
             {
+              $end_val = strlen ($list_entry) - 1;
+              
+              if (($start_val = strpos ($list_entry, "{")) > 0 && strpos ($list_entry, "}") == $end_val)
+              {
+                $diff_val = $end_val-$start_val-1;
+                $list_value = substr ($list_entry, $start_val+1, $diff_val);
+                $list_text = substr ($list_entry, 0, $start_val);
+              } 
+              else $list_value = $list_text = $list_entry;
+            
               $formitem[$key] .= "
-              <option value=\"".$list_entry."\">".$list_entry."</option>";
+              <option value=\"".$list_value."\">".$list_text."</option>";
             }
                            
             $formitem[$key] .= "

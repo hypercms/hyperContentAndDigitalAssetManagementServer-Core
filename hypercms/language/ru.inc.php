@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['ru'] = "Создать новый подп�
 $hcms_lang['navigate']['ru'] = "Перейдите";
 $hcms_lang['asset']['ru'] = "Asset";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ru'] = "Наведите курсор мыши на значки для получения более подробной информации";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['ru'] = "Пользователь должен предоставить метаданных для загрузка файлов";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['ru'] = "Введите метаданных для Вашей загрузки";
 ?>

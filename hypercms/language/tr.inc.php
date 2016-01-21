@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['tr'] = "Create new subproject";
 $hcms_lang['navigate']['tr'] = "Navigasyon";
 $hcms_lang['asset']['tr'] = "Varlık";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['tr'] = "Fareyi simgenin üzerine daha fazla bilgi edinin";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['tr'] = "Kullanıcı olmalıdır meta dosya yüklemeleri";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['tr'] = "Lütfen metadata için yüklemeleri";
 ?>

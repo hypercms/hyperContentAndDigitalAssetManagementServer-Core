@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['ja'] = "新しいサブプロジェクト�
 $hcms_lang['navigate']['ja'] = "移動し";
 $hcms_lang['asset']['ja'] = "資産";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ja'] = "アイコンの詳細情報を表示するには、マウスを移動します";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['ja'] = "ユーザファイルのアップロード用のメタデータを提供しなければならない";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['ja'] = "あなたのアップロードのためのメタデータを入力してください。";
 ?>

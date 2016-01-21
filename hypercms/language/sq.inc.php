@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['sq'] = "Do të krijojë vende të reja nenp
 $hcms_lang['navigate']['sq'] = "Lundrojnë";
 $hcms_lang['asset']['sq'] = "Pasuri";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sq'] = "Lëvizet pesha e mi mbi ikona të merrni më shumë informacion";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['sq'] = "Përdoruesit duhet të sigurojë metadata dosje për ngarkim";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['sq'] = "Ju lutem, kujdesuni për metadata ngarkimet";
 ?>

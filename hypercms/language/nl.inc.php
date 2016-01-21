@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['nl'] = "Nieuwe projectonderdelen";
 $hcms_lang['navigate']['nl'] = "Navigeren";
 $hcms_lang['asset']['nl'] = "Actief";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['nl'] = "Beweeg de muis over de icoontjes voor meer informatie.";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['nl'] = "Gebruiker moet voorzien in metadata voor file upload";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['nl'] = "Geef de metagegevens van uw upload";
 ?>

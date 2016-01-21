@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['so'] = "In la abuuro subproject cusub";
 $hcms_lang['navigate']['so'] = "Navigate";
 $hcms_lang['asset']['so'] = "Hantida";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['so'] = "Dhaqaajiso jiirka oo icons si aad u heshid akhbaar badan";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['so'] = "Waa in uu bixiyo isticmaalaha adeegga bixiyaan metadata fayl uploads,";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['so'] = "Fadlan gala uploads metadata, waayo,";
 ?>

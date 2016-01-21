@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['ms'] = "Cipta baru subproject";
 $hcms_lang['navigate']['ms'] = "Navigasi";
 $hcms_lang['asset']['ms'] = "Aset";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ms'] = "Alihkan tetikus pada ikon untuk mendapatkan lebih maklumat";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['ms'] = "Pengguna mesti sediakan metadata untuk fail Penjejak Waktu Peribadi";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['ms'] = "Sila masukkan data meta untuk Penjejak Waktu Peribadi";
 ?>

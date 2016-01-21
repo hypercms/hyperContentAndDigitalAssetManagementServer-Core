@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['ko'] = "새 하위 프로젝트를 만듭�
 $hcms_lang['navigate']['ko'] = "탐색";
 $hcms_lang['asset']['ko'] = "자산";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ko'] = "더 많은 정보를 얻으시려면 아이콘 위에 마우스를 올려 놓으면";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['ko'] = "사용자 파일 업로드 메타데이터를 제공해야 합니다.";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['ko'] = "당신의 업로드할 수 있는 메타데이터를 입력하십시오.";
 ?>

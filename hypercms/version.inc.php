@@ -1208,6 +1208,20 @@ Release 01/2016
 - Removed maximum number of results from search form
 - Improvements in main.js regarding the evaluation of the input paramaters of Js functions
 - Excluded geo location search for mobile edition
+- Bug fix: hcms_showInfo an dhcms_hideInfo on the buttons caused form elements to be disabled in explorer when switching from search to navigator and back again
+- Changed to JS function hcms_showHideLayers in template_help
+- Minor changes in CSS of standard theme
+- Function showinfobox shows infobox as long as user did not close it and remembers the close action in localstorage of browser
+- Bug fix: new infoboxes for workplace controls used onload event to close the infobox, this interferred with the existing onload event of the workplace control
+- Placed sort of search result in search_objectlist and removed order by from rdbms_searchcontent
+- Bug fix: List value and text has not been supported for textl tag in function buildsearchform in template engine
+- Design changes in popup_status 
+- Changes in function uploadfile, editpublication in order to support meta data editing during upload process
+- Changes in site_edit_form to support new configuration setting for meta data editing during upload process
+- Changes in function createtask and rdbms_createtask to support the planned effort as input
+- Changes in task_list due to the support of tasks without an object_id
+- Design improvements in task management
+- Implementation of function showganttchart into project management module
 */
 
 // current version

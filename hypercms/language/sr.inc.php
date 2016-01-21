@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['sr'] = "Stvaranje novih subproject";
 $hcms_lang['navigate']['sr'] = "Krećete";
 $hcms_lang['asset']['sr'] = "Sredstvo";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sr'] = "Potez je miša preko ikonice za više informacija";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['sr'] = "Korisnik mora pružiti metapodataka za uploads";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['sr'] = "Unesite metapodataka za vaš uploads";
 ?>

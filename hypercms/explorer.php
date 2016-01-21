@@ -1432,8 +1432,8 @@ else
     
     <!-- buttons -->
     <div style="position:fixed; top:4px; right:4px; z-index:200;">
-      <img onClick="hcms_showInfo('menu',0); hcms_hideInfo('search');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_explorer.png" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
-      <img onClick="hcms_showInfo('search',0); hcms_hideInfo('menu');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_search.png" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+      <img onClick="hcms_showHideLayers('menu','','show','search','','hide');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_explorer.png" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
+      <img onClick="hcms_showHideLayers('menu','','hide','search','','show');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_search.png" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
     </div>
 
     <!-- navigator -->
@@ -1444,11 +1444,11 @@ else
     </div>
     
     <!-- search form -->
-    <div id="search" style="position:absolute; top:12px; left:4px; right:4px; text-align:top; display:none;">
+    <div id="search" style="position:absolute; top:12px; left:4px; right:4px; text-align:top; visibility:hidden;">
       <form name="searchform_advanced" method="post" action="search_objectlist.php" target="mainFrame">
         <input type="hidden" name="action" value="base_search" />
         <input type="hidden" name="search_dir" value="" />
-        <input type="hidden" name="maxhits" value="500" />
+        <input type="hidden" name="maxhits" value="300" />
 
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></b>

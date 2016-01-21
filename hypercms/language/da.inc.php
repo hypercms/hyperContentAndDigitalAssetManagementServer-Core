@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['da'] = "Opret ny delprojekt";
 $hcms_lang['navigate']['da'] = "Naviger";
 $hcms_lang['asset']['da'] = "Aktiver";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['da'] = "Flyt musen hen over ikonerne for at få flere oplysninger";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['da'] = "Brugeren skal levere metadata til fil uploads";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['da'] = "Indtast metadata til dine uploads";
 ?>

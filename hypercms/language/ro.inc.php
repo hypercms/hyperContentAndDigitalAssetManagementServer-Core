@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['ro'] = "Creare nou subproject";
 $hcms_lang['navigate']['ro'] = "Navigaţi";
 $hcms_lang['asset']['ro'] = "Activ";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ro'] = "Deplasaţi mouse-ul peste pictograme pentru a obţine mai multe informaţii";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['ro'] = "Utilizatorul trebuie să furnizeze metadate pentru încărcarea de fişiere";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['ro'] = "Vă rugăm să introduceţi metadate pentru încărcarea de dvs.";
 ?>

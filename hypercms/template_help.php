@@ -34,20 +34,20 @@ checkusersession ($user, false);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script src="javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/main.js"></script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
 
 <!-- top bar -->
 <?php
-$menu_array = array ($hcms_lang['list-of-hypercms-tags'][$lang] => 'onclick="hcms_showInfo(\'Layer1\',0); hcms_hideInfo(\'Layer2\');"', "hyperCMS API Reference" => 'onclick="hcms_showInfo(\'Layer2\',0); hcms_hideInfo(\'Layer1\');"');
+$menu_array = array ($hcms_lang['list-of-hypercms-tags'][$lang] => 'onclick="hcms_showHideLayers(\'Layer1\',\'\',\'show\',\'Layer2\',\'\',\'hide\');"', "hyperCMS API Reference" => 'onclick="hcms_showHideLayers(\'Layer1\',\'\',\'hide\',\'Layer2\',\'\',\'show\');"');
 
 echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
 ?>
 
 <!-- content -->
-<div id="Layer1" class="hcmsWorkplaceFrame">
+<div id="Layer1" class="hcmsWorkplaceFrame" style="position:absolute; top:32px; left:0px;">
   <table border="0" cellspacing="2" cellpadding="2" width="100%">
     
     <!-- article -->
@@ -493,7 +493,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
 </div>
 
 
-<div id="Layer2" class="hcmsWorkplaceFrame" style="display:none;">
+<div id="Layer2" class="hcmsWorkplaceFrame" style="position:absolute; top:32px; left:0px; visibility:hidden;">
   <div style="padding:5px;">
     <a name="index"></a>
     <h1>hyperCMS API Function Reference</h1>

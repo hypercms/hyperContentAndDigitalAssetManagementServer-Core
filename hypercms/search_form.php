@@ -419,7 +419,7 @@ function cal_on_autoclose (cal)
 <div id="searchtab_general" style="position:absolute; width:520px; height:360px; z-index:2; left:5px; top:57px; visibility:visible;"> 
   <form name="searchform_general" method="post" action="search_objectlist.php">
     <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
-    <input type="hidden" name="maxhits" value="500" />
+    <input type="hidden" name="maxhits" value="300" />
     <?php if ($cat == "page") { ?><input type="hidden" name="search_format[]" value="page" /><?php } ?>
      
     <table border=0 cellspacing=1 cellpadding=2 width="100%" height="100%" bgcolor="#000000">
@@ -513,7 +513,7 @@ function cal_on_autoclose (cal)
 <div id="searchtab_advanced" style="position:absolute; width:520px; height:360px; z-index:3; left:5px; top:57px; visibility:hidden;"> 
   <form name="searchform_advanced" method="post" action="search_objectlist.php">
     <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
-    <input type="hidden" name="maxhits" value="500" />
+    <input type="hidden" name="maxhits" value="300" />
     <?php if ($cat == "page") { ?><input type="hidden" name="search_format[]" value="page" /><?php } ?>
     
     <table border=0 cellspacing=1 cellpadding=2 width="100%" height="100%" bgcolor="#000000">
@@ -752,7 +752,7 @@ function cal_on_autoclose (cal)
 <div id="searchtab_images" style="position:absolute; width:520px; height:360px; z-index:2; left:5px; top:57px; visibility:hidden;"> 
   <form name="searchform_images" method="post" action="search_objectlist.php">
     <input type="hidden" name="search_dir" value="<?php echo $location_esc; ?>" />
-    <input type="hidden" name="maxhits" value="500" />
+    <input type="hidden" name="maxhits" value="300" />
      
     <table border=0 cellspacing=1 cellpadding=2 width="100%" height="100%" bgcolor="#000000">
       <tr class="hcmsWorkplaceGeneric"> 

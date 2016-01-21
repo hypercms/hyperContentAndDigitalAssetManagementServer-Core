@@ -1351,4 +1351,6 @@ $hcms_lang['create-new-subproject']['bn'] = "নতুন subproject";
 $hcms_lang['navigate']['bn'] = "Navigate";
 $hcms_lang['asset']['bn'] = "সম্পদ";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['bn'] = "যে মাউস দিয়ে কার্টুন ছবি আরও তথ্য";
+$hcms_lang['user-must-provide-metadata-for-file-uploads']['bn'] = "ইউজার অবশ্যই uploads জন্য ফাইল ও অন্যান্য ক্রলার এসব শব্দকে";
+$hcms_lang['please_enter-the-metadata-for-your-uploads']['bn'] = "দয়া করে আপনার জন্য প্রবেশ ও অন্যান্য ক্রলার এসব শব্দকে uploads";
 ?>
