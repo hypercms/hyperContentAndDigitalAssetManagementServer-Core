@@ -15,7 +15,7 @@
 // output: global permission array/false
 
 // description:
-// deseralizes the permission string and and returns the root permission array.
+// Deseralizes the permission string and and returns the root permission array
 
 function rootpermission ($site_name, $site_admin, $permission_str)
 {
@@ -96,7 +96,7 @@ function rootpermission ($site_name, $site_admin, $permission_str)
 // output: global permission array/false
 
 // description:
-// deseralizes the permission string and returns the global permission array.
+// Deseralizes the permission string and returns the global permission array
 
 function globalpermission ($site_name, $permission_str)
 {
@@ -231,7 +231,7 @@ function globalpermission ($site_name, $permission_str)
 // output: local permission array/false
 
 // description:
-// deseralizes the permission string and returns the local permission array.
+// Deseralizes the permission string and returns the local permission array
 
 function localpermission ($site_name, $permission_str)
 {
@@ -285,7 +285,8 @@ function localpermission ($site_name, $permission_str)
 // input: publication, location (path to folder), object category ['page, comp']
 // output: true/false
 
-// description: checks general access to certain system folders, publications and returns true if access is granted
+// description:
+// Checks general access to certain system folders, publications and returns true if access is granted
 
 function accessgeneral ($site, $location, $cat)
 {
@@ -375,7 +376,7 @@ function accessgeneral ($site, $location, $cat)
 // requires: accessgeneral
 
 // description:
-// evaluates page and component access permissions and returns group(s).
+// Evaluates page and component access permissions and returns group(s)
 
 function accesspermission ($site, $location, $cat)
 {
@@ -512,7 +513,7 @@ function accesspermission ($site, $location, $cat)
 // output: local permission array / false on error
 
 // description:
-// sets local permissions of a user group for a specific publication
+// Sets local permissions of a user group for a specific publication
 
 function setlocalpermission ($site, $group_array, $cat)
 {
@@ -583,7 +584,7 @@ function setlocalpermission ($site, $group_array, $cat)
 // output: "direct" for direct access via group permission / "inherited" for access through inheritance / false
 
 // description:
-// checks access to a publication based on the site access and inheritance settings
+// Checks access to a publication based on the site access and inheritance settings
 
 function checkpublicationpermission ($site, $strict=true)
 {
@@ -625,7 +626,7 @@ function checkpublicationpermission ($site, $strict=true)
 // output: true/false
 
 // description:
-// checks super admin permission
+// Checks super admin permission
 
 function checkadminpermission ()
 {
@@ -649,7 +650,7 @@ function checkadminpermission ()
 // output: true/false
 
 // description:
-// checks root permission
+// Checks root permission
 
 function checkrootpermission ($name)
 {
@@ -677,7 +678,7 @@ function checkrootpermission ($name)
 // output: true/false
 
 // description:
-// checks global permission for a publication
+// Checks global permission for a publication
 
 function checkglobalpermission ($site, $name)
 {
@@ -705,7 +706,7 @@ function checkglobalpermission ($site, $name)
 // output: true/false
 
 // description:
-// checks local permissions of a user group for a specific publication
+// Checks local permissions of a user group for a specific publication
 
 function checklocalpermission ($site, $group, $name)
 {
@@ -737,9 +738,9 @@ function checklocalpermission ($site, $group, $name)
 // requires: config.inc.php to be loaded before
 
 // description:
-// login of user by sending user and password using the variables: $sentuser, $sentpasswd
+// Login of user by sending user and password using the variables: $sentuser, $sentpasswd
 // This procedure will register the user in the hypercms session and in the php session.
-// the procedure will return true or false using the variable $result.
+// The procedure will return true or false using the variable $result.
 
 function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_password=false, $locking=true)
 {
@@ -1453,7 +1454,7 @@ function createchecksum ($permissions="")
 // requires: hypercms_api.inc.php
 
 // description:
-// writes hyperCMS specific session data of a user
+// Writes hyperCMS specific session data of a user
 
 function writesession ($user, $passwd, $checksum)
 {
@@ -1524,7 +1525,7 @@ function writesession ($user, $passwd, $checksum)
 // requires: hypercms_api.inc.php
 
 // description:
-// serializes and writes all session data of a user
+// Serializes and writes all session data of a user
 
 function writesessiondata ()
 {
@@ -1627,7 +1628,7 @@ function createsession ()
 // requires: hypercms_api.inc.php
 
 // description:
-// destroys session data of user
+// Destroys session data of user
 
 function killsession ($user="", $destroy_php=true)
 {
@@ -1690,7 +1691,7 @@ function killsession ($user="", $destroy_php=true)
 // output: true/false
 
 // description:
-// checks the disc key of the installation
+// Checks the disc key of the installation
 
 function checkdiskkey ($users="", $site="")
 {
@@ -1763,7 +1764,7 @@ function checkdiskkey ($users="", $site="")
 // output: true if passed / error message as string
 
 // description:
-// This function checks the strength of a password and return the error messages or true.
+// This function checks the strength of a password and return the error messages or true
 
 function checkpassword ($password)
 {
@@ -1885,7 +1886,8 @@ function checkuserip ($client_ip, $user="", $timeout="")
 // input: user name (optional)
 // output: true / false if a certain amount of reguests per minute is exceeded
 
-// description: provides security for Cross-Site Request Forgery
+// description:
+// Provides security for Cross-Site Request Forgery
 
 function checkuserrequests ($user="sys")
 {
@@ -1939,10 +1941,10 @@ function checkuserrequests ($user="sys")
 // function: checkusersession()
 // input: user name (optional), include CSRF detection [true,false]
 // output: true / html-output followed by termination
+// requires config.inc.php
 
 // description:
-// checks if session data of user is correct. This function does access session variables directly!
-// requires config.inc.php
+// Checks if session data of user is correct. This function does access session variables directly!
 
 function checkusersession ($user="sys", $CSRF_detection=true)
 {
@@ -2003,10 +2005,10 @@ function checkusersession ($user="sys", $CSRF_detection=true)
 // function: allowuserip ()
 // input: publication name
 // output: true / false
+// requires config.inc.php
 
 // description:
-// checks if the client IP is in the range of valid IPs.
-// requires config.inc.php
+// Checks if the client IP is in the range of valid IPs
 
 function allowuserip ($site)
 {
@@ -2041,7 +2043,7 @@ function allowuserip ($site)
 // output: variable / false on error
 
 // description:
-// test if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
+// Checks if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
 
 function valid_objectname ($variable)
 {
@@ -2081,7 +2083,7 @@ function valid_objectname ($variable)
 // output: variable / false on error
 
 // description:
-// test if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
+// Checks if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
 
 function valid_locationname ($variable)
 {
@@ -2124,7 +2126,7 @@ function valid_locationname ($variable)
 // output: variable / false on error
 
 // description:
-// test if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
+// Checks if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
 
 function valid_publicationname ($variable)
 {
@@ -2165,13 +2167,9 @@ function valid_publicationname ($variable)
 // output: html encoded value as array or string / false on error
 
 // description:
-// This function encodes certain characters (&, <, >, ", ') into their 
-// HTML character entity equivalents to protect against XSS.
-
-
-// description:
-// converts a string into the html equivalents (also used for XSS protection).
-// supports multibyte character sets like UTF-8 as well based on the ASCII value of the character.
+// This function encodes certain characters (&, <, >, ", ') into their HTML character entity equivalents to protect against XSS.
+// Converts a string into the html equivalents (also used for XSS protection).
+// Supports multibyte character sets like UTF-8 as well based on the ASCII value of the character.
 
 function html_encode ($expression, $encoding="", $js_protection=false)
 {
@@ -2272,7 +2270,7 @@ function html_encode ($expression, $encoding="", $js_protection=false)
 // output: html decoded value as array or string / false on error
 
 // description:
-// This function decodes all characters which have been converted by html_encode.
+// This function decodes all characters which have been converted by html_encode
 
 function html_decode ($expression, $encoding="")
 {
@@ -2339,7 +2337,7 @@ function scriptcode_encode ($content)
 // output: script code as array / false on error or if noting was found
 
 // description:
-// This function extracts the script code of a given content.
+// This function extracts the script code of a given content
 
 function scriptcode_extract ($content, $identifier_start="<?", $identifier_end="?>")
 {
@@ -2395,7 +2393,7 @@ function scriptcode_extract ($content, $identifier_start="<?", $identifier_end="
 // output: result array / false on error
 
 // description:
-// This function removes all dangerous PHP functions.
+// This function removes all dangerous PHP functions
 
 function scriptcode_clean_functions ($content, $type=3, $application="PHP")
 {
@@ -2472,7 +2470,7 @@ function scriptcode_clean_functions ($content, $type=3, $application="PHP")
 // output: result array / false on error
 
 // description:
-// This function checks SQL statements for write operations.
+// This function checks SQL statements for write operations
 
 function sql_clean_functions ($content)
 {
@@ -2531,7 +2529,7 @@ function sql_clean_functions ($content)
 // output: urlencoded value as array or string / false on error
 
 // description:
-// This function encodes all characters.
+// This function encodes all characters
 
 function url_encode ($variable)
 {
@@ -2559,7 +2557,7 @@ function url_encode ($variable)
 // output: urldecoded value as array or string / false on error
 
 // description:
-// This function decodes all characters which have been converted by url_encode or urlencode (PHP).
+// This function decodes all characters which have been converted by url_encode or urlencode (PHP)
 
 function url_decode ($variable)
 {
@@ -2587,7 +2585,7 @@ function url_decode ($variable)
 // output: encoded value as array or string / false on error
 
 // description:
-// This function encodes/escapes characters to secure the shell comand.
+// This function encodes/escapes characters to secure the shell comand
 
 function shellcmd_encode ($variable)
 {
@@ -2615,7 +2613,7 @@ function shellcmd_encode ($variable)
 // output: encoded string / false on error
 
 // description:
-// unidrectional encryption using crypt, MD5 and urlencode
+// Unidrectional encryption using crypt, MD5 and urlencode
 
 function hcms_crypt ($string, $start=0, $length=0)
 {
@@ -2651,7 +2649,7 @@ function hcms_crypt ($string, $start=0, $length=0)
 // output: encoded string / false on error
 
 // description:
-// encryption of a string. only strong encryption is binary-safe!
+// Encryption of a string. Only strong encryption is binary-safe!
 
 function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
 {
@@ -2761,7 +2759,7 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
 // output: decoded string / false on error
 
 // description:
-// decryption of a string. only strong encryption is binary-safe!
+// Decryption of a string. Only strong encryption is binary-safe!
 
 function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
 {

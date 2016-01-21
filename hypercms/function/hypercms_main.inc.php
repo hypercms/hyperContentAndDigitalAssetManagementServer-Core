@@ -84,12 +84,12 @@ function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
 
 // ------------------------- specialchr -----------------------------
 // function: specialchr()
-// input: expression, list of characters to be excluded from search  
+// input: expression, list of characters to be excluded from search (optional) 
 // output: true/false
 
 // description:
-// test if an expression includes special characters (true) or doesnt (false).
-// allows you to accept characters through including it into $accept (e.g. #$...)
+// Tests if an expression includes special characters (true) or does not (false).
+// Allows you to accept characters through including it into $accept (e.g. #$...)
 
 function specialchr ($expression, $accept="")
 {
@@ -107,7 +107,7 @@ function specialchr ($expression, $accept="")
 // output: expression without special characters (for file names)
 
 // description:
-// renames all special characters for file names in an expression according to given rules.
+// Renames all special characters for file names to an expression according to given rules
 
 function specialchr_encode ($expression, $remove="no")
 {
@@ -162,7 +162,7 @@ function specialchr_encode ($expression, $remove="no")
 // output: expression with special characters (for file names) / false
 
 // description:
-// is the decode function for encode.
+// This is the decode function for function specialchr_encode
 
 function specialchr_decode ($expression)
 {
@@ -191,7 +191,7 @@ function specialchr_decode ($expression)
 
 // description:
 // This function is an alternative to mb_check_encoding (which requires an extra PHP module).
-// it is not failsave!
+// It is not failsave!
 
 function is_utf8 ($str)
 {
@@ -223,7 +223,7 @@ function is_utf8 ($str)
 
 // description:
 // This function is an alternative to mb_check_encoding (which requires an extra PHP module).
-// it is not failsave!
+// It is not failsave!
 
 function is_latin1 ($str)
 {
@@ -298,7 +298,7 @@ function splitstring ($string)
 // output: true / false
 
 // description:
-// checks if directory/folder is empty (has no published objects or other files).
+// Checks if a directory/folder is empty (has no published objects or other files)
 
 function is_emptyfolder ($dir)
 {
@@ -330,7 +330,7 @@ function is_emptyfolder ($dir)
 // output: true / false
 
 // description:
-// This function determines if a certain file type by its extension is supported by the systems media conversion.
+// This function determines if a certain file type by its file extension is supported by the systems media conversion
 
 function is_supported ($preview_array, $file)
 {
@@ -356,7 +356,7 @@ function is_supported ($preview_array, $file)
 // output: true / false
 
 // description:
-// This function determines if a certain string represents a valid date format
+// This function determines if a string represents a valid date format
 
 function is_date ($date, $format="Y-m-d")
 {
@@ -376,7 +376,7 @@ function is_date ($date, $format="Y-m-d")
 // output: if file is a temp file true / false on error
 
 // description:
-// This functions checks if a given file name of path is a temporary file
+// This functions checks if the provided file name is a temporary file
 
 function is_tempfile ($path)
 {
@@ -405,7 +405,7 @@ function is_tempfile ($path)
 // output: if file is a thumbnail file true / false on error
 
 // description:
-// This functions checks if a given file name is a thumbnail file
+// This functions checks if the provided file name is a thumbnail file
 
 function is_thumbnail ($media, $images_only=true)
 {
@@ -433,7 +433,7 @@ function is_thumbnail ($media, $images_only=true)
 // output: if file is a config file true / false if not
 
 // description:
-// This functions checks if a given file name is a config file
+// This functions checks if the provided file name is a config file
 
 function is_config ($media)
 {
@@ -459,7 +459,7 @@ function is_config ($media)
 // output: true / false
 
 // description:
-// This functions checks if a given file name is encrypted
+// This functions checks if the provided file is encrypted
 
 function is_encryptedfile ($location, $file)
 {
@@ -647,7 +647,7 @@ function is_audio ($file)
 // output: true / false
 
 // description:
-// detects is a mobile browser is used.
+// Detects if a mobile browser is used
 
 function is_mobilebrowser ()
 {
@@ -672,7 +672,7 @@ function is_mobilebrowser ()
 // output: true/false
 
 // description:
-// This function copyies all directories and files from source to destination directory.
+// This function copyies all directories and files from source to destination directory
 
 function copyrecursive ($src, $dst)
 {
@@ -784,7 +784,7 @@ function correctpath ($path, $slash="/")
 // output: converted path or URL / false on error
 
 // description:
-// This function replaces all pathes of the content management config with %page% and %comp% path variables.
+// This function replaces object pathes of the content management config with %page% and %comp% path variables
 
 function convertpath ($site, $path, $cat)
 {
@@ -885,7 +885,7 @@ function convertpath ($site, $path, $cat)
 // output: converted path or URL / false on error
 
 // description:
-// This function replaces all pathes of the publication management config with %page% and %comp% path variables.
+// This function replaces pathes of the publication management config with %page% and %comp% path variables.
 
 function convertlink ($site, $path, $cat)
 {
@@ -985,8 +985,8 @@ function convertlink ($site, $path, $cat)
 
 // description:
 // This function replaces all %page% and %comp% path variables with the path of the content management config.
-// it converts the path only on content management side not for the publication target.
-// it optionally transform special characters as well.
+// It converts the path only on content management side not for the publication target.
+// It optionally transform special characters as well.
 
 function deconvertpath ($path, $type="file", $specialchr_transform=false)
 {
@@ -1096,8 +1096,7 @@ function deconvertpath ($path, $type="file", $specialchr_transform=false)
 
 // description:
 // This function deconverts the path only for the publication target.
-// should be used for page linking, otherwise the function will return the absolute
-// link including the host for component links.
+// It should be used for page linking, otherwise the function will return the absolute link including the host for component links.
 
 function deconvertlink ($path, $type="url")
 {
@@ -1381,8 +1380,8 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
 // output: download link / false on error
 
 // description:
-// generates a download link of a single media file, folder or multi objects.
-// priority if multiple input parameters for media file, folder or multi objects are given:
+// Generates a download link of a single media file, folder or multi objects.
+// Priority if multiple input parameters for media file, folder or multi objects are given:
 // 1st...multi objects
 // 2nd...media file
 // 3rd...folder
@@ -1474,7 +1473,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
 // output: cleanded string / false on error
 
 // description:
-// returns the URL notation without the protocoll://domain.
+// Returns the URL notation without the protocoll://domain.
 
 function cleandomain ($path)
 {
@@ -1632,7 +1631,7 @@ function loadfile_header ($abs_path, $filename)
 
 // description:
 // This functions is identical to loadfile, but it does not wait for locked files to be unlocked again.
-// it should only be used on files that won't be locked by the system. it is therefore recommended to use loadfile.
+// It should only be used on files that won't be locked by the system. It is therefore recommended to use loadfile.
 
 function loadfile_fast ($abs_path, $filename)
 {
@@ -1679,7 +1678,7 @@ function loadfile_fast ($abs_path, $filename)
 // output: file content
 
 // description:
-// This function loads a file and waits up to 3 seconds for locked files to be unlocked.
+// This function loads a file and waits up to 3 seconds for locked files to be unlocked
 
 function loadfile ($abs_path, $filename)
 {
@@ -1758,7 +1757,7 @@ function loadfile ($abs_path, $filename)
 // output: file content
 
 // description:
-// This function loads and locks a file for a sepecific user. it waits up to 3 seconds for locked files to be unlocked.
+// This function loads and locks a file for a sepecific user. It waits up to 3 seconds for locked files to be unlocked.
 
 function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
 {
@@ -1897,7 +1896,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
 // output: true/false
 
 // description:
-// This function saves content to a file.
+// This function saves content to a file
 
 function savefile ($abs_path, $filename, $filedata)
 {
@@ -1941,7 +1940,7 @@ function savefile ($abs_path, $filename, $filedata)
 // output: true/false
 
 // description:
-// savelockfile saves content to a locked file. it requires the file to be opened by loadlockfile.
+// Saves content to a locked file. It requires the file to be opened by loadlockfile.
 
 function savelockfile ($user, $abs_path, $filename, $filedata)
 {
@@ -1999,9 +1998,9 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
 // output: true/false
 
 // description: 
-// appendfile appends data to a file but cannot create a new file!
-// it waits up to 3 seconds for locked files to be unlocked again.
-// files won't be unlocked if the file is already locked.
+// Appends data to a file but cannot create a new file!
+// Waits up to 3 seconds for locked files to be unlocked again.
+// Files won't be unlocked if the file is already locked.
 
 function appendfile ($abs_path, $filename, $filedata)
 {
@@ -2080,7 +2079,7 @@ function appendfile ($abs_path, $filename, $filedata)
 // output: true/false
 
 // description:
-// This functions lockes a file for a specific user.
+// This functions lockes a file for a specific user
 
 function lockfile ($user, $abs_path, $filename)
 {
@@ -2122,7 +2121,7 @@ function lockfile ($user, $abs_path, $filename)
 // output: true/false
 
 // description:
-// This functions unlockes a file for a specific user.
+// This functions unlockes a file for a specific user
 
 function unlockfile ($user, $abs_path, $filename)
 {
@@ -2245,7 +2244,8 @@ function deletefile ($abs_path, $filename, $recursive=0)
 // input: publication name, mediafile name
 // output: true/false
 
-// description: deletes all media file derivates (thumbnails, config files, converted versions of the file) of a specific media file resource.
+// description:
+// Deletes all media file derivates (thumbnails, config files, converted versions of the file) of a specific media file resource
 
 function deletemediafiles ($site, $mediafile)
 {
@@ -2388,7 +2388,7 @@ function deletemediafiles ($site, $mediafile)
 // output: true / false on error
 
 // description:
-// appending data to a file ensures that the previous write process is finished (required due to issue when editing encrypted files)
+// Appending data to a file ensures that the previous write process is finished (required due to issue when editing encrypted files)
 
 function avoidfilecollision ($data="tempdata")
 {
@@ -2412,7 +2412,7 @@ function avoidfilecollision ($data="tempdata")
 // output: versioned file name [string] / false on error
 
 // description:
-// creates a version file name
+// Creates a version file name
 
 function fileversion ($file)
 {
@@ -2435,7 +2435,7 @@ function fileversion ($file)
 // output: true / false
 
 // description:
-// creates a new version of a multimedia file and container
+// Creates a new version of a multimedia file and container
 
 function createversion ($site, $file)
 {
@@ -2527,7 +2527,7 @@ function createversion ($site, $file)
 // output: array with found values / false
 
 // description:
-// searches for substring in array
+// Searches for substring in array
 
 function substr_in_array ($search, $array)
 {
@@ -2835,7 +2835,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
 // output: XML content of container / false on error
 
 // description:
-// This functions loads a content container.
+// This functions loads a content container
 
 function loadcontainer ($container, $type="work", $user)
 {
@@ -3202,8 +3202,7 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
 // requires: config.inc.php, fileoperation
 
 // description:
-// help function for function buildview to evaluate the workflow of an object and return the manipulated view store, view name, workflow ID, 
-// workflow role and the encrypted workflow token.
+// Help function for function buildview to evaluate the workflow of an object and return the manipulated view store, view name, workflow ID, workflow role and the encrypted workflow token.
 
 function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $contentdata="", $buildview="cmsview", $viewstore="", $user)
 {
@@ -3601,10 +3600,10 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
 // requires: hypercms_api.inc.php, config.inc.php
 
 // description:
-// This function loads and locks the inheritance database
-// each record of the inherit management database has the following design:
+// This function loads and locks the inheritance database.
+// Each record of the inherit management database has the following design:
 // xml-content container :| absolute path to 1-n objects :| 1-m inherits used by 1-n objects
-// important: the inherit management database needs to be saved or closed after loading it.
+// Important: The inherit management database needs to be saved or closed after loading it
 
 function inherit_db_load ($user)
 {
@@ -3722,7 +3721,7 @@ function inherit_db_read ()
 // requires: hypercms_api.inc.php
 
 // description:
-// closes and unlocks the inheritance management database.
+// Closes and unlocks the inheritance management database
 
 function inherit_db_close ($user)
 {
@@ -3916,7 +3915,7 @@ function inherit_db_deleteparent ($inherit_db, $parent)
 // output: value of setting
 
 // description:
-// help function for createinstance
+// Help function for createinstance
 
 function getconfigvalue ($config, $in_key="")
 {
@@ -4443,7 +4442,7 @@ function deleteinstance ($instance_name, $user="sys")
 // output: result array
 
 // description:
-// This function creates a new publication with all its files.
+// This function creates a new publication with all its files
 
 function createpublication ($site_name, $user="sys")
 {
@@ -4835,7 +4834,7 @@ function createpublication ($site_name, $user="sys")
 // output: result array
 
 // description:
-// This function saves the settings of a publication.
+// This function saves the settings of a publication
 
 function editpublication ($site_name, $setting, $user="sys")
 {
@@ -5320,7 +5319,7 @@ allow_ip = ".$allow_ip_new;
 // output: true/false
 
 // description:
-// This function can be used to edit a single settings of a publication.
+// This function can be used to edit a single settings of a publication
 
 function editpublicationsetting ($site_name, $setting, $value, $user="sys")
 {
@@ -5406,7 +5405,7 @@ function editpublicationsetting ($site_name, $setting, $value, $user="sys")
 // output: result array
 
 // description:
-// This function deletes a publication with all its files.
+// This function deletes a publication with all its files
 
 function deletepublication ($site_name, $user="sys")
 {
@@ -5975,9 +5974,7 @@ function createtemplate ($site, $template, $cat)
 
 // description:
 // This function returns a list of all templates for pages or components.
-// based on the inheritance settings of the publication the template will be loaded
-// with highest priority from the own publication and if not available from a parent
-// publication.
+// Based on the inheritance settings of the publication the template will be loaded with highest priority from the own publication and if not available from a parent publication.
 
 function gettemplates ($site, $cat)
 {
@@ -6056,10 +6053,10 @@ function gettemplates ($site, $cat)
 
 // description:
 // This function loads templates by given name.
-// based on the inheritance settings of the publication the template will be loaded
+// Based on the inheritance settings of the publication the template will be loaded
 // with highest priority from the own publication and if not available from a parent
-// publication. if the parent publications have double entries the sort mechanism will
-// define the priority. first priority have numbers, second are upper case letters and
+// publication. If the parent publications have double entries the sort mechanism will
+// define the priority. First priority have numbers, second are upper case letters and
 // last priority have lower case letters.
 
 function loadtemplate ($site, $template)
@@ -7631,7 +7628,7 @@ function deleteworkflowfolder ($site, $cat, $folderpath, $user)
 // output: Array with onload JS-code and message
 
 // description:
-// creates a new media category in the index file
+// Creates a new media category in the template media index file. Only used for template media.
 
 function createmediacat ($site, $mediacat_name)
 {
@@ -7734,7 +7731,7 @@ function createmediacat ($site, $mediacat_name)
 // output: Array with onload JS-code and message
 
 // description:
-// renames a new media category in the index file
+// Renames a new media category in the template media index file
 
 function renamemediacat ($site, $mediacat_name_curr, $mediacat_name)
 {
@@ -7829,7 +7826,7 @@ function renamemediacat ($site, $mediacat_name_curr, $mediacat_name)
 // output: Array with onload JS-code and message
 
 // description:
-// deletes a new media category in the index file
+// Deletes a new media category in the template media index file
 
 function deletemediacat ($site, $mediacat_name)
 {
@@ -7923,7 +7920,7 @@ function deletemediacat ($site, $mediacat_name)
 // output: Array with onload JS-code and message
 
 // description:
-// uploads a media file into a given media category
+// Uploads a media file into a given template media category
 
 function uploadtomediacat ($site, $mediacat_name, $global_files)
 {
@@ -8045,7 +8042,7 @@ function uploadtomediacat ($site, $mediacat_name, $global_files)
 // output: Array with onload JS-code and message
 
 // description:
-// deletes a media file from the media category index
+// Deletes a media file from the template media category index
 
 function deletefrommediacat ($site, $mediafile)
 {
@@ -9370,7 +9367,7 @@ function createobject ($site, $location, $page, $template, $user)
  
 // description:
 // This function manages all file uploads, like unzip files, create media objects and resize images.
-// the container name will be extracted from the media file name for updating an existing multimedia file
+// The container name will be extracted from the media file name for updating an existing multimedia file.
 
 function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, $createthumbnail=0, $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $versioning=false)
 {
@@ -10048,7 +10045,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
 // output: Array
 
 // description:
-// This function creates a media object by reading a given source file.
+// This function creates an asset (multimedia object) by reading a given source file
 
 function createmediaobject ($site, $location, $file, $path_source_file, $user)
 {
@@ -10237,7 +10234,8 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 //        type of image/video/audio file [thumbnail,origthumb(thumbail made from original video/audio),original,any other string present in $mgmt_imageoptions] (optional)
 // output: result array / false on error (saves original or thumbnail media file of an object, for thumbnail only jpeg format is supported as output), user name
 
-// description: editmediaobject mainly uses function createmedia to render the objects media but at the same time takes care of versioning and the object name if the file extension has changed.
+// description:
+// This function mainly uses function createmedia to render the objects media, but at the same time takes care of versioning and the object name if the file extension has changed
 
 function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbnail", $user)
 {
@@ -10374,8 +10372,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
 // output: array
 
 // description:
-// This function removes, unpublishs, renames and pastes objects and
-// is used by other functions which works as a shell for this function.
+// This function removes, unpublishs, renames and pastes objects and is used by other functions which works as a shell for this function
 
 function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
 {
@@ -11979,8 +11976,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
 // output: array
 
 // description:
-// This function removes page or component
-// and calls the function manipulateobject
+// This function removes page or component and calls the function manipulateobject
 
 function deleteobject ($site, $location, $page, $user)
 {      
@@ -12062,7 +12058,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
 // description:
 // This function renames a file (NOT a page or component) and calls the function manipulateobject. 
 // This function renames the file name including the extension and not only the name of an object.
-// the event that will be executed in the event system is the same as renameobject.
+// The event that will be executed in the event system is the same as renameobject.
 
 function renamefile ($site, $location, $page, $pagenew, $user)
 {      
@@ -12199,7 +12195,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false)
 // output: array
 
 // description:
-// This function cuts a page or component
+// This function copies a page or component
 
 function copyobject ($site, $location, $page, $user, $clipboard_add=false)
 {      
@@ -12303,7 +12299,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false)
 // output: array
 
 // description:
-// This function cuts a page or component
+// This function makes a connected copy of a page or component
 
 function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=false)
 {      
@@ -12445,7 +12441,7 @@ function pasteobject ($site, $location, $user)
 // output: array
 
 // description:
-// This function locks a page or asset
+// This function locks a page, component or asset
 
 function lockobject ($site, $location, $page, $user)
 {      
@@ -12804,7 +12800,7 @@ if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
 // output: array
 
 // description:
-// This function publishs a page or component
+// This function publishes a page, component or asset
 
 function publishobject ($site, $location, $page, $user)
 {      
@@ -13354,8 +13350,8 @@ function publishobject ($site, $location, $page, $user)
 // output: true/false on error
 
 // description:
-// publish, unpublish or delete all objects recursively.
-// should not be used in CMS GUI, only for queue processing, since it does not provide feedback about the process state!
+// Publish, unpublish or delete all objects recursively.
+// Should not be used in CMS GUI, only for queue processing, since it does not provide feedback about the process state!
 
 function processobjects ($action, $site, $location, $file, $published_only="0", $user)
 {
@@ -13444,8 +13440,8 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
 
 // description:
 // This function publishes all linked objects of a given object.
-// all objects with component links (references) to the given object will be published.
-// This funtion is only used by publishobject
+// All objects with component links (references) to the given object will be published.
+// This funtion is only used by publishobject.
 
 function publishlinkedobject ($site, $location, $page, $user)
 {      
@@ -13736,7 +13732,7 @@ function unpublishobject ($site, $location, $page, $user)
 
 // description:
 // This function is used to perform actions on folders with several items. the function will be called by
-// popup_status.php. to work correctly the functions needs several variables to be passed. please take a
+// popup_status.php. To work correctly the functions needs several variables to be passed. please take a
 // look at the $result array of this function.
 
 // help function used to create a list of all objects inside a folder
@@ -14410,7 +14406,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
 // output: http answer [string] or false
 
 // description:
-// sends data to remote client via http post
+// Sends data to remote client via http post
 
 function remoteclient ($action, $root, $site, $location, $locationnew, $page, $pagenew)
 {
@@ -14510,7 +14506,7 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
 // output: http response [string] / false on error
 
 // description:
-// sends data via http post and returns response
+// Sends data via http post and returns response
 
 function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded", $charset="UTF-8", $referrer="") 
 {
@@ -14632,7 +14628,7 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
 // output: http response [string] / false on error
 
 // description:
-// sends data via http get and returns response
+// Sends data via http get and returns response
 
 function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencoded", $charset="UTF-8") 
 {
@@ -14702,7 +14698,7 @@ function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencod
 // requires: PHP CURL
 
 // description:
-// sends all global POST/GET and FILES data via http post and returns response
+// Sends all global POST/GET and FILES data via http post and returns response
 
 function HTTP_Proxy ($URL, $enable_file=false) 
 {
@@ -14826,8 +14822,8 @@ function HTTP_Proxy ($URL, $enable_file=false)
 // requires: HTTP_Proxy
 
 // description:
-// balances the load by sending all global POST/GET and FILES to one service ressource of a given array of service ressources
-// don't define and use the same server ressources in $mgmt_config['url_path_service'], this can lead to a infinite loop that will be ended by 
+// Balances the load by sending all global POST/GET and FILES to one service ressource of a given array of service ressources.
+// Don't define and use the same server ressources in $mgmt_config['url_path_service'], this can lead to an infinite loop.
 
 function loadbalancer ($type) 
 {
@@ -14885,7 +14881,8 @@ function loadbalancer ($type)
 // output: true / false on error
 
 // description: adds new entries to log file
-// an error entry must be formed like: date[YYYY-MM-DD hh:mm]|name of scipt file|error type: "error", "warning" or "information"|unique error code in script file|error message
+// An error entry must be formed like:
+// date[YYYY-MM-DD hh:mm]|name of scipt file|error type: "error", "warning" or "information"|unique error code in script file|error message
 
 function savelog ($error, $logfile="event")
 {
@@ -14922,7 +14919,8 @@ function savelog ($error, $logfile="event")
 // input: logname (optional)
 // output: result array
 
-// description: deletes the log file
+// description:
+// Deletes the log file
 
 function deletelog ($logname="")
 {
@@ -14970,7 +14968,7 @@ function deletelog ($logname="")
 // output: true / false
 
 // description:
-// writes code lines into debug file in data/log/debug.log
+// Writes code lines into debug file in data/log/debug.log
 
 function debuglog ($code)
 {
@@ -14994,7 +14992,8 @@ function debuglog ($code)
 // input: publication name, location, object name, event name [oncreate,onedit,onmove,ondelete], user name
 // output: true / false on error
 
-// description: notifies all users based on the given event and location
+// description:
+// Notifies all users based on the given event and location
 
 function notifyusers ($site, $location, $object, $event, $user_from)
 {
@@ -15145,7 +15144,8 @@ function notifyusers ($site, $location, $object, $event, $user_from)
 //        date format (optional), 
 // output: true / false on error
 
-// description: searches for objects with a date in a given text field that has to be between the given dates and sends a message to the given user
+// description:
+// Searches for objects with a date in a given text field that has to be between the given dates and sends a message to the given user
 
 function licensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $date_end, $user, $format="%Y-%m-%d")
 {
@@ -15278,7 +15278,7 @@ function licensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $
 
 // description:
 // Paul's Simple Diff Algorithm v 0.1
-// html_diff is a wrapper for the diff command, it takes two strings and
+// Function html_diff is a wrapper for the diff command, it takes two strings and 
 // returns the differences in HTML. The tags used are <ins> and <del>,
 // which can easily be styled with CSS. 
 
@@ -15698,7 +15698,8 @@ function rewrite_targetURI ($site, $text_id, $uri, $exclude_dir_esc="", $rewrite
 // input: publication name, rewrite type [none,forward] (optional)
 // output: target URI / false on error
 
-// description: rewrite_homepage used the page root directory of the publication configuration and forwards to the default index page. No page include supported!
+// description:
+// Uses the page root directory of the publication configuration and forwards to the default index page. No page include supported!
 
 function rewrite_homepage ($site, $rewrite_type="forward")
 {
@@ -15733,7 +15734,8 @@ function rewrite_homepage ($site, $rewrite_type="forward")
 // input: associative data array, file name (optonal), file path for saving the CSV file (optional), delimiter (optional), enclosure (optional), character set (optional)
 // output: true / false on error
 
-// description: creates a CSV file from an associative data array and returns the file as download or writes the file to the file system if a valid path to a directory has been provided.
+// description:
+// Creates a CSV file from an associative data array and returns the file as download or writes the file to the file system if a valid path to a directory has been provided
 
 function create_csv ($assoc_array, $filename="export.csv", $filepath="php://output", $delimiter=";", $enclosure='"', $charset="utf-8")
 {

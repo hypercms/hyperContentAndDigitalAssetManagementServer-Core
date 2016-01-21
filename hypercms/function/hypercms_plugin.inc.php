@@ -29,10 +29,10 @@ function plugin_getdefaultconf ()
 // output: menu point array used by navigator
 
 // description:
-// Reads Menupoints and menugroups from the xml data
-// be carefull with nesting, getcontent is used here and you can't nest groups inside of groups as a subpoint!
-// pluginFolder contains the folder this plugin is located in, that is needed for the icons and the links
-// returns an Array containing every group and menupoint with their configuration
+// Reads Menupoints and menugroups from the xml data.
+// Be carefull with nesting, function getcontent is used and you can't nest groups inside of groups as a subpoint!
+// Input parameter $pluginFolder contains the directory of the plugin.
+// Returns an Array containing every group and menupoint with its configuration.
 
 function plugin_readmenu ($xml, $pluginFolder)
 {
@@ -260,13 +260,12 @@ function plugin_parse ($oldData=array())
 
 // --------------------------------------- plugin_generatedefinition -------------------------------------------
 // function: plugin_generatedefinition()
-// input: name of array holding the plugin definitions, configuration array
+// input: name of array holding the plugin definitions, configuration array containing the values and keys
 // output: plugin array / false on error
 
 // description:
-// Generates the Array definition used in php for $array with the name of $arrayName
-// Run recursively through the array and supports boolean, numeric and string types for the key and value
-// $arrayName -> Name of the Array, $array the array containing the values and keys
+// Generates the Array definition used in php for $array with the name of $arrayName.
+// Run recursively through the array and supports boolean, numeric and string types for the key and value.
 
 function plugin_generatedefinition ($arrayName, $array) 
 {
@@ -308,8 +307,8 @@ function plugin_generatedefinition ($arrayName, $array)
 // output: true / false on error
 
 // description:
-// Saves the plugin configuration $configuration into the configuration file
-// The configuration file is located in the data/config directory and is named plugin.conf.php
+// Saves the plugin configuration $configuration into the configuration file.
+// The configuration file is located in the data/config directory and is named plugin.conf.php.
 
 function plugin_saveconfig ($configuration)
 {
@@ -330,7 +329,7 @@ function plugin_saveconfig ($configuration)
 // output: plugin link
 
 // description:
-// Generates a link to be used when linking to other pages inside of a plugin.
+// Generates a link to be used when linking to other pages inside of a plugin
 
 function plugin_generatelink ($plugin, $page, $control=false, $additionalGetParameters=false)
 {

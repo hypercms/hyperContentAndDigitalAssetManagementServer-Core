@@ -12,7 +12,7 @@
 // ---------------------- getserverload -----------------------------
 // function: getserverload()
 // input: %
-// output: Returns the average system load (the number of processes in the system run queue) over the last minute and the number of CPU cores
+// output: Returns the average system load (the number of processes in the system run queue) over the last minute and the number of CPU cores as array
 
 function getserverload ()
 {
@@ -54,8 +54,8 @@ function getserverload ()
  
 // ------------------------- getsession -----------------------------
 // function: getsession()
-// input: variable name, default value (optional)
-// output: value
+// input: session variable name, default session value (optional)
+// output: session value
 
 function getsession ($variable, $default="")
 {
@@ -73,11 +73,11 @@ function getsession ($variable, $default="")
 
 // ------------------------- getrequest -----------------------------
 // function: getrequest()
-// input: variable name, must be of certain type [numeric,array,publicationname,locationname,objectname,url,bool] (optional), default value (optional)
-// output: value
+// input: request variable name, must be of certain type [numeric,array,publicationname,locationname,objectname,url,bool] (optional), default value (optional)
+// output: request value
 
 // description:
-// return a value from POST, GET or COOKIE, or a default value if none set
+// Returns the value of a POST, GET or COOKIE request, or a default value if not valid.
 
 function getrequest ($variable, $force_type=false, $default="")
 {
@@ -114,12 +114,12 @@ function getrequest ($variable, $force_type=false, $default="")
 
 // ------------------------- getrequest_esc -----------------------------
 // function: getrequest_esc()
-// input: variable name, must be of certain type [numeric,array,publicationname,locationname,objectname] (optional), default value (optional), 
+// input: request variable name, must be of certain type [numeric,array,publicationname,locationname,objectname] (optional), default value (optional), 
 //        remove characters to avoid JS injection [true,false] (optional)
-// output: value
+// output: request value
 
 // description:
-// return a escaped value tp prevent XSS from POST, GET or COOKIE, or a default value if none set
+// Returns the escaped value in order to prevent XSS from POST, GET or COOKIE variables. Returns a default value if not valid.
 
 function getrequest_esc ($variable, $force_type=false, $default="", $js_protection=false)
 {    
@@ -139,7 +139,7 @@ function getrequest_esc ($variable, $force_type=false, $default="", $js_protecti
 // output: IP address of client / false on error
 
 // description:
-// retrieves IP address of the client/user.
+// Retrieves the IP address of the client/user.
 
 function getuserip ()
 {
@@ -153,7 +153,7 @@ function getuserip ()
 // ----------------------------------------- getlanguageoptions ------------------------------------------
 // function: getlanguageoptions()
 // input: %
-// output: array with 2-gigit language code as key and language name in English as value / false on error
+// output: array with 2-digit language code as key and language name in English as value / false on error
 
 function getlanguageoptions ()
 {
@@ -254,7 +254,8 @@ function getcalendarlang ($lang="en")
 // input: text as string, character set of text, 2-digit language code
 // output: HTML escaped text
 
-// description: if the destination character set is not supported by language set the text need to be HTML escaped.
+// description:
+// If the destination character set is not supported by the language set of the presebtation, the text need to be HTML escaped.
 
 function getescapedtext ($text, $charset="", $lang="")
 {
@@ -285,7 +286,7 @@ function getescapedtext ($text, $charset="", $lang="")
 // requires: config.inc.php
 
 // description:
-// loads the content container of a given object (page, component, folder)
+// Loads the content container of a given object (page, component, folder)
 
 function getobjectcontainer ($site, $location, $object, $user)
 {
@@ -341,7 +342,7 @@ function getobjectcontainer ($site, $location, $object, $user)
 // requires: config.inc.php
 
 // description:
-// obsolete function used as shell for loadcontainer function without loading locked containers 
+// Obsolete function used as an alias for the loadcontainer function without the possibility to load locked containers
 
 function getcontainer ($containerid, $type)
 {
@@ -544,7 +545,7 @@ function getlocationname ($site, $location, $cat, $source="path")
 // output: path to theme / false
 
 // description:
-// returns the absolute path (URL) to the theme (css and images).
+// Returns the absolute path (URL) of the theme (css and images).
 
 function getthemelocation ($theme="")
 {
@@ -584,7 +585,7 @@ function getthemelocation ($theme="")
 // requires: config.inc.php
 
 // description:
-// evaluates the category ['page, comp'] of a location.
+// Evaluates the category ['page, comp'] of a location
 
 function getcategory ($site="", $location)
 {
@@ -661,7 +662,7 @@ function getcategory ($site="", $location)
 // output: publication name
 
 // description:
-// extract the publication name of a location path.
+// Extract the publication name of a location path
 
 function getpublication ($path)
 {
@@ -696,7 +697,7 @@ function getpublication ($path)
 // output: location (without object or folder)
 
 // description:
-// extract the location excluding object or folder of a location path.
+// Extract the location excluding object or folder of a location path
 
 function getlocation ($path)
 {
@@ -726,7 +727,7 @@ function getlocation ($path)
 // output: object or folder name
 
 // description:
-// extract the object or folder of a location path.
+// Extract the object or folder of a location path
 
 function getobject ($path)
 {
@@ -767,7 +768,7 @@ function getobject ($path)
 // output: container name / false on error
 
 // description:
-// extract the container name from a multimedia file name by using the hcm-ID
+// Extract the container name from a multimedia file name by using the hcm-ID
 
 function getmediacontainername ($file)
 {
@@ -793,7 +794,7 @@ function getmediacontainername ($file)
 // output: container ID / false on error
 
 // description:
-// extract the container ID from a multimedia file name by using the hcms-ID
+// Extract the container ID from a multimedia file name by using the hcms-ID
 
 function getmediacontainerid ($file)
 {
@@ -819,7 +820,7 @@ function getmediacontainerid ($file)
 // output: media file name / false on error
 
 // description:
-// extracts the name from the multimedia file by container name or ID in order to get the media file of older content versions.
+// Extracts the name from the multimedia file by container name or ID in order to get the media file of older content versions.
 // if the result is false, there is no older media file version.
 
 function getmediafileversion ($container)
@@ -913,7 +914,7 @@ function getmediafileversion ($container)
 // output: object ID
 
 // description:
-// converts object path to object ID
+// Converts the object path to the object ID of any object
 
 function getobjectid ($objectlink)
 {
@@ -993,7 +994,7 @@ function getobjectid ($objectlink)
 // output: converted object link
 
 // description:
-// converts object ID to object path
+// Converts the object ID to the object path of any object
 
 function getobjectlink ($objectid)
 {
@@ -1157,7 +1158,7 @@ function gettemplateversions ($site, $template)
 // output: array/false
 
 // description:
-// defines file properties based on the file extension and returns file info in an array:
+// defines file properties based on the file extension and returns file info as an array:
 //    $result['file']: file name without hypercms management extension
 //    $result['name']: readable file name without hypercms management extension
 //    $result['filename']: file name without file extensions
@@ -1452,7 +1453,7 @@ function getfileinfo ($site, $file, $cat="comp")
 // requires: config.inc.php
 
 // description:
-// get's all file pointers (container, media, template) and object name from object file and collects info from container version if provided
+// Get all file pointers (container, media, template) and object name from object file and collect info from container version, if provided
 
 function getobjectinfo ($site, $location, $object, $user="sys", $container_version="")
 {
@@ -1605,7 +1606,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
 // output: result array with file size in kB and file count / false on error
 
 // Attention!
-// This function won't give you a proper result of the file size of multimedia components, if there is no DB in use.
+// This function won't give you a proper result of the file size of multimedia components, if there is no Database installed.
 
 function getfilesize ($file)
 {
@@ -1678,8 +1679,8 @@ function getfilesize ($file)
 // output: mime_type
 
 // description:
-// gets the mime-type of the file of its extension.
-// if file has a version file extension the next file extension will be used.
+// Gets the mime-type of the file by its extension.
+// If file has a version file extension the next file extension will be used.
 
 function getmimetype ($file)
 {
@@ -1997,9 +1998,8 @@ function getbrowserinfo ()
 // output: location of the container file / false on error
 
 // description:
-// gets the content location based on the given container id
-// a split up of folders is necessary since the number of directories is limited by
-// the filesystem, e.g. Linux ext3 is limited to 32000.
+// Gets the content location based on the given container id.
+// The use of various directories is necessary since the number of directories is limited by the filesystem, e.g. Linux ext3 is limited to 32000.
 
 function getcontentlocation ($container_id, $type="abs_path_content")
 {
@@ -2038,10 +2038,9 @@ function getcontentlocation ($container_id, $type="abs_path_content")
 // output: location of the multimedia file / false on error
 
 // description:
-// gets the media repsitory location from $mgtm_config Array.
-// the function supports up to 10 media repositories.
-// any other rules for splitting the media files on multiple devices could be 
-// implemented as well.
+// Gets the media repsitory location from $mgtm_config array.
+// The function supports up to 10 media repositories.
+// Any other rules for splitting the media files on multiple devices can be implemented as well by the function getmedialocation_rule.
 
 // include rule from external file (must return a value)   
 if (@is_file ($mgmt_config['abs_path_data']."media/getmedialocation.inc.php"))
@@ -2114,7 +2113,7 @@ function getmedialocation ($site, $file, $type)
 // output: Array holding file name incl. lock extension and user name / false on error
 
 // description:
-// finds the locked file and returns the name and user as array
+// Finds the locked file and returns the name and user as array
 
 function getlockedfileinfo ($location, $file)
 {
@@ -2258,7 +2257,7 @@ function getimagelib ()
 // output: file name
 
 // description:
-// extracts the file name of the hyperCMS content and template pointer tags 
+// Extracts the file name of the content and template pointer tags of an object file
 
 function getfilename ($filedata, $tagname)
 {
@@ -2311,10 +2310,8 @@ function getfilename ($filedata, $tagname)
 // output: full hyperCMS tag array [array]/false on error
 
 // description:
-// finds the hyperCMS tag start and end position 
-// and returns an array of the whole tags including all information.
-// offset value must be integer value and is used to skip search
-// for hyperCMS tag till offset position of filedata.
+// Finds the hyperCMS tag start and end position and returns an array of the whole tags including all information.
+// Offset value must be integer value and is used to skip search for hyperCMS tag till offset position of filedata.
 
 function gethypertag ($filedata, $tagname, $offset=0)
 {
@@ -2368,7 +2365,7 @@ function gethypertag ($filedata, $tagname, $offset=0)
 // output: full hyperCMS tag name/false on error
 
 // description:
-// reads the name of the hyperCMS tag.
+// Reads the name of the hyperCMS tag
 
 function gethypertagname ($tagdata)
 {
@@ -2398,9 +2395,8 @@ function gethypertagname ($tagdata)
 // output: full html tag/false on error
 
 // description:
-// finds the first html tag start and end position of a nested hyperCMS tag
-// and returns the whole tag including all information.
-// works also if other script tags are nested in the HTML-tag.
+// Finds the first html tag start and end position of a nested hyperCMS tag and returns the whole tag including all information.
+// Works also if other script tags are nested in the HTML-tag.
 // This function is not case sensitive!
 
 function gethtmltag ($filedata, $tag)
@@ -2523,8 +2519,7 @@ function gethtmltag ($filedata, $tag)
 // output: string from html tag start to end tag/false on error
 
 // description:
-// finds the nearest html tag start and end position of a nested hyperCMS tag
-// and returns the whole tag including all information.
+// Finds the nearest html tag start and end position of a nested hyperCMS tag and returns the whole tag including all information.
 // This functions works also for html-tag pairs like <a href></a>, <div></div> and so on.
 
 function gethtmltags ($filedata, $tag)
@@ -2653,7 +2648,7 @@ function gethtmltags ($filedata, $tag)
 // output: attribute value/false on error
 
 // description:
-// get the value of a certain attribute out of a string (...attributname=value....)
+// Get the value of a certain attribute out of a string (...attributname=value....)
 
 function getattribute ($string, $attribute, $secure=true)
 {
@@ -2796,7 +2791,7 @@ function getattribute ($string, $attribute, $secure=true)
 // output: option value / false on error
 
 // description:
-// get the value of a certain option out of a string (-c:v value -ar 44100)
+// Get the value of a certain option out of a string (-c:v value -ar 44100)
 
 function getoption ($string, $option)
 {
@@ -2828,7 +2823,7 @@ function getoption ($string, $option)
 // requires: config.inc.php
 
 // description:
-// extract the content-type definition and the character set from the template (1st priority), content container (2nd priority) or publication settings (3rd priority)
+// Extract the content-type definition and the character set from the template (1st priority), content container (2nd priority) or publication settings (3rd priority)
 
 function getcharset ($site, $data)
 {
@@ -3004,7 +2999,7 @@ function getcharset ($site, $data)
 // output: article id/false on error
 
 // description:
-// extract article id out of the id.
+// Extract the article ID from the tag ID
 
 function getartid ($id)
 {
@@ -3030,7 +3025,7 @@ function getartid ($id)
 // output: element id/false on error
 
 // description:
-// extract element id out of the id
+// Extract the element ID from the tag ID
 
 function getelementid ($id)
 {

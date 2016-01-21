@@ -1222,8 +1222,12 @@ Release 01/2016
 - Changes in task_list due to the support of tasks without an object_id
 - Design improvements in task management
 - Implementation of function showganttchart into project management module
+- Improved documentation of API functions
+
+Version 6.0.3
+Release 02/2016
 */
 
 // current version
-$version = "Version 6.0.2";
+$version = "Version 6.0.3";
 ?>

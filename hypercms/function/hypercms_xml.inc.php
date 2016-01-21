@@ -20,8 +20,7 @@
 // output: XML content container / false on error
 
 // description:
-// set parameter values in XML declaration (e.g. encoding):
-// encoding="UTF-8"
+// Set parameter values in XML declaration (e.g. encoding): encoding="UTF-8"
 
 function setxmlparameter ($xmldata, $parameter, $value)
 {
@@ -87,11 +86,10 @@ function setxmlparameter ($xmldata, $parameter, $value)
 
 // description:
 // <tagname>content</tagname>
-// extracts the content between the given $starttagname xml-tags.
-// only this function will decode special characters (&, <, >) in the content and removes CDATA.
-// getcontent will only decode values if they are non-xml and non_html. so content inside child nodes
-// including tags won't be decoded.
-// wild card character "*" can be used at the end of $starttagname.
+// Extracts the content between the given $starttagname xml-tags.
+// Only this function will decode special characters (&, <, >) in the content and removes CDATA.
+// Function getcontent will only decode values if they are non-xml and non_html. so content inside child nodes including tags won't be decoded.
+// Wild card character "*" can be used at the end of $starttagname.
 
 function getcontent ($xmldata, $starttagname)
 {
@@ -184,11 +182,10 @@ function getcontent ($xmldata, $starttagname)
 // CASE-Insensitive version (XML parser are however always case-sensitive!)
 //
 // <tagname>content</tagname>
-// extracts the content between the given $starttagname xml-tags.
-// only this function will decode special characters (&, <, >) in the content and removes CDATA.
-// getcontent will only decode values if they are non-xml and non_html. so content inside child nodes
-// including tags won't be decoded.
-// wild card character "*" can be used at the end of $starttagname
+// Extracts the content between the given $starttagname xml-tags.
+// Only this function will decode special characters (&, <, >) in the content and removes CDATA.
+// getcontent will only decode values if they are non-xml and non_html. so content inside child nodes including tags won't be decoded.
+// Wild card character "*" can be used at the end of $starttagname
 
 function geticontent ($xmldata, $starttagname)
 {
@@ -284,9 +281,9 @@ function geticontent ($xmldata, $starttagname)
 
 // description:
 // <tagname>content</tagname>
-// extracts the content together with the $starttagname xml tags
+// Extracts the content together with the $starttagname xml tags.
 // This function will NOT decode special characters like function getcontent!
-// wild card character "*" can be used at the end of $starttagname
+// Wild card character "*" can be used at the end of $starttagname.
 
 function getxmlcontent ($xmldata, $starttagname)
 {
@@ -356,9 +353,9 @@ function getxmlcontent ($xmldata, $starttagname)
 // CASE-Insensitive version (XML parser are always case-sensitive!)
 //
 // <tagname>content</tagname>
-// extracts the content together with the $starttagname xml tags
+// Extracts the content together with the $starttagname xml tags.
 // This function will NOT decode special characters like function getcontent!
-// wild card character "*" can be used at the end of $starttagname
+// Wild card character "*" can be used at the end of $starttagname.
 
 function getxmlicontent ($xmldata, $starttagname)
 {
@@ -436,12 +433,10 @@ function getxmlicontent ($xmldata, $starttagname)
 //    .........
 // </tagname>
 //
-// extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag
-// value is equal with the target value $condvalue
-// wild card character "*" can be used at the end of $starttagname
-// wild card character "*" can be used at begin and end of $condvalue
-//
-// Be Aware: $startcondtag must be a child of $starttagname !!!
+// Extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag value is equal with the target value $condvalue.
+// Wild card character "*" can be used at the end of $starttagname.
+// Wild card character "*" can be used at begin and end of $condvalue.
+// Be Aware: $startcondtag must be a child of $starttagname!
 
 function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
@@ -600,12 +595,10 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 //    .........
 // </tagname>
 //
-// extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag
-// value is equal with the target value $condvalue
-// wild card character "*" can be used at the end of $starttagname
-// wild card character "*" can be used at begin and end of $condvalue
-
-// Be Aware: $startcondtag must be a child of $starttagname !!!
+// Extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag value is equal with the target value $condvalue.
+// Wild card character "*" can be used at the end of $starttagname.
+// Wild card character "*" can be used at begin and end of $condvalue.
+// Be Aware: $startcondtag must be a child of $starttagname!
 
 function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
@@ -767,11 +760,9 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 //    .......  
 // </tagname>
 //
-// extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag
-// value is equal with the target value $condvalue
-// wild card character "*" can be used at begin and end of $condvalue
-//
-// Be Aware: $startcondtag must be a child of $starttagname !!!
+// Extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag value is equal with the target value $condvalue
+// Wild card character "*" can be used at begin and end of $condvalue.
+// Be Aware: $startcondtag must be a child of $starttagname!
 
 function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
@@ -933,11 +924,9 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 //    .......  
 // </tagname>
 //
-// extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag
-// value is equal with the target value $condvalue
-// wild card character "*" can be used at begin and end of $condvalue
-
-// Be Aware: $startcondtag must be a child of $starttagname !!!
+// Extracts the content between the given $starttagname xml tags where the child xml tag $startcondtag value is equal with the target value $condvalue.
+// Wild card character "*" can be used at begin and end of $condvalue.
+// Be Aware: $startcondtag must be a child of $starttagname!
 
 function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
@@ -1099,8 +1088,8 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 //    <condtag>condvalue</condtag>
 // </tagname>
 //
-// deletes the whole xml content including <tagname>
-// wild card character "*" can be used at begin and end of $condvalue  
+// Deletes the whole xml content including <tagname>.
+// Wild card character "*" can be used at begin and end of $condvalue.
 
 function deletecontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
@@ -1160,8 +1149,8 @@ function deletecontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 //    <condtag>condvalue</condtag>
 // </tagname>
 //
-// deletes the whole xml content including <tagname>
-// wild card character "*" can be used at begin and end of $condvalue  
+// Deletes the whole xml content including <tagname>.
+// Wild card character "*" can be used at begin and end of $condvalue.
   
 function deleteicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 {
@@ -1228,7 +1217,7 @@ function deleteicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // $startcondtag = child xml tag where condition will be set
 // $condvalue = value of the condition
 //
-// wild card character "*" can be used at begin and end of $condvalue  
+// Wild card character "*" can be used at begin and end of $condvalue.
   
 function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag="", $condvalue="")
 {
@@ -1314,7 +1303,7 @@ function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, 
 // $startcondtag = child xml tag where condition will be set
 // $condvalue = value of the condition
 //
-// wild card character "*" can be used at begin and end of $condvalue  
+// Wild card character "*" can be used at begin and end of $condvalue. 
   
 function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag, $condvalue)
 {
@@ -1404,7 +1393,7 @@ function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew,
 // $startcondtag = child xml tag where condition will be set
 // $condvalue = value of the condition
 //
-// wild card character "*" can be used at begin and end of $condvalue  
+// Wild card character "*" can be used at begin and end of $condvalue.
   
 function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag="", $condvalue="")
 {
@@ -1469,7 +1458,7 @@ function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $content
 // output: XML content container / false on error
 
 // description:
-// updates a given xml string $xmlnode in $xmldata with the content $xmlnodenew.
+// Updates a given xml string $xmlnode in $xmldata with the content $xmlnodenew.
 // This method provides a faster way to update xml nodes when the node was selected before.
 
 function updatecontent ($xmldata, $xmlnode, $xmlnodenew)
@@ -1501,7 +1490,7 @@ function updatecontent ($xmldata, $xmlnode, $xmlnodenew)
 //    </tagname>                     <- list end
 // .....................
 //
-// insert $insertxmldata string at the end of all child between the parent $tagname 
+// Inserts $insertxmldata string at the end of all child between the parent $tagname .
 
 function insertcontent ($xmldata, $insertxmldata, $starttagname)
 {
@@ -1552,7 +1541,7 @@ function insertcontent ($xmldata, $insertxmldata, $starttagname)
 //    </tagname>                     <- list end
 // .....................
 //
-// insert $insertxmldata string at the end of all child between the parent $tagname 
+// Inserts $insertxmldata string at the end of all child between the parent $tagname.
   
 function inserticontent ($xmldata, $insertxmldata, $starttagname)
 {  

@@ -16,8 +16,8 @@
 
 // description:
 // This function extracts the text content of multimedia objects and writes it the text to the container.
-// the given charset of the publication (not set by default), container or publication (not set by default) will be used.
-// the default character set of default.meta.tpl is UTF-8, so all content should be saved in UTF-8.
+// The given charset of the publication (not set by default), container or publication (not set by default) will be used.
+// The default character set of default.meta.tpl is UTF-8, so all content should be saved in UTF-8.
 
 function indexcontent ($site, $location, $file, $container="", $container_content="", $user)
 {
@@ -620,8 +620,9 @@ function unindexcontent ($site, $location, $file, $container, $container_content
 // input: publication, path to source dir, path to destination dir, file name
 // output: new file name / false on error (saves only thumbnail media file in destination location, only jpeg format is supported as output)
 
-// description: creates a thumbnail by extracting the thumbnail from an indesign file and transferes the generated image via remoteclient.
-// note for good results, InDesign Preferences must be set to save preview image and at extra large size.
+// description:
+// Creates a thumbnail by extracting the thumbnail from an indesign file and transferes the generated image via remoteclient.
+// For good results, InDesign Preferences must be set to save preview image and at extra large size.
 
 function createthumbnail_indesign ($site, $location_source, $location_dest, $file)
 {
@@ -766,7 +767,8 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
 // input: publication, path to source dir, path to destination dir, file name, frame of video in the seconds or hh:mm:ss[.xxx]
 // output: new file name / false on error (saves only thumbnail media file in destination location, only jpeg format is supported as output)
 
-// description: creates a thumbnail picture of a video frame 
+// description:
+// Creates a thumbnail picture of a video frame 
 
 function createthumbnail_video ($site, $location_source, $location_dest, $file, $frame)
 {
@@ -845,7 +847,8 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 //        force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
 // output: new file name / false on error (saves original or thumbnail media file in destination location, for thumbnail only jpeg format is supported as output)
 
-// description: creates an new image from original or creates a thumbnail and transferes the generated image via remoteclient
+// description:
+// Creates an new image from original or creates a thumbnail and transferes the generated image via remoteclient
 
 function createmedia ($site, $location_source, $location_dest, $file, $format="", $type="thumbnail", $force_no_encrypt=false)
 {
@@ -2499,7 +2502,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 //        force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
 // output: new file name / false on error
 
-// description: converts and creates a new image/video/audio or document from original. this is a wrapper function for createmedia and createdocument.
+// description:
+// Converts and creates a new image/video/audio or document from original. this is a wrapper function for createmedia and createdocument
 
 function convertmedia ($site, $location_source, $location_dest, $mediafile, $format, $media_config="", $force_no_encrypt=false)
 {
@@ -2552,7 +2556,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
 // output: new file name / false on error
 
 // description:
-// converts and creates a new image from original. the new image keeps will be resized and cropped to fit width and height.
+// Converts and creates a new image from original. the new image keeps will be resized and cropped to fit width and height.
 // This is a wrapper function for createmedia.
 
 function convertimage ($site, $file_source, $location_dest, $format="jpg", $colorspace="RGB", $iccprofile="", $width="", $height="", $slug=0, $units="px", $dpi=72, $quality="")
@@ -2743,7 +2747,8 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
 // input: publication, path to source media file, rotation angle, destination image format [jpg,png,gif]
 // output: new image file name / false on error
 
-// description: rotates an image (must be jpg, png or gif) using GD library. not used if ImageMagick is available.
+// description:
+// Rotates an image (must be jpg, png or gif) using GD library. not used if ImageMagick is available
 
 function rotateimage ($site, $filepath, $angle, $imageformat)
 {
@@ -2858,7 +2863,8 @@ function rotateimage ($site, $filepath, $angle, $imageformat)
 // input: publication, media file name
 // output: result array / false on error
 
-// description: uses the thumbnail image to calculate the mean color (red, green, blue), defines the colorkey (5 most commonly used colors) and the image type (landscape, portrait, square)
+// description:
+// Uses the thumbnail image to calculate the mean color (red, green, blue), defines the colorkey (5 most commonly used colors) and the image type (landscape, portrait, square)
 
 function getimagecolors ($site, $file)
 {
@@ -2973,7 +2979,8 @@ function getimagecolors ($site, $file)
 // input: image resource
 // output: color key of image / false on error
 
-// description: extracts the color key for an image that represents the 5 mostly used colors.
+// description:
+// Extracts the color key for an image that represents the 5 mostly used colors:
 // K...black
 // W...white
 // E...grey
@@ -3399,7 +3406,8 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
 //        force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
 // output: new file name / false on error
 
-// description: creates a new multimedia file of given format at source destination using UNOCONV and saves it as thumbnail file at the desitnation location
+// description:
+// Creates a new multimedia file of given format at source destination using UNOCONV and saves it as thumbnail file at the desitnation location
 
 function createdocument ($site, $location_source, $location_dest, $file, $format="", $force_no_encrypt=false)
 {
@@ -3587,7 +3595,9 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
 // function: unzipfile()
 // input: publication, path to source zip file, path to destination location, name of file for extraction, user
 // output: true/false
-// description: unpackes ZIP file and creates media files in destination location
+
+// description:
+// Unpacks ZIP file and creates media files in destination location
 
 function unzipfile ($site, $zipfilepath, $location, $filename, $user)
 {
@@ -3709,7 +3719,8 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $user)
 //        name of ZIP-file, user name, activity that need to be set for daily stats [download] (optional)
 // output: true/false
 
-// help function that reads and copies all multimedia files from multimedia components to the structure based on the multimedia component names
+// description:
+// Help function that reads and copies all multimedia files from multimedia components to the structure based on the multimedia component names
 
 function cloneFolder ($site, $source, $destination, $user, $activity="")
 {
@@ -3933,7 +3944,8 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
 // input: pixel, dpi (optional)
 // output: mm / false
 
-// description: convert pixel to mm
+// description:
+// Convert pixel to mm
 
 function px2mm ($pixel, $dpi=72)
 {
@@ -3949,7 +3961,8 @@ function px2mm ($pixel, $dpi=72)
 // input: pixel, dpi (optional)
 // output: pixel / false
 
-// description: convert mm to pixel
+// description:
+// Convert mm to pixel
 
 function mm2px ($mm, $dpi=72)
 {
@@ -3965,7 +3978,8 @@ function mm2px ($mm, $dpi=72)
 // input: pixel, dpi (optional)
 // output: inch / false
 
-// description: convert pixel to inches
+// description:
+// Convert pixel to inches
 
 function px2inch ($pixel, $dpi=72)
 {
@@ -3981,7 +3995,8 @@ function px2inch ($pixel, $dpi=72)
 // input: pixel, dpi (optional)
 // output: pixel / false
 
-// description: convert inches to pixel
+// description:
+// Convert inches to pixel
 
 function inch2px ($inch, $dpi=72)
 {
@@ -3997,7 +4012,8 @@ function inch2px ($inch, $dpi=72)
 // input: VTT string
 // output: array / false
 
-// description: converts VTT string to array
+// description:
+// Converts VTT string to array
 
 function vtt2array ($vtt)
 {

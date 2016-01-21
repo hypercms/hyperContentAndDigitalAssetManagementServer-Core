@@ -15,7 +15,7 @@
 // output: true / false
 
 // description:
-// sets explorer objectlist view.
+// Sets explorer objectlist view parameter
 
 function toggleview ($view)
 {
@@ -52,7 +52,7 @@ function toggleview ($view)
 // output: true / false
 
 // description:
-// enables or disables sidebar
+// Enables or disables the sidebar
 
 function togglesidebar ($view)
 {
@@ -77,7 +77,7 @@ function togglesidebar ($view)
 // output: true / false
 
 // description:
-// set filter settings for object view in session.
+// Set filter settings for object view in session
 
 function setfilter ($filter_set)
 {
@@ -111,7 +111,7 @@ function setfilter ($filter_set)
 // output: true / false
 
 // description:
-// if an object / file name is passing the filter-test.
+// If an object name is passing the filter-test. One or more filters need to be set in the session "hcms_objectfilter".
 
 function objectfilter ($file)
 {
@@ -155,10 +155,10 @@ function objectfilter ($file)
 // function: showshorttext ()
 // input: text as string, max. length of text (minus length starting from the end) (optional),
 //        line break instead of cut [true,false] only if length is positive (optional)
-// output: shorten text if possible
+// output: shortened text if possible, or orignal text
 
 // description:
-// reduce the length of a string and adding "..."
+// Reduce the length of a string and add "..." at the end
 
 function showshorttext ($text, $length=0, $linebreak=false)
 {
@@ -194,7 +194,7 @@ function showshorttext ($text, $length=0, $linebreak=false)
 // output: top bar box / false on error
 
 // description:
-// shows the standard top bar with or without close button
+// Returns the standard top bar with or without close button
 
 function showtopbar ($show, $lang="en", $close_link="", $close_target="", $individual_button="", $id="bar")
 {
@@ -237,7 +237,7 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $indiv
 // output: top bar box / false on error
 
 // description:
-// shows the menu top bar with or without close button
+// Returns the menu top bar with or without close button
 
 function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_target="", $id="bar")
 {
@@ -284,7 +284,7 @@ function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_
 // output: message box / false on error
 
 // description:
-// shows the standard message box with close button
+// Returns the standard message box with close button
 
 function showmessage ($show, $width="580px", $height="70px", $lang="en", $style="", $id="hcms_messageLayer")
 {
@@ -325,7 +325,7 @@ function showmessage ($show, $width="580px", $height="70px", $lang="en", $style=
 // output: message on html info page / false on error
 
 // description:
-// shows a full html info page
+// Returns a full html info page
 
 function showinfopage ($show, $lang="en")
 {
@@ -358,7 +358,7 @@ function showinfopage ($show, $lang="en")
 // output: message in div layer / false on error
 
 // description:
-// shows infobox as long as it has not been closed. Saves the close event in localstorage of browser.
+// Returns the infobox as long as it has not been closed. Saves the close event in localstorage of browser.
 
 function showinfobox ($show, $lang="en", $style="", $id="hcms_infoboxLayer")
 {
@@ -397,7 +397,7 @@ function showinfobox ($show, $lang="en", $style="", $id="hcms_infoboxLayer")
 // output: message in div layer / false on error
 
 // description:
-// shows share links
+// Returns the presenation of share links of social media platforms
 
 function showsharelinks ($link, $lang="en", $style="", $id="hcms_shareLayer")
 {
@@ -549,16 +549,18 @@ function showobject ($site, $location, $page, $cat="", $name="")
 // function: showmedia ()
 // input: mediafile (publication/filename), name of mediafile for display, view type [template, preview, preview_download, preview_no_rendering], ID of the media tag,
 //        width in px (optional), height in px (optional), CSS class (optional)
-// output: html presentation / false
+// output: html presentation of any media asset / false
 
 // description:
 // This function requires site, location and cat to be set as global variable in order to validate the access permission of the user
 
 function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $height="", $class="hcmsImageItem")
 {
+  // $mgmt_imageoptions is used for image rendering (in case the format requires the rename of the object file extension)	 
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docconvert, $hcms_charset, $hcms_lang_codepage, $hcms_lang, $lang,
-         $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions; // used for image rendering (in case the format requires rename of the object file extension)	 
-     
+         $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions;
+  
+  // Path to PDF.JS and Google Docs
   $pdfjs_path = $mgmt_config['url_path_cms']."javascript/pdfpreview/web/viewer.html?file=";
   $gdocs_path = "https://docs.google.com/viewer?url=";
 
@@ -1659,7 +1661,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 // output: explorer with search / false on error
 
 // description:
-// creates component explorer incl. search form
+// Creates component explorer including the search form
 
 function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="multi", $search_expression="", $search_format="", $mediatype="", $lang="en", $callback="", $scalingfactor="1")
 {
@@ -2073,7 +2075,7 @@ function showOptions()
 // output: rich text editor code / false on error
 
 // description:
-// shows the rich text editor
+// Returns the rich text editor code
 
 function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, $sizeheight=300, $toolbar="Default", $lang="en", $dpi=72)
 {
@@ -2126,7 +2128,7 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
 // output: rich text editor code for html head section / false on error
 
 // description:
-// shows the rich text editor code (JS, CSS) for include into the html head section
+// Returns the rich text editor code (JS, CSS) for include into the html head section
 
 function showinlineeditor_head ($lang)
 {
@@ -2278,7 +2280,7 @@ function showinlineeditor_head ($lang)
 // output: date picker code for html head section / false on error
 
 // description:
-// shows the date picker code (JS, CSS) for include into the html head section
+// Returns the date picker code (JS, CSS) for include into the html head section
 
 function showinlinedatepicker_head ()
 {
@@ -2888,7 +2890,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 // output: HTML code of the video player / false on error
 
 // description:
-// generates a html segment for the video code we use.
+// Generates a html segment for the video player code
 
 function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_url="", $id="", $title="", $autoplay=true, $fullscreen=true, $loop=false, $muted=false, $controls=true, $iframe=false, $force_reload=false)
 {
@@ -3135,10 +3137,10 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true)
 // function: showaudioplayer()
 // input: publication name, audio files as array (Array), ID of the tag (optional),
 //        autoplay (optional) [true,false], play loop (optional) [true,false], player controls (optional) [true,false]
-// output: String Code for the HTML
+// output: code of the HTML5 player / false
 
 // description:
-// Generates a html segment for the video code we use. False on error.
+// Generates the html segment for the video player code
 
 function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url="", $id="", $autoplay=false, $loop=false, $controls=true, $force_reload=false)
 {
@@ -3272,7 +3274,7 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
 // ------------------------- showaudioplayer_head -----------------------------
 // function: showaudioplayer_head()
 // input: secure hyperreferences by adding 'hypercms_'
-// output: head for video player
+// output: head for audio player
 
 function showaudioplayer_head ($secureHref=true)
 {
@@ -3293,8 +3295,8 @@ function showaudioplayer_head ($secureHref=true)
 // output: debug message
 
 // description:
-// Returns the current backtrace as a good readable string
-// ignores debug and debug_getbacktracestring
+// Returns the current backtrace as a good readable string.
+// Ignores debug and debug_getbacktracestring.
 
 function debug_getbacktracestring ($valueSeparator, $rowSeparator, $ignoreFunctions=array())
 {
@@ -3363,7 +3365,7 @@ function debug_getbacktracestring ($valueSeparator, $rowSeparator, $ignoreFuncti
 // output: HTML output of documentation / false on error
 
 // description:
-// generates the documentation of an API file
+// Generates the documentation of an API file
 
 function showAPIdocs ($file, $return="html")
 {
@@ -3493,7 +3495,8 @@ function showAPIdocs ($file, $return="html")
         foreach ($function as $name=>$value)
         {
           $result .= "<h3>".$name."</h3><br/>\n";
-          $result .= "<b>Syntax:</b><br/>\n";
+          $result .= "<b>Syntax:</b><br/>\n";          
+          $function[$name] = str_replace (",", ", ", $function[$name]);
           $result .= $function[$name]."<br/><br/>\n";
           
           $temp = trim (substr ($value, strpos ($value, "(") + 1), ")");
@@ -3514,7 +3517,11 @@ function showAPIdocs ($file, $return="html")
                 
                 if (trim ($var) == "") $var = "%";
                 
-                if (!empty ($var_text[$i])) $text = " ... ".trim ($var_text[$i]);
+                if (!empty ($var_text[$i]))
+                {
+                  $var_text[$i] = str_replace (",", ", ", $var_text[$i]);
+                  $text = " ... ".trim ($var_text[$i]);
+                }
                 else $text = "";
               
                 $result .= trim ($var).$text."<br/>\n";
@@ -3537,6 +3544,7 @@ function showAPIdocs ($file, $return="html")
           
           if (!empty ($description[$name]))
           {
+            $description[$name] = str_replace (",", ", ", $description[$name]);
             $result .= "<b>Description:</b><br/>\n";
             $result .= nl2br (trim ($description[$name]))."<br/><br/>\n";
           }
@@ -3566,7 +3574,7 @@ function showAPIdocs ($file, $return="html")
 // output: navigation item array / false
 
 // description:
-// readnavigation reads the content from the container and collects information about a single navigation item.
+// Reads the content from the container and collects information about a single navigation item
 
 function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
 {
@@ -3698,7 +3706,7 @@ function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
 // output: navigation array / false
 
 // description:
-// generates an assoc. array (item => nav-item, sub => array with sub-items)
+// Generates an associative array (item => nav-item, sub => array with sub-items)
 
 function createnavigation ($site, $docroot, $urlroot, $view="publish", $currentobject="", $recursive=true)
 {
@@ -3815,7 +3823,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
 // ------------------------- shownavigation -----------------------------
 // function: shownavigation()
 // input: navigation array (created by function readnavigation), level as integer (optional)
-// output: navigation presentation / false
+// output: navigation HTML presentation / false
 
 // description:
 // display navigation as HTML code.
@@ -3901,7 +3909,7 @@ function shownavigation ($navigation, $level=1)
 // ------------------------- showselect -----------------------------
 // function: showselect()
 // input: values array (array-key = value, array-value = text), use values of array as option value and text [true,false] (optional), selected value (optional), attributes of select tags like name or id or events (optional)
-// output: select presentation / false
+// output: HTML select box presentation / false
 
 function showselect ($value_array, $only_text=false, $selected_value="", $id="", $attributes="")
 {

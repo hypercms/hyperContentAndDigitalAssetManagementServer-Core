@@ -14,7 +14,8 @@
 // input: publication name, user group data (XML)
 // output: updated user group data (XML), false on error
 
-// description: update to version 5.6.4 (group names will be replaced by object-IDs)
+// description:
+// Update to version 5.6.4 (group names will be replaced by object-IDs)
 
 function update_usergroups_v564 ($site, $data)
 {
@@ -69,7 +70,8 @@ function update_usergroups_v564 ($site, $data)
 // input: %
 // output: updated tasks data (from XML to RDBMS), false on error
 
-// description: update of tasks to version 5.8.4
+// description:
+// Update of tasks to version 5.8.4
 
 function update_tasks_v584 ()
 {
@@ -175,7 +177,8 @@ function update_tasks_v584 ()
 // input: %
 // output: updated database, false on error
 
-// description: update of database to version 5.8.6
+// description:
+// Update of database to version 5.8.6
 
 function update_database_v586 ()
 {
@@ -293,7 +296,8 @@ function update_database_v586 ()
 // input: %
 // output: updated database, false on error
 
-// description: update of database to version 6.0.1
+// description: 
+// Update of database to version 6.0.1
 
 function update_database_v601 ()
 {

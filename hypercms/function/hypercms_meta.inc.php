@@ -15,7 +15,7 @@
 // output: keywords sperated by , /false on error
 
 // description:
-// generates a keyword list, to be used for meta information. stop word lists are defined in include/stopwords.inc.php
+// Generates a keyword list, to be used for meta information. stop word lists are defined in include/stopwords.inc.php
 
 function getkeywords ($text, $language="en", $charset="UTF-8")
 {
@@ -89,7 +89,7 @@ function getkeywords ($text, $language="en", $charset="UTF-8")
 // output: cleanded description of provided text /false on error
 
 // description:
-// generates a description from a text, to be used as meta information. stop word lists are defined in include/stopwords.inc.php
+// Generates a description from a text, to be used as meta information. Stop word lists are defined in include/stopwords.inc.php
 
 function getdescription ($text, $charset="UTF-8")
 {
@@ -127,7 +127,7 @@ function getdescription ($text, $charset="UTF-8")
 // output: xml sitemap / false on error
 
 // description:
-// generates a google sitemap xml-output.
+// Generates a google sitemap xml-output
 
 // help function
 function collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $prio, $ignore_array, $filetypes_array, $show_freq, $show_prio)
@@ -309,7 +309,7 @@ function getgooglesitemap ($site, $dir, $url, $getpara=array(), $permalink=array
 // function: getmetadata()
 // input: location, object (both optional if container is given), container name or container content (optional), 
 //        seperator of meta data fields [any string,array] (optional), publication name/template name to extract label names (optional)
-// output: string with all meta data from given object based on container
+// output: string with all meta data from given object based on container / false
 
 function getmetadata ($location, $object, $container="", $seperator="\n", $template="")
 {
@@ -474,7 +474,8 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
 // input: path to source file, path to destination file
 // output: true / false
 
-// description: copies all meta data from source to destination file using EXIFTOOL
+// description:
+// Copies all meta data from source to destination file using EXIFTOOL
 
 function copymetadata ($file_source, $file_dest)
 {
@@ -540,7 +541,8 @@ function copymetadata ($file_source, $file_dest)
 // input: path to image file
 // output: result array / false on error
 
-// description: extracts all meta data from a file using EXIFTOOL
+// description:
+// Extracts all meta data from a file using EXIFTOOL
 
 function extractmetadata ($file)
 {
@@ -636,7 +638,7 @@ function extractmetadata ($file)
 // output: result array / false
 
 // description:
-// function to convert an xmlobject to an array, provided by xaviered at gmail dot com
+// Converts an xmlobject to an array, provided by xaviered at gmail dot com
 
 function xmlobject2array ($obj, $namespace="")
 {
@@ -712,7 +714,8 @@ function xmlobject2array ($obj, $namespace="")
 // input: path to audio file
 // output: result array / false on error
 
-// description: requires getID3 library since EXIFTOOL cannot write ID3 tags so far
+// description:
+// Requires getID3 library since EXIFTOOL cannot write ID3 tags so far
 
 function id3_getdata ($file)
 {
@@ -827,7 +830,7 @@ function id3_getdata ($file)
 // output: true / false on error
 
 // description:
-// writes ID3 tags into audio file for supported file types and keeps the existing ID3 tags
+// Writes ID3 tags into audio file for supported file types and keeps the existing ID3 tags
 
 function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
 {
@@ -960,7 +963,7 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
 // output: ID3 tag array / false on error
 
 // description:
-// defines ID3 tag array based on the media mapping of a publication.
+// Defines ID3 tag array based on the media mapping of a publication.
 
 function id3_create ($site, $text)
 {
@@ -1155,7 +1158,7 @@ function xmp_getdata ($file)
 // output: true / false on error
 
 // description:
-// writes XMP tags into image file for supported file types and keeps the existing XMP tags
+// Writes XMP tags into image file for supported file types and keeps the existing XMP tags
 
 function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
 {
@@ -1259,7 +1262,7 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
 // output: XMP tag array / false on error
 
 // description:
-// defines XMP tag array based on the media mapping of a publication.
+// Defines XMP tag array based on the media mapping of a publication
 
 function xmp_create ($site, $text)
 {
@@ -1789,7 +1792,7 @@ function iptc_getcharset ($tag)
 // output: binary IPTC tag / false on error
 
 // description:
-// convert the IPTC tag into binary code.
+// Convert the IPTC tag to binary code
 
 function iptc_maketag ($record=2, $tag, $value)
 {
@@ -1823,7 +1826,7 @@ function iptc_maketag ($record=2, $tag, $value)
 // output: true / false on error
 
 // description:
-// writes IPTC tags into image file for supported file types and keeps the existing IPTC tags
+// Writes IPTC tags into image file for supported file types and keeps the existing IPTC tags
 
 function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
 {
@@ -1978,7 +1981,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
 // output: IPTC tag array / false on error
 
 // description:
-// defines IPTC tag array based on the medai mapping of a publication.
+// Defines IPTC tag array based on the medai mapping of a publication
 
 function iptc_create ($site, $text)
 {
@@ -2058,7 +2061,7 @@ function iptc_create ($site, $text)
 // output: true / false on error
 
 // description:
-// prepares the PHP mapping array from the provided mapping definition and saves media mapping file
+// Prepares the PHP mapping array from the provided mapping definition and saves media mapping file
 
 function createmapping ($site, $mapping)
 {
@@ -2122,7 +2125,7 @@ function createmapping ($site, $mapping)
 // output: mapping code for display / false
 
 // description:
-// loads the mapping file of the provided publication.
+// Loads the mapping file of the provided publication
 
 function getmapping ($site)
 {
@@ -2297,8 +2300,8 @@ hcms:quality => "Quality"';
 // output: true/false
 
 // description:
-// saves meta data of a multimedia file using a provided mapping in the proper fields of the content container. 
-// if no mapping is given a default mapping will be used.
+// Saves meta data of a multimedia file using a provided mapping in the proper fields of the content container. 
+// If no mapping is given a default mapping will be used.
 
 function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="", $user)
 {

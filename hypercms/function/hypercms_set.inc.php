@@ -934,7 +934,8 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
 // input: publication name, container (XML), container name, content array, user name, chracter set of text content
 // output: updated content container (XML), false on error
 
-// description: if content is general meta information
+// description:
+// Only used for content in general head information of container
 
 function sethead ($site, $contentdata, $contentfile, $headcontent, $user, $charset="")
 {
@@ -1007,7 +1008,7 @@ function sethead ($site, $contentdata, $contentfile, $headcontent, $user, $chars
 // output: filedata/false on error
 
 // description:
-// sets or creates the file name of the hyperCMS content file, template file, media file or file name pointer
+// Sets or creates the file name of the hyperCMS content file, template file, media file or file name pointer
 
 function setfilename ($filedata, $tagname, $value)
 {
