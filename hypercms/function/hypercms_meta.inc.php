@@ -2921,11 +2921,17 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               rdbms_setcontent ($container_id, $text_array, $user);
             }
 
-            return savecontainer ($container, "work", $containerdata, $user);
+            $save = savecontainer ($container, "work", $containerdata, $user);
+            
+            if ($save == false)
+            {
+              $errcode = "20581";
+              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Failed to write meta data to container with ID: ".$container_id;
+            }
           }
           
           // return content container on success
-          return $container_content;
+          return $containerdata;
         }
         else return false;
       }

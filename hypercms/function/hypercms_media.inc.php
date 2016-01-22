@@ -450,7 +450,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       if ($file_ext != "" && substr_count (strtolower ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video']).".", $file_ext.".") > 0)
       {
         // function setmetadata saves metadata in the content container
-        $container_content = setmetadata ($site, "", "", $file, "", $container_content, $user);
+        $container_content = setmetadata ($site, "", "", $file, "", $container_content, $user, false);
       } 
 
       // delete temp file
