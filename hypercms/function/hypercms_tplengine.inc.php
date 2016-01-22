@@ -2880,7 +2880,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         </tr>";
                         }
                       }                        
-                      elseif ($buildview == "template")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
                         <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
@@ -2918,13 +2918,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           </td>
                         </tr>";
                       }
-                      elseif ($buildview == "template")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
                         <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."</b><br />
+                              <b>element: ".$elementid."</b><br />
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-text-entries'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>
@@ -2959,7 +2960,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         </td>
                       </tr>";
                       }                        
-                      elseif ($buildview == "template")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
                         <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
@@ -3035,7 +3036,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         </tr>";
                         }
                       }                      
-                      elseif ($buildview == "template")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
                         <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
@@ -3096,13 +3097,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         </tr>";
                         }
                       }                      
-                      elseif ($buildview == "template")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
                         <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
                           <tr>
                             <td>
-                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=\"#000000\"><b>article: ".$artid."<br />element: ".$elementid."</b><br />
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."</b><br />
+                              <b>element: ".$elementid."</b><br />
                               ".getescapedtext ($hcms_lang['this-place-is-reserved-for-formatted-text-entries'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>
@@ -3153,7 +3155,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         </tr>";
                         }
                       }                        
-                      elseif ($buildview == "template")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
                         <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
@@ -3231,7 +3233,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           </tr>";
                         }
                       }
-                      elseif ($buildview == "template")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
                         <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
@@ -3289,13 +3291,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         </td>
                       </tr>";
                       }                      
-                      elseif ($buildview == "template")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
                         <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
                           <tr>
                             <td>
-                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."</b><br />
+                              <b>element: ".$elementid."</b><br />
                               ".$hcms_lang['this-place-is-reserved-for-text-options'][$lang]."</font>
                             </td>
                           </tr>
@@ -3342,7 +3345,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         </td>
                       </tr>";
                       }
-                      elseif ($buildview == "template" && $onedit != "hidden")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
                         <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\"0>
@@ -3379,14 +3382,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         </td>
                       </tr>";
                       }                      
-                      elseif ($buildview == "template")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
                         <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />
-                              element: ".$elementid."</b><br />".$hcms_lang['this-place-is-reserved-for-a-checkbox'][$lang]."</font>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."</b><br />
+                              <b>element: ".$elementid."</b><br />
+                              ".$hcms_lang['this-place-is-reserved-for-a-checkbox'][$lang]."</font>
                             </td>
                           </tr>
                         </table>";
@@ -3431,7 +3435,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         </td>
                       </tr>";
                       }
-                      elseif ($buildview == "template" && $onedit != "hidden")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
                         <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\"0>
@@ -3467,9 +3471,18 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         </td>
                       </tr>";
                       }                      
-                      elseif ($buildview == "template")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
-                        $taglink = "<table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />".getescapedtext ($hcms_lang['this-place-is-reserved-for-a-checkbox'][$lang], $charset, $lang)."</font>\n    </td>\n  </tr>\n</table>\n";
+                        $taglink = "
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."</b><br />
+                              <b>element: ".$elementid."</b><br />
+                              ".getescapedtext ($hcms_lang['this-place-is-reserved-for-a-checkbox'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -4010,9 +4023,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         
                         $formitem[$key] .= "</table></td></tr>";
                       }
-                      elseif ($buildview == "template")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
-                        $taglink = "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\"><tr><td><font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />".getescapedtext ($hcms_lang['this-place-is-reserved-for-media-image'][$lang], $charset, $lang)."</font></td></tr></table>\n";
+                        $taglink = "
+                        <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />
+                              ".getescapedtext ($hcms_lang['this-place-is-reserved-for-media-image'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -4090,9 +4111,18 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         
                         $formitem[$key] .= "</table></td></tr>";                  
                       }
-                      elseif ($buildview == "template")
+                      elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
-                        $taglink = "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\"><tr><td><font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article ".$artid.":<br />element: ".$elementid."<br /></b>".getescapedtext ($hcms_lang['this-place-is-reserved-for-media-image'][$lang], $charset, $lang)."</font></td></tr></table>\n";
+                        $taglink = "
+                        <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
+                          <tr>
+                            <td>
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article ".$artid.":</b><br />
+                              <b>element: ".$elementid."</b><br />
+                              ".getescapedtext ($hcms_lang['this-place-is-reserved-for-media-image'][$lang], $charset, $lang)."</font>
+                            </td>
+                          </tr>
+                        </table>";
                       }               
                       else $taglink = "";
                     }
@@ -4764,7 +4794,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."<br />
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."</b><br />
+                              <b>element: ".$elementid."</b><br />
                               </b>".getescapedtext ($hcms_lang['here-you-can-add-a-link'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>
@@ -5318,7 +5349,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
                           <tr>
                             <td>
-                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."</b><br />
+                              <b>element: ".$elementid."</b><br />
                               ".getescapedtext ($hcms_lang['here-you-can-insert-a-single-component'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>
@@ -5559,7 +5591,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
-                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."<br />element: ".$elementid."</b><br />
+                              <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."</b><br />
+                              <b>element: ".$elementid."</b><br />
                               ".getescapedtext ($hcms_lang['here-you-can-insert-multiple-components'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>

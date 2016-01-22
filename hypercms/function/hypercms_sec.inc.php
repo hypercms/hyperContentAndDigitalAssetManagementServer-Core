@@ -63,7 +63,7 @@ function rootpermission ($site_name, $site_admin, $permission_str)
         if ($rootpermission['desktopcheckedout'] == 0 && $desktop[3] == 1) $rootpermission['desktopcheckedout'] = 1;       
         if ($rootpermission['desktoptimetravel'] == 0 && $desktop[4] == 1) $rootpermission['desktoptimetravel'] = 1;
         if ($rootpermission['desktopfavorites'] == 0 && $desktop[5] == 1) $rootpermission['desktopfavorites'] = 1;
-        if ($rootpermission['desktopprojectmgmt'] == 0 && $desktop[2] == 1) $rootpermission['desktopprojectmgmt'] = 1; // new in version 6.0.1
+        if ($rootpermission['desktopprojectmgmt'] == 0 && $desktop[6] == 1) $rootpermission['desktopprojectmgmt'] = 1; // new in version 6.0.1
 
         if ($site_admin == true)
         {

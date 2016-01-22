@@ -35,6 +35,7 @@ class hcms_db
   // $db = Name of the database
   // $host = Hostname of the database Server
   // $charset = Charset if applicable
+  
   public function __construct ($type, $host, $user, $pass, $db, $charset="")
   {
     switch ($type)
@@ -57,6 +58,7 @@ class hcms_db
   // Escapes the String according to the used dbtype
   // $string String to be escaped
   // Returns Escaped String
+  
   public function escape_string ($string)
   {
     if ($this->_isMySqli())
@@ -89,6 +91,7 @@ class hcms_db
   // $date Date of the Query
   // $num Number where the result shall be stored. Needed for getRowCount and getResultRow
   // Returns true on success, false on failure
+  
   public function query ($sql, $errCode, $date, $num=1)
   {
     global $mgmt_config;
@@ -116,7 +119,7 @@ class hcms_db
       
       if ($result == false)
       {
-        $this->_error[] = $date."|db_connect_rdbms.php|error|$errCode|".$this->_db->error;
+        $this->_error[] = $date."|db_connect_rdbms.php|error|$errCode|".$this->_db->error.", SQL:".$sql;
         $this->_result[$num] = false;
         return false;
       }
@@ -132,7 +135,7 @@ class hcms_db
       
       if ($result == false)
       {
-        $this->_error[] = $date."|db_connect_rdbms.php|error|$errCode|ODBC Error Number: ".odbc_error();
+        $this->_error[] = $date."|db_connect_rdbms.php|error|$errCode|ODBC Error Number: ".odbc_error().", SQL:".$sql;
         $this->_result[$num] = false;
         return false;
       }
@@ -400,7 +403,7 @@ function rdbms_setcontent ($container_id, $text_array="", $user="")
     {
       $sql = 'UPDATE container SET ';
       $sql .= implode (", ", $sql_attr).' ';    
-      $sql .= 'WHERE id='.intval ($container_id).'';
+      $sql .= 'WHERE id="'.intval ($container_id).'"';
       
       $errcode = "50003";
       $db->query ($sql, $errcode, $mgmt_config['today'], 1);
@@ -420,7 +423,7 @@ function rdbms_setcontent ($container_id, $text_array="", $user="")
         if ($key != "") 
         {
           $sql = 'SELECT * FROM textnodes ';
-          $sql .= 'WHERE id='.intval ($container_id).' AND text_id="'.$key.'"';
+          $sql .= 'WHERE id="'.intval ($container_id).'" AND text_id="'.$key.'"';
                
           $errcode = "50004";
           $done = $db->query ($sql, $errcode, $mgmt_config['today'], $i);
@@ -455,7 +458,7 @@ function rdbms_setcontent ($container_id, $text_array="", $user="")
 
               //query 
               $sql = 'UPDATE textnodes SET textcontent="'.$text.'", object_id="'.$object_id.'", user="'.$user.'" ';
-              $sql .= 'WHERE id='.intval ($container_id).' AND text_id="'.$key.'"'; 
+              $sql .= 'WHERE id="'.intval ($container_id).'" AND text_id="'.$key.'"'; 
 
               $errcode = "50005";
               $db->query ($sql, $errcode, $mgmt_config['today'], ++$i);
@@ -578,7 +581,7 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
         {
           $sql = 'UPDATE media SET ';
           $sql .= implode (", ", $sql_update);
-          $sql .= ' WHERE id='.intval($id);
+          $sql .= ' WHERE id="'.intval($id).'"';
         }
       }
 
@@ -610,7 +613,7 @@ function rdbms_getmedia ($container_id, $extended=false)
     
     // get media info
     if ($extended == true) $sql = 'SELECT med.*, cnt.createdate, cnt.date, cnt.latitude, cnt.longitude, cnt.user FROM media AS med, container AS cnt WHERE med.id=cnt.id AND med.id='.intval($container_id).'';   
-    else $sql = 'SELECT * FROM media WHERE id='.intval($container_id).'';   
+    else $sql = 'SELECT * FROM media WHERE id="'.intval($container_id).'"';   
 
     $errcode = "50067";
     $done = $db->query ($sql, $errcode, $mgmt_config['today']);
@@ -717,7 +720,7 @@ function rdbms_renameobject ($object_old, $object_new)
         $filetype = getfiletype ($fileext);
 
         // update object 
-        $sql = 'UPDATE object SET objectpath="'.$object.'" WHERE object_id='.$object_id;
+        $sql = 'UPDATE object SET objectpath="'.$object.'" WHERE object_id="'.$object_id.'"';
         
         $errcode = "50011";
         $db->query ($sql, $errcode, $mgmt_config['today'], $i++);        
@@ -725,7 +728,7 @@ function rdbms_renameobject ($object_old, $object_new)
         // update media file-type
         if ($filetype != "")
         {
-          $sql = 'UPDATE media SET filetype="'.$filetype.'" WHERE id='.$container_id;
+          $sql = 'UPDATE media SET filetype="'.$filetype.'" WHERE id="'.$container_id.'"';
   
           $errcode = "50012";
           $db->query ($sql, $errcode, $mgmt_config['today'], $i++);
@@ -767,7 +770,7 @@ function rdbms_deleteobject ($object, $object_id="")
     $sql = 'SELECT id FROM object ';
     
     if ($object != "") $sql .= 'WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
-    elseif ($object_id > 0) $sql .= 'WHERE object_id='.intval ($object_id).'';
+    elseif ($object_id > 0) $sql .= 'WHERE object_id="'.intval ($object_id).'"';
        
     $errcode = "50012";
     $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select1');
@@ -796,49 +799,49 @@ function rdbms_deleteobject ($object, $object_id="")
         if ($row_id && $num_rows == 1)
         {
           // delete object
-          $sql = 'DELETE FROM object WHERE id='.$container_id;
+          $sql = 'DELETE FROM object WHERE id="'.$container_id.'"';
 
           $errcode = "50014";
           $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete1');
 
           // delete container
-          $sql = 'DELETE FROM container WHERE id='.$container_id;   
+          $sql = 'DELETE FROM container WHERE id="'.$container_id.'"';   
 
           $errcode = "50014";
           $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete2');
 
           // delete textnodes  
-          $sql = 'DELETE FROM textnodes WHERE id='.$container_id;
+          $sql = 'DELETE FROM textnodes WHERE id="'.$container_id.'"';
 
           $errcode = "50015";
           $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete3');
 
           // delete media attributes  
-          $sql = 'DELETE FROM media WHERE id='.$container_id;
+          $sql = 'DELETE FROM media WHERE id="'.$container_id.'"';
 
           $errcode = "50016";
           $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete4');
 
           // delete dailytstat 
-          $sql = 'DELETE FROM dailystat WHERE id='.$container_id;
+          $sql = 'DELETE FROM dailystat WHERE id="'.$container_id.'"';
 
           $errcode = "50017";
           $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete5');        
 
           // delete queue
-          $sql = 'DELETE FROM queue WHERE object_id='.$row_id['object_id'];
+          $sql = 'DELETE FROM queue WHERE object_id="'.$row_id['object_id'].'"';
 
           $errcode = "50018";
           $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete6');
           
           // delete accesslink
-          $sql = 'DELETE FROM accesslink WHERE object_id='.$row_id['object_id'];
+          $sql = 'DELETE FROM accesslink WHERE object_id="'.$row_id['object_id'].'"';
 
           $errcode = "50019";
           $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete7');
           
           // delete task
-          $sql = 'DELETE FROM task WHERE object_id='.$row_id['object_id'];
+          $sql = 'DELETE FROM task WHERE object_id="'.$row_id['object_id'].'"';
 
           $errcode = "50023";
           $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete7');    
@@ -853,13 +856,13 @@ function rdbms_deleteobject ($object, $object_id="")
         }
 
         // delete queue
-        $sql = 'DELETE FROM queue WHERE object_id='.$row_id['object_id'];   
+        $sql = 'DELETE FROM queue WHERE object_id="'.$row_id['object_id'].'"';   
 
         $errcode = "50021";
         $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete8');
         
         // delete notification
-        $sql = 'DELETE FROM notify WHERE object_id='.$row_id['object_id'];   
+        $sql = 'DELETE FROM notify WHERE object_id="'.$row_id['object_id'].'"';   
 
         $errcode = "50022";
         $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete9');
@@ -890,7 +893,7 @@ function rdbms_deletecontent ($container_id, $text_id, $user)
     if ($user != "") $user = $db->escape_string ($user);
     
     // query
-    $sql = 'DELETE FROM textnodes WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
+    $sql = 'DELETE FROM textnodes WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
        
     $errcode = "50021";
     $db->query ($sql, $errcode, $mgmt_config['today']);
@@ -1736,12 +1739,12 @@ function rdbms_getobject_hash ($object="", $container_id="")
     // if object id
     elseif (intval ($object) > 0)
     {
-      $sql = 'SELECT hash FROM object WHERE object_id='.intval($object).' LIMIT 1';
+      $sql = 'SELECT hash FROM object WHERE object_id="'.intval($object).'" LIMIT 1';
     }
     // if container id
     elseif (intval ($container_id) > 0)
     {
-      $sql = 'SELECT hash FROM object WHERE id='.intval($container_id).' LIMIT 1';
+      $sql = 'SELECT hash FROM object WHERE id="'.intval($container_id).'" LIMIT 1';
     }
 
     if (!empty ($sql))
@@ -1924,7 +1927,7 @@ function rdbms_createaccesslink ($hash, $object_id, $type="al", $user="", $lifet
 
     // insert access link info
     $sql = 'INSERT INTO accesslink (hash, date, object_id, type, user, deathtime, formats) ';    
-    $sql .= 'VALUES ("'.$hash.'", "'.$date.'", '.intval ($object_id).', "'.$type.'", "'.$user.'", '.intval ($deathtime).', "'.$formats.'")';
+    $sql .= 'VALUES ("'.$hash.'", "'.$date.'", "'.intval ($object_id).'", "'.$type.'", "'.$user.'", '.intval ($deathtime).', "'.$formats.'")';
          
     $errcode = "50007";
     $db->query ($sql, $errcode, $mgmt_config['today']);
@@ -2030,7 +2033,7 @@ function rdbms_createrecipient ($object, $from_user, $to_user, $email)
       while ($object_id = $db->getResultRow ('select'))
       {
         $sql = 'INSERT INTO recipient (object_id, date, from_user, to_user, email) ';    
-        $sql .= 'VALUES ('.intval ($object_id['object_id']).', "'.$date.'", "'.$from_user.'", "'.$to_user.'", "'.$email.'")';
+        $sql .= 'VALUES ("'.intval ($object_id['object_id']).'", "'.$date.'", "'.$from_user.'", "'.$to_user.'", "'.$email.'")';
         
         $errcode = "50030";
         $done = $db->query ($sql, $errcode, $mgmt_config['today'], $i++);
@@ -2290,7 +2293,7 @@ function rdbms_createnotification ($object, $events, $user)
       if (array_key_exists ("ondelete", $events) && $events['ondelete'] == 1) $ondelete = 1;
       else $ondelete = 0;
       
-      $sql = 'SELECT count(*) AS count FROM notify WHERE object_id='.$object_id.' AND user="'.$user.'"';
+      $sql = 'SELECT count(*) AS count FROM notify WHERE object_id="'.$object_id.'" AND user="'.$user.'"';
       
       $errcode = "50193";
       $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'select');
@@ -2419,8 +2422,8 @@ function rdbms_deletenotification ($notify_id, $object="", $user="")
     elseif (!empty($object_id)) $object_id = $db->escape_string ($object_id);
     elseif (!empty($user)) $user = $db->escape_string ($user);
         
-    if (!empty($notify_id)) $sql = 'DELETE FROM notify WHERE notify_id='.$notify_id;
-    elseif (!empty($object_id)) $sql = 'DELETE FROM notify WHERE object_id='.$object_id;
+    if (!empty($notify_id)) $sql = 'DELETE FROM notify WHERE notify_id="'.$notify_id.'"';
+    elseif (!empty($object_id)) $sql = 'DELETE FROM notify WHERE object_id="'.$object_id.'"';
     elseif (!empty($user)) $sql = 'DELETE FROM notify WHERE user="'.$user.'"';
      
     $errcode = "50092";
@@ -2878,13 +2881,13 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
     
     if ($task_id > 0)
     {
-      $sql .= ' WHERE task_id='.$task_id;
+      $sql .= ' WHERE task_id="'.$task_id.'"';
     }
     else
     {
       $sql .= ' WHERE 1=1';
-      if ($object_id > 0) $sql .= ' AND object_id='.$object_id;
-      if ($project_id > 0) $sql .= ' AND project_id='.$project_id;  
+      if ($object_id > 0) $sql .= ' AND object_id="'.$object_id.'"';
+      if ($project_id > 0) $sql .= ' AND project_id="'.$project_id.'"';  
       if ($from_user != "") $sql .= ' AND from_user="'.$from_user.'"';
       if ($to_user != "") $sql .= ' AND to_user="'.$to_user.'"';
       if ($startdate != "") $sql .= ' AND startdate="'.$startdate.'"';
@@ -2955,8 +2958,8 @@ function rdbms_deletetask ($task_id="", $object_id="", $to_user="")
     elseif (!empty ($object_id)) $object_id = intval ($object_id);
     elseif (!empty ($to_user)) $to_user = $db->escape_string ($to_user);
         
-    if (!empty ($task_id)) $sql = 'DELETE FROM task WHERE task_id='.$task_id;
-    elseif (!empty ($object_id)) $sql = 'DELETE FROM task WHERE object_id='.$object_id;
+    if (!empty ($task_id)) $sql = 'DELETE FROM task WHERE task_id="'.$task_id.'"';
+    elseif (!empty ($object_id)) $sql = 'DELETE FROM task WHERE object_id="'.$object_id.'"';
     elseif (!empty ($to_user)) $sql = 'DELETE FROM task WHERE to_user="'.$to_user.'"';
      
     $errcode = "50098";
@@ -3088,11 +3091,11 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
     // get recipients
     $sql = 'SELECT project_id, subproject_id, object_id, project, user, description FROM project WHERE 1=1';
     
-    if ($project_id > 0 && $subproject_id < 1) $sql .= ' AND project_id='.$project_id;
-    elseif ($project_id < 1 && $subproject_id >= 0) $sql .= ' AND subproject_id='.$subproject_id;
-    elseif ($project_id > 0 && $subproject_id >= 0) $sql .= ' AND (project_id='.$project_id.' OR subproject_id='.$subproject_id.')';
+    if ($project_id > 0 && $subproject_id < 1) $sql .= ' AND project_id="'.$project_id.'"';
+    elseif ($project_id < 1 && $subproject_id >= 0) $sql .= ' AND subproject_id="'.$subproject_id.'"';
+    elseif ($project_id > 0 && $subproject_id >= 0) $sql .= ' AND (project_id="'.$project_id.'" OR subproject_id="'.$subproject_id.'")';
     
-    if ($object_id != "") $sql .= ' AND object_id='.$object_id;    
+    if ($object_id != "") $sql .= ' AND object_id="'.$object_id.'"';    
     if ($user != "") $sql .= ' AND user="'.$user.'"';
     if ($order_by != "") $sql .= ' ORDER BY '.$order_by;
 
@@ -3152,8 +3155,8 @@ function rdbms_deleteproject ($project_id="", $object_id="", $user="")
     elseif (!empty ($object_id)) $object_id = intval ($object_id);
     elseif (!empty ($user)) $user = $db->escape_string ($user);
         
-    if (!empty ($task_id)) $sql = 'DELETE FROM project WHERE project_id='.$task_id;
-    elseif (!empty ($object_id)) $sql = 'DELETE FROM project WHERE object_id='.$object_id;
+    if (!empty ($task_id)) $sql = 'DELETE FROM project WHERE project_id="'.$task_id.'"';
+    elseif (!empty ($object_id)) $sql = 'DELETE FROM project WHERE object_id="'.$object_id.'"';
     elseif (!empty ($to_user)) $sql = 'DELETE FROM project WHERE user="'.$user.'"';
      
     $errcode = "50068";
