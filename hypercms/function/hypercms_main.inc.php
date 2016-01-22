@@ -10022,7 +10022,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
     if (is_file ($temp_file)) unlink ($temp_file);
     
     // include object name in message
-    if (empty ($show_command)) $show_command = "[".$result['object']."]";
+    if (empty ($show_command) && !empty ($result['object'])) $show_command = "[".$result['object']."]";
   
     // return message and command to flash object
     $result['result'] = true;

@@ -272,10 +272,6 @@ $mgmt_lang_shortcut['ms'] = "ms";
 $mgmt_lang_name['no'] = "Norwegian";
 $mgmt_lang_shortcut['no'] = "no";
 
-// Malay
-$mgmt_lang_name['ko'] = "Malay";
-$mgmt_lang_shortcut['ko'] = "ko";
-
 // Polish
 $mgmt_lang_name['pl'] = "Polish";
 $mgmt_lang_shortcut['pl'] = "pl";
@@ -307,9 +303,6 @@ $mgmt_lang_shortcut['sl'] = "sl";
 // Spanish
 $mgmt_lang_name['es'] = "Spanish";
 $mgmt_lang_shortcut['es'] = "es";
-// Swedish
-$mgmt_lang_name['sv'] = "Swedish";
-$mgmt_lang_shortcut['sv'] = "sv";
 
 // Thai
 $mgmt_lang_name['th'] = "Thai";

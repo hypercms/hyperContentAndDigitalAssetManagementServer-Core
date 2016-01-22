@@ -2296,14 +2296,14 @@ hcms:quality => "Quality"';
 
 // ------------------------- setmetadata -----------------------------
 // function: setmetadata()
-// input: publication name, location path (optional), object name (optional), media file name (optional), mapping array (meta data tag name -> text-id, optional), user name 
-// output: true/false
+// input: publication name, location path (optional), object name (optional), media file name (optional), mapping array [meta data tag name -> text-id] (optional), container content as XML string (optional), user name 
+// output: container content as XML string / false
 
 // description:
 // Saves meta data of a multimedia file using a provided mapping in the proper fields of the content container. 
 // If no mapping is given a default mapping will be used.
 
-function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="", $user)
+function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="", $containerdata="", $user, $savecontainer=true)
 {
   global $eventsystem, $mgmt_config, $hcms_ext;
   
@@ -2491,7 +2491,12 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       // get container information
       $container_id = getmediacontainerid ($mediafile);
       $container = getmediacontainername ($mediafile);
-      $containerdata = loadcontainer ($container, "work", $user);
+      
+      // load container if not provided
+      if ($containerdata == "")
+      {
+        $containerdata = loadcontainer ($container, "work", $user);
+      }
       
       // get destination character set
       $charset_array = getcharset ($site, $containerdata);
@@ -2704,7 +2709,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             }
           }
         }
-        
+
         // ------------------- binary IPTC block -------------------
         
         $size = getimagesize ($medialocation.$mediafile, $info);
@@ -2908,13 +2913,19 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         // save container
         if ($containerdata != false)
         {
-          if ($mgmt_config['db_connect_rdbms'] != "")
+          if ($savecontainer == true)
           {
-            include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
-            rdbms_setcontent ($container_id, $text_array, $user);
-          }
+            if ($mgmt_config['db_connect_rdbms'] != "")
+            {
+              include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
+              rdbms_setcontent ($container_id, $text_array, $user);
+            }
 
-          return savecontainer ($container, "work", $containerdata, $user);
+            return savecontainer ($container, "work", $containerdata, $user);
+          }
+          
+          // return content container on success
+          return $container_content;
         }
         else return false;
       }

@@ -50,11 +50,11 @@ checkusersession ($user);
       <tr>
         <td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:3px; border:0;" /></td>
         <td align="left" valign="top" class="hcmsTab">
-          &nbsp;<a href="site_edit_form.php?site=<?php echo $site; ?>&preview=<?php echo $preview; ?>&site_name=<?php echo $site_name; ?>" target="mainFrame2" onClick="hcms_showHideLayers('Layer_tab1','','show','Layer_tab2','','hide');"><?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?></a>
+          &nbsp;<a href="site_edit_form.php?site=<?php echo $site; ?>&preview=<?php echo $preview; ?>&site_name=<?php echo $site_name; ?>" target="mainFrame2" onClick="hcms_showHideLayers('Layer_tab1','','show','Layer_tab2','','hide');" title="<?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?></a>
         </td>
         <td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:3px; border:0;"></td>
         <td align="left" valign="top" class="hcmsTab">
-          &nbsp;<a href="site_edit_inheritance.php?site=<?php echo $site; ?>&preview=<?php echo $preview; ?>&site_name=<?php echo $site_name; ?>" target="mainFrame2" onClick="hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','show');"><?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?></a>
+          &nbsp;<a href="site_edit_inheritance.php?site=<?php echo $site; ?>&preview=<?php echo $preview; ?>&site_name=<?php echo $site_name; ?>" target="mainFrame2" onClick="hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','show');" title="<?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?></a>
         </td>
       </tr>
     </table>

@@ -57,26 +57,26 @@ function rootpermission ($site_name, $site_admin, $permission_str)
         parse_str ($value);
     
         // desktop permissions
-        if ($rootpermission['desktop'] == 0 && $desktop[0] == 1) $rootpermission['desktop'] = 1;
-        if ($rootpermission['desktopsetting'] == 0 && $desktop[1] == 1) $rootpermission['desktopsetting'] = 1;
-        if ($rootpermission['desktoptaskmgmt'] == 0 && $desktop[2] == 1) $rootpermission['desktoptaskmgmt'] = 1;
-        if ($rootpermission['desktopcheckedout'] == 0 && $desktop[3] == 1) $rootpermission['desktopcheckedout'] = 1;       
-        if ($rootpermission['desktoptimetravel'] == 0 && $desktop[4] == 1) $rootpermission['desktoptimetravel'] = 1;
-        if ($rootpermission['desktopfavorites'] == 0 && $desktop[5] == 1) $rootpermission['desktopfavorites'] = 1;
-        if ($rootpermission['desktopprojectmgmt'] == 0 && $desktop[6] == 1) $rootpermission['desktopprojectmgmt'] = 1; // new in version 6.0.1
+        if ($rootpermission['desktop'] == 0 && @$desktop[0] == 1) $rootpermission['desktop'] = 1;
+        if ($rootpermission['desktopsetting'] == 0 && @$desktop[1] == 1) $rootpermission['desktopsetting'] = 1;
+        if ($rootpermission['desktoptaskmgmt'] == 0 && @$desktop[2] == 1) $rootpermission['desktoptaskmgmt'] = 1;
+        if ($rootpermission['desktopcheckedout'] == 0 && @$desktop[3] == 1) $rootpermission['desktopcheckedout'] = 1;       
+        if ($rootpermission['desktoptimetravel'] == 0 && @$desktop[4] == 1) $rootpermission['desktoptimetravel'] = 1;
+        if ($rootpermission['desktopfavorites'] == 0 && @$desktop[5] == 1) $rootpermission['desktopfavorites'] = 1;
+        if ($rootpermission['desktopprojectmgmt'] == 0 && @$desktop[6] == 1) $rootpermission['desktopprojectmgmt'] = 1; // new in version 6.0.1
 
         if ($site_admin == true)
         {
           // site permissions
-          if ($rootpermission['site'] == 0 && $site[0] == 1) $rootpermission['site'] = 1;
-          if ($rootpermission['sitecreate'] == 0 && $site[1] == 1) $rootpermission['sitecreate'] = 1;
-          if ($rootpermission['sitedelete'] == 0 && $site[2] == 1) $rootpermission['sitedelete'] = 1;
-          if ($rootpermission['siteedit'] == 0 && $site[3] == 1) $rootpermission['siteedit'] = 1;   
+          if ($rootpermission['site'] == 0 && @$site[0] == 1) $rootpermission['site'] = 1;
+          if ($rootpermission['sitecreate'] == 0 && @$site[1] == 1) $rootpermission['sitecreate'] = 1;
+          if ($rootpermission['sitedelete'] == 0 && @$site[2] == 1) $rootpermission['sitedelete'] = 1;
+          if ($rootpermission['siteedit'] == 0 && @$site[3] == 1) $rootpermission['siteedit'] = 1;   
           // user permissions
-          if ($rootpermission['user'] == 0 && $user[0] == 1) $rootpermission['user'] = 1;
-          if ($rootpermission['usercreate'] == 0 && $user[1] == 1) $rootpermission['usercreate'] = 1;
-          if ($rootpermission['userdelete'] == 0 && $user[2] == 1) $rootpermission['userdelete'] = 1;
-          if ($rootpermission['useredit'] == 0 && $user[3] == 1) $rootpermission['useredit'] = 1;         
+          if ($rootpermission['user'] == 0 && @$user[0] == 1) $rootpermission['user'] = 1;
+          if ($rootpermission['usercreate'] == 0 && @$user[1] == 1) $rootpermission['usercreate'] = 1;
+          if ($rootpermission['userdelete'] == 0 && @$user[2] == 1) $rootpermission['userdelete'] = 1;
+          if ($rootpermission['useredit'] == 0 && @$user[3] == 1) $rootpermission['useredit'] = 1;         
         }  
       }
     }
@@ -158,61 +158,61 @@ function globalpermission ($site_name, $permission_str)
         parse_str ($value);
 
         // user permissions
-        if ($globalpermission[$site_name]['user'] == 0 && $user[0] == 1) $globalpermission[$site_name]['user'] = 1;
-        if ($globalpermission[$site_name]['usercreate'] == 0 && $user[1] == 1) $globalpermission[$site_name]['usercreate'] = 1;
-        if ($globalpermission[$site_name]['userdelete'] == 0 && $user[2] == 1) $globalpermission[$site_name]['userdelete'] = 1;
-        if ($globalpermission[$site_name]['useredit'] == 0 && $user[3] == 1) $globalpermission[$site_name]['useredit'] = 1;
+        if ($globalpermission[$site_name]['user'] == 0 && @$user[0] == 1) $globalpermission[$site_name]['user'] = 1;
+        if ($globalpermission[$site_name]['usercreate'] == 0 && @$user[1] == 1) $globalpermission[$site_name]['usercreate'] = 1;
+        if ($globalpermission[$site_name]['userdelete'] == 0 && @$user[2] == 1) $globalpermission[$site_name]['userdelete'] = 1;
+        if ($globalpermission[$site_name]['useredit'] == 0 && @$user[3] == 1) $globalpermission[$site_name]['useredit'] = 1;
         // group permissions
-        if ($globalpermission[$site_name]['group'] == 0 && $group[0] == 1) $globalpermission[$site_name]['group'] = 1;
-        if ($globalpermission[$site_name]['groupcreate'] == 0 && $group[1] == 1) $globalpermission[$site_name]['groupcreate'] = 1;
-        if ($globalpermission[$site_name]['groupdelete'] == 0 && $group[2] == 1) $globalpermission[$site_name]['groupdelete'] = 1;
-        if ($globalpermission[$site_name]['groupedit'] == 0 && $group[3] == 1) $globalpermission[$site_name]['groupedit'] = 1;
+        if ($globalpermission[$site_name]['group'] == 0 && @$group[0] == 1) $globalpermission[$site_name]['group'] = 1;
+        if ($globalpermission[$site_name]['groupcreate'] == 0 && @$group[1] == 1) $globalpermission[$site_name]['groupcreate'] = 1;
+        if ($globalpermission[$site_name]['groupdelete'] == 0 && @$group[2] == 1) $globalpermission[$site_name]['groupdelete'] = 1;
+        if ($globalpermission[$site_name]['groupedit'] == 0 && @$group[3] == 1) $globalpermission[$site_name]['groupedit'] = 1;
         // personalization permissions
-        if ($globalpermission[$site_name]['pers'] == 0 && $pers[0] == 1) $globalpermission[$site_name]['pers'] = 1;
-        if ($globalpermission[$site_name]['perstrack'] == 0 && $pers[1] == 1) $globalpermission[$site_name]['perstrack'] = 1;
-        if ($globalpermission[$site_name]['perstrackcreate'] == 0 && $pers[2] == 1) $globalpermission[$site_name]['perstrackcreate'] = 1;
-        if ($globalpermission[$site_name]['perstrackdelete'] == 0 && $pers[3] == 1) $globalpermission[$site_name]['perstrackdelete'] = 1;
-        if ($globalpermission[$site_name]['perstrackedit'] == 0 && $pers[4] == 1) $globalpermission[$site_name]['perstrackedit'] = 1;
-        if ($globalpermission[$site_name]['persprof'] == 0 && $pers[5] == 1) $globalpermission[$site_name]['persprof'] = 1;
-        if ($globalpermission[$site_name]['persprofcreate'] == 0 && $pers[6] == 1) $globalpermission[$site_name]['persprofcreate'] = 1;
-        if ($globalpermission[$site_name]['persprofdelete'] == 0 && $pers[7] == 1) $globalpermission[$site_name]['persprofdelete'] = 1;
-        if ($globalpermission[$site_name]['persprofedit'] == 0 && $pers[8] == 1) $globalpermission[$site_name]['persprofedit'] = 1;
+        if ($globalpermission[$site_name]['pers'] == 0 && @$pers[0] == 1) $globalpermission[$site_name]['pers'] = 1;
+        if ($globalpermission[$site_name]['perstrack'] == 0 && @$pers[1] == 1) $globalpermission[$site_name]['perstrack'] = 1;
+        if ($globalpermission[$site_name]['perstrackcreate'] == 0 && @$pers[2] == 1) $globalpermission[$site_name]['perstrackcreate'] = 1;
+        if ($globalpermission[$site_name]['perstrackdelete'] == 0 && @$pers[3] == 1) $globalpermission[$site_name]['perstrackdelete'] = 1;
+        if ($globalpermission[$site_name]['perstrackedit'] == 0 && @$pers[4] == 1) $globalpermission[$site_name]['perstrackedit'] = 1;
+        if ($globalpermission[$site_name]['persprof'] == 0 && @$pers[5] == 1) $globalpermission[$site_name]['persprof'] = 1;
+        if ($globalpermission[$site_name]['persprofcreate'] == 0 && @$pers[6] == 1) $globalpermission[$site_name]['persprofcreate'] = 1;
+        if ($globalpermission[$site_name]['persprofdelete'] == 0 && @$pers[7] == 1) $globalpermission[$site_name]['persprofdelete'] = 1;
+        if ($globalpermission[$site_name]['persprofedit'] == 0 && @$pers[8] == 1) $globalpermission[$site_name]['persprofedit'] = 1;
         // workflow permissions
-        if ($globalpermission[$site_name]['workflow'] == 0 && $workflow[0] == 1) $globalpermission[$site_name]['workflow'] = 1;
-        if ($globalpermission[$site_name]['workflowproc'] == 0 && $workflow[1] == 1) $globalpermission[$site_name]['workflowproc'] = 1;
-        if ($globalpermission[$site_name]['workflowproccreate'] == 0 && $workflow[2] == 1) $globalpermission[$site_name]['workflowproccreate'] = 1;
-        if ($globalpermission[$site_name]['workflowprocdelete'] == 0 && $workflow[3] == 1) $globalpermission[$site_name]['workflowprocdelete'] = 1;
-        if ($globalpermission[$site_name]['workflowprocedit'] == 0 && $workflow[4] == 1) $globalpermission[$site_name]['workflowprocedit'] = 1;
-        if ($globalpermission[$site_name]['workflowprocfolder'] == 0 && $workflow[5] == 1) $globalpermission[$site_name]['workflowprocfolder'] = 1;
-        if ($globalpermission[$site_name]['workflowscript'] == 0 && $workflow[6] == 1) $globalpermission[$site_name]['workflowscript'] = 1;
-        if ($globalpermission[$site_name]['workflowscriptcreate'] == 0 && $workflow[7] == 1) $globalpermission[$site_name]['workflowscriptcreate'] = 1;
-        if ($globalpermission[$site_name]['workflowscriptdelete'] == 0 && $workflow[8] == 1) $globalpermission[$site_name]['workflowscriptdelete'] = 1;
-        if ($globalpermission[$site_name]['workflowscriptedit'] == 0 && $workflow[9] == 1) $globalpermission[$site_name]['workflowscriptedit'] = 1;      
+        if ($globalpermission[$site_name]['workflow'] == 0 && @$workflow[0] == 1) $globalpermission[$site_name]['workflow'] = 1;
+        if ($globalpermission[$site_name]['workflowproc'] == 0 && @$workflow[1] == 1) $globalpermission[$site_name]['workflowproc'] = 1;
+        if ($globalpermission[$site_name]['workflowproccreate'] == 0 && @$workflow[2] == 1) $globalpermission[$site_name]['workflowproccreate'] = 1;
+        if ($globalpermission[$site_name]['workflowprocdelete'] == 0 && @$workflow[3] == 1) $globalpermission[$site_name]['workflowprocdelete'] = 1;
+        if ($globalpermission[$site_name]['workflowprocedit'] == 0 && @$workflow[4] == 1) $globalpermission[$site_name]['workflowprocedit'] = 1;
+        if ($globalpermission[$site_name]['workflowprocfolder'] == 0 && @$workflow[5] == 1) $globalpermission[$site_name]['workflowprocfolder'] = 1;
+        if ($globalpermission[$site_name]['workflowscript'] == 0 && @$workflow[6] == 1) $globalpermission[$site_name]['workflowscript'] = 1;
+        if ($globalpermission[$site_name]['workflowscriptcreate'] == 0 && @$workflow[7] == 1) $globalpermission[$site_name]['workflowscriptcreate'] = 1;
+        if ($globalpermission[$site_name]['workflowscriptdelete'] == 0 && @$workflow[8] == 1) $globalpermission[$site_name]['workflowscriptdelete'] = 1;
+        if ($globalpermission[$site_name]['workflowscriptedit'] == 0 && @$workflow[9] == 1) $globalpermission[$site_name]['workflowscriptedit'] = 1;      
         // template permissions
-        if ($globalpermission[$site_name]['template'] == 0 && $template[0] == 1) $globalpermission[$site_name]['template'] = 1;
-        if ($globalpermission[$site_name]['tpl'] == 0 && $template[1] == 1) $globalpermission[$site_name]['tpl'] = 1;
-        if ($globalpermission[$site_name]['tplcreate'] == 0 && $template[2] == 1) $globalpermission[$site_name]['tplcreate'] = 1;
+        if ($globalpermission[$site_name]['template'] == 0 && @$template[0] == 1) $globalpermission[$site_name]['template'] = 1;
+        if ($globalpermission[$site_name]['tpl'] == 0 && @$template[1] == 1) $globalpermission[$site_name]['tpl'] = 1;
+        if ($globalpermission[$site_name]['tplcreate'] == 0 && @$template[2] == 1) $globalpermission[$site_name]['tplcreate'] = 1;
         if (isset ($template[5]) && $template[5] != "") // older versions before 5.5.11 (template upload still exists)
         {
-          if ($globalpermission[$site_name]['tpldelete'] == 0 && $template[4] == 1) $globalpermission[$site_name]['tpldelete'] = 1;
-          if ($globalpermission[$site_name]['tpledit'] == 0 && $template[5] == 1) $globalpermission[$site_name]['tpledit'] = 1;
+          if ($globalpermission[$site_name]['tpldelete'] == 0 && @$template[4] == 1) $globalpermission[$site_name]['tpldelete'] = 1;
+          if ($globalpermission[$site_name]['tpledit'] == 0 && @$template[5] == 1) $globalpermission[$site_name]['tpledit'] = 1;
         }
         else
         {
-          if ($globalpermission[$site_name]['tpldelete'] == 0 && $template[3] == 1) $globalpermission[$site_name]['tpldelete'] = 1;
-          if ($globalpermission[$site_name]['tpledit'] == 0 && isset ($template[4]) && $template[4] == 1) $globalpermission[$site_name]['tpledit'] = 1;
+          if ($globalpermission[$site_name]['tpldelete'] == 0 && @$template[3] == 1) $globalpermission[$site_name]['tpldelete'] = 1;
+          if ($globalpermission[$site_name]['tpledit'] == 0 && @$template[4] == 1) $globalpermission[$site_name]['tpledit'] = 1;
         }
         // template media permissions
-        if ($globalpermission[$site_name]['tplmedia'] == 0 && $media[0] == 1) $globalpermission[$site_name]['tplmedia'] = 1;
-        if ($globalpermission[$site_name]['tplmediacatcreate'] == 0 && $media[1] == 1) $globalpermission[$site_name]['tplmediacatcreate'] = 1;
-        if ($globalpermission[$site_name]['tplmediacatdelete'] == 0 && $media[2] == 1) $globalpermission[$site_name]['tplmediacatdelete'] = 1;
-        if ($globalpermission[$site_name]['tplmediacatrename'] == 0 && $media[3] == 1) $globalpermission[$site_name]['tplmediacatrename'] = 1;
-        if ($globalpermission[$site_name]['tplmediaupload'] == 0 && $media[4] == 1) $globalpermission[$site_name]['tplmediaupload'] = 1;
-        if ($globalpermission[$site_name]['tplmediadelete'] == 0 && $media[5] == 1) $globalpermission[$site_name]['tplmediadelete'] = 1;
+        if ($globalpermission[$site_name]['tplmedia'] == 0 && @$media[0] == 1) $globalpermission[$site_name]['tplmedia'] = 1;
+        if ($globalpermission[$site_name]['tplmediacatcreate'] == 0 && @$media[1] == 1) $globalpermission[$site_name]['tplmediacatcreate'] = 1;
+        if ($globalpermission[$site_name]['tplmediacatdelete'] == 0 && @$media[2] == 1) $globalpermission[$site_name]['tplmediacatdelete'] = 1;
+        if ($globalpermission[$site_name]['tplmediacatrename'] == 0 && @$media[3] == 1) $globalpermission[$site_name]['tplmediacatrename'] = 1;
+        if ($globalpermission[$site_name]['tplmediaupload'] == 0 && @$media[4] == 1) $globalpermission[$site_name]['tplmediaupload'] = 1;
+        if ($globalpermission[$site_name]['tplmediadelete'] == 0 && @$media[5] == 1) $globalpermission[$site_name]['tplmediadelete'] = 1;
         // component permissions
-        if ($globalpermission[$site_name]['component'] == 0 && $component[0] == 1) $globalpermission[$site_name]['component'] = 1;
+        if ($globalpermission[$site_name]['component'] == 0 && @$component[0] == 1) $globalpermission[$site_name]['component'] = 1;
         // content permissions
-        if ($globalpermission[$site_name]['page'] == 0 && $page[0] == 1) $globalpermission[$site_name]['page'] = 1;     
+        if ($globalpermission[$site_name]['page'] == 0 && @$page[0] == 1) $globalpermission[$site_name]['page'] = 1;     
       }  
     }
     
@@ -247,27 +247,27 @@ function localpermission ($site_name, $permission_str)
         parse_str ($value);
   
         // component permissions
-        $localpermission[$site_name][$group_name]['component'] = $component[0];
-        $localpermission[$site_name][$group_name]['compupload'] = $component[1];
-        $localpermission[$site_name][$group_name]['compdownload'] = $component[2];
-        $localpermission[$site_name][$group_name]['compsendlink'] = $component[3]; 
-        $localpermission[$site_name][$group_name]['compfoldercreate'] = $component[4];
-        $localpermission[$site_name][$group_name]['compfolderdelete'] = $component[5];
-        $localpermission[$site_name][$group_name]['compfolderrename'] = $component[6];
-        $localpermission[$site_name][$group_name]['compcreate'] = $component[7];
-        $localpermission[$site_name][$group_name]['compdelete'] = $component[8];
-        $localpermission[$site_name][$group_name]['comprename'] = $component[8];
-        $localpermission[$site_name][$group_name]['comppublish'] = $component[10];
+        $localpermission[$site_name][$group_name]['component'] = @$component[0];
+        $localpermission[$site_name][$group_name]['compupload'] = @$component[1];
+        $localpermission[$site_name][$group_name]['compdownload'] = @$component[2];
+        $localpermission[$site_name][$group_name]['compsendlink'] = @$component[3]; 
+        $localpermission[$site_name][$group_name]['compfoldercreate'] = @$component[4];
+        $localpermission[$site_name][$group_name]['compfolderdelete'] = @$component[5];
+        $localpermission[$site_name][$group_name]['compfolderrename'] = @$component[6];
+        $localpermission[$site_name][$group_name]['compcreate'] = @$component[7];
+        $localpermission[$site_name][$group_name]['compdelete'] = @$component[8];
+        $localpermission[$site_name][$group_name]['comprename'] = @$component[8];
+        $localpermission[$site_name][$group_name]['comppublish'] = @$component[10];
         // content permissions
-        $localpermission[$site_name][$group_name]['page'] = $page[0];
-        $localpermission[$site_name][$group_name]['pagesendlink'] = $page[1]; 
-        $localpermission[$site_name][$group_name]['pagefoldercreate'] = $page[2];
-        $localpermission[$site_name][$group_name]['pagefolderdelete'] = $page[3];
-        $localpermission[$site_name][$group_name]['pagefolderrename'] = $page[4];
-        $localpermission[$site_name][$group_name]['pagecreate'] = $page[5];
-        $localpermission[$site_name][$group_name]['pagedelete'] = $page[6];
-        $localpermission[$site_name][$group_name]['pagerename'] = $page[7];
-        $localpermission[$site_name][$group_name]['pagepublish'] = $page[8];
+        $localpermission[$site_name][$group_name]['page'] = @$page[0];
+        $localpermission[$site_name][$group_name]['pagesendlink'] = @$page[1]; 
+        $localpermission[$site_name][$group_name]['pagefoldercreate'] = @$page[2];
+        $localpermission[$site_name][$group_name]['pagefolderdelete'] = @$page[3];
+        $localpermission[$site_name][$group_name]['pagefolderrename'] = @$page[4];
+        $localpermission[$site_name][$group_name]['pagecreate'] = @$page[5];
+        $localpermission[$site_name][$group_name]['pagedelete'] = @$page[6];
+        $localpermission[$site_name][$group_name]['pagerename'] = @$page[7];
+        $localpermission[$site_name][$group_name]['pagepublish'] = @$page[8];
       }  
     }
     

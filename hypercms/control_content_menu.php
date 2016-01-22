@@ -801,24 +801,24 @@ if ($page != "")
       <tr>
         <td style=\"width:3px;\"><img src=\"".getthemelocation()."img/backgrd_tabs_spacer.gif\" style=\"width:3px; height:3px; border:0;\" /></td>
         <td align=\"left\" valign=\"top\" class=\"hcmsTab\">&nbsp;
-          <a href=\"page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&ctrlreload=no\" target=\"objFrame\" onClick=\"hcms_showHideLayers('Layer_tab1','','show','Layer_tab2','','hide','Layer_tab3','','hide','Layer_tab4','','hide')\">".$pagecomp."</a>
+          <a href=\"page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&ctrlreload=no\" target=\"objFrame\" onClick=\"hcms_showHideLayers('Layer_tab1','','show','Layer_tab2','','hide','Layer_tab3','','hide','Layer_tab4','','hide')\" title=\"".$pagecomp."\">".$pagecomp."</a>
         </td>
         <td style=\"width:3px;\"><img src=\"".getthemelocation()."img/backgrd_tabs_spacer.gif\" style=\"width:3px; height:3px; border:0;\" /></td>
         <td align=\"left\" valign=\"top\" class=\"hcmsTab\">&nbsp;\n";
           if (($usedby == "" || $usedby == $user) && ($wf_role >= 4 || $wf_role == 2) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) 
-            echo "<a href=\"frameset_template_change.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&template=".url_encode($template)."\" target=\"objFrame\" onClick=\"hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','show','Layer_tab3','','hide','Layer_tab4','','hide')\">".getescapedtext ($hcms_lang['template'][$lang])."</a>";
+            echo "<a href=\"frameset_template_change.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&template=".url_encode($template)."\" target=\"objFrame\" onClick=\"hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','show','Layer_tab3','','hide','Layer_tab4','','hide')\" title=\"".getescapedtext ($hcms_lang['template'][$lang])."\">".getescapedtext ($hcms_lang['template'][$lang])."</a>";
           else echo "<b class=\"hcmsButtonTinyOff\">".getescapedtext ($hcms_lang['template'][$lang])."</b>";
         echo "</td>
         <td style=\"width:3px;\"><img src=\"".getthemelocation()."img/backgrd_tabs_spacer.gif\" style=\"width:3px; height:3px; border:0;\" /></td>
         <td align=\"left\" valign=\"top\" class=\"hcmsTab\">&nbsp;\n";
           if (($usedby == "" || $usedby == $user) && ($wf_role >= 4 || $wf_role == 2) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
-            echo "<a href=\"version_content.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\" target=\"objFrame\" onClick=\"hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','hide','Layer_tab3','','show','Layer_tab4','','hide')\">".getescapedtext ($hcms_lang['version'][$lang])."</a>";
+            echo "<a href=\"version_content.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\" target=\"objFrame\" onClick=\"hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','hide','Layer_tab3','','show','Layer_tab4','','hide')\" title=\"".getescapedtext ($hcms_lang['version'][$lang])."\">".getescapedtext ($hcms_lang['version'][$lang])."</a>";
           else echo "<b class=\"hcmsButtonTinyOff\">".getescapedtext ($hcms_lang['version'][$lang])."</b>";
         echo "</td>
         <td style=\"width:3px;\"><img src=\"".getthemelocation()."img/backgrd_tabs_spacer.gif\" style=\"width:3px; height:3px; border:0;\" /></td>
         <td align=\"left\" valign=\"top\" class=\"hcmsTab\">&nbsp;\n";
           if ($wf_role >= 1 && $setlocalpermission['root'] == 1) 
-            echo "<a href=\"page_info.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\" target=\"objFrame\" onClick=\"hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','hide','Layer_tab3','','hide','Layer_tab4','','show')\">".getescapedtext ($hcms_lang['information'][$lang])."</a>";
+            echo "<a href=\"page_info.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\" target=\"objFrame\" onClick=\"hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','hide','Layer_tab3','','hide','Layer_tab4','','show')\" title=\"".getescapedtext ($hcms_lang['information'][$lang])."\">".getescapedtext ($hcms_lang['information'][$lang])."</a>";
           else echo "<b class=\"hcmsButtonTinyOff\">".getescapedtext ($hcms_lang['information'][$lang])."</b>";
         echo "</td>
       </tr>

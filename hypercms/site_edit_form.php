@@ -136,6 +136,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   $mgmt_config[$site_name]['remoteclient'] = "";
   $mgmt_config[$site_name]['specialchr_disable'] = "";
   $mgmt_config[$site_name]['dam'] = "";
+  $mgmt_config[$site_name]['upload_userinput'] = "";
   $mgmt_config[$site_name]['storage'] = "";
   $mgmt_config[$site_name]['crypt_content'] = "";
   $mgmt_config[$site_name]['watermark_image'] = "";
@@ -169,15 +170,15 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     </tr>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['grant-publication-management'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="checkbox" name="setting[site_admin]" value="true" <?php if ($mgmt_config[$site_name]['site_admin'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="checkbox" name="setting[site_admin]" value="true" <?php if (@$mgmt_config[$site_name]['site_admin'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['url-of-the-website'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="text" id="url_path_page" name="setting[url_path_page]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['url_path_page']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="text" id="url_path_page" name="setting[url_path_page]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['url_path_page']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['directory-path-of-the-website'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="text" id="abs_path_page" name="setting[abs_path_page]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['abs_path_page']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="text" id="abs_path_page" name="setting[abs_path_page]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['abs_path_page']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr align="left" valign="top"> 
       <td><?php echo getescapedtext ($hcms_lang['folders-to-exclude'][$lang]); ?>: <br />
@@ -192,28 +193,28 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <?php if (is_dir ($mgmt_config['abs_path_cms']."webdav")) { ?>
     <tr align="left" valign="top"> 
       <td><?php echo getescapedtext ($hcms_lang['allow-access-through-webdav'][$lang]); ?>: <br />
-      <td nowrap="nowrap"> <input type="checkbox" name="setting[webdav]" value="true" <?php if ($mgmt_config[$site_name]['webdav'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="checkbox" name="setting[webdav]" value="true" <?php if (@$mgmt_config[$site_name]['webdav'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <?php } ?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['link-management'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="checkbox" id="linkengine" name="setting[linkengine]" value="true" <?php if ($mgmt_config[$site_name]['linkengine'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="checkbox" id="linkengine" name="setting[linkengine]" value="true" <?php if (@$mgmt_config[$site_name]['linkengine'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['default-characterset'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="text" name="setting[default_codepage]" style="width:350px;" value="<?php if ($mgmt_config[$site_name]['default_codepage'] != "") echo $mgmt_config[$site_name]['default_codepage']; else echo "UTF-8"; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="text" name="setting[default_codepage]" style="width:350px;" value="<?php if (@$mgmt_config[$site_name]['default_codepage'] != "") echo $mgmt_config[$site_name]['default_codepage']; else echo "UTF-8"; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="checkbox" name="setting[sendmail]" value="true" <?php if ($mgmt_config[$site_name]['sendmail'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="checkbox" name="setting[sendmail]" value="true" <?php if (@$mgmt_config[$site_name]['sendmail'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['mail-server-name-has-effect-on-sendlink'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="text" name="setting[mailserver]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['mailserver']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="text" name="setting[mailserver]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['mailserver']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['disable-special-characters-in-object-names'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="checkbox" name="setting[specialchr_disable]" value="true" <?php if ($mgmt_config[$site_name]['specialchr_disable'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="checkbox" name="setting[specialchr_disable]" value="true" <?php if (@$mgmt_config[$site_name]['specialchr_disable'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['only-dam-functionality'][$lang]); ?>: </td>
@@ -221,34 +222,34 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     </tr>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['user-must-provide-metadata-for-file-uploads'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="checkbox" name="setting[upload_userinput]" value="true" <?php if ($mgmt_config[$site_name]['upload_userinput'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="checkbox" name="setting[upload_userinput]" value="true" <?php if (@$mgmt_config[$site_name]['upload_userinput'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['storage-limit-in-mb'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="text" name="setting[storage]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['storage']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="text" name="setting[storage]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['storage']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <?php if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php")) {	?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['encrypt-content'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="checkbox" id="crypt_content" name="setting[crypt_content]" value="true" <?php if ($mgmt_config[$site_name]['crypt_content'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="checkbox" id="crypt_content" name="setting[crypt_content]" value="true" <?php if (@$mgmt_config[$site_name]['crypt_content'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <?php } ?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['watermark-options-for-images'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="text" name="setting[watermark_image]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['watermark_image']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="text" name="setting[watermark_image]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['watermark_image']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['watermark-options-for-vidoes'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="text" name="setting[watermark_video]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['watermark_video']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="text" name="setting[watermark_video]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['watermark_video']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <?php if (is_file ($mgmt_config['abs_path_cms']."connector/socialmedia/youtube/index.php")) { ?>
       <tr align="left" valign="top"> 
         <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['social-media-sharing'][$lang]); ?>: </td>
-        <td nowrap="nowrap"> <input type="checkbox" id="youtube" name="setting[sharesociallink]" value="true" <?php if ($mgmt_config[$site_name]['sharesociallink'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+        <td nowrap="nowrap"> <input type="checkbox" id="youtube" name="setting[sharesociallink]" value="true" <?php if (@$mgmt_config[$site_name]['sharesociallink'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
       </tr>
       <tr align="left" valign="top"> 
         <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['youtube-upload'][$lang]); ?>: </td>
-        <td nowrap="nowrap"> <input type="checkbox" id="youtube" name="setting[youtube]" value="true" <?php if ($mgmt_config[$site_name]['youtube'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+        <td nowrap="nowrap"> <input type="checkbox" id="youtube" name="setting[youtube]" value="true" <?php if (@$mgmt_config[$site_name]['youtube'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
       </tr>
     <?php	}	?>
     <tr align="left" valign="top"> 

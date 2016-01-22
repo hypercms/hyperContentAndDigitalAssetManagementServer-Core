@@ -1225,15 +1225,32 @@ Release 01/2016
 - Improved documentation of API functions
 
 Version 6.0.3
-Release 02/2016
-- Minor improvements in media_select of editor
+Release 01/2016
+- Minor improvements in media_select of rich text editor
 - Improvements of usability in popup_publish
 - Bug fix: Function rootpermission did not read project management permission correctly
 - Implementation of SQL statement for error reports in function query of DB Connect
 - Implementation of double quotes for numerical conditions in several functions of DB Connect in order to improve error reporting
-- Implementation of validation of onedit and infotype attributes for template view in template engine 
+- Implementation of validation of onedit and infotype attributes for template view in template engine
+- Bug fix: Function createtask used wrong variable name for object path
+- Bug fix: Function createtask used wrong variable name for error reporting
+- Implementation of warning suppression for function rootpermission, globalpermission, and localpermission in case of unset permissions
+- Implementation of labels for all checkboxes in user_sendlink
+- Design optimizations in user_sendlink
+- Bug fix: The default main configuration file includes Somaly and Swedish language twice
+- Implementation of bubble titles for all tabs in the system
+- Design changes in the top bar of the system
+- Corrections in Japanese language file
+- Update of user manuals: Installation guide and users guide
+- Bug fix: Function indexcontent did not use the content container from function setmetadata, causing meta data from files not be saved
+- Implementation of new input parameter for content container and container save in function setmetadata
+- Bug fix: Setting $mgmt_config[$site_name]['upload_userinput'] in site_edit_from has not been initalized
+- Implementation of result validation of object in function uploadfile
+
+Version 6.0.4
+Release 02/2016
 */
 
 // current version
-$version = "Version 6.0.3";
+$version = "Version 6.0.4";
 ?>
