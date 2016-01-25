@@ -446,10 +446,10 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
       // ------------------------ AUDIO, IMAGES, VIDEOS -----------------------   
       // SPECIAL CASE: the meta data attributes found in the file will be saved using a mapping.
-      // get file content from image formats holding meta data using setmetadata
+      // get file content from image formats with meta data
       if ($file_ext != "" && substr_count (strtolower ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video']).".", $file_ext.".") > 0)
       {
-        // function setmetadata saves metadata in the content container
+        // function setmetadata provides metadata in the content container without saving the container
         $container_content = setmetadata ($site, "", "", $file, "", $container_content, $user, false);
       } 
 
@@ -521,39 +521,28 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         if ($container_contentnew != false)
         {
           // relational DB connectivity
-          if ($mgmt_config['db_connect_rdbms'] != "")
-          {
-            rdbms_setcontent ($container_id, $text_array, $user);                    
-          }
-          
+          if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($container_id, $text_array, $user);  
+
           // set modified date in container
           $container_contentnew = setcontent ($container_contentnew, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
           if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
           
           // save container
           if ($container_contentnew != false) return savecontainer ($container, "work", $container_contentnew, $user);
-          else return false;
         }
-        else return false;
       }
-      // if not content has been extracted, save user and date information
+      // if no content has been extracted, save user and date information
       else
       {
         // relational DB connectivity
-        if ($mgmt_config['db_connect_rdbms'] != "")
-        {
-          rdbms_setcontent ($container_id, "", $user);                    
-        }
-        
+        if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($container_id, "", $user);
+
         // set modified date in container
         $container_content = setcontent ($container_content, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
         if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
         
         // save container
-        if ($container_content != false)
-        {
-          return savecontainer ($container, "work", $container_content, $user);
-        }
+        if ($container_content != false) return savecontainer ($container, "work", $container_content, $user);
       }
     }
   }

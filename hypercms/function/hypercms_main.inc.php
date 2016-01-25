@@ -9642,7 +9642,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
     }
 
     // Check the md5 Hash with the one in the database
-    if ($checkduplicates)
+    if (!empty ($checkduplicates))
     {
       $md5_hash = md5_file ($global_files['Filedata']['tmp_name']);
       $duplicates = rdbms_getduplicate_file ($site, $md5_hash);
@@ -9662,7 +9662,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
         }
         
         if (sizeof ($links) > 0)
-        {        
+        {
           $result['header'] = "HTTP/1.1 510 Internal Server Error";
           $result['message'] = str_replace ('%files%', implode(", ", $links), $hcms_lang['there-are-files-with-the-same-content-files'][$lang]);
   
@@ -9855,7 +9855,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
           $contentfile = $container_id.".xml";
          
           // create version of previous content and media file
-          if ($versioning == true) $createversion = createversion ($site, $media_update);
+          if (!empty ($versioning)) $createversion = createversion ($site, $media_update);
           else $createversion = true;
 
           // if versioning was successful

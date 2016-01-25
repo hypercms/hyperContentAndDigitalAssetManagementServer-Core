@@ -2296,7 +2296,8 @@ hcms:quality => "Quality"';
 
 // ------------------------- setmetadata -----------------------------
 // function: setmetadata()
-// input: publication name, location path (optional), object name (optional), media file name (optional), mapping array [meta data tag name -> text-id] (optional), container content as XML string (optional), user name 
+// input: publication name, location path (optional), object name (optional), media file name (optional), mapping array [meta data tag name -> text-id] (optional), 
+//        container content as XML string (optional), user name, save content container [true,false] (optional)
 // output: container content as XML string / false
 
 // description:
