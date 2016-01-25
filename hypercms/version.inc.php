@@ -1251,6 +1251,8 @@ Version 6.0.4
 Release 02/2016
 - Minor improvements in function indexcontent
 - Bug fix: WebDAV function createObject did not proberly pass the paramaters to function uploadfile, causing a check of duplicates when cut and paste was used via WebdAV
+- Bug fix: JS function setSaveType of template engine did not forward to target URL when selecting media
+- Modifications in navigator CSS
 */
 
 // current version

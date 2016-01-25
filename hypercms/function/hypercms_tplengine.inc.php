@@ -7163,8 +7163,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       ".$add_submitcomp."
       hcms_stringifyVTTrecords();
       
-      // save content
-      if (type == 'form_sc') saveContent();
+      // save content using form POST when URL paramater is used for posting
+      if (url != '') saveContent();
+      // save content using AJAX in all other cases
       else var save = autoSave(true);
       
       // for file upload and meta data editing
