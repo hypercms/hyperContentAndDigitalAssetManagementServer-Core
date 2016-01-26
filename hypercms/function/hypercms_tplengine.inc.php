@@ -664,7 +664,7 @@ function tpl_globals_extended ($application, $abs_path_cms, $abs_path_rep, $site
   if ($application == "php")
   {
     return "<?php
-if (is_array (\$_GET['hcms_session']))
+if (!empty (\$_GET['hcms_session']) && is_array (\$_GET['hcms_session']))
 {
   foreach (\$_GET['hcms_session'] as \$key => \$value)
   {

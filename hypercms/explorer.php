@@ -525,7 +525,7 @@ else
       $subpoint->setOnMouseOver('hcms_resetContext();');
       $point->addSubPoint($subpoint);
     }
-    
+
     if (checkrootpermission ('desktopprojectmgmt') && is_file ($mgmt_config['abs_path_cms']."project/project_list.php") && $mgmt_config['db_connect_rdbms'] != "")
     {
       $subpoint = new hcms_menupoint($hcms_lang['project-management'][$lang], "project/project_list.php", 'project.gif');
@@ -1477,7 +1477,7 @@ else
             foreach ($siteaccess as $site)
             {
               // load publication inheritance setting
-              if ($mgmt_config[$site]['inherit_tpl'] == true)
+              if (!empty ($mgmt_config[$site]['inherit_tpl']))
               {
                 $inherit_db = inherit_db_read ();
                 $site_array = inherit_db_getparent ($inherit_db, $site);
@@ -1518,8 +1518,8 @@ else
                 if (strpos ($value, ".page.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".page.tpl"))." (".getescapedtext ($hcms_lang['page'][$lang]).")";
                 elseif (strpos ($value, ".comp.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".comp.tpl"))." (".getescapedtext ($hcms_lang['component'][$lang]).")";
                 elseif (strpos ($value, ".meta.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".meta.tpl"))." (".getescapedtext ($hcms_lang['meta-data'][$lang]).")";
-                
-                echo "<option value=\"".$value."\">".$tpl_name."</option>\n";
+ 
+                if (!empty ($tpl_name)) echo "<option value=\"".$value."\">".$tpl_name."</option>\n";
               }
             }
             else 

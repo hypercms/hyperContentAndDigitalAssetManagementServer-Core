@@ -10,6 +10,10 @@
 // Directory name of hyperCMS application
 $hypercms_dir = "hypercms";
 
+
+$mgmt_config = array();
+$publ_config = array();
+
  // Depending how the user accessed our page we are setting our protocol
 $mgmt_config['url_protocol'] = (!empty($_SERVER['HTTPS'])) ? 'https://' : 'http://';
 
@@ -43,8 +47,8 @@ $mgmt_config['url_path_data_sub'] = $base_url."/data/";
 $mgmt_config['abs_path_data'] = $base_path."/data/";
 
 // url and absolute path to MyPublication on your webserver (e.g. /home/domain/hyperCMS/mypublication/)
-$mgmt_config['url_path_mypublication'] = $mgmt_config['url_protocol'].$base_url."/mypublication/";
-$mgmt_config['abs_path_mypublication'] = $base_path."/mypublication/";
+$publ_config['url_path_mypublication'] = $mgmt_config['url_protocol'].$base_url."/mypublication/";
+$publ_config['abs_path_mypublication'] = $base_path."/mypublication/";
 
 // set theme name
 $mgmt_config['theme'] = "standard";
@@ -137,12 +141,12 @@ $show = "";
 if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['abs_path_cms'] != "" && checktoken ($token, $user))
 {
   // create data and repository file structure
-  if ($show == "" && $mgmt_config['abs_path_data'] != "" && $mgmt_config['abs_path_rep'] != "" && $mgmt_config['abs_path_mypublication'] != "")
+  if ($show == "" && $mgmt_config['abs_path_data'] != "" && $mgmt_config['abs_path_rep'] != "" && $publ_config['abs_path_mypublication'] != "")
   {   
     if (!is_writeable ($mgmt_config['abs_path_cms']."config/")) $show .= "<li>Write perission for config-directory is missing (".$mgmt_config['abs_path_cms']."config/)!</li>\n";
     if (!is_writeable ($mgmt_config['abs_path_data'])) $show .= "<li>Write perission for data-directory is missing (".$mgmt_config['abs_path_data'].")!</li>\n";
     if (!is_writeable ($mgmt_config['abs_path_rep'])) $show .= "<li>Write perission for repository-directory is missing (".$mgmt_config['abs_path_rep'].")!</li>\n";
-    if (!is_writeable ($mgmt_config['abs_path_mypublication'])) $show .= "<li>Write perissions for publication-directory is missing (".$mgmt_config['abs_path_mypublication'].")!</li>\n";
+    if (!is_writeable ($publ_config['abs_path_mypublication'])) $show .= "<li>Write perissions for publication-directory is missing (".$publ_config['abs_path_mypublication'].")!</li>\n";
 
     // copy to internal repository
     if ($show == "")
@@ -158,7 +162,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
       if ($result == false) $show .= "<li>Repository file structure could not be created!</li>\n";
     }
   }
-  
+
   // create database
   if ($show == "" && $db_host != "" && $db_username != "" && $db_password != "" && $db_name != "")
   {
@@ -221,7 +225,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
     $result = edituser ("*Null*", "admin", "", $password, $confirm_password, "1", $realname, $language, "standard", $email, "", "", "", $user);
     if ($result['result'] == false) $show .= "<li>".$result['message']."</li>\n";
   }
-  
+
   // create configs
   if ($show == "" && $os_cms != "" && $mgmt_config['url_path_cms'] != "" && $mgmt_config['abs_path_cms'] != "")
   {
@@ -306,7 +310,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
       // create publication
       $result = createpublication ($site, "admin");
       if (!$result['result']) $show .= "<li>".$result['message']."</li>\n"; 
-      
+
       // edit publication settings
       if ($show == "")
       {
@@ -323,19 +327,20 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
           $setting['inherit_tpl'] = false;
           $setting['specialchr_disable'] = true;
           $setting['dam'] = false;
+          $setting['upload_userinput'] = false;
           $setting['youtube'] = false;
           $setting['theme'] = "standard";
           $setting['storage'] = "";
           $setting['default_codepage'] = "UTF-8";
-          $setting['url_path_page'] = $mgmt_config['url_path_mypublication'];
-          $setting['abs_path_page'] = $mgmt_config['abs_path_mypublication'];
+          $setting['url_path_page'] = $publ_config['url_path_mypublication'];
+          $setting['abs_path_page'] = $publ_config['abs_path_mypublication'];
           $setting['exclude_folders'] = "";
           $setting['allow_ip'] = "";
           $setting['mailserver'] = $smtp_sender;
           $setting['publ_os'] = $os_cms;
           $setting['remoteclient'] = "";
-          $setting['url_publ_page'] = $mgmt_config['url_path_mypublication'];
-          $setting['abs_publ_page'] = $mgmt_config['abs_path_mypublication'];
+          $setting['url_publ_page'] = $publ_config['url_path_mypublication'];
+          $setting['abs_publ_page'] = $publ_config['abs_path_mypublication'];
           $setting['url_publ_rep'] = $mgmt_config['url_path_rep'];
           $setting['abs_publ_rep'] = $mgmt_config['abs_path_rep'];
           $setting['abs_publ_app'] = "";
@@ -353,6 +358,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
           $setting['inherit_tpl'] = false;
           $setting['specialchr_disable'] = false;
           $setting['dam'] = true;
+          $setting['upload_userinput'] = false;
           $setting['youtube'] = false;
           $setting['theme'] = "standard";
           $setting['storage'] = "";

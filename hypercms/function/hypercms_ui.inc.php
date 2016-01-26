@@ -293,7 +293,7 @@ function showmessage ($show, $width="580px", $height="70px", $lang="en", $style=
   if ($show != "" && strlen ($show) < 2400 && $lang != "")
   {
     // check mobile setting
-    if ($_SESSION['hcms_mobile']) $width = "90%";
+    if (!empty ($_SESSION['hcms_mobile'])) $width = "90%";
     
     // add unit if not set
     if (is_int ($width)) $width = $width."px";
@@ -485,6 +485,10 @@ function showobject ($site, $location, $page, $cat="", $name="")
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && is_file ($location.$page))
   {
+    $filetime = "";
+    $filecount = 0;
+    $filesize = 0;
+    
     // define category if undefined
     if ($cat == "") $cat = getcategory ($site, $location.$page);
       
@@ -501,6 +505,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
     {
       // get file time
       $filetime = date ("Y-m-d H:i", @filemtime ($location.$page));
+      
       // get file size
       if ($mgmt_config['db_connect_rdbms'] != "")
       { 

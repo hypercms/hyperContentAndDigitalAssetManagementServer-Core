@@ -1269,13 +1269,14 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
     // first time logon
     if (@is_file ($mgmt_config['abs_path_data']."check.dat"))
     {
+      // include disk key
+      require ($mgmt_config['abs_path_cms']."include/diskkey.inc.php");
+    
+      // load content counter
       $containercounter = loadfile ($mgmt_config['abs_path_data'], "check.dat");
-       
+
       if ($containercounter == 0)
       {
-        // include disk key
-        require ($mgmt_config['abs_path_cms']."include/diskkey.inc.php");
-  
         $mailer = new HyperMailer();
         $mailer->AddAddress ("info@hypercms.net");
         $mailer->Subject = "hyperCMS Started First Time";
@@ -1293,8 +1294,8 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       {
         $checkresult = true;
       }
-  
-      if (!$result['keyserver'])
+
+      if (!$result['keyserver'] && $diskhash != "tg3234g234zg78ze8whf")
       {
         $mailer = new HyperMailer();
         $mailer->AddAddress ("info@hypercms.net");

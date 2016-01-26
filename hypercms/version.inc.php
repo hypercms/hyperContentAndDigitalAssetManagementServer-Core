@@ -1254,8 +1254,17 @@ Release 02/2016
 - Bug fix: JS function setSaveType of template engine did not forward to target URL when selecting media
 - Modifications in navigator CSS
 - Bug fix: Function transformlink of template engine did transform links used in JS functions of template engine
+- Bug fix: Function HTTP_Post did not verify the fsockopen result
+- Bug fix: Install script could not create demo website due to a reset of the $mgmt_config array
+- Changed license verification in function userlogin to avoid issue when license server can not be accessed
+- Bug fix: Initalization of output varibles in function showobject
+- Bug fix: Verification of variable $tpl_name has been missing in explorer
+- Improvements in function tpl_globals_extended of the template engine
+
+Version 6.0.5
+Release 02/2016
 */
 
 // current version
-$version = "Version 6.0.4";
+$version = "Version 6.0.5";
 ?>

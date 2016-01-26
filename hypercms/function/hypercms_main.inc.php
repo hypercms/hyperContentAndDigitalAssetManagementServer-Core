@@ -4842,7 +4842,7 @@ function editpublication ($site_name, $setting, $user="sys")
 
   $result_ok = false;
   $exclude_folders_new = "";
-  
+
   // set default language
   if ($lang == "") $lang = "en";
   
@@ -4941,7 +4941,7 @@ function editpublication ($site_name, $setting, $user="sys")
     else $url_path_page_new = "";
     if (array_key_exists ('abs_path_page', $setting)) $abs_path_page_new = correctpath ($setting['abs_path_page'], "/");
     else $abs_path_page_new = "";
-    
+
     if (array_key_exists('exclude_folders', $setting) && $setting['exclude_folders'] != "")
     {
       $folder_array = explode (";", $setting['exclude_folders']);
@@ -14603,20 +14603,25 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
     }
    
     $fp = @fsockopen ($Host_protocol.$URL_Info["host"], $URL_Info["port"]);
-    @fputs ($fp, $request);
     
     $result = "";
-    
-    while(!feof ($fp)) 
+          
+    if ($fp)
     {
-      $result .= @fgets ($fp, 128);
+      @fputs ($fp, $request);
+      
+      while (!feof ($fp)) 
+      {
+        $result .= @fgets ($fp, 128);
+      }
+      
+      // remove header information from the xml/html-document
+      if (strpos ($result, "<") > 0) $result = substr ($result, strpos ($result, "<"), strrpos ($result, ">") - strpos ($result, "<") + 1);
+      
+      @fclose ($fp);
     }
+    else $result = false;
     
-    // remove header information from the xml/html-document
-    if (strpos ($result, "<") > 0) $result = substr ($result, strpos ($result, "<"), strrpos ($result, ">") - strpos ($result, "<") + 1);
-    
-    @fclose ($fp);
-   
     return $result;
   }
   else return false;
@@ -14661,15 +14666,11 @@ function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencod
       $request .= "Authorization: Basic ".base64_encode($authString)."\r\n";
     }
     
-    $request.="\r\n";
+    $request .= "\r\n";
   
     $fp = @fsockopen ($URL_Info["host"], $URL_Info["port"]);
     
-    if (!$fp)
-    {
-      $result = false;
-    }
-    else
+    if ($fp)
     {
       // send request
       @fputs ($fp, $request);
@@ -14685,6 +14686,7 @@ function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencod
       
       @fclose ($fp);
     }
+    else $result = false;
     
     return $result;
   }
