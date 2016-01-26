@@ -1253,8 +1253,12 @@ Release 02/2016
 - Bug fix: WebDAV function createObject did not proberly pass the paramaters to function uploadfile, causing a check of duplicates when cut and paste was used via WebdAV
 - Bug fix: JS function setSaveType of template engine did not forward to target URL when selecting media
 - Modifications in navigator CSS
+- Bug fix: Function transformlink of template engine did transform links used in JS functions of template engine
+
+Version 6.0.5
+Release 02/2016
 */
 
 // current version
-$version = "Version 6.0.4";
+$version = "Version 6.0.5";
 ?>

@@ -773,22 +773,22 @@ function transformlink ($viewstore)
   $link_array[13] = ".href ='";
   $link_array[14] = ".href= '";
   $link_array[15] = ".href='";
-  $link_array[16] = "location.replace = \"";
-  $link_array[17] = "location.replace =\"";
-  $link_array[18] = "location.replace= \"";
-  $link_array[19] = "location.replace=\"";
-  $link_array[20] = "location.replace = '";
-  $link_array[21] = "location.replace ='";
-  $link_array[22] = "location.replace= '";
-  $link_array[23] = "location.replace='";
-  $link_array[24] = "location = \"";
-  $link_array[25] = "location =\"";
-  $link_array[26] = "location= \"";
-  $link_array[27] = "location=\"";
-  $link_array[28] = "location = '";
-  $link_array[29] = "location ='";
-  $link_array[30] = "location= '";
-  $link_array[31] = "location='";
+  $link_array[16] = ".location.replace = \"";
+  $link_array[17] = ".location.replace =\"";
+  $link_array[18] = ".location.replace= \"";
+  $link_array[19] = ".location.replace=\"";
+  $link_array[20] = ".location.replace = '";
+  $link_array[21] = ".location.replace ='";
+  $link_array[22] = ".location.replace= '";
+  $link_array[23] = ".location.replace='";
+  $link_array[24] = ".location = \"";
+  $link_array[25] = ".location =\"";
+  $link_array[26] = ".location= \"";
+  $link_array[27] = ".location=\"";
+  $link_array[28] = ".location = '";
+  $link_array[29] = ".location ='";
+  $link_array[30] = ".location= '";
+  $link_array[31] = ".location='";
   
   // escape all javascript calls and anchors
   // so they won't be followed by hyperCMS.
