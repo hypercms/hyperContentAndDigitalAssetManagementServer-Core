@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['sv'] = "Nedladdningen misslyckades (max. stor
 $hcms_lang['please-close-the-search-window']['sv'] = "Stäng sökfönstret";
 $hcms_lang['filter-by-file-type']['sv'] = "Filtrera efter filtyp";
 $hcms_lang['preview-window']['sv'] = "Fönstret Förhandsgranska";
-$hcms_lang['click-here-to-viewdownload-the-file']['sv'] = "Skicka till chatt";
 $hcms_lang['file-extracted-succesfully']['sv'] = "Filen extraheras brandväggarna";
 $hcms_lang['date-created']['sv'] = "Skapad datum";
 $hcms_lang['html-body-segment']['sv'] = "HTML-segment";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['sv'] = "Tillgång";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sv'] = "Flytta musen över ikonerna för att få mer information";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['sv'] = "Användaren måste ange metadata för filuploads";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['sv'] = "Ange metadata för dina uppladdningar";
+$hcms_lang['user-wants-to-chat-with-you']['sv'] = "Användare %user% vill chatta med dig";
 ?>

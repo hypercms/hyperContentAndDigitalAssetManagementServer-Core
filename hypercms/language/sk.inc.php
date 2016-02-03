@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['sk'] = "Preberanie zlyhalo (max. veľkosť %f
 $hcms_lang['please-close-the-search-window']['sk'] = "Prosím, zatvorte okno vyhľadávania";
 $hcms_lang['filter-by-file-type']['sk'] = "Filter podľa typu súboru";
 $hcms_lang['preview-window']['sk'] = "Okno náhľadu";
-$hcms_lang['click-here-to-viewdownload-the-file']['sk'] = "Poslať na pokec";
 $hcms_lang['file-extracted-succesfully']['sk'] = "Súbor vyťažené úspešne";
 $hcms_lang['date-created']['sk'] = "Dátum vytvorenia";
 $hcms_lang['html-body-segment']['sk'] = "HTML časti tela";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['sk'] = "Aktíva";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sk'] = "Presuňte myšou na ikony a získajte viac informácií";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['sk'] = "Užívateľ musí poskytnúť metadáta pre nahrávanie súborov";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['sk'] = "Zadajte, prosím, metadát pre vaše obrázky";
+$hcms_lang['user-wants-to-chat-with-you']['sk'] = "Užívateľ "user % chce diskutovať s vami";
 ?>

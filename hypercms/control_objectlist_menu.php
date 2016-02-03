@@ -1020,7 +1020,7 @@ else
       echo "<img onClick=\"sendtochat('".$chatcontent."');\" ".
       "class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_chat\" ".
       "src=\"".getthemelocation()."img/button_chat.gif\" ".
-      "alt=\"".getescapedtext ($hcms_lang['click-here-to-viewdownload-the-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['click-here-to-viewdownload-the-file'][$lang])."\" />\n";
+      "alt=\"".getescapedtext ($hcms_lang['send-to-chat'][$lang])."\" title=\"".getescapedtext ($hcms_lang['send-to-chat'][$lang])."\" />\n";
     }
     elseif ($is_mobile)
     {
@@ -1379,7 +1379,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
           { 
             $downloadlink = createmultidownloadlink ($site, $multiobject, $media, $location.$folder, $pagename, $user, $convert_type, $convert_cfg);
             
-            echo "<a href=\"".$downloadlink."\" class=\"button hcmsButtonGreen\" target=\"_blank\">".getescapedtext ($hcms_lang['click-here-to-viewdownload-the-file'][$lang])."</a>";
+            echo "<a href=\"".$downloadlink."\" class=\"button hcmsButtonGreen\" target=\"_blank\">".getescapedtext ($hcms_lang['downloadview-file'][$lang])."</a>";
           }
           else
           {

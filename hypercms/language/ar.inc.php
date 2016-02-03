@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['ar'] = "(max. %filesize% MB) فشل تحمي�
 $hcms_lang['please-close-the-search-window']['ar'] = "الرجاء إغلاق النافذة البحث";
 $hcms_lang['filter-by-file-type']['ar'] = "التصفية حسب نوع الملف";
 $hcms_lang['preview-window']['ar'] = "نافذة العرض";
-$hcms_lang['click-here-to-viewdownload-the-file']['ar'] = "إرسال الدردشة";
 $hcms_lang['file-extracted-succesfully']['ar'] = "استخراج الملف بنجاح";
 $hcms_lang['date-created']['ar'] = "تاريخ الإنشاء";
 $hcms_lang['html-body-segment']['ar'] = "الجزء هيئة HTML";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['ar'] = "الاصول";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ar'] = "حرك الماوس فوق الرموز للحصول على مزيد من المعلومات";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ar'] = "يجب على المستخدم تقديم البيانات الفوقية فى تحميل الملفات";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['ar'] = "يرجى ادخال بيانات التعريف الخاصة التحميلات";
+$hcms_lang['user-wants-to-chat-with-you']['ar'] = "مستخدم %المستخدم% يريد التحادث معك";
 ?>

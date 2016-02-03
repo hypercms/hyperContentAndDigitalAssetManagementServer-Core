@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['ro'] = "Descărcare eşuată (max. dimensiune
 $hcms_lang['please-close-the-search-window']['ro'] = "Vă rugăm să închideţi fereastra de căutare";
 $hcms_lang['filter-by-file-type']['ro'] = "Filtrul de tip fişier";
 $hcms_lang['preview-window']['ro'] = "Fereastra de previzualizare";
-$hcms_lang['click-here-to-viewdownload-the-file']['ro'] = "Trimite la chat";
 $hcms_lang['file-extracted-succesfully']['ro'] = "File extrase cu succes";
 $hcms_lang['date-created']['ro'] = "Data creării";
 $hcms_lang['html-body-segment']['ro'] = "HTML segment caroserie";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['ro'] = "Activ";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ro'] = "Deplasaţi mouse-ul peste pictograme pentru a obţine mai multe informaţii";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ro'] = "Utilizatorul trebuie să furnizeze metadate pentru încărcarea de fişiere";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['ro'] = "Vă rugăm să introduceţi metadate pentru încărcarea de dvs.";
+$hcms_lang['user-wants-to-chat-with-you']['ro'] = "Utilizator %utilizatorul% vrea sa chat cu tine";
 ?>

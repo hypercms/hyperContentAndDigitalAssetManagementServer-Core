@@ -1274,7 +1274,6 @@ $hcms_lang['download-failed-max']['he'] = "ההורדה נכשלה (מקסימו
 $hcms_lang['please-close-the-search-window']['he'] = "סגור את חלון החיפוש";
 $hcms_lang['filter-by-file-type']['he'] = "סנן לפי סוג קובץ";
 $hcms_lang['preview-window']['he'] = "חלון תצוגה מקדימה";
-$hcms_lang['click-here-to-viewdownload-the-file']['he'] = "שלח צ'אט";
 $hcms_lang['file-extracted-succesfully']['he'] = "קובץ BlackBerryשברשותך חולצו";
 $hcms_lang['date-created']['he'] = "תאריך יצירה";
 $hcms_lang['html-body-segment']['he'] = "הגוף קטע HTML";
@@ -1354,4 +1353,5 @@ $hcms_lang['asset']['he'] = "נכסים";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['he'] = "הזז את העכבר מעל סמלים כדי לקבל מידע נוסף";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['he'] = "המשתמש חייב לספק metadata עבור טעינת קבצים";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['he'] = "הזן את המטה של העלאות שלך";
+$hcms_lang['user-wants-to-chat-with-you']['he'] = "משתמש %המשתמש% רוצה לשוחח עם לך";
 ?>

@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['ja'] = "失敗しました(max. %filesize% MB
 $hcms_lang['please-close-the-search-window']['ja'] = "[検索]ウィンドウを閉じてください。";
 $hcms_lang['filter-by-file-type']['ja'] = "フィルタファイルの種類で";
 $hcms_lang['preview-window']['ja'] = "プレビューウィンドウ";
-$hcms_lang['click-here-to-viewdownload-the-file']['ja'] = "チャットに送信";
 $hcms_lang['file-extracted-succesfully']['ja'] = "ファイルが正常に解凍された";
 $hcms_lang['date-created']['ja'] = "作成された日付";
 $hcms_lang['html-body-segment']['ja'] = "HTMLボディセグメント";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['ja'] = "資産";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ja'] = "アイコンの詳細情報を表示するには、マウスを移動します";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ja'] = "ユーザファイルのアップロード用のメタデータを提供しなければならない";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['ja'] = "あなたのアップロードのためのメタデータを入力してください。";
+$hcms_lang['user-wants-to-chat-with-you']['ja'] = "ユーザのユーザがチャットを希望している";
 ?>

@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['ur'] = "معلومات ناکام ہے. چھ�
 $hcms_lang['please-close-the-search-window']['ur'] = "مہربانی فرما کر اپ کھڑکی کی تلاش";
 $hcms_lang['filter-by-file-type']['ur'] = "مقطار قسم کی فائل";
 $hcms_lang['preview-window']['ur'] = "preview کھڑکی بند کردی";
-$hcms_lang['click-here-to-viewdownload-the-file']['ur'] = "بھیجنے سے بات چیت";
 $hcms_lang['file-extracted-succesfully']['ur'] = "فائل رائلٹی succesfully";
 $hcms_lang['date-created']['ur'] = "تاریخ پیدا";
 $hcms_lang['html-body-segment']['ur'] = "html لاش قطعہ";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['ur'] = "موجودات";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ur'] = "چوہے کا مزید معلومات حاصل کرنے کے شبیہیں";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ur'] = "صارف فراہم کرنا مسل Uploads میٹا ڈیٹا کے لئے";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['ur'] = "آپ کے لئے داخل کی میٹا ڈیٹا Uploads";
+$hcms_lang['user-wants-to-chat-with-you']['ur'] = "صارف %صارف فیصد آپ سے بات چیت کرنا چاہتی";
 ?>

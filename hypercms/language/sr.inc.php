@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['sr'] = "Download nije (max. veličina %filesi
 $hcms_lang['please-close-the-search-window']['sr'] = "Molimo da zatvori rezultati prozor";
 $hcms_lang['filter-by-file-type']['sr'] = "Filter za tip fajl";
 $hcms_lang['preview-window']['sr'] = "Pregled prozor";
-$hcms_lang['click-here-to-viewdownload-the-file']['sr'] = "Upute za vrljanje";
 $hcms_lang['file-extracted-succesfully']['sr'] = "Dobijeni fajl uspješno je okončala projekat";
 $hcms_lang['date-created']['sr'] = "Datum stvoren";
 $hcms_lang['html-body-segment']['sr'] = "HTML telo segment";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['sr'] = "Sredstvo";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sr'] = "Potez je miša preko ikonice za više informacija";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['sr'] = "Korisnik mora pružiti metapodataka za uploads";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['sr'] = "Unesite metapodataka za vaš uploads";
+$hcms_lang['user-wants-to-chat-with-you']['sr'] = "Korisnik korisnik%% želi da razgovor sa vama";
 ?>

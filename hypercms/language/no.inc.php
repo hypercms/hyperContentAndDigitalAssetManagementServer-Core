@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['no'] = "Nedlasting mislyktes (maks. størrels
 $hcms_lang['please-close-the-search-window']['no'] = "Lukk vinduet Søk etter";
 $hcms_lang['filter-by-file-type']['no'] = "Filteret etter filtype";
 $hcms_lang['preview-window']['no'] = "Vinduet Forhåndsvisning";
-$hcms_lang['click-here-to-viewdownload-the-file']['no'] = "Send til chat";
 $hcms_lang['file-extracted-succesfully']['no'] = "Filen pakkes ut gjenopprettet";
 $hcms_lang['date-created']['no'] = "Dato opprettet";
 $hcms_lang['html-body-segment']['no'] = "HTML-kroppen-segment";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['no'] = "Aktiva";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['no'] = "Beveg musen over ikonene for å få mer informasjon";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['no'] = "Brukeren må gi metadata for opplasting";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['no'] = "Skriv inn metadata for opplasting";
+$hcms_lang['user-wants-to-chat-with-you']['no'] = "Bruker %bruker% ønsker å prate med deg";
 ?>

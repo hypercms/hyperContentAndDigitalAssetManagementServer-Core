@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['da'] = "Download mislykkedes (maks. størrels
 $hcms_lang['please-close-the-search-window']['da'] = "Luk vinduet søg";
 $hcms_lang['filter-by-file-type']['da'] = "Filtrer efter filtype";
 $hcms_lang['preview-window']['da'] = "Vinduet Vis udskrift";
-$hcms_lang['click-here-to-viewdownload-the-file']['da'] = "Send til chat";
 $hcms_lang['file-extracted-succesfully']['da'] = "Filen hentes fuldført";
 $hcms_lang['date-created']['da'] = "Oprettet dato";
 $hcms_lang['html-body-segment']['da'] = "HTML body segment";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['da'] = "Aktiver";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['da'] = "Flyt musen hen over ikonerne for at få flere oplysninger";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['da'] = "Brugeren skal levere metadata til fil uploads";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['da'] = "Indtast metadata til dine uploads";
+$hcms_lang['user-wants-to-chat-with-you']['da'] = "Brugeren %bruger% lyst til at chatte med dig";
 ?>

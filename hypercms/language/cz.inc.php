@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['cz'] = "Stahování se nezdařilo (max. velik
 $hcms_lang['please-close-the-search-window']['cz'] = "Zavřete prosím vyhledávací okno";
 $hcms_lang['filter-by-file-type']['cz'] = "Filtrovat podle typu souboru";
 $hcms_lang['preview-window']['cz'] = "Náhled okna";
-$hcms_lang['click-here-to-viewdownload-the-file']['cz'] = "Odeslat program Konverzace.";
 $hcms_lang['file-extracted-succesfully']['cz'] = "soubor úspěšně extrahovány";
 $hcms_lang['date-created']['cz'] = "Datum vytvoření";
 $hcms_lang['html-body-segment']['cz'] = "HTML tělo segmentu";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['cz'] = "Aktiva";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['cz'] = "Přesuňte kurzor myši nad ikony získáte další informace";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['cz'] = "Uživatel musí poskytnout metadata pro odesílání souborů";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['cz'] = "Zadejte metadata pro vaše odesílání";
+$hcms_lang['user-wants-to-chat-with-you']['cz'] = "Uživatel %uživatel% chce chat s vámi";
 ?>

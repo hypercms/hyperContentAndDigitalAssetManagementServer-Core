@@ -94,7 +94,7 @@ switch ($function)
         $message = str_replace ($message, '&gt;&gt; <a href="#" onclick="'.$message.'">Object-Link</a>', $message);
       }
  	
-    	fwrite (fopen ($chat_log, 'a'), "<span>". $nickname . "</span>" . $message = str_replace ("\n", " ", $message) . "\n"); 
+    	fwrite (fopen ($chat_log, 'a'), "<span>".$nickname."</span>".$message = str_replace ("\n", " ", $message)."\n"); 
     }
     
     break;
@@ -102,18 +102,17 @@ switch ($function)
   // save invitation message for a selected user in chat log
 	case ('invite'):
   
-    $nickname = htmlentities (strip_tags ($user));
-    $reg_exUrl = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
-    $message = htmlentities (strip_tags ($message));
+    $from_user = $user;
+    $from_user_clean = htmlentities (strip_tags ($from_user));
+    $to_user = $message;
+    $to_user_clean = htmlentities (strip_tags ($to_user));
  
-    if (($message) != "\n")
-    {   	
-      if (preg_match ($reg_exUrl, $message, $url))
-      {
-        $message = preg_replace ($reg_exUrl, '<a href="'.$url[0].'" target="_blank">'.$url[0].'</a>', $message);
-      } 
- 	
-    	fwrite (fopen ($chat_log, 'a'), "<span>". $nickname . "</span> &gt;&gt; <span data-action=\"invite\">" . $message = str_replace ("\n", " ", $message) . "</span>\n"); 
+    if (($to_user_clean) != "\n")
+    {
+    	fwrite (fopen ($chat_log, 'a'), "<span>".$from_user_clean."</span> &gt;&gt; <span data-action=\"invite\">".$to_user_clean."</span>\n"); 
+
+      // send message to user
+      sendmessage ($user, $to_user, str_replace ("%user%", "'".$user."'", $hcms_lang['user-wants-to-chat-with-you'][$lang]), $mgmt_config['url_path_cms']."\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang]);
     }
     
     break;

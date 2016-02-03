@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['ru'] = "Сбой при загрузке (м�
 $hcms_lang['please-close-the-search-window']['ru'] = "Пожалуйста, закройте окно поиска";
 $hcms_lang['filter-by-file-type']['ru'] = "Фильтр, тип файла";
 $hcms_lang['preview-window']['ru'] = "Окно предварительного просмотра";
-$hcms_lang['click-here-to-viewdownload-the-file']['ru'] = "Отправить чат";
 $hcms_lang['file-extracted-succesfully']['ru'] = "Извлеченный файл успешно";
 $hcms_lang['date-created']['ru'] = "Дата создания";
 $hcms_lang['html-body-segment']['ru'] = "HTML органа высокого уровня";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['ru'] = "Asset";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ru'] = "Наведите курсор мыши на значки для получения более подробной информации";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ru'] = "Пользователь должен предоставить метаданных для загрузка файлов";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['ru'] = "Введите метаданных для Вашей загрузки";
+$hcms_lang['user-wants-to-chat-with-you']['ru'] = "Пользователь %User% хочет поговорить с вами";
 ?>

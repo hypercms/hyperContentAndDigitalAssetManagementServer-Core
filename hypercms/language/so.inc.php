@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['so'] = "Download guul (max. %filesize% MB)";
 $hcms_lang['please-close-the-search-window']['so'] = "Fadlan dhow raadinta daaqad";
 $hcms_lang['filter-by-file-type']['so'] = "Miire ay u qoreysa nooca";
 $hcms_lang['preview-window']['so'] = "Preview daaqad";
-$hcms_lang['click-here-to-viewdownload-the-file']['so'] = "Soo Dir u sheekeyso";
 $hcms_lang['file-extracted-succesfully']['so'] = "Aad u Qoreysid lisan succesfully";
 $hcms_lang['date-created']['so'] = "Taariikhda abuuray";
 $hcms_lang['html-body-segment']['so'] = "HTML jirka xubin";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['so'] = "Hantida";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['so'] = "Dhaqaajiso jiirka oo icons si aad u heshid akhbaar badan";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['so'] = "Waa in uu bixiyo isticmaalaha adeegga bixiyaan metadata fayl uploads,";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['so'] = "Fadlan gala uploads metadata, waayo,";
+$hcms_lang['user-wants-to-chat-with-you']['so'] = "Uu bixiyo isticmaalaha adeegga %uu bixiyo isticmaalaha adeegga% doonayo in uu la haasaawo buu";
 ?>

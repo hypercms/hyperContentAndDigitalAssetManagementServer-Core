@@ -1272,7 +1272,6 @@ $hcms_lang['download-failed-max']['sl'] = "Prenos ni uspel (največja velikost %
 $hcms_lang['please-close-the-search-window']['sl'] = "Zaprite okna za iskanje";
 $hcms_lang['filter-by-file-type']['sl'] = "Filter glede na vrsto datoteke";
 $hcms_lang['preview-window']['sl'] = "Okno Predogled";
-$hcms_lang['click-here-to-viewdownload-the-file']['sl'] = "Pošlji za klepet";
 $hcms_lang['file-extracted-succesfully']['sl'] = "Datoteke prenesene uspešno";
 $hcms_lang['date-created']['sl'] = "Ustvarjene podatke";
 $hcms_lang['html-body-segment']['sl'] = "HTML telo segment";
@@ -1352,4 +1351,5 @@ $hcms_lang['asset']['sl'] = "Postavka";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sl'] = "Premaknite kazalec miške čez ikone in dobite več informacij";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['sl'] = "Uporabnik mora zagotavljanje metapodatkov za datotek v strežnik";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['sl'] = "Prosimo, vnesite metapodatkov za vaš strežnik";
+$hcms_lang['user-wants-to-chat-with-you']['sl'] = "Uporabnik "uporabnik % želi klepet z vami";
 ?>

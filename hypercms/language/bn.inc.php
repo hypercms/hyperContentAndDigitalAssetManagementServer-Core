@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['bn'] = "সফটওয়্যার ডাউ
 $hcms_lang['please-close-the-search-window']['bn'] = "Search জানালা বন্ধ করুন";
 $hcms_lang['filter-by-file-type']['bn'] = "Pass filter ফাইল টাইপ করে";
 $hcms_lang['preview-window']['bn'] = "জানালা ব্যানার ম্যানেজার";
-$hcms_lang['click-here-to-viewdownload-the-file']['bn'] = "চ্যাট করতে";
 $hcms_lang['file-extracted-succesfully']['bn'] = "ফাইল succesfully উৎপাটন";
 $hcms_lang['date-created']['bn'] = "সৃষ্টি তারিখ";
 $hcms_lang['html-body-segment']['bn'] = "এইচটিএমএল সঙ্গদিয়ে শরীরের";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['bn'] = "সম্পদ";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['bn'] = "যে মাউস দিয়ে কার্টুন ছবি আরও তথ্য";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['bn'] = "ইউজার অবশ্যই uploads জন্য ফাইল ও অন্যান্য ক্রলার এসব শব্দকে";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['bn'] = "দয়া করে আপনার জন্য প্রবেশ ও অন্যান্য ক্রলার এসব শব্দকে uploads";
+$hcms_lang['user-wants-to-chat-with-you']['bn'] = "ইউজার %ইউজার ভাগ চান আপনার সাথে চ্যাট";
 ?>

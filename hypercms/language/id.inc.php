@@ -1274,7 +1274,6 @@ $hcms_lang['download-failed-max']['id'] = "Download gagal (maks. ukuran %filesiz
 $hcms_lang['please-close-the-search-window']['id'] = "Harap tutup jendela pencarian";
 $hcms_lang['filter-by-file-type']['id'] = "Filter oleh jenis file";
 $hcms_lang['preview-window']['id'] = "Jendela Cuplikan";
-$hcms_lang['click-here-to-viewdownload-the-file']['id'] = "Kirim ke obrolan";
 $hcms_lang['file-extracted-succesfully']['id'] = "File diekstrak berhasil";
 $hcms_lang['date-created']['id'] = "Tanggal dibuat";
 $hcms_lang['html-body-segment']['id'] = "HTML segmen tubuh";
@@ -1354,4 +1353,5 @@ $hcms_lang['asset']['id'] = "Aset";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['id'] = "Gerakkan mouse di atas ikon-ikon untuk mendapatkan informasi lebih lanjut";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['id'] = "Pengguna harus menyediakan metadata untuk meng-upload file";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['id'] = "Harap masukkan metadata untuk meng-upload anda";
+$hcms_lang['user-wants-to-chat-with-you']['id'] = "Pengguna pengguna %% ingin mengobrol dengan Anda";
 ?>

@@ -178,8 +178,8 @@ elseif ($objectpath_esc != "")
     
     $zip_filename = $object_id."_hcm".$object_info['container_id'];
 
-    // zip all files in temp folder
-    if (!is_file ($mgmt_config['abs_path_temp'].$zip_filename.".zip"))
+    // zip all files in temp folder if temp file does not exist or is older than 24 hours
+    if (!is_file ($mgmt_config['abs_path_temp'].$zip_filename.".zip") || filemtime ($mgmt_config['abs_path_temp'].$zip_filename.".zip") < (time() - 24*60*60))
     {
       $result_zip = zipfiles ($site, array ($location), $mgmt_config['abs_path_temp'], $zip_filename, $user_zip, "download");
     }

@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['sq'] = "Shkarko dështoi (maks. madhësia %fi
 $hcms_lang['please-close-the-search-window']['sq'] = "Ju lutem mbyllni kërkimi dritare";
 $hcms_lang['filter-by-file-type']['sq'] = "Filtër nga dosje lloji";
 $hcms_lang['preview-window']['sq'] = "Preview dritare";
-$hcms_lang['click-here-to-viewdownload-the-file']['sq'] = "Dergo në chat";
 $hcms_lang['file-extracted-succesfully']['sq'] = "Dosje nxjerrë përmbushë";
 $hcms_lang['date-created']['sq'] = "Data krijuar";
 $hcms_lang['html-body-segment']['sq'] = "HTML segment trupin";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['sq'] = "Pasuri";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sq'] = "Lëvizet pesha e mi mbi ikona të merrni më shumë informacion";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['sq'] = "Përdoruesit duhet të sigurojë metadata dosje për ngarkim";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['sq'] = "Ju lutem, kujdesuni për metadata ngarkimet";
+$hcms_lang['user-wants-to-chat-with-you']['sq'] = "Perdoruesi %dëshiron të bisedojë përdoruesi 44% me ty";
 ?>

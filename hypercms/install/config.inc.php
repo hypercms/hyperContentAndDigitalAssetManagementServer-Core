@@ -151,6 +151,9 @@ $mgmt_config['sidebar'] = true;
 // Define if chat should be enabled (true) or disabled (false)
 $mgmt_config['chat'] = true;
 
+// Define support user name for chat that will always be present for chat or leave empty
+$mgmt_config['chat-support'] = "";
+
 // Define standard mail link type ("access" = access-link; "download" = download-link)
 $mgmt_config['maillink'] = "download";
 

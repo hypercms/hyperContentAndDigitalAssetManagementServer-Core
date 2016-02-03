@@ -15777,4 +15777,126 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
   
   return true;
 }
+
+// ---------------------------------------------- sendmessage ----------------------------------------------
+// function: sendmessage()
+// input: from_user name, to_user name, title, message, object ID or object path (optional)
+// output: true/false
+// requires: config.inc.php
+
+// description:
+// Sends a message via e-mail to a user
+
+function sendmessage ($from_user, $to_user, $title, $message, $object_id="")
+{
+  global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
+  
+  // include hypermailer class
+  if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");  
+
+  if ($from_user != "" && $to_user != "" && $title != "" && strlen ($title) < 360 && $message != ""  && strlen ($message) < 3600)
+  {
+    $result = false;
+    $object_link = "";
+    
+    // get local date today (jjjj-mm-dd hh:mm)
+    $mgmt_config['today'] = date ("Y-m-d H:i", time());
+
+    // try to get object_id from object path
+    if ($object_id != "" && intval ($object_id) < 1)
+    {
+      // convert object path if necessary
+      if ($site != "") $object_id = convertpath ($site, $object_id, "");
+      
+      // get object id
+      $object_id = rdbms_getobject_id ($object_id);
+      
+      // object link
+      $object_link = createaccesslink ("", "", "", "", $object_id, $to_user, "al");
+    }
+
+    // load user file
+    $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+    
+    // get e-mail and language of user
+    if ($userdata != "")
+    {       
+      // get user node and extract required information    
+      $usernode = selectcontent ($userdata, "<user>", "<login>", $from_user);
+
+      if (!empty ($usernode[0]))
+      {
+        // email
+        $temp = getcontent ($usernode[0], "<email>");
+        if (!empty ($temp[0])) $from_email = $temp[0];
+        else $from_email = "";
+
+        // language
+        $temp = getcontent ($usernode[0], "<language>");            
+        if (!empty ($temp[0])) $from_lang = $temp[0];
+        else $from_lang = "en";
+      }
+      
+      // get user node and extract required information    
+      $usernode = selectcontent ($userdata, "<user>", "<login>", $to_user);
+
+      if (!empty ($usernode[0]))
+      {
+        // email
+        $temp = getcontent ($usernode[0], "<email>");
+        if (!empty ($temp[0])) $to_email = $temp[0];
+        else $to_email = "";
+ 
+        // language
+        $temp = getcontent ($usernode[0], "<language>");            
+        if (!empty ($temp[0])) $to_lang = $temp[0];
+        else $to_lang = "en";
+      }
+    }
+  
+    // send e-mail to user
+    if (!empty ($to_email))
+    {
+      // load language of user if it has not been loaded
+      if (!empty ($to_lang) && empty ($hcms_lang['new-task-from-user'][$to_lang]))
+      {
+        require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($to_lang));
+      }
+
+      // email schema
+      if ($from_email != "") $email_schema = " [<a href='mailto:".$from_email."'>".$from_email."</a>]";
+      else $email_schema = "";
+      
+      $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">".$message."\n\n".$object_link."</span>";
+  
+      $mailer = new HyperMailer();
+      $mailer->IsHTML(true);
+      $mailer->AddAddress ($to_email, $to_user);
+      $mailer->AddReplyTo ($from_email, $from_user);
+      $mailer->From = $from_email;
+      $mailer->Subject = "hyperCMS: ".$title;
+      $mailer->CharSet = $hcms_lang_codepage[$to_lang];
+      $mailer->Body = html_decode (nl2br ($body), $hcms_lang_codepage[$to_lang]);
+      
+      // send mail
+      if ($mailer->Send())
+      {
+        $errcode = "00202";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|info|$errcode|message has been sent to ".$to_user." (".$to_email.")";
+        $result = true;
+      }
+      else
+      {
+        $errcode = "50202";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|message could not be sent to ".$to_user." (".$to_email.")";  
+      }
+
+      // save log
+      savelog (@$error);
+    }
+    
+    return $result;
+  }
+  else return false;
+}
 ?>

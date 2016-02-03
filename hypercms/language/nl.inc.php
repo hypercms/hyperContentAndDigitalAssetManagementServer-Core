@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['nl'] = "Downloaden mislukt (max. formaat %fil
 $hcms_lang['please-close-the-search-window']['nl'] = "Sluit het venster zoeken";
 $hcms_lang['filter-by-file-type']['nl'] = "Filteren op bestandstype";
 $hcms_lang['preview-window']['nl'] = "Voorbeeldvenster";
-$hcms_lang['click-here-to-viewdownload-the-file']['nl'] = "Verzenden om te chatten";
 $hcms_lang['file-extracted-succesfully']['nl'] = "Bestand hebt uitgepakt voltooid";
 $hcms_lang['date-created']['nl'] = "Datum gemaakt";
 $hcms_lang['html-body-segment']['nl'] = "HTML body segment";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['nl'] = "Actief";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['nl'] = "Beweeg de muis over de icoontjes voor meer informatie.";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['nl'] = "Gebruiker moet voorzien in metadata voor file upload";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['nl'] = "Geef de metagegevens van uw upload";
+$hcms_lang['user-wants-to-chat-with-you']['nl'] = "Gebruiker %gebruikersnaam% wil met u te chatten";
 ?>

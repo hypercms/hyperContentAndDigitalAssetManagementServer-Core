@@ -1260,9 +1260,17 @@ Release 02/2016
 - Bug fix: Initalization of output varibles in function showobject
 - Bug fix: Verification of variable $tpl_name has been missing in explorer
 - Improvements in function tpl_globals_extended of the template engine
+- Bug fix: Button for image and media editing used AJAX save methode of form data and did not forward to image or media editing view
+- Improvement in explorer_download to verify temporary file age before compression
 
 Version 6.0.5
 Release 02/2016
+- Presenting download links for folders in info tab
+- Updates and changes in language files and workplace controls
+- Implementation of new function sendmessage in main API
+- Implementation of e-mail messaging for chat invitations
+- Implementation of support user for chat that will always be visible
+- New main configuration setting for chat support user
 */
 
 // current version

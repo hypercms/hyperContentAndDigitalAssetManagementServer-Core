@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['es'] = "Error en la descarga (máx. tamaño %
 $hcms_lang['please-close-the-search-window']['es'] = "Por favor, cierre la ventana de búsqueda";
 $hcms_lang['filter-by-file-type']['es'] = "Filtrar por tipo de archivo";
 $hcms_lang['preview-window']['es'] = "Ventana de Vista Previa";
-$hcms_lang['click-here-to-viewdownload-the-file']['es'] = "Enviar a chat";
 $hcms_lang['file-extracted-succesfully']['es'] = "Ha extraído el archivo correctamente.";
 $hcms_lang['date-created']['es'] = "Fecha de creación";
 $hcms_lang['html-body-segment']['es'] = "Segmento de HTML";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['es'] = "Asset";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['es'] = "Mueva el ratón sobre los iconos para obtener más información";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['es'] = "El usuario debe proporcionar metadatos para cargas de archivos";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['es'] = "Introduzca los metadatos de tus envíos";
+$hcms_lang['user-wants-to-chat-with-you']['es'] = "El usuario %usuario% desea charlar con usted";
 ?>

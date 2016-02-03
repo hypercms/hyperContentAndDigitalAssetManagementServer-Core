@@ -1274,7 +1274,6 @@ $hcms_lang['download-failed-max']['bg'] = "Неуспешно изтегляне
 $hcms_lang['please-close-the-search-window']['bg'] = "Моля, затворете този прозорец търсене";
 $hcms_lang['filter-by-file-type']['bg'] = "Филтър от тип файл";
 $hcms_lang['preview-window']['bg'] = "Прозорец за преглед";
-$hcms_lang['click-here-to-viewdownload-the-file']['bg'] = "Изпрати за чат";
 $hcms_lang['file-extracted-succesfully']['bg'] = "Файл извлечени успешно";
 $hcms_lang['date-created']['bg'] = "Дата на създаване";
 $hcms_lang['html-body-segment']['bg'] = "HTML орган сегмент";
@@ -1354,4 +1353,5 @@ $hcms_lang['asset']['bg'] = "Актив";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['bg'] = "Преместете показалеца на мишката върху икони, за да получите повече информация";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['bg'] = "Потребителят трябва да предостави метаданни за прехвърляне на файлове";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['bg'] = "Моля, въведете метаданни за вашия качване";
+$hcms_lang['user-wants-to-chat-with-you']['bg'] = "Потребителски %потребителски% иска да чатите с вас";
 ?>

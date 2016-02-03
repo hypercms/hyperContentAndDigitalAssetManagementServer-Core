@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['ko'] = "실패(최대 크기를 %%mb)파일 �
 $hcms_lang['please-close-the-search-window']['ko'] = "검색 창이 닫으십시오";
 $hcms_lang['filter-by-file-type']['ko'] = "필터 파일 형식에";
 $hcms_lang['preview-window']['ko'] = "미리 보기 창";
-$hcms_lang['click-here-to-viewdownload-the-file']['ko'] = "채팅에 보내";
 $hcms_lang['file-extracted-succesfully']['ko'] = "성공적으로 압축 파일";
 $hcms_lang['date-created']['ko'] = "작성일";
 $hcms_lang['html-body-segment']['ko'] = "HTML body 세그먼트";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['ko'] = "자산";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ko'] = "더 많은 정보를 얻으시려면 아이콘 위에 마우스를 올려 놓으면";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ko'] = "사용자 파일 업로드 메타데이터를 제공해야 합니다.";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['ko'] = "당신의 업로드할 수 있는 메타데이터를 입력하십시오.";
+$hcms_lang['user-wants-to-chat-with-you']['ko'] = "사용자 %사용자 %채트하기를 원할";
 ?>

@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['hu'] = "Letöltés sikertelen (max. %filesize
 $hcms_lang['please-close-the-search-window']['hu'] = "Kérjük adja meg a keresési ablak bezárása";
 $hcms_lang['filter-by-file-type']['hu'] = "Szűrő fájl típusa";
 $hcms_lang['preview-window']['hu'] = "Előnézeti ablak";
-$hcms_lang['click-here-to-viewdownload-the-file']['hu'] = "Küldés a chat";
 $hcms_lang['file-extracted-succesfully']['hu'] = "Kivont fájl exportálása sikeresen megtörtént";
 $hcms_lang['date-created']['hu'] = "Létrehozás dátuma";
 $hcms_lang['html-body-segment']['hu'] = "HTML-szakasz karosszéria";
@@ -1353,4 +1352,5 @@ $hcms_lang['asset']['hu'] = "Az eszköz";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['hu'] = "Mozgassa az egeret az ikonok fölé további információk.";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['hu'] = "A metaadatok a felhasználónak meg kell adnia a fájl feltöltések";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['hu'] = "Adja meg a metaadatokat a feltöltések";
+$hcms_lang['user-wants-to-chat-with-you']['hu'] = "%user% akar, folytathat.";
 ?>

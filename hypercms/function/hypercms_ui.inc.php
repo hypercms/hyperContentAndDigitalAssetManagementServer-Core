@@ -978,7 +978,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if ($viewtype == "preview" && is_supported ($mgmt_imagepreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) 
         {
           // add image rendering button
-          $mediaview .= "<tr><td align=middle><input name=\"media_rendering\" class=\"hcmsButtonGreen\" type=\"button\" value=\"".getescapedtext ($hcms_lang['edit-image'][$lang], $hcms_charset, $lang)."\" onclick=\"if (typeof setSaveType == 'function') setSaveType('imagerendering_so', '');\" /></td></tr>\n";
+          $mediaview .= "<tr><td align=middle><input name=\"media_rendering\" class=\"hcmsButtonGreen\" type=\"button\" value=\"".getescapedtext ($hcms_lang['edit-image'][$lang], $hcms_charset, $lang)."\" onclick=\"if (typeof setSaveType == 'function') setSaveType('imagerendering_so', '', 'post');\" /></td></tr>\n";
         }
         
         $mediaview .= "</table>\n";
@@ -1086,8 +1086,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             $mediaview .= "
                 <input type=\"hidden\" id=\"VTT\" name=\"\" value=\"\" />
-                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '');\">".getescapedtext ($hcms_lang['edit-audio-file'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '');\">".getescapedtext ($hcms_lang['embed-audio-file'][$lang], $hcms_charset, $lang)."</button>";
+                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '', 'post');\">".getescapedtext ($hcms_lang['edit-audio-file'][$lang], $hcms_charset, $lang)."</button>&nbsp;
+                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '', 'post');\">".getescapedtext ($hcms_lang['embed-audio-file'][$lang], $hcms_charset, $lang)."</button>";
           }
           // cut, embed, options button
           elseif ($viewtype == "preview_download" && valid_locationname ($location) && valid_objectname ($page))
@@ -1208,8 +1208,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $mediaview .= "
                 <input type=\"hidden\" id=\"VTT\" name=\"\" value=\"\" />
                 <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"hcms_openVTTeditor('vtt_container');\" />".getescapedtext ($hcms_lang['video-text-track'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '');\">".getescapedtext ($hcms_lang['edit-video'][$lang], $hcms_charset, $lang)."</button>&nbsp;
-                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '');\">".getescapedtext ($hcms_lang['embed-video'][$lang], $hcms_charset, $lang)."</button>";
+                <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '', 'post');\">".getescapedtext ($hcms_lang['edit-video'][$lang], $hcms_charset, $lang)."</button>&nbsp;
+                <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediaplayerconfig_so', '', 'post');\">".getescapedtext ($hcms_lang['embed-video'][$lang], $hcms_charset, $lang)."</button>";
           }
           // embed button
           elseif ($viewtype == "preview_download" && valid_locationname ($location) && valid_objectname ($page))

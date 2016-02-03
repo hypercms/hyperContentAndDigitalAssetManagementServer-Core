@@ -222,12 +222,10 @@ if ($pagestore != false)
       // wrapper link
       if ($mgmt_config['db_connect_rdbms'] != "") $filewrapperlink = createwrapperlink ($site, $location, $page, $cat);
       elseif ($media != "") $filewrapperlink = $mgmt_config['url_path_cms']."explorer_wrapper.php?media=".url_encode($site."/".$media)."&token=".hcms_crypt($site."/".$media);
+      
       // download link  
-      if ($media != "")
-      {
-        if ($mgmt_config['db_connect_rdbms'] != "") $filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
-        else $filewrapperdownload = $mgmt_config['url_path_cms']."explorer_download.php?media=".url_encode($site."/".$media)."&name=".url_encode($page)."&token=".hcms_crypt($site."/".$media);
-      }
+      if ($mgmt_config['db_connect_rdbms'] != "") $filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
+      elseif ($media != "") $filewrapperdownload = $mgmt_config['url_path_cms']."explorer_download.php?media=".url_encode($site."/".$media)."&name=".url_encode($page)."&token=".hcms_crypt($site."/".$media);
     }
     
     // file access links

@@ -1273,7 +1273,6 @@ $hcms_lang['download-failed-max']['zh-s'] = "下载失败(最大大小%文件大
 $hcms_lang['please-close-the-search-window']['zh-s'] = "请关闭“搜索”窗口";
 $hcms_lang['filter-by-file-type']['zh-s'] = "按文件类型过滤";
 $hcms_lang['preview-window']['zh-s'] = "预览窗口";
-$hcms_lang['click-here-to-viewdownload-the-file']['zh-s'] = "发送到聊天";
 $hcms_lang['file-extracted-succesfully']['zh-s'] = "已成功解压文件";
 $hcms_lang['date-created']['zh-s'] = "创建日期";
 $hcms_lang['are-you-sure-you-want-to-delete-this-user']['zh-s'] = "是否确实要删除此用户?";
@@ -1354,4 +1353,5 @@ $hcms_lang['asset']['zh-s'] = "资产";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['zh-s'] = "将鼠标移到图标上方以获取更多信息。";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['zh-s'] = "用户必须提供元数据文件上传";
 $hcms_lang['please_enter-the-metadata-for-your-uploads']['zh-s'] = "请输入元数据为您上传";
+$hcms_lang['user-wants-to-chat-with-you']['zh-s'] = "用户%s用户成想要与您聊天";
 ?>
