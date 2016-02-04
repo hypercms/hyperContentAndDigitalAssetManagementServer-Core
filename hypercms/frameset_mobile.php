@@ -75,7 +75,7 @@ $(document).ready(function()
   <div id="topbar" class="ui-header ui-bar-b" data-role="header">
     <a href="#navigator">Navigator</a>
     <h1>hyperCMS <?php echo ucfirst ($hcms_themename); ?></h1>
-    <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?><a href="#chat"><?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?></a><?php } ?>
+    <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true && !$is_iphone) { ?><a href="#chat"><?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?></a><?php } ?>
   </div> 
 
   <!-- navigator panel -->
@@ -114,7 +114,7 @@ $(document).ready(function()
   </div>
   
   <!-- chat panel -->
-  <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
+  <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true && !$is_iphone) { ?>
   <div id="chat" data-role="panel" data-display="overlay" data-position="right" style="padding:0; margin:0; width:300px;">    
     <div id="chatContainer" style="position:absolute; top:0; right:0; padding:0; margin:0; border:0; width:300px; overflow:auto; -webkit-overflow-scrolling:touch;">
       <iframe id="chatFrame" scrolling="yes" src="chat.php" frameBorder="0" style="border:0; width:300px;"></iframe>

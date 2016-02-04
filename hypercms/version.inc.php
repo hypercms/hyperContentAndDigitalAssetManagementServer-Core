@@ -1271,6 +1271,8 @@ Release 02/2016
 - Implementation of e-mail messaging for chat invitations
 - Implementation of support user for chat that will always be visible
 - New main configuration setting for chat support user
+- Added support for iPad scrolling
+- Removed chat for iPad and i Phone due to display issues in JQuery mobile panel
 */
 
 // current version

@@ -15867,7 +15867,12 @@ function sendmessage ($from_user, $to_user, $title, $message, $object_id="")
       if ($from_email != "") $email_schema = " [<a href='mailto:".$from_email."'>".$from_email."</a>]";
       else $email_schema = "";
       
-      $body = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">".$message."\n\n".$object_link."</span>";
+      $body = "
+  <span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">
+    <b>".$hcms_lang['message'][$to_lang]." ".$hcms_lang['from'][$to_lang]." '".$from_user."'".$email_schema."</b><br/><br/>
+    ".nl2br ($message)."<br/><br/>
+    ".$object_link."
+  </span>";
   
       $mailer = new HyperMailer();
       $mailer->IsHTML(true);
@@ -15876,7 +15881,7 @@ function sendmessage ($from_user, $to_user, $title, $message, $object_id="")
       $mailer->From = $from_email;
       $mailer->Subject = "hyperCMS: ".$title;
       $mailer->CharSet = $hcms_lang_codepage[$to_lang];
-      $mailer->Body = html_decode (nl2br ($body), $hcms_lang_codepage[$to_lang]);
+      $mailer->Body = html_decode ($body, $hcms_lang_codepage[$to_lang]);
       
       // send mail
       if ($mailer->Send())

@@ -112,7 +112,7 @@ switch ($function)
     	fwrite (fopen ($chat_log, 'a'), "<span>".$from_user_clean."</span> &gt;&gt; <span data-action=\"invite\">".$to_user_clean."</span>\n"); 
 
       // send message to user
-      sendmessage ($user, $to_user, str_replace ("%user%", "'".$user."'", $hcms_lang['user-wants-to-chat-with-you'][$lang]), $mgmt_config['url_path_cms']."\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang]);
+      sendmessage ($user, $to_user, str_replace ("%user%", "'".$user."'", $hcms_lang['user-wants-to-chat-with-you'][$lang]), $hcms_lang['open-link'][$lang].": ".$mgmt_config['url_path_cms']."\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang]);
     }
     
     break;
