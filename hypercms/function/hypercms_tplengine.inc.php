@@ -7338,7 +7338,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         else
         {
           $viewstore .= "<img name=\"Button_so\" src=\"".getthemelocation()."img/button_save.gif\" class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"setSaveType('form_so', '', 'ajax');\" alt=\"".getescapedtext ($hcms_lang['save'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['save'][$lang], $charset, $lang)."\" align=\"absmiddle\" />\n";
-          if (($mediafile == false || $mediafile == "") && $page != ".folder" && $objectview != "formedit" && $objectview != "formmeta" && $objectview != "formlock") $viewstore .= "<img name=\"Button_sc\" src=\"".getthemelocation()."img/button_saveclose.gif\" class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"setSaveType('form_sc', '', 'ajax');\" alt=\"".getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang)."\" align=\"absmiddle\" />\n"; 
+          if (($mediafile == false || $mediafile == "") && $page != ".folder" && $objectview != "formedit" && $objectview != "formmeta" && $objectview != "formlock") $viewstore .= "<img name=\"Button_sc\" src=\"".getthemelocation()."img/button_saveclose.gif\" class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"setSaveType('form_sc', '', 'post');\" alt=\"".getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang)."\" align=\"absmiddle\" />\n"; 
         }
         
         // print button
@@ -7364,7 +7364,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     <div style=\"width:100%; height:32px;\">&nbsp;</div>\n";
     
       // include share links for image and video files
-      if (is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/") && !empty ($mgmt_config[$site]['sharesociallink']) && $mediafile != "" && (is_image ($mediafile) || is_video ($mediafile)) && $buildview != "formlock")
+      if (is_dir ($mgmt_config['abs_path_cms']."connector/") && !empty ($mgmt_config[$site]['sharesociallink']) && $mediafile != "" && (is_image ($mediafile) || is_video ($mediafile)) && $buildview != "formlock")
       {
         $sharelink = createwrapperlink ($site, $location, $page, "comp");        
         $viewstore .= showsharelinks ($sharelink, $lang, "position:absolute; top:40px; right:12px;");

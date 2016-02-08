@@ -1352,6 +1352,6 @@ $hcms_lang['navigate']['id'] = "Arahkan";
 $hcms_lang['asset']['id'] = "Aset";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['id'] = "Gerakkan mouse di atas ikon-ikon untuk mendapatkan informasi lebih lanjut";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['id'] = "Pengguna harus menyediakan metadata untuk meng-upload file";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['id'] = "Harap masukkan metadata untuk meng-upload anda";
-$hcms_lang['user-wants-to-chat-with-you']['id'] = "Pengguna pengguna %% ingin mengobrol dengan Anda";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['id'] = "Harap masukkan metadata untuk meng-upload anda";
+$hcms_lang['user-wants-to-chat-with-you']['id'] = "Pengguna %user% ingin mengobrol dengan Anda";
 ?>

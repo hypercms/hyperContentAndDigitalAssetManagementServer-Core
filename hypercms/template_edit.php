@@ -86,7 +86,7 @@ if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, '
     
     if ($result_save['result'] == true && $preview == "yes")
     {
-      $add_onload = " hcms_openWindow('template_view.php?site=".url_encode($site)."&cat=".$cat."&template=".url_encode($template)."','preview','scrollbars=yes,resizable=yes', '800', '600');";
+      $add_onload = " hcms_openWindow('template_view.php?site=".url_encode($site)."&cat=".$cat."&template=".url_encode($template)."', 'preview', 'scrollbars=yes,resizable=yes', 800, 600);";
     }
     else $add_onload = "";
   }
@@ -134,27 +134,27 @@ $token_new = createtoken ($user);
 <!--
 function openHelp()
 {
-  hcms_openWindow('template_help.php?site=<?php echo $site; ?>', 'help', 'resizable=yes,scrollbars=yes', '750', '680');
+  hcms_openWindow('template_help.php?site=<?php echo $site; ?>', 'help', 'resizable=yes,scrollbars=yes', 750, 680);
 }
 
 function openmetaInfo()
 {  
-  hcms_openWindow('template_edit_metainfo.php?site=<?php echo $site; ?>', 'constraint', 'scrollbars=no,resizable=no', '450', '150');
+  hcms_openWindow('template_edit_metainfo.php?site=<?php echo $site; ?>', 'constraint', 'scrollbars=no,resizable=no', 450, 150);
 }
 
 function openLanguageInfo()
 {  
-  hcms_openWindow('template_edit_language.php?site=<?php echo $site; ?>', 'language', 'scrollbars=no,resizable=no', '450', '150');
+  hcms_openWindow('template_edit_language.php?site=<?php echo $site; ?>', 'language', 'scrollbars=no,resizable=no', 450, 150);
 }
 
 function openConstraints()
 {  
-  hcms_openWindow('template_edit_constraints.php?site=<?php echo $site; ?>', 'constraint', 'scrollbars=no,resizable=no', '450', '250');
+  hcms_openWindow('template_edit_constraints.php?site=<?php echo $site; ?>', 'constraint', 'scrollbars=no,resizable=no', 450, 250);
 }
 
 function openmediaType()
 {  
-  hcms_openWindow('template_edit_mediatype.php?site=<?php echo $site; ?>', 'constraint', 'scrollbars=no,resizable=no', '350', '150');
+  hcms_openWindow('template_edit_mediatype.php?site=<?php echo $site; ?>', 'constraint', 'scrollbars=no,resizable=no', 350, 150);
 }
 
 function checkForm_chars(text, exclude_chars)

@@ -221,11 +221,11 @@ if ($pagestore != false)
     {
       // wrapper link
       if ($mgmt_config['db_connect_rdbms'] != "") $filewrapperlink = createwrapperlink ($site, $location, $page, $cat);
-      elseif ($media != "") $filewrapperlink = $mgmt_config['url_path_cms']."explorer_wrapper.php?media=".url_encode($site."/".$media)."&token=".hcms_crypt($site."/".$media);
+      elseif ($media != "") $filewrapperlink = createviewlink ($site, $media, $page);
       
       // download link  
       if ($mgmt_config['db_connect_rdbms'] != "") $filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
-      elseif ($media != "") $filewrapperdownload = $mgmt_config['url_path_cms']."explorer_download.php?media=".url_encode($site."/".$media)."&name=".url_encode($page)."&token=".hcms_crypt($site."/".$media);
+      elseif ($media != "") $filewrapperdownload = createviewlink ($site, $media, $page, false, "download");
     }
     
     // file access links
@@ -255,10 +255,10 @@ if ($pagestore != false)
     }
     
     // show youtube statistics button (requires youtube connector)
-    if ($cat == "comp" && is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/youtube") && !empty ($mgmt_config[$site]['youtube_token']))
+    if ($cat == "comp" && is_dir ($mgmt_config['abs_path_cms']."connector/youtube") && !empty ($mgmt_config[$site]['youtube_token']))
     {
       // YouTube functions
-      require ("connector/socialmedia/youtube/functions.inc.php");
+      require ("connector/youtube/functions.inc.php");
 
       // get youtube video ID
       $temp = selectcontent ($contentdata, "<text>", "<text_id>", "Youtube-ID");

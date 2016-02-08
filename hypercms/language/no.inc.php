@@ -1351,6 +1351,6 @@ $hcms_lang['navigate']['no'] = "Navigere";
 $hcms_lang['asset']['no'] = "Aktiva";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['no'] = "Beveg musen over ikonene for å få mer informasjon";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['no'] = "Brukeren må gi metadata for opplasting";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['no'] = "Skriv inn metadata for opplasting";
-$hcms_lang['user-wants-to-chat-with-you']['no'] = "Bruker %bruker% ønsker å prate med deg";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['no'] = "Skriv inn metadata for opplasting";
+$hcms_lang['user-wants-to-chat-with-you']['no'] = "Bruker %user% ønsker å prate med deg";
 ?>

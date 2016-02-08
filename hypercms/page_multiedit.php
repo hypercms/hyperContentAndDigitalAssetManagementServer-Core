@@ -270,7 +270,7 @@ foreach ($multiobject_array as $object)
       if ($imgwidth < 100 && $imgheight < 100) $style_size = "";
       else $style_size = $ratio;
       
-      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$thumbnail)."&token=".hcms_crypt($site."/".$thumbnail)."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";;
+      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".createviewlink ($site, $thumbnail, $oinfo['name'])."\" class=\"hcmsImageItem\" style=\"".$style_size."\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";;
     }
     // no thumbnail available
     else

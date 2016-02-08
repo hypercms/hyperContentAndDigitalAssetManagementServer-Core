@@ -1351,6 +1351,6 @@ $hcms_lang['navigate']['th'] = "นำทางไปยัง";
 $hcms_lang['asset']['th'] = "สินทรัพย์";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['th'] = "เลื่อนเมาส์ไปที่ไอคอนเพื่อดูข้อมูลเพิ่มเติม";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['th'] = "ผู้ใช้จะต้องระบุ Metadata สำหรับการอัพโหลดไฟล์";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['th'] = "โปรดป้อน Metadata สำหรับการอัพโหลดของคุณ";
-$hcms_lang['user-wants-to-chat-with-you']['th'] = "%1 %2 % ของผู้ใช้ผู้ใช้ที่ต้องการสนทนากับคุณ";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['th'] = "โปรดป้อน Metadata สำหรับการอัพโหลดของคุณ";
+$hcms_lang['user-wants-to-chat-with-you']['th'] = "%user% ผู้ใช้ต้องการที่จะพูดคุยกับคุณ";
 ?>

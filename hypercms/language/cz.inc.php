@@ -1351,6 +1351,6 @@ $hcms_lang['navigate']['cz'] = "Procházení";
 $hcms_lang['asset']['cz'] = "Aktiva";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['cz'] = "Přesuňte kurzor myši nad ikony získáte další informace";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['cz'] = "Uživatel musí poskytnout metadata pro odesílání souborů";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['cz'] = "Zadejte metadata pro vaše odesílání";
-$hcms_lang['user-wants-to-chat-with-you']['cz'] = "Uživatel %uživatel% chce chat s vámi";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['cz'] = "Zadejte metadata pro vaše odesílání";
+$hcms_lang['user-wants-to-chat-with-you']['cz'] = "Uživatel %user% chce chat s vámi";
 ?>

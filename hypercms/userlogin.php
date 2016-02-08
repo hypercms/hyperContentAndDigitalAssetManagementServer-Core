@@ -76,7 +76,7 @@ if ($al != "")
     }
     
     // if type is download link forward to file download
-    if ($result_al['type'] == "dl") header ("Location: explorer_download.php?dl=".url_encode($al));
+    if ($result_al['type'] == "dl") header ("Location: service/mediadownload.php?dl=".url_encode($al));
   }
 }
 

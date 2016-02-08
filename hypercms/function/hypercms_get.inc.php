@@ -2072,7 +2072,10 @@ function getmedialocation ($site, $file, $type)
         
         $hdarray_size = sizeof ($mgmt_config[$type]);
         
-        if ($hdarray_size == 1) return $mgmt_config[$type][1];
+        if ($hdarray_size == 1)
+        {
+          return $mgmt_config[$type][1];
+        }
         elseif ($hdarray_size  > 1) 
         {
           $j = 1;

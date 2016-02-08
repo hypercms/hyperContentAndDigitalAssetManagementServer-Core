@@ -1351,6 +1351,6 @@ $hcms_lang['navigate']['tr'] = "Navigasyon";
 $hcms_lang['asset']['tr'] = "Varlık";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['tr'] = "Fareyi simgenin üzerine daha fazla bilgi edinin";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['tr'] = "Kullanıcı olmalıdır meta dosya yüklemeleri";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['tr'] = "Lütfen metadata için yüklemeleri";
-$hcms_lang['user-wants-to-chat-with-you']['tr'] = "Kullanıcı %kullanıcı% istediğini sohbet sizin";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['tr'] = "Lütfen metadata için yüklemeleri";
+$hcms_lang['user-wants-to-chat-with-you']['tr'] = "Kullanıcı %user% istediğini sohbet sizin";
 ?>

@@ -1351,6 +1351,6 @@ $hcms_lang['navigate']['fi'] = "Siirry";
 $hcms_lang['asset']['fi'] = "Kohteen";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['fi'] = "Siirrä hiiren osoitin kuvakkeiden päälle, pyydä lisätietoja";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['fi'] = "Käyttäjän pitää antaa metatiedot tiedostojen lataaminen";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['fi'] = "Kirjoita metatiedot, lisäykset";
-$hcms_lang['user-wants-to-chat-with-you']['fi'] = "Käyttäjän %käyttäjä% haluaa keskustella kanssasi";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['fi'] = "Kirjoita metatiedot, lisäykset";
+$hcms_lang['user-wants-to-chat-with-you']['fi'] = "Käyttäjän %user% haluaa keskustella kanssasi";
 ?>

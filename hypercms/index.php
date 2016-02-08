@@ -69,7 +69,7 @@ $wl = getrequest ("wl", "url");
 
 if ($wl != "")
 {
-  $forward = "explorer_wrapper.php?wl=".url_encode($wl).$add;
+  $forward = "service/mediawrapper.php?wl=".url_encode($wl).$add;
 }
 
 //   new hash parameter for download-link
@@ -77,7 +77,7 @@ $dl = getrequest ("dl", "url");
 
 if ($dl != "")
 {
-  $forward = "explorer_download.php?dl=".url_encode($dl).$add;
+  $forward = "service/mediadownload.php?dl=".url_encode($dl).$add;
 }
 
 // deprecated since version 5.6.1 but still supported:
@@ -86,8 +86,8 @@ $hcms_objid = getrequest ("hcms_objid", "url");
 $hcms_token = getrequest ("hcms_token", "url");
 $type = getrequest ("type", "url");
 
-if ($type == "dl") $file = "explorer_download.php";
-else $file = "explorer_wrapper.php";
+if ($type == "dl") $file = "service/mediadownload.php";
+else $file = "service/mediawrapper.php";
 
 if ($hcms_objid != "" && $hcms_token != "")
 {
@@ -110,7 +110,7 @@ $wm = getrequest ("wm", "url");
 
 if ($wm != "")
 {
-  $forward = "explorer_wrapper.php?wm=".url_encode($wm).$add;
+  $forward = "service/mediastream.php?wm=".url_encode($wm).$add;
 }
 
 // new encrypted media string for wrapper-link
@@ -118,7 +118,7 @@ $dm = getrequest ("dm", "url");
 
 if ($dm != "")
 {
-  $forward = "explorer_download.php?dm=".url_encode($dm).$add;
+  $forward = "service/mediadownload.php?dm=".url_encode($dm).$add;
 }
 
 // ------------------------- forward ------------------------------

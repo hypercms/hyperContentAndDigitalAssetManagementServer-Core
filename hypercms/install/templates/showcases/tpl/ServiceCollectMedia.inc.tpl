@@ -29,17 +29,17 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
 {
   global $mgmt_config;
   
-  //check if paramters are empty
+  // check if paramters are empty
   if (empty ($site) || empty ($container_id) || empty ($mediaTagId) || empty ($abs_comp))
   {
     return false;
   }
   
-  //retrieve folder of mediafile via container/mediaTagId
+  // retrieve folder of mediafile via container/mediaTagId
   $data = loadcontainer ($container_id, "work", "sys");
   $folder = "";
   
-  if($data)
+  if ($data)
   {
     $media = selectcontent ($data, "<media>", "<media_id>", $mediaTagId);
     
@@ -58,13 +58,13 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
     return false;
   }
   
-  //check if folder is empty
+  // check if folder is empty
   if (empty ($folder) && !is_dir ($folder))
   {
     return false;
   }
 
-  //collect mediafiles
+  // collect mediafiles
   $location_esc = convertpath ($site, $folder, "comp");
   $item_site = getpublication ($location_esc);
   $files = array();
@@ -72,7 +72,7 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
   
   while ($file = readdir ($dir_handle))
   {
-    //check if file exists
+    // check if file exists
     if ($file != "." && $file != ".." && $file != ".folder" && is_file ($folder.$file))
     {
       $fileinfo = getfileinfo ($item_site, $file, "comp");
@@ -85,17 +85,17 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
         $link = createwrapperlink($item_site, $folder, $file, "comp");        
         $abspath = $medialocation.$item_site."/";
         
-        //create thumbnail link
+        // create thumbnail link
         if (@is_file ($thumbnail_path=$medialocation.$item_site."/".$mediafileinfo['filename'].".thumb.jpg") && @filesize ($medialocation.$item_site."/".$mediafileinfo['filename'].".thumb.jpg") > 400)
         {	
-          $thumb_link = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($item_site)."&media=".url_encode($item_site."/".$mediafileinfo['filename'].".thumb.jpg")."&token=".hcms_crypt($item_site."/".$mediafileinfo['filename'].".thumb.jpg");
+          $thumb_link = createviewlink ($item_site, $mediafileinfo['filename'].".thumb.jpg");
         }
         else
         {
           $thumb_link = $picture_link;
         }
 
-        //retrieve additional
+        // retrieve additional
         $contentdata = loadcontainer($objectinfo['container_id'], "work", "sys");
 
         if (!empty($contentdata))
@@ -106,9 +106,10 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
           $desc = ($desctext) ? current(getcontent($desctext[0], "<textcontent>")) : '';
         }
 
-        //return array
+        // return array
         $files[] = array("name" => $fileinfo['name'], "title"=>$title, "description"=>$desc, "link" => $link, "thumb_link" => $thumb_link, "abspath"  => $abspath, "filename" => $objectinfo['media']);
-        //sort result via usort and helperfunction
+        
+        // sort result via usort and helperfunction
         usort($files, "sortByName");
       }
     }

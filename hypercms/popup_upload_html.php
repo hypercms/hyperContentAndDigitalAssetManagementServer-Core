@@ -191,7 +191,7 @@ function nextEditWindow ()
 window.onbeforeunload = function() {
   if (document.getElementById('editwindow') && document.getElementById('editwindow').style.display != "none")
   {
-    return "<?php echo getescapedtext ($hcms_lang['please_enter-the-metadata-for-your-uploads'][$lang]); ?>";
+    return "<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>";
   }
 }
   
@@ -1185,7 +1185,7 @@ echo showtopbar ($title.": ".$object_name, $lang);
         <div id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile" class="inline"><?php echo getescapedtext ($hcms_lang['dropbox'][$lang]); ?></span></div>
         <?php } ?>
         <?php if (!empty ($mgmt_config['ftp_download'])) { ?>
-        <div id="btnFTP" class="button hcmsButtonGreen" onclick="hcms_openWindow('popup_ftp.php?site=<?php echo url_encode($site); ?>&multi=<?php if ($uploadmode == "multi") echo "true"; else echo "false"; ?>', 'ftp', 'scrollbars=yes,resizable=yes', '600', '400');"><?php echo getescapedtext ($hcms_lang['ftp'][$lang]); ?></div>
+        <div id="btnFTP" class="button hcmsButtonGreen" onclick="hcms_openWindow('popup_ftp.php?site=<?php echo url_encode($site); ?>&multi=<?php if ($uploadmode == "multi") echo "true"; else echo "false"; ?>', 'ftp', 'scrollbars=yes,resizable=yes', 600, 400);"><?php echo getescapedtext ($hcms_lang['ftp'][$lang]); ?></div>
         <?php } ?>
         <div id="btnUpload" class="button hcmsButtonBlue" ><?php echo getescapedtext ($hcms_lang['upload-files'][$lang]); ?></div>
         <div id="btnCancel" class="button hcmsButtonOrange" ><?php echo getescapedtext ($hcms_lang['cancel-all-uploads'][$lang]); ?></div>
@@ -1198,7 +1198,7 @@ echo showtopbar ($title.": ".$object_name, $lang);
 <!-- Edit Window -->
 <div id="editwindow" style="display:none; position:fixed; top:0px; bottom:0px; left:0px; right:0px; margin:0; padding:0; z-index:1000;">
   <div class="hcmsPriorityHigh" style="width:100%; height:28px;">
-    <div style="padding:4px;"><b><?php echo getescapedtext ($hcms_lang['please_enter-the-metadata-for-your-uploads'][$lang]); ?></b></div>
+    <div style="padding:4px;"><b><?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?></b></div>
   </div>
   <div class="hcmsWorkplaceGeneric" style="position:fixed; top:28px; bottom:0px; left:0px; right:0px; margin:0; padding:0; z-index:1001;">
     <iframe id="editiframe" scrolling="auto" src="" style="width:100%; height:95%; border-bottom:1px solid #000000; margin:0; padding:0;" frameborder="0"></iframe>

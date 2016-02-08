@@ -1352,6 +1352,6 @@ $hcms_lang['navigate']['zh-s'] = "浏览";
 $hcms_lang['asset']['zh-s'] = "资产";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['zh-s'] = "将鼠标移到图标上方以获取更多信息。";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['zh-s'] = "用户必须提供元数据文件上传";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['zh-s'] = "请输入元数据为您上传";
-$hcms_lang['user-wants-to-chat-with-you']['zh-s'] = "用户%s用户成想要与您聊天";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['zh-s'] = "请输入元数据为您上传";
+$hcms_lang['user-wants-to-chat-with-you']['zh-s'] = "用户%user%希望与您聊天";
 ?>

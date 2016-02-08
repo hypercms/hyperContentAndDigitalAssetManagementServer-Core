@@ -1351,6 +1351,6 @@ $hcms_lang['navigate']['sv'] = "Navigera";
 $hcms_lang['asset']['sv'] = "Tillgång";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sv'] = "Flytta musen över ikonerna för att få mer information";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['sv'] = "Användaren måste ange metadata för filuploads";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['sv'] = "Ange metadata för dina uppladdningar";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['sv'] = "Ange metadata för dina uppladdningar";
 $hcms_lang['user-wants-to-chat-with-you']['sv'] = "Användare %user% vill chatta med dig";
 ?>

@@ -263,16 +263,16 @@ if (!$is_mobile && is_array ($folder_array) && @sizeof ($folder_array) > 0)
         
         $listview .= "
                       <tr id=g".$items_row." ".$selectclick." align=\"left\" style=\"cursor:pointer\">
-                       <td id=h".$items_row."_0 width=\"360\" nowrap=\"nowrap\">
+                       <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:360px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                          <input id=\"objectpath\" type=hidden value=\"".$location_esc.$folder."\" />                  
                          <div ".$hcms_setObjectcontext." ".$style." ".$openFolder." title=\"".$folder_name."\">
-                           <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".$dlink_start.showshorttext($folder_name, 40).$dlink_end."&nbsp;
+                           <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".$dlink_start.$folder_name.$dlink_end."&nbsp;
                          </div>
                        </td>";
         if (!$is_mobile) $listview .= "
-                       <td id=h".$items_row."_1 width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_time."</span></td>                   
-                       <td id=h".$items_row."_2 width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;</span></td>
-                       <td id=h".$items_row."_3 nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".getescapedtext ($hcms_lang['folder'][$lang])."</span></td>\n";
+                       <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_time."</span></td>                   
+                       <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;</span></td>
+                       <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".getescapedtext ($hcms_lang['folder'][$lang])."</span></td>\n";
         $listview .= "</tr>";                       
     
         $galleryview .= "
@@ -466,17 +466,17 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
 
         $listview .= "
                       <tr id=\"g".$items_row."\" style=\"text-align:left; cursor:pointer;\" ".$selectclick.">
-                        <td id=\"h".$items_row."_0\" width=\"360\" nowrap=\"nowrap\">
+                        <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:360px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                           <input id=\"objectpath\" type=\"hidden\" value=\"".$location_esc.$object."\" />
                           <div ".$hcms_setObjectcontext." ".$style." ".$openObject." title=\"".$metadata."\">
-                            <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" ".$class_image." />&nbsp;".$dlink_start.showshorttext($object_name, 40).$dlink_end."&nbsp;   
+                            <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" ".$class_image." />&nbsp;".$dlink_start.$object_name.$dlink_end."&nbsp;   
                           </div>
                         </td>";
                         
         if (!$is_mobile) $listview .= "
-                        <td id=\"h".$items_row."_1\" width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_time."</span></td>
-                        <td id=\"h".$items_row."_2\" width=\"120\" nowrap=\"nowrap\"><div align=\"right\" ".$hcms_setObjectcontext." ".$style.">".$file_size."&nbsp;</div></td>
-                        <td id=\"h".$items_row."_3\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_type."</span></td>";
+                        <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_time."</span></td>
+                        <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><div align=\"right\" ".$hcms_setObjectcontext." ".$style.">".$file_size."&nbsp;</div></td>
+                        <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_type."</span></td>";
                         
         $listview .= "
                       </tr>"; 
@@ -526,7 +526,7 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
               $class_size = "class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"";
             }
             
-            $thumbnail = "<div ".$div_id." ".$class_size."><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$media_info['filename'].".thumb.jpg")."&token=".hcms_crypt($site."/".$media_info['filename'].".thumb.jpg")."\" ".$class_image." /></div>";
+            $thumbnail = "<div ".$div_id." ".$class_size."><img src=\"".createviewlink ($site, $media_info['filename'].".thumb.jpg")."\" ".$class_image." /></div>";
           }
           // display file icon if thumbnail fails 
           else
@@ -557,8 +557,8 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
           if (empty ($downloadformats) || (is_document ($mediafile) && !empty ($downloadformats['document']['original'])) || (is_image ($mediafile) && !empty ($downloadformats['image']['original'])))
           {            
             $linking_buttons .= "
-            <a href=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?name=".url_encode($object_name)."&media=".url_encode($site."/".$mediafile)."&token=".hcms_crypt($site."/".$mediafile)."\" target=\"_blank\"><button class=\"hcmsButtonDownload\" onClick=\"\">".getescapedtext ($hcms_lang['view'][$lang])."</button></a>
-            <a href=\"".$mgmt_config['url_path_cms']."explorer_download.php?name=".url_encode($object_name)."&media=".url_encode($site."/".$mediafile)."&token=".hcms_crypt($site."/".$mediafile)."\" target=\"_blank\"><button class=\"hcmsButtonDownload\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
+            <a href=\"".createviewlink ($site, $mediafile, $object_name)."\" target=\"_blank\"><button class=\"hcmsButtonDownload\" onClick=\"\">".getescapedtext ($hcms_lang['view'][$lang])."</button></a>
+            <a href=\"".createviewlink ($site, $mediafile, $object_name, false, "download")."\" target=\"_blank\"><button class=\"hcmsButtonDownload\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
           }
         }
         
@@ -615,6 +615,7 @@ else $objects_counted = 0;
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" language="JavaScript" type="text/javascript"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript" src="javascript/chat.js"></script>
 <script language="JavaScript">
 <!--
@@ -683,11 +684,26 @@ function sendtochat (text)
     chat.send(text, username);
   }
 }
+
+function resizecols()
+{
+  // get width of table header columns
+  var c1 = $('#c1').width();
+  var c2 = $('#c2').width();
+  var c3 = $('#c3').width();
+  var c4 = $('#c4').width();
+
+  // set width for table columns
+  $('.hcmsCol1').width(c1);
+  $('.hcmsCol2').width(c2);
+  $('.hcmsCol3').width(c3);
+  $('.hcmsCol4').width(c4);
+}
 //-->
 </script>
 </head>
 
-<body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" style="overflow:hidden;">
+<body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist">
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang], $lang, "position:fixed; top:30px; right:30px;", "hcms_infoboxKeys"); ?>
 
@@ -788,22 +804,22 @@ function sendtochat (text)
 
 <!-- Detail View -->
 <div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; margin:0; padding:0; width:100%; z-index:1; visibility:visible;">
-  <table cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
+  <table id="objectlist_head" cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
-      <td width="360" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:360px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
       </td>
       <?php if (!$is_mobile) { ?>
-      <td width="120" onClick="hcms_sortTable(1);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['date-modified'][$lang]); ?>
       </td>
-      <td width="120" onClick="hcms_sortTable(2, true);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c3" onClick="hcms_sortTable(2, true);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['size-in-kb'][$lang]); ?>&nbsp;&nbsp;
       </td>    
-      <td onClick="hcms_sortTable(3);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['type'][$lang]); ?>
       </td>
-      <td width="16" class="hcmsTableHeader">
+      <td class="hcmsTableHeader" style="width:16px;">
         &nbsp;
       </td>
       <?php } ?> 
@@ -811,7 +827,7 @@ function sendtochat (text)
   </table>
 
   <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:30px; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
-    <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; table-layout:fixed;">
+    <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" style="border:0; width:100%; table-layout:fixed;">
     <?php 
     echo $listview;
     ?>
@@ -868,10 +884,11 @@ else
 }
 ?>
 
-<!-- toggle view and adjust height -->
+<!-- initalize -->
 <script language="JavaScript">
 <!--
 toggleview (explorerview);
+$("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
 //-->
 </script>
 

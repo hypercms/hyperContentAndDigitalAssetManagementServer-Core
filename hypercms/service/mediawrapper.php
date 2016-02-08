@@ -12,9 +12,9 @@ define ("SESSION", "create");
 // management configuration
 require ("config.inc.php");
 // hyperCMS API
-require ("function/hypercms_api.inc.php");
+require ("../function/hypercms_api.inc.php");
 // format file extensions
-require ("include/format_ext.inc.php");  
+require ("../include/format_ext.inc.php");  
 
 
 // input parameters
@@ -31,8 +31,6 @@ $hcms_token = getrequest ("hcms_token");
 $hcms_id_token = getrequest ("hcms_id_token");
 // new hash parameter for wrapper-link since version 5.6.0
 $wl = getrequest ("wl", "url");
-// new crpyted media parameter since version 5.6.3
-$wm = getrequest ("wm", "url");
 // media conversion
 $type = getrequest_esc ("type");
 $media_config = getrequest_esc ("mediacfg");
@@ -122,14 +120,9 @@ if ($object_id != "" && $mgmt_config['db_connect_rdbms'] != "")
 }
 
 // ---------------------------------- define media -----------------------------------
-// get media from crypted video string
-if ($wm != "")
-{
-  $media = hcms_decrypt ($wm);
-  $media_approved = true;  
-}
+
 // get media from object path
-elseif ($objectpath_esc != "")
+if ($objectpath_esc != "")
 {
   $site = getpublication ($objectpath_esc);
   $cat = getcategory ($site, $objectpath_esc);
@@ -176,7 +169,7 @@ elseif ($objectpath_esc != "")
 }
 
 // ---------------------------------- stream file -----------------------------------
-// Publication
+// get publication
 if (substr_count ($media, "/") == 1) $site = substr ($media, 0, strpos ($media, "/"));
 
 // publication management config
@@ -185,11 +178,10 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // read multimedia file (publication/file) and submit data
 if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != "" || is_thumbnail ($media, false) || !$mgmt_config[$site]['dam'])) || $media_approved))
 {
-  // check ip access if public access
+  // check IP access
   if ($user == "" && !allowuserip ($site))
   {
     header ('HTTP/1.0 403 Forbidden', true, 403);
-    echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
     exit;
   }
 
@@ -209,9 +201,6 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
   }
   else $media_root = "";
 
-  // eventsystem
-  if ($eventsystem['onfiledownload_pre'] == 1) onfiledownload_pre ($site, $media_root, $media, $name, $user); 
-  
   $media_info_new = Null;
 
   if ($media_root != "")
@@ -271,16 +260,18 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
           $name = $name_info['filename'].$media_info_new['ext'];
         }
       }
-       
-      // for IE the name must by urlencoded
-      if (substr_count ($_SERVER['HTTP_USER_AGENT'], "MSIE") > 0) $name = rawurlencode ($name);
-
+      
       // stream file content
       downloadfile ($media_root.$media, $name, "wrapper", $user);
-      
-      // eventsystem
-      if ($eventsystem['onfiledownload_post'] == 1) onfiledownload_post ($site, $media_root, $media, $name, $user);
     }
+    else
+    {
+      header ("HTTP/1.1 400 Invalid Request", true, 400);
+    }
+  }
+  else
+  {
+    header ("HTTP/1.1 400 Invalid Request", true, 400);
   }
 }
 // page or component
@@ -288,10 +279,9 @@ elseif ($objectpath_esc != "" && is_file ($location.$object))
 {
   downloadobject ($location, $object, $container, $lang, $user);
 }
-// not content available
+// no content available
 else
 {
   header ("HTTP/1.1 400 Invalid Request", true, 400);
-  //echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
 }
 ?>

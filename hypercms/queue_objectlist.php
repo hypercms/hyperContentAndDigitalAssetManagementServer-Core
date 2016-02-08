@@ -93,7 +93,7 @@ if (is_array ($queue_array) && @sizeof ($queue_array) >= 1)
         else $object_name = $file_info['name'];
 
         // open on double click
-        $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', '800', '600');\"";
+        $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\"";
         // onclick for marking objects
         $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlQueueMenu();\"";
         // set context
@@ -105,20 +105,20 @@ if (is_array ($queue_array) && @sizeof ($queue_array) >= 1)
   
         $listview .= "
               <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
-                <td id=\"h".$items_row."_0\" width=\"180\" nowrap=\"nowrap\">
+                <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                   <input id=\"queue_id\" type=\"hidden\" value=\"".$queue_id."\" />
                   <div ".$hcms_setObjectcontext." ".$openObject." >
                       <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." align=\"absmiddle\" />&nbsp;
-                      <span title=\"".$object_name."\">".showshorttext($object_name, 20)."</span>&nbsp;
+                      <span title=\"".$object_name."\">".$object_name."</span>&nbsp;
                   </div>
                 </td>";
                 
         if (!$is_mobile) $listview .= "
-                <td id=\"h".$items_row."_1\" width=\"100\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." title=\"".$site."\">&nbsp;&nbsp;".showshorttext($site, 20)."</span></td>
-                <td id=\"h".$items_row."_2\" width=\"200\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext." title=\"".$location_name."\">&nbsp;&nbsp;".showshorttext($location_name, 20)."</span></td>
-                <td id=\"h".$items_row."_3\" width=\"120\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$date."</span></td>
-                <td id=\"h".$items_row."_4\" width=\"60\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$action."</span></td>
-                <td id=\"h".$items_row."_5\" nowrap=\"nowrap\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>";
+                <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$site."\">&nbsp;&nbsp;".$site."</span></td>
+                <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$location_name."\">&nbsp;&nbsp;".$location_name."</span></td>
+                <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$date."</span></td>
+                <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$action."</span></td>
+                <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>";
                 
         $listview .= "
               </tr>";
@@ -138,9 +138,12 @@ else $objects_counted = 0;
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
+<meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" language="JavaScript" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script language="JavaScript">
 <!--
 // context menu
@@ -166,6 +169,25 @@ function buttonaction (action)
   if (action == "edit" && object != "") return true;
   else if (action == "delete" && object != "") return true;
   else return false;
+}
+
+function resizecols()
+{
+  // get width of table header columns
+  var c1 = $('#c1').width();
+  var c2 = $('#c2').width();
+  var c3 = $('#c3').width();
+  var c4 = $('#c4').width();
+  var c5 = $('#c5').width();
+  var c6 = $('#c6').width();
+
+  // set width for table columns
+  $('.hcmsCol1').width(c1);
+  $('.hcmsCol2').width(c2);
+  $('.hcmsCol3').width(c3);
+  $('.hcmsCol4').width(c4);
+  $('.hcmsCol5').width(c5);
+  $('.hcmsCol6').width(c6);
 }
 //-->
 </script>
@@ -208,28 +230,28 @@ function buttonaction (action)
 </div>
 
 <div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; margin:0px; padding:0px; width:100%; z-index:3; visibility:visible;">
-  <table cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
+  <table id="objectlist_head" cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
-      <td width="180" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
       </td>
       <?php if (!$is_mobile) { ?>
-      <td width="100" onClick="hcms_sortTable(1);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:100px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>
       </td>
-      <td width="200" onClick="hcms_sortTable(2);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:200px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>
       </td> 
-      <td width="120" onClick="hcms_sortTable(3);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c4" nClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['date'][$lang]); ?>
       </td>
-      <td width="60" onClick="hcms_sortTable(4);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="width:60px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['action'][$lang]); ?>
       </td>
-      <td onClick="hcms_sortTable(5);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c6" onClick="hcms_sortTable(5);" class="hcmsTableHeader" style="white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>
       </td>                    
-      <td width="16" class="hcmsTableHeader">
+      <td class="hcmsTableHeader" style="width:16px;">
         &nbsp;
       </td>
       <?php } ?>   
@@ -267,6 +289,13 @@ else
 <?php
 }
 ?>
+
+<!-- initalize -->
+<script language="JavaScript">
+<!--
+$("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+//-->
+</script>
 
 </body>
 </html>

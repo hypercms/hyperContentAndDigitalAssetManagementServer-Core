@@ -1271,10 +1271,36 @@ Release 02/2016
 - Implementation of e-mail messaging for chat invitations
 - Implementation of support user for chat that will always be visible
 - New main configuration setting for chat support user
-- Added support for iPad scrolling
-- Removed chat for iPad and i Phone due to display issues in JQuery mobile panel
+- Added support for iPad scrolling for frameset_content
+- Removed chat for iPad and iPhone due to display issues with JQuery mobile panel for chat
+- Bug fix: Save and close button did not use post methode and therfore did not close the form view created by the template engine
+- Improvements in popup_publish
+- Bug fix: JS function hcms_openWindow used in various files declared windows size as string and not as integer
+- Bug: MS Edge opens window in same dimension of parent window if not in fullscreen mode. This is an issue of MS Edge and can not be solved.
+
+Version 6.0.6
+Release 02/2016
+- Bug fix: Verification of $compaccess has been missing in webdav function getChildsForLocation
+- Bug fix: Report CSV export button targeted wrong file name
+- Implementation of table column resizing in all objectlist views
+- Bug fix: File version_template used wrong reference to external JS file
+- Bug fix: File template_edit used single quote for width paramater in function hcms_openWindow call
+- Bug fix: Logviewer plugin used wrong parameter for function showinfobox call
+- Implementation of table column resizing for log viewer
+- Implementation of table column resizing for logviewer plugin
+- Implemen tation of new streaming logic in function downloadfile
+- Included download events into function downloadfile and removed them from explorer_download and explorer_wrapper
+- Improvements in hypercms_api loader for language file
+- Implementation of new media streaming service "mediastreaming" for video player to solve issues with streaming on mobile browsers
+- Bug fix: UI Function showmessage did not provide text container with ID "message_text" used by YouTube connector
+- Implementation of new function createviewlink
+- Replacement of harcoded logic for links by function creatviewlink in all files
+- Moved explorer_download and explorer_wrapper as mediadownload and mediawrapper to service
+- Changes in UI function showvideplayer and showaudioplayer to support new streaming service
+- Bug fix: Function copymetadata used wrong filename for error reporting
+- Bug fix: Several language files did not use proper %user% variable in the text strings
 */
 
 // current version
-$version = "Version 6.0.5";
+$version = "Version 6.0.6";
 ?>

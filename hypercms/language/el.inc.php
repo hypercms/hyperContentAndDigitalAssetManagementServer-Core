@@ -1352,6 +1352,6 @@ $hcms_lang['navigate']['el'] = "Πλοήγηση";
 $hcms_lang['asset']['el'] = "Περιουσιακό στοιχείο";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['el'] = "Μετακινήστε το ποντίκι πάνω από τα εικονίδια για να λάβετε περισσότερες πληροφορίες";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['el'] = "Ο χρήστης πρέπει να παρέχει μεταδεδομένα για Αποστολές αρχείων";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['el'] = "Εισαγάγετε τα μεταδεδομένα για την αποστολή σας";
-$hcms_lang['user-wants-to-chat-with-you']['el'] = "Χρήστης %χρήστη% θέλει να συνομιλήσουν μαζί σας";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['el'] = "Εισαγάγετε τα μεταδεδομένα για την αποστολή σας";
+$hcms_lang['user-wants-to-chat-with-you']['el'] = "Χρήστης %user% θέλει να συνομιλήσουν μαζί σας";
 ?>

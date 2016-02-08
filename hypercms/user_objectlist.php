@@ -198,18 +198,21 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
       $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlUserMenu();\" ";
       $setContext = "style=\"display:block; height:16px;\" onMouseOver=\"hcms_setUsercontext('".$site."', '".$object_array['login'][$key]."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
  
-      $listview .= "<tr id=g".$items_row." ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
-              <td id=h".$items_row."_0 width=\"180\" nowrap=\"nowrap\">
+      $listview .= "
+            <tr id=\"g".$items_row."\" ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
+              <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                 <input id=\"login\" type=\"hidden\" value=\"".$object_array['login'][$key]."\">
                 <div ".$openUser." ".$setContext.">
                     <img src=\"".getthemelocation()."img/user.gif\" width=16 height=16 border=0 align=\"absmiddle\" />&nbsp; ".
-                    showshorttext($object_array['login'][$key], 30)."&nbsp;
+                    $object_array['login'][$key]."&nbsp;
                 </div>
-              </td>\n";
-      if (!$is_mobile) $listview .= "<td id=h".$items_row."_1 width=\"180\" nowrap=\"nowrap\"><span ".$setContext.">&nbsp;".showshorttext($object_array['name'][$key], 30)."</span></td>
-              <td id=h".$items_row."_2 width=\"300\" nowrap=\"nowrap\"><span ".$setContext.">&nbsp;".showshorttext($object_array['email'][$key], 46)."</span></td>
-              <td id=h".$items_row."_3 nowrap=\"nowrap\"><span ".$setContext.">&nbsp;".$object_array['date'][$key]."</span></td>\n";
-      if (!$is_mobile) $listview .= "</tr>\n";
+              </td>";
+      if (!$is_mobile) $listview .= "
+              <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$object_array['name'][$key]."</span></td>
+              <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$object_array['email'][$key]."</span></td>
+              <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$object_array['date'][$key]."</span></td>";
+      if (!$is_mobile) $listview .= "
+            </tr>";
   
       $items_row++;  
     }
@@ -227,9 +230,12 @@ else $objects_counted = 0;
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
+<meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" language="JavaScript" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script language="JavaScript">
 <!--
 function confirm_delete ()
@@ -245,6 +251,21 @@ function buttonaction (action)
   if (action == "edit" && object != "") return true;
   else if (action == "delete" && object != "") return true;
   else return false;
+}
+
+function resizecols()
+{
+  // get width of table header columns
+  var c1 = $('#c1').width();
+  var c2 = $('#c2').width();
+  var c3 = $('#c3').width();
+  var c4 = $('#c4').width();
+
+  // set width for table columns
+  $('.hcmsCol1').width(c1);
+  $('.hcmsCol2').width(c2);
+  $('.hcmsCol3').width(c3);
+  $('.hcmsCol4').width(c4);
 }
 
 // set contect menu option
@@ -294,22 +315,22 @@ var session_id = '<?php session_id(); ?>';
 </div>
 
 <div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; width:100%; z-index:1; visibility:visible;">
-  <table cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
+  <table id="objectlist_head" cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
-      <td width="180" onClick="hcms_sortTable(0);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>
       </td>
       <?php if (!$is_mobile) { ?>
-      <td width="180" onClick="hcms_sortTable(1);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
       </td>
-      <td width="300" onClick="hcms_sortTable(2);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:300px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>
       </td> 
-      <td onClick="hcms_sortTable(3);" class="hcmsTableHeader" nowrap="nowrap">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['date-created'][$lang]); ?>
       </td>
-      <td width="16" class="hcmsTableHeader">
+      <td class="hcmsTableHeader" style="width:16px;">
         &nbsp;
       </td>
        <?php } ?>
@@ -347,6 +368,13 @@ else
 <?php
 }
 ?>
+
+<!-- initalize -->
+<script language="JavaScript">
+<!--
+$("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+//-->
+</script>
   
 </body>
 </html>

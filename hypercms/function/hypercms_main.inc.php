@@ -1158,6 +1158,35 @@ function deconvertlink ($path, $type="url")
   else return false;
 }
 
+// ---------------------- createviewlink -----------------------------
+// function: createviewlink()
+// input: publication, media file name, media name (optional), force reload [true,false] (optional), link type [wrapper,download] (optional)
+// output: URL for download of the multimedia file / false on error
+
+// description:
+// The view link is mainly used inside the system in order to reference and load a multimedia file. 
+// The database is not required since the object hash or ID is not needed to create the view link. 
+
+function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type="wrapper")
+{
+  global $user, $mgmt_config;
+  
+  // if mediafile is provided as path, extract the media file name
+  if ($mediafile != "" && substr_count ($mediafile, "/") > 0) $mediafile = getobject ($mediafile);
+
+  if (isset ($mgmt_config) && valid_publicationname ($site) && valid_objectname ($mediafile))
+  {
+    if ($force_reload) $add = "&ts=".time();
+    else $add = "";
+    
+    if (strtolower ($type) == "download") $servicename = "mediadownload";
+    else $servicename = "mediadownload";
+    
+    return $mgmt_config['url_path_cms']."service/".$servicename.".php?site=".urlencode($site)."&media=".urlencode($site."/".$mediafile)."&token=".hcms_crypt ($site."/".$mediafile)."&name=".urlencode($name).$add;
+  }
+  else return false;
+}
+
 // ---------------------- createaccesslink -----------------------------
 // function: createaccesslink()
 // input: publication, location (optional), object (optional), category [page,comp] (optional), object-ID (optional), user login, link type [al,dl] (optional), token lifetime in seconds (optional), formats (optional)
@@ -1461,7 +1490,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
     if ($mediacfg) $add .= '&mediacfg='.url_encode($mediacfg);
     
     // return result
-    if ($media != "" && $result_zip) return $mgmt_config['url_path_cms']."explorer_download.php?site=".url_encode($site)."&media=".url_encode($media)."&name=".url_encode($name)."&token=".hcms_crypt($media).$add;
+    if ($media != "" && $result_zip) return createviewlink ($site, $media, $name).$add;
     else return false;
   }
   else return false;
@@ -2559,18 +2588,23 @@ function substr_in_array ($search, $array)
 
 function downloadobject ($location, $object, $container="", $lang="en", $user="")
 {
-  global $mgmt_config, $hcms_lang, $lang;
+  global $mgmt_config, $eventsystem, $hcms_lang, $lang;
   
   $location = deconvertpath ($location, "file");
 
   if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object))
   {
     $prefix = uniqid();
+    
+    // eventsystem
+    if ($eventsystem['onfiledownload_pre'] == 1) onfiledownload_pre ($site, $location, $media, $name, $user);
 
     // copy to temp/view and execute
     copy ($location.$object, $mgmt_config['abs_path_view'].$prefix."_".$object);
+    
     // get content via HTTP in order ro render page
     $content = @file_get_contents ($mgmt_config['url_path_view'].$prefix."_".$object);
+    
     // remove temp file
     unlink ($mgmt_config['abs_path_view'].$prefix."_".$object);
     
@@ -2583,16 +2617,22 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
         $objectdata = loadfile ($location, $object);
         $container = getfilename ($objectdata, "content");
       }
+      
       // get container id
       if (strpos ($container, ".xml") > 0) $container_id = substr ($container, 0, strpos ($container, ".xml"));
-      elseif (is_numeric ($container)) $container_id = $container;    
+      elseif (is_numeric ($container)) $container_id = $container;
+         
       // write stats
       if (is_numeric ($container_id) && $container_id > 0) rdbms_insertdailystat ("download", intval($container_id), $user);
+      
       // echo content
       echo $content;
     }
     // return info page
     else echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
+    
+    // eventsystem
+    if ($eventsystem['onfiledownload_post'] == 1) onfiledownload_post ($site, $location, $media, $name, $user);
   }
   else return false;
 }
@@ -2607,16 +2647,24 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
 
 function downloadfile ($filepath, $name, $force="wrapper", $user="")
 {
-  global $mgmt_config, $hcms_lang, $lang, $is_iphone;
+  global $mgmt_config, $eventsystem, $hcms_lang, $lang, $is_iphone;
 
-  $allowrange = true;
-  $error = array();
+  $stream = "";
+  $buffer = 102400;
+  $start = -1;
+  $end = -1;
+  $size = 0;
   $range = false;
 
   if (valid_locationname ($filepath) && is_file ($filepath) && $name != "")
   {
+    // get location and media object
     $location = getlocation ($filepath);
     $media = getobject ($filepath);
+    
+    // get publication
+    if (strpos ($location, "/") > 0 && strpos ($media, "_hcm") > 0) $site = basename ($location);
+    else $site = "";
     
     // create temp file if file is encrypted
     $temp = createtempfile ($location, $media);
@@ -2626,26 +2674,91 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       $location = $temp['templocation'];
       $media = $temp['tempfile'];
     }
+    
+    // eventsystem
+    if ($eventsystem['onfiledownload_pre'] == 1) onfiledownload_pre ($site, $location, $media, $name, $user);
 
     // get browser information/version
     $user_client = getbrowserinfo ();
     
     // if browser is IE then we need to encode it (does not detect IE 11)
-    if (isset ($user_client['msie']) && $user_client['msie'] > 0) $name = rawurlencode ($name);     
-
-    // read file without headers
+    if (isset ($user_client['msie']) && $user_client['msie'] > 0) $name = rawurlencode ($name);
+    
+    // read file without headers, no streaming supported (used by WebDAV)
     if ($force == "noheader")
     {
       $filedata = file_get_contents ($location.$media);
     }
-    // define file header and provide file
+    // stream file and provide headers
     else
     {
-      header ('HTTP/1.1 200 Ok', true, 200);
-      if ($allowrange) header ("Accept-Ranges: bytes");
-      header ("Server: Apache");
-      header ("Content-Description: File Transfer");
+      // --------------------------------- open stream --------------------------------------
 
+      // stream file from AWS S3
+      if (strpos (strtolower ("_".getmedialocation ($site, $media, 'url_path_media')), "s3://") > 0)
+      {
+        // create a stream context to allow seeking
+        $context = stream_context_create (array(
+          's3' => array(
+            'seekable' => true
+          )
+        ));
+        
+        if (!($stream = fopen ($filepath, 'rb', false, $context)))
+        {
+          // can't read the file
+          header ("HTTP/1.1 500 Internal Server Error", true, 500);
+          $errcode = 20601;
+          $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$filepath.')';
+          // write log
+          savelog (@$error);
+          exit;
+        }
+      }
+      // stream file from Google Cloud
+      if (strpos (strtolower ("_".getmedialocation ($site, $media, 'url_path_media')), "gs://") > 0)
+      {
+        // create a stream context to allow seeking
+        $context = stream_context_create (array(
+          'gs' => array(
+            'seekable' => true
+          )
+        ));
+        
+        if (!($stream = fopen ($filepath, 'rb', false, $context)))
+        {
+          // can't read the file
+          header ("HTTP/1.1 500 Internal Server Error", true, 500);
+          $errcode = 20601;
+          $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$filepath.')';
+          // write log
+          savelog (@$error);
+          exit;
+        }
+      }
+      // stream local file
+      else
+      {
+        if (!($stream = fopen ($filepath, 'rb')))
+        {
+          // can't read the file
+          header ("HTTP/1.1 500 Internal Server Error", true, 500);
+          $errcode = 20602;
+          $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$filepath.')';
+          // write log
+          savelog (@$error);
+          exit;
+        }
+      }
+  
+      ob_get_clean();
+      
+      // get file start and end bytes
+      $start = 0;
+      $size  = filesize ($filepath);
+      $end   = $size - 1;
+  
+      // ------------------------- define proper header -------------------------
       // force download of file
       if ($force == "download")
       {
@@ -2671,150 +2784,103 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
             
         header ("Expires: 0");      
       }
-      // provide content of file inline
-      else
+      // provide content of file inline for wrapper
+      elseif ($force == "wrapper")
       {
-        header ("Content-Disposition: inline; filename=\"".$name."\"");
-      }
-
-      // content-type
-      // deprecated since version 5.6.8 since not supported properly by iPhone
-      // if ($is_iphone) header ("Content-Type: application/mac-binhex40");
-      // else header ("Content-Type: ".getmimetype ($medialocation));
-      header ("Content-Type: ".getmimetype ($location.$media));
-      header ("Content-Transfer-Encoding: binary");
-      
-      // file stat
-      $fstat = stat ($location.$media);
-      
-      // for partial file download support
-      header ('ETag: '.sprintf ('"%x-%x-%x"', $fstat['ino'], $fstat['size'], str_pad ($fstat['mtime'], 16, "0")));
-      
-      // get the 'Range' header if one was sent
-      if ($allowrange && isset ($_SERVER['HTTP_RANGE'])) 
-      {
-        list ($type, $tmp) = explode ('=', $_SERVER['HTTP_RANGE']);
-  
-        if (strtolower (trim ($type)) != 'bytes')
-        {
-          // bad request - range unit is not 'bytes'
-          header ("HTTP/1.1 400 Invalid Request", true, 400);
-          exit;
-        }
+        // content-type
+        header ("Content-Type: ".getmimetype ($filepath));
+        header ("Cache-Control: max-age=2592000, public");
+        header ("Expires: ".gmdate ('D, d M Y H:i:s', time() + 2592000) . ' GMT');
+        header ("Last-Modified: ".gmdate ('D, d M Y H:i:s', @filemtime ($filepath)) . ' GMT' );
+        header ("Accept-Ranges: 0-".$end);
         
-        $tmp = explode (',',$tmp);
-        $tmp = explode ('-', $tmp[0]); // We only use the first range and deliver it
-        
-        if ($tmp[0] === '')
+        // partial file download
+        if (isset ($_SERVER['HTTP_RANGE']))
         {
-          // first number missing, return last $range[1] in bytes
-          $end = $fstat['size']-1;
-          $start = $end - intval ($tmp[1]);
-        }
-        elseif ($tmp[1] === '')
-        {
-          // second number missing, return from byte $range[0] to end
-          $start = intval($tmp[0]);
-          $end = $fstat['size']-1;
-        }
-        else
-        {
-          // both numbers present, return specific range
-          $start = intval($tmp[0]);
-          $end = intval($tmp[1]);
-        }  
-  
-        if ($start > $end || $start > $fstat['size'] || $end > $fstat['size']) 
-        {
-          // bad request - start is greater than end
-          header ("HTTP/1.1 416 Requested range not satisfiable", true, 416);
+          $c_start = $start;
+          $c_end = $end;
+    
+          list ($rest, $range) = explode ('=', $_SERVER['HTTP_RANGE'], 2);
           
-          $errcode = 20600;
-          $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile() -> Range not satisfiable: '.$start.' - '.$end.' ('.$fstat['size'].')';
-          
-          // write log
-          savelog (@$error);
-          exit;
-        }
-  
-        $range = true; 
-        unset ($tmp);
-      }
-  
-      // partial file download
-      if ($allowrange && $range)
-      {
-        $length = $end - $start+1;
-  
-        header ('HTTP/1.1 206 Partial Content', true, 206);      
-        header ("Content-Length: ".$length);
-        header ("Content-Range: bytes ".$start."-".$end."/".$fstat['size']);
-  
-        // read partial if not the whole file has been requested
-        if ($length != $fstat['size'])
-        {
-          if (!($fh = fopen ($location.$media, 'r')))
+          if (strpos ($range, ',') !== false)
           {
-            // if we can't read the file
-            header ("HTTP/1.1 500 Internal Server Error", true, 500);
-            $errcode = 20601;
-            $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$location.$media.')';
-            // write log
-            savelog (@$error);
+            header ('HTTP/1.1 416 Requested Range Not Satisfiable');
+            header ("Content-Range: bytes ".$start."-".$end."/".$size);
             exit;
           }
-  
-          if ($start)
+          
+          if ($range == '-')
           {
-            $result = fseek ($fh, $start);
-            
-            if ($result == -1)
-            {
-              header ("HTTP/1.1 500 Internal Server Error", true, 500);
-              $errcode = 20602;
-              $error[] = $mgmt_config['today'].'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not seek '.$location.$media.')';
-              // write log
-              savelog (@$error);
-              exit;
-            }
+            $c_start = $size - substr ($range, 1);
           }
-  
-          while ($length)
-          { 
-            // read in blocks of 8KB so we don't chew up memory on the server
-            $read = ($length > 8192) ? 8192 : $length;
-            $length -= $read;
-            print (fread ($fh, $read));
+          else
+          {
+            $range = explode ('-', $range);
+            $c_start = $range[0];
+             
+            $c_end = (isset ($range[1]) && is_numeric ($range[1])) ? $range[1] : $c_end;
           }
           
-          fclose ($fh);
+          $c_end = ($c_end > $end) ? $end : $c_end;
+          
+          if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size)
+          {
+            header ('HTTP/1.1 416 Requested Range Not Satisfiable');
+            header ("Content-Range: bytes ".$start."-".$end."/".$size);
+            exit;
+          }
+          
+          $start = $c_start;
+          $end = $c_end;
+          $length = $end - $start + 1;
+          fseek ($stream, $start);
+          header ('HTTP/1.1 206 Partial Content');
+          header ("Content-Length: ".$length);
+          header ("Content-Range: bytes ".$start."-".$end."/".$size);
         }
+        // standard file download
         else
         {
-          // read file
-          readfile ($location.$media);
+          if (!$is_iphone)
+          {
+            header ("Content-Length: ".$size);
+            header ("Connection: close");
+          }
         }
       }
-      // standard file download
-      else
+  
+      // ----------------- perform the streaming of calculated range --------------------
+      $i = $start;
+      set_time_limit (0);
+
+      while (!feof ($stream) && $i <= $end)
       {
-        if (!$is_iphone)
+        $bytesToRead = $buffer;
+        
+        if (($i + $bytesToRead) > $end)
         {
-          header ("Content-Length: ".$fstat['size']);
-          header ("Connection: close");
+          $bytesToRead = $end - $i + 1;
         }
-    
-        // read file
-        readfile ($location.$media);
+        
+        $data = fread ($stream, $bytesToRead);
+        echo $data;
+        flush ();
+        $i += $bytesToRead;
       }
+      
+      // ----------------------------- close stream -----------------------------------
+      fclose ($stream);
     }
 
     // write stats for partial file download (range has been provided) only if start of file or end of file has been requested 
-    if (!is_thumbnail ($location.$media) && (($range && ($start == 0 || $end == ($fstat['size']-1))) || !$range))
+    if (!is_thumbnail ($location.$media) && (($range && ($start == 0 || $end == ($size - 1))) || !$range))
     {
       $container_id = getmediacontainerid ($media);
-      if (is_numeric ($container_id) && $container_id > 0) rdbms_insertdailystat ("download", $container_id, $user);
+      if ($container_id > 0) rdbms_insertdailystat ("download", $container_id, $user);
     }
+    
+    // eventsystem
+    if ($eventsystem['onfiledownload_post'] == 1) onfiledownload_post ($site, $location, $media, $name, $user);
 
     // write log
     savelog (@$error);
@@ -5059,7 +5125,7 @@ function editpublication ($site_name, $setting, $user="sys")
 
 ";
 
-  if (is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/")) $site_mgmt_config .= "
+  if (is_dir ($mgmt_config['abs_path_cms']."connector/")) $site_mgmt_config .= "
   // Allow sharing of social media links
 // enable (false) or disable (true) restricted system usage of social media link sharing. 
 \$mgmt_config['".$site_name."']['sharesociallink'] = ".$sharesociallink_new.";

@@ -10,9 +10,9 @@
 // session
 define ("SESSION", "create");
 // management configuration
-require ("config.inc.php");
+require ("../config.inc.php");
 // hyperCMS API
-require ("function/hypercms_api.inc.php");
+require ("../function/hypercms_api.inc.php");
 
 
 // input parameters
@@ -265,9 +265,6 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
   }  
   else $media_root = "";
 
-  // eventsystem
-  if ($eventsystem['onfiledownload_pre'] == 1) onfiledownload_pre ($site, $media_root, $media, $name, $user);
-  
   if ($media_root != "")
   {
     // convert file if requested
@@ -314,12 +311,9 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
     // no media file -> createdocument failed
     else
     {
-      header ("HTTP/1.1 500 Internal Server Error", true, 500);
+      header ("HTTP/1.1 400 Internal Server Error", true, 400);
       echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
-    }    
-    
-    // eventsystem
-    if ($eventsystem['onfiledownload_post'] == 1) onfiledownload_post ($site, $media_root, $media, $name, $user);
+    }
   }
   else
   {

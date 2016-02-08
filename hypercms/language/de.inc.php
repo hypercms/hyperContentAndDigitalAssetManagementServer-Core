@@ -1353,6 +1353,6 @@ $hcms_lang['navigate']['de'] = "Navigieren";
 $hcms_lang['asset']['de'] = "Asset";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['de'] = "Bewegen Sie die Maus über die Symbole, um weitere Informationen zu erhalten";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['de'] = "Benutzer müssen Metadaten für Dateiuploads eingeben";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['de'] = "Bitte geben Sie die Metadaten für Ihre Uploads ein";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['de'] = "Bitte geben Sie die Metadaten für Ihre Uploads ein";
 $hcms_lang['user-wants-to-chat-with-you']['de'] = "Benutzer %user% will mit ihnen chatten.";
 ?>

@@ -307,7 +307,7 @@ function showmessage ($show, $width="580px", $height="70px", $lang="en", $style=
     <table style=\"width:100%; height:100%; padding:0; border:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
         <td style=\"text-align:left; vertical-align:top; padding:3px; margin:0;\">
-          ".$show."
+          <div id=\"message_text\">".$show."</div>
         </td>
         <td style=\"width:22px; text-align:right; vertical-align:top; padding:3px; margin:0;\">
           <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.gif',1);\" onClick=\"hcms_showHideLayers('".$id."','','hide');\" />
@@ -403,7 +403,7 @@ function showsharelinks ($link, $lang="en", $style="", $id="hcms_shareLayer")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang;
      
-  if (is_dir ($mgmt_config['abs_path_cms']."connector/socialmedia/") && $link != "" && $lang != "" && $id != "")
+  if (is_dir ($mgmt_config['abs_path_cms']."connector/") && $link != "" && $lang != "" && $id != "")
   {
     return "
   <div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"".$style."\">".
@@ -736,7 +736,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           $mediaview .= "
         <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
-          <tr><td align=\"left\"><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile_thumb)."&token=".hcms_crypt($site."/".$mediafile_thumb)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style." /></td></tr>
+          <tr><td align=\"left\"><img src=\"".createviewlink ($site, $mediafile_thumb)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style." /></td></tr>
           <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>";           
         }
         // if no thumbnail/preview exists
@@ -750,7 +750,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
         // define html code for download of older file version
         $mediaview .= "
-          <tr><td align=\"middle\"><button class=\"hcmsButtonGreen\" onclick=\"location.href='".$mgmt_config['url_path_cms']."explorer_download.php?site=".url_encode($site)."&name=".$medianame."&media=".url_encode($site."/".$mediafile_orig)."&token=".hcms_crypt($site."/".$mediafile_orig)."';\">
+          <tr><td align=\"middle\"><button class=\"hcmsButtonGreen\" onclick=\"location.href='".createviewlink ($site, $mediafile_orig, $medianame, false, "download")."';\">
             ".getescapedtext ($hcms_lang['download-file'][$lang], $hcms_charset, $lang)."
           </button></td></tr>";
           
@@ -811,7 +811,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           if (substr_count (".pdf", $file_info['orig_ext']) == 1) 
           {
             // using pdfjs with orig. file via iframe
-            $doc_link = cleandomain ($mgmt_config['url_path_cms'])."explorer_wrapper.php?site=".$site."&name=".$medianame."&media=".$site."/".$mediafile_orig."&token=".hcms_crypt ($site."/".$mediafile_orig)."&ts=".time();
+            $doc_link = cleandomain (createviewlink ($site, $mediafile_orig, $medianame, true));
             $mediaview .= "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
           }
           else
@@ -835,14 +835,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             if ($thumb_pdf_exists != false)
             {
               // using pdfjs with thumbnail file via iframe
-              $doc_link = cleandomain ($mgmt_config['url_path_cms'])."explorer_wrapper.php?site=".$site."&name=".$medianame_thumb."&media=".$site."/".$mediafile_thumb."&token=".hcms_crypt ($site."/".$mediafile_thumb)."&ts=".time();
+              $doc_link = cleandomain (createviewlink ($site, $mediafile_thumb, $medianame_thumb, true));
               $mediaview .= "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
             }
             // thumb pdf does not exsist
             elseif ($thumb_pdf_exists == false)
             {
               // using original file and wrapper to start conversion in the background
-              $doc_link = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".urlencode($site)."&name=".urlencode($medianame_thumb)."&media=".urlencode($site."/".$mediafile)."&token=".hcms_crypt ($site."/".$mediafile)."&type=pdf&ts=".time();
+              $doc_link = createviewlink ($site, $mediafile, $medianame_thumb)."&type=pdf&ts=".time();
 
               // show standard file icon
               if (!empty ($file_info['icon_large'])) $mediaview .= "<div style=\"width:".$width."px; text-align:center;\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /></div>";
@@ -853,7 +853,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             // using Google Docs if UNOCONV was not able to convert into pdf and no standard file-icon exists
             else
             {
-              $doc_link = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".$site."&name=".$medianame."&media=".$site."/".$mediafile_orig."&token=".hcms_crypt ($site."/".$mediafile_orig)."&ts=".time();
+              $doc_link = createviewlink ($site, $mediafile_orig, $medianame, true);
               $mediaview .= "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
             }
           }
@@ -861,7 +861,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         else
         {
           // Not compatible Browser - using google docs
-          $doc_link = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&name=".url_encode($medianame)."&media=".url_encode($site."/".$mediafile_orig)."&token=".hcms_crypt ($site."/".$mediafile_orig)."&ts=".time();
+          $doc_link = createviewlink ($site, $mediafile_orig, $medianame, true);
           $mediaview .= "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." ".$id." style=\"border:none;\"></iframe><br />\n";
         }
      
@@ -953,7 +953,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
             $mediaview .= "
           <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
-            <tr><td align=\"left\"><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile)."&token=".hcms_crypt($site."/".$mediafile)."&ts=".time()."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style."/></td></tr>
+            <tr><td align=\"left\"><img src=\"".createviewlink ($site, $mediafile, $medianame, true)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style."/></td></tr>
             <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>";           
           }
           // if no thumbnail/preview exists
@@ -1012,9 +1012,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
         <tr><td align=\"left\">
           <object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" ".$style.">
-            <param name=\"movie\" value=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile_orig)."&token=".hcms_crypt($site."/".$mediafile_orig)."\" />
+            <param name=\"movie\" value=\"".createviewlink ($site, $mediafile_orig, $medianame)."\" />
             <param name=\"quality\" value=\"high\" />
-            <embed src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile_orig)."&token=".hcms_crypt($site."/".$mediafile_orig)."&ts=".time()."\" ".$id." quality=\"high\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" type=\"application/x-shockwave-flash\" ".$style." />
+            <embed src=\"".createviewlink ($site, $mediafile_orig, $medianame, true)."\" ".$id." quality=\"high\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" type=\"application/x-shockwave-flash\" ".$style." />
           </object>
         </td></tr>
         <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>
@@ -1419,7 +1419,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         
         $mediaview .= "
       <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
-        <tr><td align=left><img src=\"".$mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($site."/".$mediafile)."&token=".hcms_crypt($site."/".$mediafile)."&ts=".time()."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" /></td></tr>
+        <tr><td align=left><img src=\"".createviewlink ($site, $mediafile, $medianame, true)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" /></td></tr>
         <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>\n";           
       }
       // if no thumbnail/preview exists
@@ -1474,7 +1474,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
         $audio_channels['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
         
-        $download_link = "top.location.href='".$mgmt_config['url_path_cms']."explorer_download.php?media=".url_encode($site."/".$mediafile_orig)."&name=".url_encode($medianame)."&token=".hcms_crypt($site."/".$mediafile_orig)."'; return false;";
+        $download_link = "top.location.href='".createviewlink ($site, $mediafile_orig, $medianame, false, "download")."'; return false;";
        
         // download button
         if ($viewtype == "preview" || $viewtype == "preview_download") 
@@ -1482,10 +1482,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $downloads['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;"><button class="hcmsButtonBlue" onclick="'.$download_link.'">'.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button></td>';
           
           // Youtube upload
-          if (!empty ($mgmt_config[$site]['youtube']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/socialmedia/youtube/index.php"))
+          if (!empty ($mgmt_config[$site]['youtube']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
           {		
             $youtube_uploads['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left;"> 
-            <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/socialmedia/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","640","400")\'><img src="'.getthemelocation().'img/button_upload.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button> </td>';
+            <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$mediafile_orig).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","640","400")\'><img src="'.getthemelocation().'img/button_upload.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button> </td>';
           }
         }
       }
@@ -1540,7 +1540,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   
               $audio_channels[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
   
-              $download_link = "top.location.href='".$mgmt_config['url_path_cms']."explorer_download.php?media=".url_encode($site."/".$video_thumbfile)."&name=".url_encode($video_filename)."&token=".hcms_crypt($site."/".$video_thumbfile)."'; return false;";
+              $download_link = "top.location.href='".createviewlink ($site, $video_thumbfile, $video_filename, false, "download")."'; return false;";
              
               // download button
               if ($viewtype == "preview" || $viewtype == "preview_download")
@@ -1548,10 +1548,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 $downloads[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;"><button class="hcmsButtonBlue" onclick="'.$download_link.'">'.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button></td>'; 
                 
                 // Youtube upload
-                if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/socialmedia/youtube/index.php"))
+                if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
                 {	
                   $youtube_uploads[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;"> 
-                <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/socialmedia/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","640","400")\'><img src="'.getthemelocation().'img/button_upload.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button> </td>';
+                <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","640","400")\'><img src="'.getthemelocation().'img/button_upload.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button> </td>';
                 }
               }
             }
@@ -1578,7 +1578,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       // Download
       if (is_array ($downloads) && sizeof ($downloads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $downloads).'</tr>';
       // Youtube
-      if (!empty ($mgmt_config[$site]['youtube']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/socialmedia/youtube/index.php"))
+      if (!empty ($mgmt_config[$site]['youtube']) && $mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
       {
         if (is_array ($youtube_uploads) && sizeof ($youtube_uploads) > 0) $mediaview .= '<tr><td>&nbsp;</td>'.implode ("", $youtube_uploads).'</tr>';
       }
@@ -2925,18 +2925,19 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
           
           if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
           else $type = "";
-          
-          $url = $mgmt_config['url_path_cms'].$value.$ts;
+
+          // use new media streaming service
+          if (substr_count ($media, "/") == 1) $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt ($media).$ts;
+          // is not supported anymore since version 6.0.6
+          else $url = $mgmt_config['url_path_cms'].$value.$ts;
         }
         // version 2.0 (only media reference is given, no ; as seperator is used)
         elseif (strpos ($value, ";") < 1)
         {
-          $media = getattribute ($value, "media");
-          
-          if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
+          if ($value != "") $type = "type=\"".getmimetype ($value)."\" ";
           else $type = "";
-          
-          $url = $mgmt_config['url_path_cms']."explorer_wrapper.php?media=".$value."&token=".hcms_crypt($value).$ts;
+            
+          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt ($value).$ts;
         }
         // version 2.1 (media reference and mimetype is given)
         elseif (strpos ($value, ";") > 0)
@@ -2948,7 +2949,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
         }
         else $url = "";
       }
-      // absulute URL
+      // absolute URL is given (deprecated)
       else
       {
         $media = getattribute ($value, "media");
@@ -3002,8 +3003,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
       // IMPORTANT: Do not use a wrapperlink for the video poster image!
       if ($logo_name != "" && is_file ($media_dir.$site."/".$logo_name.".thumb.jpg"))
       {
-        $logo_media = $site."/".$logo_name.".thumb.jpg";
-        $logo_url = $mgmt_config['url_path_cms'].'explorer_wrapper.php?media='.$logo_media.'&token='.hcms_crypt($logo_media).$ts;
+        $logo_url = createviewlink ($site, $logo_name.".thumb.jpg").$ts;
       }
     }
 
@@ -3168,7 +3168,7 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
       // only partial URL
       if (strpos ("_".trim($value), "http") != 1)
       {
-        // version 2.0 (only media reference incl. the wrapper is given)
+        // before version 2.0 (only media reference incl. the wrapper is given)
         if (strpos ("_".$value, "explorer_wrapper.php") > 0)
         {
           $media = getattribute ($value, "media");
@@ -3176,17 +3176,18 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
           if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
           else $type = "";
           
-          $url = $mgmt_config['url_path_cms'].$value;
+          // use new media streaming service
+          if (substr_count ($media, "/") == 1) $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt ($media).$ts;
+          // is not supported anymore since version 6.0.6
+          else $url = $mgmt_config['url_path_cms'].$value.$ts;
         }
         // version 2.0 (only media reference is given, no ; as seperator is used)
         elseif (strpos ($value, ";") < 1)
         {
-          $media = getattribute ($value, "media");
-          
-          if ($media != "") $type = "type=\"".getmimetype ($media)."\" ";
+          if ($value != "") $type = "type=\"".getmimetype ($value)."\" ";
           else $type = "";
-          
-          $url = $mgmt_config['url_path_cms']."explorer_wrapper.php?media=".$value."&token=".hcms_crypt($value);
+
+          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt($value).$ts;
         }
         // version 2.1 (media reference and mimetype is given)
         elseif (strpos ($value, ";") > 0)
@@ -3194,11 +3195,11 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
           list ($media, $type) = explode (";", $value);
           
           $type = "type=\"".$type."\" ";
-          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt($media);
+          $url = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt($media).$ts;
         }
         else $url = "";
       }
-      // absulute URL
+      // absolute URL is given (deprecated)
       else
       {
         $media = getattribute ($value, "media");
@@ -3244,8 +3245,7 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
       // IMPORTANT: Do not use a wrapperlink for the video poster image!
       if ($logo_name != "" && is_file ($media_dir.$site."/".$logo_name.".thumb.jpg"))
       {
-        $logo_media = $site."/".$logo_name.".thumb.jpg";
-        $logo_url = $mgmt_config['url_path_cms'].'explorer_wrapper.php?media='.$logo_media.'&token='.hcms_crypt($logo_media).$ts;
+        $logo_url = createviewlink ($site, $logo_name.".thumb.jpg").$ts;
       }
     }
         

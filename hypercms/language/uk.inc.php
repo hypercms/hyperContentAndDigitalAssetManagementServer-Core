@@ -1351,6 +1351,6 @@ $hcms_lang['navigate']['uk'] = "Навігація";
 $hcms_lang['asset']['uk'] = "Управління активами";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['uk'] = "Наведіть вказівник миші над піктограмами для отримання детальнішої інформації";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['uk'] = "Користувач зобов'язаний надавати йому метадані для завантаження файлів";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['uk'] = "Введіть метадані для вашого завантаження";
-$hcms_lang['user-wants-to-chat-with-you']['uk'] = "Користувач %користувача% хоче спілкуватися з вами";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['uk'] = "Введіть метадані для вашого завантаження";
+$hcms_lang['user-wants-to-chat-with-you']['uk'] = "Користувач %user% хоче спілкуватися з вами";
 ?>

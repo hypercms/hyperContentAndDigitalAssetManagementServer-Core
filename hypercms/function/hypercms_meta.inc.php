@@ -521,7 +521,7 @@ function copymetadata ($file_source, $file_dest)
         if ($errorCode)
         {
           $errcode = "20241";
-          $error[] = $mgmt_config['today']."|explorer_download.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed in copy metadata to file: ".getobject($file_dest);
+          $error[] = $mgmt_config['today']."|hypercms_meta.php|error|$errcode|exec of EXIFTOOL (code:$errorCode) failed in copy metadata to file: ".getobject($file_dest);
           
           // save log
           savelog (@$error);

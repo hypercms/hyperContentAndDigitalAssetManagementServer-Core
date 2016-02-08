@@ -1351,6 +1351,6 @@ $hcms_lang['navigate']['nl'] = "Navigeren";
 $hcms_lang['asset']['nl'] = "Actief";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['nl'] = "Beweeg de muis over de icoontjes voor meer informatie.";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['nl'] = "Gebruiker moet voorzien in metadata voor file upload";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['nl'] = "Geef de metagegevens van uw upload";
-$hcms_lang['user-wants-to-chat-with-you']['nl'] = "Gebruiker %gebruikersnaam% wil met u te chatten";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['nl'] = "Geef de metagegevens van uw upload";
+$hcms_lang['user-wants-to-chat-with-you']['nl'] = "Gebruiker %user% wil met u te chatten";
 ?>

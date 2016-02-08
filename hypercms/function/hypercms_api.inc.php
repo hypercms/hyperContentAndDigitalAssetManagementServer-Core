@@ -160,8 +160,8 @@ if (defined ("SESSION") && constant ("SESSION") == "create" && is_file ($mgmt_co
 }
 
 // include language file for API functions
-if (empty ($hcms_lang) || !is_array ($hcms_lang))
+if ((empty ($hcms_lang) || !is_array ($hcms_lang)) && !empty ($lang) && is_file ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang)))
 {
-  require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile (@$lang));
+  require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
 }
 ?>

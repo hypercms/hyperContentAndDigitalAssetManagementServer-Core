@@ -204,48 +204,52 @@ if ($action == "publish") echo $headline = getescapedtext ($hcms_lang['publish-c
 elseif ($action == "unpublish") echo $headline = getescapedtext ($hcms_lang['unpublish-content'][$lang]);
 
 echo showtopbar ($headline, $lang);
+
+echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px;");
 ?>
 
-<?php echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px;"); ?>
-
-<form name="publish" method="post" action="">
-  <input type="hidden" name="action" value="<?php echo $action; ?>" />
-  <input type="hidden" name="force" value="start" />      
-  <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
-  <input type="hidden" name="page" value="<?php echo correctfile ($location, $page, $user); ?>" />
-  <input type="hidden" name="filetype" value="<?php echo $filetype; ?>" />          
-  <input type="hidden" name="media" value="<?php echo $media; ?>" />
-  <input type="hidden" name="folder" value="<?php echo $folder; ?>" />
-  <input type="hidden" name="multiobject" value="<?php echo $multiobject; ?>" />
-  <input type="hidden" name="token" value="<?php echo $token; ?>" /> 
-  
-  <table width="100%" border=0 cellpadding="3" cellspacing="0">
-    <tr> 
-      <td align="left">
-        <input name="publish" type="radio" value="now" checked="checked" /> <?php echo getescapedtext ($hcms_lang['now'][$lang]); ?>
-	    </td>
-    </tr>
-    <tr> 
-      <td align="left">		
-        <input name="publish" type="radio" value="later" /> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?> 
-        <input type="text" name="publishdate" id="publishdate" readonly="readonly" value="<?php echo $publishdate; ?>" />
-        <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'publishdate', '%Y-%m-%d %H:%i');" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
-	    </td>
-    </tr>
-    <?php if ($action == "publish") { ?>
-    <tr> 
-      <td align="left">
-        <input type="checkbox" name="published_only" value="1" /> <?php echo getescapedtext ($hcms_lang['only-already-published-content'][$lang]); ?>
-	    </td>
-    </tr>
-    <?php } ?>
-    <tr>  
-      <td align="left">  
-        &nbsp;<?php echo $headline; ?>: <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
-      </td>
-    </tr>
-  </table>
-</form>
+<div class="hcmsWorkplaceFrame">
+  <form name="publish" method="post" action="">
+    <input type="hidden" name="action" value="<?php echo $action; ?>" />
+    <input type="hidden" name="force" value="start" />      
+    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+    <input type="hidden" name="page" value="<?php echo correctfile ($location, $page, $user); ?>" />
+    <input type="hidden" name="filetype" value="<?php echo $filetype; ?>" />          
+    <input type="hidden" name="media" value="<?php echo $media; ?>" />
+    <input type="hidden" name="folder" value="<?php echo $folder; ?>" />
+    <input type="hidden" name="multiobject" value="<?php echo $multiobject; ?>" />
+    <input type="hidden" name="token" value="<?php echo $token; ?>" /> 
+    
+    <table width="100%" border=0 cellpadding="3" cellspacing="0">
+      <tr> 
+        <td align="left">
+          <label><input name="publish" type="radio" value="now" checked="checked" /> <?php echo getescapedtext ($hcms_lang['now'][$lang]); ?></label>
+  	    </td>
+      </tr>
+      <tr> 
+        <td align="left">		
+          <label>
+            <input name="publish" type="radio" value="later" /> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?>
+            <input type="text" name="publishdate" id="publishdate" readonly="readonly" value="<?php echo $publishdate; ?>" />
+            <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'publishdate', '%Y-%m-%d %H:%i');" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
+          </label>
+  	    </td>
+      </tr>
+      <?php if ($action == "publish") { ?>
+      <tr> 
+        <td align="left">
+          <label><input type="checkbox" name="published_only" value="1" /> <?php echo getescapedtext ($hcms_lang['only-already-published-content'][$lang]); ?></label>
+  	    </td>
+      </tr>
+      <?php } ?>
+      <tr>  
+        <td align="left">  
+          <?php echo $headline; ?>: <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
 
 </body>
 </html>

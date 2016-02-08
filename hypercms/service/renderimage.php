@@ -384,12 +384,12 @@ if (!empty ($result))
   }
   
   // add timestamp to ensure the new image will be loaded
-  $output->imagelink = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($result)."&token=".hcms_crypt($result)."&ts=".time();
+  $output->imagelink = createviewlink ($site, $result, "", true);
   
   if (!empty ($resultthumb)) 
   {
     // add timestamp to ensure the new image will be loaded
-    $output->thumblink = $mgmt_config['url_path_cms']."explorer_wrapper.php?site=".url_encode($site)."&media=".url_encode($resultthumb)."&token=".hcms_crypt($resultthumb)."&ts=".time();
+    $output->thumblink = createviewlink ($site, $resultthumb, "", true);
     
     // create temp file if file is encrypted
     $temp_target = createtempfile ($media_root_target, $resultthumb);

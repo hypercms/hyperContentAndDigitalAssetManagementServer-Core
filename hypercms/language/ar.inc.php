@@ -1351,6 +1351,6 @@ $hcms_lang['navigate']['ar'] = "التنقل";
 $hcms_lang['asset']['ar'] = "الاصول";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ar'] = "حرك الماوس فوق الرموز للحصول على مزيد من المعلومات";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ar'] = "يجب على المستخدم تقديم البيانات الفوقية فى تحميل الملفات";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['ar'] = "يرجى ادخال بيانات التعريف الخاصة التحميلات";
-$hcms_lang['user-wants-to-chat-with-you']['ar'] = "مستخدم %المستخدم% يريد التحادث معك";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['ar'] = "يرجى ادخال بيانات التعريف الخاصة التحميلات";
+$hcms_lang['user-wants-to-chat-with-you']['ar'] = "مستخدم %المستخدم %user% ادث معك";
 ?>

@@ -1350,6 +1350,6 @@ $hcms_lang['navigate']['sl'] = "Krmarjenje";
 $hcms_lang['asset']['sl'] = "Postavka";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sl'] = "Premaknite kazalec miške čez ikone in dobite več informacij";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['sl'] = "Uporabnik mora zagotavljanje metapodatkov za datotek v strežnik";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['sl'] = "Prosimo, vnesite metapodatkov za vaš strežnik";
-$hcms_lang['user-wants-to-chat-with-you']['sl'] = "Uporabnik "uporabnik % želi klepet z vami";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['sl'] = "Prosimo, vnesite metapodatkov za vaš strežnik";
+$hcms_lang['user-wants-to-chat-with-you']['sl'] = "Uporabnik %user% želi klepet z vami";
 ?>

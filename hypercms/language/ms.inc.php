@@ -1351,6 +1351,6 @@ $hcms_lang['navigate']['ms'] = "Navigasi";
 $hcms_lang['asset']['ms'] = "Aset";
 $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ms'] = "Alihkan tetikus pada ikon untuk mendapatkan lebih maklumat";
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ms'] = "Pengguna mesti sediakan metadata untuk fail Penjejak Waktu Peribadi";
-$hcms_lang['please_enter-the-metadata-for-your-uploads']['ms'] = "Sila masukkan data meta untuk Penjejak Waktu Peribadi";
-$hcms_lang['user-wants-to-chat-with-you']['ms'] = "Pengguna% pengguna% ingin ngobrol kau";
+$hcms_lang['please-enter-the-metadata-for-your-uploads']['ms'] = "Sila masukkan data meta untuk Penjejak Waktu Peribadi";
+$hcms_lang['user-wants-to-chat-with-you']['ms'] = "Pengguna %user% ingin ngobrol kau";
 ?>
