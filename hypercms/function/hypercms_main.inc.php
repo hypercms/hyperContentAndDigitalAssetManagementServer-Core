@@ -1490,7 +1490,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
     if ($mediacfg) $add .= '&mediacfg='.url_encode($mediacfg);
     
     // return result
-    if ($media != "" && $result_zip) return createviewlink ($site, $media, $name).$add;
+    if ($media != "" && $result_zip) return createviewlink ($site, $media, $name, "", "download").$add;
     else return false;
   }
   else return false;
@@ -2716,7 +2716,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
         }
       }
       // stream file from Google Cloud
-      if (strpos (strtolower ("_".getmedialocation ($site, $media, 'url_path_media')), "gs://") > 0)
+      elseif (strpos (strtolower ("_".getmedialocation ($site, $media, 'url_path_media')), "gs://") > 0)
       {
         // create a stream context to allow seeking
         $context = stream_context_create (array(
@@ -2791,61 +2791,62 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
         header ("Content-Type: ".getmimetype ($filepath));
         header ("Cache-Control: max-age=2592000, public");
         header ("Expires: ".gmdate ('D, d M Y H:i:s', time() + 2592000) . ' GMT');
-        header ("Last-Modified: ".gmdate ('D, d M Y H:i:s', @filemtime ($filepath)) . ' GMT' );
-        header ("Accept-Ranges: 0-".$end);
+      }
         
-        // partial file download
-        if (isset ($_SERVER['HTTP_RANGE']))
+      header ("Last-Modified: ".gmdate ('D, d M Y H:i:s', @filemtime ($filepath)) . ' GMT' );
+      header ("Accept-Ranges: 0-".$end);
+      
+      // partial file download
+      if (isset ($_SERVER['HTTP_RANGE']))
+      {
+        $c_start = $start;
+        $c_end = $end;
+  
+        list ($rest, $range) = explode ('=', $_SERVER['HTTP_RANGE'], 2);
+        
+        if (strpos ($range, ',') !== false)
         {
-          $c_start = $start;
-          $c_end = $end;
-    
-          list ($rest, $range) = explode ('=', $_SERVER['HTTP_RANGE'], 2);
-          
-          if (strpos ($range, ',') !== false)
-          {
-            header ('HTTP/1.1 416 Requested Range Not Satisfiable');
-            header ("Content-Range: bytes ".$start."-".$end."/".$size);
-            exit;
-          }
-          
-          if ($range == '-')
-          {
-            $c_start = $size - substr ($range, 1);
-          }
-          else
-          {
-            $range = explode ('-', $range);
-            $c_start = $range[0];
-             
-            $c_end = (isset ($range[1]) && is_numeric ($range[1])) ? $range[1] : $c_end;
-          }
-          
-          $c_end = ($c_end > $end) ? $end : $c_end;
-          
-          if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size)
-          {
-            header ('HTTP/1.1 416 Requested Range Not Satisfiable');
-            header ("Content-Range: bytes ".$start."-".$end."/".$size);
-            exit;
-          }
-          
-          $start = $c_start;
-          $end = $c_end;
-          $length = $end - $start + 1;
-          fseek ($stream, $start);
-          header ('HTTP/1.1 206 Partial Content');
-          header ("Content-Length: ".$length);
+          header ('HTTP/1.1 416 Requested Range Not Satisfiable');
           header ("Content-Range: bytes ".$start."-".$end."/".$size);
+          exit;
         }
-        // standard file download
+        
+        if ($range == '-')
+        {
+          $c_start = $size - substr ($range, 1);
+        }
         else
         {
-          if (!$is_iphone)
-          {
-            header ("Content-Length: ".$size);
-            header ("Connection: close");
-          }
+          $range = explode ('-', $range);
+          $c_start = $range[0];
+           
+          $c_end = (isset ($range[1]) && is_numeric ($range[1])) ? $range[1] : $c_end;
+        }
+        
+        $c_end = ($c_end > $end) ? $end : $c_end;
+        
+        if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size)
+        {
+          header ('HTTP/1.1 416 Requested Range Not Satisfiable');
+          header ("Content-Range: bytes ".$start."-".$end."/".$size);
+          exit;
+        }
+        
+        $start = $c_start;
+        $end = $c_end;
+        $length = $end - $start + 1;
+        fseek ($stream, $start);
+        header ('HTTP/1.1 206 Partial Content');
+        header ("Content-Length: ".$length);
+        header ("Content-Range: bytes ".$start."-".$end."/".$size);
+      }
+      // standard file download
+      else
+      {
+        if (!$is_iphone)
+        {
+          header ("Content-Length: ".$size);
+          header ("Connection: close");
         }
       }
   

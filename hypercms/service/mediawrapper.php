@@ -10,7 +10,7 @@
 // session
 define ("SESSION", "create");
 // management configuration
-require ("config.inc.php");
+require ("../config.inc.php");
 // hyperCMS API
 require ("../function/hypercms_api.inc.php");
 // format file extensions
@@ -185,15 +185,18 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
     exit;
   }
 
-  // location
+  // Location
+  // ... of multimedia file in repository
   if (@is_file (getmedialocation ($site, $media, "abs_path_media").$media))
   {
     $media_root = getmedialocation ($site, $media, "abs_path_media");
   }
+  // ... of template media file
   elseif (@is_file ($mgmt_config['abs_path_tplmedia'].$media))
   {
     $media_root = $mgmt_config['abs_path_tplmedia'];
   }
+  // ... of zip file in temp
   elseif (@is_file ($mgmt_config['abs_path_temp'].getobject($media)) && $user != "")
   {
     $media_root = $mgmt_config['abs_path_temp'];

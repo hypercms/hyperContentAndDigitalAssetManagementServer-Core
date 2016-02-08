@@ -184,10 +184,10 @@ elseif ($objectpath_esc != "")
       $result_zip = zipfiles ($site, array ($location), $mgmt_config['abs_path_temp'], $zip_filename, $user_zip, "download");
     }
     else $result_zip = true;
-        
+  
     // zip file download
     if ($result_zip == true)
-    {      
+    {
       $media = $zip_filename.".zip";
       $media_info = getfileinfo ($site, getobject ($location).".zip", $cat);
       $name = $media_info['name'];
@@ -256,12 +256,12 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
   if (@is_file (getmedialocation ($site, getobject($media), "abs_path_media").$media))
   {
     $media_root = getmedialocation ($site, getobject($media), "abs_path_media");
-    $container_id = getmediacontainerid ($media);
   }
   // ... of zip file in temp
-  elseif (@is_file ($mgmt_config['abs_path_temp'].$media))
+  elseif (@is_file ($mgmt_config['abs_path_temp'].getobject($media)))
   {
     $media_root = $mgmt_config['abs_path_temp'];
+    $media = getobject ($media);
   }  
   else $media_root = "";
 
