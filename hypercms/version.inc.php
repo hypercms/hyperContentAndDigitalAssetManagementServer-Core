@@ -1299,8 +1299,13 @@ Release 02/2016
 - Changes in UI function showvideplayer and showaudioplayer to support new streaming service
 - Bug fix: Function copymetadata used wrong filename for error reporting
 - Bug fix: Several language files did not use proper %user% variable in the text strings
+
+Version 6.0.7
+Release 02/2016
+- Reorganisation of connector modules and external APIs
+- Implementation of AWS S3 and Google Cloud client API in connector to support storage of assets in external cloud storage
 */
 
 // current version
-$version = "Version 6.0.6";
+$version = "Version 6.0.7";
 ?>
