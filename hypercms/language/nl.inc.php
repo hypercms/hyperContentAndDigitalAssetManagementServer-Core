@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['nl'] = "Bew
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['nl'] = "Gebruiker moet voorzien in metadata voor file upload";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['nl'] = "Geef de metagegevens van uw upload";
 $hcms_lang['user-wants-to-chat-with-you']['nl'] = "Gebruiker %user% wil met u te chatten";
+$hcms_lang['enable-direct-file-uploads-in-pages']['nl'] = "Activeer direct file upload in pagina's";
 ?>

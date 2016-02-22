@@ -490,7 +490,7 @@ else
   // create main Menu points
   // ----------------------------------------- logout ---------------------------------------------- 
   $point = new hcms_menupoint ($hcms_lang['logout'][$lang], '#', 'logout.gif');
-  $point->setOnClick('javascript:top.location.href="userlogout.php"');
+  $point->setOnClick('javascript:top.location="userlogout.php"');
   $point->setOnMouseOver('hcms_resetContext();');
   $maintree .= $point->generateHTML();
 
@@ -1415,7 +1415,7 @@ else
       <table width="150px" cellspacing="0" cellpadding="3" class="hcmsContextMenu">
         <tr>
           <td>
-            <a href=# onClick="parent.location.href='userlogout.php';"><img src="<?php echo getthemelocation(); ?>img/button_logout.gif" align="absmiddle" border=0 />&nbsp;<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></a>
+            <a href=# onClick="parent.location='userlogout.php';"><img src="<?php echo getthemelocation(); ?>img/button_logout.gif" align="absmiddle" border=0 />&nbsp;<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></a>
             <hr/>
             <a href=# id="href_cmsview" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" id="img_cmsview" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />
             <a href=# id="_href_notify" onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="_img_notify" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />   
@@ -1423,7 +1423,7 @@ else
             <a href=# onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('publish');"><img id="img_publish" src="<?php echo getthemelocation(); ?>img/button_file_publish.gif" align="absmiddle" border=0 />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
             <a href=# onClick="if (document.forms['contextmenu_object'].elements['contexttype'].value != 'none') hcms_createContextmenuItem ('unpublish');"><img id="img_unpublish" src="<?php echo getthemelocation(); ?>img/button_file_unpublish.gif" align="absmiddle" border=0 />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />        
             <hr/>
-            <a href=# onClick="document.location.href='explorer.php?refresh=1';"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.gif" align="absmiddle" border=0 />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
+            <a href=# onClick="document.location='explorer.php?refresh=1';"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.gif" align="absmiddle" border=0 />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
           </td>
         </tr>    
       </table>

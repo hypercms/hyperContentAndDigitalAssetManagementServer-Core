@@ -115,7 +115,7 @@ if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0
 var editobjects = [];
 
 // Reloads all needed frames
-function frameReload (newpage, timeout)
+function frameReload (objectpath, timeout)
 {
   // reload main frame (upload by control objectlist)
   if (eval (opener.parent.frames['mainFrame']))
@@ -131,17 +131,25 @@ function frameReload (newpage, timeout)
   // reload object frame (upload by control content)
   else if (eval (opener.parent.frames['objFrame']))
   {
-    if (newpage == "") opener.parent.frames['objFrame'].location.reload();
-    else opener.parent.frames['objFrame'].location.href='page_view.php?ctrlreload=yes&location=<?php echo html_encode($location_esc); ?>&page='+newpage;
+    if (objectpath == "") opener.parent.frames['objFrame'].location.reload();
+    else
+    {
+      // get location and object
+      var index = objectpath.lastIndexOf("/") + 1;
+      var location = objectpath.substring(0, index);
+      var newpage = objectpath.substr(index);
+    
+      opener.parent.frames['objFrame'].location='page_view.php?ctrlreload=yes&location=' +  location + '&page=' + newpage;
+    }
     
     setTimeout('window.close()', timeout);
   }
 }
 
-function openEditWindow (newpage)
+function openEditWindow (objectpath)
 {
   // add objectpath to array
-  editobjects.push('<?php echo $location_esc; ?>'+newpage);
+  editobjects.push(objectpath);
   
   var window = document.getElementById('editwindow');
   var iframe = document.getElementById('editiframe');
@@ -149,7 +157,12 @@ function openEditWindow (newpage)
   // open edit window for first object
   if (window.style.display == 'none')
   {
-    iframe.src='page_view.php?ctrlreload=yes&location=<?php echo html_encode($location_esc); ?>&page='+newpage;
+    // get location and object
+    var index = objectpath.lastIndexOf("/") + 1;
+    var location = objectpath.substring(0, index);
+    var newpage = objectpath.substr(index);
+
+    iframe.src='page_view.php?rlreload=yes&location=' + location + '&page=' + newpage;
     window.style.display='inline';
     
     // remove first array element
@@ -173,7 +186,7 @@ function nextEditWindow ()
     var newpage = objectpath.substr(index);
     
     // load next object
-    iframe.src='page_view.php?ctrlreload=yes&location='+location+'&page='+newpage;
+    iframe.src='page_view.php?ctrlreload=yes&location=' + location + '&page=' + newpage;
     
     if (window.style.display == 'none')
     {
@@ -411,19 +424,33 @@ $(document).ready(function ()
     var file = "";
     
     // Put out message if possible
-    if(data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.UNSENT)
+    if (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.UNSENT)
     {
-      var text = ajax.responseText;
-      
-      if(text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1) {
+      var text = ajax.responseText.trim();
+
+      if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
+      {
         file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
         text = text.substr (0, filepos1);
+        
+        <?php if ($cat == "comp" && !empty ($mgmt_config[$site]['upload_userinput']) && $mgmt_config[$site]['upload_userinput'] == true && $uploadmode != "single") { ?> 
+        if (file.indexOf("|") > 0)
+        {
+          var file_array = file.split("|");
+          
+          for (var i=0; i < file_array.length; ++i)
+          {
+            // open meta data edit window in iframe
+            openEditWindow(file_array[i]);
+          }
+        }
+        else
+        {
+          // open meta data edit window in iframe
+          openEditWindow(file);
+        }
+        <?php } ?>
       }
-      
-      <?php if (!empty ($mgmt_config[$site]['upload_userinput']) && $mgmt_config[$site]['upload_userinput'] == true && $uploadmode != "single") { ?>
-      // open meta data edit window in iframe
-      openEditWindow(file);
-      <?php } ?>
       
       buildFileMessage(data, text, true);
     }       
@@ -1144,7 +1171,7 @@ echo showtopbar ($title.": ".$object_name, $lang);
         <input type="checkbox" name="unzip" id="unzip" value="1" /> <?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?>
       </div>
       <br />
-      <?php } elseif ($uploadmode == "single") { ?>
+      <?php } elseif ($cat == "comp" && $uploadmode == "single") { ?>
         <?php if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) { ?>
       <div class="inline">
         <input type="checkbox" name="versioning" id="versioning" value="1" />&nbsp;<?php echo getescapedtext ($hcms_lang['keep-existing-file-as-old-version'][$lang]); ?>
@@ -1156,17 +1183,19 @@ echo showtopbar ($title.": ".$object_name, $lang);
       </div>
       <br />
       <?php } 
-      if ($uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) { ?>
+      if ($cat == "comp" && $uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) { ?>
       <div class="inline">
         <input type="checkbox" name="imageresize" id="imageresize" value="percentage" />&nbsp;<?php echo getescapedtext ($hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]); ?>: <input name="imagepercentage" id="imagepercentage" type="text" size="3" maxlength="3" value="100" disabled="disabled" /> %
       </div>
       <br />
-      <?php } ?> 
+      <?php } ?>
+      <?php if ($cat == "comp") { ?>
       <div class="inline">
         <input type="checkbox" name="checkduplicates" id="checkduplicates" value="1" <?php if ($mgmt_config['check_duplicates']) echo 'checked="checked"'; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['check-for-duplicates'][$lang]); ?>
       </div>
       <br />
-      <?php if ($uploadmode == "multi") { ?>
+      <?php } ?>
+      <?php if ($cat == "comp" && $uploadmode == "multi") { ?>
       <div class="inline">
         <input type="checkbox" name="deleteobject" id="deleteobject" value="1" />&nbsp;<?php echo getescapedtext ($hcms_lang['remove-uploaded-files-on'][$lang]); ?>
         <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />

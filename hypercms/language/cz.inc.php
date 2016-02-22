@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['cz'] = "Př
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['cz'] = "Uživatel musí poskytnout metadata pro odesílání souborů";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['cz'] = "Zadejte metadata pro vaše odesílání";
 $hcms_lang['user-wants-to-chat-with-you']['cz'] = "Uživatel %user% chce chat s vámi";
+$hcms_lang['enable-direct-file-uploads-in-pages']['cz'] = "Umožňuje přímé odeslání souboru na stránkách";
 ?>

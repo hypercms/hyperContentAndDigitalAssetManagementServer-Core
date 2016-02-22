@@ -331,7 +331,7 @@ function goToURL()
     {
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
-             "onClick=\"parent.location.href='frameset_objectlist.php?site=".url_encode($site)."&login=".url_encode($login)."&action=user_files';\" name=\"media_userfiles\" ".
+             "onClick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&login=".url_encode($login)."&action=user_files';\" name=\"media_userfiles\" ".
              "src=\"".getthemelocation()."img/button_user_files.gif\" alt=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" />\n";
     }    
     else

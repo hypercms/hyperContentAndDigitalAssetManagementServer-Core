@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['tr'] = "Far
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['tr'] = "Kullanıcı olmalıdır meta dosya yüklemeleri";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['tr'] = "Lütfen metadata için yüklemeleri";
 $hcms_lang['user-wants-to-chat-with-you']['tr'] = "Kullanıcı %user% istediğini sohbet sizin";
+$hcms_lang['enable-direct-file-uploads-in-pages']['tr'] = "Doğrudan dosya yükleme sayfaları";
 ?>

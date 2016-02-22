@@ -287,7 +287,7 @@ else
 
     <div class="hcmsWorkplaceControl" style="position:fixed; left:0; bottom:0; width:100%; padding:10px;"> 
       <button id="select" class="hcmsButtonGreen" onClick="submitfiles();"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></button>
-      <button id="logout" class="hcmsButtonOrange" onClick="location.href='?action=logout&multi=<?php echo $multi; ?>';"><?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></button>
+      <button id="logout" class="hcmsButtonOrange" onClick="location='?action=logout&multi=<?php echo $multi; ?>';"><?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></button>
     </div>
     
   </form>

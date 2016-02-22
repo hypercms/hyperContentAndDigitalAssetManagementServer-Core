@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ar'] = "ح�
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ar'] = "يجب على المستخدم تقديم البيانات الفوقية فى تحميل الملفات";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['ar'] = "يرجى ادخال بيانات التعريف الخاصة التحميلات";
 $hcms_lang['user-wants-to-chat-with-you']['ar'] = "مستخدم %المستخدم %user% ادث معك";
+$hcms_lang['enable-direct-file-uploads-in-pages']['ar'] = "تمكين مباشرة فى صفحة تحميل الملفات";
 ?>

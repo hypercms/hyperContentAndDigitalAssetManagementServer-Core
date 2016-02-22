@@ -435,11 +435,19 @@ if ($action == "unzip" && $authorized == true)
   ob_end_flush ();
   sleep (1);
 
-  // unzip file
-  if ($mediapath != "" && $mediafile != "" && $location != "") $result_unzip =  unzipfile ($site, $mediapath.$site.'/'.$mediafile, $location, $media_info['name'], $user);
+  // unzip file in assets
+  if ($cat == "comp" && $mediapath != "" && $mediafile != "" && $location != "")
+  {
+    $result_unzip = unzipfile ($site, $mediapath.$site.'/'.$mediafile, $location, $media_info['name'], $cat, $user);
+  }
+  // unzip file in pages
+  elseif ($cat == "page" && $location != "" && $page != "")
+  {
+    $result_unzip = unzipfile ($site, $location.$page, $location, $media_info['name'], $cat, $user);
+  }
   else $result_unzip = false;
-  
-  if ($result_unzip == true)
+ 
+  if (!empty ($result_unzip))
   {
     $result['result'] = true;
     $add_onload = "document.getElementById('loadingLayer').style.display='none'; if (eval (opener.parent.frames['mainFrame'])) {opener.parent.frames['mainFrame'].location.reload();}\n";

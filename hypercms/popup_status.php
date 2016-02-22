@@ -75,7 +75,7 @@ if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
   if ($force == "start" && $action != "paste")
   {
     if ($location != "" && $page != "" && !is_file ($location.correctfile ($location, $page, $user))) $authorized = false;
-    elseif ($location != "" && $folder != "" && !is_file ($location.".folder")) $authorized = false;
+    elseif ($location != "" && $folder != "" && !is_dir ($location)) $authorized = false;
     elseif ($location != "" && $page == "" && $folder == "") $authorized = false;
   }
 }
@@ -135,11 +135,11 @@ if ($authorized == true || $force == "stop")
       // define next process
       if ($working == true)
       {
-        $add_javascript = "document.location.href='".$mgmt_config['url_path_cms']."popup_status.php?force=continue&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&token=".url_encode($token)."';\n";
+        $add_javascript = "document.location='".$mgmt_config['url_path_cms']."popup_status.php?force=continue&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&token=".url_encode($token)."';\n";
       }
       elseif ($working == false)
       {
-        $add_javascript = "document.location.href='".$mgmt_config['url_path_cms']."popup_status.php?force=finish&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&token=".url_encode($token)."';\n"; 
+        $add_javascript = "document.location='".$mgmt_config['url_path_cms']."popup_status.php?force=finish&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&token=".url_encode($token)."';\n"; 
       }    
     }
     // if an error occured
@@ -176,7 +176,7 @@ if ($authorized == true || $force == "stop")
     elseif ($action == "delete")
     {
       // not suitable for EasyEdit
-      $add_javascript = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['controlFrame'].location.href='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
+      $add_javascript = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
     opener.parent.frames['mainFrame'].location.reload();  
     self.close();\n";
     }  

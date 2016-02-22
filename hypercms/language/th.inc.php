@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['th'] = "เ
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['th'] = "ผู้ใช้จะต้องระบุ Metadata สำหรับการอัพโหลดไฟล์";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['th'] = "โปรดป้อน Metadata สำหรับการอัพโหลดของคุณ";
 $hcms_lang['user-wants-to-chat-with-you']['th'] = "%user% ผู้ใช้ต้องการที่จะพูดคุยกับคุณ";
+$hcms_lang['enable-direct-file-uploads-in-pages']['th'] = "เปิดใช้งานการอัปโหลดไฟล์โดยตรงในหน้า";
 ?>

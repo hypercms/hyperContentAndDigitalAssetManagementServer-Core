@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ur'] = "چ�
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ur'] = "صارف فراہم کرنا مسل Uploads میٹا ڈیٹا کے لئے";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['ur'] = "آپ کے لئے داخل کی میٹا ڈیٹا Uploads";
 $hcms_lang['user-wants-to-chat-with-you']['ur'] = "یوزر %user% آپ کے ساتھ چیٹ کرنے کے لئے چاہتا ہے";
+$hcms_lang['enable-direct-file-uploads-in-pages']['ur'] = "صفحہ میں براہ راست مسل چڑھانا اہل بنائیں";
 ?>

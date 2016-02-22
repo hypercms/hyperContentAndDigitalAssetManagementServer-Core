@@ -223,13 +223,13 @@ function checkForm_file_upload()
   <div class="hcmsToolbarBlock">
     <?php
     if ($cat == "meta" && $mgmt_config['db_connect_rdbms'] != "" && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='frameset_licensenotification.php?site=".url_encode($site)."&cat=comp';\" name=\"media_edit\" src=\"".getthemelocation()."img/button_user_sendlink.gif\" alt=\"".getescapedtext ($hcms_lang['license-notification'][$lang])."\" title=\"".getescapedtext ($hcms_lang['license-notification'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location='frameset_licensenotification.php?site=".url_encode($site)."&cat=comp';\" name=\"media_edit\" src=\"".getthemelocation()."img/button_user_sendlink.gif\" alt=\"".getescapedtext ($hcms_lang['license-notification'][$lang])."\" title=\"".getescapedtext ($hcms_lang['license-notification'][$lang])."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_user_sendlink.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?> 
     <?php
     if ($cat == "meta" && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.href='media_mapping.php?site=".url_encode($site)."';\" name=\"media_edit\" src=\"".getthemelocation()."img/button_mapping.gif\" alt=\"".getescapedtext ($hcms_lang['meta-data-mapping'][$lang])."\" title=\"".getescapedtext ($hcms_lang['meta-data-mapping'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location='media_mapping.php?site=".url_encode($site)."';\" name=\"media_edit\" src=\"".getthemelocation()."img/button_mapping.gif\" alt=\"".getescapedtext ($hcms_lang['meta-data-mapping'][$lang])."\" title=\"".getescapedtext ($hcms_lang['meta-data-mapping'][$lang])."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_mapping.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>   

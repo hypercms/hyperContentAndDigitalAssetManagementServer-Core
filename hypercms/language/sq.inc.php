@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sq'] = "Lë
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['sq'] = "Përdoruesit duhet të sigurojë metadata dosje për ngarkim";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['sq'] = "Ju lutem, kujdesuni për metadata ngarkimet";
 $hcms_lang['user-wants-to-chat-with-you']['sq'] = "Perdoruesi %user% dëshiron për të biseduar me ju";
+$hcms_lang['enable-direct-file-uploads-in-pages']['sq'] = "Aftësohet drejtpërdrejtë në faqet dosje upload";
 ?>

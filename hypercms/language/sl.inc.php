@@ -1352,4 +1352,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sl'] = "Pre
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['sl'] = "Uporabnik mora zagotavljanje metapodatkov za datotek v strežnik";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['sl'] = "Prosimo, vnesite metapodatkov za vaš strežnik";
 $hcms_lang['user-wants-to-chat-with-you']['sl'] = "Uporabnik %user% želi klepet z vami";
+$hcms_lang['enable-direct-file-uploads-in-pages']['sl'] = "Omogoča neposreden prenos datoteke v strani";
 ?>

@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sr'] = "Pot
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['sr'] = "Korisnik mora pružiti metapodataka za uploads";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['sr'] = "Unesite metapodataka za vaš uploads";
 $hcms_lang['user-wants-to-chat-with-you']['sr'] = "Korisnik %user% želi da razgovor sa vama";
+$hcms_lang['enable-direct-file-uploads-in-pages']['sr'] = "Omogućiti direktan upload u strana";
 ?>

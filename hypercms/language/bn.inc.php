@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['bn'] = "য
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['bn'] = "ইউজার অবশ্যই uploads জন্য ফাইল ও অন্যান্য ক্রলার এসব শব্দকে";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['bn'] = "দয়া করে আপনার জন্য প্রবেশ ও অন্যান্য ক্রলার এসব শব্দকে uploads";
 $hcms_lang['user-wants-to-chat-with-you']['bn'] = "ইউজার %user% ভাগ চান আপনার সাথে চ্যাট";
+$hcms_lang['enable-direct-file-uploads-in-pages']['bn'] = "যাতে সরাসরি ফাইল পারবেন। পৃষ্ঠা";
 ?>

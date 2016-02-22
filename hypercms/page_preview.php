@@ -147,7 +147,7 @@ else
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
 
   echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['this-object-is-not-managed-by-hypercms'][$lang])."</p>\n";
-  echo getescapedtext ($hcms_lang['you-wont-be-able-to-change-the-content-of-this-item'][$lang])."\n".$text7[$lang]."\n";
+  echo getescapedtext ($hcms_lang['you-wont-be-able-to-change-the-content-of-this-item'][$lang])."\n";
 
   echo "</body>\n";
   echo "</html>\n";

@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sv'] = "Fly
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['sv'] = "Användaren måste ange metadata för filuploads";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['sv'] = "Ange metadata för dina uppladdningar";
 $hcms_lang['user-wants-to-chat-with-you']['sv'] = "Användare %user% vill chatta med dig";
+$hcms_lang['enable-direct-file-uploads-in-pages']['sv'] = "Aktivera direct filupload i sidor";
 ?>

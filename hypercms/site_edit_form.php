@@ -137,6 +137,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   $mgmt_config[$site_name]['specialchr_disable'] = "";
   $mgmt_config[$site_name]['dam'] = "";
   $mgmt_config[$site_name]['upload_userinput'] = "";
+  $mgmt_config[$site_name]['upload_pages'] = "";
   $mgmt_config[$site_name]['storage'] = "";
   $mgmt_config[$site_name]['crypt_content'] = "";
   $mgmt_config[$site_name]['watermark_image'] = "";
@@ -224,6 +225,12 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['user-must-provide-metadata-for-file-uploads'][$lang]); ?>: </td>
       <td nowrap="nowrap"> <input type="checkbox" name="setting[upload_userinput]" value="true" <?php if (@$mgmt_config[$site_name]['upload_userinput'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
+    <?php if (is_dir ($mgmt_config['abs_path_cms']."connector")) {	?>
+    <tr align="left" valign="top"> 
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['enable-direct-file-uploads-in-pages'][$lang]); ?>: </td>
+      <td nowrap="nowrap"> <input type="checkbox" name="setting[upload_pages]" value="true" <?php if (@$mgmt_config[$site_name]['upload_pages'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+    </tr>
+    <?php } ?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['storage-limit-in-mb'][$lang]); ?>: </td>
       <td nowrap="nowrap"> <input type="text" name="setting[storage]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['storage']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>

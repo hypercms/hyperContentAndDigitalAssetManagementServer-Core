@@ -260,6 +260,7 @@ function localpermission ($site_name, $permission_str)
         $localpermission[$site_name][$group_name]['comppublish'] = @$component[10];
         // content permissions
         $localpermission[$site_name][$group_name]['page'] = @$page[0];
+        $localpermission[$site_name][$group_name]['pageupload'] = @$component[1]; // the upload permission of components is reused here
         $localpermission[$site_name][$group_name]['pagesendlink'] = @$page[1]; 
         $localpermission[$site_name][$group_name]['pagefoldercreate'] = @$page[2];
         $localpermission[$site_name][$group_name]['pagefolderdelete'] = @$page[3];
@@ -563,6 +564,7 @@ function setlocalpermission ($site, $group_array, $cat)
       elseif ($cat == "page")
       {      
         if ($setlocalpermission['root'] == 0 && @$localpermission[$site][$group]['page'] == 1) $setlocalpermission['root'] = 1;
+        if ($setlocalpermission['upload'] == 0 && @$localpermission[$site][$group]['pageupload'] == 1) $setlocalpermission['upload'] = 1;
         if ($setlocalpermission['sendlink'] == 0 && @$localpermission[$site][$group]['pagesendlink'] == 1) $setlocalpermission['sendlink'] = 1;
         if ($setlocalpermission['foldercreate'] == 0 && @@$localpermission[$site][$group]['pagefoldercreate'] == 1) $setlocalpermission['foldercreate'] = 1;
         if ($setlocalpermission['folderdelete'] == 0 && $localpermission[$site][$group]['pagefolderdelete'] == 1) $setlocalpermission['folderdelete'] = 1;

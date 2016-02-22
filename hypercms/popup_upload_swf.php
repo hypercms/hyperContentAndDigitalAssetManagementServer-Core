@@ -291,7 +291,7 @@ function frameReload (newpage)
   else if (eval (opener.parent.frames['objFrame']))
   {
     if (newpage == "") opener.parent.frames['objFrame'].location.reload();
-    else opener.parent.frames['objFrame'].location.href='page_view.php?ctrlreload=yes&site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&location=<?php echo $location_esc; ?>&page='+newpage;
+    else opener.parent.frames['objFrame'].location='page_view.php?ctrlreload=yes&site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&location=<?php echo $location_esc; ?>&page='+newpage;
     
     setTimeout('window.close()', 1000);
   }

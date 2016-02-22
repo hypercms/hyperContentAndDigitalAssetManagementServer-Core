@@ -1354,4 +1354,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['id'] = "Ger
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['id'] = "Pengguna harus menyediakan metadata untuk meng-upload file";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['id'] = "Harap masukkan metadata untuk meng-upload anda";
 $hcms_lang['user-wants-to-chat-with-you']['id'] = "Pengguna %user% ingin mengobrol dengan Anda";
+$hcms_lang['enable-direct-file-uploads-in-pages']['id'] = "Aktifkan upload file langsung dalam halaman-halaman";
 ?>

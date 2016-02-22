@@ -1354,4 +1354,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['fr'] = "Dé
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['fr'] = "L'utilisateur doit fournir pour les chargements de fichiers de métadonnées";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['fr'] = "Veuillez entrer les métadonnées de vos téléchargements";
 $hcms_lang['user-wants-to-chat-with-you']['fr'] = "L'utilisateur %user% veut discuter avec vous";
+$hcms_lang['enable-direct-file-uploads-in-pages']['fr'] = "Activer direct dans pages de téléchargement de fichier";
 ?>

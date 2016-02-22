@@ -289,7 +289,7 @@ if (checkuserip (getuserip ()) == true)
   {
     $show = "<script language=\"JavaScript\">
     <!--
-    location.href='".$mgmt_config['url_path_cms'].$result_frameset."';
+    location='".$mgmt_config['url_path_cms'].$result_frameset."';
     //-->
     </script>
   

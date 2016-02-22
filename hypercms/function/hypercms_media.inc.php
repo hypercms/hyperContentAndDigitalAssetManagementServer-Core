@@ -3579,18 +3579,21 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
 
 // ---------------------- unzipfile -----------------------------
 // function: unzipfile()
-// input: publication, path to source zip file, path to destination location, name of file for extraction, user
-// output: true/false
+// input: publication, path to source zip file, path to destination location, category [page,comp], name of file for extraction, user
+// output: result array with all object paths / false
 
 // description:
-// Unpacks ZIP file and creates media files in destination location
+// Unpacks ZIP file and creates media files in destination location for components or unzips files directly for pages.
 
-function unzipfile ($site, $zipfilepath, $location, $filename, $user)
+function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $user)
 {
   global $mgmt_config, $mgmt_uncompress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions;
- 
-  if ($mgmt_uncompress['.zip'] != "" && valid_publicationname ($site) && $zipfilepath != "" && valid_locationname ($location) && valid_objectname ($filename) && valid_objectname ($user))
+
+  if ($mgmt_uncompress['.zip'] != "" && valid_publicationname ($site) && $zipfilepath != "" && valid_locationname ($location) && valid_objectname ($filename) && ($cat == "page" || $cat == "comp") && valid_objectname ($user))
   {
+      // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
     // folder name for extraction
     $folder = substr ($filename, 0, strrpos ($filename, "."));
     
@@ -3602,7 +3605,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $user)
       
     // extension of zip file
     $file_ext = strtolower (strrchr ($filename, "."));      
-  
+
     // directory with name of the folder must not exist
     if (!is_dir ($location.$folder."/"))
     {
@@ -3636,22 +3639,11 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $user)
         
         if (substr_count ($extension.".", $file_ext.".") > 0)
         {
-          // create temporary directory for extraction
-          $result = @mkdir ($unzippath_temp, $mgmt_config['fspermission']);
-
-          // create destination folder for extraction
-          if ($result == true)
+          if ($cat == "page")
           {
-            $result = createfolder ($site, $location, $folder, $user);
-          
-            // remote client
-            remoteclient ("save", "abs_path_comp", $site, $location, "", $folder, "");           
-          }
-
-          if ($result['result'] == true)
-          {            
-            $cmd = $mgmt_uncompress[$extension]." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($unzippath_temp)."\"";         
-         
+            // extract files directly to page location
+            $cmd = $mgmt_uncompress[$extension]." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($location)."\"";
+            
             @exec ($cmd, $error_array);
 
             if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
@@ -3659,35 +3651,86 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $user)
               $error_message = implode ("<br />", $error_array);
               $error_message = str_replace ($unzippath_temp, "/".$site."/", $error_message);
 
-              $errcode = "10640";
+              $errcode = "10639";
               $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzipfile failed for $filename: $error_message";
               
               // save log
               savelog (@$error);                       
             }
-            
-            // extraction failed (check if files were extracted)
-            $handle = opendir ($unzippath_temp);
-            
-            if ($handle != false)
-            {    
-              $check = 0;
-              while ($buffer = @readdir ($handle)) $check++;
-              closedir ($handle);              
-              if ($check < 1) return false;
+          
+            // collect extracted files
+            $object_array = collectobjects (1, $site, $cat, $location);
+
+            if (is_array ($object_array) && sizeof ($object_array) > 0)
+            {
+              $result = array();
+              
+              foreach ($object_array as $object_record)
+              {
+                list ($root_id, $site_record, $location_record, $object_record) = explode ("|", $object_record);
+                $result[] = $location_record.$object_record;
+              }
+              
+              return $result;
             }
-            else return false;            
+            else return false;
+          }
+          elseif ($cat == "comp")
+          {
+            // create temporary directory for extraction
+            $result = @mkdir ($unzippath_temp, $mgmt_config['fspermission']);
+  
+            // create destination folder for extraction
+            if ($result == true)
+            {
+              $result = createfolder ($site, $location, $folder, $user);
             
-            // create media objects          
-            $result = createmediaobjects ($site, $unzippath_temp, $location.$result['folder']."/", $user);
+              // remote client
+              remoteclient ("save", "abs_path_comp", $site, $location, "", $folder, "");           
+            }
+  
+            if ($result['result'] == true)
+            {
+              // extract files to temporary location for media assets (components)         
+              $cmd = $mgmt_uncompress[$extension]." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($unzippath_temp)."\"";
+  
+              @exec ($cmd, $error_array);
+  
+              if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
+              {
+                $error_message = implode ("<br />", $error_array);
+                $error_message = str_replace ($unzippath_temp, "/".$site."/", $error_message);
+  
+                $errcode = "10640";
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzipfile failed for $filename: $error_message";
+                
+                // save log
+                savelog (@$error);                       
+              }
             
-            // delete unzipped tenporary files
-            deletefile ($location_temp, $unzipname_temp, 1);
-            
-            // delete decrypted temporary file
-            if (!empty ($tempfilepath)) deletefile ($location_temp, $unzipname_temp.$file_ext, 1);
-            
-            return $result;  
+              // check if files were extracted
+              $handle = opendir ($unzippath_temp);
+              
+              if ($handle != false)
+              {    
+                $check = 0;
+                while ($buffer = @readdir ($handle)) $check++;
+                closedir ($handle);              
+                if ($check < 1) return false;
+              }
+              else return false;            
+              
+              // create media objects          
+              $result = createmediaobjects ($site, $unzippath_temp, $location.$result['folder']."/", $user);
+              
+              // delete unzipped tenporary files
+              deletefile ($location_temp, $unzipname_temp, 1);
+              
+              // delete decrypted temporary file
+              if (!empty ($tempfilepath)) deletefile ($location_temp, $unzipname_temp.$file_ext, 1);
+              
+              return $result;  
+            }
           }
         }
         

@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['no'] = "Bev
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['no'] = "Brukeren må gi metadata for opplasting";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['no'] = "Skriv inn metadata for opplasting";
 $hcms_lang['user-wants-to-chat-with-you']['no'] = "Bruker %user% ønsker å prate med deg";
+$hcms_lang['enable-direct-file-uploads-in-pages']['no'] = "Aktivere direkte opplasting i sidene";
 ?>

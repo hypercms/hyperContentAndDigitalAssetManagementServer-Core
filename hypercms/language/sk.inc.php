@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['sk'] = "Pre
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['sk'] = "Užívateľ musí poskytnúť metadáta pre nahrávanie súborov";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['sk'] = "Zadajte, prosím, metadát pre vaše obrázky";
 $hcms_lang['user-wants-to-chat-with-you']['sk'] = "Užívateľ %user% chce diskutovať s vami";
+$hcms_lang['enable-direct-file-uploads-in-pages']['sk'] = "Umožňuje priame načítanie súboru do stránky";
 ?>

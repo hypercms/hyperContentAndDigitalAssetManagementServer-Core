@@ -129,7 +129,7 @@ if (@substr_count ($follow, "://") > 0 || @substr_count (strtolower ($follow), "
     <!--
     function urlforward()
     {
-      document.location.href='".$follow."';
+      document.location='".$follow."';
     }
 
     setTimeout('urlforward()', 2000);

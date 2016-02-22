@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['hu'] = "Moz
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['hu'] = "A metaadatok a felhasználónak meg kell adnia a fájl feltöltések";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['hu'] = "Adja meg a metaadatokat a feltöltések";
 $hcms_lang['user-wants-to-chat-with-you']['hu'] = "Felhasználói %user% csevegni szeretne veled";
+$hcms_lang['enable-direct-file-uploads-in-pages']['hu'] = "Közvetlen fájl feltöltése az oldal";
 ?>

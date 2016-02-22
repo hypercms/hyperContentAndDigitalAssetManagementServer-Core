@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['da'] = "Fly
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['da'] = "Brugeren skal levere metadata til fil uploads";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['da'] = "Indtast metadata til dine uploads";
 $hcms_lang['user-wants-to-chat-with-you']['da'] = "Brugeren %user% lyst til at chatte med dig";
+$hcms_lang['enable-direct-file-uploads-in-pages']['da'] = "Aktiverer direkte fil upload i sider";
 ?>

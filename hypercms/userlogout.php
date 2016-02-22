@@ -27,7 +27,7 @@ require ("version.inc.php");
 <script src="javascript/click.js" type="text/javascript"></script>
 </head>
 
-<body class="hcmsStartScreen" onload="location.href='userlogin.php';">
+<body class="hcmsStartScreen" onload="location='userlogin.php';">
 
 <?php
 // delete session file of user
@@ -54,7 +54,7 @@ else
 
 <p class="hcmsTextGreen">
   <?php echo "&gt;&gt; ".$user." ".$answer."&nbsp;"; ?>
-  <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="location.href='userlogin.php';" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+  <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="location='userlogin.php';" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
 </p>
 
 </body>

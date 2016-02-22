@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['pt'] = "Mov
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['pt'] = "O usuário deve fornecer metadados para uploads de arquivo";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['pt'] = "Insira os metadados para o seu upload";
 $hcms_lang['user-wants-to-chat-with-you']['pt'] = "Usuário %user% quer conversar com você";
+$hcms_lang['enable-direct-file-uploads-in-pages']['pt'] = "O upload do arquivo direto em páginas";
 ?>

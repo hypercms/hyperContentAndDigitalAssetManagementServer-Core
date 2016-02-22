@@ -1354,4 +1354,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['he'] = "ה�
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['he'] = "המשתמש חייב לספק metadata עבור טעינת קבצים";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['he'] = "הזן את המטה של העלאות שלך";
 $hcms_lang['user-wants-to-chat-with-you']['he'] = "משתמש %המשתמש% רו %user% עם לך";
+$hcms_lang['enable-direct-file-uploads-in-pages']['he'] = "אפשר להעלות קובץ ישירה ב דפים";
 ?>

@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['hi'] = "आ
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['hi'] = "उपयोगकर्ता अवश्य प्रदान करने के लिए फ़ाइल metadata अपलोड";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['hi'] = "कृपया अपने लिए metadata अपलोड";
 $hcms_lang['user-wants-to-chat-with-you']['hi'] = "उपयोगकर्ता नाम %user% करना चाहती है तो आप के साथ चैट";
+$hcms_lang['enable-direct-file-uploads-in-pages']['hi'] = "डायरेक् फ़ाइल अपलोड पृष्ठ";
 ?>

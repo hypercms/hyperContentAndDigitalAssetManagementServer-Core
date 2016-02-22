@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['so'] = "Dha
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['so'] = "Waa in uu bixiyo isticmaalaha adeegga bixiyaan metadata fayl uploads";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['so'] = "Fadlan gala uploads metadata, waayo";
 $hcms_lang['user-wants-to-chat-with-you']['so'] = "Ujuurada %user% doonayo inuu kula sheekeysto";
+$hcms_lang['enable-direct-file-uploads-in-pages']['so'] = "Waxaad dacwo u upload tooska ah ku gaarsiiso nasiibka";
 ?>

@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ms'] = "Ali
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ms'] = "Pengguna mesti sediakan metadata untuk fail Penjejak Waktu Peribadi";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['ms'] = "Sila masukkan data meta untuk Penjejak Waktu Peribadi";
 $hcms_lang['user-wants-to-chat-with-you']['ms'] = "Pengguna %user% ingin ngobrol kau";
+$hcms_lang['enable-direct-file-uploads-in-pages']['ms'] = "Langsung fail muat dalam halaman";
 ?>

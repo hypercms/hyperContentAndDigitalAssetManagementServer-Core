@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ko'] = "더
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ko'] = "사용자 파일 업로드 메타데이터를 제공해야 합니다.";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['ko'] = "당신의 업로드할 수 있는 메타데이터를 입력하십시오.";
 $hcms_lang['user-wants-to-chat-with-you']['ko'] = "사용자 %user% 채트하기를 원할";
+$hcms_lang['enable-direct-file-uploads-in-pages']['ko'] = "페이지를 직접 파일 업로드 가능";
 ?>

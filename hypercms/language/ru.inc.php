@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ru'] = "Н�
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ru'] = "Пользователь должен предоставить метаданных для загрузка файлов";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['ru'] = "Введите метаданных для Вашей загрузки";
 $hcms_lang['user-wants-to-chat-with-you']['ru'] = "Пользователь %user% хочет поговорить с вами";
+$hcms_lang['enable-direct-file-uploads-in-pages']['ru'] = "Включить прямой загрузки файла в страницах";
 ?>

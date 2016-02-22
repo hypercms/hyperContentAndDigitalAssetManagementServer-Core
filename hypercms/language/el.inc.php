@@ -1354,4 +1354,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['el'] = "Μ�
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['el'] = "Ο χρήστης πρέπει να παρέχει μεταδεδομένα για Αποστολές αρχείων";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['el'] = "Εισαγάγετε τα μεταδεδομένα για την αποστολή σας";
 $hcms_lang['user-wants-to-chat-with-you']['el'] = "Χρήστης %user% θέλει να συνομιλήσουν μαζί σας";
+$hcms_lang['enable-direct-file-uploads-in-pages']['el'] = "Επιτρέπει την άμεση αποστολή αρχείου σε σελίδες";
 ?>

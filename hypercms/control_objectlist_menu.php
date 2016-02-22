@@ -727,7 +727,7 @@ else
        )
     {
        echo "<img ".
-       "onClick=\"if (locklayer == false) parent.location.href='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_down_esc)."';\" ".
+       "onClick=\"if (locklayer == false) parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_down_esc)."';\" ".
        "class=\"hcmsButton hcmsButtonSizeSquare\" ".
        "name=\"pic_folder_back\" ".
        "src=\"".getthemelocation()."img/button_back.gif\" ".
@@ -832,7 +832,7 @@ else
   <div class="hcmsToolbarBlock">
     <?php
     // Preview Button
-    if ($multiobject_count <= 1 && $page != "" && $cat != "" && $setlocalpermission['root'] == 1)
+    if ($container_id > 0 && $multiobject_count <= 1 && $page != "" && $cat != "" && $setlocalpermission['root'] == 1)
     {
       if ($page != ".folder") echo "<img onClick=\"hcms_openWindow('page_preview.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."', 'preview', 'scrollbars=yes,resizable=yes', 800, 600);\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" src=\"".getthemelocation()."img/button_file_preview.gif\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" />\n";
       elseif ($page == ".folder") echo "<img onClick=\"hcms_openWindow('page_preview.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/&page=.folder', 'preview', 'scrollbars=yes,resizable=yes', 800, 600);\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" src=\"".getthemelocation()."img/button_file_preview.gif\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" />\n";
@@ -976,6 +976,7 @@ else
 
     // Edit Button   
     if (
+         $container_id > 0 && 
          $multiobject_count <= 1 && 
          $page != "" && 
          (($media == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || 
@@ -986,7 +987,7 @@ else
       elseif ($page == ".folder") echo "<img onClick=\"hcms_openWindow('frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/&page=".url_encode($page)."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\"\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_edit\" src=\"".getthemelocation()."img/button_file_edit.gif\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" />\n";
     }
     // Edit button to edit the fileds which are equal across all selected files
-    elseif ($multiobject_count > 1)
+    elseif ($container_id > 0 && $multiobject_count > 1)
     {
       echo "<img onClick=\"submitToWindow('page_multiedit.php', '', 'multiedit', 'status=yes,scrollbars=yes,resizable=yes', 800, 600);\"\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_edit\" src=\"".getthemelocation()."img/button_file_edit.gif\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" />\n";
     }
@@ -999,7 +1000,7 @@ else
   <div class="hcmsToolbarBlock">       
     <?php    
     // SendMail Button
-    if ($page != "" && $mgmt_config[$site]['sendmail'] && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1 && $mgmt_config['db_connect_rdbms'] != "")
+    if ($container_id > 0 && $page != "" && $mgmt_config[$site]['sendmail'] && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1 && $mgmt_config['db_connect_rdbms'] != "")
     {
       echo "<img onClick=\"submitToWindow('user_sendlink.php', '', 'sendlink', 'scrollbars=yes,resizable=no', 600, 680);\" ".
       "class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" ".
@@ -1012,7 +1013,7 @@ else
     }
 
     // Send to Chat Button
-    if ($is_mobile && $page != "" && $setlocalpermission['root'] == 1 && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true)
+    if ($container_id > 0 && $is_mobile && $page != "" && $setlocalpermission['root'] == 1 && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true)
     {
       if ($page != ".folder") $chatcontent = "hcms_openWindow(\\'frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\\', \\'\\', \\'status=yes,scrollbars=no,resizable=yes\\', 800, 600);";
       elseif ($page == ".folder") $chatcontent = "hcms_openWindow(\\'frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/&page=".url_encode($page)."\\', \\'\\', \\'status=yes,scrollbars=no,resizable=yes\\', 800, 600);";
@@ -1065,7 +1066,7 @@ else
     if ($html5file) $popup_upload = "popup_upload_html.php";
     else $popup_upload = "popup_upload_swf.php";
     
-    if ($hcms_linking['type'] != "Object" && $from_page == "" && $cat != "page" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)
+    if ($hcms_linking['type'] != "Object" && $from_page == "" && ($cat != "page" || !empty($mgmt_config[$site]['upload_pages'])) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_openWindow('".$popup_upload."?uploadmode=multi&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."', '', 'status=yes,scrollbars=yes,resizable=yes', 800, 600);\" name=\"pic_obj_upload\" src=\"".getthemelocation()."img/button_file_upload.gif\" alt=\"".getescapedtext ($hcms_lang['upload-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['upload-file'][$lang])."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_file_upload.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
@@ -1112,7 +1113,7 @@ else
       else
       {echo "<img src=\"".getthemelocation()."img/button_file_copy.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">\n";}
       
-      if ($hcms_linking['type'] != "Object" && $setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
+      if ($container_id > 0 && $hcms_linking['type'] != "Object" && $setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
       {echo "<img onClick=\"if (locklayer == false) submitToWindow('popup_action.php', 'linkcopy', '');\" ".
                      "class=\"hcmsButton hcmsButtonSizeSquare\" ".
                      "name=\"pic_obj_linkedcopy\" ".
@@ -1134,7 +1135,7 @@ else
       else
       {echo "<img src=\"".getthemelocation()."img/button_file_copy.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
       
-      if ($setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1 && $setlocalpermission['foldercreate'] == 1)
+      if ($container_id > 0 && $setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1 && $setlocalpermission['foldercreate'] == 1)
       {echo "<img onClick=\"if (locklayer == false) submitToWindow('popup_action.php', 'linkcopy', '');\" ".
                      "class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_linkedcopy\" src=\"".getthemelocation()."img/button_file_copylinked.gif\" alt=\"".getescapedtext ($hcms_lang['connected-copy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['connected-copy'][$lang])."\" />\n";}
       else
@@ -1157,7 +1158,7 @@ else
   <div class="hcmsToolbarBlock">
     <?php
     // un/publish object
-    if ($page != "" && $page != ".folder")
+    if ($container_id > 0 && $page != "" && $page != ".folder")
     {
       if (($filetype != "" || $multiobject != "") && $setlocalpermission['root'] == 1 && $setlocalpermission['publish'] == 1)
       {
@@ -1187,7 +1188,7 @@ else
       }
     }
     // un/publish folder
-    elseif ($folder != "")
+    elseif ($container_id > 0 && $folder != "")
     {
       if ($setlocalpermission_ACCESS['root'] == 1 && $setlocalpermission_ACCESS['publish'] == 1)
       {
@@ -1226,7 +1227,7 @@ else
   <div class="hcmsToolbarBlock">
     <?php
     // if link references to an object and not a folder, disable search
-    if ((!is_array ($hcms_linking) || $hcms_linking['type'] != "Object") && $location != "" && $mgmt_config['db_connect_rdbms'] != "") echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"if (locklayer == false) parent.mainFrame.location.href='search_form.php?location=".url_encode($location_esc)."';\" name=\"pic_obj_search\" src=\"".getthemelocation()."img/button_search.gif\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />\n";
+    if ((!is_array ($hcms_linking) || $hcms_linking['type'] != "Object") && $location != "" && $mgmt_config['db_connect_rdbms'] != "") echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"if (locklayer == false) parent.mainFrame.location='search_form.php?location=".url_encode($location_esc)."';\" name=\"pic_obj_search\" src=\"".getthemelocation()."img/button_search.gif\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />\n";
     else echo "<img src=\"".getthemelocation()."img/button_search.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     ?>    
   </div>
@@ -1236,7 +1237,7 @@ else
     if (!$is_mobile)
     {
       // reload button
-      if ($from_page == "") $refresh = "location.href='explorer_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'";
+      if ($from_page == "") $refresh = "location='explorer_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'";
       else $refresh = "location.reload();";
       
       echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"if (locklayer == false) parent.frames['mainFrame'].".$refresh.";\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\">\n";
@@ -1252,7 +1253,7 @@ else
     if (!$is_mobile && is_array ($hcms_linking))
     {
       // logout button
-      echo "<img onClick=\"top.location.href='userlogout.php';\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_logout\" src=\"".getthemelocation()."img/button_logout.gif\" alt=\"".getescapedtext ($hcms_lang['logout'][$lang])."\" title=\"".getescapedtext ($hcms_lang['logout'][$lang])."\" /></td>\n";
+      echo "<img onClick=\"top.location='userlogout.php';\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_logout\" src=\"".getthemelocation()."img/button_logout.gif\" alt=\"".getescapedtext ($hcms_lang['logout'][$lang])."\" title=\"".getescapedtext ($hcms_lang['logout'][$lang])."\" /></td>\n";
     }
     ?>
   </div>

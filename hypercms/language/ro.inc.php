@@ -1353,4 +1353,5 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['ro'] = "Dep
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['ro'] = "Utilizatorul trebuie să furnizeze metadate pentru încărcarea de fişiere";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['ro'] = "Vă rugăm să introduceţi metadate pentru încărcarea de dvs.";
 $hcms_lang['user-wants-to-chat-with-you']['ro'] = "Utilizator %user% vrea sa chat cu tine";
+$hcms_lang['enable-direct-file-uploads-in-pages']['ro'] = "Permite încărcarea fişierului direct în pagini";
 ?>
