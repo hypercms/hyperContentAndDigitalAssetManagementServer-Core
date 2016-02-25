@@ -12,14 +12,14 @@ function hcms_loadSidebar()
   document.forms['contextmenu_object'].attributes['target'].value = 'sidebarFrame';
   document.forms['contextmenu_object'].elements['action'].value = '';
   
-	if (allow_tr_submit)
+  if (allow_tr_submit)
   {
-		document.forms['contextmenu_object'].submit();
-	}
+    document.forms['contextmenu_object'].submit();
+  }
   else
   {
-		allow_tr_submit = true;
-	}
+    allow_tr_submit = true;
+  }
   
   return true;
 }
@@ -151,20 +151,20 @@ function hcms_getScrollXY ()
 // retrieve browser window width
 function hcms_getWindowWidth (win)
 { 
-	if (win == undefined) win = window; 
+  if (win == undefined) win = window; 
   
-	if (win.innerWidth)
+  if (win.innerWidth)
   { 
-		return win.innerWidth; 
-	} 
-	else
+    return win.innerWidth; 
+  } 
+  else
   { 
-		if (win.document.documentElement && win.document.documentElement.clientWidth)
+    if (win.document.documentElement && win.document.documentElement.clientWidth)
     { 
-			return win.document.documentElement.clientWidth; 
-		} 
-		else return win.document.body.offsetWidth; 
-	}
+      return win.document.documentElement.clientWidth; 
+    } 
+    else return win.document.body.offsetWidth; 
+  }
   
   return true;
 } 
@@ -172,20 +172,20 @@ function hcms_getWindowWidth (win)
 // retrieve browser window height 
 function hcms_getWindowHeight (win)
 { 
-	if (win == undefined) win = window; 
+  if (win == undefined) win = window; 
   
-	if (win.innerHeight)
+  if (win.innerHeight)
   { 
-		return win.innerHeight; 
-	} 
-	else
+    return win.innerHeight; 
+  } 
+  else
   { 
-		if (win.document.documentElement && win.document.documentElement.clientHeight)
+    if (win.document.documentElement && win.document.documentElement.clientHeight)
     { 
-			return win.document.documentElement.clientHeight; 
-		} 
-		else return win.document.body.offsetHeight; 
-	}
+      return win.document.documentElement.clientHeight; 
+    } 
+    else return win.document.body.offsetHeight; 
+  }
   
   return true;
 }
@@ -643,7 +643,6 @@ function hcms_endsWith(str, suffix) {
 // select multiple objects
 function hcms_selectObject (row_id, event)
 {
-
   var contextmenu_form = false;
 
   if (eval (document.forms['contextmenu_object']))
@@ -659,7 +658,7 @@ function hcms_selectObject (row_id, event)
     contextmenu_form = document.forms['contextmenu_queue'];
   }
   
-  // We found no contextmenu to use
+  // no contextmenu to use
   if (contextmenu_form == false)
   {
     return false;
@@ -793,10 +792,19 @@ function hcms_selectObject (row_id, event)
   }
   // if no key is pressed
   else
-  {      
-    document.getElementById('g' + row_id).className='hcmsObjectSelected';
-    if (eval (document.getElementById('objectgallery'))) document.getElementById('t' + row_id).className='hcmsObjectSelected';
-    return true;
+  {
+    var td = document.getElementById('h' + row_id + '_0');
+    var inputs = td.getElementsByTagName('input'); 
+    var object = inputs[0].value;
+
+    if (multiobject_str == '' || multiobject_str2.indexOf ('|'+object+'|') == -1 )
+    {
+      contextmenu_form.elements['multiobject'].value = multiobject_str + '|' + object;
+      document.getElementById('g' + row_id).className='hcmsObjectSelected';
+      if (eval (document.getElementById('objectgallery'))) document.getElementById('t' + row_id).className='hcmsObjectSelected';
+      return true;
+    }
+    else return false; 
   }
 }
 
@@ -806,30 +814,30 @@ function hcms_updateControlObjectListMenu()
   document.forms['contextmenu_object'].attributes['target'].value = 'controlFrame';
   document.forms['contextmenu_object'].elements['action'].value = '';
   
-	if (allow_tr_submit)
+  if (allow_tr_submit)
   {
-		document.forms['contextmenu_object'].submit();
-	}
+    document.forms['contextmenu_object'].submit();
+  }
   else
   {
-		allow_tr_submit = true;
-	}
+    allow_tr_submit = true;
+  }
 }
 
 function hcms_updateControlUserMenu()
 {	
-	document.forms['contextmenu_user'].attributes['action'].value = 'control_user_menu.php';
-	document.forms['contextmenu_user'].attributes['target'].value = 'controlFrame';
-	document.forms['contextmenu_user'].elements['action'].value = '';
+  document.forms['contextmenu_user'].attributes['action'].value = 'control_user_menu.php';
+  document.forms['contextmenu_user'].attributes['target'].value = 'controlFrame';
+  document.forms['contextmenu_user'].elements['action'].value = '';
   
-	if (allow_tr_submit)
+  if (allow_tr_submit)
   {
-		document.forms['contextmenu_user'].submit();
-	}
+    document.forms['contextmenu_user'].submit();
+  }
   else
   {
-		allow_tr_submit = true;
-	}
+    allow_tr_submit = true;
+  }
 }
 
 function hcms_updateControlQueueMenu()
@@ -840,12 +848,12 @@ function hcms_updateControlQueueMenu()
    
   if (allow_tr_submit)
   {
-		document.forms['contextmenu_queue'].submit();
-	}
+    document.forms['contextmenu_queue'].submit();
+  }
   else
   {
-		allow_tr_submit = true;
-	}
+    allow_tr_submit = true;
+  }
 }
 
 // unselect all objects
@@ -938,6 +946,7 @@ function hcms_leftClick(e)
 {
   if (!e) var e = window.event;
   var multiobject;
+  var objectcount=0;
 
   if (eval (document.forms['contextmenu_object']))
   {
@@ -951,14 +960,17 @@ function hcms_leftClick(e)
   {
     multiobject = document.forms['contextmenu_queue'].elements['multiobject'].value;
   }
+  
+  // count object stored in multiobject
+  if (multiobject != "") objectcount = multiobject.split("|").length - 1;
 
   // left mouse click
   if (e.which == 0 || e.which == 1) 
   {
     hcms_hideContextmenu();
     
-    // if no key is pressed and multiobject is not empty
-    if (hcms_keyPressed('', e) == false && multiobject != "")
+    // if no key is pressed and multiobject stores more than 1 object
+    if (hcms_keyPressed('', e) == false && objectcount > 1)
     {
       hcms_unselectAll();
       hcms_resetContext();
@@ -968,8 +980,8 @@ function hcms_leftClick(e)
   {
     hcms_hideContextmenu();
     
-    // if no key is pressed and multiobject is not empty
-    if (hcms_keyPressed('', e) == false && multiobject != "")
+    // if no key is pressed and multiobject stores more than 1 object
+    if (hcms_keyPressed('', e) == false && objectcount > 1)
     {
       hcms_unselectAll();
       hcms_resetContext();
