@@ -1317,8 +1317,12 @@ Release 02/2016
 - Support for meta data input after ZIP file upload and automatic unpacking of ZIP file content
 - Replacement of location.href with location due to issues with MS Edge
 - Implementation of new selection methode for object lists (Suppor of multi-selection of objects if the first element is selected without nay key pressed)
+
+Version 6.0.8
+Release 03/2016
+- Implementation of AWS S3 and Google Cloud client API in connector to support storage of assets in external cloud storage
 */
 
 // current version
-$version = "Version 6.0.7";
+$version = "Version 6.0.8";
 ?>

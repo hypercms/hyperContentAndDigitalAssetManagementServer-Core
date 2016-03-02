@@ -187,7 +187,7 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
 
   // Location
   // ... of multimedia file in repository
-  if (@is_file (getmedialocation ($site, $media, "abs_path_media").$media))
+  if (is_file (getmedialocation ($site, $media, "abs_path_media").$media))
   {
     $media_root = getmedialocation ($site, $media, "abs_path_media");
   }
@@ -197,7 +197,7 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
     $media_root = $mgmt_config['abs_path_tplmedia'];
   }
   // ... of zip file in temp
-  elseif (@is_file ($mgmt_config['abs_path_temp'].getobject($media)) && $user != "")
+  elseif (is_file ($mgmt_config['abs_path_temp'].getobject($media)) && $user != "")
   {
     $media_root = $mgmt_config['abs_path_temp'];
     $media = getobject ($media);

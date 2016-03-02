@@ -480,7 +480,7 @@ if ($savetype == "auto" || $savetype == "")
 // refresh after save and open
 elseif ($savetype == "editor_so")
 {
-  $add_onload .=  "document.location.href='../media_rendering.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
+  $add_onload .=  "document.location='../media_rendering.php?site=".url_encode($site)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."';\n";
 ?>
 <!DOCTYPE html>
 <html>
