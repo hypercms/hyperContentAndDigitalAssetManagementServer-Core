@@ -269,9 +269,9 @@ if ($usedby == "" || $usedby == $user)
         // get media file location and name
         $mediafile_location = getmedialocation ($site, $object_info['media'], "abs_path_media").$site."/";
         $mediafile_name = $object_info['media'];
-        
-        // create temp file if file is encrypted
-        $temp = createtempfile ($mediafile_location, $mediafile_name);
+
+        // prepare media file
+        $temp = preparemediafile ($site, $mediafile_location, $mediafile_name, $user);
         
         if ($temp['result'] && $temp['crypted']) $object_mediafile = $temp['templocation'].$temp['tempfile'];
         else $object_mediafile = $mediafile_location.$mediafile_name;
@@ -332,6 +332,9 @@ if ($usedby == "" || $usedby == $user)
             
             // encrypt and save file if required
             if ($temp['result']) movetempfile ($mediafile_location, $mediafile_name, true);
+
+            // save to cloud storage
+            if (function_exists ("savecloudobject")) savecloudobject ($site, $mediafile_location, $mediafile_name, $user);
           }
           // alternatively touch the file to change the modified date
           else

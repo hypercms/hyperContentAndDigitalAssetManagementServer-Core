@@ -15,7 +15,7 @@ if (empty ($mgmt_config['abs_path_cms']) && is_file ("../config.inc.php"))
   require ("../config.inc.php");
 }
 
-// include get API
+// include Get API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_get.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_get.inc.php");
@@ -27,61 +27,61 @@ if (is_file ($mgmt_config['abs_path_data']."eventsystem/hypercms_eventsys.inc.ph
   include_once ($mgmt_config['abs_path_data']."eventsystem/hypercms_eventsys.inc.php");
 }
 
-// include relational DB connectivity
+// include Relational DB Connectivity
 if ($mgmt_config['db_connect_rdbms'] != "" && is_file ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']))
 {
   require_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
 }
 
-// include main API
+// include Main API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_main.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_main.inc.php");
 }
 
-// include security API
+// include Security API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_sec.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_sec.inc.php");
 }
 
-// include set API
+// include Set API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_set.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_set.inc.php");
 }
 
-// include XML content API
+// include XML API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_xml.inc.php"))
 {
   include_once ($mgmt_config['abs_path_cms']."function/hypercms_xml.inc.php");
 }
 
-// include media API
+// include Media API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_media.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_media.inc.php");
 }
 
-// include link management API
+// include Link Management API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_link.inc.php"))
 {
   include_once ($mgmt_config['abs_path_cms']."function/hypercms_link.inc.php");
 }
 
-// include meta data API
+// include Metadata API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_meta.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_meta.inc.php");
 }
 
-// include plugin API
+// include Plugin API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_plugin.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_plugin.inc.php");
 }
 
-// include connect API
+// include Connect API
 if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_connect.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_connect.inc.php");
@@ -105,7 +105,7 @@ if (is_file ($mgmt_config['abs_path_cms']."workflow/hypercms_workflow.inc.php"))
   require_once ($mgmt_config['abs_path_cms']."workflow/hypercms_workflow.inc.php");
 }
 
-// include encryption API (not included in Free Edition)
+// include Encryption API (not included in Free Edition)
 if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php");
@@ -114,6 +114,12 @@ if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.ph
 elseif (is_file ($mgmt_config['abs_path_cms']."function/hypercms_encryption.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."function/hypercms_encryption.inc.php");
+}
+
+// include Cloud Storage API (not included in Free Edition)
+if (is_file ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php");
 }
 
 // include UI API

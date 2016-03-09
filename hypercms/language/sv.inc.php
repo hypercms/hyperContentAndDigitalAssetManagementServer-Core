@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['sv'] = "Användaren m
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['sv'] = "Ange metadata för dina uppladdningar";
 $hcms_lang['user-wants-to-chat-with-you']['sv'] = "Användare %user% vill chatta med dig";
 $hcms_lang['enable-direct-file-uploads-in-pages']['sv'] = "Aktivera direct filupload i sidor";
+$hcms_lang['use-local-media-storage']['sv'] = "Använd lokala media lagring";
+$hcms_lang['use-cloud-media-storage']['sv'] = "Använd cloud medielagring";
+$hcms_lang['use-local-and-cloud-media-storage']['sv'] = "Använd lokala och cloud medielagring";
+$hcms_lang['media-storage-type']['sv'] = "Media lagringstyp";
 ?>

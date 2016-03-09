@@ -42,11 +42,11 @@ if ($wm != "")
     }
     
     // media location
-    if (@is_file (getmedialocation ($site, $media, "abs_path_media").$media))
+    if (is_file (getmedialocation ($site, $media, "abs_path_media").$media) || is_cloudobject (getmedialocation ($site, getobject($media), "abs_path_media").$site."/".getobject ($media)))
     {
       $media_root = getmedialocation ($site, $media, "abs_path_media");
     }
-    elseif (@is_file ($mgmt_config['abs_path_temp'].getobject($media)))
+    elseif (is_file ($mgmt_config['abs_path_temp'].getobject($media)))
     {
       $media_root = $mgmt_config['abs_path_temp'];
       $media = getobject ($media);

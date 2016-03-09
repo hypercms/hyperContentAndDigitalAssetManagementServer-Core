@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['nl'] = "Gebruiker moe
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['nl'] = "Geef de metagegevens van uw upload";
 $hcms_lang['user-wants-to-chat-with-you']['nl'] = "Gebruiker %user% wil met u te chatten";
 $hcms_lang['enable-direct-file-uploads-in-pages']['nl'] = "Activeer direct file upload in pagina's";
+$hcms_lang['use-local-media-storage']['nl'] = "Gebruik lokale opslagmedia";
+$hcms_lang['use-cloud-media-storage']['nl'] = "Gebruik cloud mediaopslag";
+$hcms_lang['use-local-and-cloud-media-storage']['nl'] = "Gebruik lokaal en cloud mediaopslag";
+$hcms_lang['media-storage-type']['nl'] = "Opslagmedia type";
 ?>

@@ -814,7 +814,7 @@ $().ready(function() {
 </div>
 
 <?php
-echo showinfobox ($hcms_lang['use-options-to-edit-the-video'][$lang], $lang, "position:fixed; top:40px; left:10px; width:90%;", "hcms_infoLayer");
+echo showinfobox ($hcms_lang['use-options-to-edit-the-video'][$lang], $lang, "position:fixed; top:40px; left:10px; width:760px;", "hcms_infoLayer");
 echo showmessage ($show, 600 , 80, $lang, "position:fixed; left:50px; top:150px;");
 ?> 
 

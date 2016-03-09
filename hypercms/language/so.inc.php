@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['so'] = "Waa in uu bix
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['so'] = "Fadlan gala uploads metadata, waayo";
 $hcms_lang['user-wants-to-chat-with-you']['so'] = "Ujuurada %user% doonayo inuu kula sheekeysto";
 $hcms_lang['enable-direct-file-uploads-in-pages']['so'] = "Waxaad dacwo u upload tooska ah ku gaarsiiso nasiibka";
+$hcms_lang['use-local-media-storage']['so'] = "Isticmaal dawladaha hoose iyo keydka saxaafadda";
+$hcms_lang['use-cloud-media-storage']['so'] = "Isticmaal samada iyo keydka saxaafadda";
+$hcms_lang['use-local-and-cloud-media-storage']['so'] = "Isticmaal dawladaha hoose iyo daruurta iyo keydka saxaafadda";
+$hcms_lang['media-storage-type']['so'] = "Saxaafadda nooca shaatigaduud";
 ?>

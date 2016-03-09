@@ -45,6 +45,8 @@ checkusersession ($user, false);
 $filedirectlink = "";
 $filewrapperlink = "";
 $filewrapperdownload = "";
+$filesize = 0;
+$filecount = 0;
 ?>
 <!DOCTYPE html>
 <html>
@@ -106,11 +108,46 @@ if ($pagestore != false)
       
     // ---------------------------- page info ---------------------------
     
-    if (!empty ($contentfile))
+    // get file information for
+    // multimedia objects
+    if (!empty ($media))
     {
-      // get file time
-      if ($media != "") $last_updated[0] = date ("Y-m-d H:i", @filemtime (getmedialocation ($site, $media, "abs_path_media").$site."/".$media));   
-                
+      $mediadir = getmedialocation ($site, $media, "abs_path_media").$site."/";
+      
+      if ($mgmt_config['db_connect_rdbms'] != "")
+      {
+        $media_info = rdbms_getmedia ($container_id, true);
+        $last_updated[0] = date ("Y-m-d H:i", strtotime ($media_info['date']));
+        $fileMD5 = $media_info['md5_hash'];
+        $filesize = $media_info['filesize'];
+      }
+      elseif (is_file ($mediadir.$media))
+      {
+        $last_updated[0] = date ("Y-m-d H:i", filemtime ($mediadir.$media));
+        $fileMD5 = md5_file ($mediadir.$site."/".$media);
+        $filesize = filesize ($mediadir.$site."/".$media) / 1024;
+      }
+    }
+    // folder objects
+    elseif ($page == ".folder")
+    {
+      // multimedia and standard objects
+      $filesize_array = getfilesize ($location_esc.$page);
+    
+      if (is_array ($filesize_array))
+      {
+        $filesize = $filesize_array['filesize'];
+        $filecount = $filesize_array['count'];
+      }
+    } 
+    // standard objects   
+    elseif ($page != "")
+    {
+      $filesize = filesize ($location.$page) / 1024;
+    }
+    
+    if (!empty ($contentfile))
+    {                
       echo "<tr><td valign=top>".getescapedtext ($hcms_lang['owner'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$owner[0]."</td></tr>\n";
       echo "<tr><td valign=top>".getescapedtext ($hcms_lang['modified'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$last_updated[0]."</td></tr>\n";
       echo "<tr><td valign=top>".getescapedtext ($hcms_lang['published'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$last_published[0]."</td></tr>\n"; 
@@ -157,48 +194,7 @@ if ($pagestore != false)
       echo "<tr><td valign=top>".$pagecomp.": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$tpl_name."</td></tr>\n";
     }
     
-    // file size
-    $filesize = 0;
-    $filecount = 0;
-    
-    // get file size in kB for:
-    // multimedia objects
-    if ($media != false && !empty ($media))
-    {
-      if ($mgmt_config['db_connect_rdbms'] != "")
-      {
-        $media_info = rdbms_getmedia ($container_id);
-        $fileMD5 = $media_info['md5_hash'];
-        $filesize = $media_info['filesize'];
-      }
-      else
-      {
-        $mediadir = getmedialocation ($site, $media, "abs_path_media");          
-        $fileMD5 = md5_file ($mediadir.$site."/".$media);
-        $filesize = filesize ($mediadir.$site."/".$media) / 1024;
-      }
-     
-      // direct link
-      if ($mgmt_config[$site]['dam'] != true) $filedirectlink = getmedialocation ($site, $media, "url_path_media").$site."/".$media;
-    }
-    // folders objects
-    elseif ($page == ".folder")
-    {
-      // multimedia and standard objects
-      $filesize_array = getfilesize ($location_esc.$page);
-    
-      if (is_array ($filesize_array))
-      {
-        $filesize = $filesize_array['filesize'];
-        $filecount = $filesize_array['count'];
-      }
-    } 
-    // standard objects   
-    elseif ($page != "")
-    {
-      $filesize = filesize ($location.$page) / 1024;
-    }
-    
+    // file size    
     $filesize = round ($filesize, 0);
     if ($filesize < 1) $filesize = 1;
     
@@ -216,6 +212,9 @@ if ($pagestore != false)
     if ($filesize > 0) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['file-size'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filesize."</td></tr>\n";
     if ($filecount > 0) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['number-of-files'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filecount."</td></tr>\n";
   
+    // direct link
+    if (!empty ($media) && $mgmt_config[$site]['dam'] != true) $filedirectlink = getmedialocation ($site, $media, "url_path_media").$site."/".$media;
+  
     // links
     if ($mgmt_config['publicdownload'] == true && ($cat == "page" || $setlocalpermission['download'] == 1))
     {
@@ -227,7 +226,7 @@ if ($pagestore != false)
       if ($mgmt_config['db_connect_rdbms'] != "") $filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
       elseif ($media != "") $filewrapperdownload = createviewlink ($site, $media, $page, false, "download");
     }
-    
+
     // file access links
     if (!empty ($filedirectlink)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['direct-link'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filedirectlink."</td></tr>\n";
     if (!empty ($filewrapperlink)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['wrapper-link'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filewrapperlink."</td></tr>\n";

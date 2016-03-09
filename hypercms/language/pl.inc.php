@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['pl'] = "Użytkownik m
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['pl'] = "Proszę wprowadzić metadanych dla twojego przesłania";
 $hcms_lang['user-wants-to-chat-with-you']['pl'] = "Użytkownik %user% chce porozmawiać z wami";
 $hcms_lang['enable-direct-file-uploads-in-pages']['pl'] = "Umożliwia bezpośrednie przesyłanie plików w stronach";
+$hcms_lang['use-local-media-storage']['pl'] = "Wykorzystanie lokalnych nośników zapisu";
+$hcms_lang['use-cloud-media-storage']['pl'] = "Za chmurą przechowywanie nośników";
+$hcms_lang['use-local-and-cloud-media-storage']['pl'] = "Wykorzystanie lokalnych i rozproszonych przechowywanie nośników";
+$hcms_lang['media-storage-type']['pl'] = "Media rodzaj pamięci masowej";
 ?>

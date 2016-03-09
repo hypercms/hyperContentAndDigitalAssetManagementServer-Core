@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['uk'] = "Корист�
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['uk'] = "Введіть метадані для вашого завантаження";
 $hcms_lang['user-wants-to-chat-with-you']['uk'] = "Користувач %user% хоче спілкуватися з вами";
 $hcms_lang['enable-direct-file-uploads-in-pages']['uk'] = "Активувати функцію прямого файл завантаження сторінки";
+$hcms_lang['use-local-media-storage']['uk'] = "Використання місцевих носій";
+$hcms_lang['use-cloud-media-storage']['uk'] = "Використання хмара носій";
+$hcms_lang['use-local-and-cloud-media-storage']['uk'] = "Використання місцевих і хмари носій";
+$hcms_lang['media-storage-type']['uk'] = "Носій типу";
 ?>

@@ -1355,4 +1355,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['id'] = "Pengguna haru
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['id'] = "Harap masukkan metadata untuk meng-upload anda";
 $hcms_lang['user-wants-to-chat-with-you']['id'] = "Pengguna %user% ingin mengobrol dengan Anda";
 $hcms_lang['enable-direct-file-uploads-in-pages']['id'] = "Aktifkan upload file langsung dalam halaman-halaman";
+$hcms_lang['use-local-media-storage']['id'] = "Menggunakan penyimpanan media lokal";
+$hcms_lang['use-cloud-media-storage']['id'] = "Gunakan awan penyimpanan media";
+$hcms_lang['use-local-and-cloud-media-storage']['id'] = "Menggunakan penyimpanan media lokal dan awan";
+$hcms_lang['media-storage-type']['id'] = "Penyimpanan Media";
 ?>

@@ -59,7 +59,7 @@ $file_info = getfileinfo ($site, $location.$object, $cat);
 $token = createtoken ($user);
 
 // check storage limit (MB)
-if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0)
+if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage_limit'] > 0)
 {
   // memory for file size (should be kept for 24 hours)
   $filesize_mem = $mgmt_config['abs_path_temp'].$site.".filesize.dat";
@@ -72,7 +72,7 @@ if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0
   }
   else $filesize['filesize'] = loadfile ($mgmt_config['abs_path_temp'], $site.".filesize.dat");
 
-  if ($filesize['filesize'] > ($mgmt_config[$site]['storage'] * 1024))
+  if ($filesize['filesize'] > ($mgmt_config[$site]['storage_limit'] * 1024))
   {
     echo showinfopage ($hcms_lang['storage-limit-exceeded'][$lang], $lang);
     exit;

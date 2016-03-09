@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['sq'] = "Përdoruesit 
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['sq'] = "Ju lutem, kujdesuni për metadata ngarkimet";
 $hcms_lang['user-wants-to-chat-with-you']['sq'] = "Perdoruesi %user% dëshiron për të biseduar me ju";
 $hcms_lang['enable-direct-file-uploads-in-pages']['sq'] = "Aftësohet drejtpërdrejtë në faqet dosje upload";
+$hcms_lang['use-local-media-storage']['sq'] = "Përdorim ruajtjen e medias lokale";
+$hcms_lang['use-cloud-media-storage']['sq'] = "Përdorimi i dyshimtë akreditimi deponim";
+$hcms_lang['use-local-and-cloud-media-storage']['sq'] = "Shfrytëzojnë lëndën dhe cloud ruajtjen e medias";
+$hcms_lang['media-storage-type']['sq'] = "Akreditimi deponim lloji";
 ?>

@@ -1355,4 +1355,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['el'] = "Ο χρήστ
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['el'] = "Εισαγάγετε τα μεταδεδομένα για την αποστολή σας";
 $hcms_lang['user-wants-to-chat-with-you']['el'] = "Χρήστης %user% θέλει να συνομιλήσουν μαζί σας";
 $hcms_lang['enable-direct-file-uploads-in-pages']['el'] = "Επιτρέπει την άμεση αποστολή αρχείου σε σελίδες";
+$hcms_lang['use-local-media-storage']['el'] = "Χρήση τοπικών μέσων αποθήκευσης";
+$hcms_lang['use-cloud-media-storage']['el'] = "Χρησιμοποιήστε το σύννεφο μέσων αποθήκευσης";
+$hcms_lang['use-local-and-cloud-media-storage']['el'] = "Χρήση τοπικών και cloud αποθήκευση μέσων";
+$hcms_lang['media-storage-type']['el'] = "Πολυμέσα αποθήκευσης τύπου";
 ?>

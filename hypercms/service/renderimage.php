@@ -119,32 +119,71 @@ if (checktoken ($token, $user)) loadbalancer ("renderimage");
 
 $show = "";
 $add_onload = "";
+$result = false;
+
+// definitions
+$available_colorspaces = array();
+$available_colorspaces['CMYK'] = 'CMYK';
+$available_colorspaces['GRAY'] = 'GRAY';
+$available_colorspaces['CMY'] = 'CMY';
+$available_colorspaces['RGB'] = 'RGB';
+$available_colorspaces['sRGB'] = 'sRGB';
+$available_colorspaces['Transparent'] = 'Transparent';
+$available_colorspaces['XYZ'] = 'XYZ';
+
+$available_flip = array();
+$available_flip['fv'] = $hcms_lang['vertical'][$lang];
+$available_flip['fh'] = $hcms_lang['horizontal'][$lang];
+$available_flip['fv fh'] = $hcms_lang['both'][$lang];
 
 if (checktoken ($token, $user))
 {
   // get file information of original media file
   $mediafile_info = getfileinfo ($site, $mediafile, "comp");
+  
   // source media location
   $media_root_source = getmedialocation ($site, $mediafile_info['file'], "abs_path_media").$site."/";
+  
   // destination media location
   if ($savetype == "auto") $media_root_target = $media_root_source;
   else $media_root_target = $mgmt_config['abs_path_temp'];
   
   $mediafile_orig = $mediafile;
-  
+
   // if RAW image, use equivalent JPEG image
-  if (is_rawimage ($mediafile_info['ext']) && is_file ($media_root_source.$mediafile_info['filename'].".jpg"))
+  if (is_rawimage ($mediafile_info['ext']))
   {
-    // create temp file if file is encrypted
-    $temp_source = createtempfile ($media_root_source, $mediafile_info['filename'].".jpg");
-    $mediafile = $mediafile_info['filename'].".jpg";
-  }
-  else
-  {
-    // create temp file if file is encrypted
-    $temp_source = createtempfile ($media_root_source, $mediafile);
+    // reset media file
+    $mediafile_raw = $mediafile_info['filename'].".jpg";
+    
+    // prepare media file
+    $temp_source = preparemediafile ($site, $media_root_source, $mediafile_raw, $user);
+    
+    if ($temp_source['result'] && $temp_source['crypted'] && is_file ($temp_source['templocation'].$temp_source['tempfile']))
+    {
+      $media_root_source = $temp_source['templocation'];
+      $mediafile = $temp_source['tempfile'];
+    }
+    elseif (is_file ($media_root_source.$mediafile_raw))
+    {
+      // reset media file
+      $mediafile = $mediafile_raw;
+    }
+    else
+    {
+      // reset media file
+      $mediafile = $mediafile_orig;
+      $mediafile_failed = true;
+    }
   }
   
+  // if not a RAW image or no equivalent JPEG image is available
+  if (!is_rawimage ($mediafile_info['ext']) || !empty ($mediafile_failed))
+  {
+    // prepare media file
+    $temp_source = preparemediafile ($site, $media_root_source, $mediafile, $user);
+  }
+
   // get file information of new original media file
   if ($temp_source['result'] && $temp_source['crypted'])
   {
@@ -154,23 +193,6 @@ if (checktoken ($token, $user))
   {
     $media_size = @getimagesize ($media_root_source.$mediafile);
   }
-  
-  $available_colorspaces = array();
-  $available_colorspaces['CMYK'] = 'CMYK';
-  $available_colorspaces['GRAY'] = 'GRAY';
-  $available_colorspaces['CMY'] = 'CMY';
-  $available_colorspaces['RGB'] = 'RGB';
-  $available_colorspaces['sRGB'] = 'sRGB';
-  $available_colorspaces['Transparent'] = 'Transparent';
-  $available_colorspaces['XYZ'] = 'XYZ';
-  
-  $available_flip = array();
-  $available_flip['fv'] = $hcms_lang['vertical'][$lang];
-  $available_flip['fh'] = $hcms_lang['horizontal'][$lang];
-  $available_flip['fv fh'] = $hcms_lang['both'][$lang];
-  
-  $show = "";
-  $result = false;
 
   // render image
   if ($media_size != false && valid_publicationname ($site))
@@ -390,9 +412,9 @@ if (!empty ($result))
   {
     // add timestamp to ensure the new image will be loaded
     $output->thumblink = createviewlink ($site, $resultthumb, "", true);
-    
-    // create temp file if file is encrypted
-    $temp_target = createtempfile ($media_root_target, $resultthumb);
+
+    // prepare media file
+    $temp_target = preparemediafile ($site, $media_root_target, $resultthumb, $user);
     
     // get file information of new original media file
     if ($temp_target['result'] && $temp_target['crypted'])
@@ -416,8 +438,7 @@ if (!empty ($result))
 else
 {
   $output->success = false;
-  
-  
+
   if (empty ($show))
   {
     $show = $hcms_lang['error-during-conversion'][$lang];

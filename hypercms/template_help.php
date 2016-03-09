@@ -523,6 +523,9 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
       <?php if (is_file ($mgmt_config['abs_path_cms']."workflow/hypercms_workflow.inc.php")) { ?>
       <li><a href="#workflow">Workflow API Functions</a></li>
       <?php } ?>
+      <?php if (is_file ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php")) { ?>
+      <li><a href="#workflow">Cloud Storage API Functions</a></li>
+      <?php } ?>
     </ol>
     
     <a name="main"></a>
@@ -637,6 +640,14 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Workflow API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."workflow/hypercms_workflow.inc.php";
+    echo showAPIdocs ($file);
+    } ?>
+    
+    <?php if (is_file ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php")) { ?>
+    <a name="cloud"></a>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Cloud Storage API Functions</h2>
+    <?php
+    $file = $mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php";
     echo showAPIdocs ($file);
     } ?>
   </div>

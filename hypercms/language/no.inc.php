@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['no'] = "Brukeren må 
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['no'] = "Skriv inn metadata for opplasting";
 $hcms_lang['user-wants-to-chat-with-you']['no'] = "Bruker %user% ønsker å prate med deg";
 $hcms_lang['enable-direct-file-uploads-in-pages']['no'] = "Aktivere direkte opplasting i sidene";
+$hcms_lang['use-local-media-storage']['no'] = "Bruk lokale medier lagring";
+$hcms_lang['use-cloud-media-storage']['no'] = "Bruk sky media storage";
+$hcms_lang['use-local-and-cloud-media-storage']['no'] = "Bruk lokal og skybasert media storage";
+$hcms_lang['media-storage-type']['no'] = "Media storage type";
 ?>

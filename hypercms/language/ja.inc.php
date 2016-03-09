@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['ja'] = "ユーザフ�
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['ja'] = "あなたのアップロードのためのメタデータを入力してください。";
 $hcms_lang['user-wants-to-chat-with-you']['ja'] = "ユーザー％user％は、あなたとチャットしたいです";
 $hcms_lang['enable-direct-file-uploads-in-pages']['ja'] = "ページに直接ファイルをアップロードを有効にする";
+$hcms_lang['use-local-media-storage']['ja'] = "ローカル・メディア・ストレージを使用して";
+$hcms_lang['use-cloud-media-storage']['ja'] = "クラウド・ストレージ・メディアを使用して";
+$hcms_lang['use-local-and-cloud-media-storage']['ja'] = "ローカルおよびクラウドメディアストレージを使用して";
+$hcms_lang['media-storage-type']['ja'] = "メディアストレージのタイプ";
 ?>

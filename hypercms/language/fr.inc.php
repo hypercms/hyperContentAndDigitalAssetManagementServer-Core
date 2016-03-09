@@ -1355,4 +1355,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['fr'] = "L'utilisateur
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['fr'] = "Veuillez entrer les métadonnées de vos téléchargements";
 $hcms_lang['user-wants-to-chat-with-you']['fr'] = "L'utilisateur %user% veut discuter avec vous";
 $hcms_lang['enable-direct-file-uploads-in-pages']['fr'] = "Activer direct dans pages de téléchargement de fichier";
+$hcms_lang['use-local-media-storage']['fr'] = "Utiliser les médias locaux storage";
+$hcms_lang['use-cloud-media-storage']['fr'] = "Utilisez le cloud media de stockage";
+$hcms_lang['use-local-and-cloud-media-storage']['fr'] = "Utiliser local et support de stockage cloud";
+$hcms_lang['media-storage-type']['fr'] = "Type de support de stockage";
 ?>

@@ -45,6 +45,7 @@ if (sizeof ($config_files) > 0)
     // load main config
     require ("../".$config_file);
     
+    // process objects in queue
     if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_data']))
     {
       // load queue

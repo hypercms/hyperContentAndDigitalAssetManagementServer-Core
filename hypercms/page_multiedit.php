@@ -243,8 +243,17 @@ foreach ($multiobject_array as $object)
     if (!is_video ($media_info['ext'])) $is_video = false;
     if (!is_audio ($media_info['ext'])) $is_audio = false;
     
+    // prepare media file
+    $temp = preparemediafile ($site, $mediadir.$site."/", $thumbnail, $user);
+    
+    if ($temp['result'] && $temp['crypted'])
+    {
+      $media_root = $temp['templocation'];
+      $mediafile = $temp['tempfile'];
+    }
+    
     // thumbnails preview
-    if (is_file ($mediadir.$site."/".$media_info['filename'].".thumb.jpg"))
+    if (is_file ($mediadir.$site."/".$thumbnail))
     {
       $imgsize = getimagesize ($mediadir.$site."/".$thumbnail);
       
@@ -2183,7 +2192,7 @@ elseif ($is_video || $is_audio)
     
     
     <form id="sendform">
-      <div style="display:block;">
+      <div style="display:block; margin-top:8px;">
         <span class="hcmsHeadlineTiny">
           <?php echo getescapedtext ($hcms_lang['only-fields-marked-with-*-hold-the-same-content-may-be-changed'][$lang], $charset, $lang); ?>
         </span>

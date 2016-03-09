@@ -371,7 +371,7 @@ function showinfobox ($show, $lang="en", $style="", $id="hcms_infoboxLayer")
     
     return "
   <div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"display:none; ".$style."\">
-    <table style=\"padding:0; border:0; border-spacing:0; border-collapse:collapse;\">
+    <table style=\"width:100%; padding:0; border:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
         <td style=\"text-align:left; vertical-align:top; padding:1px; margin:0;\">
           ".$show."
@@ -643,9 +643,6 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     elseif (valid_publicationname ($site))
     {
       $thumb_root = $media_root = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";;
-      
-      // get file time
-      $mediafiletime = date ("Y-m-d H:i", @filemtime ($thumb_root.$mediafile_orig));
 
       // get container ID
       $container_id = getmediacontainerid ($mediafile);
@@ -655,15 +652,6 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
       if (!empty ($usedby_array['user'])) $usedby = $usedby_array['user'];
       else $usedby = "";
-
-      // create temp file if file is encrypted
-      $temp = createtempfile ($media_root, $mediafile);
-      
-      if ($temp['result'] && $temp['crypted'])
-      {
-        $media_root = $temp['templocation'];
-        $mediafile = $temp['tempfile'];
-      }
 
       // load container
       if (!empty ($usedby) && $usedby != $user)
@@ -676,20 +664,23 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       $owner = getcontent ($contentdata, "<contentuser>");
       $date_published = getcontent ($contentdata, "<contentpublished>");
 
-      // get media information
+      // get media file information from database
       if ($mgmt_config['db_connect_rdbms'] != "" && !$is_version)
       {
-        // get media file information from database
-        $media_info = rdbms_getmedia ($container_id);
+        $media_info = rdbms_getmedia ($container_id, true);
         
+        $mediafiletime = date ("Y-m-d H:i", strtotime ($media_info['date']));
         $mediafilesize = $media_info['filesize'];
         $width_orig = $media_info['width'];
         $height_orig = $media_info['height'];
       }
-      else
+      // get media file information from media file
+      elseif (is_file ($media_root.$mediafile))
       {
-        // get file size
-        $mediafilesize = round (@filesize ($media_root.$mediafile) / 1024, 0);
+        $mediafiletime = date ("Y-m-d H:i", filemtime ($thumb_root.$mediafile));
+        
+        if (filesize ($media_root.$mediafile) > 0) $mediafilesize = round (filesize ($media_root.$mediafile) / 1024, 0);
+        else $mediafilesize = 0;
       
         // get dimensions of original media file
         $media_size = @getimagesize ($media_root.$mediafile);
@@ -718,13 +709,22 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     $style = "";
 
     // only show details if user has permissions to edit the file or the configuration of the system is not a DAM
-    if ($viewtype == "template" || ($setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1) && is_file ($media_root.$mediafile))
+    if ($viewtype == "template" || ($setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1))
     {
       // --------------------------------------- if version ----------------------------------------
       if ($is_version && $viewtype != "template")
       {
-        // define version thumbnail file
+        // define version thumbnail file (append version file extension)
         $mediafile_thumb = $file_info['filename'].".thumb.jpg".strtolower (strrchr ($mediafile_orig, "."));
+        
+        // prepare media file
+        $temp = preparemediafile ($site, $thumb_root, $mediafile_thumb, $user);
+        
+        if ($temp['result'] && $temp['crypted'])
+        {
+          $thumb_root = $temp['templocation'];
+          $mediafile_thumb = $temp['tempfile'];
+        }
         
         $style = "";
         if ($width > 0) $style .= "width:".intval($width)."px;";
@@ -732,7 +732,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if ($style != "") $style = "style=\"".$style."\"";
 
         // use thumbnail if it is valid (larger than 10 bytes)
-        if (@is_file ($thumb_root.$mediafile_thumb) && @filesize ($thumb_root.$mediafile_thumb) > 10)
+        if (is_file ($thumb_root.$mediafile_thumb))
         {
           $mediaview .= "
         <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
@@ -807,7 +807,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
              )
            )
         {    			
-          // check if original file is a pdf
+          // if original file is a pdf
           if (substr_count (".pdf", $file_info['orig_ext']) == 1) 
           {
             // using pdfjs with orig. file via iframe
@@ -818,15 +818,16 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             $mediafile_thumb = $medianame_thumb = $file_info['filename'].".thumb.pdf";
             
-            // thumb file exists
-            if (is_file ($thumb_root.$mediafile_thumb)) 
+            // document thumb file exists in media repository
+            if (is_file ($thumb_root.$mediafile_thumb) || is_cloudobject ($thumb_root.$mediafile_thumb)) 
             {
               $thumb_pdf_exists = true;
             }
             // sometimes libre office (UNOCONV) takes long time to convert to PDF and function createdocument is not able to rename the file from .pdf to .thumb.pdf  
-            elseif (is_file ($thumb_root.$file_info['filename'].".pdf"))
+            elseif (is_file ($thumb_root.$file_info['filename'].".pdf") || is_cloudobject ($thumb_root.$file_info['filename'].".pdf"))
             {
               rename ($thumb_root.$file_info['filename'].".pdf", $thumb_root.$file_info['filename'].".thumb.pdf");
+              if (function_exists ("renamecloudobject")) renamecloudobject ($site, $thumb_root, $file_info['filename'].".pdf", $file_info['filename'].".thumb.pdf", $user);
               $thumb_pdf_exists = true;
             }
             else $thumb_pdf_exists = false;
@@ -845,10 +846,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $doc_link = createviewlink ($site, $mediafile, $medianame_thumb)."&type=pdf&ts=".time();
 
               // show standard file icon
-              if (!empty ($file_info['icon_large'])) $mediaview .= "<div style=\"width:".$width."px; text-align:center;\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /></div>";
+              if (!empty ($file_info['icon_large'])) $mediaview .= "<div style=\"width:".$width."px; text-align:center;\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /></div>\n";
               
               // use AJAX service to start conversion of media file to pdf format for preview
-              $mediaview .= "<script type=\"text/javascript\">hcms_ajaxService('".$doc_link."')</script><br />\n";
+              $mediaview .= "<script type=\"text/javascript\">hcms_ajaxService('".$doc_link."')</script>\n";
             }
             // using Google Docs if UNOCONV was not able to convert into pdf and no standard file-icon exists
             else
@@ -875,15 +876,25 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       
         if ($viewtype != "template")
         {
+          $thumbfile = $file_info['filename'].".thumb.jpg";
+          
+          // prepare media file
+          $temp = preparemediafile ($site, $thumb_root, $thumbfile, $user);
+          
+          if ($temp['result'] && $temp['crypted'])
+          {
+            $thumb_root = $temp['templocation'];
+            $thumbfile = $temp['tempfile'];
+          }
+          
           // use thumbnail if it is valid (larger than 10 bytes)
-          if (@is_file ($thumb_root.$file_info['filename'].".thumb.jpg") && @filesize ($thumb_root.$file_info['filename'].".thumb.jpg") > 10)
+          if (is_file ($thumb_root.$thumbfile))
           {
             $viewfolder = $mgmt_config['abs_path_temp'];
             $newext = 'png';
             $typename = 'view';
             
             // get thumbnail image information
-            $thumbfile = $file_info['filename'].".thumb.jpg";
             $thumb_size = @getimagesize ($thumb_root.$thumbfile);
             $mediaratio = $thumb_size[0] / $thumb_size[1];
             
@@ -986,10 +997,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       // -------------------------------------- if flash --------------------------------------- 
       elseif ($file_info['ext'] != "" && substr_count ($swf_ext.".", $file_info['ext'].".") > 0)
       {
-        // media size
-        $style = "";
-        
         // use provided dimensions
+        $style = "";
         if (is_numeric ($width) && $width > 0) $style .= "width=\"".$width."\"";
         if (is_numeric ($height) && $height > 0) $style .= " height=\"".$height."\"";
         
@@ -1001,8 +1010,17 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $style .= "width=\"".$width_orig."\" height=\"".$height_orig."\"";
           }
           // try to get the dimensions from media file
-          else
+          elseif (is_file ($media_root.$mediafile) || is_cloudobject ($media_root.$mediafile))
           {
+            // prepare media file
+            $temp = preparemediafile ($site, $media_root, $mediafile, $user);
+            
+            if ($temp['result'] && $temp['crypted'])
+            {
+              $media_root = $temp['templocation'];
+              $mediafile = $temp['tempfile'];
+            }
+          
             $media_size = @getimagesize ($media_root.$mediafile);
             if (!empty ($media_size[3])) $style .= $media_size[3];
           }
@@ -1024,22 +1042,22 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       elseif ($file_info['ext'] != "" && is_audio ($file_info['ext']))
       {
         // media player config file is given
-        if (strpos ($mediafile_orig, ".config.") > 0 && is_file ($thumb_root.$mediafile_orig))
+        if (strpos ($mediafile_orig, ".config.") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
         {
           $config = readmediaplayer_config ($thumb_root, $mediafile_orig);
         }
         // new since version 5.6.3 (config of original-preview file)
-        elseif (file_exists ($thumb_root.$file_info['filename'].".config.orig"))
+        elseif (is_file ($thumb_root.$file_info['filename'].".config.orig") || is_cloudobject ($thumb_root.$file_info['filename'].".config.orig"))
         {
           $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
         }
         // new since version 5.6.3 (config of audioplayer)
-        elseif (file_exists ($thumb_root.$file_info['filename'].".config.audio"))
+        elseif (is_file ($thumb_root.$file_info['filename'].".config.audio") || is_cloudobject ($thumb_root.$file_info['filename'].".config.audio"))
         {
           $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.audio");
         }
         // no media config file is available, try to create video thumbnail file
-        elseif (is_file ($thumb_root.$mediafile_orig))
+        elseif (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig))
         {
           // create thumbnail video of original file
           $create_media = createmedia ($site, $thumb_root, $thumb_root, $mediafile_orig, "", "origthumb");
@@ -1061,7 +1079,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         <!-- hyperCMS:height file=\"".$mediaheight."\" -->";
         
         // add original file if config is empty
-        if (empty ($config['mediafiles']) && strpos ($mediafile_orig, ".config.") == 0 && is_file ($thumb_root.$mediafile_orig))
+        if (empty ($config['mediafiles']) && strpos ($mediafile_orig, ".config.") == 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
         {
           $config['mediafiles'] = array ($site."/".$mediafile_orig.";".getmimetype ($mediafile_orig));
         }
@@ -1108,29 +1126,34 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       // ---------------------------- if video ---------------------------- 
       elseif ($file_info['ext'] != "" && is_video ($file_info['ext']))
       {
+        $config = array();
+        
         // media player config file is given
-        if (strpos ($mediafile_orig, ".config.") > 0 && is_file ($thumb_root.$mediafile_orig))
+        if (strpos ($mediafile_orig, ".config.") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
         {
           $config = readmediaplayer_config ($thumb_root, $mediafile_orig);
         }
         // get media player config file
         // new since version 5.6.3 (config/preview of original file)
-        elseif (is_file ($thumb_root.$file_info['filename'].".config.orig"))
+        elseif (is_file ($thumb_root.$file_info['filename'].".config.orig") || is_cloudobject ($thumb_root.$file_info['filename'].".config.orig"))
         {
           $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
+          
+          // set default width for preview of original video file
+          $width = 320;
         }
         // new since version 5.5.7 (config of videoplayer)
-        elseif (is_file ($thumb_root.$file_info['filename'].".config.video"))
+        elseif (is_file ($thumb_root.$file_info['filename'].".config.video") || is_cloudobject ($thumb_root.$file_info['filename'].".config.video"))
         {
           $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.video");
         }
         // old version (only FLV support)
-        elseif (is_file ($thumb_root.$file_info['filename'].".config.flv"))
+        elseif (is_file ($thumb_root.$file_info['filename'].".config.flv") || is_cloudobject ($thumb_root.$file_info['filename'].".config.flv"))
         {
           $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.flv");
         }
         // no media config file is available, try to create video thumbnail file
-        elseif (is_file ($thumb_root.$mediafile_orig))
+        elseif (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig))
         {
           // create thumbnail video of original file
           $create_media = createmedia ($site, $thumb_root, $thumb_root, $mediafile_orig, "", "origthumb");
@@ -1141,7 +1164,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
         if (!is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) <= 1)
         {
-          if (strpos ($mediafile_orig, ".config.") == 0 && is_file ($thumb_root.$mediafile_orig) && substr_count (".mp4.ogg.ogv.webm.flv.", $file_info['orig_ext'].".") > 0)
+          if (strpos ($mediafile_orig, ".config.") == 0 && substr_count (".mp4.ogg.ogv.webm.flv.", $file_info['orig_ext'].".") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
           {
             $config['mediafiles'][] = $site."/".$mediafile_orig.";".getmimetype ($mediafile_orig);
           }
@@ -1186,10 +1209,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $mediaheight = $height;
           $mediawidth = round (($mediaheight * $mediaratio), 0);
         }
-        
+
         // generate player code
         $playercode = showvideoplayer ($site, @$config['mediafiles'], $mediawidth, $mediaheight, "", "cut", "", false, true, false, false, true, false, true);
-      
+
         $mediaview .= "
         <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
           <tr><td align=\"left\">
@@ -1224,8 +1247,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "
             </div>
             <!-- video player end -->";
-        
-        // VVT editor
+
+        // VTT editor
         if (is_supported ($mgmt_mediapreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
         {
           if ($viewtype == "preview")
@@ -1340,14 +1363,23 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           </td></tr>";
           }
         }     
-        
+
         $mediaview .= "
       </table>\n";
       }
       // ---------------------------------- if plain/clear text ---------------------------------- 
       elseif ($file_info['ext'] != "" && substr_count (strtolower ($hcms_ext['cleartxt'].$hcms_ext['cms']).".", $file_info['ext'].".") > 0)
       {
-        if (file_exists ($media_root.$mediafile))
+        // prepare media file
+        $temp = preparemediafile ($site, $media_root, $mediafile, $user);
+        
+        if ($temp['result'] && $temp['crypted'])
+        {
+          $media_root = $temp['templocation'];
+          $mediafile = $temp['tempfile'];
+        }
+      
+        if (is_file ($media_root.$mediafile))
         {
           $content = loadfile ($media_root, $mediafile);
 
@@ -1410,7 +1442,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     if ($mediaview == "")
     {
       // use thumbnail if it is valid (larger than 10 bytes)
-      if (file_exists ($thumb_root.$file_info['filename'].".thumb.jpg") && @filesize ($thumb_root.$file_info['filename'].".thumb.jpg") > 10)
+      if (is_file ($thumb_root.$file_info['filename'].".thumb.jpg") || is_cloudobject ($thumb_root.$file_info['filename'].".thumb.jpg"))
       {
         // thumbnail file
         $mediafile = $file_info['filename'].".thumb.jpg";
@@ -1451,20 +1483,36 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       if (substr_count (strtolower ($hcms_ext['video']), $file_info['ext']) > 0) $is_video = true;
       else $is_video = false;
       
-      // get video info from video file
-      $videoinfo = getvideoinfo ($media_root.$mediafile);
+      // get video info from config file
+      $mediafile_config = substr ($mediafile_orig, 0, strrpos ($mediafile_orig, ".")).".config.orig";
+      $videoinfo = readmediaplayer_config ($thumb_root, $mediafile_config);
+      
+      // get video info from video file for older versions
+      if (empty ($videoinfo['version']) || floatval ($videoinfo['version']) < 2.3)
+      {
+        // prepare media file
+        $temp = preparemediafile ($site, $media_root, $mediafile, $user);
         
-      // save duration of original media file in hidden field so it can be accessed for video editing
-      $mediaview .= "<input type=\"hidden\" id=\"mediaplayer_duration\" name=\"mediaplayer_duration\" value=\"".$videoinfo['duration_ms']."\" />";
+        if ($temp['result'] && $temp['crypted'])
+        {
+          $media_root = $temp['templocation'];
+          $mediafile = $temp['tempfile'];
+        }
+      
+        $videoinfo = getvideoinfo ($media_root.$mediafile);
+      }
       
       // show the values
       if (is_array ($videoinfo))
-      {           
-        $filesizes['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].' &nbsp;&nbsp;&nbsp;</td>';
+      {
+        // save duration of original media file in hidden field so it can be accessed for video editing
+        $mediaview .= "<input type=\"hidden\" id=\"mediaplayer_duration\" name=\"mediaplayer_duration\" value=\"".$videoinfo['duration']."\" />";
+      
+        $filesizes['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].'&nbsp;&nbsp;&nbsp;</td>';
 
-        $dimensions['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].' &nbsp;&nbsp;&nbsp;</td>';
+        $dimensions['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].'&nbsp;&nbsp;&nbsp;</td>';
 
-        $durations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration'].'&nbsp;&nbsp;&nbsp;</td>';
+        $durations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration_no_ms'].'&nbsp;&nbsp;&nbsp;</td>';
 
         $bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['videobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
 
@@ -1489,69 +1537,96 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           }
         }
       }
-      
+
       $videos = array ('<th style="text-align:left;">'.getescapedtext ($hcms_lang['original'][$lang], $hcms_charset, $lang).'</th>');
-      
+
       if (!$is_version && ($viewtype == "preview" || $viewtype == "preview_download"))
       {
-        // video and audio thumbnail files
-        if ($is_video) $media_extension_array = explode (".", substr (strtolower ($hcms_ext['video'].$hcms_ext['audio']), 1));
-        // audio thumbnail files
-        else $media_extension_array = explode (".", substr (strtolower ($hcms_ext['audio']), 1));
-        
-        foreach ($media_extension_array as $media_extension)
+        // look for available audio and video files 
+        foreach ($mgmt_mediaoptions as $media_extension => $media_options)
         {
-          // try individual video
-          $video_thumbfile = $file_info['filename'].".media.".$media_extension;
-          
-          // or use thumbnail video for videoplayer (only if file is not encrypted!)
-          if (!is_file ($thumb_root.$video_thumbfile) && !is_encryptedfile ($thumb_root, $file_info['filename'].".thumb.".$media_extension))
+          if ($media_extension != "" && $media_extension != "thumbnail-video" && $media_extension != "thumbnail-audio")
           {
-            $video_thumbfile = $file_info['filename'].".thumb.".$media_extension;
-          }
-          
-          $video_filename = substr ($medianame, 0, strrpos ($medianame, ".")).".".$media_extension;
-  
-          if (is_file ($thumb_root.$video_thumbfile))
-          {
-            $videos[$media_extension] = '<th style="text-align:left;">'.$media_extension.'</th>';
+            // remove dot
+            $media_extension = str_replace (".", "", $media_extension);
             
-            // get video info for original video config file
+            // get video info from config file
             $mediafile_config = substr ($mediafile_orig, 0, strrpos ($mediafile_orig, ".")).".config.".$media_extension;
-            $videoinfo = readmediaplayer_config ($thumb_root, $mediafile_config);
-            
-            // get video info from video file
-            if (empty ($videoinfo['version']) || floatval ($videoinfo['version']) < 2.2) $videoinfo = getvideoinfo ($thumb_root.$video_thumbfile);
-  
-            // show the values
-            if (is_array ($videoinfo))
-            {          
-              $filesizes[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].' &nbsp;&nbsp;&nbsp;</td>';
-  
-              $dimensions[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].' &nbsp;&nbsp;&nbsp;</td>';
-  
-              $durations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration'].'&nbsp;&nbsp;&nbsp;</td>';
-  
-              $bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['videobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-  
-              $audio_bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-  
-              $audio_frequenzies[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';
-  
-              $audio_channels[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
-  
-              $download_link = "top.location.href='".createviewlink ($site, $video_thumbfile, $video_filename, false, "download")."'; return false;";
-             
-              // download button
-              if ($viewtype == "preview" || $viewtype == "preview_download")
+    
+            // verify if video config file exists
+            if (is_file ($thumb_root.$mediafile_config) || is_cloudobject ($thumb_root.$mediafile_config))
+            {
+              $videoinfo = readmediaplayer_config ($thumb_root, $mediafile_config);
+    
+              // verify and define video thumbnail file
+              // try individual video
+              $test_file = $file_info['filename'].".media.".$media_extension;
+              
+              if (is_file ($thumb_root.$test_file) || is_cloudobject ($thumb_root.$test_file))
               {
-                $downloads[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;"><button class="hcmsButtonBlue" onclick="'.$download_link.'">'.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button></td>'; 
+                $video_thumbfile = $test_file;
+              }
+              else
+              {
+                // try use thumbnail video file
+                $test_file = $file_info['filename'].".thumb.".$media_extension;
                 
-                // Youtube upload
-                if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
-                {	
-                  $youtube_uploads[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;"> 
-                <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","640","400")\'><img src="'.getthemelocation().'img/button_upload.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button> </td>';
+                if (is_file ($thumb_root.$test_file) || is_cloudobject ($thumb_root.$test_file))
+                {
+                  $video_thumbfile = $test_file;
+                }
+              }
+    
+              // get video info from video file for older versions
+              if (!empty ($video_thumbfile) && (empty ($videoinfo['version']) || floatval ($videoinfo['version']) < 2.3))
+              {
+                // prepare media file
+                $temp = preparemediafile ($site, $thumb_root, $video_thumbfile, $user);
+    
+                if ($temp['result'] && $temp['crypted'])
+                {
+                  $thumb_root = $temp['templocation'];
+                  $video_thumbfile = $temp['tempfile'];
+                }
+              
+                $videoinfo = getvideoinfo ($thumb_root.$video_thumbfile);
+              }
+  
+              // show the values
+              if (!empty ($video_thumbfile) && is_array ($videoinfo))
+              {
+                $videos[$media_extension] = '<th style="text-align:left;">'.$media_extension.'</th>';
+               
+                // define video file name          
+                $video_filename = substr ($medianame, 0, strrpos ($medianame, ".")).".".$media_extension;
+                
+                $filesizes[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].'&nbsp;&nbsp;&nbsp;</td>';
+    
+                $dimensions[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].'&nbsp;&nbsp;&nbsp;</td>';
+    
+                $durations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration_no_ms'].'&nbsp;&nbsp;&nbsp;</td>';
+    
+                $bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['videobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
+    
+                $audio_bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
+    
+                $audio_frequenzies[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';
+    
+                $audio_channels[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
+    
+                $download_link = "top.location.href='".createviewlink ($site, $video_thumbfile, $video_filename, false, "download")."'; return false;";
+               
+                // download button
+                if ($viewtype == "preview" || $viewtype == "preview_download")
+                {
+                  $downloads[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;"><button class="hcmsButtonBlue" onclick="'.$download_link.'">'.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'</button></td>'; 
+                  
+                  // Youtube upload
+                  if ($mgmt_config[$site]['youtube'] == true && is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php"))
+                  {	
+                    $youtube_uploads[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left;"> 
+                  <button type="button" name="media_youtube" class="hcmsButtonGreen" onclick=\'hcms_openWindow("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'","","scrollbars=no,resizable=yes","640","400")\'><img src="'.getthemelocation().'img/button_upload.png" style="height:12px;" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'</button> </td>';
+                  }
                 }
               }
             }
@@ -1598,30 +1673,32 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       $mediafilesize = number_format ($mediafilesize, 0, "", ".")." ".$unit;
       
       // output information
+      $col_width = "width:120px; ";
+      
       $mediaview .= "    <table>";
       if (!empty ($owner[0])) $mediaview .= "
       <tr>
-      <td style=\"text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['owner'][$lang], $hcms_charset, $lang).": </td>
+      <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['owner'][$lang], $hcms_charset, $lang).": </td>
       <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$owner[0]."</td>
       </tr>";
       $mediaview .= "
       <tr>
-      <td style=\"text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang).": </td>
+      <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang).": </td>
       <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$mediafiletime."</td>
       </tr>";
       if (!empty ($date_published[0])) $mediaview .= "
       <tr>
-      <td style=\"text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['published'][$lang], $hcms_charset, $lang).": </td>
+      <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['published'][$lang], $hcms_charset, $lang).": </td>
       <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$date_published[0]."</td>
       </tr>";
       if (!empty ($date_delete)) $mediaview .= "
       <tr>
-      <td style=\"text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['will-be-removed'][$lang], $hcms_charset, $lang).": </td>
+      <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['will-be-removed'][$lang], $hcms_charset, $lang).": </td>
       <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$date_delete."</td>
       </tr>";
       $mediaview .= "
       <tr>
-      <td style=\"text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang).": </td>
+      <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang).": </td>
       <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$mediafilesize."</td>
       </tr>\n";
 
@@ -1630,28 +1707,28 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         // size in pixel of media file
         $mediaview .= "
       <tr>
-      <td style=\"text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang).": </td>
+      <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang).": </td>
       <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$width_orig."x".$height_orig." px</td>
       </tr>\n";
       
         // size in cm
         $mediaview .= "
       <tr>
-      <td style=\"text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." (72 dpi): </td>
+      <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." (72 dpi): </td>
       <td class=\"hcmsHeadlineTiny\">".round(($width_orig / 72 * 2.54), 1)."x".round(($height_orig / 72 * 2.54), 1)." cm, ".round(($width_orig / 72), 1)."x".round(($height_orig / 72), 1)." inch</td>
       </tr>\n";
       
         // size in inch
         $mediaview .= "
       <tr>
-      <td style=\"text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." (300 dpi): </td>
+      <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." (300 dpi): </td>
       <td class=\"hcmsHeadlineTiny\">".round(($width_orig / 300 * 2.54), 1)."x".round(($height_orig / 300 * 2.54), 1)." cm, ".round(($width_orig / 300), 1)."x".round(($height_orig / 300), 1)." inch</td>
       </tr>\n";
       }
       
       $mediaview .= "    </table>";
     }
-    
+
     return $mediaview;
   }
   else return false;
@@ -3001,7 +3078,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
       
       // if logo is in media repository
       // IMPORTANT: Do not use a wrapperlink for the video poster image!
-      if ($logo_name != "" && is_file ($media_dir.$site."/".$logo_name.".thumb.jpg"))
+      if ($logo_name != "" && (is_file ($media_dir.$site."/".$logo_name.".thumb.jpg") || is_cloudobject ($media_dir.$site."/".$logo_name.".thumb.jpg")))
       {
         $logo_url = createviewlink ($site, $logo_name.".thumb.jpg").$ts;
       }
@@ -3243,7 +3320,7 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
       
       // if logo is in media repository
       // IMPORTANT: Do not use a wrapperlink for the video poster image!
-      if ($logo_name != "" && is_file ($media_dir.$site."/".$logo_name.".thumb.jpg"))
+      if ($logo_name != "" && (is_file ($media_dir.$site."/".$logo_name.".thumb.jpg") || is_cloudobject ($media_dir.$site."/".$logo_name.".thumb.jpg")))
       {
         $logo_url = createviewlink ($site, $logo_name.".thumb.jpg").$ts;
       }

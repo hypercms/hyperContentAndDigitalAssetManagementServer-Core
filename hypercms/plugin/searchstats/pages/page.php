@@ -60,7 +60,7 @@ function showkeywordlist ($keywords, $sort_type="value", $css="hcmsButtonGreen")
       if ($count > 0) $count = "(".number_format ($count, 0, ",", ".").")";
       else $count = "";
       
-      $show .= "<tr><td><button class=\"".$css."\" style=\"max-width:240px;\" onclick=\"location.href='frameset_objectlist.php?action=base_search&search_expression=".urlencode($value)."&maxhits=1000';\">".$value." ".$count."</button></td></tr>\n";
+      $show .= "<tr><td><button class=\"".$css."\" style=\"max-width:240px;\" onclick=\"location='frameset_objectlist.php?action=base_search&search_expression=".urlencode($value)."&maxhits=1000';\">".$value." ".$count."</button></td></tr>\n";
     }
       
     return $show;
@@ -173,7 +173,7 @@ if (is_file ($keywordfile))
   ?>
   
   <?php if ($regenerate && is_file ($mgmt_config['abs_path_data']."log/search.log")) { ?>
-  <button class="hcmsButtonGreen" onclick="document.getElementById('hcmsLoadScreen').style.display='block'; location.href='?action=regenerate&token=<?php echo createtoken ($user); ?>';"><?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></button>
+  <button class="hcmsButtonGreen" onclick="document.getElementById('hcmsLoadScreen').style.display='block'; location='?action=regenerate&token=<?php echo createtoken ($user); ?>';"><?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></button>
   <?php } ?>
 
   <?php if (!empty ($show_rank)) { ?>

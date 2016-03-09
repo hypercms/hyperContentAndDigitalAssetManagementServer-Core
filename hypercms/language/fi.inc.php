@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['fi'] = "Käyttäjän 
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['fi'] = "Kirjoita metatiedot, lisäykset";
 $hcms_lang['user-wants-to-chat-with-you']['fi'] = "Käyttäjän %user% haluaa keskustella kanssasi";
 $hcms_lang['enable-direct-file-uploads-in-pages']['fi'] = "Jotta suora tiedoston lataus sivuilla";
+$hcms_lang['use-local-media-storage']['fi'] = "Käyttämällä paikallista tallennustilaa";
+$hcms_lang['use-cloud-media-storage']['fi'] = "Käytä cloud tallennusväline";
+$hcms_lang['use-local-and-cloud-media-storage']['fi'] = "Käyttämällä paikallista ja cloud-tallennusväline";
+$hcms_lang['media-storage-type']['fi'] = "Tallennusväline tyyppi";
 ?>

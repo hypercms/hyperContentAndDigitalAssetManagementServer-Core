@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['tr'] = "Kullanıcı o
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['tr'] = "Lütfen metadata için yüklemeleri";
 $hcms_lang['user-wants-to-chat-with-you']['tr'] = "Kullanıcı %user% istediğini sohbet sizin";
 $hcms_lang['enable-direct-file-uploads-in-pages']['tr'] = "Doğrudan dosya yükleme sayfaları";
+$hcms_lang['use-local-media-storage']['tr'] = "Yerel medya depolama";
+$hcms_lang['use-cloud-media-storage']['tr'] = "Bulut kullanın ortam depolama";
+$hcms_lang['use-local-and-cloud-media-storage']['tr'] = "Yerel ve bulut ortam depolama";
+$hcms_lang['media-storage-type']['tr'] = "Ortam depolama türü";
 ?>

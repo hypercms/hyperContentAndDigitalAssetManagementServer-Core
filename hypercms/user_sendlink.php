@@ -461,8 +461,11 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                         // use original file
                         else
                         {
-                          // create temp file if file is encrypted
-                          $temp_source = createtempfile ($mediadir.$siteTemp."/", $mediafile);
+                          // load from cloud storage
+                          if (function_exists ("loadcloudobject")) loadcloudobject ($siteTemp, $mediadir.$siteTemp."/", $mediafile, $user);
+                        
+                          // prepare media file
+                          $temp_source = preparemediafile ($siteTemp, $mediadir.$siteTemp."/", $mediafile, $user);
                           
                           if ($temp_source['result'] && $temp_source['crypted'])
                           {
@@ -776,8 +779,11 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                             // use original file
                             else
                             {
-                              // create temp file if file is encrypted
-                              $temp_source = createtempfile ($mediadir.$siteTemp."/", $mediafile);
+                              // load from cloud storage
+                              if (function_exists ("loadcloudobject")) loadcloudobject ($siteTemp, $mediadir.$siteTemp."/", $mediafile, $user);
+
+                              // prepare media file
+                              $temp_source = preparemediafile ($siteTemp, $mediadir.$siteTemp."/", $mediafile, $user);
                               
                               if ($temp_source['result'] && $temp_source['crypted'])
                               {

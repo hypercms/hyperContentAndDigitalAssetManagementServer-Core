@@ -145,5 +145,16 @@ if (is_file ($mgmt_config['abs_path_cms']."workflow/hypercms_workflow.inc.php"))
   echo showAPIdocs ($file);
 }
 ?>
+
+<?php
+if (is_file ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php"))
+{
+?>
+<h2>Cloud Storage API Functions</h2>
+<?php
+  $file = $mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php";
+  echo showAPIdocs ($file);
+}
+?>
 </body>
 </html>

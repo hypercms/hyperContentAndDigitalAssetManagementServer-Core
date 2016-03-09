@@ -1355,4 +1355,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['he'] = "המשתמש 
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['he'] = "הזן את המטה של העלאות שלך";
 $hcms_lang['user-wants-to-chat-with-you']['he'] = "משתמש %המשתמש% רו %user% עם לך";
 $hcms_lang['enable-direct-file-uploads-in-pages']['he'] = "אפשר להעלות קובץ ישירה ב דפים";
+$hcms_lang['use-local-media-storage']['he'] = "השתמש באחסון המדיה המקומי";
+$hcms_lang['use-cloud-media-storage']['he'] = "השתמש באחסון המדיה ענן";
+$hcms_lang['use-local-and-cloud-media-storage']['he'] = "השתמש באחסון המדיה ענן מקומי";
+$hcms_lang['media-storage-type']['he'] = "סוג אחסון מדיה";
 ?>

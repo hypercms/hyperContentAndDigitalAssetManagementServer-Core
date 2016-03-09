@@ -1316,13 +1316,44 @@ Release 02/2016
 - Changes in popup_action to support uncompressing ZIP files in page structure
 - Support for meta data input after ZIP file upload and automatic unpacking of ZIP file content
 - Replacement of location.href with location due to issues with MS Edge
-- Implementation of new selection methode for object lists (Suppor of multi-selection of objects if the first element is selected without nay key pressed)
+- Implementation of new selection methode for object lists (Support of multi-selection of objects if the first element is selected without nay key pressed)
 
-Version 6.0.8
+Version 6.1.0
 Release 03/2016
-- Implementation of AWS S3 and Google Cloud client API in connector to support storage of assets in external cloud storage
+- Implementation of the cloud storage connector for the AWS S3 client API to support storage of assets, their derivates and versions in an external cloud storage
+- Implementation of the cloud storage API to manage assets in the external cloud storage
+- Changes in function getmedialocation for cloud storage support
+- Implementation of the cloud storage API in hyperCMS API loader
+- Moved image resizing from function uploadfile to function createmediaobject
+- Changes in function uploadfile, downloadfile, createmedia, convertimage, createdocument, createthumbnail_video, createthumbnail_indesign, indexcontent, deleteversions, showmedia, zipfiles, unzipfiles, readmediaplayer_config, savemediaplayer_config, getimagecolors for cloud storage support
+- Changes in media and meta API functions for cloud storage support
+- Bug fix: mediadownload service did not verify and present file download for template media files
+- Implementation of synchronization service in daily job to synchronize media files with cloud storage
+- Update of al lnaguage files with new translations
+- Implementation of new publication settings for local and cloud storage
+- Renamed publication settting 'storage' to 'storage_limit'. Implementation of various changes to support the changed name.
+- Implementation of new publication setting for 'storage_type' to support local, cloud and both storage types
+- Implementation of new function is_cloudstorage and preparemediafile in main API
+- Added support to remove original file to function deletemediafiles
+- Bug fix: Media assets download in control_objectlist_menu always forced ZIP file download by function createmultidownloadlink due to multiobject variable
+- Bug fix: Function downloadfile did not set filepath variable for encrpyted files
+- Optimizations in image_rendering
+- Changes in image_rendering, user_sendlink, page_info, page_multiedit, explorer_objectlist and search_objectlist for cloud storage support
+- Changes in service renderimage, savecontent for cloud storage support
+- Replacement of all createtempfile functions call by preparemediafile function calls
+- Optimizations in function createmedia
+- Moved creation of new thumbnail image (if original image has been modified) from function createmediaobject to function createmedia
+- Implementation of version 2.3 for video/audio configuration files (duration incl. milliseconds, new duration parameter w/o milliseconds)
+- Design improvements in explorer_preview
+- Bug fix: Converted documents were save in temporaray directory instead of the media repository
+- Improvements in function showmessage and showmedia
+- Implementation of support for absolute path of media files in function getpublication
+- Implementation of new main configuration settings $mgmt_config['storage_dailycloudsnyc'] and $mgmt_config['storage_type']
+- Updates in Mime-types (include/format_mime)
+- Removed replacement of all brackets from function specialchr_encode to solve issues with WebDAV module
+- Improvements in function scriptcode_clean_functions to verify PHP functions in the script code
 */
 
 // current version
-$version = "Version 6.0.8";
+$version = "Version 6.1.0";
 ?>

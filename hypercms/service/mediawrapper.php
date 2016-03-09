@@ -187,12 +187,12 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
 
   // Location
   // ... of multimedia file in repository
-  if (is_file (getmedialocation ($site, $media, "abs_path_media").$media))
+  if (is_file (getmedialocation ($site, $media, "abs_path_media").$media) || is_cloudobject (getmedialocation ($site, getobject($media), "abs_path_media").$site."/".getobject ($media)))
   {
     $media_root = getmedialocation ($site, $media, "abs_path_media");
   }
   // ... of template media file
-  elseif (@is_file ($mgmt_config['abs_path_tplmedia'].$media))
+  elseif (is_file ($mgmt_config['abs_path_tplmedia'].$media))
   {
     $media_root = $mgmt_config['abs_path_tplmedia'];
   }

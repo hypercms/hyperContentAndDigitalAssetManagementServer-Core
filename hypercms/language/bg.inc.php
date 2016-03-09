@@ -1355,4 +1355,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['bg'] = "Потреб�
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['bg'] = "Моля, въведете метаданни за вашия качване";
 $hcms_lang['user-wants-to-chat-with-you']['bg'] = "Потребителски %user% иска да чатите с вас";
 $hcms_lang['enable-direct-file-uploads-in-pages']['bg'] = "Директна файл качете в страници";
+$hcms_lang['use-local-media-storage']['bg'] = "Използвайте местните медии съхранение";
+$hcms_lang['use-cloud-media-storage']['bg'] = "Използвайте облак носители за съхранение";
+$hcms_lang['use-local-and-cloud-media-storage']['bg'] = "Използвайте местните и облак носители за съхранение";
+$hcms_lang['media-storage-type']['bg'] = "Носители за съхранение тип";
 ?>

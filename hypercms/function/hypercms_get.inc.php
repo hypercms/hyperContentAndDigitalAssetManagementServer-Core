@@ -668,6 +668,8 @@ function getpublication ($path)
 {
   if ($path != "")
   {
+    $site = false;
+    
     // extract publication from the converted path (first found path entry only!)
     if (@substr_count ($path, "%page%") > 0) $root_var = "%page%/";
     elseif (@substr_count ($path, "%comp%") > 0) $root_var = "%comp%/";
@@ -683,10 +685,15 @@ function getpublication ($path)
       
       if ($pos1 != false && $pos2 != false) $site = @substr ($path, $pos1, $pos2-$pos1);
       else $site = false;
-      
-      return $site;
     }
-    else return false;
+    // extract publication from the absolute path (requires media file name with hcm-ID)
+    elseif (getmediacontainerid (getobject ($path)))
+    {
+      $location = getlocation ($path);
+      $site = basename ($location);
+    }
+    
+    return $site;
   }
   else return false;
 }
@@ -1752,10 +1759,10 @@ function getfiletype ($file_ext)
 
 function getvideoinfo ($mediafile)
 {
-  global $mgmt_config, $mgmt_mediapreview;
+  global $mgmt_config, $mgmt_mediapreview, $user;
   
   // read media information from media files
-  if ($mediafile != "" && @is_file ($mediafile))
+  if ($mediafile != "")
   {
   	$dimensionRegExp = "/, ([0-9]+x[0-9]+)/";
   	$durationRegExp = "/Duration: ([0-9\:\.]+)/i";
@@ -1765,7 +1772,7 @@ function getvideoinfo ($mediafile)
     $width = "";
     $height = ""; 
     $duration = "";
-    $duration_ms = "";  
+    $duration_no_ms = "";  
     $video_bitrate = "";
     $imagetype = "";
     $audio_codec = "";
@@ -1773,16 +1780,20 @@ function getvideoinfo ($mediafile)
     $audio_frequenzy = "";
     $audio_channels = "";
 
+    $site = getpublication ($mediafile);
     $location = getlocation ($mediafile);
     $media = getobject ($mediafile);
-    
-    // create temp file if file is encrypted
-    $temp = createtempfile ($location, $media);
+
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $media, $user);
     
     if ($temp['result'] && $temp['crypted'])
     {
       $mediafile = $temp['templocation'].$temp['tempfile'];
     }
+    
+    // verify media file
+    if (!is_file ($location.$media)) return false;
     
     // get video file size in MB
     $filesize = round (@filesize ($mediafile) / 1024 / 1024, 0)." MB";
@@ -1844,11 +1855,10 @@ function getvideoinfo ($mediafile)
           
     			if (preg_match ($durationRegExp, implode ("\n", $metadata), $matches))
           {
-            // cut of milliseconds: 
-            if (strpos ($matches[1], ".") > 6) $duration = substr ($matches[1], 0, -3);
-            else $duration = $matches[1];
+            // cut of milliseconds
+            if (strpos ($matches[1], ".") > 6) $duration_no_ms = substr ($matches[1], 0, -3);
             
-    				$duration_ms = $matches[1];
+            $duration = $matches[1];
     			}
           
           // video bitrate in kB/s (flac file uses the same bitrate declaration as video streams)
@@ -1894,7 +1904,7 @@ function getvideoinfo ($mediafile)
     if ($height > 0) $result['ratio'] = round (($width / $height), 5);
     else $result['ratio'] = 0;      
     $result['duration'] = $duration;
-    $result['duration_ms'] = $duration_ms;
+    $result['duration_no_ms'] = $duration_no_ms;
     $result['videobitrate'] = $video_bitrate;
     $result['imagetype'] = $imagetype;
     $result['audio_codec'] = $audio_codec;
@@ -2043,7 +2053,7 @@ function getcontentlocation ($container_id, $type="abs_path_content")
 // Any other rules for splitting the media files on multiple devices can be implemented as well by the function getmedialocation_rule.
 
 // include rule from external file (must return a value)   
-if (@is_file ($mgmt_config['abs_path_data']."media/getmedialocation.inc.php"))
+if (is_file ($mgmt_config['abs_path_data']."media/getmedialocation.inc.php"))
 {
   include ($mgmt_config['abs_path_data']."media/getmedialocation.inc.php");
 }
@@ -2052,54 +2062,61 @@ function getmedialocation ($site, $file, $type)
 {
   global $mgmt_config, $publ_config;
   
-  if (valid_objectname ($file) && $type != "" && is_array ($mgmt_config))
+  if (valid_locationname ($file) && $type != "" && is_array ($mgmt_config))
   {
     // management configuration
     if ($type == "url_path_media" || $type == "abs_path_media")
     {
-      // multiple media harddisk support
-      if (is_array ($mgmt_config[$type]))
+      // if media repository path is available
+      if (!empty ($mgmt_config[$type]))
       {
-        // encoding algorithm
-        $container_id = intval (getmediacontainerid ($file));
-        $no = substr ($container_id, -1);
-      
-        if (function_exists ("getmedialocation_rule"))
+        // multiple media harddisk support
+        if (is_array ($mgmt_config[$type]))
         {
-          $result = getmedialocation_rule ($site, $file, $type, $container_id);
-          if ($result != "") return $result;
-        }
+          // encoding algorithm
+          $container_id = intval (getmediacontainerid ($file));
+          $no = substr ($container_id, -1);
         
-        $hdarray_size = sizeof ($mgmt_config[$type]);
-        
-        if ($hdarray_size == 1)
-        {
-          return $mgmt_config[$type][1];
-        }
-        elseif ($hdarray_size  > 1) 
-        {
-          $j = 1;
-          
-          for ($i=1; $i<=10; $i++)
+          if (function_exists ("getmedialocation_rule"))
           {
-            if (substr ($i, -1) == $no) return $mgmt_config[$type][$j];
-            if ($j == $hdarray_size) $j = 1;
-            else $j++;
+            $result = getmedialocation_rule ($site, $file, $type, $container_id);
+            if ($result != "") return $result;
+          }
+          
+          $hdarray_size = sizeof ($mgmt_config[$type]);
+          
+          if ($hdarray_size == 1)
+          {
+            return $mgmt_config[$type][1];
+          }
+          elseif ($hdarray_size  > 1) 
+          {
+            $j = 1;
+            
+            for ($i=1; $i<=10; $i++)
+            {
+              if (substr ($i, -1) == $no) return $mgmt_config[$type][$j];
+              if ($j == $hdarray_size) $j = 1;
+              else $j++;
+            }
           }
         }
+        // single media harddsik
+        else return $mgmt_config[$type];
       }
-      // single media harddsik
-      else return $mgmt_config[$type];
+      else return false;
     }
     // publication configuration
     elseif ($type == "url_publ_media" || $type == "abs_publ_media")
     {
+      // looad publication INI file
       if (valid_publicationname ($site) && !is_array ($publ_config))
       {
         $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
-        return $publ_config[$type];
       }
-      elseif (is_array ($publ_config))
+      
+      // publication media repository path is available
+      if (is_array ($publ_config) && !empty ($publ_config[$type]))
       {
         return $publ_config[$type];
       }

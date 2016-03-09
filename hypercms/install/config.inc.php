@@ -59,36 +59,6 @@ $mgmt_config['abs_path_view'] = $mgmt_config['abs_path_temp']."view/";
 $mgmt_config['url_path_template'] = $mgmt_config['url_path_data']."template/";
 $mgmt_config['abs_path_template'] = $mgmt_config['abs_path_data']."template/";
 
-// URL and absolute path to the content media repository
-// For media mass storage over multiple harddisks the multimedia files can be
-// distributed on the given devices (max. 10 devices).
-// Special rules can be defined in $mgmt_config['abs_path_data']/media/getmedialocation.inc.php
-// The configuration of hyperCMS for multiple storage devices will effect
-// the development of templates in terms of referring to multimedia files.
-// It is therefore recommended to configure getmedialocation to save all
-// digital assests of a website on one harddisk.
-// (e.g. http://www.yourdomain.com/data/media_cnt/)
-// (e.g. /home/domain/data/media_cnt/)
-$mgmt_config['url_path_media'] = $mgmt_config['url_path_rep']."media_cnt/";
-$mgmt_config['abs_path_media'] = $mgmt_config['abs_path_rep']."media_cnt/";
-// $mgmt_config['url_path_media'][1] = $mgmt_config['url_path_rep']."media_cnt1/";
-// $mgmt_config['abs_path_media'][1] = $mgmt_config['abs_path_rep']."media_cnt1/";
-// $mgmt_config['url_path_media'][2] = $mgmt_config['url_path_rep']."media_cnt2/";
-// $mgmt_config['abs_path_media'][2] = $mgmt_config['abs_path_rep']."media_cnt2/";
-
-// URL to services / Load balancing
-// To enable load balancing for file upload, storing content and rendering files
-// the system need to be alled on several physical servers.
-// In order to enable load balancing an array providing the URL to the servers services
-// need to be defined.
-// One physical server provides the GUI and splits the load. Only this server need to be
-// configured for load balancing.
-// Make sure that all servers store the files in the same central repository and use the same database.
-// There is no limit for the amount of physical servers in the load balancing array.
-// (e.g. http://www.yourdomain.com/service/)
-// $mgmt_config['url_path_service'][1] = "http://server1/hypercms/service/";
-// $mgmt_config['url_path_service'][2] = "http://server2/hypercms/service/";
-
 // URL and absolute path to the template media repository
 // Do not change this settings!
 // (e.g. http://www.yourdomain.com/data/media_tpl/)
@@ -125,9 +95,71 @@ $mgmt_config['abs_path_link'] = $mgmt_config['abs_path_rep']."link/";
 $mgmt_config['url_path_plugin'] = $mgmt_config['url_path_cms']."plugin/";
 $mgmt_config['abs_path_plugin'] = $mgmt_config['abs_path_cms']."plugin/";
 
+// URL and absolute path to the content media repository
+// For media mass storage over multiple harddisks the multimedia files can be
+// distributed on the given devices (max. 10 devices).
+// Special rules can be defined in $mgmt_config['abs_path_data']/media/getmedialocation.inc.php
+// The configuration of hyperCMS for multiple storage devices will effect
+// the development of templates in terms of referring to multimedia files.
+// It is therefore recommended to configure getmedialocation to save all
+// digital assests of a website on one harddisk.
+// (e.g. http://www.yourdomain.com/data/media_cnt/)
+// (e.g. /home/domain/data/media_cnt/)
+$mgmt_config['url_path_media'] = $mgmt_config['url_path_rep']."media_cnt/";
+$mgmt_config['abs_path_media'] = $mgmt_config['abs_path_rep']."media_cnt/";
+// $mgmt_config['url_path_media'][1] = $mgmt_config['url_path_rep']."media_cnt1/";
+// $mgmt_config['abs_path_media'][1] = $mgmt_config['abs_path_rep']."media_cnt1/";
+// $mgmt_config['url_path_media'][2] = $mgmt_config['url_path_rep']."media_cnt2/";
+// $mgmt_config['abs_path_media'][2] = $mgmt_config['abs_path_rep']."media_cnt2/";
+
+// ------------------------------------ Cloud storage settings ----------------------------------------
+
+// ATTENTION: The following settings only applies for the Enterprise Edition!
+// If you are using AWS S3 or Google Cloud as media repository, the system will save all media files
+// using the SDK client of the cloud service provider.
+// Please note, that you need a cloud service account with your cloud service provider.
+// In order to connect with the cloud service you need provide the credentials for the cloud service.
+//
+// For AWS S3 use:
+// Provide credentials for access
+// $mgmt_config['aws_access_key_id'] = "";
+// $mgmt_config['aws_secret_access_key'] = "";
+// Provide region code, see also: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions
+// $mgmt_config['aws_region'] = "";
+// Provide the name of your AWS S3 bucket
+// $mgmt_config['aws_bucket'] = "";
+
+// For Google Cloud Platform use:
+// Provide credentials for access
+// $mgmt_config['gs_client_id'] = "";
+// $mgmt_config['gs_client_secret'] = "";
+// Provide region code, see also: https://cloud.google.com/compute/docs/zones
+// $mgmt_config['gs_region'] = "";
+// Provide the name of your AWS S3 bucket
+// $mgmt_config['gs_bucket'] = "";
+
+// Define daily synchronization for delayed saving of media files in cloud storage (true) or save media files immediately (false)
+// If the daily synchronization has been enabled the media files will not be saved in the cloud storage immediately!
+// $mgmt_config['storage_dailycloudsnyc'] = false;
+
+// ------------------------------------ Load balancing settings ----------------------------------------
+
+// URL to services / Load balancing
+// To enable load balancing for file upload, storing content and rendering files
+// the system need to be alled on several physical servers.
+// In order to enable load balancing an array providing the URL to the servers services
+// need to be defined.
+// One physical server provides the GUI and splits the load. Only this server need to be
+// configured for load balancing.
+// Make sure that all servers store the files in the same central repository and use the same database.
+// There is no limit for the amount of physical servers in the load balancing array.
+// (e.g. http://www.yourdomain.com/service/)
+// $mgmt_config['url_path_service'][1] = "http://server1/hypercms/service/";
+// $mgmt_config['url_path_service'][2] = "http://server2/hypercms/service/";
+
 // ------------------------------------ GUI settings ----------------------------------------
 
-// Allow (true) or disable (false) html tags used in text editor for unformatted text
+// Enable (true) or disable (false) html tags used in text editor for unformatted text
 $mgmt_config['editoru_html'] = true;
 
 // Define videoplayer name, leave empty for the default player (VIDEO.JS) or use "projekktor" as alternative
@@ -368,7 +400,7 @@ $mgmt_config['maxzipsize'] = 2000;
 // Maximum digits for file names (applies for createobject and uploadfile).
 $mgmt_config['max_digits_filename'] = 200;
 
-// Which types of files (file extensions)are not allowed for upload, example ".asp.jsp.php.pl.sql"
+// Which types of files (file extensions) are not allowed for upload, example ".asp.jsp.php.pl.sql"
 $mgmt_config['exclude_files'] = ".php.pl.jsp.asp.aspx.exe.sql.sh.bash";
 
 // Save Metadata to Files

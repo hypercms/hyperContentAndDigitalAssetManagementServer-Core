@@ -12,7 +12,7 @@
 // ---------------------------------------- indexcontent --------------------------------------------
 // function: indexcontent()
 // input: publication name, path to multimedia file, multimedia file name (file to be indexed), container name or ID, container XML-content (optional), user name
-// output: result array
+// output: true / false
 
 // description:
 // This function extracts the text content of multimedia objects and writes it the text to the container.
@@ -67,15 +67,18 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
     }
 
     if (!empty ($container_content) && ($usedby == "" || $usedby == $user) && $file_ext != "")
-    {
-      // create temp file if file is encrypted
-      $temp = createtempfile ($location, $file);
+    {    
+      // prepare media file
+      $temp = preparemediafile ($site, $location, $file, $user);
       
-      if ($temp['crypted'])
+      if ($temp['result'] && $temp['crypted'])
       {
         $location = $temp['templocation'];
         $file = $temp['tempfile'];
       }
+      
+      // verify local media file
+      if (!is_file ($location.$file)) return false;
       
       // ------------------------ Adobe PDF -----------------------
       // get file content from PDF
@@ -553,7 +556,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 // ---------------------------------------- unindexcontent --------------------------------------------
 // function: unindexcontent()
 // input: publication name, file location, file name, multimedia file to index, container name or ID, container XML-content, user name
-// output: true/false
+// output: true / false
 
 // description:
 // This function removes media objects from the container
@@ -612,22 +615,25 @@ function unindexcontent ($site, $location, $file, $container, $container_content
 
 function createthumbnail_indesign ($site, $location_source, $location_dest, $file)
 {
-  global $mgmt_config;
+  global $mgmt_config, $user;
   
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
   {
     // add slash if not present at the end of the location string
     if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
     if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";
-    
-    // create temp file if file is encrypted
-    $temp_source = createtempfile ($location_source, $file);
+
+    // prepare media file
+    $temp_source = preparemediafile ($site, $location_source, $file, $user);
     
     if ($temp_source['result'] && $temp_source['crypted'])
     {
       $location_source = $temp_source['templocation'];
       $file = $temp_source['tempfile'];
     }
+    
+    // verify local media file
+    if (!is_file ($location_source.$file)) return false;
     
     $filedata = file_get_contents ($location_source.$file);
 
@@ -716,6 +722,9 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
           fwrite ($filehandler, base64_decode ($indd_thumbnail));
           fclose ($filehandler);
           
+          // save in cloud storage
+          if (function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
+          
           // remote client
           remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
           
@@ -758,7 +767,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
 
 function createthumbnail_video ($site, $location_source, $location_dest, $file, $frame)
 {
-  global $mgmt_config, $mgmt_mediapreview;
+  global $mgmt_config, $mgmt_mediapreview, $user;
   
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file) && $frame != "")
   {
@@ -775,9 +784,9 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
     
     // thumbnail file name
     $newfile = $fileinfo['filename'].".thumb.jpg";
-    
-    // create temp file if file is encrypted
-    $temp_source = createtempfile ($location_source, $file);
+
+    // prepare media file
+    $temp_source = preparemediafile ($site, $location_source, $file, $user);
     
     if ($temp_source['result'] && $temp_source['crypted'])
     {
@@ -785,6 +794,10 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
       $file = $temp_source['tempfile'];
     }
     
+    // verify local media file
+    if (!is_file ($location_source.$file)) return false;
+    
+    // create thumbnail
     $errorCode = "video not valid";
     
     if (is_file ($location_source.$file))
@@ -819,6 +832,12 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
     } 
     else
     {
+      // save in cloud storage
+      if (function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
+      
+      // remote client
+      remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+    
       return $newfile;
     }
   }
@@ -831,14 +850,15 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 //        format (file extension w/o dot) (optional), 
 //        type of image/video/audio file [thumbnail(for thumbnails of images),origthumb(thumbnail made from original video/audio),original(to overwrite original video/audio file),any other string present in $mgmt_imageoptions/$mgmt_mediaoptions] (optional),
 //        force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
-// output: new file name / false on error (saves original or thumbnail media file in destination location, for thumbnail only jpeg format is supported as output)
+// output: new file name / false on error
 
 // description:
-// Creates an new image from original or creates a thumbnail and transferes the generated image via remoteclient
+// Creates an new image from original or creates a thumbnail and transferes the generated image via remoteclient.
+// Saves original or thumbnail media file in destination location, for thumbnail only jpeg format is supported as output.
 
 function createmedia ($site, $location_source, $location_dest, $file, $format="", $type="thumbnail", $force_no_encrypt=false)
 {
-  global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext;
+  global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $user;
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
   {
@@ -861,9 +881,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
     if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";
 
-    // check if file exists
-    if (!is_file ($location_source.$file)) return false;
-    
     // save original file source location and file name
     $location_source_orig = $location_source;
     $file_orig = $file;
@@ -882,15 +899,18 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
     // define temporary media file location
     $location_temp = $mgmt_config['abs_path_temp'];
-    
-    // create temp file if file is encrypted
-    $temp_source = createtempfile ($location_source, $file);
+
+    // prepare media file
+    $temp_source = preparemediafile ($site, $location_source, $file, $user);
     
     if ($temp_source['result'] && $temp_source['crypted'])
     {
       $location_source = $temp_source['templocation'];
       $file = $temp_source['tempfile'];
     }
+    
+    // check if file exists and has content
+    if (!is_file ($location_source.$file) || filesize ($location_source.$file) < 10) return false;
 
     // get file size of media file in kB
     $filesize_orig = round (@filesize ($location_source.$file) / 1024, 0);
@@ -939,14 +959,17 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         $location_source = $location_dest;
         $file = $file_name.".jpg";
 
-        // create temp file if file is encrypted
-        $temp_raw = createtempfile ($location_source, $file);
+        // prepare media file
+        $temp_raw = preparemediafile ($site, $location_source, $file, $user);
     
         if ($temp_raw['result'] && $temp_raw['crypted'])
         {
           $location_source = $temp_raw['templocation'];
           $file = $temp_raw['tempfile'];
         }
+        
+        // verify local media file
+        if (!is_file ($location_source.$file)) return false;
       }
     }
     
@@ -1414,20 +1437,23 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // delete thumbnail
                   if ($type == "thumbnail" && @is_file ($location_dest.$file_name.".thumb.jpg"))
                   {
-                    @unlink ($location_dest.$file_name.".thumb.jpg");
+                    unlink ($location_dest.$file_name.".thumb.jpg");
                   }
                   // copy original image before conversion to restore it if an error occured
                   elseif ($type != "thumbnail" && @is_file ($location_source.$file))
                   {
                     // create buffer file
                     $buffer_file = $location_dest.$file_name.".buffer".strrchr ($file, ".");;
-                    @copy ($location_source.$file, $buffer_file);
+                    copy ($location_source.$file, $buffer_file);
   
                     // delete the old file if we overwrite the original file
-                    if ($type == "original") @unlink ($location_source.$file);
+                    if ($type == "original")
+                    {
+                      unlink ($location_source.$file);
+                    }
                   }
 
-                  // DOCUMENT & VECTOR Graphics: document-based formats, encapsulated post script and vector graphics
+                  // CASE: document-based formats, encapsulated post script and vector graphics
                   if ($file_ext == ".pdf" || $file_ext == ".eps" || $file_ext == ".svg")
                   {
                     if ($type == "thumbnail")
@@ -1452,46 +1478,13 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // on error
                     if ($errorCode)
                     {
-                      // restore original file
-                      if ($type == "original") @copy ($buffer_file, $location_source.$file);
-  
                       $errcode = "20231";
                       $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;
                     }
                     // on success
-                    else
-                    {
-                      // watermark using composite
-                      if ($type != "thumbnail" && $type != "original" && !empty ($watermark))
-                      {
-                        $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."composite ".$watermark." ".shellcmd_encode ($location_dest.$newfile)." ".shellcmd_encode ($location_temp."watermark.".$newfile);
-                        
-                        @exec ($cmd, $buffer, $errorCode);
-                        
-                        // on error
-                        if ($errorCode)
-                        {
-                          // overwrite original file
-                          if (is_file ($location_temp."watermark.".$newfile)) @unlink ($location_temp."watermark.".$newfile);
-    
-                          $errcode = "20261";
-                          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$file;
-                        }
-                        else
-                        {
-                          // overwrite source file with watermarked file
-                          @rename ($location_temp."watermark.".$newfile, $location_dest.$newfile);
-                        }
-                      }
-                      
-                      $converted = true;
-                      // copy metadata from original file using EXIFTOOL
-                      if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
-                      // remote client
-                      if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-                    }
+                    else $converted = true;
                   }
-                  // Adobe Photoshop / Adobe Illustrator: layered files
+                  // CASE: Adobe Photoshop / Adobe Illustrator: layered files
                   elseif ($file_ext == ".ai" || $file_ext == ".psd")
                   {
                     if ($type == "thumbnail")
@@ -1527,46 +1520,13 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // on error
                     if ($errorCode)
                     {
-                      // restore original file
-                      if ($type == "original") @copy ($buffer_file, $location_source.$file);
-                      
                       $errcode = "20232";
                       $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in createmedia for file: ".$file;   
                     }
                     // on success
-                    else
-                    {
-                      // watermark using composite
-                      if ($type != "thumbnail" && $type != "original" && !empty ($watermark))
-                      {
-                        $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."composite ".$watermark." ".shellcmd_encode ($location_dest.$newfile)." ".shellcmd_encode ($location_temp."watermark.".$newfile);
-                        
-                        @exec ($cmd, $buffer, $errorCode);
-                        
-                        // on error
-                        if ($errorCode)
-                        {
-                          // overwrite original file
-                          if (is_file ($location_temp."watermark.".$newfile)) @unlink ($location_temp."watermark.".$newfile);
-    
-                          $errcode = "20262";
-                          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$file;
-                        }
-                        else
-                        {
-                          // overwrite source file with watermarked file
-                          @rename ($location_temp."watermark.".$newfile, $location_dest.$newfile);
-                        }
-                      }
-                      
-                      $converted = true;
-                      // copy metadata from original file using EXIFTOOL
-                      if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
-                      // remote client
-                      if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-                    }
+                    else $converted = true;
                   }
-                  // IMAGE: standard images
+                  // CASE: Standard images
                   else
                   {
                     // only for RAW image
@@ -1603,64 +1563,43 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
   
                     @exec ($cmd, $error_array, $errorCode);
-  
+
                     // on error
                     if ($errorCode)
-                    {
-                      // restore original image
-                      if ($type == "original") @copy ($buffer_file, $location_source.$file);
-                                   
+                    {            
                       $errcode = "20234";
                       $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode) (command:$cmd) failed in createmedia for file: ".$file."<br />".implode ("<br />", $error_array);   
                     }
                     // on success
-                    else
-                    {          
-                      if (is_file ($location_dest.$newfile))
-                      {
-                        // copy metadata from original file using EXIFTOOL
-                        if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
-                        // remote client
-                        if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-                        // delete original RAW image if converted to other format
-                        if ($type == "original" && is_rawimage ($file_ext)) deletefile ($location_source_orig, $file_orig, 0);              
-                      }
-                    }
+                    else $converted = true;
                   }
   
-                  // delete buffer file
-                  if ($type != "thumbnail") @unlink ($buffer_file);   
-                  
-                  // save log
-                  savelog (@$error);           
-  
-                  // if new file is larger than 5 bytes
-                  if (!empty ($newfile) && @filesize ($location_dest.$newfile) > 5)
+                  // WATERMARK AND PROCESS IMAGE ON SUCCESS: if new file is larger than 5 bytes
+                  if ($converted == true && !empty ($newfile) && is_file ($location_dest.$newfile) && filesize ($location_dest.$newfile) > 5)
                   {
-                    // watermark using composite
+                    // watermark image using composite command (using a temporaray intermediate image file in order to restore image if watermarking failed)
                     if ($type != "thumbnail" && $type != "original" && !empty ($watermark))
                     {
                       $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."composite ".$watermark." \"".shellcmd_encode ($location_dest.$newfile)."\" \"".shellcmd_encode ($location_temp."watermark.".$newfile)."\"";
   
                       @exec ($cmd, $error_array, $errorCode);
-  
+
                       // on error
                       if ($errorCode)
                       {
-                        // overwrite original file
-                        if (is_file ($location_temp."watermark.".$newfile)) @unlink ($location_temp."watermark.".$newfile);
+                        // delete temporary watermarked image file
+                        if (is_file ($location_temp."watermark.".$newfile)) unlink ($location_temp."watermark.".$newfile);
   
                         $errcode = "20262";
                         $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in watermark file: ".$newfile."<br />".implode ("<br />", $error_array);
                       }
+                      // on success
                       else
                       {
-                        // overwrite source file with watermarked file
+                        // overwrite source file with watermarked image file
                         @rename ($location_temp."watermark.".$newfile, $location_dest.$newfile);
                       }
                     }
-                  
-                    $converted = true;
                     
                     // get media information from thumbnail
                     if ($type == "thumbnail")
@@ -1673,16 +1612,61 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
                       }
                     }
+
+                    // on success
+                    if (is_file ($location_dest.$newfile))
+                    {
+                      // get new file extension
+                      $newfile_ext = strtolower (strrchr ($newfile, "."));
+    
+                      // copy metadata from original file using EXIFTOOL
+                      if ($type != "thumbnail" && $type != "origthumb") copymetadata ($buffer_file, $location_dest.$newfile);
+
+                      if ($type == "thumbnail" || $type == "origthumb" || $type == "original")
+                      {
+                        // remote client
+                        remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+                      }
+                      
+                      // delete original image, if it has been converted to another format (another file extension)
+                      if ($type == "original" && !empty ($file_ext) && !empty ($newfile_ext) && $file_ext != $newfile_ext)
+                      {
+                        deletefile ($location_source_orig, $file_orig, 0);
+                      
+                        // delete from cloud storage
+                        if (function_exists ("deletecloudobject")) deletecloudobject ($site, $location_source_orig, $file_orig, $user);
+                        
+                        // remote client
+                        remoteclient ("delete", "abs_path_media", $site, $location_source_orig, "", $file_orig, ""); 
+                      }
+                    }
                   }
+                  // on conversion error
                   else
                   {
-                    // delete thumbnail file
-                    @unlink ($location_dest.$file_name.".thumb.jpg");
-                    // remote client
-                    if ($type == "thumbnail" || $type == "original") remoteclient ("delete", "abs_path_media", $site, $location_dest, "", $file_name.".thumb.jpg", "");
-                  }         
+                    // restore original image from buffer file
+                    if ($type == "original" && is_file ($buffer_file))
+                    {
+                      copy ($buffer_file, $location_source.$file);
+                    }
+                    // delete failed thumbnail image file
+                    elseif ($type == "thumbnail" && is_file ($location_dest.$file_name.".thumb.jpg"))
+                    {
+                      // delete thumbnail file
+                      unlink ($location_dest.$file_name.".thumb.jpg");
+                      
+                      // delete from cloud storage
+                      if (function_exists ("deletecloudobject")) deletecloudobject ($site, $location_dest, $file_name.".thumb.jpg", $user);
+                      
+                      // remote client
+                      if ($type == "thumbnail" || $type == "origthumb" ||$type == "original") remoteclient ("delete", "abs_path_media", $site, $location_dest, "", $file_name.".thumb.jpg", "");
+                    }
+                  }
+
+                  // delete buffer file
+                  if ($type != "thumbnail" && is_file ($buffer_file)) unlink ($buffer_file);          
                 }
-                // -------------------- convert image using GD-Library -----------------------
+                // -------------------- convert image using GD-Library (no watermarking supported) -----------------------
                 elseif ($imagewidth_orig > 0 && $imageheight_orig > 0 && (empty ($mgmt_imagepreview[$imagepreview_ext]) || $mgmt_imagepreview[$imagepreview_ext] == "GD") && in_array (strtolower($file_ext), $GD_allowed_ext))
                 {
                   // calculate aspect ratio
@@ -1783,7 +1767,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // delete original file if file extension has been changed
                   if ($result == true && $file_ext != ".".$format_set && $type == "original" && is_file ($location_orig.$file_orig))
                   {
-                    @unlink ($location_orig.$file_orig);
+                    unlink ($location_orig.$file_orig);
                   }
               
                   @ImageDestroy ($imgsource);
@@ -1792,11 +1776,18 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if ($result == true)
                   {
                     $converted = true;
+                    
                     // rotate image
                     if ($type != "thumbnail" && $imagerotation != "") $result = rotateimage ($site, $location_dest.$newfile, $imagerotation, $format_set);
-  
-                    // remote client
-                    if ($type == "thumbnail" || $type == "original") remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+
+                    if ($type == "thumbnail" || $type == "origthumb" ||$type == "original")
+                    {
+                      // save in cloud storage
+                      if (function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
+                      
+                      // remote client
+                      remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+                    }
                     
                     // get media information from thumbnail
                     if ($type == "thumbnail")
@@ -1810,7 +1801,13 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       }
                     }
                   }
-                }      
+                }
+                
+                // create thumbnail (new preview of original image)
+                if ($converted == true && $type == "original")
+                {
+                  createmedia ($site, $location_dest, $location_dest, $newfile, "jpg", "thumbnail");
+                }    
               }               
             }
           }
@@ -2392,8 +2389,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // capture screen from video to use as thumbnail image
                 if ($type == "origthumb" || $type == "original") createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
      
-                // new video info (only if it is not the thumbnail file of the original file)
-                if ($type != "origthumb" || $type == "original") $videoinfo = getvideoinfo ($location_dest.$newfile);
+                // new video info (only if it is not a thumbnail file of the original file)
+                if ($type == "original") $videoinfo = getvideoinfo ($location_dest.$newfile);
                 
                 // set media width and height to empty string
                 if ($mediawidth < 1 || $mediaheight < 1)
@@ -2403,8 +2400,15 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
 
                 // save config
-                savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $mediawidth, $mediaheight, $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels']);
-
+                if ($type == "origthumb" || $type == "original")
+                {
+                  savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $videoinfo['width'], $videoinfo['height'], $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels']);
+                }
+                else
+                {
+                  savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $mediawidth, $mediaheight, $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels']);
+                }
+                
                 // get video information to save in DB
                 if ($type == "origthumb" || $type == "original")
                 { 
@@ -2432,7 +2436,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   {
                     createmedia ($site, $location_dest, $location_dest, $newfile, "", "origthumb");
                   }
-                }                             
+                }
+                
+                // save in cloud storage
+                if (function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
                 
                 // remote client
                 remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
@@ -2470,6 +2477,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         $data = encryptfile ($location_dest, $file);
         if (!empty ($data)) savefile ($location_dest, $file, $data);
       }
+    }
+
+    // save in cloud storage
+    if (!empty ($newfile) && is_file ($location_dest.$newfile) && ($type == "thumbnail" || $type == "origthumb" || $type == "original"))
+    {
+      if (function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
     }
     
     // save log
@@ -2548,9 +2561,6 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
 function convertimage ($site, $file_source, $location_dest, $format="jpg", $colorspace="RGB", $iccprofile="", $width="", $height="", $slug=0, $units="px", $dpi=72, $quality="")
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext;
-  
-  $file = getobject ($file_source);
-  $location_source = getlocation ($file_source);
 
   if (valid_publicationname ($site) && valid_locationname ($file_source) && valid_locationname ($location_dest))
   {
@@ -2560,13 +2570,26 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
     
-    // convert to abs. path of source media file
+    // if no absolute path has been provided, try to get absolute path of the source media file
     if (!is_file ($file_source) && strpos ($file_source, "_hcm") > 0)
     {
-      $file_source = getmedialocation ($site, $file_source, "abs_path_media").$site."/".$file;
-      if (!is_file ($file_source)) return false;
-    }
+      $file_source = getmedialocation ($site, $file_source, "abs_path_media").$site."/".getobject ($file_source);
+    } 
     
+    // get location and file name
+    $file = getobject ($file_source);
+    $location_source = getlocation ($file_source);
+    
+    // prepare media file
+    $temp_source = preparemediafile ($site, $location_source, $file, $user);
+    
+    if ($temp_source['result'] && $temp_source['crypted'])
+    {
+      $location_source = $temp_source['templocation'];
+      $file = $temp_source['tempfile'];
+      $file_source = $location_source.$file;
+    }
+
     // add slash if not present at the end of the location string
     if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";  
     
@@ -2744,8 +2767,17 @@ function rotateimage ($site, $filepath, $angle, $imageformat)
   {
     $file_info = getfileinfo ($site, $filepath, "comp");
     $location = getlocation ($filepath);
+    $file = getobject ($filepath);
+    
+    // prepare media file
+    $temp_source = preparemediafile ($site, $location, $file, $user);
+    
+    if ($temp_source['result'] && $temp_source['crypted'])
+    {
+      $filepath = $temp_source['templocation'].$temp_source['tempfile'];
+    }
      
-    if (@is_file ($filepath))
+    if (is_file ($filepath))
     {
       // create image from file
       if ($file_info['ext'] == ".jpg") $image = imagecreatefromjpeg ($filepath);
@@ -2829,7 +2861,7 @@ function rotateimage ($site, $filepath, $angle, $imageformat)
         else $result = false;
         
         // delete original file if file extension has changed
-        if ($result == true && ".".$imageformat != $file_info['ext']) @unlink ($media_root.$site."/".$file);
+        if ($result == true && ".".$imageformat != $file_info['ext']) @unlink ($filepath);
 
         // return result
         if ($result == true) return $file_info['filename'].".".$imageformat;
@@ -2854,7 +2886,7 @@ function rotateimage ($site, $filepath, $angle, $imageformat)
 
 function getimagecolors ($site, $file)
 {
-  global $mgmt_config;
+  global $mgmt_config, $user;
   
   if ($mgmt_config['db_connect_rdbms'] != "" && valid_publicationname ($site) && valid_objectname ($file))
   {  
@@ -2863,21 +2895,36 @@ function getimagecolors ($site, $file)
     $file = $file_info['file'];
     
     // try thumbnail image first
-    if (@is_file ($media_root.$file_info['filename'].".thumb.jpg"))
+    $thumbnail = $file_info['filename'].".thumb.jpg";
+    
+    // prepare media file
+    $temp_source = preparemediafile ($site, $media_root, $thumbnail, $user);
+    
+    if ($temp_source['result'] && $temp_source['crypted'])
     {
-      $image = imagecreatefromjpeg ($media_root.$file_info['filename'].".thumb.jpg");
+      $media_root = $temp_source['templocation'];
+      $thumb = $temp_source['tempfile'];
+    }
+    
+    // use thumbnail image file
+    if (is_file ($media_root.$thumbnail))
+    {
+      $image = imagecreatefromjpeg ($media_root.$thumbnail);
     }
     // try original image
-    elseif (@is_file ($media_root.$file))
+    else
     {
-      // create temp file if file is encrypted
-      $temp_source = createtempfile ($media_root, $file);
+      // prepare media file
+      $temp_source = preparemediafile ($site, $media_root, $file, $user);
       
       if ($temp_source['result'] && $temp_source['crypted'])
       {
         $media_root = $temp_source['templocation'];
         $file = $temp_source['tempfile'];
       }
+      
+      // verify local media file
+      if (!is_file ($media_root.$file)) return false;
     
       if ($file_info['ext'] == ".jpg") $image = imagecreatefromjpeg ($media_root.$file);
       elseif ($file_info['ext'] == ".png") $image = imagecreatefrompng ($media_root.$file);
@@ -3122,17 +3169,35 @@ function rgb2hex ($red, $green, $blue)
 
 // ====================================== VIDEO PLAYER =========================================
 
-// ------------------------- readvideoplayer_config -----------------------------
-// function: readvideoplayer_config()
+// ------------------------- readmediaplayer_config -----------------------------
+// function: readmediaplayer_config()
 // input: path to media config file, config file name 
 // output: config array / false on error
 
 function readmediaplayer_config ($location, $configfile)
 { 
-  global $mgmt_config;
+  global $mgmt_config, $user;
   
-  if (valid_locationname ($location) && valid_objectname ($configfile) && is_file ($location.$configfile))
+  if (valid_locationname ($location) && valid_objectname ($configfile))
   {
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+  
+    // get publication
+    $site = getpublication ($location.$configfile);
+    
+    // prepare source media file
+    $temp = preparemediafile ($site, $location, $configfile, $user);
+    
+    if ($temp['result'] && $temp['crypted'])
+    {
+      $location = $temp['templocation'];
+      $configfile = $temp['tempfile'];
+    }
+    
+    // verify file
+    if (!is_file ($location.$configfile)) return false;
+  
     // load config
     $configstring = loadfile ($location, $configfile);
     
@@ -3189,10 +3254,14 @@ function readmediaplayer_config ($location, $configfile)
           
           if (!empty ($config['filesize']) && strpos ($config['filesize'], "MB") == 0) $config['filesize'] = $config['filesize']." MB";
         }
-        // duration in hh:mm:ss
+        // duration in hh:mm:ss.ms
         elseif (strpos ("_".$value, "duration=") > 0)
         {
           list ($name, $config['duration']) = explode ("duration=", $value);
+          
+          // cut of milliseconds
+          if (strpos ($config['duration'], ".") > 6) $config['duration_no_ms'] = substr ($config['duration'], 0, -3);
+          else $config['duration_no_ms'] = $config['duration'];
         }
         // bitrate in kb/s
         elseif (strpos ("_".$value, "videobitrate=") > 0)
@@ -3311,25 +3380,31 @@ function readmediaplayer_config ($location, $configfile)
   else return false;
 }
 
-// ------------------------- savevideoplayer_config -----------------------------
-// function: savevideoplayer_config()
+// ------------------------- savemediaplayer_config -----------------------------
+// function: savemediaplayer_config()
 // input: path to media config file, media config file name, media file name array or string, width in px (optional), height in px (optional), file size in kB (optional), 
 //        duration in hh:mmm:ss (optional), video bitrate in kb/s (optional), audio bitrate in kb/s (optional), audio frequenzy in Hz (optional), audio channels [mono, stereo] (optional)
 // output: true / false on error
 
 function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320, $height=240, $filesize="", $duration="", $videobitrate="", $audiobitrate="", $audiofrequenzy="", $audiochannels="")
 {
-  global $mgmt_config;
+  global $mgmt_config, $user;
 
   if (valid_locationname ($location) && valid_objectname ($configfile) && (is_array ($mediafiles) || $mediafiles != ""))
   {
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
+    // get publication
+    $site = getpublication ($location.$configfile);
+  
   	// set 'portrait', 'landscape' or 'square' for the image type
   	if ($width > $height) $imagetype = "landscape";
   	elseif ($height > $width) $imagetype = "portrait";
   	elseif ($height == $width) $imagetype = "square";
             
     $config = array();
-    $config[0] = "V2.2";
+    $config[0] = "V2.3";
     $config[1] = "width=".$width;
     $config[2] = "height=".$height;
     if ($width > 0 && $height > 0) $config[3] = "dimension=".$width."x".$height." px";
@@ -3378,8 +3453,14 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
       // dont add mime-type
       else $config[12] = $mediafiles;
     }
+    
+    // save config
+    $result = savefile ($location, $configfile, implode ("\n", $config));
+    
+    // save in cloud storage
+    if ($result && function_exists ("savecloudobject")) savecloudobject ($site, $location, $configfile, $user);
 
-    return savefile ($location, $configfile, implode ("\n", $config));
+    return $result;
   }
   else return false;  
 }
@@ -3397,7 +3478,7 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
 
 function createdocument ($site, $location_source, $location_dest, $file, $format="", $force_no_encrypt=false)
 {
-  global $mgmt_config, $mgmt_docpreview, $mgmt_docoptions, $mgmt_docconvert, $mgmt_maxsizepreview, $hcms_ext, $hcms_lang, $lang;
+  global $mgmt_config, $mgmt_docpreview, $mgmt_docoptions, $mgmt_docconvert, $mgmt_maxsizepreview, $hcms_ext, $hcms_lang, $lang, $user;
   
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
   {
@@ -3408,45 +3489,55 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
     // add slash if not present at the end of the location string
     if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
     if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";
+         
+    // for inital conversion request the temp directory will be defined as destination directory by default of the service mediadownload or mediawrapper
+    // the converted files however should be placed in the media repository to avoid the recreation of the file over and over again
+    if (trim ($location_dest) == trim ($mgmt_config['abs_path_temp']) && strpos ($file, "_hcm") > 0)
+    {
+      $location_dest = getmedialocation ($site, $file, "abs_path_media").$site."/";
+    }
     
     // get file name without extension
     $file_name_orig = strrev (substr (strstr (strrev ($file), "."), 1));
     
     // get the file extension
     $file_ext = strtolower (strrchr ($file, "."));
-    
-    // get file size of media file in kB
-    $filesize_orig = round (@filesize ($location_source.$file) / 1024, 0);
-    
-    // check max file size in MB for certain file extensions and skip rendering
-    if (is_array ($mgmt_maxsizepreview))
-    {
-      reset ($mgmt_maxsizepreview);   
-      
-      // defined extension for maximum file size restriction in MB
-      foreach ($mgmt_maxsizepreview as $maxsizepreview_ext => $maxsizepreview)
-      {        
-        if ($file_ext != "" && substr_count (strtolower ($maxsizepreview_ext).".", $file_ext.".") > 0)
-        {
-          if ($mgmt_maxsizepreview[$maxsizepreview_ext] > 0 && ($filesize_orig / 1024) > $mgmt_maxsizepreview[$maxsizepreview_ext]) return false;
-        }
-      }
-    }   
-    
+
     // define format if not set
     if ($format == "") $format = "pdf";
     else $format = strtolower ($format);
     
     // if media conversion software is given, conversion supported and destination format is not the source format
-    if (is_array ($mgmt_docpreview) && sizeof ($mgmt_docpreview) > 0 && !empty ($mgmt_docconvert[$file_ext]) && is_array ($mgmt_docconvert[$file_ext]) && $format != trim ($file_ext, ".") && in_array (".".$format, $mgmt_docconvert[$file_ext]) && @is_file ($location_source.$file))
+    if (is_array ($mgmt_docpreview) && sizeof ($mgmt_docpreview) > 0 && !empty ($mgmt_docconvert[$file_ext]) && is_array ($mgmt_docconvert[$file_ext]) && $format != trim ($file_ext, ".") && in_array (".".$format, $mgmt_docconvert[$file_ext]))
     {
-      // create temp file if file is encrypted
-      $temp_source = createtempfile ($location_source, $file);
+      // prepare source media file
+      $temp_source = preparemediafile ($site, $location_source, $file, $user);
       
       if ($temp_source['result'] && $temp_source['crypted'])
       {
         $location_source = $temp_source['templocation'];
         $file = $temp_source['tempfile'];
+      }
+      
+      // verify local media file
+      if (!is_file ($location_source.$file)) return false;
+      
+      // get file size of media file in kB
+      $filesize_orig = round (@filesize ($location_source.$file) / 1024, 0);
+      
+      // check max file size in MB for certain file extensions and skip rendering
+      if (is_array ($mgmt_maxsizepreview))
+      {
+        reset ($mgmt_maxsizepreview);   
+        
+        // defined extension for maximum file size restriction in MB
+        foreach ($mgmt_maxsizepreview as $maxsizepreview_ext => $maxsizepreview)
+        {        
+          if ($file_ext != "" && substr_count (strtolower ($maxsizepreview_ext).".", $file_ext.".") > 0)
+          {
+            if ($mgmt_maxsizepreview[$maxsizepreview_ext] > 0 && ($filesize_orig / 1024) > $mgmt_maxsizepreview[$maxsizepreview_ext]) return false;
+          }
+        }
       }
       
       // get file name without extension
@@ -3484,28 +3575,25 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
               $newfile = $file_name_orig.".thumb.".$docformat;  
               
               // if thumbnail file exists in destination (temp) folder
-              if (@is_file ($location_dest.$newfile))
+              if (is_file ($location_dest.$newfile))
               {
                 // delete existing destination file if it is older than the source file
-                if (@filemtime ($location_dest.$newfile) < @filemtime ($location_source.$file)) 
+                if (@filemtime ($location_dest.$newfile) < filemtime ($location_source.$file)) 
                 {
-                  @unlink ($location_dest.$newfile);
+                  unlink ($location_dest.$newfile);
                 }
                 // or we return the filename
-                else
-                {
-                  $converted = true;
-                }
+                else $converted = true;
               }
 
               // if thumbnail file exits in source folder 
-              if (@is_file ($location_source.$newfile))
+              if (is_file ($location_source.$newfile))
               {
                 // if existing thumbnail file is newer than the source file
-                if (@filemtime ($location_source.$newfile) >= @filemtime ($location_source.$file)) 
+                if (filemtime ($location_source.$newfile) >= filemtime ($location_source.$file)) 
                 {
                   // copy to destination directory
-                  $result_rename = @copy ($location_source.$newfile, $location_dest.$newfile);
+                  $result_rename = copy ($location_source.$newfile, $location_dest.$newfile);
                   
                   if ($result_rename == true)
                   {
@@ -3513,11 +3601,11 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                   }
                 }
               }
-                
+              
               $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".shellcmd_encode ($location_source.$file)."\"";
                          
               @exec ($cmd." 2>&1", $error_array, $errorCode);
-          
+
               // error if conersion failed
               if ($errorCode || !is_file ($location_source.$file_name.".".$docformat))
               {
@@ -3542,20 +3630,23 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                 }
                 else 
                 {
+                  $converted = true;
+                  
                   // copy metadata from original file using EXIFTOOL
                   $result_copy = copymetadata ($location_source.$file, $location_dest.$newfile);
 
                   // remote client
                   remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-                  
-                  $converted = true;
-                  
+
                   // encrypt and save data
                   if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && $force_no_encrypt == false && !empty ($result_rename) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
                   {
                     $data = encryptfile ($location_dest, $newfile);
                     if (!empty ($data)) savefile ($location_dest, $newfile, $data);
                   }
+
+                  // save in cloud storage
+                  if (is_file ($location_dest.$newfile) && function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
                 }
               }
             }
@@ -3614,20 +3705,17 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
       $unzipname_temp = uniqid ("unzip");
       $unzippath_temp = $location_temp.$unzipname_temp."/";
       
-      // decrypt file if ZIP file is encypted
       $location_zip = getlocation ($zipfilepath);
       $file_zip = getobject ($zipfilepath);
       
-      if (is_encryptedfile ($location_zip, $file_zip))
+      // prepare media file
+      $temp = preparemediafile ($site, $location_zip, $file_zip, $user);
+      
+      if ($temp['result'] && $temp['crypted'])
       {
-        $data = decryptfile ($location_zip, $file_zip);
-        
-        if (!empty ($data))
-        {
-          $save = savefile ($location_temp, $unzipname_temp.$file_ext, $data);
-          // set new media location
-          if ($save) $tempfilepath = $zipfilepath = $location_temp.$unzipname_temp.$file_ext;
-        }
+        $location_zip = $temp['templocation'];
+        $file_zip = $temp['tempfile'];
+        $zipfilepath = $location_zip.$file_zip;
       }
 
       reset ($mgmt_uncompress);
@@ -3649,7 +3737,6 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
             if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
             {
               $error_message = implode ("<br />", $error_array);
-              $error_message = str_replace ($unzippath_temp, "/".$site."/", $error_message);
 
               $errcode = "10639";
               $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzipfile failed for $filename: $error_message";
@@ -3723,11 +3810,11 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
               // create media objects          
               $result = createmediaobjects ($site, $unzippath_temp, $location.$result['folder']."/", $user);
               
-              // delete unzipped tenporary files
+              // delete unzipped temporary files in temporary directory
               deletefile ($location_temp, $unzipname_temp, 1);
               
               // delete decrypted temporary file
-              if (!empty ($tempfilepath)) deletefile ($location_temp, $unzipname_temp.$file_ext, 1);
+              if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 1);
               
               return $result;  
             }
@@ -3903,18 +3990,20 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
               {
                 $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
                 
-                // decrypt and save file if media file is encypted
-                if (is_encryptedfile ($mediadir, $mediafile))
+                // prepare media file
+                $temp = preparemediafile ($site, $mediadir, $mediafile, $user);
+                
+                if ($temp['result'] && $temp['crypted'])
                 {
-                  $data = decryptfile ($mediadir, $mediafile);
-                  
-                  if (!empty ($data))
-                  {
-                    savefile ($tempFolder."/".specialchr_decode ($destinationFolder), specialchr_decode ($filename), $data);
-                  }
+                  $mediadir = $temp['templocation'];
+                  $mediafile = $temp['tempfile'];
                 }
+
                 // copy file to new location
-                else copy ($mediadir.$mediafile, $tempFolder."/".specialchr_decode ($destinationFolder.$filename));
+                copy ($mediadir.$mediafile, $tempFolder."/".specialchr_decode ($destinationFolder.$filename));
+                
+                // remove decrypted temporary file
+                if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
               }
             }
           }

@@ -242,7 +242,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 
 // read multimedia file (publication/file)
 if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != "" || is_thumbnail ($media, false) || !$mgmt_config[$site]['dam'])) || $media_approved == true))
-{ 
+{
   // check ip access if public access
   if ($user == "" && !allowuserip ($site))
   {
@@ -253,7 +253,7 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
 
   // Location
   // ... of multimedia file in repository
-  if (is_file (getmedialocation ($site, getobject($media), "abs_path_media").$media))
+  if (is_file (getmedialocation ($site, getobject($media), "abs_path_media").$media) || is_cloudobject (getmedialocation ($site, getobject($media), "abs_path_media").$site."/".getobject ($media)))
   {
     $media_root = getmedialocation ($site, getobject($media), "abs_path_media");
   }
@@ -280,7 +280,7 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
 
       // convert file
       $result_conv = convertmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config, true);
-      
+
       // if new file has been converted successfully, set new media root path and new media file name
       if ($result_conv != "")
       { 

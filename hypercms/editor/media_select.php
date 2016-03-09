@@ -39,7 +39,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // check permissions
 if (
      !valid_publicationname ($site) ||
-     $globalpermission[$site]['component'] != 1 || 
+     @$globalpermission[$site]['component'] != 1 || 
      ($mediatype != "image" && $mgmt_config[$site]['dam'] == true)
    ) killsession ($user);
 

@@ -118,7 +118,7 @@ function startConversion ($videotype)
   if ($bitrate == "" || $bitrate == "original") $mgmt_mediaoptions['.'.$filetype] = str_replace ("-b:v %videobitrate%", "", $mgmt_mediaoptions['.'.$filetype]);
   if ($audiobitrate == "" || $audiobitrate == "original") $mgmt_mediaoptions['.'.$filetype] = str_replace ("-b:a %audiobitrate%", "", $mgmt_mediaoptions['.'.$filetype]);
   if ($width < 1 || $height < 1) $mgmt_mediaoptions['.'.$filetype] = str_replace ("-s:v %width%x%height%", "", $mgmt_mediaoptions['.'.$filetype]);
-  
+
   $mgmt_mediaoptions['.'.$filetype] = $cut_add.$sh_add.$rotate_add.$gbcs_add.str_replace (array('%videobitrate%', '%audiobitrate%', '%width%', '%height%'), array($bitrate, $audiobitrate, $width, $height), $mgmt_mediaoptions['.'.$filetype]);
 
   // create video

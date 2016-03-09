@@ -76,6 +76,9 @@ function switchDAM ()
     document.getElementById('abs_publ_app').disabled = true;
     document.getElementById('linkengine').disabled = true;
     document.getElementById('crypt_content').disabled = false;
+    document.getElementById('storage_type1').disabled = false;
+    document.getElementById('storage_type2').disabled = false;
+    document.getElementById('storage_type3').disabled = false;
   }
   else
   {
@@ -86,6 +89,9 @@ function switchDAM ()
     document.getElementById('abs_publ_app').disabled = false;
     document.getElementById('linkengine').disabled = false;
     document.getElementById('crypt_content').disabled = true;
+    document.getElementById('storage_type1').disabled = true;
+    document.getElementById('storage_type2').disabled = true;
+    document.getElementById('storage_type3').disabled = true;
   }
 }
 -->
@@ -138,7 +144,8 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   $mgmt_config[$site_name]['dam'] = "";
   $mgmt_config[$site_name]['upload_userinput'] = "";
   $mgmt_config[$site_name]['upload_pages'] = "";
-  $mgmt_config[$site_name]['storage'] = "";
+  $mgmt_config[$site_name]['storage_limit'] = "";
+  $mgmt_config[$site_name]['storage_type'] = "";
   $mgmt_config[$site_name]['crypt_content'] = "";
   $mgmt_config[$site_name]['watermark_image'] = "";
   $mgmt_config[$site_name]['watermark_video'] = "";
@@ -233,8 +240,22 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <?php } ?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['storage-limit-in-mb'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="text" name="setting[storage]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['storage']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="text" name="setting[storage_limit]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['storage_limit']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
+    <?php if (is_cloudstorage()) {	?>
+    <tr align="left" valign="top"> 
+      <td nowrap="nowrap"> </td>
+      <td nowrap="nowrap"> <input type="radio" id="storage_type2" name="setting[storage_type]" value="local" <?php if (@$mgmt_config[$site_name]['storage_type'] == "local" || empty ($mgmt_config[$site_name]['storage_type'])) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-local-media-storage'][$lang]); ?></td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td nowrap="nowrap"> </td>
+      <td nowrap="nowrap"> <input type="radio" id="storage_type3" name="setting[storage_type]" value="cloud" <?php if (@$mgmt_config[$site_name]['storage_type'] == "cloud") echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-cloud-media-storage'][$lang]); ?></td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['media-storage-type'][$lang]); ?>: </td>
+      <td nowrap="nowrap"> <input type="radio" id="storage_type1" name="setting[storage_type]" value="both" <?php if (@$mgmt_config[$site_name]['storage_type'] == "both") echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-local-and-cloud-media-storage'][$lang]); ?></td>
+    </tr>
+    <?php } ?>
     <?php if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php")) {	?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['encrypt-content'][$lang]); ?>: </td>

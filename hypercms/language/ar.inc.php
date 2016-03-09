@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['ar'] = "يجب على
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['ar'] = "يرجى ادخال بيانات التعريف الخاصة التحميلات";
 $hcms_lang['user-wants-to-chat-with-you']['ar'] = "مستخدم %المستخدم %user% ادث معك";
 $hcms_lang['enable-direct-file-uploads-in-pages']['ar'] = "تمكين مباشرة فى صفحة تحميل الملفات";
+$hcms_lang['use-local-media-storage']['ar'] = "استخدام وسائط تخزين";
+$hcms_lang['use-cloud-media-storage']['ar'] = "استخدام وسائط تخزين الشبكات";
+$hcms_lang['use-local-and-cloud-media-storage']['ar'] = "استخدام وسائط تخزين الشبكات المحلية";
+$hcms_lang['media-storage-type']['ar'] = "نوع وحدة تخزين الوسائط";
 ?>

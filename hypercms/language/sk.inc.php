@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['sk'] = "Užívateľ m
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['sk'] = "Zadajte, prosím, metadát pre vaše obrázky";
 $hcms_lang['user-wants-to-chat-with-you']['sk'] = "Užívateľ %user% chce diskutovať s vami";
 $hcms_lang['enable-direct-file-uploads-in-pages']['sk'] = "Umožňuje priame načítanie súboru do stránky";
+$hcms_lang['use-local-media-storage']['sk'] = "Využitie miestnych médií na uchovávanie údajov";
+$hcms_lang['use-cloud-media-storage']['sk'] = "Pomocou cloud úložné médium";
+$hcms_lang['use-local-and-cloud-media-storage']['sk'] = "Využitie miestnych a cloud úložné médium";
+$hcms_lang['media-storage-type']['sk'] = "Médiá typu ukladania";
 ?>

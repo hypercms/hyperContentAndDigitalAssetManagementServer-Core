@@ -47,14 +47,20 @@ if (sizeof ($config_files) > 0)
     
     if (!empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_data']))
     {
-      // create filesize.at files in order to check storage limit (MB) for each publication
+      // create filesize.dat files in order to check storage limit (MB) for each publication
       $inherit_db = inherit_db_read ();
       
       if (is_array ($inherit_db))
       {
         foreach ($inherit_db as $site => $array)
         {
-          if (isset ($mgmt_config[$site]['storage']) && $mgmt_config[$site]['storage'] > 0)
+          // load publication config if not available
+          if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+          {
+            require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+          }
+        
+          if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage_limit'] > 0)
           {
             // memory for file size (should be kept for 24 hours)
             $filesize_mem = $mgmt_config['abs_path_temp'].$site.".filesize.dat";
@@ -207,6 +213,9 @@ if (sizeof ($config_files) > 0)
         $error[] = $mgmt_config['today']."|daily.php|error|$errcode|license notification can not be executed. Config directory is missing.";
       }
     }
+
+    // synchronize media files in repository with cloud storage
+    if (function_exists ("synccloudobjects")) synccloudobjects ("sys");
   }
 }
 

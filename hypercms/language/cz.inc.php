@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['cz'] = "Uživatel mus
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['cz'] = "Zadejte metadata pro vaše odesílání";
 $hcms_lang['user-wants-to-chat-with-you']['cz'] = "Uživatel %user% chce chat s vámi";
 $hcms_lang['enable-direct-file-uploads-in-pages']['cz'] = "Umožňuje přímé odeslání souboru na stránkách";
+$hcms_lang['use-local-media-storage']['cz'] = "Použít místní úložiště médií";
+$hcms_lang['use-cloud-media-storage']['cz'] = "Použití cloud úložiště médií";
+$hcms_lang['use-local-and-cloud-media-storage']['cz'] = "Použít místní a cloud úložiště médií";
+$hcms_lang['media-storage-type']['cz'] = "Úložiště médií typu";
 ?>

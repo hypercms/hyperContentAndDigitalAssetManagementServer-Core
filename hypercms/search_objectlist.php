@@ -399,27 +399,28 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             {
               // location of file
               $mediadir = getmedialocation ($item_site, $mediafile, "abs_path_media");
-                          
-              // get file time
-              if (is_file ($mediadir.$item_site."/".$mediafile)) $file_time = date ("Y-m-d H:i", @filemtime ($mediadir.$item_site."/".$mediafile));
-              else $file_time = "-";
               
-              // get file size
+              // get file size and time
               if ($mgmt_config['db_connect_rdbms'] != "")
               {
-                $media_info = rdbms_getmedia ($container_id);
+                $media_info = rdbms_getmedia ($container_id, true);
                 $file_size = $media_info['filesize'];
-                $file_size = number_format ($file_size, 0, "", "."); 
+                $file_size = number_format ($file_size, 0, "", ".");
+                
+                $file_time = date ("Y-m-d H:i", strtotime ($media_info['date']));
               }
-              elseif (is_file ($mediadir.$item_site."/".$mediafile))
+              elseif (is_file ($mediadir.$site."/".$mediafile))
               {
                 $file_size = round (@filesize ($mediadir.$item_site."/".$mediafile) / 1024);
                 if ($file_size == 0) $file_size = 1;
-                $file_size = number_format ($file_size, 0, "", ".");                 
+                $file_size = number_format ($file_size, 0, "", ".");
+                
+                $file_time = date ("Y-m-d H:i", @filemtime ($mediadir.$item_site."/".$mediafile));               
               }
               else
               {
                 $file_size = "-";
+                $file_time = "-";
               }
               
               // media file info
@@ -512,14 +513,17 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             
             // if there is a thumb file, display the thumb
             if ($mediafile != false && $mediadir != "")
-            {              
+            {
+              // prepare source media file
+              preparemediafile ($item_site, $mediadir.$item_site."/", $media_info['filename'].".thumb.jpg", $user);
+               
               // try to create thumbnail if not available
-              if ($mgmt_config['recreate_preview'] == true && !file_exists ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg") && !file_exists ($mediadir.$item_site."/".$media_info['filename'].".thumb.flv"))
+              if ($mgmt_config['recreate_preview'] == true && (!is_file ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg")))
               {
                 createmedia ($item_site, $mediadir.$item_site."/", $mediadir.$item_site."/", $media_info['file'], "", "thumbnail");
-              }            
+              }          
               
-              if (@is_file ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg") && @filesize ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg") > 10)
+              if (is_file ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg"))
               {
                 $imgsize = getimagesize ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg");
                 

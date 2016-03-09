@@ -132,7 +132,7 @@ function specialchr_encode ($expression, $remove="no")
         // encode to UTF-8 if name is not utf-8 coded
         if (!is_utf8 ($expression)) $expression = utf8_encode (trim ($expression));    
         // replace ~ since this is the identifier and replace invalid file name characters (symbols)
-        $strip = array ("~", "%", "`", "!", "@", "#", "$", "^", "&", "*", "(", ")", "=", "{", "}", 
+        $strip = array ("~", "%", "`", "!", "@", "#", "$", "^", "&", "*", "=", 
                         "\\", "|", ";", ":", "\"", "&quot;", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
                         "Ã¢â‚¬â€", "Ã¢â‚¬â€œ", ",", "<", "&lt;", ">", "&gt;", "/", "?");
                          
@@ -345,9 +345,87 @@ function is_supported ($preview_array, $file)
       // check file extension
       if (substr_count ($preview_ext.".", ".".$ext.".") > 0 && trim ($preview_exec) != "") return true;
     }
-    
-    return false;
   }
+  
+  return false;
+}
+
+// -------------------------------- is_cloudstorage --------------------------------
+// function: is_cloudstorage()
+// input: publication name (optional)
+// output: true / false
+
+// description:
+// This function determines if a cloud storage has been defined in the main configuration or for a specific publication
+
+function is_cloudstorage ($site="")
+{
+  global $mgmt_config;
+  
+  // if cloud connector is available
+  if (is_array ($mgmt_config) && is_file ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php"))
+  {
+    if (valid_publicationname ($site))
+    {
+      // load publication config if not available
+      if (!isset ($mgmt_config[$site]['storage_type']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+      {
+        require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+      }
+
+      // if the cloud storage is disabled for the publication
+      if (!isset ($mgmt_config[$site]['storage_type']) || strtolower ($mgmt_config[$site]['storage_type']) == "local")
+      {
+        return false;
+      }
+    }
+  
+    // AWS S3 cloud storage
+    if (!empty ($mgmt_config['aws_access_key_id']) && !empty ($mgmt_config['aws_secret_access_key']) && !empty ($mgmt_config['aws_bucket']))
+    {
+      return true;
+    }
+    
+    // Google cloud storage
+    if (!empty ($mgmt_config['gs_access_key_id']) && !empty ($mgmt_config['gs_secret_access_key']) && !empty ($mgmt_config['gs_bucket']))
+    {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+// ---------------------- is_cloudobject -----------------------------
+// function: is_cloudobject()
+// input: path to media file or media file name
+// output: true / false
+
+// description:
+// This functions verifies if an object/file is available in the cloud storage
+
+function is_cloudobject ($file)
+{
+  global $mgmt_config;
+
+  if (valid_locationname ($file) && getmediacontainerid ($file))
+  {
+    $result = false;
+
+    // AWS S3 cloud storage
+    if (!empty ($mgmt_config['aws_access_key_id']) && !empty ($mgmt_config['aws_secret_access_key']) && !empty ($mgmt_config['aws_bucket']) && function_exists ("is_S3object"))
+    {
+      $result = is_S3object ($mgmt_config['aws_bucket'], getobject ($file));
+    }
+    // Google cloud storage
+    elseif (!empty ($mgmt_config['gs_access_key_id']) && !empty ($mgmt_config['gs_secret_access_key']) && !empty ($mgmt_config['gs_bucket']) && function_exists ("is_GSobject"))
+    {
+      $result = is_GSobject ($mgmt_config['gs_bucket'], getobject ($file));
+    }
+    
+    return $result;
+  }
+  else return false;
 }
 
 // -------------------------------- is_date --------------------------------
@@ -1029,7 +1107,7 @@ function deconvertpath ($path, $type="file", $specialchr_transform=false)
         else $site = false;
         
         // load publication config if not available
-        if (valid_publicationname ($site) && empty ($mgmt_config[$site]['abs_path_page']) && @is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+        if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
         {
           require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
         }        
@@ -1421,14 +1499,11 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
   
   if (valid_publicationname ($site) && valid_objectname ($user) && (valid_locationname ($location) || valid_locationname ($multiobject) || valid_objectname ($media)))
   {
-    //ob_flush();
-    //flush();
-    
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";      
     
     // download zip-file for multiobjects
-    if ($multiobject != "")
+    if ($multiobject != "" && substr_count ($multiobject, "|") > 1)
     {
       // unique name for zip-file to download
       $zip_filename = uniqid ("tmp");
@@ -1542,7 +1617,7 @@ function deleteversions ($type, $report)
     while ($entry = readdir ($versionhandler))
     {
       // suitable for templates and containers
-      if ($entry != "." && $entry != ".." && !is_dir ($versiondir.$entry) && (preg_match ("/.v_/i", $entry) || @preg_match ("/_hcm/i", $entry)))
+      if ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/.v_/i", $entry) || @preg_match ("/_hcm/i", $entry)))
       {
         // remove media file version
         if (@preg_match ("/_hcm/i", $entry))
@@ -1556,17 +1631,20 @@ function deleteversions ($type, $report)
             if (is_array ($contentobjects))
             {
               $site = getpublication ($contentobjects[0]);
-              
+
               if (valid_publicationname ($site))
               {
                 $mediadir = getmedialocation ($site, $entry, "abs_path_media").$site."/";
+                // local media file
                 if (is_file ($mediadir.$entry)) unlink ($mediadir.$entry);
+                // cloud storage
+                if (function_exists ("deletecloudobject")) deletecloudobject ($site, $mediadir, $entry, $user);
               }
             }
           }
         }
         
-        // remove container versiono
+        // remove container version
         $test = unlink ($versiondir.$entry);
         
         if ($report == "yes" || ($report != "" && $report != "no")) 
@@ -1575,7 +1653,7 @@ function deleteversions ($type, $report)
           else $report_str .= "deleted $entry<br />\n";          
         }    
       }
-      // suitable for containers
+      // content container directory
       elseif ($entry != "." && $entry != ".." && is_dir ($versiondir.$entry))
       {
         $report_str = deleteversions ($versiondir.$entry."/", $report);
@@ -1635,17 +1713,21 @@ function loadfile_header ($abs_path, $filename)
     // get file size
     $filesize = filesize ($abs_path.$filename);
     
+    // compare filesize with headersize
     if ($filesize < $headersize) $headersize = $filesize;
     
-    $filehandle = @fopen ($abs_path.$filename, "rb");
-
-    // load file
-    if ($filename != false)
+    // load header
+    if (is_file ($abs_path.$filename))
     {
-      if ($filehandle != false)
+      $filehandle = @fopen ($abs_path.$filename, "rb");
+
+      if ($filename != false)
       {
-        $filedata = @fread ($filehandle, 2048);
-        @fclose ($filehandle);
+        if ($filehandle != false)
+        {
+          $filedata = @fread ($filehandle, 2048);
+          @fclose ($filehandle);
+        }
       }
     }
   } 
@@ -1686,7 +1768,7 @@ function loadfile_fast ($abs_path, $filename)
     // load file
     if ($filename != false)
     {   
-      $filehandle = @fopen ($abs_path.$filename, "rb");
+      $filehandle = fopen ($abs_path.$filename, "rb");
   
       if ($filehandle != false)
       {
@@ -1733,7 +1815,7 @@ function loadfile ($abs_path, $filename)
     // load file
     if ($filename != false)
     {    
-      $filehandle = @fopen ($abs_path.$filename, "rb");
+      $filehandle = fopen ($abs_path.$filename, "rb");
 
       if ($filehandle != false)
       {
@@ -1754,10 +1836,10 @@ function loadfile ($abs_path, $filename)
         $filename = $filename_unlocked;
         $filename = correctfile ($abs_path, $filename, $user);
         
-        if (@is_file ($abs_path.$filename) || @is_file ($abs_path.$filename.".off"))
+        if (is_file ($abs_path.$filename) || @is_file ($abs_path.$filename.".off"))
         {
           // if file is offline
-          if (@is_file ($abs_path.$filename.".off")) $filename = $filename.".off";    
+          if (is_file ($abs_path.$filename.".off")) $filename = $filename.".off";    
                   
           $filehandle = @fopen ($abs_path.$filename, "rb");
   
@@ -1817,7 +1899,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
       if (!is_file ($abs_path.$filename_unlocked.".@".$user))
       {
         // lock file
-        $locked = @rename ($abs_path.$filename, $abs_path.$filename.".@".$user);
+        $locked = rename ($abs_path.$filename, $abs_path.$filename.".@".$user);
         $filename = $filename.".@".$user;
       }
       else $locked = true;
@@ -1837,7 +1919,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
         else
         {
           // unlock file
-          @rename ($abs_path.$filename, $abs_path.$filename_unlocked);
+          rename ($abs_path.$filename, $abs_path.$filename_unlocked);
         }
       }
     }
@@ -1863,7 +1945,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
           if (!is_file ($abs_path.$filename_unlocked.".@".$user))
           {
             // lock file
-            $locked = @rename ($abs_path.$filename, $abs_path.$filename.".@".$user);
+            $locked = rename ($abs_path.$filename, $abs_path.$filename.".@".$user);
             $filename = $filename.".@".$user;
           }
           else $locked = true;
@@ -1887,7 +1969,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
             else
             {
               // unlock file
-              @rename ($abs_path.$filename, $abs_path.$filename_unlocked);
+              rename ($abs_path.$filename, $abs_path.$filename_unlocked);
             }
           }
         }
@@ -1903,7 +1985,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
         if (is_array ($file_info))
         {
           // unlock file
-          $result_rename = @rename ($abs_path.$file_info['file'], $abs_path.$filename_unlocked);
+          $result_rename = rename ($abs_path.$file_info['file'], $abs_path.$filename_unlocked);
           
           // load file
           if ($result_rename)
@@ -1943,11 +2025,11 @@ function savefile ($abs_path, $filename, $filedata)
     }
 
     // if file is locked by the same user file can be saved
-    if (@is_file ($abs_path.$filename.".@".$user)) $filename = $filename.".@".$user;
+    if (is_file ($abs_path.$filename.".@".$user)) $filename = $filename.".@".$user;
     // if file is offline
-    elseif (@is_file ($abs_path.$filename.".off")) $filename = $filename.".off";
+    elseif (is_file ($abs_path.$filename.".off")) $filename = $filename.".off";
 
-    $filehandle = @fopen ($abs_path.$filename, "wb");
+    $filehandle = fopen ($abs_path.$filename, "wb");
   
     if ($filehandle != false)
     {    
@@ -1998,9 +2080,9 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
     }
     
     // if locked file exists
-    if (@is_file ($abs_path.$filename))
+    if (is_file ($abs_path.$filename))
     {
-      $filehandle = @fopen ($abs_path.$filename, "wb");
+      $filehandle = fopen ($abs_path.$filename, "wb");
 
       if ($filehandle != false)
       {
@@ -2012,7 +2094,7 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
       else return false;
 
       // unlock file
-      @rename ($abs_path.$filename, $abs_path.$filename_unlocked);
+      rename ($abs_path.$filename, $abs_path.$filename_unlocked);
 
       return true;
     }
@@ -2052,9 +2134,9 @@ function appendfile ($abs_path, $filename, $filedata)
     if ($filename_test != false) $filename = $filename_test; 
        
     // if file exists
-    if (@is_file ($abs_path.$filename))
+    if (is_file ($abs_path.$filename))
     {      
-      $filehandle = @fopen ($abs_path.$filename, "a");
+      $filehandle = fopen ($abs_path.$filename, "a");
   
       if ($filehandle != false)
       {
@@ -2080,7 +2162,7 @@ function appendfile ($abs_path, $filename, $filedata)
     
         if ($filename != false)
         {   
-          $filehandle = @fopen ($abs_path.$filename, "a");
+          $filehandle = fopen ($abs_path.$filename, "a");
               
           if ($filehandle != false)
           {
@@ -2136,7 +2218,7 @@ function lockfile ($user, $abs_path, $filename)
     // lock file
     elseif (is_file ($abs_path.$filename))
     {
-      return @rename ($abs_path.$filename, $abs_path.$filename.".@".$user);
+      return rename ($abs_path.$filename, $abs_path.$filename.".@".$user);
     }
     // file cannot be found
     else return false;
@@ -2178,7 +2260,7 @@ function unlockfile ($user, $abs_path, $filename)
     // unlock file
     elseif (is_file ($abs_path.$filename.".@".$user))
     {
-      return @rename ($abs_path.$filename.".@".$user, $abs_path.$filename);
+      return rename ($abs_path.$filename.".@".$user, $abs_path.$filename);
     }
     // file cannot be found
     else return false;
@@ -2207,16 +2289,16 @@ function deletefile ($abs_path, $filename, $recursive=0)
     }
 
     // if selected file is a directory
-    if (@is_dir ($abs_path.$filename))
+    if (is_dir ($abs_path.$filename))
     { 
       $test = true;
           
       // check if directory is empty      
       if ($recursive == 1) 
       {    
-        $dir = @opendir ($abs_path.$filename);
+        $dir = opendir ($abs_path.$filename);
         
-        while ($dirfile = @readdir ($dir))
+        while ($dirfile = readdir ($dir))
         {
           if ($dirfile != "." && $dirfile != "..")
           {
@@ -2224,13 +2306,23 @@ function deletefile ($abs_path, $filename, $recursive=0)
             {
               $test = deletefile ($abs_path.$filename."/", $dirfile, 1);
                           
-              if ($test == false) break;
+              if ($test == false)
+              {
+                $errcode = "10107";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$abs_path.$filename."/".$dirfile;
+                break;
+              }
             }   
-            else
+            elseif (is_file ($abs_path.$filename."/".$dirfile))
             {
-              $test = @unlink ($abs_path.$filename."/".$dirfile);    
+              $test = unlink ($abs_path.$filename."/".$dirfile);    
                       
-              if ($test == false) break;
+              if ($test == false)
+              {
+                $errcode = "10108";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$abs_path.$filename."/".$dirfile;
+                break;
+              }
             }    
           }
         }
@@ -2239,9 +2331,15 @@ function deletefile ($abs_path, $filename, $recursive=0)
       }
       
       // delete directory itself
-      if ($test != false)
+      if ($test != false && is_dir ($abs_path.$filename))
       {
         $test = @rmdir ($abs_path.$filename);
+        
+        if ($test == false)
+        {
+          $errcode = "10109";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$abs_path.$filename;
+        }
   
         if ($test != false) return true;
         else return false;
@@ -2249,15 +2347,21 @@ function deletefile ($abs_path, $filename, $recursive=0)
       else return false;
     }
     // if selected file is a file
-    elseif (@is_file ($abs_path.$filename) || @is_file ($abs_path.$filename.".off") || @is_file ($abs_path.$filename.".@".$user))
+    elseif (is_file ($abs_path.$filename) || is_file ($abs_path.$filename.".off") || is_file ($abs_path.$filename.".@".$user))
     {    
       // if file is offline (for objects)
-      if (@is_file ($abs_path.$filename.".off")) $filename = $filename.".off";   
+      if (is_file ($abs_path.$filename.".off")) $filename = $filename.".off";   
       // if file is locked (for containers)
-      if (@is_file ($abs_path.$filename.".@".$user)) $filename = $filename.".@".$user;   
+      if (is_file ($abs_path.$filename.".@".$user)) $filename = $filename.".@".$user;   
         
       // remove selected file
-      $test = @unlink ($abs_path.$filename);     
+      $test = unlink ($abs_path.$filename);
+      
+      if ($test == false)
+      {
+        $errcode = "10110";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$abs_path.$filename;
+      }
       
       if ($test == true) return true;
       else return false;
@@ -2268,15 +2372,38 @@ function deletefile ($abs_path, $filename, $recursive=0)
   else return false;
 }
 
+// ------------------------------------------ preparemediafile --------------------------------------------
+// function: preparemediafile()
+// input: publication name, media file location, media file name, user name (optional)
+// output: result array / false on error
+
+// description:
+// Prepares a media file for use in the system (load from cloud, decrypt content)
+
+function preparemediafile ($site, $medialocation, $mediafile, $user="")
+{
+  global $mgmt_config;
+
+  if (valid_publicationname ($site) && valid_locationname ($medialocation) && valid_objectname ($mediafile) && !empty ($mgmt_config['abs_path_media']))
+  {
+    // load from cloud storage
+    if (function_exists ("loadcloudobject")) loadcloudobject ($site, $medialocation, $mediafile, $user);
+
+    // create temp file if file is encrypted
+    return createtempfile ($medialocation, $mediafile);
+  }
+  else return false;
+}  
+    
 // ------------------------------------------ deletemediafiles --------------------------------------------
 // function: deletemediafiles()
-// input: publication name, mediafile name
+// input: publication name, mediafile name, delete original media file [true,false] (optional)
 // output: true/false
 
 // description:
-// Deletes all media file derivates (thumbnails, config files, converted versions of the file) of a specific media file resource
+// Deletes all derivates (thumbnails, config files, converted versions of the file) of a specific media file resource. Deletes the original media file optionally .
 
-function deletemediafiles ($site, $mediafile)
+function deletemediafiles ($site, $mediafile, $delete_original=false)
 {
   global $user, $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext, $hcms_lang, $lang;
   
@@ -2285,25 +2412,36 @@ function deletemediafiles ($site, $mediafile)
     // define media location 
     $medialocation = getmedialocation ($site, $mediafile, "abs_path_media");
     
+    // original media file
+    if ($delete_original == true)
+    {
+      // local media file
+      deletefile ($medialocation.$site."/", $mediafile, 0);
+      // cloud storage
+      if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile, $user);
+      // remote client
+      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile, "");
+      // delete media file in temp/view as well (copied by 360 viewer)
+      if (is_file ($mgmt_config['abs_path_view'].$mediafile)) deletefile ($mgmt_config['abs_path_view'], $mediafile, 0);
+    }
+
     // image thumbnail file
     $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb.jpg";
-    
-    if (@is_file ($medialocation.$site."/".$mediafile_thumb))
-    {
-      deletefile ($medialocation.$site."/", $mediafile_thumb, 0);                
-      // remote client
-      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");               
-    }
+    // local media file
+    deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
+    // cloud storage
+    if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_thumb, $user);
+    // remote client
+    remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
 
     // image file from RAW image
     if (is_rawimage ($mediafile))
     {
       $mediafile_raw = substr ($mediafile, 0, strrpos ($mediafile, ".")).".jpg";
-      
-      if (@is_file ($medialocation.$site."/".$mediafile_raw))
-      {
-        deletefile ($medialocation.$site."/", $mediafile_raw, 0);            
-      }
+      // local media file
+      deletefile ($medialocation.$site."/", $mediafile_raw, 0);
+      // cloud storage
+      if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_raw, $user);
     }
     
     // document thumbnail files
@@ -2314,14 +2452,13 @@ function deletemediafiles ($site, $mediafile)
         if ($docoptions_ext != "")
         {
           // document thumbnail file
-          $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb".$docoptions_ext;             
-          
-          if (@is_file ($medialocation.$site."/".$mediafile_thumb))
-          {
-            deletefile ($medialocation.$site."/", $mediafile_thumb, 0);           
-            // remote client
-            remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
-          }
+          $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb".$docoptions_ext;
+          // local media file
+          deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
+          // cloud storage
+          if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_thumb, $user);
+          // remote client
+          remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
         }
       }
     }
@@ -2334,77 +2471,70 @@ function deletemediafiles ($site, $mediafile)
         if ($mediaoptions_ext != "" && $mediaoptions_ext != "thumbnail-video" && $mediaoptions_ext != "thumbnail-audio")
         {
           // original thumbnail video file
-          $mediafile_orig = substr ($mediafile, 0, strrpos ($mediafile, ".")).".orig".$mediaoptions_ext;
-          
-          if (@is_file ($medialocation.$site."/".$mediafile_orig))
-          {
-            deletefile ($medialocation.$site."/", $mediafile_orig, 0);           
-            // remote client
-            remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_orig, "");
-          }
+          $mediafile_orig = substr ($mediafile, 0, strrpos ($mediafile, ".")).".orig".$mediaoptions_ext;+
+          // local media file
+          deletefile ($medialocation.$site."/", $mediafile_orig, 0);
+          // cloud storage
+          if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_orig, $user);
+          // remote client
+          remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_orig, "");
           
           // video thumbnail files
           $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb".$mediaoptions_ext;
-          
-          if (@is_file ($medialocation.$site."/".$mediafile_thumb))
-          {
-            deletefile ($medialocation.$site."/", $mediafile_thumb, 0);         
-            // remote client
-            remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
-          }
+          // local media file
+          deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
+          // cloud storage
+          if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_thumb, $user);
+          // remote client
+          remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
           
           // video individual files
           $mediafile_video = substr ($mediafile, 0, strrpos ($mediafile, ".")).".media".$mediaoptions_ext;
-          
-          if (@is_file ($medialocation.$site."/".$mediafile_video))
-          {
-            deletefile ($medialocation.$site."/", $mediafile_video, 0);         
-            // remote client
-            remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_video, "");
-          }
+          // local media file
+          deletefile ($medialocation.$site."/", $mediafile_video, 0);
+          // cloud storage
+          if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_video, $user);
+          // remote client
+          remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_video, "");
           
           // media player config file
           $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config".$mediaoptions_ext;                
-          
-          if (@is_file ($medialocation.$site."/".$mediafile_config))
-          {
-            deletefile ($medialocation.$site."/", $mediafile_config, 0);              
-            // remote client
-            remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
-          }
+          // local media file
+          deletefile ($medialocation.$site."/", $mediafile_config, 0);
+          // cloud storage
+          if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_config, $user);
+          // remote client
+          remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
         }
       }       
     }
     
     // delete original media player config
     $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.orig";  
-                  
-    if (@is_file ($medialocation.$site."/".$mediafile_config))
-    {
-      deletefile ($medialocation.$site."/", $mediafile_config, 0);
-      // remote client
-      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
-    }
+    // local media file
+    deletefile ($medialocation.$site."/", $mediafile_config, 0);
+    // cloud storage
+    if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_config, $user);
+    // remote client
+    remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
     
     // delete general audio player config
-    $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.audio";  
-                  
-    if (@is_file ($medialocation.$site."/".$mediafile_config))
-    {
-      deletefile ($medialocation.$site."/", $mediafile_config, 0);
-      // remote client
-      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
-    }
+    $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.audio";
+    // local media file
+    deletefile ($medialocation.$site."/", $mediafile_config, 0);
+    // cloud storage
+    if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_config, $user);
+    // remote client
+    remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
     
     // delete general video player config
-    $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.video";  
-                  
-    if (@is_file ($medialocation.$site."/".$mediafile_config))
-    {
-      deletefile ($medialocation.$site."/", $mediafile_config, 0);
-      // remote client
-      remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
-    }
+    $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.video";
+    // local media file
+    deletefile ($medialocation.$site."/", $mediafile_config, 0);
+    // cloud storage
+    if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_config, $user);
+    // remote client
+    remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
     
     return true;
   }
@@ -2468,7 +2598,7 @@ function fileversion ($file)
 
 function createversion ($site, $file)
 {
-  global $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext;
+  global $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext, $user;
 
   if (valid_publicationname ($site) && valid_objectname ($file))
   {
@@ -2478,6 +2608,11 @@ function createversion ($site, $file)
       // try to get container ID from multimedia file
       if ($container_id = getmediacontainerid ($file))
       {
+        $media_root = getmedialocation ($site, $file, "abs_path_media").$site."/";
+        
+        // verify media file
+        if (!is_cloudobject ($media_root.$file) || !is_file ($media_root.$file) || filesize ($media_root.$file) < 10) return true;
+      
         $file_info = getfileinfo ($site, $file, "comp");
         
         // create new version of file name
@@ -2489,24 +2624,29 @@ function createversion ($site, $file)
         // thumbnail
         $thumb = $file_info['filename'].".thumb.jpg";
         $thumb_v = $thumb.$ext_v;
-        
+
         // create new version of thumbnail file
-        $media_root = getmedialocation ($site, $file, "abs_path_media").$site."/";
-          
-        // move thumbnail (important for versioing!)  
+        // move thumbnail (important for versioning!)  
         if (is_file ($media_root.$thumb) && filesize ($media_root.$thumb) > 0)
         {
           @rename ($media_root.$thumb, $media_root.$thumb_v);
         }
-            
+
+        // rename in cloud storage
+        if (function_exists ("renamecloudobject")) renamecloudobject ($site, $media_root, $thumb, $thumb_v, $user);
+        
+        // create new version of original file
         // copy media file (important for image editing!)
         if (is_file ($media_root.$file) && filesize ($media_root.$file) > 0)
         {
           @copy ($media_root.$file, $media_root.$file_v);
         }
+
+        // copy in cloud storage
+        if (function_exists ("copycloudobject")) copycloudobject ($site, $media_root, $file, $file_v, $user);
         
         // delete all other media file derivatives (individual or videplayer thumbnail files)
-        deletemediafiles ($site, $file);
+        deletemediafiles ($site, $file, false);
             
         // create new version of container and keep source container file as well
         $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
@@ -2656,25 +2796,28 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
   $size = 0;
   $range = false;
 
-  if (valid_locationname ($filepath) && is_file ($filepath) && $name != "")
+  if (valid_locationname ($filepath) && $name != "")
   {
-    // get location and media object
+    // get publication, location and media object
+    $site = getpublication ($filepath);
     $location = getlocation ($filepath);
     $media = getobject ($filepath);
-    
-    // get publication
-    if (strpos ($location, "/") > 0 && strpos ($media, "_hcm") > 0) $site = basename ($location);
-    else $site = "";
-    
-    // create temp file if file is encrypted
-    $temp = createtempfile ($location, $media);
+
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $media, $user);
     
     if ($temp['result'] && $temp['crypted'])
     {
       $location = $temp['templocation'];
       $media = $temp['tempfile'];
+      
+      // set new file path
+      $filepath = $location.$media;
     }
-    
+
+    // verify local media file
+    if (!is_file ($filepath)) return false;
+
     // eventsystem
     if ($eventsystem['onfiledownload_pre'] == 1) onfiledownload_pre ($site, $location, $media, $name, $user);
 
@@ -2694,63 +2837,17 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     {
       // --------------------------------- open stream --------------------------------------
 
-      // stream file from AWS S3
-      if (strpos (strtolower ("_".getmedialocation ($site, $media, 'url_path_media')), "s3://") > 0)
+      if (!($stream = fopen ($filepath, 'rb')))
       {
-        // create a stream context to allow seeking
-        $context = stream_context_create (array(
-          's3' => array(
-            'seekable' => true
-          )
-        ));
-        
-        if (!($stream = fopen ($filepath, 'rb', false, $context)))
-        {
-          // can't read the file
-          header ("HTTP/1.1 500 Internal Server Error", true, 500);
-          $errcode = 20601;
-          $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$filepath.')';
-          // write log
-          savelog (@$error);
-          exit;
-        }
+        // can't read the file
+        header ("HTTP/1.1 500 Internal Server Error", true, 500);
+        $errcode = 20602;
+        $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$filepath.')';
+        // write log
+        savelog (@$error);
+        exit;
       }
-      // stream file from Google Cloud
-      elseif (strpos (strtolower ("_".getmedialocation ($site, $media, 'url_path_media')), "gs://") > 0)
-      {
-        // create a stream context to allow seeking
-        $context = stream_context_create (array(
-          'gs' => array(
-            'seekable' => true
-          )
-        ));
-        
-        if (!($stream = fopen ($filepath, 'rb', false, $context)))
-        {
-          // can't read the file
-          header ("HTTP/1.1 500 Internal Server Error", true, 500);
-          $errcode = 20601;
-          $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$filepath.')';
-          // write log
-          savelog (@$error);
-          exit;
-        }
-      }
-      // stream local file
-      else
-      {
-        if (!($stream = fopen ($filepath, 'rb')))
-        {
-          // can't read the file
-          header ("HTTP/1.1 500 Internal Server Error", true, 500);
-          $errcode = 20602;
-          $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$filepath.')';
-          // write log
-          savelog (@$error);
-          exit;
-        }
-      }
-  
+
       ob_get_clean();
       
       // get file start and end bytes
@@ -2774,8 +2871,8 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
         // check for IE only headers
         if (isset ($user_client['msie']) && $user_client['msie'] > 0)
         {
-          header ('Cache-Control: must-revalidate, post-check=0, pre-check=0');
           header ('Pragma: public');
+          header ('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         }
         else
         {
@@ -4618,7 +4715,7 @@ function createpublication ($site_name, $user="sys")
         // link
         if ($test != false) 
         {
-          $errcode = "10105";
+          $errcode = "10135";
           $test = savefile ($mgmt_config['abs_path_data']."link/", $site_name.".link.dat", "container:|object|:|link|\n");
           if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savefile failed for /data/link/".$site_name.".link.dat";
         }
@@ -4628,7 +4725,7 @@ function createpublication ($site_name, $user="sys")
         
         if ($test != false && @!is_dir ($dir_temp)) 
         {
-          $errcode = "10107";
+          $errcode = "10137";
           $test = @mkdir ($dir_temp, $mgmt_config['fspermission']);
           if ($test != false) $test = @copy ($mgmt_config['abs_path_cms']."xmlschema/template_default.schema.xml.php", $dir_temp."/default.meta.tpl");
           if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|mkdir failed for ".$dir_temp;
@@ -4639,7 +4736,7 @@ function createpublication ($site_name, $user="sys")
         
         if ($test != false && @!is_dir ($dir_temp)) 
         {
-          $errcode = "10108";
+          $errcode = "10138";
           $test = @mkdir ($dir_temp, $mgmt_config['fspermission']);
           if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|mkdir failed for ".$dir_temp;
         }   
@@ -4649,7 +4746,7 @@ function createpublication ($site_name, $user="sys")
         
         if ($test != false && @!is_dir ($dir_temp)) 
         {
-          $errcode = "10109";
+          $errcode = "10139";
           $test = @mkdir ($dir_temp, $mgmt_config['fspermission']);
           if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|mkdir failed for ".$dir_temp;
         }    
@@ -4664,7 +4761,7 @@ function createpublication ($site_name, $user="sys")
           {
             if (@!is_dir ($dir_temp.$site_name)) 
             {
-              $errcode = "10110";
+              $errcode = "10140";
               $test = @mkdir ($dir_temp.$site_name, $mgmt_config['fspermission']);
               
               if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|mkdir failed for ".$dir_temp.$site_name;
@@ -4679,7 +4776,7 @@ function createpublication ($site_name, $user="sys")
         
         if ($test != false && @!is_dir ($dir_temp)) 
         {
-          $errcode = "10111";
+          $errcode = "10141";
           $test = @mkdir ($dir_temp, $mgmt_config['fspermission']);
           
           if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|mkdir failed for ".$dir_temp;
@@ -4692,7 +4789,7 @@ function createpublication ($site_name, $user="sys")
         
         if ($test != false && @!is_dir ($dir_temp)) 
         {
-          $errcode = "10112";
+          $errcode = "10142";
           $test = @mkdir ($dir_temp, $mgmt_config['fspermission']);
           
           if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createfolder failed for ".$dir_temp;
@@ -4991,8 +5088,12 @@ function editpublication ($site_name, $setting, $user="sys")
     else $theme_new = "Standard";    
     
     // storage limit
-    if (array_key_exists ('storage', $setting) && is_numeric ($setting['storage'])) $storage_new = $setting['storage'];
-    else $storage_new = "''";
+    if (array_key_exists ('storage_limit', $setting) && is_numeric ($setting['storage_limit'])) $storage_limit_new = $setting['storage_limit'];
+    else $storage_limit_new = "''";
+    
+    // storage type
+    if (array_key_exists ('storage_type', $setting) && trim ($setting['storage_type']) != "") $storage_type_new = $setting['storage_type'];
+    else $storage_type_new = "''";
     
     // set codepage if none is given
     if (!array_key_exists ('default_codepage', $setting) || $setting['default_codepage'] == "") $default_codepage_new = "UTF-8";
@@ -5120,8 +5221,17 @@ function editpublication ($site_name, $setting, $user="sys")
 
 // Storage limit
 // storage limit for all multimedia files (assets) in MB
-\$mgmt_config['".$site_name."']['storage'] = ".$storage_new.";
+\$mgmt_config['".$site_name."']['storage_limit'] = ".$storage_limit_new.";
 
+";
+
+  if (is_dir ($mgmt_config['abs_path_cms']."connector/")) $site_mgmt_config .= "
+// Storage type
+// storage type for all multimedia files (assets), possible values are 'local', 'cloud' and 'both'
+\$mgmt_config['".$site_name."']['storage_type'] = \"".$storage_type_new."\";
+
+";
+  $site_mgmt_config .= "
 // Encrypt content on server
 // enable (false) or disable (true) encryption of content
 \$mgmt_config['".$site_name."']['crypt_content'] = ".$crypt_content.";
@@ -5552,27 +5662,19 @@ function deletepublication ($site_name, $user="sys")
       // -------------------------------------- delete files of site ------------------------------------------
     
       // page root
-      $errcode = "10158";
       deleteobject ($site_name, "%page%/".$site_name."/", ".folder", "sys");
-      $test = deletefile ($mgmt_config['abs_path_comp'], $site_name, 1);
-      if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /repository/media_tpl/".$site_name."/";
+      deletefile ($mgmt_config['abs_path_comp'], $site_name, 1);
       
       // component root
-      $errcode = "10159";
       deleteobject ($site_name, "%comp%/".$site_name."/", ".folder", "sys");
-      $test = deletefile ($mgmt_config['abs_path_comp'], $site_name, 1);
-      if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /repository/media_tpl/".$site_name."/";
+      deletefile ($mgmt_config['abs_path_comp'], $site_name, 1);
       
       // template media
-      $errcode = "10160";
-      $test = deletefile ($mgmt_config['abs_path_rep']."media_tpl/", $site_name, 1);
-      if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /repository/media_tpl/".$site_name."/";
+      deletefile ($mgmt_config['abs_path_rep']."media_tpl/", $site_name, 1);
       
       // content media
-      $errcode = "10161";
-      $test = deletefile ($mgmt_config['abs_path_rep']."media_cnt/", $site_name, 1);
-      if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /repository/media_cnt/".$site_name."/"; 
-    
+      deletefile ($mgmt_config['abs_path_rep']."media_cnt/", $site_name, 1);
+      
       // user
       $errcode = "10101";
       $userdata = loadlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", 5);
@@ -5615,29 +5717,19 @@ function deletepublication ($site_name, $user="sys")
       }
       
       // usergroup
-      $errcode = "10152";
-      $test = deletefile ($mgmt_config['abs_path_data']."user/", $site_name.".usergroup.xml.php", 0);
-      if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /data/user/".$site_name.".usergroup.xml.php";  
+      deletefile ($mgmt_config['abs_path_data']."user/", $site_name.".usergroup.xml.php", 0);
     
       // media   
-      $errcode = "10154";
-      $test = deletefile ($mgmt_config['abs_path_data']."media/", $site_name.".media.tpl.dat", 0);
-      if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /data/media/".$site_name.".media.tpl.dat";  
-    
+      deletefile ($mgmt_config['abs_path_data']."media/", $site_name.".media.tpl.dat", 0);
+
       // link
-      $errcode = "10155";
-      $test = deletefile ($mgmt_config['abs_path_data']."link/", $site_name.".link.dat", 0);
-      if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /data/link/".$site_name.".link.dat";  
+      deletefile ($mgmt_config['abs_path_data']."link/", $site_name.".link.dat", 0);
        
       // templates
-      $errcode = "10156";
-      $test = deletefile ($mgmt_config['abs_path_data']."template/", $site_name, 1);    
-      if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /data/template/".$site_name;  
+      deletefile ($mgmt_config['abs_path_data']."template/", $site_name, 1);    
       
       // workflow
-      $errcode = "10157";
-      $test = deletefile ($mgmt_config['abs_path_data']."workflow/", $site_name, 1);   
-      if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /data/workflow/".$site_name; 
+      deletefile ($mgmt_config['abs_path_data']."workflow/", $site_name, 1);   
     
       $dir_temp = $mgmt_config['abs_path_data']."workflow_master/";
       $files = @dir ($dir_temp);
@@ -5648,9 +5740,7 @@ function deletepublication ($site_name, $user="sys")
         {
           if (preg_match ("/^".$site_name."./", $entry))
           {
-            $errcode = "10113";
-            $test = deletefile ($dir_temp, $entry, 0);
-            if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$dir_temp.$entry; 
+            deletefile ($dir_temp, $entry, 0);
           }
         }
     
@@ -5658,38 +5748,17 @@ function deletepublication ($site_name, $user="sys")
       }  
       
       // customer files
-      $errcode = "10114";
-      $test = deletefile ($mgmt_config['abs_path_data']."customer/", $site_name, 1);    
-      if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|$errcode|deletefile failed for /data/customer/".$site_name;    
+      deletefile ($mgmt_config['abs_path_data']."customer/", $site_name, 1);      
        
       // config files
-      if (@is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
-      {
-        $errcode = "10116";
-        $test = deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php", 0);  
-        if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /data/config/".$site_name.".inc.php";
-      }
-      
-      if (@is_file ($mgmt_config['abs_path_rep']."config/".$site_name.".ini"))
-      {
-        $errcode = "10117";
-        $test = deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".ini", 0);  
-        if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /repository/config/".$site_name.".ini";
-      }
-      
-      if (@is_file ($mgmt_config['abs_path_rep']."config/".$site_name.".properties"))
-      {
-        $errcode = "10118";
-        $test = deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".properties", 0);  
-        if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /repository/config/".$site_name.".properties";
-      }
-      
+      deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php", 0);
+      deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".ini", 0);
+      deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".properties", 0);
+
       // mapping configuration file
       if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".media.map.php"))
       {
-        $errcode = "10119";
-        $test = deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".media.map.php", 0);  
-        if ($test == false) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for /repository/config/".$site_name.".media.map.php";
+        deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".media.map.php", 0);  
       }
      
       // remove site_name value from inheritance database
@@ -9423,19 +9492,19 @@ function createobject ($site, $location, $page, $template, $user)
   $result = array();
   if (isset ($error_switch) && $error_switch == "no") $result['result'] = true;
   else $result['result'] = false;
-  $result['add_onload'] = $add_onload;  
-  $result['message'] = $show;
-  $result['publication'] = $site;
-  $result['location'] = $location;
-  $result['location_esc'] = $location_esc;
-  $result['cat'] = $cat;
-  $result['object'] = $page;
-  $result['name'] = $page_orig;
-  $result['objecttype'] = $filetype;
-  $result['mediafile'] = $mediafile;
-  $result['container'] = $contentfile;
-  $result['container_id'] = $container_id;
-  $result['container_content'] = $page_box_xml;
+  $result['add_onload'] = @$add_onload;  
+  $result['message'] = @$show;
+  $result['publication'] = @$site;
+  $result['location'] = @$location;
+  $result['location_esc'] = @$location_esc;
+  $result['cat'] = @$cat;
+  $result['object'] = @$page;
+  $result['name'] = @$page_orig;
+  $result['objecttype'] = @$filetype;
+  $result['mediafile'] = @$mediafile;
+  $result['container'] = @$contentfile;
+  $result['container_id'] = @$container_id;
+  $result['container_content'] = @$page_box_xml;
   
   return $result;
 }
@@ -9509,7 +9578,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
 
     // define variables
     $updir = $location; //absolute path to where files are uploaded, no trailing slash
-    $size = $mgmt_config['maxfilesize'] * 1024 * 1024; // size limited in bytes
+    $size = $mgmt_config['maxfilesize'] * 1024 * 1024; // size limit in bytes
     
     // check if global_files contains an URL or FTP-link as source and download file temporarily
     $is_remote_file = false;
@@ -9814,71 +9883,12 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
       // ---------------- create new multimedia object ------------------
       if ($media_update == "")
       {
-        $result_createobject = createmediaobject ($site, $location, $global_files['Filedata']['name'], $global_files['Filedata']['tmp_name'], $user);
+        // if original image should not be resized
+        if ($imageresize != "percentage") $imagepercentage = 0;
         
-        if ($result_createobject['result'] == true)
-        {
-          // pass createbject result array to result array of this function
-          $result['message'] = $result_createobject['message'];
-          $result['publication'] = $result_createobject['publication'];
-          $result['location'] = $result_createobject['location'];
-          $result['location_esc'] = $result_createobject['location_esc'];
-          $result['cat'] = $result_createobject['cat'];
-          $result['object'] = $result_createobject['object'];
-          $result['name'] = $result_createobject['name'];
-          $result['objecttype'] = $result_createobject['objecttype'];
-          $result['mediafile'] = $result_createobject['mediafile'];
-          $result['container'] = $result_createobject['container'];
-          $result['container_id'] = $result_createobject['container_id'];
-          $result['container_content'] = $result_createobject['container_content'];
+        $result = createmediaobject ($site, $location, $global_files['Filedata']['name'], $global_files['Filedata']['tmp_name'], $user, $imagepercentage);
 
-          // convert uploaded original images only of given formats
-          // note: output rendering must be supported and the render format must be the same format as the original file!
-          $media_supported_ext = ".gif.jpg.jpeg.png";
-          // object and multimedia file names
-          $media_file = $result_createobject['mediafile'];
-          // get media root
-          $media_root = getmedialocation ($site, $media_file, "abs_path_media");
-          // get media size
-          $media_size = @getimagesize ($media_root.$site."/".$media_file);
-          // get file extension
-          $media_ext = strtolower (strrchr ($media_file, "."));
-          
-          if (substr_count ($media_supported_ext.".", $media_ext.".") >= 1)
-          {
-            // get new rendering settings for original images and set image options (if given)
-            if ($media_size != false && $imageresize == "percentage" && $imagepercentage > 0 && $imagepercentage <= 200)
-            {
-              $imagewidth = round ($media_size[0] * $imagepercentage / 100, 0);
-              $imageheight = round ($media_size[1] * $imagepercentage / 100, 0);
-              
-              if ($imagewidth != "" && $imageheight != "")
-              {
-                $formats = "";
-                reset ($mgmt_imageoptions);
-
-                while (list ($formatstring, $settingstring) = each ($mgmt_imageoptions))
-                {
-                  if (substr_count ($formatstring.".", $media_ext.".") > 0)
-                  {
-                    $formats = $formatstring;
-                  }
-                }
-                
-                if ($formats != "")
-                {
-                  // convert the image file (remoteclient is used in createmedia)
-                  // Options:
-                  // -s ... size in pixels (width x height)
-                  // -f ... image output format
-                  $mgmt_imageoptions[$formats]['original'] = "-s ".$imagewidth."x".$imageheight." -f ".str_replace (".", "", $media_ext);
-                  createmedia ($site, $media_root.$site."/", $media_root.$site."/", $media_file, str_replace (".", "", $media_ext), "original");
-                }
-              }
-            }
-          }
-        }
-        else
+        if ($result['result'] == false)
         {
           $errcode = 20511;
           $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$global_files['Filedata']['name']."' could not be created by createmediaobject (".$result_createobject['message'].")";
@@ -9892,7 +9902,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
       // -------------- update existing multimedia object -----------------
       elseif ($media_update != "")
       {
-        // update thumbnail file (uploaded file must be JPEG)
+        // update thumbnail file (uploaded file must be of type JPEG)
         if ($createthumbnail == 1)
         {
           // get file name without extension
@@ -9943,7 +9953,6 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
                   // remote client
                   remoteclient ("save", "abs_path_media", $site, getmedialocation ($site, $file_name.".thumb.jpg", "abs_path_media").$site."/", "", $file_name.".thumb.jpg", "");
                 }
-                
               }
 
               // delete temporary directory
@@ -9956,6 +9965,9 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
         {
           $show_command = "";
           
+          // get media root directory
+          $media_root = getmedialocation ($site, $media_update, "abs_path_media");
+          
           // get container id
           $container_id = getmediacontainerid ($media_update);
           $contentfile = $container_id.".xml";
@@ -9967,10 +9979,10 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
           // if versioning was successful
           $result_save = false;
           
-          if ($createversion)
+          if ($createversion && !empty ($media_root))
           {
             // delete old file
-            @unlink (getmedialocation ($site, $media_update, "abs_path_media").$site."/".$media_update);
+            if (is_file ($media_root.$site."/".$media_update)) unlink ($media_root.$site."/".$media_update);
           
             // remember original file name
             $media_orig = $media_update;
@@ -9986,24 +9998,18 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
             $page_nameonly = specialchr_decode (strrev (substr (strstr (strrev ($page), "."), 1)));
             // get converted location
             $location_conv = convertpath ($site, $location, $cat);
-            // get media root directory
-            $media_root = getmedialocation ($site, $media_update, "abs_path_media");
             
             // save new multimedia file
-            if (!empty ($media_root))
+            // move uploaded file
+            if (!$is_remote_file)
             {
-              // move uploaded file
-              if (!$is_remote_file)
-              {
-                $result_save = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update);
-              }
-              else $result_save = false;
-              
-              // save file from URL or if file has already been saved in the temp directory (WebDAV saves files in temp directory)
-              if ($is_remote_file || $result_save == false)
-              {
-                $result_save = @rename ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update);
-              }
+              $result_save = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update);
+            }
+            
+            // save file from URL or if file has already been saved in the temp directory (WebDAV saves files in temp directory)
+            if ($is_remote_file || $result_save == false)
+            {
+              $result_save = @rename ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update);
             }
           }
 
@@ -10049,15 +10055,17 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
                 // -s ... size in pixels (width x height)
                 // -f ... image output format
                 $mgmt_imageoptions[$formats]['original'] = "-s ".$imagewidth."x".$imageheight." -f ".$imageformat;
-                createmedia ($site, getmedialocation ($site, $media_update, "abs_path_media").$site."/", getmedialocation ($media_update, "abs_path_media").$site."/", $media_update, "", "original");
+                createmedia ($site, $media_root.$site."/", $media_root.$site."/", $media_update, "", "original");
               }
+            }
+            // create preview (thumbnail for images, previews for video/audio files)
+            else
+            {
+              createmedia ($site, $media_root.$site."/", $media_root.$site."/", $media_update, "", "origthumb");
             }
 
             // remote client for uploaded original image
             remoteclient ("save", "abs_path_media", $site, $media_root.$site."/", "", $media_update, "");
-            
-            // create preview (thumbnail for images, previews for video/audio files)
-            createmedia ($site, $media_root.$site."/", $media_root.$site."/", $media_update, "", "origthumb");
 
             // remove indexed content if file extension has changed
             if ($file_ext_old != $file_ext_new)
@@ -10069,7 +10077,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
             indexcontent ($site, $media_root.$site."/", $media_update, $contentfile, "", $user);
           }
 
-          // rename object file extension if file extension has changed
+          // rename objects file extension, if file extension has changed
           if ($result_save == true && $file_ext_old != $file_ext_new)
           {
             // write new reference in object file
@@ -10087,7 +10095,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
             // on success
             if ($result_save == true)
             {
-              // rename media object after file extension has changed
+              // rename media object, if file extension has changed
               $result_rename = renameobject ($site, $location, $page, $page_nameonly, $user);
 
               if ($result_rename['result'] == true)
@@ -10110,6 +10118,12 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
           {
             $data = encryptfile ($media_root.$site."/", $media_update);
             if (!empty ($data)) savefile ($media_root.$site."/", $media_update, $data);
+          }
+          
+          // save in cloud storage
+          if (is_file ($media_root.$site."/".$media_update))
+          {
+            if (function_exists ("savecloudobject")) savecloudobject ($site, $media_root.$site."/", $media_update, $user);
           }
 
           // eventsystem
@@ -10147,15 +10161,15 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
 
 // ---------------------------------------- createmediaobject --------------------------------------------
 // function: createmediaobject()
-// input: site, destination location, file name, path to source multimedia file (uploaded file in temp directory), user
+// input: site, destination location, file name, path to source multimedia file (uploaded file in temp directory), user, resize original image (100%) by percentage (optional)
 // output: Array
 
 // description:
 // This function creates an asset (multimedia object) by reading a given source file
 
-function createmediaobject ($site, $location, $file, $path_source_file, $user)
+function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0)
 {
-  global $mgmt_config, $eventsystem, $hcms_lang, $lang;     
+  global $mgmt_config, $mgmt_imageoptions, $eventsystem, $hcms_lang, $lang;     
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && accessgeneral ($site, $location, "comp") && $path_source_file != "")
   {
@@ -10181,7 +10195,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user)
     $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|new multimedia file created by user '$user' ($site, $location_esc, $file, $path_source_file, $user)";     
 
     if (@is_file ($path_source_file))
-    {     
+    {
       // create multimedia object
       $result = createobject ($site, $location, $file, "default.meta.tpl", $user);
 
@@ -10200,6 +10214,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user)
         // move multimedia file to content media repository
         // case "upload": move uploaded file from temp directory
         $result_move = @move_uploaded_file ($path_source_file, $medialocation.$mediafile);
+        
         // case "import": move import file from source directory 
         if (!$result_move) $result_move = @rename ($path_source_file, $medialocation.$mediafile);
 
@@ -10211,11 +10226,57 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user)
             rdbms_insertdailystat ("upload", $container_id, $user);
           }
           
-          // create preview
-          createmedia ($site, $medialocation, $medialocation, $mediafile, "", "origthumb", false);
-
           // index content
           indexcontent ($site, $medialocation, $mediafile, $container_id, $container_content, $user);
+
+          // resize original image if requested
+          if (!empty ($mediafile) && $imagepercentage > 0 && $imagepercentage <= 200)
+          {
+            // convert uploaded original images only of given formats
+            // note: output rendering must be supported and the render format must be the same format as the original file!
+            $media_supported_ext = ".gif.jpg.jpeg.png";
+            // get media size
+            $media_size = @getimagesize ($medialocation.$mediafile);
+            // get file extension
+            $media_ext = strtolower (strrchr ($mediafile, "."));
+  
+            // get new rendering settings for original images and set image options (if given)
+            if (substr_count ($media_supported_ext.".", $media_ext.".") > 0 && $media_size != false)
+            {
+              $imagewidth = round ($media_size[0] * $imagepercentage / 100, 0);
+              $imageheight = round ($media_size[1] * $imagepercentage / 100, 0);
+              
+              if ($imagewidth != "" && $imageheight != "")
+              {
+                $formats = "";
+                reset ($mgmt_imageoptions);
+  
+                while (list ($formatstring, $settingstring) = each ($mgmt_imageoptions))
+                {
+                  if (substr_count ($formatstring.".", $media_ext.".") > 0)
+                  {
+                    $formats = $formatstring;
+                  }
+                }
+                
+                if ($formats != "")
+                {
+                  // convert the image file (remoteclient is used in createmedia)
+                  // Options:
+                  // -s ... size in pixels (width x height)
+                  // -f ... image output format
+                  $mgmt_imageoptions[$formats]['original'] = "-s ".$imagewidth."x".$imageheight." -f ".str_replace (".", "", $media_ext);
+                  createmedia ($site, $medialocation, $medialocation, $mediafile, str_replace (".", "", $media_ext), "original");
+                }
+              }
+            }
+          }
+          // create thumbnail/preview of original media file
+          else
+          {
+            // create preview
+            createmedia ($site, $medialocation, $medialocation, $mediafile, "", "origthumb", false);
+          }
 
           // remote client
           remoteclient ("save", "abs_path_media", $site, $medialocation, "", $mediafile, "");
@@ -10226,6 +10287,9 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user)
             $data = encryptfile ($medialocation, $mediafile);
             if (!empty ($data)) savefile ($medialocation, $mediafile, $data);
           } 
+          
+          // save in cloud storage
+          if (is_file ($medialocation.$mediafile) && function_exists ("savecloudobject")) savecloudobject ($site, $medialocation, $mediafile, $user);
 
           // eventsystem
           if ($eventsystem['onfileupload_post'] == 1) onfileupload_post ($site, $result['cat'], $location, $result['object'], $mediafile, $result['container'], $user);            
@@ -10272,7 +10336,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user)
 
 function createmediaobjects ($site, $location_source, $location_destination, $user)
 {
-  global $mgmt_config, $eventsystem, $hcms_lang, $lang;
+  global $mgmt_config, $mgmt_imageoptions, $eventsystem, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_destination))
   {
@@ -10294,43 +10358,47 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
     if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
     if (substr ($location_destination, -1) != "/") $location_destination = $location_destination."/";      
     
-    $dir = @opendir ($location_source);
-
-    if ($dir != false && is_dir ($location_destination))
-    { 
-      // loop through source file
-      while ($file = readdir ($dir))
-      {
-        // skip Mac OS files .DS_Store and ._whatever
-        if (valid_objectname ($file) && $file != '.' && $file != '..' && !is_tempfile ($file)) 
+    if (is_dir ($location_destination))
+    {
+      $dir = @opendir ($location_source);
+  
+      if ($dir != false)
+      { 
+        // loop through source file
+        while ($file = readdir ($dir))
         {
-          if (is_dir ($location_source.$file))
+          // skip Mac OS files .DS_Store and ._whatever
+          if (valid_objectname ($file) && $file != '.' && $file != '..' && !is_tempfile ($file)) 
           {
-            $folder = $folder_new = $file;
-            
-            // correct file namens which were decoded by unzip
-            if (substr_count ($folder_new, "#U") > 0) $folder_new = json_decode (str_replace ('#U', '\u', $folder_new)); 
-
-            // create folder          
-            $createfolder = createfolder ($site, $location_destination, $folder_new, $user);
-            if ($createfolder['result'] == true) $result = createmediaobjects ($site, $location_source.$folder."/", $location_destination.$createfolder['folder']."/", $user);
-          }
-          elseif (@is_file ($location_source.$file))
-          {
-            $objectname = $file;
-            
-            // correct file namens which were decoded by unzip
-            if (substr_count ($objectname, "#U") > 0) $objectname = json_decode (str_replace ('#U', '\u', $objectname));
-
-            // create multimedia object
-            $createmediaobject = createmediaobject ($site, $location_destination, $objectname, $location_source.$file, $user);
-            if ($createmediaobject['result'] == true) $result[] = $createmediaobject['location_esc'].$createmediaobject['object'];
+            if (is_dir ($location_source.$file))
+            {
+              $folder = $folder_new = $file;
+              
+              // correct file namens which were decoded by unzip
+              if (substr_count ($folder_new, "#U") > 0) $folder_new = json_decode (str_replace ('#U', '\u', $folder_new)); 
+  
+              // create folder          
+              $createfolder = createfolder ($site, $location_destination, $folder_new, $user);
+              if ($createfolder['result'] == true) $result = createmediaobjects ($site, $location_source.$folder."/", $location_destination.$createfolder['folder']."/", $user);
+            }
+            elseif (@is_file ($location_source.$file))
+            {
+              $objectname = $file;
+              
+              // correct file namens which were decoded by unzip
+              if (substr_count ($objectname, "#U") > 0) $objectname = json_decode (str_replace ('#U', '\u', $objectname));
+  
+              // create multimedia object
+              $createmediaobject = createmediaobject ($site, $location_destination, $objectname, $location_source.$file, $user);
+              if ($createmediaobject['result'] == true) $result[] = $createmediaobject['location_esc'].$createmediaobject['object'];
+            }
           }
         }
+        
+        @closedir ($dir);
+        return $result;
       }
-      
-      @closedir ($dir);
-      return $result;
+      else return false;
     }
     else return false;
   }
@@ -10344,7 +10412,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 // output: result array / false on error (saves original or thumbnail media file of an object, for thumbnail only jpeg format is supported as output), user name
 
 // description:
-// This function mainly uses function createmedia to render the objects media, but at the same time takes care of versioning and the object name if the file extension has changed
+// This function mainly uses function createmedia to render the objects media, but at the same time takes care of versioning and the object name, if the file extension has been changed
 
 function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbnail", $user)
 {
@@ -10374,7 +10442,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
 
     // create new version
     $createversion = createversion ($site, $mediafile_orig);
-    
+
     // render media file of object
     if ($createversion) $mediafile_new = createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_orig, $format, $type);
     else $mediafile_new = false;
@@ -10383,9 +10451,6 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
     if ($mediafile_new && $createversion)
     {
       $processresult = true;
-   
-      // create new thumbnail
-      createmedia ($site, $mediafile_location, $mediafile_location, $mediafile_new, "jpg", "thumbnail");
 
       // get the file extension of the old file      
       $file_ext_old = strtolower (strrchr ($mediafile_orig, "."));
@@ -10417,7 +10482,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
         // on success
         if ($savepage == true)
         { 
-          // rename media object after file extension has changed  
+          // rename media object, if file extension has changed  
           $rename = renameobject ($site, $location, $page, $page_nameonly, $user);
 
           if ($rename['result'] == true)
@@ -10460,16 +10525,16 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
   
   // return results
   $result = array();
-  $result['result'] = $processresult;
-  $result['add_onload'] = $add_onload;  
-  $result['message'] = $show;
-  $result['publication'] = $site;
-  $result['location'] = $location;
-  $result['cat'] = $cat;
-  $result['object'] = $page;
-  $result['mediafile'] = $mediafile_new;
-  $result['container'] = $container;
-  $result['container_id'] = $container;
+  $result['result'] = @$processresult;
+  $result['add_onload'] = @$add_onload;  
+  $result['message'] = @$show;
+  $result['publication'] = @$site;
+  $result['location'] = @$location;
+  $result['cat'] = @$cat;
+  $result['object'] = @$page;
+  $result['mediafile'] = @$mediafile_new;
+  $result['container'] = @$container;
+  $result['container_id'] = @$container;
   
   return $result;
 }
@@ -11198,46 +11263,32 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         }              
       }
   
-      // ---------------------------------------- delete page -------------------------------------
+      // ---------------------------------------- delete object -------------------------------------
       if ($show == "" && $action == "page_delete")
       {
         if ($allow_delete == true && ($cat == "page" || $cat == "comp"))
-        {
-          // relational DB connectivity
-          if ($mgmt_config['db_connect_rdbms'] != "")
-          {       
-            rdbms_deleteobject (convertpath ($site, $location.$page, $cat));                     
-          } 
-                  
+        {       
           // delete page file
           $test = deletefile ($location, $page, 0); 
   
           if ($test != false)
           {
+            // relational DB connectivity
+            if ($mgmt_config['db_connect_rdbms'] != "")
+            {       
+              rdbms_deleteobject (convertpath ($site, $location.$page, $cat));                     
+            }
+          
             // remote client
             remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $page, "");
             
-            if (!empty ($mediafile_self))
-            {
-              $medialocation = getmedialocation ($site, $mediafile_self, "abs_path_media");
-              
-              // media file
-              deletefile ($medialocation.$site."/", $mediafile_self, 0);
-              
-              // delete media file in temp/view as well (copied by 360 viewer)
-              if (is_file ($mgmt_config['abs_path_view'].$mediafile_self)) deletefile ($mgmt_config['abs_path_view'], $mediafile_self, 0);
-              
-              // remote client
-              remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_self, ""); 
-                      
-              // delete media file derivates
-              deletemediafiles ($site, $mediafile_self);
-            }
-             
+            // delete media file derivates
+            if (!empty ($mediafile_self)) deletemediafiles ($site, $mediafile_self, true);
+
             // delete thumbnail file (versions before 5.0)
             $object_thumb = substr ($page, 0, strrpos ($page, ".")).".thumb".substr ($page, strrpos ($page, "."));
             
-            if (@is_file ($location.$object_thumb))
+            if (is_file ($location.$object_thumb))
             {
               deletefile ($location, $object_thumb, 0);            
               // remote client
@@ -11245,7 +11296,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             }
                    
             // delete workflow
-            if (@is_file ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile_self))
+            if (is_file ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile_self))
             {
               deletefile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile_self, 0);
             }
@@ -11257,16 +11308,11 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
               
               $test_temp = deletefile ($contentlocation, $contentfile_self, 0);    
               
-              if ($test_temp != false) @rename ($contentlocation.$contentfile_self_wrk, $contentlocation.$contentfile_self);  
-              
-              if ($test_temp == false)
-              {
-                $errcode = "10117";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$contentfile_self_wrk;
-              }   
+              // rename working container
+              if ($test_temp != false) @rename ($contentlocation.$contentfile_self_wrk, $contentlocation.$contentfile_self);
               
               // delete link file
-              if (@is_file ($mgmt_config['abs_path_link'].$contentfile_id))
+              if (is_file ($mgmt_config['abs_path_link'].$contentfile_id))
               {
                 $test_temp = deletefile ($mgmt_config['abs_path_link'], $contentfile_id, 0);    
                 
@@ -11281,28 +11327,28 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                   $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$mgmt_config['abs_path_link'].$contentfile_id;
                 }
               }
+
+              // load language code index file
+              $langcode_array = getlanguageoptions ();
               
               // delete all VTT files of videos
-              if ($contentfile_id != "")
+              if ($langcode_array != false)
               {
-                // load language code index file
-                $langcode_array = getlanguageoptions ();
-          
-                if ($langcode_array != false)
+                foreach ($langcode_array as $code => $language)
                 {
-                  foreach ($langcode_array as $code => $language)
+                  if (is_file ($mgmt_config['abs_path_temp']."view/".$contentfile_id."_".trim($code).".vtt"))
                   {
-                    if (is_file ($mgmt_config['abs_path_temp']."view/".$contentfile_id."_".trim($code).".vtt"))
-                    {
-                      deletefile ($mgmt_config['abs_path_temp']."view/", $contentfile_id."_".trim($code).".vtt", 0);
-                    }
+                    deletefile ($mgmt_config['abs_path_temp']."view/", $contentfile_id."_".trim($code).".vtt", 0);
                   }
                 }
               }
+
+              // define media location
+              $medialocation = getmedialocation ($site, $mediafile_self, "abs_path_media");
             
               // delete all content and media version files
               $dir_version = $contentlocation;
-  
+
               if ($dir_version != false)
               {
                 $handle_version = @dir ($dir_version);
@@ -11314,43 +11360,26 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                     if ($entry != "." && $entry != ".." && $contentfile_self != "" && (substr_count ($entry, $contentfile_self.".v_") == 1 || substr_count ($entry, "_hcm".$contentfile_id) == 1))
                     {
                       // container version
-                      if (@is_file ($dir_version.$entry))
-                      {
-                        $test_temp = deletefile ($dir_version, $entry, 0);
-                        
-                        if ($test_temp == false)
-                        {
-                          $errcode = "10106";
-                          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$dir_version.$entry;
-                        }
-                      }
-                      
+                      deletefile ($dir_version, $entry, 0);
+
                       // media file version
-                      if (!empty ($medialocation) && @is_file ($medialocation.$site."/".$entry))
+                      if (!empty ($mediafile_self) && !empty ($medialocation))
                       {
-                        $test_temp = deletefile ($medialocation.$site."/", $entry, 0);
-                        
-                        if ($test_temp == false)
-                        {
-                          $errcode = "10107";
-                          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$medialocation.$site."/".$entry;
-                        }
-                      }
+                        // media file version
+                        deletefile ($medialocation.$site."/", $entry, 0);
+       
+                        // cloud storage
+                        if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $entry, $user);
                       
-                      // thumbnail file version
-                      $entry_info = getfileinfo ($site, $entry, $cat);
-                      $entry_thumb = $entry_info['filename'].".thumb.jpg".strtolower (strrchr ($entry, "."));
-                      
-                      if (@is_file ($medialocation.$site."/".$entry_thumb))
-                      {
-                        $test_temp = deletefile ($medialocation.$site."/", $entry_thumb, 0);
-            
-                        if ($test_temp == false)
-                        {
-                          $errcode = "10291";
-                          $error[] = $mgmt_config['today']."|version_content.php|error|$errcode|deletefile failed for ".$medialocation.$site."/".$entry_thumb;          
-                        }
-                      }     
+                        // thumbnail file version
+                        $entry_info = getfileinfo ($site, $entry, $cat);
+                        $entry_thumb = $entry_info['filename'].".thumb.jpg".strtolower (strrchr ($entry, "."));
+
+                        deletefile ($medialocation.$site."/", $entry_thumb, 0);
+
+                        // cloud storage
+                        if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $entry_thumb, $user);
+                      }   
                     }
                   }
                   
@@ -11359,16 +11388,11 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
               }
             }
           }
-          else
-          {
-            $errcode = "10120";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$location.$page;            
-          }
         }
         elseif ($allow_delete == false && ($filetype == "Page" || $filetype == "Component"))
         {
           // delete page file
-          $test = deletefile ($location, $page, 0); 
+          deletefile ($location, $page, 0); 
           
           // remote client
           remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $page, "");           
@@ -11376,18 +11400,12 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           // thumbnail (for older versions before 5.0)
           $object_thumb = substr ($page, 0, strrpos ($page, ".")).".thumb".substr ($page, strrpos ($page, "."));
           
-          if (@is_file ($location.$object_thumb)) 
+          if (is_file ($location.$object_thumb)) 
           {
             deletefile ($location, $object_thumb, 0); 
             // remote client
             remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $object_thumb, "");
-          }  
-  
-          if ($test == false)
-          {
-            $errcode = "10121";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$location_esc.$page;            
-          }      
+          }     
         }
         elseif ($filetype != "Page" && $filetype != "Component")
         {
@@ -11398,26 +11416,20 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           } 
             
           // delete file
-          $test = deletefile ($location, $page, 0);
+          deletefile ($location, $page, 0);
           
           // remote client
           remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $page, "");           
           
-          // thumbnail
+          // thumbnail (for older versions before 5.0)
           $object_thumb = substr ($page, 0, strrpos ($page, ".")).".thumb".substr ($page, strrpos ($page, "."));
           
-          if (@is_file ($location.$object_thumb))
+          if (is_file ($location.$object_thumb))
           {
             deletefile ($location, $object_thumb, 0);
             // remote client
             remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $object_thumb, "");
-          }                    
-    
-          if ($test == false)
-          {
-            $errcode = "10107";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$location_esc.$page;
-          }             
+          }
         }
         else $test = false;
   
@@ -11442,7 +11454,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         }
       }
   
-      // --------------------------------------- rename page -------------------------------------
+      // --------------------------------------- rename object -------------------------------------
       elseif ($show == "" && ($action == "page_rename" || $action == "file_rename"))
       {
         // rename object
@@ -11457,7 +11469,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           if ($contentfile_self > 0)
           {
             // relational DB connectivity
-            if ($mgmt_config['db_connect_rdbms'] != "" && $contentfile_self > 0)
+            if ($mgmt_config['db_connect_rdbms'] != "")
             {
               rdbms_renameobject (convertpath ($site, $location.$page, $cat), convertpath ($site, $location.$pagenew, $cat));                     
             }
@@ -11478,7 +11490,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             $object_thumb = substr ($page, 0, strrpos ($page, ".")).".thumb".substr ($page, strrpos ($page, "."));
             $object_thumbnew = substr ($pagenew, 0, strrpos ($pagenew, ".")).".thumb".substr ($pagenew, strrpos ($pagenew, "."));
             
-            if (@is_file ($location.$object_thumb))
+            if (is_file ($location.$object_thumb))
             {
               @rename ($location.$object_thumb, $location.$object_thumbnew);        
               // remote client
@@ -11507,7 +11519,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         }
       }
   
-      // --------------------------------------- unpublish page -------------------------------------
+      // --------------------------------------- unpublish object -------------------------------------
       elseif ($show == "" && $action == "page_unpublish")
       {
         // read actual file info (to get associated content)
@@ -11530,17 +11542,10 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           // rename object file
           if ($test != false)
           {
-            // remove media file
-            if ($mediafile_self != "")
-            {
-              deletefile (getmedialocation ($site, $mediafile_self, "abs_path_media").$site."/", $mediafile_self);
-              // remote client
-              remoteclient ("delete", "abs_path_media", $site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", "", $mediafile, "");
-            }
-            
             // remote client
             remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");  
-                    
+           
+            // rename object file
             $test = @rename ($location.$page, $location.$pagenew);
           
             // remote client
@@ -11571,7 +11576,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         }
       }
   
-      // ----------------------------------------- cut and paste page -------------------------------------
+      // ----------------------------------------- cut and paste object -------------------------------------
       elseif ($show == "" && $action == "page_paste" && $method == "cut")
       {
         // relational DB connectivity
@@ -11636,7 +11641,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         }
       }
       
-      // --------------------------------------- connected copy and paste page -----------------------------------
+      // --------------------------------------- connected copy and paste object -----------------------------------
       elseif ($show == "" && $action == "page_paste" && $method == "linkcopy")
       {
         // load link db
@@ -11731,7 +11736,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         }           
       }      
   
-      // ----------------------------------------- copy and paste page -------------------------------------
+      // ----------------------------------------- copy and paste object -------------------------------------
       elseif ($show == "" && $action == "page_paste" && $method == "copy")
       {
         if ($contentfile_self != "")

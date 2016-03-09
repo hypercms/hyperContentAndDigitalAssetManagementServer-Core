@@ -67,7 +67,7 @@ function showkeywordlist ($keywords, $cat="", $sort_type="value", $css="hcmsButt
       if ($cat != "") $search_dir = "&search_dir=".urlencode("%".$cat."%/".$site."/");
       else $search_dir = "";
       
-      $show .= "<tr><td><button class=\"".$css."\" style=\"max-width:240px;\" onclick=\"location.href='frameset_objectlist.php?site=".urlencode($site)."&action=keyword_search".$search_dir."&search_textnode[".$text_id."]=".urlencode($value)."&maxhits=1000';\">".$value." ".$count."</button></td></tr>\n";
+      $show .= "<tr><td><button class=\"".$css."\" style=\"max-width:240px;\" onclick=\"location='frameset_objectlist.php?site=".urlencode($site)."&action=keyword_search".$search_dir."&search_textnode[".$text_id."]=".urlencode($value)."&maxhits=1000';\">".$value." ".$count."</button></td></tr>\n";
     }
       
     return $show;
@@ -249,7 +249,7 @@ if (is_file ($keywordfile))
   <?php echo showmessage ($show, 560, 120, $lang, "position:absolute; left:15px; top:15px;"); ?>
   
   <?php if ($regenerate) { ?>
-  <button class="hcmsButtonGreen" onclick="document.getElementById('hcmsLoadScreen').style.display='block'; location.href='?action=regenerate&site=<?php echo html_encode ($site); ?>&token=<?php echo createtoken ($user); ?>';"><?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></button>
+  <button class="hcmsButtonGreen" onclick="document.getElementById('hcmsLoadScreen').style.display='block'; location='?action=regenerate&site=<?php echo html_encode ($site); ?>&token=<?php echo createtoken ($user); ?>';"><?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></button>
   <?php } ?>
 
   <?php if (!empty ($show_comp_rank)) { ?>

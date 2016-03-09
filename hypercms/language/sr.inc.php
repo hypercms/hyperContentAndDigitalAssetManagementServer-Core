@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['sr'] = "Korisnik mora
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['sr'] = "Unesite metapodataka za vaš uploads";
 $hcms_lang['user-wants-to-chat-with-you']['sr'] = "Korisnik %user% želi da razgovor sa vama";
 $hcms_lang['enable-direct-file-uploads-in-pages']['sr'] = "Omogućiti direktan upload u strana";
+$hcms_lang['use-local-media-storage']['sr'] = "Korišćenje lokalnih medija za skladištenje";
+$hcms_lang['use-cloud-media-storage']['sr'] = "Korišćenje oblak medija za skladištenje";
+$hcms_lang['use-local-and-cloud-media-storage']['sr'] = "Korišćenje lokalnih i oblak medija za skladištenje";
+$hcms_lang['media-storage-type']['sr'] = "Mediji za skladištenje tip";
 ?>

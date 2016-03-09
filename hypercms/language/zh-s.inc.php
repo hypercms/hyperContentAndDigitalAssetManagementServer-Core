@@ -1355,4 +1355,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['zh-s'] = "用户必�
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['zh-s'] = "请输入元数据为您上传";
 $hcms_lang['user-wants-to-chat-with-you']['zh-s'] = "用户%user%希望与您聊天";
 $hcms_lang['enable-direct-file-uploads-in-pages']['zh-s'] = "启用直接的文件上传的页面";
+$hcms_lang['use-local-media-storage']['zh-s'] = "使用本地介质存储";
+$hcms_lang['use-cloud-media-storage']['zh-s'] = "使用云存储介质";
+$hcms_lang['use-local-and-cloud-media-storage']['zh-s'] = "使用本地和云存储介质";
+$hcms_lang['media-storage-type']['zh-s'] = "介质存储类型";
 ?>

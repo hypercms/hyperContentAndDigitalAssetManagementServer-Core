@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['ro'] = "Utilizatorul 
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['ro'] = "Vă rugăm să introduceţi metadate pentru încărcarea de dvs.";
 $hcms_lang['user-wants-to-chat-with-you']['ro'] = "Utilizator %user% vrea sa chat cu tine";
 $hcms_lang['enable-direct-file-uploads-in-pages']['ro'] = "Permite încărcarea fişierului direct în pagini";
+$hcms_lang['use-local-media-storage']['ro'] = "Utilizaţi suporturi de stocare locală";
+$hcms_lang['use-cloud-media-storage']['ro'] = "Utilizaţi suporturi de stocare de tip cloud";
+$hcms_lang['use-local-and-cloud-media-storage']['ro'] = "Utilizaţi suporturi de stocare de tip cloud şi locale";
+$hcms_lang['media-storage-type']['ro'] = "Tip de stocare media";
 ?>

@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['ko'] = "사용자 파
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['ko'] = "당신의 업로드할 수 있는 메타데이터를 입력하십시오.";
 $hcms_lang['user-wants-to-chat-with-you']['ko'] = "사용자 %user% 채트하기를 원할";
 $hcms_lang['enable-direct-file-uploads-in-pages']['ko'] = "페이지를 직접 파일 업로드 가능";
+$hcms_lang['use-local-media-storage']['ko'] = "로컬 미디어 스토리지 사용";
+$hcms_lang['use-cloud-media-storage']['ko'] = "클라우드 미디어 스토리지 사용";
+$hcms_lang['use-local-and-cloud-media-storage']['ko'] = "로컬 및 클라우드 미디어 스토리지 사용";
+$hcms_lang['media-storage-type']['ko'] = "미디어 스토리지 유형";
 ?>

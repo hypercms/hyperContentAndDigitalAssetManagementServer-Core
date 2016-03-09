@@ -479,9 +479,9 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
 
 function copymetadata ($file_source, $file_dest)
 {
-	global $user, $mgmt_config, $mgmt_mediametadata;
+	global $mgmt_config, $mgmt_mediametadata, $user;
   
-	if (is_file ($file_source) && is_file ($file_dest) && is_array ($mgmt_mediametadata))
+	if ($file_source != "" && $file_dest != "" && is_array ($mgmt_mediametadata))
   {
     // get source file extension
     $file_source_ext = strtolower (strrchr ($file_source, "."));
@@ -491,23 +491,37 @@ function copymetadata ($file_source, $file_dest)
     {
       if ($executable != "" && substr_count ($extensions.".", $file_source_ext.".") > 0)
       {
-        // get location and media file name
+        // ------------- get source publication, location and media file name ---------------
+        $site_source = getpublication ($file_source);
         $location_source = getlocation ($file_source);
         $media_source = getobject ($file_source);
         
-        // create temp file if file is encrypted
-        $temp_source = createtempfile ($location_source, $media_source);
+        // prepare source media file
+        $temp_source = preparemediafile ($site_source, $location_source, $media_source, $user);
         
-        if ($temp_source['crypted']) $file_source = $temp_source['templocation'].$temp_source['tempfile'];
+        if ($temp_source['crypted'])
+        {
+          $file_source = $location_dest.$media_dest;
+        }
+
+        // verify source media file
+        if (!is_file ($file_source)) return false;
         
-        // get location and media file name
+        // --------------- get destination publication, location and media file name ---------------
+        $site_dest = getpublication ($file_dest);
         $location_dest = getlocation ($file_dest);
         $media_dest = getobject ($file_dest);
         
-        // create temp file if file is encrypted
-        $temp_dest = createtempfile ($location_dest, $media_dest);
+        // prepare destination media file
+        $temp_dest = preparemediafile ($site_dest, $location_dest, $media_dest, $user);
         
-        if ($temp_dest['crypted']) $file_dest = $temp_dest['templocation'].$temp_dest['tempfile'];
+        if ($temp_dest['crypted'])
+        {
+          $file_dest = $temp_dest['templocation'].$temp_dest['tempfile'];
+        }
+        
+        // verify destination media file
+        if (!is_file ($file_dest)) return false;
         
         // copy meta data
         $cmd = $executable." -overwrite_original -TagsFromFile \"".shellcmd_encode ($file_source)."\" \"-all:all>all:all\" \"".shellcmd_encode ($file_dest)."\"";    
@@ -561,12 +575,13 @@ function extractmetadata ($file)
     {
       if (substr_count ($extensions.".", $file_info['ext'].".") > 0)
       {
-        // get location and media file name
+        // get publication, location and media file name
+        $site = getpublication ($file);
         $location = getlocation ($file);
         $media = getobject ($file);
     
-        // create temp file if file is encrypted
-        $temp = createtempfile ($location, $media);
+        // prepare media file
+        $temp = preparemediafile ($site, $location, $media, $user);
         
         if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
         
@@ -848,12 +863,13 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
     // check file extension
     if (substr_count (strtolower ($hcms_ext['audio']).".", $file_info['ext'].".") == 0) return false;
     
-    // get location and media file name
+    // get publication, location and media file name
+    $site = getpublication ($file);
     $location = getlocation ($file);
     $media = getobject ($file);
     
-    // create temp file if file is encrypted
-    $temp = createtempfile ($location, $media);
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $media, $user);
     
     if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
     
@@ -938,6 +954,9 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
             
             // encrypt and save file if required
             if ($temp['result']) movetempfile ($location, $media, true);
+            
+            // save to cloud storage
+            if (function_exists ("savecloudobject")) savecloudobject ($site, $location, $media, $user);
           }
         }
         // on error
@@ -1024,12 +1043,13 @@ function xmp_getdata ($file)
     // check file extension
     if (substr_count (strtolower ($hcms_ext['image']).".", $file_info['ext'].".") == 0) return false;
   
-    // get location and media file name
+    // get publication, location and media file name
+    $site = getpublication ($file);
     $location = getlocation ($file);
     $media = getobject ($file);
     
-    // create temp file if file is encrypted
-    $temp = createtempfile ($location, $media);
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $media, $user);
     
     if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
     
@@ -1174,15 +1194,16 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
     // check file extension
     if (substr_count ($hcms_ext['image'].".", $file_info['ext'].".") == 0) return false;
     
-    // get location and media file name
+    // get publication, location and media file name
+    $site = getpublication ($file);
     $location = getlocation ($file);
     $media = getobject ($file);
     
-    // create temp file if file is encrypted
-    $temp = createtempfile ($location, $media);
-    
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $media, $user);
+        
     if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
-    
+
     if (is_file ($file))
     {
       // define executable
@@ -1241,6 +1262,9 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
             
             // encrypt and save file if required
             if ($temp['result']) movetempfile ($location, $media, true);
+            
+            // save to cloud storage
+            if (function_exists ("savecloudobject")) savecloudobject ($site, $location, $media, $user);
           }
 
           // save log
@@ -1336,12 +1360,13 @@ function exif_getdata ($file)
     // check file extension
     if (substr_count (strtolower ($hcms_ext['image']).".", $file_info['ext'].".") == 0) return false;
     
-    // get location and media file name
+    // get publication, location and media file name
+    $site = getpublication ($file);
     $location = getlocation ($file);
     $media = getobject ($file);
     
-    // create temp file if file is encrypted
-    $temp = createtempfile ($location, $media);
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $media, $user);
     
     if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
 		
@@ -1592,12 +1617,13 @@ function iptc_getdata ($file)
     // check file extension
     if (substr_count (strtolower ($hcms_ext['image']).".", $file_info['ext'].".") == 0) return false;
   
-    // get location and media file name
+    // get publication, location and media file name
+    $site = getpublication ($file);
     $location = getlocation ($file);
     $media = getobject ($file);
     
-    // create temp file if file is encrypted
-    $temp = createtempfile ($location, $media);
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $media, $user);
     
     if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
   
@@ -1846,12 +1872,13 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
     // check file extension
     if (!in_array ($file_info['ext'], $allowed_ext)) return false;
     
-    // get location and media file name
+    // get publication, location and media file name
+    $site = getpublication ($file);
     $location = getlocation ($file);
     $media = getobject ($file);
     
-    // create temp file if file is encrypted
-    $temp = createtempfile ($location, $media);
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $media, $user);
     
     if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
     
@@ -1955,6 +1982,9 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
   
             // encrypt and save file if required
             if ($temp['result']) movetempfile ($location, $media, true);
+            
+            // save to cloud storage
+            if (function_exists ("savecloudobject")) savecloudobject ($site, $location, $media, $user);
           }
           
           return true;
@@ -2513,8 +2543,8 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         // load text XML-schema
         $text_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "text.schema.xml.php"));
         
-        // create temp file if file is encrypted
-        $temp = createtempfile ($medialocation, $mediafile);
+        // prepare media file
+        $temp = preparemediafile ($site, $location, $mediafile, $user);
         
         if ($temp['result'] && $temp['crypted'])
         {

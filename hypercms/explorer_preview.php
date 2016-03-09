@@ -91,7 +91,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     $mediaview = showobject ($site, $location, $page, $cat, $name);
   }
 
-  if ($mediaview != "") $mediaview = str_replace ("<td>", "<td style=\"width:140px; vertical-align:top;\">", $mediaview);
+  if ($mediaview != "") $mediaview = str_replace ("<td>", "<td style=\"width:20%; vertical-align:top;\">", $mediaview);
 
   // meta data
   $metadata_array = getmetadata ("", "", $contentdata, "array", $site."/".$object_info['template']);
@@ -103,10 +103,10 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     foreach ($metadata_array as $key => $value)
     {
       if (trim ($key) != "") $key = $key.":";
-      $rows .= "<tr><td>".$key."&nbsp;&nbsp;</td><td class=\"hcmsHeadlineTiny\">".$value."</td></tr>\n";
+      $rows .= "<tr><td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\">".$value."</td></tr>\n";
     }
     
-    if ($rows != "") $metadata = "<hr /><table>\n".str_replace ("<td>", "<td style=\"width:140px; vertical-align:top;\">", $rows)."</table>\n";
+    if ($rows != "") $metadata = "<hr /><table>\n".$rows."</table>\n";
   }
 }
 ?>

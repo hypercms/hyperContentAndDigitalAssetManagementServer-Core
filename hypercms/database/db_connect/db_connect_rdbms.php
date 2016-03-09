@@ -2487,7 +2487,7 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
     savelog ($db->getError());
     $db->close();
     
-    if (is_array ($result)) return $result;
+    if (!empty ($result) && is_array ($result)) return $result;
     else return false;
   }
   else return false;

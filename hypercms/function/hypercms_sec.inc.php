@@ -384,7 +384,7 @@ function accesspermission ($site, $location, $cat)
   global $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $mgmt_config;   
 
   if (valid_publicationname ($site) && valid_locationname ($location) && is_array ($mgmt_config))
-  { 
+  {
     // load config if not available
     if ((!isset ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
@@ -404,6 +404,9 @@ function accesspermission ($site, $location, $cat)
     {
       $location = deconvertpath ($location, "file");
     }
+    
+    // remove slash if present at the end of the location string
+    if (substr ($location, -1) == "/") $location = substr ($location, 0 , -1);  
     
     // cut off file name 
     if (@is_file ($location)) $location = getlocation ($location);
@@ -481,7 +484,7 @@ function accesspermission ($site, $location, $cat)
         }
       }  
       else return false;
-      
+
       // return result if group was located
       if (isset ($groups) && is_array ($groups) && sizeof ($groups) > 0 && isset ($points) && is_array ($points) && sizeof ($points) > 0)
       {
@@ -495,7 +498,7 @@ function accesspermission ($site, $location, $cat)
 
         if (is_array ($result) && sizeof ($result) > 0) return $result;
       }
-      // return deafult group as result if no group was located and hcms linking exists
+      // return default group as result if no group was located and hcms linking exists
       elseif (isset ($_SESSION['hcms_linking']) && is_array ($_SESSION['hcms_linking']))
       {
         $result[] = "default";
@@ -775,7 +778,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       'checksum'			=> '',
       'message'			=> '',
       'mobile'			=> '',
-      'chatstae'			=> ''
+      'chatstate'			=> ''
       );
   
   $linking_auth = true;
@@ -1669,11 +1672,11 @@ function killsession ($user="", $destroy_php=true)
     // delete session file
     if ($remove == true)
     {
-      $test = deletefile ($mgmt_config['abs_path_data']."session/", $user.".dat", 0);
+      deletefile ($mgmt_config['abs_path_data']."session/", $user.".dat", 0);
     }
     else
     {
-      $test = savefile ($mgmt_config['abs_path_data']."session/", $user.".dat", $sessiondata);
+      savefile ($mgmt_config['abs_path_data']."session/", $user.".dat", $sessiondata);
     }
   }
 
@@ -2429,8 +2432,11 @@ function scriptcode_clean_functions ($content, $type=3, $application="PHP")
     // remove functions from content
     foreach ($all_functions as $name)
     {
+      // convert all multispaces to space
+      $scriptcode = preg_replace ("/ +/", " ", $scriptcode);
+
       // find expression followed by (
-      if ($name != "" && @preg_match ('/\b'.preg_quote ($name).'\b(.*?)\(/i', $scriptcode))
+      if ($name != "" && (substr_count ($scriptcode, $name." (") > 0 || substr_count ($scriptcode, $name."(") > 0))
       {
         // found expression
         $found[] = $name;

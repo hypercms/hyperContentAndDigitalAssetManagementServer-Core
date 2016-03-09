@@ -1354,4 +1354,8 @@ $hcms_lang['user-must-provide-metadata-for-file-uploads']['ur'] = "صارف فر
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['ur'] = "آپ کے لئے داخل کی میٹا ڈیٹا Uploads";
 $hcms_lang['user-wants-to-chat-with-you']['ur'] = "یوزر %user% آپ کے ساتھ چیٹ کرنے کے لئے چاہتا ہے";
 $hcms_lang['enable-direct-file-uploads-in-pages']['ur'] = "صفحہ میں براہ راست مسل چڑھانا اہل بنائیں";
+$hcms_lang['use-local-media-storage']['ur'] = "مقامی میڈیا استعمال ذخیرہ";
+$hcms_lang['use-cloud-media-storage']['ur'] = "استعمال بادل میڈیا کی ذخیرہ";
+$hcms_lang['use-local-and-cloud-media-storage']['ur'] = "مقامی اور استعمال بادل میڈیا کی ذخیرہ";
+$hcms_lang['media-storage-type']['ur'] = "میڈیا ذخیرہ قسم";
 ?>

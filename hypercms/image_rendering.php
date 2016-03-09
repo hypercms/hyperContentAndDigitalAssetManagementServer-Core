@@ -16,6 +16,7 @@ require ("function/hypercms_api.inc.php");
 // file formats extensions
 require ("include/format_ext.inc.php");
 
+
 // input parameters
 $action = getrequest_esc ("action");
 $location = getrequest_esc ("location", "locationname");
@@ -35,35 +36,35 @@ $imagecropheight = getrequest ("imagecropheight", "numeric");
 $imagex = getrequest ("imagex", "numeric");
 $imagey = getrequest ("imagey", "numeric");
 // Rotate
-$rotate = getrequest("rotate");
+$rotate = getrequest ("rotate");
 $angle = getrequest ("degree", "numeric");
 // Brightness
-$use_brightness = getrequest("use_brightness", "numeric");
+$use_brightness = getrequest ("use_brightness", "numeric");
 $brightness = getrequest ("brightness", "numeric");
 // Contrast
-$use_contrast = getrequest("use_contrast", "numeric");
+$use_contrast = getrequest ("use_contrast", "numeric");
 $contrast = getrequest ("contrast", "numeric");
 // Colorspace
-$colorspace = getrequest( "colorspace" );
-$imagecolorspace = getrequest("imagecolorspace");
+$colorspace = getrequest ("colorspace" );
+$imagecolorspace = getrequest ("imagecolorspace");
 // flip
-$flip = getrequest( "flip" );
+$flip = getrequest ("flip" );
 // Effects
 $effect = getrequest ("effect");
 // sepia_treshold
-$sepia_treshold = getrequest( "sepia_treshold", "numeric" );
+$sepia_treshold = getrequest ("sepia_treshold", "numeric" );
 // blur data
-$blur_radius = getrequest( "blur_radius", "numeric", NULL );
-$blur_sigma = getrequest( "blur_sigma", "numeric", NULL );
+$blur_radius = getrequest ("blur_radius", "numeric", NULL );
+$blur_sigma = getrequest ("blur_sigma", "numeric", NULL );
 // blur data
-$sharpen_radius = getrequest( "sharpen_radius", "numeric", NULL );
-$sharpen_sigma = getrequest( "sharpen_sigma", "numeric", NULL );
+$sharpen_radius = getrequest ("sharpen_radius", "numeric", NULL );
+$sharpen_sigma = getrequest ("sharpen_sigma", "numeric", NULL );
 // sketch data
-$sketch_radius = getrequest( "sketch_radius", "numeric", NULL );
-$sketch_sigma = getrequest( "sketch_sigma", "numeric", NULL );
-$sketch_angle = getrequest( "sketch_angle", "numeric", NULL );
+$sketch_radius = getrequest ("sketch_radius", "numeric", NULL );
+$sketch_sigma = getrequest ("sketch_sigma", "numeric", NULL );
+$sketch_angle = getrequest ("sketch_angle", "numeric", NULL );
 // Paint Value
-$paintvalue = getrequest( "paint_value", "numeric", NULL );
+$paintvalue = getrequest ("paint_value", "numeric", NULL );
 
 // get publication and category
 $site = getpublication ($location);
@@ -91,39 +92,19 @@ checkusersession ($user);
 $show = "";
 $add_onload = "";
 
-// load object file and get container and media file
-$objectdata = loadfile ($location, $page);
-$mediafile = $mediafile_orig = getfilename ($objectdata, "media");
+$available_colorspaces = array();
+$available_colorspaces['CMYK'] = 'CMYK';
+$available_colorspaces['GRAY'] = 'GRAY';
+$available_colorspaces['CMY'] = 'CMY';
+$available_colorspaces['RGB'] = 'RGB';
+$available_colorspaces['sRGB'] = 'sRGB';
+$available_colorspaces['Transparent'] = 'Transparent';
+$available_colorspaces['XYZ'] = 'XYZ';
 
-// get file information of original media file
-$mediafile_info = getfileinfo ($site, $mediafile, "");
-$media_root = getmedialocation ($site, $mediafile_info['name'], "abs_path_media").$site."/";
-
-// get file information of original component file
-$pagefile_info = getfileinfo ($site, $location.$page, $cat);
-
-// if RAW image use equivalent JPEG image to get image size
-if (is_rawimage ($mediafile_info['ext']) && is_file ($media_root.$mediafile_info['filename'].".jpg"))
-{
-  // create temp file if file is encrypted
-  $temp = createtempfile ($media_root, $mediafile_info['filename'].".jpg");
-  $mediafile = $mediafile_info['filename'].".jpg";
-}
-else
-{
-  // create temp file if file is encrypted
-  $temp = createtempfile ($media_root, $mediafile);
-}
-
-// get image dimensions
-if ($temp['result'] && $temp['crypted'])
-{
-  $media_size = getimagesize ($temp['templocation'].$temp['tempfile']);
-}
-else
-{
-  $media_size = getimagesize ($media_root.$mediafile);
-}
+$available_flip = array();
+$available_flip['fv'] = getescapedtext ($hcms_lang['vertical'][$lang]);
+$available_flip['fh'] = getescapedtext ($hcms_lang['horizontal'][$lang]);
+$available_flip['fv fh'] = getescapedtext ($hcms_lang['both'][$lang]);
 
 // read all possible formats to convert to from the mediaoptions
 $convert_formats = array();
@@ -145,25 +126,50 @@ if (!in_array ('gif', $convert_formats)) $convert_formats[] = 'gif';
 if (!in_array ('jpg', $convert_formats) && !in_array ('jpeg', $convert_formats)) $convert_formats[] = 'jpg';
 if (!in_array ('png', $convert_formats)) $convert_formats[] = 'png';
 
-$available_colorspaces = array();
-$available_colorspaces['CMYK'] = 'CMYK';
-$available_colorspaces['GRAY'] = 'GRAY';
-$available_colorspaces['CMY'] = 'CMY';
-$available_colorspaces['RGB'] = 'RGB';
-$available_colorspaces['sRGB'] = 'sRGB';
-$available_colorspaces['Transparent'] = 'Transparent';
-$available_colorspaces['XYZ'] = 'XYZ';
+// load object file and get container and media file
+$objectdata = loadfile ($location, $page);
+$mediafile = $mediafile_orig = getfilename ($objectdata, "media");
 
-$available_flip = array();
-$available_flip['fv'] = getescapedtext ($hcms_lang['vertical'][$lang]);
-$available_flip['fh'] = getescapedtext ($hcms_lang['horizontal'][$lang]);
-$available_flip['fv fh'] = getescapedtext ($hcms_lang['both'][$lang]);
+// get file information of original media file
+$mediafile_info = getfileinfo ($site, $mediafile, "");
+$media_root = getmedialocation ($site, $mediafile_info['name'], "abs_path_media").$site."/";
 
-// get object file information in case it was renamed due to a new file extension
+// get file information of original component file
 $pagefile_info = getfileinfo ($site, $location.$page, $cat);
 
-// get file information of the new generated original media file
-$temp = createtempfile ($media_root, $mediafile);
+// if RAW image, use equivalent JPEG image
+if (is_rawimage ($mediafile_info['ext']))
+{
+  // reset media file
+  $mediafile_raw = $mediafile_info['filename'].".jpg";
+  
+  // prepare media file
+  $temp = preparemediafile ($site, $media_root, $mediafile_raw, $user);
+  
+  if ($temp['result'] && $temp['crypted'] && is_file ($temp['templocation'].$temp['tempfile']))
+  {
+    $media_root = $temp['templocation'];
+    $mediafile = $temp['tempfile'];
+  }
+  elseif (is_file ($media_root.$mediafile_raw))
+  {
+    // reset media file
+    $mediafile = $mediafile_raw;
+  }
+  else
+  {
+    // reset media file
+    $mediafile = $mediafile_orig;
+    $mediafile_failed = true;
+  }
+}
+
+// if not a RAW image or no equivalent JPEG image is available
+if (!is_rawimage ($mediafile_info['ext']) || !empty ($mediafile_failed))
+{
+  // prepare media file
+  $temp = preparemediafile ($site, $media_root, $mediafile, $user);
+}
 
 // get image dimensions
 if ($temp['result'] && $temp['crypted'])

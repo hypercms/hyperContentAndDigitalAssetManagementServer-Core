@@ -77,10 +77,7 @@ elseif (allowuserip ($site) == false)
 // --------------------------------- logic section ----------------------------------
 
 // get media location
-if (is_file (getmedialocation ($site, $media, "abs_path_media").$media))
-{
-  $media_dir = getmedialocation ($site, $media, "abs_path_media");
-}
+$media_dir = getmedialocation ($site, $media, "abs_path_media");
 
 // read player config
 $file_info = getfileinfo ($site, $media, "comp");
@@ -88,42 +85,44 @@ $audio = false;
 
 
 // IMPORTANT: do not change the priority order!
-
-// 1st Priority: versions before 5.6.3 (for HTML5 video/audio player)
-if ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename'].".config.video"))
+if ($media_dir != "")
 {
-  $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.video");
-}
-elseif ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename'].".config.audio"))
-{
-  $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.audio");
-  $audio = true;
-}
-// 2nd Priority: versions from 5.6.3 (preview of original file if no HTML5 video files have been generated)
-elseif ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename'].".config.orig"))
-{
-  $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.orig");
-  
-  // detect audio file
-  if (is_array ($config['mediafiles']))
+  // 1st Priority: versions before 5.6.3 (for HTML5 video/audio player)
+  if (is_file ($media_dir.$site."/".$file_info['filename'].".config.video") || is_cloudobject ($media_dir.$site."/".$file_info['filename'].".config.video"))
   {
-    list ($test, $rest) = explode (";", reset($config['mediafiles']));
-    $testfinfo = getfileinfo ($site, $test, 'comp');    
-    if (is_audio ($testfinfo['ext'])) $audio = true;
+    $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.video");
   }
-}
-// 3rd Priority: older versions before 5.5.13
-elseif ($media_dir != "" && is_file ($media_dir.$site."/".$file_info['filename'].".config.flv"))
-{
-  $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.flv");
-}
-// 4th Priority: no media config file is available, try to create video thumbnail file
-elseif (is_file ($media_dir.$site."/".$file_info['file']))
-{
-  // create thumbnail video of original file
-  $create_media = createmedia ($site, $media_dir.$site."/", $media_dir.$site."/", $file_info['file'], "flv", "origthumb");
-  
-  if ($create_media) $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.orig");
+  elseif (is_file ($media_dir.$site."/".$file_info['filename'].".config.audio") || is_cloudobject ($media_dir.$site."/".$file_info['filename'].".config.audio"))
+  {
+    $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.audio");
+    $audio = true;
+  }
+  // 2nd Priority: versions from 5.6.3 (preview of original file if no HTML5 video files have been generated)
+  elseif (is_file ($media_dir.$site."/".$file_info['filename'].".config.orig") || is_cloudobject ($media_dir.$site."/".$file_info['filename'].".config.orig"))
+  {
+    $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.orig");
+    
+    // detect audio file
+    if (is_array ($config['mediafiles']))
+    {
+      list ($test, $rest) = explode (";", reset($config['mediafiles']));
+      $testfinfo = getfileinfo ($site, $test, 'comp');    
+      if (is_audio ($testfinfo['ext'])) $audio = true;
+    }
+  }
+  // 3rd Priority: older versions before 5.5.13
+  elseif (is_file ($media_dir.$site."/".$file_info['filename'].".config.flv") || is_cloudobject ($media_dir.$site."/".$file_info['filename'].".config.flv"))
+  {
+    $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.flv");
+  }
+  // 4th Priority: no media config file is available, try to create video thumbnail file
+  elseif (is_file ($media_dir.$site."/".$file_info['file']) || is_cloudobject ($media_dir.$site."/".$file_info['file']))
+  {
+    // create thumbnail video of original file
+    $create_media = createmedia ($site, $media_dir.$site."/", $media_dir.$site."/", $file_info['file'], "flv", "origthumb");
+    
+    if ($create_media) $config = readmediaplayer_config ($media_dir.$site."/", $file_info['filename'].".config.orig");
+  }
 }
 
 // reset width of video player by config value
