@@ -1352,8 +1352,14 @@ Release 03/2016
 - Updates in Mime-types (include/format_mime)
 - Removed replacement of all brackets from function specialchr_encode to solve issues with WebDAV module
 - Improvements in function scriptcode_clean_functions to verify PHP functions in the script code
+
+Version 6.1.1
+Release 03/2016
+- Improvements in function getlockedobjects by implementing function loadfile_fast instead of loadfile for loading
+- Improvements in project_list regarding the verification of parameters
+- Implementation of decoding of special characters in log_list and Plugin logviewer
 */
 
 // current version
-$version = "Version 6.1.0";
+$version = "Version 6.1.1";
 ?>

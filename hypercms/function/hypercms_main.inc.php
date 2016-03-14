@@ -113,7 +113,7 @@ function specialchr_encode ($expression, $remove="no")
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
   
-  if (!is_array ($expression))
+  if (is_string ($expression))
   {
     $path_parts = array();
     $result_parts = array();
@@ -168,7 +168,7 @@ function specialchr_decode ($expression)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
   
-  if (!is_array ($expression))
+  if (is_string ($expression))
   { 
     // replace % to avoid urldecoding 
     $expression = str_replace ("~", "%", $expression);
@@ -12708,7 +12708,7 @@ function getlockedobjects ($user)
     $save = false;
     
     // get checked out objects of user
-    $data = loadfile ($dir, $file);
+    $data = loadfile_fast ($dir, $file);
     
     if ($data != "")
     {

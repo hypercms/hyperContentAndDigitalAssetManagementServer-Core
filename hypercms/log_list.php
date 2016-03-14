@@ -131,7 +131,7 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
       $description = str_replace ("\"", "`", $description);
       
       // escape special characters
-      $description = html_encode ($description);
+      $description = html_encode (specialchr_decode ($description));
       
       if (strlen ($description) > 50) 
       {
