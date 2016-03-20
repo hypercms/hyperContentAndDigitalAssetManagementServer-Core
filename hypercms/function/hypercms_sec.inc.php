@@ -1927,7 +1927,7 @@ function checkuserrequests ($user="sys")
         $errcode = "00109";
         $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|$errcode|user $user with client IP $client_ip is banned due to a possible CSRF attack";
         
-        savelog ($error);        
+        savelog (@$error);        
         killsession ($user);
         return false;
       }

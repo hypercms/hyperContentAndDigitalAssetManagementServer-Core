@@ -977,7 +977,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           }
         }      
         // if template media view
-        elseif (file_exists ($media_root.$mediafile))
+        elseif (is_file ($media_root.$mediafile))
         {
           $mediaview .= "
         <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
@@ -1139,8 +1139,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
           
-          // set default width for preview of original video file
-          $width = 320;
+          // set default width for preview of original video file if no width has been provided
+          if (!is_numeric ($width) || $width == 0) $width = 320;
         }
         // new since version 5.5.7 (config of videoplayer)
         elseif (is_file ($thumb_root.$file_info['filename'].".config.video") || is_cloudobject ($thumb_root.$file_info['filename'].".config.video"))

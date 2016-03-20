@@ -13,11 +13,11 @@
 // output: true/false
 
 // description:
-// saves logging information to file
+// Saves logging information to file
 
 function savelog ($abs_path, $filename, $filedata)
 {
-  if (@file_exists ($abs_path.$filename)) return appendfile ($abs_path, $filename, $filedata);
+  if (is_file ($abs_path.$filename)) return appendfile ($abs_path, $filename, $filedata);
   else return savefile ($abs_path, $filename, $filedata); 
 }
 
@@ -27,14 +27,14 @@ function savelog ($abs_path, $filename, $filedata)
 // output: true/false
 
 // description:
-// deletes given file or all files in given directory
+// Deletes given file or all files in given directory
 
 function deletefiles ($location, $file)
 {
   if ($location != "" && $file != "")
   {      
     // if selected file is a directory
-    if (@is_dir ($location.$file))
+    if (is_dir ($location.$file))
     {
       $handler = @opendir ($location.$file);
       
@@ -68,7 +68,7 @@ function deletefiles ($location, $file)
       else return false;
     }
     // if selected file is a file
-    elseif (@is_file ($location.$file))
+    elseif (is_file ($location.$file))
     {
       // remove selected file
       return @unlink ($location.$file);
@@ -139,7 +139,7 @@ function savefile ($abs_path, $filename, $filedata)
 // output: true/false
 
 // description: 
-// appendfile just appends data to a file but cannot create a new file!
+// Function appendfile just appends data to a file but cannot create a new file!
 
 function appendfile ($abs_path, $filename, $filedata)
 {
@@ -148,7 +148,7 @@ function appendfile ($abs_path, $filename, $filedata)
   if ($abs_path != "" && $filename != "")
   {      
     // if file exists
-    if (@file_exists ($abs_path.$filename))
+    if (is_file ($abs_path.$filename))
     {    
       $filehandle = @fopen ($abs_path.$filename, "a");
     
@@ -175,7 +175,7 @@ function appendfile ($abs_path, $filename, $filedata)
 // output: true/false
 
 // description:
-// test if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
+// Test if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
 
 function valid_publicationname ($expression)
 {
@@ -195,7 +195,7 @@ function valid_publicationname ($expression)
 // output: true/false
 
 // description:
-// test if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
+// Test if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
 
 function valid_locationname ($expression)
 {
@@ -217,7 +217,7 @@ function valid_locationname ($expression)
 // output: true/false
 
 // description:
-// test if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
+// Test if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
 
 function valid_objectname ($expression)
 {
@@ -236,9 +236,8 @@ function valid_objectname ($expression)
 // output: http answer [string] or false
 
 // description:
-// remoteclient receives data from the CMS server and executes actions (file handling)
-// it also can send back text-content if action=get. this content is packed inside
-// <remotecontent> tags.
+// The remoteclient receives data from the CMS server and executes actions (file handling)
+// It also can send back text-content if action=get. this content is packed inside <remotecontent> tags.
 
 function remoteclient ($action, $passcode, $root, $site, $location, $locationnew, $page, $pagenew, $content, $filedata)
 {
@@ -246,8 +245,8 @@ function remoteclient ($action, $passcode, $root, $site, $location, $locationnew
   {
     if ($action != "" && $root != "" && valid_publicationname ($site))
     {  
-      // load site config file of publication system
-      if (valid_publicationname ($site) && file_exists ($site.".ini")) $publ_config = parse_ini_file ($site.".ini");  
+      // load publication config file of publication system
+      if (valid_publicationname ($site) && is_file ($site.".ini")) $publ_config = parse_ini_file ($site.".ini");  
         
       // correct root
       $root = str_replace ("_path_", "_publ_", $root);    

@@ -1349,7 +1349,7 @@ Release 03/2016
 - Improvements in function showmessage and showmedia
 - Implementation of support for absolute path of media files in function getpublication
 - Implementation of new main configuration settings $mgmt_config['storage_dailycloudsnyc'] and $mgmt_config['storage_type']
-- Updates in Mime-types (include/format_mime)
+- Update of mime-types (include/format_mime)
 - Removed replacement of all brackets from function specialchr_encode to solve issues with WebDAV module
 - Improvements in function scriptcode_clean_functions to verify PHP functions in the script code
 
@@ -1357,7 +1357,10 @@ Version 6.1.1
 Release 03/2016
 - Improvements in function getlockedobjects by implementing function loadfile_fast instead of loadfile for loading
 - Improvements in project_list regarding the verification of parameters
-- Implementation of decoding of special characters in log_list and Plugin logviewer
+- Implementation of decoding of special characters in log_list and plugin 'logviewer'
+- Implementation of new verification for the original video width in function showmedia
+- Migration from function file_exists to is_file or is_dir based on the case (file or directory) in all APIs
+- Migration from function file_exists to is_file or is_dir based on the case (file or directory) in remote client
 */
 
 // current version

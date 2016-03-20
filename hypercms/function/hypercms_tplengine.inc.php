@@ -1299,7 +1299,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       else $templatefile = getfilename ($pagedata, "template");
         
       // ---------------------- load version for history view ----------------------------
-      if (file_exists ($mgmt_config['abs_path_temp'].session_id().".dates.php"))
+      if (is_file ($mgmt_config['abs_path_temp'].session_id().".dates.php"))
       {
         include ($mgmt_config['abs_path_temp'].session_id().".dates.php");
         
@@ -1666,7 +1666,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     }  
     
     // check if config db_connect will be overruled by template db_connect
-    if (isset ($db_connect) && $db_connect != "" && (!isset ($db_connect_incl) || $db_connect_incl != true) && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
+    if (isset ($db_connect) && $db_connect != "" && (!isset ($db_connect_incl) || $db_connect_incl != true) && is_file ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
     {
       @include_once ($mgmt_config['abs_path_data']."db_connect/".$db_connect);      
     }
@@ -4205,7 +4205,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 if (empty ($mediafilebot[$id][$tagid]))
                 {
                   // copy Null media to template media directory
-                  if (!file_exists ($mgmt_config['abs_path_tplmedia'].$templatesite."/Null_media.gif"))
+                  if (!is_file ($mgmt_config['abs_path_tplmedia'].$templatesite."/Null_media.gif"))
                   {
                     copy ($mgmt_config['abs_path_cms']."theme/standard/img/Null_media.gif", $mgmt_config['abs_path_tplmedia'].$templatesite."/Null_media.gif");
                   }
@@ -4255,13 +4255,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   {
                     $file_info = getfileinfo ($site, $mediafilebot[$id][$tagid], "");
                     
-                    if (file_exists (getmedialocation ($site, $file_info['filename'].".thumb.jpg", "abs_path_media").$site."/".$file_info['filename'].".thumb.jpg")) $file_media = $site."/".$file_info['filename'].".thumb.jpg";
+                    if (is_file (getmedialocation ($site, $file_info['filename'].".thumb.jpg", "abs_path_media").$site."/".$file_info['filename'].".thumb.jpg")) $file_media = $site."/".$file_info['filename'].".thumb.jpg";
                     // mp4 original thumbnail video file
-                    elseif (file_exists (getmedialocation ($site, $file_info['filename'].".orig.mp4", "abs_path_media").$site."/".$file_info['filename'].".orig.mp4")) $file_media = $site."/".$file_info['filename'].".thumb.mp4";
+                    elseif (is_file (getmedialocation ($site, $file_info['filename'].".orig.mp4", "abs_path_media").$site."/".$file_info['filename'].".orig.mp4")) $file_media = $site."/".$file_info['filename'].".thumb.mp4";
                     // flv original thumbnail video file
-                    elseif (file_exists (getmedialocation ($site, $file_info['filename'].".orig.flv", "abs_path_media").$site."/".$file_info['filename'].".orig.flv")) $file_media = $site."/".$file_info['filename'].".orig.flv";
+                    elseif (is_file (getmedialocation ($site, $file_info['filename'].".orig.flv", "abs_path_media").$site."/".$file_info['filename'].".orig.flv")) $file_media = $site."/".$file_info['filename'].".orig.flv";
                     // for older versions
-                    elseif (file_exists (getmedialocation ($site, $file_info['filename'].".thumb.flv", "abs_path_media").$site."/".$file_info['filename'].".thumb.flv")) $file_media = $site."/".$file_info['filename'].".thumb.flv";
+                    elseif (is_file (getmedialocation ($site, $file_info['filename'].".thumb.flv", "abs_path_media").$site."/".$file_info['filename'].".thumb.flv")) $file_media = $site."/".$file_info['filename'].".thumb.flv";
                     // use original file
                     else $file_media = $mediafilebot[$id][$tagid];
                   }

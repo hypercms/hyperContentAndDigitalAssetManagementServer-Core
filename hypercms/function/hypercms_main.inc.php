@@ -805,7 +805,7 @@ function correctfile ($abs_path, $filename, $user="")
       return $filename;
     }
     // if file was unpublished
-    elseif (@is_file ($abs_path.$filename.".off")) 
+    elseif (is_file ($abs_path.$filename.".off")) 
     {
       $filename = $filename.".off";
       return $filename;
@@ -822,7 +822,7 @@ function correctfile ($abs_path, $filename, $user="")
       else return false;
     }
     // if file is locked by the same user (only for management files, like content containers, link index files, user index file, ...)
-    elseif (substr_count ($abs_path.$filename, $mgmt_config['abs_path_data']) == 1 && valid_objectname ($user) && @is_file ($abs_path.$filename.".@".$user)) 
+    elseif (substr_count ($abs_path.$filename, $mgmt_config['abs_path_data']) == 1 && valid_objectname ($user) && is_file ($abs_path.$filename.".@".$user)) 
     {
       $filename = $filename.".@".$user;
       return $filename;
@@ -971,7 +971,7 @@ function convertlink ($site, $path, $cat)
 
   if (valid_publicationname ($site) && $path != "" && is_array ($mgmt_config))
   {  
-    if (@substr_count ($path, "%page%") == 0 && @substr_count ($path, "%comp%") == 0 && @is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
+    if (@substr_count ($path, "%page%") == 0 && @substr_count ($path, "%comp%") == 0 && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
     {
       // load ini
       $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");     
@@ -1202,7 +1202,7 @@ function deconvertlink ($path, $type="url")
     }
 
     // convert path
-    if ($root_var != false && valid_publicationname ($site) && @is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
+    if ($root_var != false && valid_publicationname ($site) && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
     {
       // load ini
       $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");      
@@ -1512,7 +1512,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
       $mediadir = $mgmt_config['abs_path_temp'];
   
       // generate temp dir
-      if (!file_exists ($mediadir)) mkdir ($mediadir, $mgmt_config['fspermission'], true);
+      if (!is_dir ($mediadir)) mkdir ($mediadir, $mgmt_config['fspermission'], true);
   
       // split multiobject into array
       if ($multiobject != "") $multiobject_array = link_db_getobject ($multiobject);
@@ -1548,7 +1548,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
       $mediadir = $mgmt_config['abs_path_temp'];
   
       // generate temp dir
-      if (!file_exists ($mediadir)) mkdir ($mediadir, $mgmt_config['fspermission'], true);
+      if (!is_dir ($mediadir)) mkdir ($mediadir, $mgmt_config['fspermission'], true);
   
       // set multiobject array
       $multiobject_array[0] = $location;
@@ -1607,7 +1607,7 @@ function deleteversions ($type, $report)
 
   if (strtolower ($type) == "content") $versiondir = $mgmt_config['abs_path_content'];
   elseif (strtolower ($type) == "template") $versiondir = $mgmt_config['abs_path_template'];
-  elseif ($type != "" && file_exists ($type)) $versiondir = $type;
+  elseif ($type != "" && is_dir ($type)) $versiondir = $type;
   else return false; 
   
   $versionhandler = opendir ($versiondir);
@@ -1836,7 +1836,7 @@ function loadfile ($abs_path, $filename)
         $filename = $filename_unlocked;
         $filename = correctfile ($abs_path, $filename, $user);
         
-        if (is_file ($abs_path.$filename) || @is_file ($abs_path.$filename.".off"))
+        if (is_file ($abs_path.$filename) || is_file ($abs_path.$filename.".off"))
         {
           // if file is offline
           if (is_file ($abs_path.$filename.".off")) $filename = $filename.".off";    
@@ -2302,6 +2302,7 @@ function deletefile ($abs_path, $filename, $recursive=0)
         {
           if ($dirfile != "." && $dirfile != "..")
           {
+            // directory
             if (is_dir ($abs_path.$filename."/".$dirfile)) 
             {
               $test = deletefile ($abs_path.$filename."/", $dirfile, 1);
@@ -2312,7 +2313,8 @@ function deletefile ($abs_path, $filename, $recursive=0)
                 $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$abs_path.$filename."/".$dirfile;
                 break;
               }
-            }   
+            }
+            // file
             elseif (is_file ($abs_path.$filename."/".$dirfile))
             {
               $test = unlink ($abs_path.$filename."/".$dirfile);    
@@ -2651,7 +2653,7 @@ function createversion ($site, $file)
         // create new version of container and keep source container file as well
         $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
 
-        if (@is_file ($contentlocation.$container_id.".xml.wrk") && filesize ($contentlocation.$container_id.".xml.wrk") > 0)
+        if (is_file ($contentlocation.$container_id.".xml.wrk") && filesize ($contentlocation.$container_id.".xml.wrk") > 0)
         {
           return @copy ($contentlocation.$container_id.".xml.wrk", $contentlocation.$file_v);
         }
@@ -2676,7 +2678,7 @@ function createversion ($site, $file)
         // create new version of container
         $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
 
-        if (@is_file ($contentlocation.$container_id.".xml.wrk") && filesize ($contentlocation.$container_id.".xml.wrk") > 0)
+        if (is_file ($contentlocation.$container_id.".xml.wrk") && filesize ($contentlocation.$container_id.".xml.wrk") > 0)
         {
           return @copy ($contentlocation.$container_id.".xml.wrk", $contentlocation.$file_v);
         }
@@ -3055,12 +3057,12 @@ function loadcontainer ($container, $type="work", $user)
         $contentdata = loadfile ($location, $container_info['container']);
       }
       // load unlocked container
-      elseif (@is_file ($location.$container))
+      elseif (is_file ($location.$container))
       {
         $contentdata = loadfile ($location, $container);
       }
       // load locked container for current user
-      elseif (valid_objectname ($user) && @is_file ($location.$container.".@".$user))
+      elseif (valid_objectname ($user) && is_file ($location.$container.".@".$user))
       {
         $contentdata = loadfile ($location, $container.".@".$user);
       }
@@ -3193,8 +3195,8 @@ function savecontainer ($container, $type="work", $data, $user, $init=false)
 
       // save data
       if ($init == true) return savefile ($location, $container, $data);
-      elseif (valid_objectname ($user) && @is_file ($location.$container.".@".$user)) return savefile ($location, $container.".@".$user, $data);
-      elseif (@is_file ($location.$container)) return savefile ($location, $container, $data);
+      elseif (valid_objectname ($user) && is_file ($location.$container.".@".$user)) return savefile ($location, $container.".@".$user, $data);
+      elseif (is_file ($location.$container)) return savefile ($location, $container, $data);
       else return false;
     }
     else return false;
@@ -3591,7 +3593,7 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
           {
             $workflow_file = $site.".".$workflow_name.".xml";  
           
-            if (file_exists ($mgmt_config['abs_path_data']."workflow_master/".$workflow_file))
+            if (is_file ($mgmt_config['abs_path_data']."workflow_master/".$workflow_file))
             { 
               // load workflow 
               $workflow_xml = loadfile ($mgmt_config['abs_path_data']."workflow_master/", $workflow_file);
@@ -5445,7 +5447,7 @@ allow_ip = ".$allow_ip_new;
       }
       
       // try to create page root directory
-      if (!file_exists ($abs_path_page_new))
+      if (!is_file ($abs_path_page_new))
       {
         @mkdir ($abs_path_page_new, $mgmt_config['fspermission']);
 
@@ -5454,7 +5456,7 @@ allow_ip = ".$allow_ip_new;
       }
       
       // try to create page root folder object
-      if (!file_exists ($abs_path_page_new.".folder"))
+      if (!is_file ($abs_path_page_new.".folder"))
       {
         createobject ($site_name, $abs_path_page_new, ".folder", "default.meta.tpl", "sys");
       }
@@ -5886,7 +5888,7 @@ function createpersonalization ($site, $pers_name, $cat)
     $persfile = $pers_name.$ext;
     
     // upload template file
-    if (@is_file ($mgmt_config['abs_path_data']."customer/".$site."/".$persfile))
+    if (is_file ($mgmt_config['abs_path_data']."customer/".$site."/".$persfile))
     {
       $add_onload = "";
       $show = "<span class=hcmsHeadline>".$hcms_lang['the-object-exists-already'][$lang]."</span>
@@ -5978,7 +5980,7 @@ function deletepersonalization ($site, $pers_name, $cat)
       $persfile = $pers_name.".prof.dat";
     }
     
-    if (@is_file ($mgmt_config['abs_path_data']."customer/".$site."/".$persfile))
+    if (is_file ($mgmt_config['abs_path_data']."customer/".$site."/".$persfile))
     {
       $test = deletefile ($mgmt_config['abs_path_data']."customer/".$site."/", $persfile, 0);
     
@@ -6065,7 +6067,7 @@ function createtemplate ($site, $template, $cat)
     $template = $template.$ext;
     
     // upload template file
-    if (@is_file ($mgmt_config['abs_path_template'].$site."/".$template))
+    if (is_file ($mgmt_config['abs_path_template'].$site."/".$template))
     {
       $add_onload = "";
       $show = "<span class=hcmsHeadline>".$hcms_lang['the-tempate-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-template-name'][$lang]."\n";
@@ -6210,7 +6212,7 @@ function loadtemplate ($site, $template)
   
   if (valid_publicationname ($site) && valid_objectname ($template))
   {
-    if (@is_file ($mgmt_config['abs_path_template'].$site."/".$template))
+    if (is_file ($mgmt_config['abs_path_template'].$site."/".$template))
     {
       $data = loadfile ($mgmt_config['abs_path_template'].$site."/", $template);
       
@@ -6234,7 +6236,7 @@ function loadtemplate ($site, $template)
         
         foreach ($parent_array as $parent)
         {
-          if (@is_file ($mgmt_config['abs_path_template'].$parent."/".$template))
+          if (is_file ($mgmt_config['abs_path_template'].$parent."/".$template))
           {
             $data = loadfile ($mgmt_config['abs_path_template'].$parent."/", $template);
             
@@ -6316,7 +6318,7 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
     else $templatedata = false;
   
     // save new template file
-    if ($templatedata != "" && @is_file ($mgmt_config['abs_path_template'].$site."/".$template)) 
+    if ($templatedata != "" && is_file ($mgmt_config['abs_path_template'].$site."/".$template)) 
     {
       // create version of previous template file
       $template_v = fileversion ($template);
@@ -6379,7 +6381,7 @@ function deletetemplate ($site, $template, $cat)
       $template = $template.".".$cat.".tpl";
     }
     
-    if (@is_file ($mgmt_config['abs_path_template'].$site."/".$template))
+    if (is_file ($mgmt_config['abs_path_template'].$site."/".$template))
     {
       $dir_template = dir ($mgmt_config['abs_path_template'].$site."/");
       
@@ -8118,7 +8120,7 @@ function uploadtomediacat ($site, $mediacat_name, $global_files)
     $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-is-wrong-type'][$lang]." (".$global_files["file"]["type"].")</span>\n";
   }
   // error if file exists
-  elseif (@file_exists ($mediadir.$filename_new))
+  elseif (is_file ($mediadir.$filename_new))
   {
     $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]."</span><br />".$hcms_lang['please-note-the-media-file-name-in-the-media-database-must-be-unique'][$lang]."\n";
   }
@@ -8204,7 +8206,7 @@ function deletefrommediacat ($site, $mediafile)
     $mediadir = $mgmt_config['abs_path_tplmedia'];
     $mediaurl = $mgmt_config['url_path_tplmedia']; 
     
-    if (@is_file ($mediadir.$mediafile))
+    if (is_file ($mediadir.$mediafile))
     {    
       // load media database index
       $mediacat = loadlockfile ($session_id, $mgmt_config['abs_path_data']."media/", $datafile, 3);
@@ -8453,7 +8455,7 @@ function createfolders ($site, $location, $foldernew, $user)
     if (substr ($location, -1) != "/") $location = $location."/";    
     
     // folder exists
-    if (@file_exists ($location.$foldernew)) return $result['result'] = true;
+    if (is_dir ($location.$foldernew)) return $result['result'] = true;
     
     // folder can be created
     $result = createfolder ($site, $location, $foldernew, $user);
@@ -8824,14 +8826,14 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
       if (strtolower ($cat) == "comp")
       {
         // load publication inheritance setting
-        if (@is_file ($mgmt_config['abs_path_data']."config/inheritance.dat")) 
+        if (is_file ($mgmt_config['abs_path_data']."config/inheritance.dat"))
         {
           $inherit_db = inherit_db_read ();
-  
+
           if (sizeof ($inherit_db) >= 1)
           {
             $child_array = inherit_db_getchild ($inherit_db, $site);
-            
+
             if ($child_array != false)
             {
               $site_array = array_merge ($site_array, $child_array);
@@ -9169,7 +9171,7 @@ function createobject ($site, $location, $page, $template, $user)
         }
 
         // check if page already exists
-        if (!file_exists ($location.$pagefile) && !file_exists ($location.$pagename))
+        if (!is_file ($location.$pagefile) && !is_file ($location.$pagename))
         {
           // ----------------------------- build content file (xml structure)----------------------------
           $contentstore = "";
@@ -9756,7 +9758,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
     }
 
     // error if file exists
-    if ($media_update == "" && @file_exists ($location.$file_renamed))
+    if ($media_update == "" && is_file ($location.$file_renamed))
     {      
       $result['header'] = "HTTP/1.1 504 Internal Server Error";
       $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang];
@@ -10194,7 +10196,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
     $errcode = "00101";
     $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|new multimedia file created by user '$user' ($site, $location_esc, $file, $path_source_file, $user)";     
 
-    if (@is_file ($path_source_file))
+    if (is_file ($path_source_file))
     {
       // create multimedia object
       $result = createobject ($site, $location, $file, "default.meta.tpl", $user);
@@ -10381,7 +10383,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
               $createfolder = createfolder ($site, $location_destination, $folder_new, $user);
               if ($createfolder['result'] == true) $result = createmediaobjects ($site, $location_source.$folder."/", $location_destination.$createfolder['folder']."/", $user);
             }
-            elseif (@is_file ($location_source.$file))
+            elseif (is_file ($location_source.$file))
             {
               $objectname = $file;
               
@@ -10754,12 +10756,12 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
     {
       if ($action == "page_delete")
       {
-        if (@is_file ($location.$page)) $file_writeable = true;
+        if (is_file ($location.$page)) $file_writeable = true;
         else $file_writeable = false;
       }
       elseif ($action == "page_unpublish")
       {   
-        if (@is_file ($location.$page)) $file_writeable = true;
+        if (is_file ($location.$page)) $file_writeable = true;
         else $file_writeable = false;
 
         // define new page file name
@@ -10777,7 +10779,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
       }
       elseif ($action == "page_rename" || $action == "file_rename")
       {
-        if (@is_file ($location.$page)) $file_writeable = true;
+        if (is_file ($location.$page)) $file_writeable = true;
         else $file_writeable = false;
         
         if ($pagenew != "")
@@ -10864,7 +10866,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         }
         else
         {
-          if (@is_file ($location_source.$page)) $file_writeable = true;
+          if (is_file ($location_source.$page)) $file_writeable = true;
           else $file_writeable = false;
     
           // define secondary names
@@ -10879,13 +10881,13 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           else $add_ext = "";
     
           // define file name after pasting
-          if (@is_file ($location.$page_sec) && !file_exists ($location.$page_sec_info['filename']."-Copy".$page_sec_info['ext']))
+          if (is_file ($location.$page_sec) && !is_file ($location.$page_sec_info['filename']."-Copy".$page_sec_info['ext']))
           {
             // define new file name with copy suffix
             $page_sec = $page_sec_info['filename']."-Copy".$page_sec_info['ext'].$add_ext;
             $pagename_sec = $pagename_sec_info['filename']."-Copy".$pagename_sec_info['ext'];
           }
-          elseif (@file_exists ($location.$page_sec_info['filename']."-Copy".$page_sec_info['ext']))
+          elseif (is_file ($location.$page_sec_info['filename']."-Copy".$page_sec_info['ext']))
           {
             for ($c=2; $c<=100; $c++)
             {
@@ -10893,7 +10895,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
               $page_sec = $page_sec_info['filename']."-Copy".$c.$page_sec_info['ext'].$add_ext;
               $pagename_sec = $pagename_sec_info['filename']."-Copy".$c.$pagename_sec_info['ext'];
               
-              if (!file_exists ($location.$page_sec))
+              if (!is_file ($location.$page_sec))
               {
                 $add_onload = "";
                 $show = "";
@@ -10928,7 +10930,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             $add_onload = "";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-cannot-cut-and-paste-an-item-in-the-same-location'][$lang]."</span><br />\n";
           }
-          elseif (@file_exists ($location.$page))
+          elseif (is_file ($location.$page))
           {
             $add_onload = "";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n";
@@ -10955,7 +10957,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           if (strtolower ($cat) == "comp")
           {
             // load publication inheritance setting
-            if (@is_file ($mgmt_config['abs_path_data']."config/inheritance.dat")) 
+            if (is_file ($mgmt_config['abs_path_data']."config/inheritance.dat")) 
             {
               $inherit_db = inherit_db_read ();
         
@@ -11613,7 +11615,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             // thumbnail (for support of versions before 5.0)
             $object_thumb = substr ($page, 0, strrpos ($page, ".")).".thumb".substr ($page, strrpos ($page, "."));  
             
-            if (@is_file ($location_source.$object_thumb))
+            if (is_file ($location_source.$object_thumb))
             {
               deletefile ($location_source, $object_thumb, 0);
               // remote client
@@ -11937,7 +11939,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
               remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self, "abs_path_media").$site."/", "", $mediafile_self, $mediafile_new);                 
               
               // copy thumbnail images
-              if (@is_file (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb))
+              if (is_file (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb))
               {
                 @copy (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb, getmedialocation ($site, $mediafile_new_thumb, "abs_path_media").$site."/".$mediafile_new_thumb);
                 
@@ -11961,7 +11963,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                       $mediafile_self_thumb = $mediafile_self_name.".thumb".$video_ext;
                       $mediafile_new_thumb = $mediafile_new_name.".thumb".$video_ext;
   
-                      if (@is_file (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb))
+                      if (is_file (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb))
                       {
                         @copy (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb, getmedialocation ($site, $mediafile_new_thumb, "abs_path_media").$site."/".$mediafile_new_thumb);
                         
@@ -11973,7 +11975,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                       $mediafile_self_video = $mediafile_self_name.".video".$video_ext;
                       $mediafile_new_video = $mediafile_new_name.".video".$video_ext;
                       
-                      if (@is_file (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video))
+                      if (is_file (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video))
                       {
                         @copy (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video, getmedialocation ($site, $mediafile_new_video, "abs_path_media").$site."/".$mediafile_new_video);
                         
@@ -11985,7 +11987,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                       $mediafile_self_video = $mediafile_self_name.".config".$video_ext;
                       $mediafile_new_video = $mediafile_new_name.".config".$video_ext;
                       
-                      if (@is_file (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video))
+                      if (is_file (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video))
                       {
                         @copy (getmedialocation ($site, $mediafile_self_video, "abs_path_media").$site."/".$mediafile_self_video, getmedialocation ($site, $mediafile_new_video, "abs_path_media").$site."/".$mediafile_new_video);
                         
@@ -12000,7 +12002,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                 $mediafile_self_thumb = $mediafile_self_name.".config.video";
                 $mediafile_new_thumb = $mediafile_new_name.".config.video";
                 
-                if (@is_file (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb))
+                if (is_file (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb))
                 {
                   @copy (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb, getmedialocation ($site, $mediafile_new_thumb, "abs_path_media").$site."/".$mediafile_new_thumb);
                   
@@ -12638,7 +12640,7 @@ function lockobject ($site, $location, $page, $user)
           // add new checked out object to list
           if ($test == true)
           {
-            if (@is_file ($dir.$file))
+            if (is_file ($dir.$file))
             {
               $test = appendfile ($dir, $file, $object);
             }
@@ -12864,7 +12866,7 @@ function unlockobject ($site, $location, $page, $user)
         $test = unlockfile ($user, getcontentlocation ($container_id, 'abs_path_content'), $container.".wrk");
         
         // add new checked out object to list
-        if ($test && @is_file ($dir.$file))
+        if ($test && is_file ($dir.$file))
         {
           $checkout_data = loadfile ($dir, $file);
           
@@ -13054,7 +13056,7 @@ function publishobject ($site, $location, $page, $user)
               if ($site == $buffer_site && $location == $buffer_location && $page = $buffer_page) $object_published = true;
   
               // if object file exists
-              if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && @is_file ($location.$page))
+              if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && is_file ($location.$page))
               {
                 // ---------------------------- call template engine ---------------------------
                 $result = buildview ($site, $location, $page, $user, "publish", "no");    
@@ -13395,7 +13397,7 @@ function publishobject ($site, $location, $page, $user)
           $contentfile_v = fileversion ($container);
           $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
     
-          if (@is_file ($contentlocation.$container))
+          if (is_file ($contentlocation.$container))
           {
             @copy ($contentlocation.$container, $contentlocation.$contentfile_v);
           }
@@ -13497,7 +13499,7 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
     }        
  
     // if folder
-    if (($file == ".folder" && @is_dir ($location)) || @is_dir ($location.$file))
+    if (($file == ".folder" && is_dir ($location)) || is_dir ($location.$file))
     {  
       if ($file == ".folder") $file = "";
       else $file = $file."/";
@@ -13521,7 +13523,7 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
       else return false;
     }
     // if object
-    elseif ($file != ".folder" && @is_file ($location.$file))
+    elseif ($file != ".folder" && is_file ($location.$file))
     {
       $result = getfileinfo ($site, $file, "");
 
@@ -13769,7 +13771,7 @@ function unpublishobject ($site, $location, $page, $user)
               $page = correctfile ($location, $page, $user);
 
               // if object file exists
-              if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && @is_file ($location.$page))
+              if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && is_file ($location.$page))
               {
                 $result = manipulateobject ($site, $location, $page, "", $user, "page_unpublish");  
             
@@ -13865,7 +13867,7 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only="0")
     $location = deconvertpath ($location, "file");
       
     // if folder
-    if (@is_dir ($location) && accesspermission ($site, $location, $cat) != false)
+    if (is_dir ($location) && accesspermission ($site, $location, $cat) != false)
     {         
       // check if directory is empty
       $dir = @opendir ($location);
@@ -13880,7 +13882,7 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only="0")
           if ($dirfile != "." && $dirfile != "..")
           {
             // check access permissions
-            if (@is_file ($location.$dirfile) || (@is_dir ($location.$dirfile) && accesspermission ($site, $location.$dirfile."/", $cat) != false)) 
+            if (is_file ($location.$dirfile) || (is_dir ($location.$dirfile) && accesspermission ($site, $location.$dirfile."/", $cat) != false)) 
             {
               $list_add = collectobjects ($root_id, $site, $cat, $location.$dirfile, $published_only);                   
               if ($list_add != false) $list = array_merge ($list, $list_add);
@@ -13892,7 +13894,7 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only="0")
       }
     }
     // if object
-    elseif (@is_file ($location))
+    elseif (is_file ($location))
     {
       $object = getobject ($location);
       $location = getlocation ($location);
@@ -13960,7 +13962,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
 
     // -------------------------- load or create collection  -------------------------------
     // check if collection file exists and load collection
-    if ($force != "start" && @is_file ($mgmt_config['abs_path_temp'].$tempfile))
+    if ($force != "start" && is_file ($mgmt_config['abs_path_temp'].$tempfile))
     { 
       $collection_data = loadfile_fast ($mgmt_config['abs_path_temp'], $tempfile);
   
@@ -14143,7 +14145,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
           $location_source = deconvertpath ($location_source_esc, "file");  
 
           // execute actions for files
-          if ($location_source != "" && $object_source != "" && @is_file ($location_source.$object_source))
+          if ($location_source != "" && $object_source != "" && is_file ($location_source.$object_source))
           {
             if ($action == "publish") 
             {       
@@ -14546,7 +14548,7 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
       $content = "";
      
       // load site config file of publication system
-      if (valid_publicationname ($site) && @is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
+      if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
       {   
         $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
       }
@@ -14555,7 +14557,7 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
       if ($root == "abs_path_comp" || $root == "abs_path_page")
       {
         // page or component
-        if (@is_file ($location.$page))
+        if (is_file ($location.$page))
         {
           $pagedata = loadfile ($location, $page);
           $bufferdata = getfilename ($pagedata, "template");    
@@ -14568,7 +14570,7 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
       // data of link index file
       elseif ($root == "abs_path_link")
       {
-        if (@is_file ($location.$page))
+        if (is_file ($location.$page))
         {
           if ($action == "save") $content = loadfile ($location, $page);
         }   
@@ -14576,7 +14578,7 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
       // data of multimedia files
       elseif ($root == "abs_path_media" || $root == "abs_path_tplmedia")
       {
-        if (@is_file ($location.$page))
+        if (is_file ($location.$page))
         {
           if ($action == "save") 
           {
@@ -14870,7 +14872,7 @@ function HTTP_Proxy ($URL, $enable_file=false)
           $errcode = "10991";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|uploaded file ".$_FILES['Filedata']['name']." could not be saved in temp directory";
           
-          savelog ($error);
+          savelog (@$error);
         }
       }
     }
@@ -14920,7 +14922,7 @@ function HTTP_Proxy ($URL, $enable_file=false)
       $errcode = "20921";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|HTTP_Proxy failed with error (".$error_no.") ".$error_message;
       
-      savelog ($error);
+      savelog (@$error);
     }
     
     // define http header
@@ -15031,7 +15033,7 @@ function savelog ($error, $logfile="event")
       $value = str_replace ("\n", "\t", $value);
     }
   
-    if (@is_file ($mgmt_config['abs_path_data']."log/".$logfile))
+    if (is_file ($mgmt_config['abs_path_data']."log/".$logfile))
     { 
       return appendfile ($mgmt_config['abs_path_data']."log/", $logfile, implode ("\n", $error)."\n");
     }
@@ -15062,7 +15064,7 @@ function deletelog ($logname="")
   if ($logname != "") $logfile = $logname.".log";
   else $logfile = "event.log";
   
-  if (@is_file ($mgmt_config['abs_path_data']."log/".$logfile))
+  if (is_file ($mgmt_config['abs_path_data']."log/".$logfile))
   {
     $test = savefile ($mgmt_config['abs_path_data']."log/", $logfile, "");
   
@@ -15108,7 +15110,7 @@ function debuglog ($code)
   {  
     $code = "\r\n<debug>\r\n<timestamp>".$mgmt_config['today']."</timestamp>\r\n<code>".$code."</code>\r\n</debug>\r\n";
     
-    if (@is_file ($mgmt_config['abs_path_data']."log/debug.log")) return appendfile ($mgmt_config['abs_path_data']."log/", "debug.log", $code);
+    if (is_file ($mgmt_config['abs_path_data']."log/debug.log")) return appendfile ($mgmt_config['abs_path_data']."log/", "debug.log", $code);
     else return savefile ($mgmt_config['abs_path_data']."log/", "debug.log", $code);  
   }
   else return false;

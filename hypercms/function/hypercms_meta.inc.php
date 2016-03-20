@@ -1016,7 +1016,8 @@ function id3_create ($site, $text)
     {
       $errcode = "10109";
       $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Media mapping of publication '".$site."' could not be loaded";
-      savelog ($error);
+      
+      savelog (@$error);
           
       return false;
     }
@@ -1320,7 +1321,8 @@ function xmp_create ($site, $text)
     {
       $errcode = "10101";
       $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|Media mapping of publication '".$site."' could not be loaded";
-      savelog ($error);
+      
+      savelog (@$error);
           
       return false;
     }
