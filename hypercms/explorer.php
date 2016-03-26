@@ -1302,8 +1302,6 @@ else
     
     function show_cal (el, field_id, format)
     {
-      if (cal_obj) return;
-      
       cal_field = field_id;
       cal_format = format;
       var datefield = document.getElementById(field_id);
@@ -1317,7 +1315,7 @@ else
       cal_obj.parse_date(datefield.value, cal_format);
       cal_obj.show_at_element(datefield, 'adj_left-top');
     }
-    
+        
     // onchange handler
     function cal_on_change (cal, object_code)
     {
@@ -1328,7 +1326,7 @@ else
         cal_obj = null;
       }
     }
-    
+
     // onautoclose handler
     function cal_on_autoclose (cal)
     {

@@ -138,6 +138,12 @@ $mgmt_config['abs_path_media'] = $mgmt_config['abs_path_rep']."media_cnt/";
 // Provide the name of your AWS S3 bucket
 // $mgmt_config['gs_bucket'] = "";
 
+// For MS Azure use:
+// Provide credentials for access (connection statement: DefaultEndpointsProtocol=https;AccountName=myAccount;AccountKey=myKey;)
+// $mgmt_config['azure_access_key'] = "";
+// Provide the name of your Azure container
+// $mgmt_config['azure_container'] = "";
+
 // Define daily synchronization for delayed saving of media files in cloud storage (true) or save media files immediately (false)
 // If the daily synchronization has been enabled the media files will not be saved in the cloud storage immediately!
 // $mgmt_config['storage_dailycloudsnyc'] = false;

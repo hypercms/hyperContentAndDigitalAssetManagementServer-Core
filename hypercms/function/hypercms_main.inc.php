@@ -1258,7 +1258,7 @@ function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type
     else $add = "";
     
     if (strtolower ($type) == "download") $servicename = "mediadownload";
-    else $servicename = "mediadownload";
+    else $servicename = "mediawrapper";
     
     return $mgmt_config['url_path_cms']."service/".$servicename.".php?site=".urlencode($site)."&media=".urlencode($site."/".$mediafile)."&token=".hcms_crypt ($site."/".$mediafile)."&name=".urlencode($name).$add;
   }
@@ -1483,7 +1483,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
 
 // --------------------------------------- createmultidownloadlink -------------------------------------------
 // function: createmultidownloadlink ()
-// input: publication name, multiobject string (optional), media file name (optional), location (optional), presentation name (optional), user name, conversion type (format, e.g: jpg), media configuration used for conversion (e.g.: 1024x768px)
+// input: publication name, multiobject string (optional), media file name (optional), location (optional), presentation name (optional), user name, conversion type (format, e.g: jpg), media configuration used for conversion (e.g.: 1024x768px), link type [wrapper,download] (optional)
 // output: download link / false on error
 
 // description:
@@ -1493,7 +1493,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
 // 2nd...media file
 // 3rd...folder
 
-function createmultidownloadlink ($site, $multiobject="", $media="", $location="", $name="", $user, $type="", $mediacfg="")
+function createmultidownloadlink ($site, $multiobject="", $media="", $location="", $name="", $user, $type="", $mediacfg="", $linktype="download")
 {
   global $mgmt_config, $mgmt_compress, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission, $hcms_lang, $lang;
   
@@ -1565,7 +1565,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
     if ($mediacfg) $add .= '&mediacfg='.url_encode($mediacfg);
     
     // return result
-    if ($media != "" && $result_zip) return createviewlink ($site, $media, $name, "", "download").$add;
+    if ($media != "" && $result_zip) return createviewlink ($site, $media, $name, "", $linktype).$add;
     else return false;
   }
   else return false;
@@ -11016,7 +11016,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                   $container_id = substr ($contentcontainer, 0, strpos ($contentcontainer, ".xml")); 
               
                   // remove link to page or component from content container
-                  if ($action == "page_delete" || $action == "page_unpublish") $test = link_update ($site, $contentcontainer, $obj_location, "");
+                  if ($action == "page_delete" || ($action == "page_unpublish" && $cat == "page")) $test = link_update ($site, $contentcontainer, $obj_location, "");
                   // update link in content container
                   elseif ($action == "page_rename" || $action == "file_rename" || ($action == "page_paste" && $method == "cut")) $test = link_update ($site, $contentcontainer, $obj_location, $obj_location_new);
                   else $test = true;
@@ -11028,7 +11028,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
                   }
       
                   // remove link to deleted page in link management
-                  if ($action == "page_delete" || $action == "page_unpublish")
+                  if ($action == "page_delete" || ($action == "page_unpublish" && $cat == "page"))
                   {
                     $link_db = link_db_update ($site, $link_db, "link", $contentcontainer, $cat, $obj_location, "", "all");
                   }
@@ -11040,7 +11040,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
  
                   // ---------------------------------- create new task -----------------------------------     
                   // load task file of page user, set new task and save task file
-                  if ($action == "page_delete" || $action == "page_unpublish")
+                  if ($action == "page_delete" || ($action == "page_unpublish" && $cat == "page"))
                   {
                     // get user name
                     $container_data = loadcontainer ($contentcontainer, "version", $user);

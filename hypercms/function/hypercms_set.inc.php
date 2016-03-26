@@ -850,6 +850,9 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
         // convert object path to object ID if DAM
         if ($mgmt_config[$site]['dam']) $component_conv[$id] = getobjectid ($component[$id]);
         else $component_conv[$id] = $component[$id];
+        
+        // correct extension if object is unpublished
+        if (strpos ($component_conv[$id], ".off|") > 0) $component_conv[$id] = str_replace (".off|", "|", $component_conv[$id]);
 
         // set array if input parameter is string
         if ($artbuffer != "") $art[$id] = $artbuffer;

@@ -2104,6 +2104,9 @@ function showOptions()
             // object info
             $comp_info = getfileinfo ($site, $object, "comp");    
             
+            // correct extension if object is unpublished
+            if (substr ($object, -4) == ".off") $object = substr ($object, 0, strlen ($object) - 4);
+
             // get name
             $comp_name = getlocationname ($site, $object, "comp", "path");
             
@@ -2112,13 +2115,17 @@ function showOptions()
             if (
                  $dir.$object != $location.$page && 
                  (
-                   ($compcat != "media" && !$mgmt_config[$site]['dam'] && $comp_info['type'] == "Component") || // standard published components if not DAM for component tag
+                   ($compcat != "media" && !$mgmt_config[$site]['dam'] && $comp_info['type'] == "Component") || // standard components if not DAM for component tag
                    ($compcat != "media" && $mgmt_config[$site]['dam']) || // any type if is DAM for component tag
                    ($compcat == "media" && ($mediatype == "" || $mediatype == "comp" || substr_count ($format_ext.".", $comp_info['ext'].".") > 0)) // media assets for media tag
                  )
                )
             {
               $comp_path = $object;
+              
+              // listview - view option for un/published objects
+              if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
+              else $class_image = "class=\"hcmsIconList\"";
 
               // warning if file extensions don't match and HTTP include is off and it is not a DAM
               if ($compcat != "media" && !$mgmt_config[$site]['dam'] && $mgmt_config[$site]['http_incl'] == false && ($comp_info['ext'] != $page_info['ext'] && $comp_info['ext'] != ".page")) $alert = "test = confirm(hcms_entity_decode('".getescapedtext ($hcms_lang['the-object-types-do-not-match'][$lang], $hcms_charset, $lang)."'));";    
@@ -2126,16 +2133,16 @@ function showOptions()
               
               if ($compcat == "single")
               {
-                $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" class=\"hcmsIconList\" />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."')\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+                $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."')\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
               }
               elseif ($compcat == "multi")
               {
-                $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" class=\"hcmsIconList\" />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."')\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+                $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."')\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
               }
               elseif ($compcat == "media")
               {
-                if ($callback == "") $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" class=\"hcmsIconList\" />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
-                else $result .= "<tr><td width=\"85%\" align=\"left\" nowrap><a href=# onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" class=\"hcmsIconList\" />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap><a href=# onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+                if ($callback == "") $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+                else $result .= "<tr><td width=\"85%\" align=\"left\" nowrap><a href=# onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap><a href=# onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
               }
             }
           }

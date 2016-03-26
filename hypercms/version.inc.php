@@ -1361,8 +1361,23 @@ Release 03/2016
 - Implementation of new verification for the original video width in function showmedia
 - Migration from function file_exists to is_file or is_dir based on the case (file or directory) in all APIs
 - Migration from function file_exists to is_file or is_dir based on the case (file or directory) in remote client
+
+Version 6.1.2
+Release 04/2016
+- Implementation of NTML library into connector module
+- Implementation of file extension correction if object is unpublished in function setcomplink
+- Implementation of support for unpublished objects in function showcompexplorer
+- Implementation of MS Azure API in connector module
+- Implementation of cloud functions for Azure API
+- Implementation of exception in link management for unpulished components in function manipulateobject (unpulished components will remain as component links in the containers and link index)
+- Improvements in function S3connect
+- Bug fix: Correction of error codes in cloud storage API
+- Bug fix: Rich calendar did not open in explorer if it had been closed using the close-button
+- Bug fix: Function createviewlink did always refer to service mediadownload and not also mediawrapper
+- Implemenentation of new link-type input parameter for function createmultidownloadlink
+- Bug fix: Force wrapper links for downloads on iPhones or iPads
 */
 
 // current version
-$version = "Version 6.1.1";
+$version = "Version 6.1.2";
 ?>
