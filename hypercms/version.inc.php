@@ -1376,6 +1376,7 @@ Release 04/2016
 - Bug fix: Function createviewlink did always refer to service mediadownload and not also mediawrapper
 - Implemenentation of new link-type input parameter for function createmultidownloadlink
 - Bug fix: Force wrapper links for downloads on iPhones or iPads
+- Improvements in control_content_menu and control_objectlist_menu
 */
 
 // current version

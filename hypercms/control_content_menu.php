@@ -463,13 +463,13 @@ else
     // define path variables
     if (empty ($media))
     {
-      if ($cat == "page") $url_location = str_ireplace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$page;
+      if ($cat == "page" && $site != "") $url_location = str_ireplace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$page;
       elseif ($cat == "comp") $url_location = str_ireplace ($mgmt_config['abs_path_comp'], $publ_config['url_publ_comp'], $location).$page;
     }
-    elseif (!empty ($media)) $url_location = createviewlink ($site, $media, $pagename);
+    else $url_location = createviewlink ($site, $media, $pagename);
     
     // LiveView Button
-    if ($file_info['published'] == true && $page != "" && $page != ".folder" && ($setlocalpermission['root'] == 1 && (($cat != "comp" && empty ($media)) || (!empty ($media) && $setlocalpermission['download'] == 1))))
+    if (!empty ($url_location) && $file_info['published'] == true && $page != "" && $page != ".folder" && ($setlocalpermission['root'] == 1 && (($cat != "comp" && empty ($media)) || (!empty ($media) && $setlocalpermission['download'] == 1))))
     {echo "<img onClick=\"hcms_openWindow('".$url_location."','preview','location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes','800','600');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_liveview.gif\" alt=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_file_liveview.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
