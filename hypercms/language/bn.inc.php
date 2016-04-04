@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['bn'] = "স্থানীয় গণম�
 $hcms_lang['use-cloud-media-storage']['bn'] = "মেঘ মিডিয়া স্টোরেজ ব্যবহার";
 $hcms_lang['use-local-and-cloud-media-storage']['bn'] = "মেঘ এবং স্থানীয় মিডিয়া ব্যবহার করা";
 $hcms_lang['media-storage-type']['bn'] = "মিডিয়া স্টোরেজ টাইপ";
+$hcms_lang['select-job']['bn'] = "বাছাই কাজ";
+$hcms_lang['delete-exported-objects']['bn'] = "ডিলিট সামগ্রীর রফতানি";
+$hcms_lang['creation-must-be-older-than']['bn'] = "যত বেশি হবে সৃষ্টি";
+$hcms_lang['last-access-must-be-older-than']['bn'] = "শেষ সুবিধা হবে বেশি";
+$hcms_lang['file-size-must-be-greater-than']['bn'] = "ফাইল সাইজ হবে বেশি";
+$hcms_lang['last-modification-must-be-older-than']['bn'] = "সর্বশেষ নবায়ন করা বেশি";
+$hcms_lang['days']['bn'] = "দিন";
+$hcms_lang['enable-job']['bn'] = "এনাবল কাজ";
+$hcms_lang['exported-files-will-be-saved-in']['bn'] = "রপ্তানি নষ্ট হবে তাকেও।";
+$hcms_lang['files-need-to-be-placed-in']['bn'] = "নষ্ট করতে হবে।";
 ?>

@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['ko'] = "로컬 미디어 스토리지 사
 $hcms_lang['use-cloud-media-storage']['ko'] = "클라우드 미디어 스토리지 사용";
 $hcms_lang['use-local-and-cloud-media-storage']['ko'] = "로컬 및 클라우드 미디어 스토리지 사용";
 $hcms_lang['media-storage-type']['ko'] = "미디어 스토리지 유형";
+$hcms_lang['select-job']['ko'] = "작업 선택";
+$hcms_lang['delete-exported-objects']['ko'] = "내보낸 오브젝트 삭제";
+$hcms_lang['creation-must-be-older-than']['ko'] = "생성 이전의 합니다.";
+$hcms_lang['last-access-must-be-older-than']['ko'] = "마지막 액세스 이전 합니다.";
+$hcms_lang['file-size-must-be-greater-than']['ko'] = "파일 크기가 커야 합니다.";
+$hcms_lang['last-modification-must-be-older-than']['ko'] = "마지막 수정 이전의 합니다.";
+$hcms_lang['days']['ko'] = "일";
+$hcms_lang['enable-job']['ko'] = "작업 활성화";
+$hcms_lang['exported-files-will-be-saved-in']['ko'] = "내보낸 파일이 저장되는 것입니다.";
+$hcms_lang['files-need-to-be-placed-in']['ko'] = "파일을 배치해야 합니다.";
 ?>

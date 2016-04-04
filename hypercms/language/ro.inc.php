@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['ro'] = "Utilizaţi suporturi de stocare l
 $hcms_lang['use-cloud-media-storage']['ro'] = "Utilizaţi suporturi de stocare de tip cloud";
 $hcms_lang['use-local-and-cloud-media-storage']['ro'] = "Utilizaţi suporturi de stocare de tip cloud şi locale";
 $hcms_lang['media-storage-type']['ro'] = "Tip de stocare media";
+$hcms_lang['select-job']['ro'] = "Selectaţi Job";
+$hcms_lang['delete-exported-objects']['ro'] = "Ştergeţi obiecte exportate";
+$hcms_lang['creation-must-be-older-than']['ro'] = "Crearea trebuie să fie mai veche de";
+$hcms_lang['last-access-must-be-older-than']['ro'] = "Ultima accesul trebuie să fie mai veche de";
+$hcms_lang['file-size-must-be-greater-than']['ro'] = "Dimensiune fişier trebuie să fie mai mare de";
+$hcms_lang['last-modification-must-be-older-than']['ro'] = "Ultima modificare trebuie să fie mai veche de";
+$hcms_lang['days']['ro'] = "Zile";
+$hcms_lang['enable-job']['ro'] = "Munca de activare";
+$hcms_lang['exported-files-will-be-saved-in']['ro'] = "Fişierele exportate vor fi salvate în";
+$hcms_lang['files-need-to-be-placed-in']['ro'] = "Fişierele trebuie să fie plasate în";
 ?>

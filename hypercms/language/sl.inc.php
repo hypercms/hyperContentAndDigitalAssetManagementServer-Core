@@ -1357,4 +1357,14 @@ $hcms_lang['use-local-media-storage']['sl'] = "Uporaba lokalnih medijev za shran
 $hcms_lang['use-cloud-media-storage']['sl'] = "Uporaba oblak medijev za shranjevanje";
 $hcms_lang['use-local-and-cloud-media-storage']['sl'] = "Uporaba lokalnih in oblak medijev za shranjevanje";
 $hcms_lang['media-storage-type']['sl'] = "Medijsko shranjevanje tipa";
+$hcms_lang['select-job']['sl'] = "Izberite delovna";
+$hcms_lang['delete-exported-objects']['sl'] = "Brisanje Izvoženi predmeti";
+$hcms_lang['creation-must-be-older-than']['sl'] = "Oblikovanje mora biti starejši od";
+$hcms_lang['last-access-must-be-older-than']['sl'] = "Zadnji dostop mora biti starejše od";
+$hcms_lang['file-size-must-be-greater-than']['sl'] = "Velikost datoteke mora biti večja kot";
+$hcms_lang['last-modification-must-be-older-than']['sl'] = "Zadnja sprememba mora biti starejše od";
+$hcms_lang['days']['sl'] = "Dni";
+$hcms_lang['enable-job']['sl'] = "Omogočite delo";
+$hcms_lang['exported-files-will-be-saved-in']['sl'] = "Izvožene datoteke bodo shranjene v";
+$hcms_lang['files-need-to-be-placed-in']['sl'] = "Datoteke je treba dati v";
 ?>

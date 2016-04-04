@@ -1359,4 +1359,14 @@ $hcms_lang['use-local-media-storage']['bg'] = "Използвайте местн
 $hcms_lang['use-cloud-media-storage']['bg'] = "Използвайте облак носители за съхранение";
 $hcms_lang['use-local-and-cloud-media-storage']['bg'] = "Използвайте местните и облак носители за съхранение";
 $hcms_lang['media-storage-type']['bg'] = "Носители за съхранение тип";
+$hcms_lang['select-job']['bg'] = "Изберете задача";
+$hcms_lang['delete-exported-objects']['bg'] = "Изтриване на изнесени предмети";
+$hcms_lang['creation-must-be-older-than']['bg'] = "Създаване, трябва да са по-стари от";
+$hcms_lang['last-access-must-be-older-than']['bg'] = "Последно достъп, трябва да са по-стари от";
+$hcms_lang['file-size-must-be-greater-than']['bg'] = "Размер на файла трябва да бъде по-голяма от";
+$hcms_lang['last-modification-must-be-older-than']['bg'] = "Последната промяна трябва да бъде по-стари от";
+$hcms_lang['days']['bg'] = "Дни";
+$hcms_lang['enable-job']['bg'] = "Разрешаване на задача";
+$hcms_lang['exported-files-will-be-saved-in']['bg'] = "Изнесени файлове ще бъдат запазени в";
+$hcms_lang['files-need-to-be-placed-in']['bg'] = "Файлове трябва да бъдат поставени в";
 ?>

@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['sv'] = "Använd lokala media lagring";
 $hcms_lang['use-cloud-media-storage']['sv'] = "Använd cloud medielagring";
 $hcms_lang['use-local-and-cloud-media-storage']['sv'] = "Använd lokala och cloud medielagring";
 $hcms_lang['media-storage-type']['sv'] = "Media lagringstyp";
+$hcms_lang['select-job']['sv'] = "Välj jobb";
+$hcms_lang['delete-exported-objects']['sv'] = "Ta bort den exporterade objekt";
+$hcms_lang['creation-must-be-older-than']['sv'] = "Arbetstillfällen måste vara äldre än";
+$hcms_lang['last-access-must-be-older-than']['sv'] = "Sista tillgång måste vara äldre än";
+$hcms_lang['file-size-must-be-greater-than']['sv'] = "Filen måste vara större än";
+$hcms_lang['last-modification-must-be-older-than']['sv'] = "Senaste ändring måste vara äldre än";
+$hcms_lang['days']['sv'] = "Dagar";
+$hcms_lang['enable-job']['sv'] = "Aktivera jobb";
+$hcms_lang['exported-files-will-be-saved-in']['sv'] = "Exporterade filer sparas i";
+$hcms_lang['files-need-to-be-placed-in']['sv'] = "Filer måste placeras i";
 ?>

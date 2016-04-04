@@ -119,7 +119,7 @@ function checkForm()
 {
   var form = document.forms['group_create'];
   
-  if (form.elements['group_name'].value == "")
+  if (form.elements['group_name'].value.trim() == "")
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['group_name'].focus();

@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['ja'] = "ローカル・メディア・ス
 $hcms_lang['use-cloud-media-storage']['ja'] = "クラウド・ストレージ・メディアを使用して";
 $hcms_lang['use-local-and-cloud-media-storage']['ja'] = "ローカルおよびクラウドメディアストレージを使用して";
 $hcms_lang['media-storage-type']['ja'] = "メディアストレージのタイプ";
+$hcms_lang['select-job']['ja'] = "ジョブを選択します";
+$hcms_lang['delete-exported-objects']['ja'] = "エクスポートされたオブジェクトを削除します。";
+$hcms_lang['creation-must-be-older-than']['ja'] = "作成することはより古い必要があります";
+$hcms_lang['last-access-must-be-older-than']['ja'] = "最後のアクセスがより古い必要があります";
+$hcms_lang['file-size-must-be-greater-than']['ja'] = "ファイルのサイズよりも大きくなければなりません。";
+$hcms_lang['last-modification-must-be-older-than']['ja'] = "最後の変更がより古い必要があります";
+$hcms_lang['days']['ja'] = "日";
+$hcms_lang['enable-job']['ja'] = "ジョブの有効化";
+$hcms_lang['exported-files-will-be-saved-in']['ja'] = "エクスポートされたファイルは保存されます。";
+$hcms_lang['files-need-to-be-placed-in']['ja'] = "ファイルを配置する必要があり";
 ?>

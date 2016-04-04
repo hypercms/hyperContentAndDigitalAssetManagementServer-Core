@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['cz'] = "Použít místní úložiště m�
 $hcms_lang['use-cloud-media-storage']['cz'] = "Použití cloud úložiště médií";
 $hcms_lang['use-local-and-cloud-media-storage']['cz'] = "Použít místní a cloud úložiště médií";
 $hcms_lang['media-storage-type']['cz'] = "Úložiště médií typu";
+$hcms_lang['select-job']['cz'] = "Výběr úlohy";
+$hcms_lang['delete-exported-objects']['cz'] = "Odstranění vyvážené objekty";
+$hcms_lang['creation-must-be-older-than']['cz'] = "Vytvoření musí být starší než";
+$hcms_lang['last-access-must-be-older-than']['cz'] = "Poslední přístup musí být starší než";
+$hcms_lang['file-size-must-be-greater-than']['cz'] = "Velikost souboru musí být větší než";
+$hcms_lang['last-modification-must-be-older-than']['cz'] = "Poslední změna musí být starší než";
+$hcms_lang['days']['cz'] = "Dní";
+$hcms_lang['enable-job']['cz'] = "Úlohy";
+$hcms_lang['exported-files-will-be-saved-in']['cz'] = "Exportované soubory budou uloženy do paměti";
+$hcms_lang['files-need-to-be-placed-in']['cz'] = "Soubory musí být umístěny v";
 ?>

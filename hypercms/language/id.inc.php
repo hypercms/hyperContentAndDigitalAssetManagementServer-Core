@@ -1359,4 +1359,14 @@ $hcms_lang['use-local-media-storage']['id'] = "Menggunakan penyimpanan media lok
 $hcms_lang['use-cloud-media-storage']['id'] = "Gunakan awan penyimpanan media";
 $hcms_lang['use-local-and-cloud-media-storage']['id'] = "Menggunakan penyimpanan media lokal dan awan";
 $hcms_lang['media-storage-type']['id'] = "Penyimpanan Media";
+$hcms_lang['select-job']['id'] = "Pilih Ayub";
+$hcms_lang['delete-exported-objects']['id'] = "Menghapus diekspor objek-objek";
+$hcms_lang['creation-must-be-older-than']['id'] = "Penciptaan harus lebih tua dari";
+$hcms_lang['last-access-must-be-older-than']['id'] = "Akses terakhir harus lebih tua dari";
+$hcms_lang['file-size-must-be-greater-than']['id'] = "Ukuran File harus lebih besar dari";
+$hcms_lang['last-modification-must-be-older-than']['id'] = "Modifikasi Terakhir harus lebih tua dari";
+$hcms_lang['days']['id'] = "Hari";
+$hcms_lang['enable-job']['id'] = "Aktifkan Ayub";
+$hcms_lang['exported-files-will-be-saved-in']['id'] = "File diekspor akan disimpan dalam";
+$hcms_lang['files-need-to-be-placed-in']['id'] = "File ini perlu ditempatkan di";
 ?>

@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['da'] = "Bruge lokale medier storage";
 $hcms_lang['use-cloud-media-storage']['da'] = "Brug skyen til mediestorage";
 $hcms_lang['use-local-and-cloud-media-storage']['da'] = "Brug lokale og cloud-lagring";
 $hcms_lang['media-storage-type']['da'] = "Storage medier type";
+$hcms_lang['select-job']['da'] = "Vælg job";
+$hcms_lang['delete-exported-objects']['da'] = "Slet eksporterede objekter";
+$hcms_lang['creation-must-be-older-than']['da'] = "Oprettelsen må være ældre end";
+$hcms_lang['last-access-must-be-older-than']['da'] = "Sidste adgang må være ældre end";
+$hcms_lang['file-size-must-be-greater-than']['da'] = "Filstørrelsen må ikke overstige";
+$hcms_lang['last-modification-must-be-older-than']['da'] = "Sidste ændring må være ældre end";
+$hcms_lang['days']['da'] = "Dage";
+$hcms_lang['enable-job']['da'] = "Aktiverer job";
+$hcms_lang['exported-files-will-be-saved-in']['da'] = "Eksporterede filer bliver gemt i";
+$hcms_lang['files-need-to-be-placed-in']['da'] = "Filerne skal placeres i";
 ?>

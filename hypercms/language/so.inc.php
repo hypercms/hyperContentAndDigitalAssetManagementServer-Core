@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['so'] = "Isticmaal dawladaha hoose iyo key
 $hcms_lang['use-cloud-media-storage']['so'] = "Isticmaal samada iyo keydka saxaafadda";
 $hcms_lang['use-local-and-cloud-media-storage']['so'] = "Isticmaal dawladaha hoose iyo daruurta iyo keydka saxaafadda";
 $hcms_lang['media-storage-type']['so'] = "Saxaafadda nooca shaatigaduud";
+$hcms_lang['select-job']['so'] = "Shaqo soocda "";
+$hcms_lang['delete-exported-objects']['so'] = "Dalbanayo alaabta laga dhoofin jiray";
+$hcms_lang['creation-must-be-older-than']['so'] = "Abuuridda waa ka weyn";
+$hcms_lang['last-access-must-be-older-than']['so'] = "Ugu dambaysta inay isticmaalaan waa ka weyn";
+$hcms_lang['file-size-must-be-greater-than']['so'] = "Waxaad dacwo u le'waa ka weyn yahay";
+$hcms_lang['last-modification-must-be-older-than']['so'] = "Ugu dambaysta, dhaqaajinta caqabadaha waa ka weyn";
+$hcms_lang['days']['so'] = "Maalmood";
+$hcms_lang['enable-job']['so'] = "Shaqo Gaarsiiso";
+$hcms_lang['exported-files-will-be-saved-in']['so'] = "Faylasha Dhoofa badbaadi doonaa oo";
+$hcms_lang['files-need-to-be-placed-in']['so'] = "Dhamaan faylasha loo baahan yahay in la geeynayo";
 ?>

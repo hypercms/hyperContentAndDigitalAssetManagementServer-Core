@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['sr'] = "Korišćenje lokalnih medija za s
 $hcms_lang['use-cloud-media-storage']['sr'] = "Korišćenje oblak medija za skladištenje";
 $hcms_lang['use-local-and-cloud-media-storage']['sr'] = "Korišćenje lokalnih i oblak medija za skladištenje";
 $hcms_lang['media-storage-type']['sr'] = "Mediji za skladištenje tip";
+$hcms_lang['select-job']['sr'] = "Odaberite posao";
+$hcms_lang['delete-exported-objects']['sr'] = "Obrišite izvoziti objekata";
+$hcms_lang['creation-must-be-older-than']['sr'] = "Stvaranje mora da bude stariji od";
+$hcms_lang['last-access-must-be-older-than']['sr'] = "Poslednji pristup mora biti stariji od";
+$hcms_lang['file-size-must-be-greater-than']['sr'] = "Veličina datoteka mora biti veća od";
+$hcms_lang['last-modification-must-be-older-than']['sr'] = "Poslednja izmena mora da bude stariji od";
+$hcms_lang['days']['sr'] = "Dana";
+$hcms_lang['enable-job']['sr'] = "Omogućiti posao";
+$hcms_lang['exported-files-will-be-saved-in']['sr'] = "Izvozi datoteke će biti sačuvane u";
+$hcms_lang['files-need-to-be-placed-in']['sr'] = "Datoteka treba da bude u";
 ?>

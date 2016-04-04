@@ -1359,4 +1359,14 @@ $hcms_lang['use-local-media-storage']['he'] = "השתמש באחסון המדי�
 $hcms_lang['use-cloud-media-storage']['he'] = "השתמש באחסון המדיה ענן";
 $hcms_lang['use-local-and-cloud-media-storage']['he'] = "השתמש באחסון המדיה ענן מקומי";
 $hcms_lang['media-storage-type']['he'] = "סוג אחסון מדיה";
+$hcms_lang['select-job']['he'] = "בחר תפקיד";
+$hcms_lang['delete-exported-objects']['he'] = "למחוק אובייקטים המיוצא";
+$hcms_lang['creation-must-be-older-than']['he'] = "יצירת חייב להיות יותר";
+$hcms_lang['last-access-must-be-older-than']['he'] = "הגישה האחרון חייב להיות יותר";
+$hcms_lang['file-size-must-be-greater-than']['he'] = "גודל הקובץ חייב להיות גדול יותר";
+$hcms_lang['last-modification-must-be-older-than']['he'] = "השינוי האחרון חייב להיות יותר";
+$hcms_lang['days']['he'] = "ימים";
+$hcms_lang['enable-job']['he'] = "לאפשר עבודה";
+$hcms_lang['exported-files-will-be-saved-in']['he'] = "לייצא קבצים יהיה נשמר";
+$hcms_lang['files-need-to-be-placed-in']['he'] = "הקבצים צריכים להיות ממוקמים";
 ?>

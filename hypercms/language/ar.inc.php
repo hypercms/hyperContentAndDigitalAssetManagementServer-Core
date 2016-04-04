@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['ar'] = "استخدام وسائط تخز�
 $hcms_lang['use-cloud-media-storage']['ar'] = "استخدام وسائط تخزين الشبكات";
 $hcms_lang['use-local-and-cloud-media-storage']['ar'] = "استخدام وسائط تخزين الشبكات المحلية";
 $hcms_lang['media-storage-type']['ar'] = "نوع وحدة تخزين الوسائط";
+$hcms_lang['select-job']['ar'] = "حدد وظيفة";
+$hcms_lang['delete-exported-objects']['ar'] = "حذف تصدير اشياء";
+$hcms_lang['creation-must-be-older-than']['ar'] = "انشاء يجب ان يتجاوز عمرك";
+$hcms_lang['last-access-must-be-older-than']['ar'] = "اخر الوصول يجب ان يتجاوز عمرك";
+$hcms_lang['file-size-must-be-greater-than']['ar'] = "فيجب ان يكون حجم الملف اكبر من";
+$hcms_lang['last-modification-must-be-older-than']['ar'] = "التعديل الاخير يجب ان يتجاوز عمرك";
+$hcms_lang['days']['ar'] = "ايام";
+$hcms_lang['enable-job']['ar'] = "تمكين الوظيفة";
+$hcms_lang['exported-files-will-be-saved-in']['ar'] = "سيتم حفظ الملفات المصدرة فى";
+$hcms_lang['files-need-to-be-placed-in']['ar'] = "ملفات IOS التى يجب ان توضع فى";
 ?>

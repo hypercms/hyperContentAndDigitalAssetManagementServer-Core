@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['hu'] = "A helyi adattároló";
 $hcms_lang['use-cloud-media-storage']['hu'] = "A felhőalapú adattároló";
 $hcms_lang['use-local-and-cloud-media-storage']['hu'] = "Használja a helyi és a felhő adathordozó";
 $hcms_lang['media-storage-type']['hu'] = "Adathordozó típusa";
+$hcms_lang['select-job']['hu'] = "Munka kiválasztása";
+$hcms_lang['delete-exported-objects']['hu'] = "Törlés objektumok exportálása";
+$hcms_lang['creation-must-be-older-than']['hu'] = "Régebbi létrehozását kell lennie.";
+$hcms_lang['last-access-must-be-older-than']['hu'] = "Utolsó hozzáférés régebbi kell lennie.";
+$hcms_lang['file-size-must-be-greater-than']['hu'] = "A fájl mérete nagyobb, mint a";
+$hcms_lang['last-modification-must-be-older-than']['hu'] = "Utolsó módosítás régebbi kell lennie.";
+$hcms_lang['days']['hu'] = "Nap";
+$hcms_lang['enable-job']['hu'] = "A munka";
+$hcms_lang['exported-files-will-be-saved-in']['hu'] = "Az exportált fájlok lesznek elmentve.";
+$hcms_lang['files-need-to-be-placed-in']['hu'] = "A fájlokat kell elhelyezni.";
 ?>

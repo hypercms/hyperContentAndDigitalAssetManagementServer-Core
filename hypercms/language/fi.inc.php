@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['fi'] = "Käyttämällä paikallista talle
 $hcms_lang['use-cloud-media-storage']['fi'] = "Käytä cloud tallennusväline";
 $hcms_lang['use-local-and-cloud-media-storage']['fi'] = "Käyttämällä paikallista ja cloud-tallennusväline";
 $hcms_lang['media-storage-type']['fi'] = "Tallennusväline tyyppi";
+$hcms_lang['select-job']['fi'] = "Valitse työ";
+$hcms_lang['delete-exported-objects']['fi'] = "Poista kohteet viedään";
+$hcms_lang['creation-must-be-older-than']['fi'] = "Työpaikkojen luomisen on oltava vanhempi.";
+$hcms_lang['last-access-must-be-older-than']['fi'] = "Viimeinen mahdollisuus vanhempi.";
+$hcms_lang['file-size-must-be-greater-than']['fi'] = "Tiedostokoko on oltava suurempi kuin";
+$hcms_lang['last-modification-must-be-older-than']['fi'] = "Viimeisen muutoksen on vanhempi kuin";
+$hcms_lang['days']['fi'] = "Päivien lukumäärä";
+$hcms_lang['enable-job']['fi'] = "Jotta työn";
+$hcms_lang['exported-files-will-be-saved-in']['fi'] = "Viedyt tiedostot tallennetaan";
+$hcms_lang['files-need-to-be-placed-in']['fi'] = "Tiedostot on siirretty";
 ?>

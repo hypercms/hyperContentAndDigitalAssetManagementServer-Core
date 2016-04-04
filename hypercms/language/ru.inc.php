@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['ru'] = "Использования мес
 $hcms_lang['use-cloud-media-storage']['ru'] = "Использование средств массовой информации облачных систем хранения данных";
 $hcms_lang['use-local-and-cloud-media-storage']['ru'] = "Использовать локальный и облачных систем хранения данных средств массовой информации";
 $hcms_lang['media-storage-type']['ru'] = "Средства массовой информации тип хранения";
+$hcms_lang['select-job']['ru'] = "Выберите задание";
+$hcms_lang['delete-exported-objects']['ru'] = "Удаление экспортированных объектов";
+$hcms_lang['creation-must-be-older-than']['ru'] = "Создание рабочих мест должно быть старше";
+$hcms_lang['last-access-must-be-older-than']['ru'] = "Последний доступ должен быть старше";
+$hcms_lang['file-size-must-be-greater-than']['ru'] = "Размер файла должен быть больше";
+$hcms_lang['last-modification-must-be-older-than']['ru'] = "Последнее изменение должно быть старше";
+$hcms_lang['days']['ru'] = "Дней";
+$hcms_lang['enable-job']['ru'] = "Включить задания";
+$hcms_lang['exported-files-will-be-saved-in']['ru'] = "Экспортированные файлы будут сохранены в";
+$hcms_lang['files-need-to-be-placed-in']['ru'] = "Файлы должны быть помещены в";
 ?>

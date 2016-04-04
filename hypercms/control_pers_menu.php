@@ -126,7 +126,7 @@ function checkForm_item_create()
 {  
   var form = document.forms['item_create'];
   
-  if (form.elements['persname'].value == "")
+  if (form.elements['persname'].value.trim() == "")
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['persname'].focus();

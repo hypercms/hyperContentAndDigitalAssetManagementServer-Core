@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['ur'] = "مقامی میڈیا استعم�
 $hcms_lang['use-cloud-media-storage']['ur'] = "استعمال بادل میڈیا کی ذخیرہ";
 $hcms_lang['use-local-and-cloud-media-storage']['ur'] = "مقامی اور استعمال بادل میڈیا کی ذخیرہ";
 $hcms_lang['media-storage-type']['ur'] = "میڈیا ذخیرہ قسم";
+$hcms_lang['select-job']['ur'] = "منتخب کام";
+$hcms_lang['delete-exported-objects']['ur'] = "برآمد ابجیکٹ حذف کریں";
+$hcms_lang['creation-must-be-older-than']['ur'] = "قیام بوڑھے سے کیا جائے";
+$hcms_lang['last-access-must-be-older-than']['ur'] = "آخری رسائی بوڑھے سے کیا جائے";
+$hcms_lang['file-size-must-be-greater-than']['ur'] = "مسل سائز کو زیادہ";
+$hcms_lang['last-modification-must-be-older-than']['ur'] = "آخری صورت بوڑھے سے کیا جائے";
+$hcms_lang['days']['ur'] = "دن";
+$hcms_lang['enable-job']['ur'] = "کام اہل بنائیں";
+$hcms_lang['exported-files-will-be-saved-in']['ur'] = "میں محفوظ ہوں گے. برآمد مسلیں";
+$hcms_lang['files-need-to-be-placed-in']['ur'] = "فائلیں ضائع کردیں کی ضرورت میں";
 ?>

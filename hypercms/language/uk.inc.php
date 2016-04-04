@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['uk'] = "Використання місц
 $hcms_lang['use-cloud-media-storage']['uk'] = "Використання хмара носій";
 $hcms_lang['use-local-and-cloud-media-storage']['uk'] = "Використання місцевих і хмари носій";
 $hcms_lang['media-storage-type']['uk'] = "Носій типу";
+$hcms_lang['select-job']['uk'] = "Виберіть роб.";
+$hcms_lang['delete-exported-objects']['uk'] = "Вилучити об'єкти на експорт";
+$hcms_lang['creation-must-be-older-than']['uk'] = "Створення повинен бути старше";
+$hcms_lang['last-access-must-be-older-than']['uk'] = "Останні перегляди повинен бути старше";
+$hcms_lang['file-size-must-be-greater-than']['uk'] = "Розмір файлу повинна бути більше";
+$hcms_lang['last-modification-must-be-older-than']['uk'] = "Остання модифікація повинен бути старше";
+$hcms_lang['days']['uk'] = "Днів";
+$hcms_lang['enable-job']['uk'] = "Увімкнути роб.";
+$hcms_lang['exported-files-will-be-saved-in']['uk'] = "Експорту файли буде збережено";
+$hcms_lang['files-need-to-be-placed-in']['uk'] = "Файли повинні бути розміщені в";
 ?>

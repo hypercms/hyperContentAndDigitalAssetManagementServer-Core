@@ -116,7 +116,7 @@ function checkForm()
 {
   var form = document.forms['site_create'];
   
-  if(form.elements['site_name'].value == "")
+  if(form.elements['site_name'].value.trim() == "")
   {
     alert(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['site_name'].focus();

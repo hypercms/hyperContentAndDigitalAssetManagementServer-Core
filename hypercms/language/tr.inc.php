@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['tr'] = "Yerel medya depolama";
 $hcms_lang['use-cloud-media-storage']['tr'] = "Bulut kullanın ortam depolama";
 $hcms_lang['use-local-and-cloud-media-storage']['tr'] = "Yerel ve bulut ortam depolama";
 $hcms_lang['media-storage-type']['tr'] = "Ortam depolama türü";
+$hcms_lang['select-job']['tr'] = "İş Seç";
+$hcms_lang['delete-exported-objects']['tr'] = "Delete verilen nesneleri";
+$hcms_lang['creation-must-be-older-than']['tr'] = "Oluşturma olmalıdır daha eski";
+$hcms_lang['last-access-must-be-older-than']['tr'] = "Son erişim gerekir en eski";
+$hcms_lang['file-size-must-be-greater-than']['tr'] = "Dosya boyutu büyük olmalıdır.";
+$hcms_lang['last-modification-must-be-older-than']['tr'] = "Son değişiklik gerekir en eski";
+$hcms_lang['days']['tr'] = "Gün";
+$hcms_lang['enable-job']['tr'] = "İş Etkinleştir";
+$hcms_lang['exported-files-will-be-saved-in']['tr'] = "Gönderilen dosyalar kaydedilir.";
+$hcms_lang['files-need-to-be-placed-in']['tr'] = "Dosyalar için yerleştirilebilir.";
 ?>

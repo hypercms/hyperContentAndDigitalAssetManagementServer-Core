@@ -134,7 +134,7 @@ function checkForm_mediacat_create()
 {
   var form = document.forms['mediacat_create'];
   
-  if (form.elements['mediacat_name'].value == "")
+  if (form.elements['mediacat_name'].value.trim() == "")
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-category-name-is-required'][$lang]); ?>"));
     form.elements['mediacat_name'].focus();

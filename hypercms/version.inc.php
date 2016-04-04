@@ -1377,8 +1377,24 @@ Release 04/2016
 - Implemenentation of new link-type input parameter for function createmultidownloadlink
 - Bug fix: Force wrapper links for downloads on iPhones or iPads
 - Improvements in control_content_menu and control_objectlist_menu
+
+Version 6.1.3
+Release 04/2016
+- Implementation of delete feature for exported objects
+- Implementation of conditions for export of objects (creation date, last access, last modification, file size)
+- Implementation of export job profiles in export module
+- Implementation of import job profile in import module
+- Implementation of new text variables into all language files
+- Bug fix: Help button apperaed twice in instance management control task bar
+- Implementation of JS trim for new names in all controls
+- Bug fix: timeout.js has still been used in instance manager
+- Bug fix: Language has been been defined in import and export scripts
+- Implementation of new main configuration parameters for the import and export directory (default values are data/import and data/export as in older versions)
+- Implementation of new main configuration parameters in import and export scripts
+- Added file extension .indd as image to include/format_ext.inc.php
+- Implementation of automated export and import jobs in daily job
 */
 
 // current version
-$version = "Version 6.1.2";
+$version = "Version 6.1.3";
 ?>

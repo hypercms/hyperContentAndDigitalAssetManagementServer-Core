@@ -213,6 +213,89 @@ if (sizeof ($config_files) > 0)
         $error[] = $mgmt_config['today']."|daily.php|error|$errcode|license notification can not be executed. Config directory is missing.";
       }
     }
+    
+    // export job
+    if (is_file ($mgmt_config['abs_path_data']."config/export.dat") && is_file ($mgmt_config['abs_path_cms']."connector/export/index.php"))
+    {
+      // load export jobs
+      $record_array = file ($mgmt_config['abs_path_data']."config/export.dat");
+      
+      if (is_array ($record_array) && sizeof ($record_array) > 0)
+      {
+        foreach ($record_array as $record)
+        {
+          list ($exportname, $contentjob, $object_id, $contentall, $contentpreserve, $contentdelete, $contentcreatedays, $contenteditdays, $contentaccessdays, $contentfilesize) = explode ("|", trim ($record));
+
+          // if job is active and object ID has been provided
+          if (!empty ($contentjob) && !empty ($object_id))
+          {
+            // get object path
+            $objectpath = rdbms_getobject ($object_id);
+            
+            if ($objectpath != "")
+            {
+              $site = getpublication ($objectpath);
+              $cat = getcategory ($site, $objectpath);
+              $contentlocation = getlocation ($objectpath);
+              $contentobject = getobject ($objectpath);
+              
+              // parameters
+              $data['contentpasscode'] = @$mgmt_config['passcode'];
+              $data['contentlocation'] = $contentlocation;
+              $data['contentobject'] = $contentobject;
+              $data['contentall'] = intval ($contentall);
+              $data['contentpreserve'] = intval ($contentpreserve);
+              $data['contentdelete'] = intval ($contentdelete);
+              $data['contentcreatedays'] = intval ($contentcreatedays);
+              $data['contenteditdays'] = intval ($contenteditdays);
+              $data['contentaccessdays'] = intval ($contentaccessdays);
+              $data['contentfilesize'] = intval ($contentfilesize);
+
+              // execute job
+              $report = HTTP_Post ($mgmt_config['abs_path_cms']."/connector/export/index.php", $data, "application/x-www-form-urlencoded", "UTF-8");
+              
+              // save HTML report in log
+              if ($report != "") savelog (array($report), "export_".time("Y-m-d", time()).".log.html");
+            }
+          }
+        }
+      }
+    }
+
+    // synchronize media files in repository with cloud storage
+    if (function_exists ("synccloudobjects")) synccloudobjects ("sys");
+  }
+  
+    // import job
+    if (is_file ($mgmt_config['abs_path_data']."config/import.dat") && is_file ($mgmt_config['abs_path_cms']."connector/import/index.php"))
+    {
+      // load import jobs
+      $record_array = file ($mgmt_config['abs_path_data']."config/import.dat");
+      
+      if (is_array ($record_array) && sizeof ($record_array) > 0)
+      {
+        foreach ($record_array as $record)
+        {
+          list ($importname, $contentjob, $contentcreatefolders, $contentlinkignore) = explode ("|", trim ($record));
+
+          // if job is active
+          if (!empty ($contentjob))
+          {
+              // parameters
+              $data['contentpasscode'] = @$mgmt_config['passcode'];
+              $data['contentcreatefolders'] = intval ($contentcreatefolders);
+              $data['contentlinkignore'] = intval ($contentlinkignore);
+
+              // execute job
+              $report = HTTP_Post ($mgmt_config['abs_path_cms']."/connector/import/index.php", $data, "application/x-www-form-urlencoded", "UTF-8");
+              
+              // save HTML report in log
+              if ($report != "") savelog (array($report), "import_".time("Y-m-d", time()).".log.html");
+            }
+          }
+        }
+      }
+    }
 
     // synchronize media files in repository with cloud storage
     if (function_exists ("synccloudobjects")) synccloudobjects ("sys");

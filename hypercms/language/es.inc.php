@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['es'] = "Utilizar medios de almacenamiento
 $hcms_lang['use-cloud-media-storage']['es'] = "Utilizar medios de almacenamiento cloud";
 $hcms_lang['use-local-and-cloud-media-storage']['es'] = "Utilizar medios de almacenamiento cloud y local.";
 $hcms_lang['media-storage-type']['es'] = "Tipo de almacenamiento de medios";
+$hcms_lang['select-job']['es'] = "Seleccionar trabajo";
+$hcms_lang['delete-exported-objects']['es'] = "Eliminar objetos exportados";
+$hcms_lang['creation-must-be-older-than']['es'] = "Creación deben ser mayores de";
+$hcms_lang['last-access-must-be-older-than']['es'] = "Último acceso deben ser mayores de";
+$hcms_lang['file-size-must-be-greater-than']['es'] = "El tamaño del archivo debe ser mayor que";
+$hcms_lang['last-modification-must-be-older-than']['es'] = "Última modificación deben ser mayores de";
+$hcms_lang['days']['es'] = "Días";
+$hcms_lang['enable-job']['es'] = "Habilitar el trabajo";
+$hcms_lang['exported-files-will-be-saved-in']['es'] = "Los archivos exportados se guardarán en";
+$hcms_lang['files-need-to-be-placed-in']['es'] = "Los archivos deben ser colocados en";
 ?>

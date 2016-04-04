@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['ms'] = "Setempat media";
 $hcms_lang['use-cloud-media-storage']['ms'] = "Guna cloud media";
 $hcms_lang['use-local-and-cloud-media-storage']['ms'] = "Guna lokal dan cloud media";
 $hcms_lang['media-storage-type']['ms'] = "Media Jenis";
+$hcms_lang['select-job']['ms'] = "Pilih pekerjaan";
+$hcms_lang['delete-exported-objects']['ms'] = "Hapuskan dieksport objek";
+$hcms_lang['creation-must-be-older-than']['ms'] = "Penciptaan mesti lebih tua dari";
+$hcms_lang['last-access-must-be-older-than']['ms'] = "Terakhir akses mesti lebih tua dari";
+$hcms_lang['file-size-must-be-greater-than']['ms'] = "Saiz Fail mesti lebih besar daripada";
+$hcms_lang['last-modification-must-be-older-than']['ms'] = "Pengesahanerror message mesti lebih tua dari";
+$hcms_lang['days']['ms'] = "Hari";
+$hcms_lang['enable-job']['ms'] = "Aktifkan Tugas";
+$hcms_lang['exported-files-will-be-saved-in']['ms'] = "Dieksport fail akan disimpan dalam";
+$hcms_lang['files-need-to-be-placed-in']['ms'] = "Fail perlu ditempatkan dalam";
 ?>

@@ -134,7 +134,7 @@ function checkForm_tpl_create()
 {
   var form = document.forms['tpl_create'];
    
-  if (form.elements['template'].value == "")
+  if (form.elements['template'].value.trim() == "")
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['template'].focus();

@@ -408,7 +408,7 @@ function checkForm_folder_create()
 {
   var form = document.forms['folder_create'];
   
-  if (form.elements['foldernew'].value == "")
+  if (form.elements['foldernew'].value.trim() == "")
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['foldernew'].focus();
@@ -429,7 +429,7 @@ function checkForm_folder_rename()
 {
   var form = document.forms['folder_rename'];
 
-  if (form.elements['foldernew'].value == "")
+  if (form.elements['foldernew'].value.trim() == "")
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['foldernew'].focus();
@@ -450,7 +450,7 @@ function checkForm_page_rename()
 {
   var form = document.forms['page_rename'];
   
-  if (form.elements['pagenew'].value == "")
+  if (form.elements['pagenew'].value.trim() == "")
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['pagenew'].focus();

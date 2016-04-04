@@ -32,7 +32,7 @@ $cat = getcategory ($site, $location);
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-// load publication configuration for live view
+// load publication configuration
 if (valid_publicationname ($site)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
 
 // ------------------------------ permission section --------------------------------
@@ -305,7 +305,7 @@ function checkForm_page_create()
 {
   var form = document.forms['page_create'];
   
-  if (form.elements['page'].value == "")
+  if (form.elements['page'].value.trim() == "")
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-name-is-required'][$lang]); ?>"));
     form.elements['page'].focus();

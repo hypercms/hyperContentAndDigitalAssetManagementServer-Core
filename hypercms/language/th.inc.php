@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['th'] = "การใช้งานที
 $hcms_lang['use-cloud-media-storage']['th'] = "การใช้งานที่เก็บข้อมูลมีเดียในระบบ Cloud";
 $hcms_lang['use-local-and-cloud-media-storage']['th'] = "การใช้งานในแบบท้องถิ่นและที่เก็บข้อมูลมีเดียในระบบ Cloud";
 $hcms_lang['media-storage-type']['th'] = "ประเภทของที่เก็บข้อมูลมีเดีย";
+$hcms_lang['select-job']['th'] = "งานที่เลือก";
+$hcms_lang['delete-exported-objects']['th'] = "ลบวัตถุที่ถูกเอ็กซ์ปอร์ต";
+$hcms_lang['creation-must-be-older-than']['th'] = "การสร้างต้องมีอายุมากกว่า";
+$hcms_lang['last-access-must-be-older-than']['th'] = "การเข้าใช้ล่าสุดต้องมีอายุมากกว่า";
+$hcms_lang['file-size-must-be-greater-than']['th'] = "ไฟล์ต้องมีขนาดมากกว่า";
+$hcms_lang['last-modification-must-be-older-than']['th'] = "การแก้ไขครั้งล่าสุดต้องมีอายุมากกว่า";
+$hcms_lang['days']['th'] = "วัน";
+$hcms_lang['enable-job']['th'] = "เปิดใช้งาน";
+$hcms_lang['exported-files-will-be-saved-in']['th'] = "ส่งออกไฟล์จะถูกบันทึกใน";
+$hcms_lang['files-need-to-be-placed-in']['th'] = "ไฟล์ที่จำเป็นต้องได้รับการวางอยู่ใน";
 ?>

@@ -1359,4 +1359,14 @@ $hcms_lang['use-local-media-storage']['zh-s'] = "使用本地介质存储";
 $hcms_lang['use-cloud-media-storage']['zh-s'] = "使用云存储介质";
 $hcms_lang['use-local-and-cloud-media-storage']['zh-s'] = "使用本地和云存储介质";
 $hcms_lang['media-storage-type']['zh-s'] = "介质存储类型";
+$hcms_lang['select-job']['zh-s'] = "选择作业";
+$hcms_lang['delete-exported-objects']['zh-s'] = "删除导出的对象。";
+$hcms_lang['creation-must-be-older-than']['zh-s'] = "创建必须早于";
+$hcms_lang['last-access-must-be-older-than']['zh-s'] = "最后访问时间必须早于";
+$hcms_lang['file-size-must-be-greater-than']['zh-s'] = "文件大小必须大于";
+$hcms_lang['last-modification-must-be-older-than']['zh-s'] = "最后修改必须早于";
+$hcms_lang['days']['zh-s'] = "天";
+$hcms_lang['enable-job']['zh-s'] = "启用作业";
+$hcms_lang['exported-files-will-be-saved-in']['zh-s'] = "导出的文件将被保存在";
+$hcms_lang['files-need-to-be-placed-in']['zh-s'] = "文件需要放置在";
 ?>

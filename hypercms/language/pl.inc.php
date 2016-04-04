@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['pl'] = "Wykorzystanie lokalnych nośnikó
 $hcms_lang['use-cloud-media-storage']['pl'] = "Za chmurą przechowywanie nośników";
 $hcms_lang['use-local-and-cloud-media-storage']['pl'] = "Wykorzystanie lokalnych i rozproszonych przechowywanie nośników";
 $hcms_lang['media-storage-type']['pl'] = "Media rodzaj pamięci masowej";
+$hcms_lang['select-job']['pl'] = "Wybierz zadanie";
+$hcms_lang['delete-exported-objects']['pl'] = "Usuń eksportowane obiekty";
+$hcms_lang['creation-must-be-older-than']['pl'] = "Stworzenia musi być starsze niż";
+$hcms_lang['last-access-must-be-older-than']['pl'] = "Ostatni dostęp musi być starsze niż";
+$hcms_lang['file-size-must-be-greater-than']['pl'] = "Rozmiar pliku musi być większa niż";
+$hcms_lang['last-modification-must-be-older-than']['pl'] = "Ostatniej modyfikacji muszą być starsze niż";
+$hcms_lang['days']['pl'] = "Dni";
+$hcms_lang['enable-job']['pl'] = "Zadanie udostępniania";
+$hcms_lang['exported-files-will-be-saved-in']['pl'] = "Wyeksportowane pliki zostaną zapisane w";
+$hcms_lang['files-need-to-be-placed-in']['pl'] = "Pliki muszą być umieszczone w";
 ?>

@@ -153,7 +153,7 @@ function checkForm()
   var userpassword = form.elements['password'];
   var userconfirm_password = form.elements['confirm_password'];
   
-  if (userlogin.value == "")
+  if (userlogin.value.trim() == "")
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['a-user-name-is-required'][$lang]); ?>"));
     userlogin.focus();
@@ -186,7 +186,7 @@ function checkForm()
     return false;
   }
   
-  if (userconfirm_password.value == "")
+  if (userconfirm_password.value.trim() == "")
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-confirm-the-password'][$lang]); ?>"));
     userconfirm_password.focus();

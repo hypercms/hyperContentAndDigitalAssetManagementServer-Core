@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['sk'] = "Využitie miestnych médií na uc
 $hcms_lang['use-cloud-media-storage']['sk'] = "Pomocou cloud úložné médium";
 $hcms_lang['use-local-and-cloud-media-storage']['sk'] = "Využitie miestnych a cloud úložné médium";
 $hcms_lang['media-storage-type']['sk'] = "Médiá typu ukladania";
+$hcms_lang['select-job']['sk'] = "Vyberte prácu";
+$hcms_lang['delete-exported-objects']['sk'] = "Odstránenie vyvezené predmety";
+$hcms_lang['creation-must-be-older-than']['sk'] = "Vytvorenie musia byť staršie ako";
+$hcms_lang['last-access-must-be-older-than']['sk'] = "Posledný prístup musí byť staršie ako";
+$hcms_lang['file-size-must-be-greater-than']['sk'] = "Veľkosť súboru nesmie byť väčšia ako";
+$hcms_lang['last-modification-must-be-older-than']['sk'] = "Posledná úprava musí byť staršie ako";
+$hcms_lang['days']['sk'] = "Dní";
+$hcms_lang['enable-job']['sk'] = "Umožňujú prácu";
+$hcms_lang['exported-files-will-be-saved-in']['sk'] = "Exportované súbory sa uložia v";
+$hcms_lang['files-need-to-be-placed-in']['sk'] = "Súbory musia byť umiestnené v";
 ?>

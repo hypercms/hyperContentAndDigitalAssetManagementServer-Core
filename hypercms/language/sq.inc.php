@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['sq'] = "Përdorim ruajtjen e medias lokal
 $hcms_lang['use-cloud-media-storage']['sq'] = "Përdorimi i dyshimtë akreditimi deponim";
 $hcms_lang['use-local-and-cloud-media-storage']['sq'] = "Shfrytëzojnë lëndën dhe cloud ruajtjen e medias";
 $hcms_lang['media-storage-type']['sq'] = "Akreditimi deponim lloji";
+$hcms_lang['select-job']['sq'] = "Zgjidh konkurse";
+$hcms_lang['delete-exported-objects']['sq'] = "Fshi objekte të eksportuara";
+$hcms_lang['creation-must-be-older-than']['sq'] = "Krijimi duhet të jenë më të moshuar se";
+$hcms_lang['last-access-must-be-older-than']['sq'] = "Qasja e fundit duhet të jenë më të moshuar se";
+$hcms_lang['file-size-must-be-greater-than']['sq'] = "Madhësisë duhet të jetë më e gjatë se";
+$hcms_lang['last-modification-must-be-older-than']['sq'] = "Ndyshimi i fundit duhet të jetë më i vjetër se";
+$hcms_lang['days']['sq'] = "Ditë";
+$hcms_lang['enable-job']['sq'] = "Konkurse dhe mundësojnë";
+$hcms_lang['exported-files-will-be-saved-in']['sq'] = "Eksportuar dosje do të ruhen në";
+$hcms_lang['files-need-to-be-placed-in']['sq'] = "Dosjet duhet të vendosen në";
 ?>

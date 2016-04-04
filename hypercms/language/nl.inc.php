@@ -1358,4 +1358,14 @@ $hcms_lang['use-local-media-storage']['nl'] = "Gebruik lokale opslagmedia";
 $hcms_lang['use-cloud-media-storage']['nl'] = "Gebruik cloud mediaopslag";
 $hcms_lang['use-local-and-cloud-media-storage']['nl'] = "Gebruik lokaal en cloud mediaopslag";
 $hcms_lang['media-storage-type']['nl'] = "Opslagmedia type";
+$hcms_lang['select-job']['nl'] = "Opdracht selecteren";
+$hcms_lang['delete-exported-objects']['nl'] = "Verwijder uitgevoerde objecten";
+$hcms_lang['creation-must-be-older-than']['nl'] = "Creatie moet ouder dan";
+$hcms_lang['last-access-must-be-older-than']['nl'] = "Ltst toegang moet ouder dan";
+$hcms_lang['file-size-must-be-greater-than']['nl'] = "De bestandsgrootte mag niet groter zijn dan";
+$hcms_lang['last-modification-must-be-older-than']['nl'] = "Laatste wijziging moet ouder dan";
+$hcms_lang['days']['nl'] = "Dagen";
+$hcms_lang['enable-job']['nl'] = "Inschakelen";
+$hcms_lang['exported-files-will-be-saved-in']['nl'] = "Geëxporteerde bestanden wordt opgeslagen in";
+$hcms_lang['files-need-to-be-placed-in']['nl'] = "Bestanden worden geplaatst";
 ?>

@@ -39,6 +39,12 @@ $mgmt_config['abs_path_rep'] = "%abs_path_rep%";
 $mgmt_config['url_path_data'] = $mgmt_config['url_protocol']."%url_path_data%";
 $mgmt_config['abs_path_data'] = "%abs_path_data%";
 
+// absolute path to the import directory
+$mgmt_config['abs_path_import'] = $mgmt_config['abs_path_data']."import/";
+
+// absolute path to the export directory
+$mgmt_config['abs_path_export'] = $mgmt_config['abs_path_data']."export/";
+
 
 // ATTENTION: Usually you do not have to change the following path variables!
 
