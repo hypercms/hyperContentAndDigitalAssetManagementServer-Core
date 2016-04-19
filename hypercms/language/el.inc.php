@@ -1369,4 +1369,7 @@ $hcms_lang['days']['el'] = "Ημέρες";
 $hcms_lang['enable-job']['el'] = "Εργασία";
 $hcms_lang['exported-files-will-be-saved-in']['el'] = "Τα εξαχθέντα αρχεία θα αποθηκευτούν σε";
 $hcms_lang['files-need-to-be-placed-in']['el'] = "Τα αρχεία πρέπει να τοποθετούνται σε";
+$hcms_lang['move-media-files-to-export-directory']['el'] = "Μετακινήστε τα αρχεία μέσων εξαγωγής directory (όλα τα στοιχεία που θα παραμείνουν στο σύστημα)";
+$hcms_lang['export-to-directory']['el'] = "Εξαγωγή σε directory";
+$hcms_lang['import-from-directory']['el'] = "Εισαγωγή από τον κατάλογο";
 ?>

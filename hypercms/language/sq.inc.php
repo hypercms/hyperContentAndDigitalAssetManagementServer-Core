@@ -1368,4 +1368,7 @@ $hcms_lang['days']['sq'] = "Ditë";
 $hcms_lang['enable-job']['sq'] = "Konkurse dhe mundësojnë";
 $hcms_lang['exported-files-will-be-saved-in']['sq'] = "Eksportuar dosje do të ruhen në";
 $hcms_lang['files-need-to-be-placed-in']['sq'] = "Dosjet duhet të vendosen në";
+$hcms_lang['move-media-files-to-export-directory']['sq'] = "Të medias për të eksportuar dosjet directory (të gjitha të dhënat do të ruhen në sistem)";
+$hcms_lang['export-to-directory']['sq'] = "Drejtori depertues";
+$hcms_lang['import-from-directory']['sq'] = "Drejtori të importojë nga";
 ?>

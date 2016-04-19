@@ -1368,4 +1368,7 @@ $hcms_lang['days']['ru'] = "Дней";
 $hcms_lang['enable-job']['ru'] = "Включить задания";
 $hcms_lang['exported-files-will-be-saved-in']['ru'] = "Экспортированные файлы будут сохранены в";
 $hcms_lang['files-need-to-be-placed-in']['ru'] = "Файлы должны быть помещены в";
+$hcms_lang['move-media-files-to-export-directory']['ru'] = "Переместите файлы мультимедиа для экспорта каталога (все данные будут храниться в системе)";
+$hcms_lang['export-to-directory']['ru'] = "Экспорт в каталоге";
+$hcms_lang['import-from-directory']['ru'] = "Импорт из каталога";
 ?>

@@ -1368,4 +1368,7 @@ $hcms_lang['days']['tr'] = "Gün";
 $hcms_lang['enable-job']['tr'] = "İş Etkinleştir";
 $hcms_lang['exported-files-will-be-saved-in']['tr'] = "Gönderilen dosyalar kaydedilir.";
 $hcms_lang['files-need-to-be-placed-in']['tr'] = "Dosyalar için yerleştirilebilir.";
+$hcms_lang['move-media-files-to-export-directory']['tr'] = "Hareket ortam dosyalarını export directory (tüm veri saklanır.)";
+$hcms_lang['export-to-directory']['tr'] = "Ver directory";
+$hcms_lang['import-from-directory']['tr'] = "Al directory";
 ?>

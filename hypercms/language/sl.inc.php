@@ -1367,4 +1367,7 @@ $hcms_lang['days']['sl'] = "Dni";
 $hcms_lang['enable-job']['sl'] = "Omogočite delo";
 $hcms_lang['exported-files-will-be-saved-in']['sl'] = "Izvožene datoteke bodo shranjene v";
 $hcms_lang['files-need-to-be-placed-in']['sl'] = "Datoteke je treba dati v";
+$hcms_lang['move-media-files-to-export-directory']['sl'] = "Premikanje predstavnostne datoteke za izvoz valut (vsi podatki bodo shranjeni v sistemu)";
+$hcms_lang['export-to-directory']['sl'] = "Izvoz v imenik";
+$hcms_lang['import-from-directory']['sl'] = "Uvoz iz imenika";
 ?>

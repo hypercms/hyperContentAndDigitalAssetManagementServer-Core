@@ -1368,4 +1368,7 @@ $hcms_lang['days']['bn'] = "দিন";
 $hcms_lang['enable-job']['bn'] = "এনাবল কাজ";
 $hcms_lang['exported-files-will-be-saved-in']['bn'] = "রপ্তানি নষ্ট হবে তাকেও।";
 $hcms_lang['files-need-to-be-placed-in']['bn'] = "নষ্ট করতে হবে।";
+$hcms_lang['move-media-files-to-export-directory']['bn'] = "চলমান মিডিয়া নষ্ট করে রপ্তানি ডিরেক্টরি (সব তথ্য রাখা হবে সিস্টেম)";
+$hcms_lang['export-to-directory']['bn'] = "রপ্তানি করে ডিরেক্টরি";
+$hcms_lang['import-from-directory']['bn'] = "ডাইরেক্টরি থেকে আমদানি";
 ?>

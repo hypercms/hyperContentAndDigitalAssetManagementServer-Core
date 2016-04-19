@@ -213,9 +213,9 @@ if (sizeof ($config_files) > 0)
         $error[] = $mgmt_config['today']."|daily.php|error|$errcode|license notification can not be executed. Config directory is missing.";
       }
     }
-    
+
     // export job
-    if (is_file ($mgmt_config['abs_path_data']."config/export.dat") && is_file ($mgmt_config['abs_path_cms']."connector/export/index.php"))
+    if (!empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_data']) && is_file ($mgmt_config['abs_path_data']."config/export.dat") && is_file ($mgmt_config['abs_path_cms']."connector/export/index.php"))
     {
       // load export jobs
       $record_array = file ($mgmt_config['abs_path_data']."config/export.dat");
@@ -224,10 +224,10 @@ if (sizeof ($config_files) > 0)
       {
         foreach ($record_array as $record)
         {
-          list ($exportname, $contentjob, $object_id, $contentall, $contentpreserve, $contentdelete, $contentcreatedays, $contenteditdays, $contentaccessdays, $contentfilesize) = explode ("|", trim ($record));
+          list ($exportname, $job, $object_id, $all, $preserve, $symlink, $delete, $createdays, $editdays, $accessdays, $filesize, $exportdir) = explode ("|", trim ($record));
 
           // if job is active and object ID has been provided
-          if (!empty ($contentjob) && !empty ($object_id))
+          if (!empty ($job) && !empty ($object_id))
           {
             // get object path
             $objectpath = rdbms_getobject ($object_id);
@@ -236,38 +236,37 @@ if (sizeof ($config_files) > 0)
             {
               $site = getpublication ($objectpath);
               $cat = getcategory ($site, $objectpath);
-              $contentlocation = getlocation ($objectpath);
-              $contentobject = getobject ($objectpath);
+              $location = getlocation ($objectpath);
+              $object = getobject ($objectpath);
               
               // parameters
-              $data['contentpasscode'] = @$mgmt_config['passcode'];
-              $data['contentlocation'] = $contentlocation;
-              $data['contentobject'] = $contentobject;
-              $data['contentall'] = intval ($contentall);
-              $data['contentpreserve'] = intval ($contentpreserve);
-              $data['contentdelete'] = intval ($contentdelete);
-              $data['contentcreatedays'] = intval ($contentcreatedays);
-              $data['contenteditdays'] = intval ($contenteditdays);
-              $data['contentaccessdays'] = intval ($contentaccessdays);
-              $data['contentfilesize'] = intval ($contentfilesize);
+              $data = array();
+              $data['passcode'] = @$mgmt_config['passcode'];
+              $data['location'] = $location;
+              $data['object'] = $object;
+              $data['all'] = intval ($all);
+              $data['preserve'] = intval ($preserve);
+              $data['symlink'] = intval ($symlink);
+              $data['delete'] = intval ($delete);
+              $data['createdays'] = intval ($createdays);
+              $data['editdays'] = intval ($editdays);
+              $data['accessdays'] = intval ($accessdays);
+              $data['filesize'] = intval ($filesize);
+              $data['exportdir'] = $exportdir;
 
               // execute job
-              $report = HTTP_Post ($mgmt_config['abs_path_cms']."/connector/export/index.php", $data, "application/x-www-form-urlencoded", "UTF-8");
+              $report = HTTP_Post ($mgmt_config['url_path_cms']."/connector/export/index.php", $data, "application/x-www-form-urlencoded", "UTF-8");
               
               // save HTML report in log
-              if ($report != "") savelog (array($report), "export_".time("Y-m-d", time()).".log.html");
+              if ($report != "") savelog (array($report), "export_".time("Y-m-d", time())."_".$exportname.".html");
             }
           }
         }
       }
     }
-
-    // synchronize media files in repository with cloud storage
-    if (function_exists ("synccloudobjects")) synccloudobjects ("sys");
-  }
-  
+    
     // import job
-    if (is_file ($mgmt_config['abs_path_data']."config/import.dat") && is_file ($mgmt_config['abs_path_cms']."connector/import/index.php"))
+    if (!empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_data']) && is_file ($mgmt_config['abs_path_data']."config/import.dat") && is_file ($mgmt_config['abs_path_cms']."connector/import/index.php"))
     {
       // load import jobs
       $record_array = file ($mgmt_config['abs_path_data']."config/import.dat");
@@ -276,27 +275,28 @@ if (sizeof ($config_files) > 0)
       {
         foreach ($record_array as $record)
         {
-          list ($importname, $contentjob, $contentcreatefolders, $contentlinkignore) = explode ("|", trim ($record));
-
+          list ($importname, $job, $createfolders, $linkignore, $importdir) = explode ("|", trim ($record));
+  
           // if job is active
-          if (!empty ($contentjob))
+          if (!empty ($job))
           {
-              // parameters
-              $data['contentpasscode'] = @$mgmt_config['passcode'];
-              $data['contentcreatefolders'] = intval ($contentcreatefolders);
-              $data['contentlinkignore'] = intval ($contentlinkignore);
+            // parameters
+            $data = array();
+            $data['passcode'] = @$mgmt_config['passcode'];
+            $data['createfolders'] = intval ($createfolders);
+            $data['linkignore'] = intval ($linkignore);
+            $data['importdir'] = $importdir;
 
-              // execute job
-              $report = HTTP_Post ($mgmt_config['abs_path_cms']."/connector/import/index.php", $data, "application/x-www-form-urlencoded", "UTF-8");
-              
-              // save HTML report in log
-              if ($report != "") savelog (array($report), "import_".time("Y-m-d", time()).".log.html");
-            }
+            // execute job
+            $report = HTTP_Post ($mgmt_config['url_path_cms']."/connector/import/index.php", $data, "application/x-www-form-urlencoded", "UTF-8");
+            
+            // save HTML report in log
+            if ($report != "") savelog (array($report), "import_".time("Y-m-d", time())."_".$importname.".html");
           }
         }
       }
     }
-
+    
     // synchronize media files in repository with cloud storage
     if (function_exists ("synccloudobjects")) synccloudobjects ("sys");
   }

@@ -361,12 +361,12 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
             else $usedby = "";          
           }
                            
-          // get media file      
+          // get media file
           $mediafile = getfilename ($objectdata, "media");
         
           if ($mediafile != false)
           {
-            // location of file
+            // location of media file
             $mediadir = getmedialocation ($site, $mediafile, "abs_path_media");
 
             // get file size and time
@@ -486,20 +486,23 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
         $ratio = "Width";
             
         // if there is a thumb file, display the thumb
-        if ($mediafile != false && $mediadir != "")
+        if ($mediafile != false)
         {
+          // get thumbnail location
+          $thumbdir = getmedialocation ($site, $media_info['filename'].".thumb.jpg", "abs_path_media");
+
           // prepare source media file
-          preparemediafile ($site, $mediadir.$site."/", $media_info['filename'].".thumb.jpg", $user);
+          preparemediafile ($site, $thumbdir.$site."/", $media_info['filename'].".thumb.jpg", $user);
            
           // try to create thumbnail if not available
-          if ($mgmt_config['recreate_preview'] == true && (!is_file ($mediadir.$site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($mediadir.$site."/".$media_info['filename'].".thumb.jpg")))
+          if ($mgmt_config['recreate_preview'] == true && (!is_file ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg")))
           {
-            createmedia ($site, $mediadir.$site."/", $mediadir.$site."/", $media_info['file'], "", "thumbnail");
-          }  
+            createmedia ($site, $thumbdir.$site."/", $thumbdir.$site."/", $media_info['file'], "", "thumbnail");
+          }
 
-          if (is_file ($mediadir.$site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($mediadir.$site."/".$media_info['filename'].".thumb.jpg"))
+          if (is_file ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg"))
           {
-            $imgsize = getimagesize ($mediadir.$site."/".$media_info['filename'].".thumb.jpg");
+            $imgsize = getimagesize ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg");
             
             // calculate image ratio to define CSS for image container div-tag
             if (is_array ($imgsize))

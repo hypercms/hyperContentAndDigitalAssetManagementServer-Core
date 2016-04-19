@@ -1368,4 +1368,7 @@ $hcms_lang['days']['nl'] = "Dagen";
 $hcms_lang['enable-job']['nl'] = "Inschakelen";
 $hcms_lang['exported-files-will-be-saved-in']['nl'] = "Geëxporteerde bestanden wordt opgeslagen in";
 $hcms_lang['files-need-to-be-placed-in']['nl'] = "Bestanden worden geplaatst";
+$hcms_lang['move-media-files-to-export-directory']['nl'] = "Mediabestanden verplaatsen naar exportdirectory (alle gegevens worden bewaard in het systeem)";
+$hcms_lang['export-to-directory']['nl'] = "Uitvoer naar directory";
+$hcms_lang['import-from-directory']['nl'] = "Importeren uit telefoonboek";
 ?>

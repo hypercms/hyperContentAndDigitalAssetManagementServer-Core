@@ -1368,4 +1368,7 @@ $hcms_lang['days']['ro'] = "Zile";
 $hcms_lang['enable-job']['ro'] = "Munca de activare";
 $hcms_lang['exported-files-will-be-saved-in']['ro'] = "Fişierele exportate vor fi salvate în";
 $hcms_lang['files-need-to-be-placed-in']['ro'] = "Fişierele trebuie să fie plasate în";
+$hcms_lang['move-media-files-to-export-directory']['ro'] = "Mutaţi fişiere media la export directory (toate datele vor fi păstrate în sistem)";
+$hcms_lang['export-to-directory']['ro'] = "Directorul de la export";
+$hcms_lang['import-from-directory']['ro'] = "Import din director";
 ?>

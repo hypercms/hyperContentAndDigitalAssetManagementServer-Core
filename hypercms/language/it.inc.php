@@ -1368,4 +1368,7 @@ $hcms_lang['days']['it'] = "Giorni";
 $hcms_lang['enable-job']['it'] = "Abilita Lavoro";
 $hcms_lang['exported-files-will-be-saved-in']['it'] = "I file esportati saranno salvati in";
 $hcms_lang['files-need-to-be-placed-in']['it'] = "I file devono essere posizionati nella";
+$hcms_lang['move-media-files-to-export-directory']['it'] = "Spostare i file multimediali in directory di esportazione (tutti i dati saranno conservati nel sistema)";
+$hcms_lang['export-to-directory']['it'] = "Esporta nella directory";
+$hcms_lang['import-from-directory']['it'] = "Importare dalla directory";
 ?>

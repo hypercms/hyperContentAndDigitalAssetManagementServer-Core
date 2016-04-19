@@ -1368,4 +1368,7 @@ $hcms_lang['days']['hu'] = "Nap";
 $hcms_lang['enable-job']['hu'] = "A munka";
 $hcms_lang['exported-files-will-be-saved-in']['hu'] = "Az exportált fájlok lesznek elmentve.";
 $hcms_lang['files-need-to-be-placed-in']['hu'] = "A fájlokat kell elhelyezni.";
+$hcms_lang['move-media-files-to-export-directory']['hu'] = "Húzza félre a médiafájlokat a könyvtárban (az összes adatot a rendszer)";
+$hcms_lang['export-to-directory']['hu'] = "A könyvtár exportálása";
+$hcms_lang['import-from-directory']['hu'] = "A könyvtár importálása";
 ?>

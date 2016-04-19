@@ -1368,4 +1368,7 @@ $hcms_lang['days']['cz'] = "Dní";
 $hcms_lang['enable-job']['cz'] = "Úlohy";
 $hcms_lang['exported-files-will-be-saved-in']['cz'] = "Exportované soubory budou uloženy do paměti";
 $hcms_lang['files-need-to-be-placed-in']['cz'] = "Soubory musí být umístěny v";
+$hcms_lang['move-media-files-to-export-directory']['cz'] = "Přesuňte mediální soubory do adresáře pro export (všechny údaje budou uchovány v systému)";
+$hcms_lang['export-to-directory']['cz'] = "Export to directory";
+$hcms_lang['import-from-directory']['cz'] = "Importovat z adresáře";
 ?>

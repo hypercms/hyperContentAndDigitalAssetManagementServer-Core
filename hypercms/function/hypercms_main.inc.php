@@ -1593,15 +1593,422 @@ function cleandomain ($path)
   else return false;
 }  
 
-// ======================================= DELETE VERSIONS ==========================================
+// ======================================= VERSIONING ==========================================
+
+// -------------------------------------- fileversion -------------------------------------------
+// function: fileversion()
+// input: file name [string]
+// output: versioned file name [string] / false on error
+
+// description:
+// Creates a version file name
+
+function fileversion ($file)
+{
+  if (valid_objectname ($file))
+  {
+    // get local date today (jjjj-mm-dd)
+    $versiondate = date ("Y-m-d_H-i-s", time());
+  
+    // create file name
+    $file_v = $file.".v_".$versiondate;
+  
+    return $file_v;
+  }
+  else return false;
+}
+
+// -------------------------------------- createversion -------------------------------------------
+// function: createversion()
+// input: publication name, media file name or container name, user name (optional)
+// output: true / false
+
+// description:
+// Creates a new version of a multimedia file and container
+
+function createversion ($site, $file, $user="sys")
+{
+  global $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext, $user;
+
+  if (valid_publicationname ($site) && valid_objectname ($file))
+  {
+    // create version of previous content file and media file (not for thumbnails)
+    if ((empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) && !is_thumbnail ($file, false))
+    {
+      // try to get container ID from multimedia file
+      if ($container_id = getmediacontainerid ($file))
+      {
+        $media_root = getmedialocation ($site, $file, "abs_path_media").$site."/";
+
+        // verify media file
+        if (!is_cloudobject ($media_root.$file) && !is_file ($media_root.$file)) return true;
+      
+        $file_info = getfileinfo ($site, $file, "comp");
+        
+        // create new version of file name
+        $file_v = fileversion ($file);
+        
+        // get the file extension of the version file
+        $ext_v = strrchr ($file_v, ".");
+          
+        // create thumbnail
+        $thumb = $file_info['filename'].".thumb.jpg";
+        $thumb_v = $thumb.$ext_v;
+        
+        $thumb_root = getmedialocation ($site, $thumb, "abs_path_media").$site."/";
+
+        // create new version of thumbnail file
+        // move thumbnail (important for versioning!)  
+        if (is_file ($thumb_root.$thumb) && filesize ($thumb_root.$thumb) > 0)
+        {
+          @rename ($thumb_root.$thumb, $thumb_root.$thumb_v);
+        }
+
+        // rename in cloud storage
+        if (function_exists ("renamecloudobject")) renamecloudobject ($site, $thumb_root, $thumb, $thumb_v, $user);
+        
+        // create new version of original file
+        // copy media file (important for image editing!)
+        if (is_file ($media_root.$file) && filesize ($media_root.$file) > 0)
+        {
+          // copy to media repository in case media file has been exported
+          @copy ($media_root.$file, $thumb_root.$file_v);
+        }
+
+        // copy in cloud storage
+        if (function_exists ("copycloudobject")) copycloudobject ($site, $thumb_root, $file, $file_v, $user);
+        
+        // delete all other media file derivatives (individual or videplayer thumbnail files)
+        deletemediafiles ($site, $file, false);
+            
+        // create new version of container and keep source container file as well
+        $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
+        
+        // get working container name
+        $containerinfo = getcontainername ($container_id);
+        $contentfile_wrk = $containerinfo['container'];
+
+        if (is_file ($contentlocation.$contentfile_wrk) && filesize ($contentlocation.$contentfile_wrk) > 0)
+        {
+          return @copy ($contentlocation.$contentfile_wrk, $contentlocation.$file_v);
+        }
+        else return false;
+      }
+      // try container
+      elseif (intval ($file) > 0 || strpos ($file, ".xml") > 0)
+      {
+        // get container ID
+        if (strpos ($file, ".xml") > 0)
+        {
+          $container_id = substr ($file, 0, strpos ($file, ".xml"));
+        }
+        else
+        {
+          $container_id = $file;
+        }
+
+        // create new version of file name
+        $file_v = fileversion ($container_id.".xml");
+
+        // create new version of container
+        $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
+        
+        // get working container name
+        $containerinfo = getcontainername ($container_id);
+        $contentfile_wrk = $containerinfo['container'];
+
+        if (is_file ($contentlocation.$contentfile_wrk) && filesize ($contentlocation.$contentfile_wrk) > 0)
+        {
+          return @copy ($contentlocation.$contentfile_wrk, $contentlocation.$file_v);
+        }
+        else return false;
+      }
+      else return false;
+    }
+    // versioning is disabled
+    else return true;
+  }
+  else return false;
+}
+
+// -------------------------------------- rollbackversion -------------------------------------------
+// function: rollbackversion()
+// input: publication name, location, object name, container version name, user name (optional)
+// output: result_array
+
+// description:
+// Makes an older object version to the current version
+
+function rollbackversion ($site, $location, $page, $container_version, $user="sys")
+{
+  global $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext, $hcms_lang, $lang;
+  
+  $result = array();
+  $result['result'] = false;
+  $result['publication'] = $site;
+  $result['location'] = $location;
+  $result['object'] = $page;
+  $result['container_id'] = "";
+  $result['message'] = "";
+  
+  if (empty ($lang)) $lang = "en";
+
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($container_version) && strpos ($container_version, ".v_") > 0)
+  {
+    $cat = getcategory ($site, $location);
+  
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";  
+    
+    // convert location
+    $location = deconvertpath ($location, "file");
+    
+    // read actual object info (to get associated content)
+    $objectinfo = getobjectinfo ($site, $location, $page);
+    
+    if (is_array ($objectinfo))
+    {
+      $contentfile = $objectinfo['content'];
+      $container_id = $objectinfo['container_id'];
+      $mediafile = $objectinfo['media'];
+      
+      // get content container location
+      $versiondir = getcontentlocation ($container_id, 'abs_path_content');
+      
+      // get media file locations
+      if ($mediafile != "")
+      {
+        $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
+        $thumbdir = getmedialocation ($site, "dummy.".$mediafile, "abs_path_media").$site."/";
+      }
+      
+      // change version
+      if ($versiondir != "")
+      {
+        // STEP 1
+        // create new version of current/last object version 
+        if ($mediafile != "" && preg_match ("/_hcm".$container_id."./i", $container_version))
+        {
+          // create version of current container and media file
+          $createversion = createversion ($site, $mediafile, $user);
+          
+          // remove original files (that will be kept by function createversion for image editing)
+          if (!empty ($createversion)) deletefile ($thumbdir, $mediafile, 0);
+        }
+        else
+        {
+          // create version of current container
+          $createversion = createversion ($site, $container_id, $user);
+        }
+        
+        // STEP 2
+        // make the selected older version the actual/latest version
+        if (!empty ($createversion))
+        {  
+          // load working container
+          $getcontainername = getcontainername ($container_id);
+          $contentfile_wrk = $getcontainername['container'];
+          $tempdata = loadcontainer ($contentfile_wrk, "work", $user);  
+  
+          // get current objects
+          if ($tempdata != false) $contentobjects = getcontent ($tempdata, "<contentobjects>");
+          
+          // make old container the last container version
+          $rename_2 = @rename ($versiondir.$container_version, $versiondir.$contentfile);
+          $copy_2 = @copy ($versiondir.$contentfile, $versiondir.$contentfile_wrk);
+
+          // change media file version
+          if ($rename_2 != false && $mediafile != "" && @preg_match ("/_hcm".$container_id."./i", $container_version))
+          {
+            // get file extension
+            $ext_version = strrchr ($container_version, ".");
+          
+            // get media file name from container version
+            $mediafile_current = substr ($container_version, 0, strrpos ($container_version, "."));
+            
+            // get media file extension
+            $ext_current = strrchr ($mediafile_current, ".");
+            
+            // move media file to media repository in case media file has been exported
+            $rename_2 = @rename ($mediadir.$container_version, $thumbdir.$mediafile_current);
+        
+            // remove symbolic link (if exported media file)
+            if (is_link ($thumbdir.$container_version)) deletefile ($thumbdir, $container_version, 0);
+
+            // rename in cloud storage
+            if (function_exists ("renamecloudobject")) renamecloudobject ($site, $thumbdir, $container_version, $mediafile_current, $user);  
+            
+            // thumbnail
+            $thumbnail = substr ($mediafile_current, 0, strrpos ($mediafile_current, ".")).".thumb.jpg";
+            $thumbnail_version = $thumbnail.$ext_version;
+    
+            // rename old version to last version of thumbnail file
+            if (is_file ($thumbdir.$thumbnail_version) && filesize ($thumbdir.$thumbnail_version) > 0)
+            {
+              @rename ($thumbdir.$thumbnail_version, $thumbdir.$thumbnail);
+            }
+    
+            // rename in cloud storage
+            if (function_exists ("renamecloudobject")) renamecloudobject ($site, $thumbdir, $thumbnail_version, $thumbnail, $user);
+            
+            // create preview (thumbnail for images, previews for video/audio files)
+            createmedia ($site, $thumbdir, $thumbdir, $mediafile_current, "", "origthumb");
+            // reindex
+            indexcontent ($site, $thumbdir, $mediafile_current, $container_id, "", $user);
+          }
+          
+          // load working container of restored version
+          $tempdata = loadcontainer ($contentfile_wrk, "work", $user); 
+  
+          if ($tempdata != false) 
+          {
+            // insert new object into content container
+            $tempdata = setcontent ($tempdata, "<hyperCMS>", "<contentobjects>", $contentobjects[0], "", "");
+              
+            // save working container 
+            $test = savecontainer ($contentfile_wrk, "work", $tempdata, $user);
+          }
+          else
+          {
+            $errcode = "10100";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savecontainer failed for container ".$contentfile_wrk;           
+          }
+          
+          // rename object if file extension has been changed
+          if (!empty ($ext_current) && !empty ($ext_version) && $ext_current != $ext_version)
+          {
+             // write new reference in object file
+            $filedata = loadfile ($location, $page);
+            if ($filedata != false) $filedata = setfilename ($filedata, "media", $mediafile_current);
+
+            if ($filedata != false)
+            {
+              $result_save = savefile ($location, $page, $filedata);
+              // remote client
+              remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");
+            }
+            else $result_save = false;
+
+            // on success
+            if ($result_save == true)
+            {
+              // get object name without extension
+              $page_nameonly = substr ($page, 0, strrpos ($page, "."));
+              
+              // rename media object, if file extension has changed
+              $result_rename = renameobject ($site, $location, $page, $page_nameonly, $user);
+
+              if ($result_rename['result'] == true)
+              {
+                // set new page name
+                $page = $page_nameonly.$ext_current;
+                $result['object'] = $page;
+              }
+              // on error
+              else
+              {
+                $show = $hcms_lang['the-file-could-not-be-renamed'][$lang]."\n";
+              }
+            }
+          }
+  
+          if (empty ($rename_2) || empty ($copy_2))
+          {
+            $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."<br /><br />\n";
+          }
+        }
+        else
+        {
+          $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."<br /><br />\n";
+        }
+      }
+    }
+  }
+
+  // write log
+  savelog (@$error);
+  
+  // return result
+  if (empty ($show)) $result['result'] = true;
+  else $result['message'] = $show;
+  
+  return $result;
+}
+
+// -------------------------------------- deleteversion -------------------------------------------
+// function: deleteversion()
+// input: publication name, location, object name, container version name, user name (optional)
+// output: true / false
+
+// description:
+// Removes the version of an object
+
+function deleteversion ($site, $container_version, $user="sys")
+{
+  global $mgmt_config;
+
+  if (valid_publicationname ($site) && valid_objectname ($container_version) && strpos ($container_version, ".v_") > 0)
+  {
+    // get container ID
+    if (strpos ($container_version, "_hcm") > 0) $container_id = getmediacontainerid ($container_version);
+    elseif (strpos ($container_version, ".xml") > 0) $container_id = substr ($container_version, 0, strpos ($container_version, ".xml"));
+  
+    if (intval ($container_id) > 0)
+    {
+      // get locations
+      $versiondir = getcontentlocation ($container_id, 'abs_path_content');
+      $thumbdir = getmedialocation ($site, "dummy.".$container_version, "abs_path_media").$site."/";
+      $mediadir = getmedialocation ($site, $container_version, "abs_path_media").$site."/";
+      
+      // delete media file version
+      if (is_file ($mediadir.$container_version) || is_cloudobject ($container_version))
+      {
+        // delete media file
+        if (is_file ($mediadir.$container_version)) $media_result = deletefile ($mediadir, $container_version, 0);
+
+        // delete symbolic link to media file (if exported file)
+        if (is_link ($thumbdir.$container_version)) deletefile ($thumbdir, $container_version, 0);
+        
+        // cloud storage
+        if (function_exists ("deletecloudobject")) deletecloudobject ($site, $thumbdir, $container_version, $user);
+      }
+      else $media_result = true;
+      
+      // delete thumbnail file
+      $fileinfo = getfileinfo ($site, $container_version, "comp");
+      $thumbnail = $fileinfo['filename'].".thumb.jpg".strrchr ($container_version, ".");
+        
+      if (is_file ($thumbdir.$thumbnail))
+      {
+        $thumbnail_result = deletefile ($thumbdir, $thumbnail, 0);
+        
+        // cloud storage
+        if (function_exists ("deletecloudobject")) deletecloudobject ($site, $thumbdir, $thumbnail, $user);
+      }
+      else $thumbnail_result = true;
+
+      // delete container version
+      if ($media_result == true && $thumbnail_result == true && is_file ($versiondir.$container_version))
+      {
+        // delete media file
+        return deletefile ($versiondir, $container_version, 0);
+      }
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
 
 // --------------------------------------- deleteversions -------------------------------------------
 // function: deleteversions()
-// input: type [content, template] or valid path in filesystem, report [yes, no]
+// input: type [content, template] or valid path in filesystem, report [yes,no], user name (optional)
 // output: true [report=no] or report [report=yes], false on error
-// requires: config.inc.php to be loaded before
 
-function deleteversions ($type, $report)
+// description:
+// Removes all versions of all objects or templates
+
+function deleteversions ($type, $report, $user="sys")
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
@@ -1616,10 +2023,15 @@ function deleteversions ($type, $report)
   {    
     while ($entry = readdir ($versionhandler))
     {
-      // suitable for templates and containers
-      if ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/.v_/i", $entry) || @preg_match ("/_hcm/i", $entry)))
+      // content container directory
+      if ($entry != "." && $entry != ".." && is_dir ($versiondir.$entry))
       {
-        // remove media file version
+        $report_str = deleteversions ($versiondir.$entry."/", $report, $user);
+      }
+      // suitable for templates and containers
+      elseif ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/.v_/i", $entry) || @preg_match ("/_hcm/i", $entry)))
+      {
+        // remove container and media file version
         if (@preg_match ("/_hcm/i", $entry))
         {
           $entrydata = loadfile ($versiondir, $entry);
@@ -1634,29 +2046,23 @@ function deleteversions ($type, $report)
 
               if (valid_publicationname ($site))
               {
-                $mediadir = getmedialocation ($site, $entry, "abs_path_media").$site."/";
-                // local media file
-                if (is_file ($mediadir.$entry)) unlink ($mediadir.$entry);
-                // cloud storage
-                if (function_exists ("deletecloudobject")) deletecloudobject ($site, $mediadir, $entry, $user);
+                $test = deleteversion ($site, $entry, $user);
               }
             }
           }
         }
-        
-        // remove container version
-        $test = unlink ($versiondir.$entry);
-        
-        if ($report == "yes" || ($report != "" && $report != "no")) 
+        // remove template or other version
+        else
         {
-          if ($test == false) $report_str .= "failed to delete $entry<br />\n";
-          else $report_str .= "deleted $entry<br />\n";          
-        }    
-      }
-      // content container directory
-      elseif ($entry != "." && $entry != ".." && is_dir ($versiondir.$entry))
-      {
-        $report_str = deleteversions ($versiondir.$entry."/", $report);
+          $test = deletefile ($versiondir, $entry, 0);
+        }
+        
+        // report  
+        if (strtolower ($report) == "yes") 
+        {
+          if (empty ($test)) $report_str .= "failed to delete ".$entry."<br />\n";
+          else $report_str .= "deleted ".$entry." successfully<br />\n";          
+        }
       }
     }
     
@@ -2270,10 +2676,10 @@ function unlockfile ($user, $abs_path, $filename)
 
 // ------------------------------------------ deletefile --------------------------------------------
 // function: deletefile()
-// input: path to file, file or directory name, delete all files in directory recursive (=1) or not recursive (=0) 
+// input: path to file, file or directory name, delete all files in directory recursively including symbolic links [true,false] 
 // output: true/false
 
-function deletefile ($abs_path, $filename, $recursive=0)
+function deletefile ($abs_path, $filename, $recursive=false)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
   
@@ -2294,7 +2700,7 @@ function deletefile ($abs_path, $filename, $recursive=0)
       $test = true;
           
       // check if directory is empty      
-      if ($recursive == 1) 
+      if (!empty ($recursive)) 
       {    
         $dir = opendir ($abs_path.$filename);
         
@@ -2305,24 +2711,24 @@ function deletefile ($abs_path, $filename, $recursive=0)
             // directory
             if (is_dir ($abs_path.$filename."/".$dirfile)) 
             {
-              $test = deletefile ($abs_path.$filename."/", $dirfile, 1);
+              $test = deletefile ($abs_path.$filename."/", $dirfile, $recursive);
                           
               if ($test == false)
               {
                 $errcode = "10107";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$abs_path.$filename."/".$dirfile;
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for directory ".$abs_path.$filename."/".$dirfile;
                 break;
               }
             }
             // file
             elseif (is_file ($abs_path.$filename."/".$dirfile))
             {
-              $test = unlink ($abs_path.$filename."/".$dirfile);    
+              $test = deletefile ($abs_path.$filename."/", $dirfile, $recursive);    
                       
               if ($test == false)
               {
                 $errcode = "10108";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$abs_path.$filename."/".$dirfile;
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for file ".$abs_path.$filename."/".$dirfile;
                 break;
               }
             }    
@@ -2340,19 +2746,16 @@ function deletefile ($abs_path, $filename, $recursive=0)
         if ($test == false)
         {
           $errcode = "10109";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$abs_path.$filename;
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for directory ".$abs_path.$filename;
         }
-  
-        if ($test != false) return true;
-        else return false;
       }
-      else return false;
     }
     // if selected file is a file
     elseif (is_file ($abs_path.$filename) || is_file ($abs_path.$filename.".off") || is_file ($abs_path.$filename.".@".$user))
     {    
       // if file is offline (for objects)
-      if (is_file ($abs_path.$filename.".off")) $filename = $filename.".off";   
+      if (is_file ($abs_path.$filename.".off")) $filename = $filename.".off"; 
+        
       // if file is locked (for containers)
       if (is_file ($abs_path.$filename.".@".$user)) $filename = $filename.".@".$user;   
         
@@ -2362,16 +2765,102 @@ function deletefile ($abs_path, $filename, $recursive=0)
       if ($test == false)
       {
         $errcode = "10110";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$abs_path.$filename;
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for file ".$abs_path.$filename;
+      }
+    }
+    // if selected file is a symbolic link
+    elseif (is_link ($abs_path.$filename))
+    {
+      // delete target file
+      if (!empty ($recursive))
+      {
+        $targetpath = readlink ($abs_path.$filename);
+        deletefile ($abs_path, $filename, $recursive);
       }
       
-      if ($test == true) return true;
-      else return false;
+      // remove symbolic link
+      $test = unlink ($abs_path.$filename);
+      
+      if ($test == false)
+      {
+        $errcode = "10110";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for symbolic link ".$abs_path.$filename;
+      }
     }
-    // file whether a file nor a dir
+    else $test = false;
+    
+    // write log
+    savelog (@$error);
+
+    // return result    
+    if ($test == true) return true;
     else return false;
   }
   else return false;
+}
+
+
+// ------------------------------------------ restoremediafile --------------------------------------------
+// function: restoremediafile()
+// input: publication name, media file name
+// output: result array
+
+// description:
+// Moves an exported media file back to the media repository
+
+function restoremediafile ($site, $mediafile)
+{
+  global $mgmt_config;
+  
+  $success = true;
+  $restored = false;
+  $medialocation = "";
+
+  if (valid_publicationname ($site) && valid_objectname ($mediafile) && !empty ($mgmt_config['abs_path_media']))
+  {  
+    // get media location
+    $medialocation = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
+    
+    // get media repository directory by using a dummy media file with same ID
+    $mediaroot = getmedialocation ($site, "dummy.".$mediafile, "abs_path_media").$site."/";
+
+    // move media file back to repository
+    if ($mediaroot != $medialocation && is_file ($mediaroot.$mediafile))
+    {
+      $rename = rename ($medialocation.$mediafile, $mediaroot.$mediafile);
+
+      if (!$rename)
+      {
+        $errcode = 10602;
+        $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|could not restore exported media file '.$mediafile.' to repository';
+      
+        $success = false;
+      }
+      else
+      {
+        // remove symbolic link
+        if (is_link ($mediaroot.$mediafile)) deletefile ($mediaroot, $mediafile, 0);
+    
+        avoidfilecollision();
+        
+        // reset location path
+        $medialocation = $mediaroot;
+        $restored = true;
+      }
+    }
+  }
+  
+  // write log
+  savelog (@$error);
+
+  $result = array();
+  $result['result'] = $success;
+  $result['restored'] = $restored;
+  $result['publication'] = $site;
+  $result['location'] = $medialocation;
+  $result['mediafile'] = $mediafile;
+  
+  return $result;
 }
 
 // ------------------------------------------ preparemediafile --------------------------------------------
@@ -2388,11 +2877,27 @@ function preparemediafile ($site, $medialocation, $mediafile, $user="")
 
   if (valid_publicationname ($site) && valid_locationname ($medialocation) && valid_objectname ($mediafile) && !empty ($mgmt_config['abs_path_media']))
   {
+    // restore exported media file
+    $restoremediafile = restoremediafile ($site, $mediafile);
+    
+    if (!empty ($restoremediafile['result']) && !empty ($restoremediafile['restored']))
+    {
+      $site = $restoremediafile['publication'];
+      $medialocation = $restoremediafile['location'];
+      $mediafile = $restoremediafile['mediafile'];
+    }
+    
     // load from cloud storage
     if (function_exists ("loadcloudobject")) loadcloudobject ($site, $medialocation, $mediafile, $user);
 
     // create temp file if file is encrypted
-    return createtempfile ($medialocation, $mediafile);
+    $createtempfile = createtempfile ($medialocation, $mediafile);
+    
+    // if media file has been restored
+    if (!empty ($restoremediafile['restored'])) $createtempfile['restored'] = true;
+    else $createtempfile['restored'] = false;
+    
+    return $createtempfile;
   }
   else return false;
 }  
@@ -2411,14 +2916,19 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
   
   if (valid_publicationname ($site) && valid_objectname ($mediafile) && !empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_rep']))
   {
-    // define media location 
-    $medialocation = getmedialocation ($site, $mediafile, "abs_path_media");
-    
+    // define media location in repository
+    $medialocation = getmedialocation ($site, strrpos ($mediafile, ".").".thumb.jpg", "abs_path_media");
+
     // original media file
     if ($delete_original == true)
     {
+      // define media location of original file (may have been exported)
+      $medialocation_orig = getmedialocation ($site, $mediafile, "abs_path_media");
+    
       // local media file
-      deletefile ($medialocation.$site."/", $mediafile, 0);
+      $deletefile = deletefile ($medialocation_orig.$site."/", $mediafile, 0);
+      // remove symbolic link of exported media file
+      if ($deletefile && is_link ($medialocation.$site."/".$mediafile)) unlink ($medialocation.$site."/".$mediafile);
       // cloud storage
       if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile, $user);
       // remote client
@@ -2426,7 +2936,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
       // delete media file in temp/view as well (copied by 360 viewer)
       if (is_file ($mgmt_config['abs_path_view'].$mediafile)) deletefile ($mgmt_config['abs_path_view'], $mediafile, 0);
     }
-
+    
     // image thumbnail file
     $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb.jpg";
     // local media file
@@ -2473,7 +2983,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
         if ($mediaoptions_ext != "" && $mediaoptions_ext != "thumbnail-video" && $mediaoptions_ext != "thumbnail-audio")
         {
           // original thumbnail video file
-          $mediafile_orig = substr ($mediafile, 0, strrpos ($mediafile, ".")).".orig".$mediaoptions_ext;+
+          $mediafile_orig = substr ($mediafile, 0, strrpos ($mediafile, ".")).".orig".$mediaoptions_ext;
           // local media file
           deletefile ($medialocation.$site."/", $mediafile_orig, 0);
           // cloud storage
@@ -2563,131 +3073,6 @@ function avoidfilecollision ($data="tempdata")
     // append data to file
     if (is_file ($mgmt_config['abs_path_temp']."writefile.tmp")) return appendfile ($mgmt_config['abs_path_temp'], "writefile.tmp", $data);
     else return false;
-  }
-  else return false;
-}
-
-// -------------------------------------- fileversion -------------------------------------------
-// function: fileversion()
-// input: file name [string]
-// output: versioned file name [string] / false on error
-
-// description:
-// Creates a version file name
-
-function fileversion ($file)
-{
-  if (valid_objectname ($file))
-  {
-    // get local date today (jjjj-mm-dd)
-    $versiondate = date ("Y-m-d_H-i-s", time());
-  
-    // create file name
-    $file_v = $file.".v_".$versiondate;
-  
-    return $file_v;
-  }
-  else return false;
-}
-
-// -------------------------------------- createversion -------------------------------------------
-// function: createversion()
-// input: publication name, media file name or container name
-// output: true / false
-
-// description:
-// Creates a new version of a multimedia file and container
-
-function createversion ($site, $file)
-{
-  global $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext, $user;
-
-  if (valid_publicationname ($site) && valid_objectname ($file))
-  {
-    // create version of previous content file and media file (not for thumbnails)
-    if ((empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) && !is_thumbnail ($file, false))
-    {
-      // try to get container ID from multimedia file
-      if ($container_id = getmediacontainerid ($file))
-      {
-        $media_root = getmedialocation ($site, $file, "abs_path_media").$site."/";
-        
-        // verify media file
-        if (!is_cloudobject ($media_root.$file) || !is_file ($media_root.$file) || filesize ($media_root.$file) < 10) return true;
-      
-        $file_info = getfileinfo ($site, $file, "comp");
-        
-        // create new version of file name
-        $file_v = fileversion ($file);
-        
-        // get the file extension of the version file
-        $ext_v = strrchr ($file_v, ".");
-          
-        // thumbnail
-        $thumb = $file_info['filename'].".thumb.jpg";
-        $thumb_v = $thumb.$ext_v;
-
-        // create new version of thumbnail file
-        // move thumbnail (important for versioning!)  
-        if (is_file ($media_root.$thumb) && filesize ($media_root.$thumb) > 0)
-        {
-          @rename ($media_root.$thumb, $media_root.$thumb_v);
-        }
-
-        // rename in cloud storage
-        if (function_exists ("renamecloudobject")) renamecloudobject ($site, $media_root, $thumb, $thumb_v, $user);
-        
-        // create new version of original file
-        // copy media file (important for image editing!)
-        if (is_file ($media_root.$file) && filesize ($media_root.$file) > 0)
-        {
-          @copy ($media_root.$file, $media_root.$file_v);
-        }
-
-        // copy in cloud storage
-        if (function_exists ("copycloudobject")) copycloudobject ($site, $media_root, $file, $file_v, $user);
-        
-        // delete all other media file derivatives (individual or videplayer thumbnail files)
-        deletemediafiles ($site, $file, false);
-            
-        // create new version of container and keep source container file as well
-        $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
-
-        if (is_file ($contentlocation.$container_id.".xml.wrk") && filesize ($contentlocation.$container_id.".xml.wrk") > 0)
-        {
-          return @copy ($contentlocation.$container_id.".xml.wrk", $contentlocation.$file_v);
-        }
-        else return false;
-      }
-      // try container
-      elseif (intval ($file) > 0 || strpos ($file, ".xml") > 0)
-      {
-        // get container ID
-        if (strpos ($file, ".xml") > 0)
-        {
-          $container_id = substr ($file, 0, strpos ($file, ".xml"));
-        }
-        else
-        {
-          $container_id = $file;
-        }
-
-        // create new version of file name
-        $file_v = fileversion ($container_id.".xml");
-
-        // create new version of container
-        $contentlocation = getcontentlocation ($container_id, 'abs_path_content');
-
-        if (is_file ($contentlocation.$container_id.".xml.wrk") && filesize ($contentlocation.$container_id.".xml.wrk") > 0)
-        {
-          return @copy ($contentlocation.$container_id.".xml.wrk", $contentlocation.$file_v);
-        }
-        else return false;
-      }
-      else return false;
-    }
-    // versioning is disabled
-    else return true;
   }
   else return false;
 }
@@ -2816,6 +3201,14 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       // set new file path
       $filepath = $location.$media;
     }
+    elseif ($temp['restored'])
+    {
+      $location = $temp['location'];
+      $media = $temp['file'];
+      
+      // set new file path
+      $filepath = $location.$media;
+    }
 
     // verify local media file
     if (!is_file ($filepath)) return false;
@@ -2854,8 +3247,8 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       
       // get file start and end bytes
       $start = 0;
-      $size  = filesize ($filepath);
-      $end   = $size - 1;
+      $size = filesize ($filepath);
+      $end = $size - 1;
   
       // ------------------------- define proper header -------------------------
       // force download of file
@@ -4996,7 +5389,7 @@ function createpublication ($site_name, $user="sys")
 
 // ------------------------- editpublication -----------------------------
 // function: editpublication()
-// input: publication name, publication settings array ['site_admin','linkengine','sendmail','webdav','http_incl','inherit_obj','inherit_comp','inherit_tpl','specialchr_disable','default_codepage','exclude_folders'], user name  
+// input: publication name, publication settings array, user name  
 // output: result array
 
 // description:
@@ -9547,7 +9940,10 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
     if (substr ($location, -1) != "/") $location = $location."/";
     
     // deconvert location
-    $location = deconvertpath ($location, "file");   
+    $location = deconvertpath ($location, "file");
+    
+    // convert path
+    $location_esc = $result['location_esc'] = convertpath ($site, $location, $cat);
         
     // set local permissions
     $ownergroup = accesspermission ($site, $location, $cat);
@@ -9965,15 +10361,24 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
         // update multimedia file
         else
         {
-          $show_command = "";
-          
           // get media root directory
-          $media_root = getmedialocation ($site, $media_update, "abs_path_media");
+          $media_root = getmedialocation ($site, $media_update, "abs_path_media").$site."/";
+          $thumb_root = getmedialocation ($site, "dummy.".$media_update, "abs_path_media").$site."/";
           
+          // prepare media file (in case it has been exported)
+          $temp = preparemediafile ($site, $media_root, $media_update, $user);
+          
+          // reset location if restored
+          if ($temp['restored'])
+          {
+            $media_root = $temp['location'];
+            $media_update = $temp['file'];
+          }
+
           // get container id
           $container_id = getmediacontainerid ($media_update);
           $contentfile = $container_id.".xml";
-         
+
           // create version of previous content and media file
           if (!empty ($versioning)) $createversion = createversion ($site, $media_update);
           else $createversion = true;
@@ -9983,8 +10388,9 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
           
           if ($createversion && !empty ($media_root))
           {
-            // delete old file
-            if (is_file ($media_root.$site."/".$media_update)) unlink ($media_root.$site."/".$media_update);
+            // delete old file and symbolic link
+            deletefile ($media_root, $media_update, 0);
+            deletefile ($thumb_root, $media_update, 0);
           
             // remember original file name
             $media_orig = $media_update;
@@ -10005,13 +10411,13 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
             // move uploaded file
             if (!$is_remote_file)
             {
-              $result_save = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update);
+              $result_save = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $media_root.$media_update);
             }
-            
+
             // save file from URL or if file has already been saved in the temp directory (WebDAV saves files in temp directory)
             if ($is_remote_file || $result_save == false)
             {
-              $result_save = @rename ($global_files['Filedata']['tmp_name'], $media_root.$site."/".$media_update);
+              $result_save = @rename ($global_files['Filedata']['tmp_name'], $media_root.$media_update);
             }
           }
 
@@ -10024,7 +10430,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
             }
 
             // get media size
-            $media_size = @getimagesize ($media_root.$site."/".$media_update);
+            $media_size = @getimagesize ($media_root.$media_update);
             
             if (!empty ($media_size[0]) && !empty ($media_size[1]))
             {
@@ -10057,26 +10463,26 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
                 // -s ... size in pixels (width x height)
                 // -f ... image output format
                 $mgmt_imageoptions[$formats]['original'] = "-s ".$imagewidth."x".$imageheight." -f ".$imageformat;
-                createmedia ($site, $media_root.$site."/", $media_root.$site."/", $media_update, "", "original");
+                createmedia ($site, $media_root, $media_root, $media_update, "", "original");
               }
             }
             // create preview (thumbnail for images, previews for video/audio files)
             else
             {
-              createmedia ($site, $media_root.$site."/", $media_root.$site."/", $media_update, "", "origthumb");
+              createmedia ($site, $media_root, $media_root, $media_update, "", "origthumb");
             }
 
             // remote client for uploaded original image
-            remoteclient ("save", "abs_path_media", $site, $media_root.$site."/", "", $media_update, "");
+            remoteclient ("save", "abs_path_media", $site, $media_root, "", $media_update, "");
 
             // remove indexed content if file extension has changed
             if ($file_ext_old != $file_ext_new)
             {
-              unindexcontent ($site, $media_root.$site."/", $media_orig, $contentfile, "", $user);
+              unindexcontent ($site, $media_root, $media_orig, $contentfile, "", $user);
             }
             
             // index content of readable documents
-            indexcontent ($site, $media_root.$site."/", $media_update, $contentfile, "", $user);
+            indexcontent ($site, $media_root.$site, $media_update, $contentfile, "", $user);
           }
 
           // rename objects file extension, if file extension has changed
@@ -10105,7 +10511,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
                 // set new page name
                 $page = $pagename = $page_nameonly.$file_ext_new;
                 // define new page
-                $show_command = "[".specialchr_encode($page)."]";
+                $result['object'] = specialchr_encode ($page);
               }
               // on error
               else
@@ -10118,14 +10524,14 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
           // encrypt and save data
           if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
           {
-            $data = encryptfile ($media_root.$site."/", $media_update);
-            if (!empty ($data)) savefile ($media_root.$site."/", $media_update, $data);
+            $data = encryptfile ($media_root, $media_update);
+            if (!empty ($data)) savefile ($media_root, $media_update, $data);
           }
           
           // save in cloud storage
-          if (is_file ($media_root.$site."/".$media_update))
+          if (is_file ($media_root.$media_update))
           {
-            if (function_exists ("savecloudobject")) savecloudobject ($site, $media_root.$site."/", $media_update, $user);
+            if (function_exists ("savecloudobject")) savecloudobject ($site, $media_root, $media_update, $user);
           }
 
           // eventsystem
@@ -10597,7 +11003,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
     if (substr ($location, -1) != "/") $location = $location."/";  
     
       // eventsystem for paste
-    if ($action == "page_paste" && $eventsystem['onpasteobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+    if ($action == "page_paste" && $eventsystem['onpasteobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
       onpasteobject_pre ($site, $cat, $location_source, $location, $page, $user);     
    
     // get object information of the selected item
@@ -10673,19 +11079,16 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           if ($site == $site_source || ($mgmt_config[$site]['inherit_obj'] == true && $parent_array != false && in_array ($site_source, $parent_array)))
           { 
             // if the category of the object (page or component) is different for cut/copy and paste
-            // action is not allowed
             if ($cat_source != $cat) 
             {
                $add_onload = "";
                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['it-is-not-possible-to-paste-the-objects-here'][$lang]."</span><br />\n";
             }
-            else
-            {       
-              if ($method == "cut" && $location == $location_source)
-              {
-                $add_onload = "";
-                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['it-is-not-possible-to-cut-and-paste-objects-in-the-same-destination'][$lang]."</span><br />\n";         
-              }
+            // if the cutted object will be pasted in the source location
+            elseif ($method == "cut" && substr_count ($location_esc, $location_source_esc) > 0)
+            {
+              $add_onload = "";
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['it-is-not-possible-to-cut-and-paste-objects-in-the-same-destination'][$lang]."</span><br />\n";         
             }
           }  
           else
@@ -11208,10 +11611,10 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           {          
             $objects = getcontent ($bufferdata, "<contentobjects>");
             // remove object reference ion container (except last entry, since the object will be deleted completetly)
-            if (is_array ($objects) && $objects[0] != "" && substr_count ($objects[0], "|") > 1)
+            if (!empty ($objects[0]) && substr_count ($objects[0], "|") > 0)
             {
-              $objects = str_replace ($location_esc.$pagename."|", "", $objects[0]);
-              $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $objects, "", "");
+              $objects_str = str_replace ($location_esc.$pagename."|", "", $objects[0]);
+              $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $objects_str, "", "");
             }
           
             if ($allow_delete == true)
@@ -11223,11 +11626,11 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           elseif ($action == "page_rename" || $action == "file_rename") 
           {
             $objects = getcontent ($bufferdata, "<contentobjects>");
-            
-            if (is_array ($objects) && $objects[0] != "" && substr_count ($objects[0], "|") > 1)
+
+            if (!empty ($objects[0]) && substr_count ($objects[0], "|") > 0)
             {
-              $objects = str_replace ($location_esc.$pagename."|", $location_esc.$pagenewname."|", $objects[0]);
-              $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $objects, "", "");
+              $objects_str = str_replace ($location_esc.$pagename."|", $location_esc.$pagenewname."|", $objects[0]);
+              $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $objects_str, "", "");
             }
           }
           // insert new objects references into content container
@@ -11235,10 +11638,10 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           {
             $objects = getcontent ($bufferdata, "<contentobjects>");
             
-            if (is_array ($objects) && $objects[0] != "" && substr_count ($objects[0], "|") > 1)
+            if (!empty ($objects[0]) && substr_count ($objects[0], "|") > 0)
             {
-              $objects = str_replace ($location_source_esc.$pagename."|", $location_esc.$pagename."|", $objects[0]);
-              $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $objects, "", "");
+              $objects_str = str_replace ($location_source_esc.$pagename."|", $location_esc.$pagename."|", $objects[0]);
+              $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $objects_str, "", "");
             }
           }
     

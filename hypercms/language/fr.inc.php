@@ -1369,4 +1369,7 @@ $hcms_lang['days']['fr'] = "Jours";
 $hcms_lang['enable-job']['fr'] = "Activer travail";
 $hcms_lang['exported-files-will-be-saved-in']['fr'] = "Fichiers exportés seront enregistrées dans";
 $hcms_lang['files-need-to-be-placed-in']['fr'] = "Les fichiers doivent être placés dans";
+$hcms_lang['move-media-files-to-export-directory']['fr'] = "Déplacer des fichiers multimédia pour exporter le répertoire (toutes les données seront gardées dans le système)";
+$hcms_lang['export-to-directory']['fr'] = "L'exportation vers le répertoire";
+$hcms_lang['import-from-directory']['fr'] = "Importer depuis le répertoire";
 ?>

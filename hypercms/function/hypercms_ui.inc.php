@@ -642,7 +642,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     // define media file root directory for assets
     elseif (valid_publicationname ($site))
     {
-      $thumb_root = $media_root = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";;
+      $media_root = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
+      $thumb_root = getmedialocation ($site, "dummy.".$mediafile, "abs_path_media").$site."/";
 
       // get container ID
       $container_id = getmediacontainerid ($mediafile);
@@ -724,6 +725,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           $thumb_root = $temp['templocation'];
           $mediafile_thumb = $temp['tempfile'];
+        }
+        elseif ($temp['restored'])
+        {
+          $thumb_root = $temp['location'];
+          $mediafile_thumb = $temp['file'];
         }
         
         $style = "";
@@ -886,6 +892,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $thumb_root = $temp['templocation'];
             $thumbfile = $temp['tempfile'];
           }
+          elseif ($temp['restored'])
+          {
+            $thumb_root = $temp['location'];
+            $thumbfile = $temp['file'];
+          }
           
           // use thumbnail if it is valid (larger than 10 bytes)
           if (is_file ($thumb_root.$thumbfile))
@@ -1019,6 +1030,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             {
               $media_root = $temp['templocation'];
               $mediafile = $temp['tempfile'];
+            }
+            elseif ($temp['restored'])
+            {
+              $media_root = $temp['location'];
+              $mediafile = $temp['file'];
             }
           
             $media_size = @getimagesize ($media_root.$mediafile);
@@ -1378,6 +1394,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $media_root = $temp['templocation'];
           $mediafile = $temp['tempfile'];
         }
+        elseif ($temp['restored'])
+        {
+          $media_root = $temp['location'];
+          $mediafile = $temp['file'];
+        }
       
         if (is_file ($media_root.$mediafile))
         {
@@ -1498,6 +1519,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $media_root = $temp['templocation'];
           $mediafile = $temp['tempfile'];
         }
+        elseif ($temp['restored'])
+        {
+          $media_root = $temp['location'];
+          $mediafile = $temp['file'];
+        }
       
         $videoinfo = getvideoinfo ($media_root.$mediafile);
       }
@@ -1587,6 +1613,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 {
                   $thumb_root = $temp['templocation'];
                   $video_thumbfile = $temp['tempfile'];
+                }
+                elseif ($temp['restored'])
+                {
+                  $thumb_root = $temp['location'];
+                  $video_thumbfile = $temp['file'];
                 }
               
                 $videoinfo = getvideoinfo ($thumb_root.$video_thumbfile);

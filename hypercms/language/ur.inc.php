@@ -1368,4 +1368,7 @@ $hcms_lang['days']['ur'] = "دن";
 $hcms_lang['enable-job']['ur'] = "کام اہل بنائیں";
 $hcms_lang['exported-files-will-be-saved-in']['ur'] = "میں محفوظ ہوں گے. برآمد مسلیں";
 $hcms_lang['files-need-to-be-placed-in']['ur'] = "فائلیں ضائع کردیں کی ضرورت میں";
+$hcms_lang['move-media-files-to-export-directory']['ur'] = "اقدام میڈیا کی فائلیں تمام ایکسپورٹ ڈائریکٹری (کوائف) کے نظام میں رکھا جائے گا.";
+$hcms_lang['export-to-directory']['ur'] = "ڈائرکٹری برامد کریں";
+$hcms_lang['import-from-directory']['ur'] = "ڈائرکٹری سے درامد کریں";
 ?>

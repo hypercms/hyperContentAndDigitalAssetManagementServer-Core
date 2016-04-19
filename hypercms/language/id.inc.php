@@ -1369,4 +1369,7 @@ $hcms_lang['days']['id'] = "Hari";
 $hcms_lang['enable-job']['id'] = "Aktifkan Ayub";
 $hcms_lang['exported-files-will-be-saved-in']['id'] = "File diekspor akan disimpan dalam";
 $hcms_lang['files-need-to-be-placed-in']['id'] = "File ini perlu ditempatkan di";
+$hcms_lang['move-media-files-to-export-directory']['id'] = "Memindah file media ke direktori ekspor (semua data akan dipelihara di sistem)";
+$hcms_lang['export-to-directory']['id'] = "Direktori untuk ekspor";
+$hcms_lang['import-from-directory']['id'] = "Impor dari directory";
 ?>

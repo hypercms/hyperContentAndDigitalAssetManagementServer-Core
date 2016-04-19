@@ -1368,4 +1368,7 @@ $hcms_lang['days']['fi'] = "Päivien lukumäärä";
 $hcms_lang['enable-job']['fi'] = "Jotta työn";
 $hcms_lang['exported-files-will-be-saved-in']['fi'] = "Viedyt tiedostot tallennetaan";
 $hcms_lang['files-need-to-be-placed-in']['fi'] = "Tiedostot on siirretty";
+$hcms_lang['move-media-files-to-export-directory']['fi'] = "Siirrä mediatiedostoja voi viedä hakemistoon (kaikki tiedot säilytetään järjestelmässä)";
+$hcms_lang['export-to-directory']['fi'] = "Vie hakemisto";
+$hcms_lang['import-from-directory']['fi'] = "Tuo hakemisto";
 ?>

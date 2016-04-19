@@ -273,8 +273,18 @@ if ($usedby == "" || $usedby == $user)
         // prepare media file
         $temp = preparemediafile ($site, $mediafile_location, $mediafile_name, $user);
         
-        if ($temp['result'] && $temp['crypted']) $object_mediafile = $temp['templocation'].$temp['tempfile'];
-        else $object_mediafile = $mediafile_location.$mediafile_name;
+        if ($temp['result'] && $temp['crypted'])
+        {
+          $object_mediafile = $temp['templocation'].$temp['tempfile'];
+        }
+        elseif ($temp['restored'])
+        {
+          $object_mediafile = $temp['location'].$temp['file'];
+        }
+        else
+        {
+          $object_mediafile = $mediafile_location.$mediafile_name;
+        }
         
         if (is_file ($object_mediafile))
         {

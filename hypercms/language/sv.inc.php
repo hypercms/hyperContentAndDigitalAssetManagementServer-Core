@@ -1368,4 +1368,7 @@ $hcms_lang['days']['sv'] = "Dagar";
 $hcms_lang['enable-job']['sv'] = "Aktivera jobb";
 $hcms_lang['exported-files-will-be-saved-in']['sv'] = "Exporterade filer sparas i";
 $hcms_lang['files-need-to-be-placed-in']['sv'] = "Filer måste placeras i";
+$hcms_lang['move-media-files-to-export-directory']['sv'] = "Flytta mediefiler till exportkatalog (alla data ska lagras i systemet)";
+$hcms_lang['export-to-directory']['sv'] = "Exportera till katalog";
+$hcms_lang['import-from-directory']['sv'] = "Importera från katalog";
 ?>

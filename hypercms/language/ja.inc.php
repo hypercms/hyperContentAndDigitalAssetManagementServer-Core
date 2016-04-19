@@ -1368,4 +1368,7 @@ $hcms_lang['days']['ja'] = "日";
 $hcms_lang['enable-job']['ja'] = "ジョブの有効化";
 $hcms_lang['exported-files-will-be-saved-in']['ja'] = "エクスポートされたファイルは保存されます。";
 $hcms_lang['files-need-to-be-placed-in']['ja'] = "ファイルを配置する必要があり";
+$hcms_lang['move-media-files-to-export-directory']['ja'] = "メディアファイルのディレクトリ ( すべてのデータがシステムに保持されをエクスポートするに移動します ) 。";
+$hcms_lang['export-to-directory']['ja'] = "ディレクトリをエクスポート";
+$hcms_lang['import-from-directory']['ja'] = "ディレクトリからインポート";
 ?>

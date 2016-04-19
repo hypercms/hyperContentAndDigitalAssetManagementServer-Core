@@ -76,6 +76,11 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         $location = $temp['templocation'];
         $file = $temp['tempfile'];
       }
+      elseif ($temp['restored'])
+      {
+        $location = $temp['location'];
+        $file = $temp['file'];
+      }
       
       // verify local media file
       if (!is_file ($location.$file)) return false;
@@ -631,6 +636,11 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
       $location_source = $temp_source['templocation'];
       $file = $temp_source['tempfile'];
     }
+    elseif ($temp_source['restored'])
+    {
+      $location_source = $temp_source['location'];
+      $file = $temp_source['file'];
+    }
     
     // verify local media file
     if (!is_file ($location_source.$file)) return false;
@@ -793,6 +803,11 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
       $location_source = $temp_source['templocation'];
       $file = $temp_source['tempfile'];
     }
+    elseif ($temp_source['restored'])
+    {
+      $location_source = $temp_source['location'];
+      $file = $temp_source['file'];
+    }
     
     // verify local media file
     if (!is_file ($location_source.$file)) return false;
@@ -908,6 +923,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       $location_source = $temp_source['templocation'];
       $file = $temp_source['tempfile'];
     }
+    elseif ($temp_source['restored'])
+    {
+      $location_source = $temp_source['location'];
+      $file = $temp_source['file'];
+    }
     
     // check if file exists and has content
     if (!is_file ($location_source.$file) || filesize ($location_source.$file) < 10) return false;
@@ -966,6 +986,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         {
           $location_source = $temp_raw['templocation'];
           $file = $temp_raw['tempfile'];
+        }
+        elseif ($temp_raw['restored'])
+        {
+          $location_source = $temp_raw['location'];
+          $file = $temp_raw['file'];
         }
         
         // verify local media file
@@ -2589,6 +2614,12 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
       $file = $temp_source['tempfile'];
       $file_source = $location_source.$file;
     }
+    elseif ($temp_source['restored'])
+    {
+      $location_source = $temp_source['location'];
+      $file = $temp_source['file'];
+      $file_source = $location_source.$file;
+    }
 
     // add slash if not present at the end of the location string
     if (substr ($location_dest, -1) != "/") $location_dest = $location_dest."/";  
@@ -2776,6 +2807,10 @@ function rotateimage ($site, $filepath, $angle, $imageformat)
     {
       $filepath = $temp_source['templocation'].$temp_source['tempfile'];
     }
+    elseif ($temp_source['restored'])
+    {
+      $filepath = $temp_source['location'].$temp_source['file'];
+    }
      
     if (is_file ($filepath))
     {
@@ -2905,6 +2940,11 @@ function getimagecolors ($site, $file)
       $media_root = $temp_source['templocation'];
       $thumb = $temp_source['tempfile'];
     }
+    elseif ($temp_source['restored'])
+    {
+      $media_root = $temp_source['location'];
+      $thumb = $temp_source['file'];
+    }
     
     // use thumbnail image file
     if (is_file ($media_root.$thumbnail))
@@ -2921,6 +2961,11 @@ function getimagecolors ($site, $file)
       {
         $media_root = $temp_source['templocation'];
         $file = $temp_source['tempfile'];
+      }
+      elseif ($temp_source['restored'])
+      {
+        $media_root = $temp_source['location'];
+        $file = $temp_source['file'];
       }
       
       // verify local media file
@@ -3193,6 +3238,11 @@ function readmediaplayer_config ($location, $configfile)
     {
       $location = $temp['templocation'];
       $configfile = $temp['tempfile'];
+    }
+    elseif ($temp['restored'])
+    {
+      $location = $temp['location'];
+      $configfile = $temp['file'];
     }
     
     // verify file
@@ -3518,6 +3568,11 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
         $location_source = $temp_source['templocation'];
         $file = $temp_source['tempfile'];
       }
+      elseif ($temp_source['restored'])
+      {
+        $location_source = $temp_source['location'];
+        $file = $temp_source['file'];
+      }
       
       // verify local media file
       if (!is_file ($location_source.$file)) return false;
@@ -3715,6 +3770,12 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
       {
         $location_zip = $temp['templocation'];
         $file_zip = $temp['tempfile'];
+        $zipfilepath = $location_zip.$file_zip;
+      }
+      elseif ($temp['restored'])
+      {
+        $location_zip = $temp['location'];
+        $file_zip = $temp['file'];
         $zipfilepath = $location_zip.$file_zip;
       }
 
@@ -3997,6 +4058,11 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
                 {
                   $mediadir = $temp['templocation'];
                   $mediafile = $temp['tempfile'];
+                }
+                elseif ($temp['restored'])
+                {
+                  $mediadir = $temp['location'];
+                  $mediafile = $temp['file'];
                 }
 
                 // copy file to new location

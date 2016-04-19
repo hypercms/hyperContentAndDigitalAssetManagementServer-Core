@@ -151,6 +151,11 @@ if (is_rawimage ($mediafile_info['ext']))
     $media_root = $temp['templocation'];
     $mediafile = $temp['tempfile'];
   }
+  elseif ($temp['restored'] && is_file ($temp['location'].$temp['file']))
+  {
+    $media_root = $temp['location'];
+    $mediafile = $temp['file'];
+  }
   elseif (is_file ($media_root.$mediafile_raw))
   {
     // reset media file
@@ -175,6 +180,10 @@ if (!is_rawimage ($mediafile_info['ext']) || !empty ($mediafile_failed))
 if ($temp['result'] && $temp['crypted'])
 {
   $media_size = getimagesize ($temp['templocation'].$temp['tempfile']);
+}
+elseif ($temp['restored'])
+{
+  $media_size = getimagesize ($temp['location'].$temp['file']);
 }
 else
 {

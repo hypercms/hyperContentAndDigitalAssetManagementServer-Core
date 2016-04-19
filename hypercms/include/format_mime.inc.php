@@ -2,6 +2,7 @@
 // file extentions used in getfileinfo function.";
 // declaration of global categorization of files.";
 // do not use upper case characters!";
+$mimetype = array();
 $mimetype['.ai'] = "application/postscript";
 $mimetype['.aif'] = "audio/x-aiff";
 $mimetype['.aifc'] = "audio/x-aiff";

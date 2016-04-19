@@ -1368,4 +1368,7 @@ $hcms_lang['days']['sr'] = "Dana";
 $hcms_lang['enable-job']['sr'] = "Omogućiti posao";
 $hcms_lang['exported-files-will-be-saved-in']['sr'] = "Izvozi datoteke će biti sačuvane u";
 $hcms_lang['files-need-to-be-placed-in']['sr'] = "Datoteka treba da bude u";
+$hcms_lang['move-media-files-to-export-directory']['sr'] = "Taj potez medija fajlova za izvoz direktorijum (svi podaci će biti zadržan u sistemu)";
+$hcms_lang['export-to-directory']['sr'] = "Izvoz u direktorijum";
+$hcms_lang['import-from-directory']['sr'] = "Uvoz iz Direktorijum";
 ?>

@@ -1368,4 +1368,7 @@ $hcms_lang['days']['hi'] = "दिन";
 $hcms_lang['enable-job']['hi'] = "काम कर सकें।";
 $hcms_lang['exported-files-will-be-saved-in']['hi'] = "फ़ाइलों का निर्यात में सहेजे जाएंगे.";
 $hcms_lang['files-need-to-be-placed-in']['hi'] = "फ़ाइलों को में रखा जाए।";
+$hcms_lang['move-media-files-to-export-directory']['hi'] = "मीडिया फ़ाइलों को ले जाने के लिए निर्देशिका का निर्यात (सभी डेटा) की प्रणाली को ध्यान में रखा जाएगा।";
+$hcms_lang['export-to-directory']['hi'] = "निर्यात के लिए निर्देशिका";
+$hcms_lang['import-from-directory']['hi'] = "निर्देशिका से आयात";
 ?>

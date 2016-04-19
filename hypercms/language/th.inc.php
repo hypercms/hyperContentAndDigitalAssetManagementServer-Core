@@ -1368,4 +1368,7 @@ $hcms_lang['days']['th'] = "วัน";
 $hcms_lang['enable-job']['th'] = "เปิดใช้งาน";
 $hcms_lang['exported-files-will-be-saved-in']['th'] = "ส่งออกไฟล์จะถูกบันทึกใน";
 $hcms_lang['files-need-to-be-placed-in']['th'] = "ไฟล์ที่จำเป็นต้องได้รับการวางอยู่ใน";
+$hcms_lang['move-media-files-to-export-directory']['th'] = "ย้ายไฟล์มีเดียไปยังไดเรกทอรีของการส่งออกทั้งหมด ( ข้อมูลจะถูกเก็บไว้ในระบบ )";
+$hcms_lang['export-to-directory']['th'] = "ส่งออกไปยังไดเรกทอรี";
+$hcms_lang['import-from-directory']['th'] = "นำเข้าจากไดเรกทอรี";
 ?>

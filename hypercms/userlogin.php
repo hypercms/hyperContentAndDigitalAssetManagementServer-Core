@@ -128,7 +128,7 @@ if ($user != "" && $passwd != "" && $hcms_user == "")
   checkusersession ($user);
   
   // define frameset for mobile access (also via mail link)
-  if ($is_mobile) $result_frameset = "frameset_mobile.php"; 
+  if ($is_mobile || getsession ("hcms_mobile")) $result_frameset = "frameset_mobile.php"; 
   // define frameset for access via mail link
   elseif (is_array ($hcms_linking)) $result_frameset = "frameset_main_linking.php";
   // frameset for standard logon

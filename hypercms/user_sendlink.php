@@ -471,6 +471,10 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                           {
                             $attachment = $temp_source['templocation'].$temp_source['tempfile'];
                           }
+                          elseif ($temp_source['restored'])
+                          {
+                            $attachment = $temp_source['location'].$temp_source['file'];
+                          } 
                           else $attachment = $mediadir.$siteTemp."/".$mediafile;
                         }
                         
@@ -788,6 +792,10 @@ if ($intention == "sendmail" && checktoken ($token, $user))
                               if ($temp_source['result'] && $temp_source['crypted'])
                               {
                                 $attachment = $temp_source['templocation'].$temp_source['tempfile'];
+                              }
+                              elseif ($temp_source['restored'])
+                              {
+                                $attachment = $temp_source['location'].$temp_source['file'];
                               }
                               else $attachment = $mediadir.$siteTemp."/".$mediafile;
                             }

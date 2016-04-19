@@ -277,6 +277,75 @@ function getescapedtext ($text, $charset="", $lang="")
   return html_encode ($text);
 }
 
+// ----------------------------------------- getsynonym ------------------------------------------
+// function: getescapedtext()
+// input: word as string, 2-digit language code (optional)
+// output: array holding all synonyms including the provided word / false on error
+
+// description:
+// Returns the synonyms of a word.
+
+function getsynonym ($text, $lang="")
+{
+  global $mgmt_config;
+  
+  require ($mgmt_config['abs_path_cms']."include/synonym.inc.php");
+  
+  if ($text != "")
+  {
+    // remove wild card characters * and ?
+    $text_clean = trim (str_replace (array("*", "?"), "", strtolower ($text)));
+    
+    // search in all languages
+    if ($lang == "" && !empty ($synonym) && is_array ($synonym))
+    {
+      foreach ($synonym as $lang=>$lang_array)
+      {
+        foreach ($synonym[$lang] as $text_array)
+        {
+          if (in_array ($text_clean, $text_array))
+          {
+            $intermediate = $text_array;
+            break;
+          }
+        }
+      }
+    }
+    // search in provided language
+    elseif ($lang != "" && !empty ($synonym[$lang]) && is_array ($synonym[$lang]))
+    {
+      foreach ($synonym[$lang] as $text_array)
+      {
+        if (in_array ($text_clean, $text_array))
+        {
+          $intermediate = $text_array;
+          break;
+        }
+      }
+    }
+    
+    if (!empty ($intermediate))
+    {
+      $result = array();
+      
+      foreach ($intermediate as $word)
+      {
+        // add wild card characters * and ?
+        if (substr ($text, 0, 1) == "*") $word = "*".$word;
+        elseif (substr ($text, 0, 1) == "?") $word = "?".$word;
+        if (substr ($text, -1) == "*") $word = $word."*";
+        elseif (substr ($text, -1) == "?") $word = $word."?";
+        
+        $result[] = $word;
+      }
+      
+      return $result;
+    }
+    else return array ($text);
+  }
+  else return false;
+}
+
  // ========================================= LOAD CONTENT ============================================
 
 // ---------------------------------------- getobjectcontainer ----------------------------------------
@@ -1469,9 +1538,21 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object))
   {
     $result = array();
+    $result['template'] = "";
+    $result['content'] = "";
+    $result['media'] = "";
+    $result['file'] = $object;
+    $result['name'] = "";
+    $result['filename'] = "";
+    $result['container_id'] = "";
+    $result['contentobjects'] = "";
+    $result['icon'] = "";
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
+    
+    // get category
+    $cat = getcategory ($site, $location.$object);
     
     // deconvert location
     if (@substr_count ($location, "%page%") > 0 || @substr_count ($location, "%comp%") > 0)
@@ -1481,7 +1562,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
     }
     else
     {
-      $location_esc = convertpath ($site, $location, "");
+      $location_esc = convertpath ($site, $location, $cat);
     }
     
     // evaluate if object is a file or a folder
@@ -1500,7 +1581,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
     else $name = $object;
     
     // get file icon
-    $fileinfo = getfileinfo ($site, $location.$object, "");
+    $fileinfo = getfileinfo ($site, $location_esc.$object, $cat);
     $result['icon'] = $fileinfo['icon'];
   
     // load object file
@@ -1585,11 +1666,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
         {
           $object = getobject ($contentobjects[0]);
         }
-        
-        // get file icon
-        $fileinfo = getfileinfo ($site, $contentobjects[0], "");
-        $result['icon'] = $fileinfo['icon'];
-        
+
         // get name
         if ($object == ".folder") $name = getobject ($location);
         else $name = $object;
@@ -1786,6 +1863,13 @@ function getvideoinfo ($mediafile)
 
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
+    
+    // reset location if restored
+    if ($temp['restored'])
+    {
+      $location = $temp['location'];
+      $media = $temp['file'];
+    }
     
     if ($temp['result'] && $temp['crypted'])
     {
@@ -2052,35 +2136,57 @@ function getcontentlocation ($container_id, $type="abs_path_content")
 // The function supports up to 10 media repositories.
 // Any other rules for splitting the media files on multiple devices can be implemented as well by the function getmedialocation_rule.
 
-// include rule from external file (must return a value)   
-if (is_file ($mgmt_config['abs_path_data']."media/getmedialocation.inc.php"))
-{
-  include ($mgmt_config['abs_path_data']."media/getmedialocation.inc.php");
-}
-
 function getmedialocation ($site, $file, $type)
 {
   global $mgmt_config, $publ_config;
   
   if (valid_locationname ($file) && $type != "" && is_array ($mgmt_config))
   {
+    // include rule from external file (must return a value)   
+    if (is_file ($mgmt_config['abs_path_data']."media/getmedialocation.inc.php"))
+    {
+      include ($mgmt_config['abs_path_data']."media/getmedialocation.inc.php");
+    }
+    
+    // get file name
+    $file = getobject ($file);
+  
     // management configuration
     if ($type == "url_path_media" || $type == "abs_path_media")
     {
       // if media repository path is available
       if (!empty ($mgmt_config[$type]))
       {
-        // multiple media harddisk support
+        // multiple media harddisk/mountpoint support
         if (is_array ($mgmt_config[$type]))
         {
-          // encoding algorithm
+          // get container id as integer
           $container_id = intval (getmediacontainerid ($file));
+          
+          // get last digit of container id
           $no = substr ($container_id, -1);
         
           if (function_exists ("getmedialocation_rule"))
           {
             $result = getmedialocation_rule ($site, $file, $type, $container_id);
-            if ($result != "") return $result;
+            
+            if ($result != "")
+            {
+              // symbolic link
+              if (is_link ($result.$site."/".$file))
+              {
+                // get link target
+                $targetpath = readlink ($result.$site."/".$file);
+                $targetroot = getlocation (getlocation ($targetpath));
+                
+                return $targetroot;
+              } 
+              // file
+              else
+              {
+                return $result;
+              }
+            }
           }
           
           $hdarray_size = sizeof ($mgmt_config[$type]);
@@ -2095,21 +2201,57 @@ function getmedialocation ($site, $file, $type)
             
             for ($i=1; $i<=10; $i++)
             {
-              if (substr ($i, -1) == $no) return $mgmt_config[$type][$j];
+              if (substr ($i, -1) == $no)
+              {
+                if ($mgmt_config[$type][$j] != "")
+                {
+                  // symbolic link
+                  if (is_link ($mgmt_config[$type][$j].$site."/".$file))
+                  {
+                    // get link target
+                    $targetpath = readlink ($mgmt_config[$type][$j].$site."/".$file);
+                    $targetroot = getlocation (getlocation ($targetpath));
+                    
+                    return $targetroot;
+                  }
+                  // file
+                  else
+                  {
+                    return $mgmt_config[$type][$j];
+                  }
+                }
+              }
+              
               if ($j == $hdarray_size) $j = 1;
               else $j++;
             }
           }
         }
-        // single media harddsik
-        else return $mgmt_config[$type];
+        // single media harddisk/mountpoint
+        else
+        {
+          // symbolic link
+          if (is_link ($mgmt_config[$type].$site."/".$file))
+          {
+            // get link target
+            $targetpath = readlink ($mgmt_config[$type].$site."/".$file);
+            $targetroot = getlocation (getlocation ($targetpath));
+            
+            return $targetroot;
+          }
+          // file
+          else
+          {
+            return $mgmt_config[$type];
+          }
+        }
       }
       else return false;
     }
     // publication configuration
     elseif ($type == "url_publ_media" || $type == "abs_publ_media")
     {
-      // looad publication INI file
+      // load publication INI file
       if (valid_publicationname ($site) && !is_array ($publ_config))
       {
         $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 

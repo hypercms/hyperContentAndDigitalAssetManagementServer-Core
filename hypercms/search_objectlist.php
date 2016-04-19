@@ -512,20 +512,23 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             $ratio = "Width";
             
             // if there is a thumb file, display the thumb
-            if ($mediafile != false && $mediadir != "")
+            if ($mediafile != false)
             {
+              // get thumbnail location
+              $thumbdir = getmedialocation ($site, $media_info['filename'].".thumb.jpg", "abs_path_media");
+          
               // prepare source media file
-              preparemediafile ($item_site, $mediadir.$item_site."/", $media_info['filename'].".thumb.jpg", $user);
+              preparemediafile ($item_site, $thumbdir.$item_site."/", $media_info['filename'].".thumb.jpg", $user);
                
               // try to create thumbnail if not available
-              if ($mgmt_config['recreate_preview'] == true && (!is_file ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg")))
+              if ($mgmt_config['recreate_preview'] == true && (!is_file ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg")))
               {
-                createmedia ($item_site, $mediadir.$item_site."/", $mediadir.$item_site."/", $media_info['file'], "", "thumbnail");
+                createmedia ($item_site, $thumbdir.$item_site."/", $thumbdir.$item_site."/", $media_info['file'], "", "thumbnail");
               }          
               
-              if (is_file ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg"))
+              if (is_file ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg"))
               {
-                $imgsize = getimagesize ($mediadir.$item_site."/".$media_info['filename'].".thumb.jpg");
+                $imgsize = getimagesize ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg");
                 
                 // calculate image ratio to define CSS for image container div-tag
                 if (is_array ($imgsize))

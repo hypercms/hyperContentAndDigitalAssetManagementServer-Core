@@ -1385,14 +1385,43 @@ Release 04/2016
 - Implementation of export job profiles in export module
 - Implementation of import job profile in import module
 - Implementation of new text variables into all language files
-- Bug fix: Help button apperaed twice in instance management control task bar
+- Bug fix: Help button appeared twice in instance management control task bar
 - Implementation of JS trim for new names in all controls
 - Bug fix: timeout.js has still been used in instance manager
-- Bug fix: Language has been been defined in import and export scripts
-- Implementation of new main configuration parameters for the import and export directory (default values are data/import and data/export as in older versions)
-- Implementation of new main configuration parameters in import and export scripts
+- Bug fix: Language has not been defined in import and export scripts
+- Implementation of new parameters for the import and export directory (default values are data/import and data/export)
 - Added file extension .indd as image to include/format_ext.inc.php
 - Implementation of automated export and import jobs in daily job
+- Bug fix: Import script did only update content container and not the multimedia file in case the container ID is provided in import file
+- Bug fix: Import script did not delete imported multimedia files
+- Improvements regarding undeclared variables in function settext
+- Implementation of support for synonyms in search engine
+- Implementation of new function getsynonym
+- Implementation of new main configuration setting for synonyms
+_ Implementation of support for synonyms in function rdbms_searchcontent 
+- Implementation of synonyms for English and German
+- Added MTS file extension (AVCHD) to video file extensions and video rendering
+- Removed GIF file extension from video file extensions and video rendering
+- Bug fix: Task home box did use wrong reference to task management
+- Implementation of symbolic links for export and import (for asset file archive with slower access)
+- Implementation of new function restoremediafile in main API
+- Implementation of restore of media files in repository in function preparemediafile
+- Bug fix: Mobile edition has not been used if user was logged in already on the mobile device
+- Implementation in various API functions to support the new output of function preparemediafile
+- Bug fix: Function createversion did not create new version if is_cloudobject returned false
+- Implementation of support for exported media files in version_content
+- Bug fix: Function uploadfile did not return full objectpath when updating a media file
+- Improvements in function getobjectinfo
+- Implementation of new function rollbackvsion in main API
+- Implementation of new function deletebackvsion in main API
+- Improvements in function deletebackvsions in main API
+- Improvements in function getobjectinfo in get API
+- Improvements in popup_upload_html
+- Implementation workflow token in tabs of control_content_menu
+- Bug fix: Function manipulateobject did not properbly update the object reference in the content container on action "file_rename" or "page_rename"
+- Implementation of support for symbolic links in function deletefile
+- Bug fix: Function deletefile did not write error log
+- Bug fix: Function manipulateobject did not proberly verify the cut & paste of objects into a subfolder of the source location of the objects
 */
 
 // current version

@@ -21,6 +21,7 @@ $page = getrequest_esc ("page", "objectname");
 $contentfile_recent = getrequest ("contentfile_recent", "objectname");
 $actual = getrequest ("actual");
 $delete  = getrequest ("delete", "array");
+$wf_token = getrequest ("wf_token");
 $token = getrequest ("token");
 
 // get publication and category
@@ -46,6 +47,9 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+$show = "";
+$add_onload = "";
+
 // read actual file info (to get associated content)
 $pagestore = loadfile ($location, $page);
 $contentfile = getfilename ($pagestore, "content");
@@ -60,15 +64,42 @@ elseif (valid_objectname ($contentfile))
   $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
   $versiondir = getcontentlocation ($container_id, 'abs_path_content');
   $mediadir = getmedialocation ($site, $media, "abs_path_media").$site."/";
-  $show = "";
+  $thumbdir = getmedialocation ($site, "dummy.".$media, "abs_path_media").$site."/";
+}
+
+// create secure token
+$token_new = createtoken ($user);
+
+// change to version
+if ($actual != "" && checktoken ($token, $user))
+{
+  $rollbackversion = rollbackversion ($site, $location, $page, $actual, $user);
+  
+  $show = $rollbackversion['message'];
+  
+  // reset object name
+  if ($page != $rollbackversion['object'])
+  {
+    $page = $rollbackversion['object'];
+    $add_onload = "if (eval (parent.frames['controlFrame'])) parent.frames['controlFrame'].location='".$mgmt_config['url_path_cms']."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."'; ";
+  }
+}
+
+// delete versions
+if (is_array ($delete) && sizeof ($delete) > 0 && checktoken ($token, $user))
+{
+  foreach ($delete as $file_v_del)
+  {
+    if (valid_objectname ($file_v_del))
+    {
+      deleteversion ($site, $file_v_del, $user);
+    }
+  }
 }
 
 // get file info
 $file_info = getfileinfo ($site, $location.$page, $cat);    
 $pagename = $file_info['name'];
-
-// create secure token
-$token_new = createtoken ($user);
 ?>
 <!DOCTYPE html>
 <html>
@@ -148,7 +179,7 @@ function compare_submit ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif')">
+<body class="hcmsWorkplaceGeneric" onLoad="<?php echo $add_onload; ?>hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif');">
 
 <div class="hcmsWorkplaceFrame">
 <!-- change versions -->
@@ -169,126 +200,7 @@ function compare_submit ()
      <td nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['current'][$lang]); ?></td>
      <td nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></td>
     </tr>
-    <?php    
-    // change to version
-    if ($actual != "" && $versiondir != "" && checktoken ($token, $user))
-    {
-      if ($media != "" && preg_match ("/_hcm".$container_id."./i", $actual))
-      {
-        // create version of actual content file
-        $media_v = fileversion ($media);
-        $rename_1 = @rename ($versiondir.$contentfile_recent, $versiondir.$media_v);
-        // create version of actual media file
-        if ($rename_1) $rename_1 = @rename ($mediadir.$media, $mediadir.$media_v);
-      }
-      else
-      {
-        // create version of actual content file
-        $contentfile_v = fileversion ($contentfile);
-        $rename_1 = @rename ($versiondir.$contentfile_recent, $versiondir.$contentfile_v);
-      }
-      
-      // make version actual
-      if ($rename_1 != false)
-      {
-        // load working container from file system even if it is locked
-        $result = getcontainername ($contentfile_recent);
-        $contentfile_wrk = $result['container'];
-        $bufferdata = loadcontainer ($contentfile_wrk, "work", $user);  
-
-        // get current objects
-        if ($bufferdata != false) $contentobjects = getcontent ($bufferdata, "<contentobjects>");    
-
-        $bufferdata = false;
-        
-        // change container version
-        $rename_2 = @rename ($versiondir.$actual, $versiondir.$contentfile_recent);
-        $copy_2 = @copy ($versiondir.$contentfile_recent, $versiondir.$contentfile_wrk);
-        
-        // change media file version
-        if ($rename_2 != false && $media != "" && @preg_match ("/_hcm".$container_id."./i", $actual))
-        {
-          $rename_2 = @rename ($mediadir.$actual, $mediadir.$media);          
-          // create preview (thumbnail for images, previews for video/audio files)
-          createmedia ($site, $mediadir, $mediadir, $media, "", "origthumb");
-          // reindex
-          indexcontent ($site, $mediadir, $media, $container_id, $bufferdata, $user);
-        }
-        
-        // load working container from file system
-        $bufferdata = loadcontainer ($contentfile_id, "work", $user); 
-
-        if ($bufferdata != false) 
-        {
-          // insert new object into content container
-          $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $contentobjects[0], "", "");
-            
-          // save working container 
-          $test = savecontainer ($contentfile_id, "work", $bufferdata, $user);
-        }
-        else $test = false;         
-        
-        if ($test == false)
-        {
-          $errcode = "10100";
-          $error[] = $mgmt_config['today']."|version_content.php|error|$errcode|savecontainer failed for container ".$contentfile_wrk;           
-        }      
-
-        if ($rename_2 == false || $copy_2 == false) echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."<br /><br />\n";
-      }
-      else $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['could-not-change-version'][$lang])."</p>\n".getescapedtext ($hcms_lang['file-is-missing-or-you-do-not-have-write-permissions'][$lang])."<br /><br />\n";
-    }
-
-    // delete versions
-    if (is_array ($delete) && sizeof ($delete) > 0)
-    {
-      foreach ($delete as $file_v_del)
-      {
-        if (valid_objectname ($file_v_del))
-        {
-          // container version
-          if (is_file ($versiondir.$file_v_del))
-          {
-            // delete media file
-            $test = deletefile ($versiondir, $file_v_del, 0);
-
-            if ($test == false)
-            {
-              $errcode = "10291";
-              $error[] = $mgmt_config['today']."|version_content.php|error|$errcode|deletefile failed for ".$versiondir.$file_v_del;           
-            }
-          }
-          
-          // media file version
-          if (is_file ($mediadir.$file_v_del))
-          {
-            $test = deletefile ($mediadir, $file_v_del, 0);
-            
-            if ($test == false)
-            {
-              $errcode = "10292";
-              $error[] = $mgmt_config['today']."|version_content.php|error|$errcode|deletefile failed for ".$mediadir.$file_v_del;           
-            }
-          }
-          
-          // delete thumbnail file
-          $file_info_v = getfileinfo ($site, $file_v_del, $cat);
-          $thumb_v_del = $file_info_v['filename'].".thumb.jpg".strrchr ($file_v_del, ".");
-            
-          if (is_file ($mediadir.$thumb_v_del))
-          {
-            $test = deletefile ($mediadir, $thumb_v_del, 0);
-
-            if ($test == false)
-            {
-              $errcode = "10291";
-              $error[] = $mgmt_config['today']."|version_content.php|error|$errcode|deletefile failed for ".$versiondir.$thumb_v_del;           
-            }
-          }
-        }
-      }
-    }
-
+    <?php
     // select all content version files in directory sorted by date
     $files_v = getcontainerversions ($container_id);
 

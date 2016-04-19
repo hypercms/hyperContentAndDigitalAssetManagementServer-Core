@@ -164,6 +164,11 @@ if (checktoken ($token, $user))
       $media_root_source = $temp_source['templocation'];
       $mediafile = $temp_source['tempfile'];
     }
+    elseif ($temp_source['restored'] && is_file ($temp_source['location'].$temp_source['file']))
+    {
+      $media_root_source = $temp_source['location'];
+      $mediafile = $temp_source['file'];
+    }
     elseif (is_file ($media_root_source.$mediafile_raw))
     {
       // reset media file
@@ -188,6 +193,10 @@ if (checktoken ($token, $user))
   if ($temp_source['result'] && $temp_source['crypted'])
   {
     $media_size = @getimagesize ($temp_source['templocation'].$temp_source['tempfile']);
+  }
+  elseif ($temp_source['restored'])
+  {
+    $media_size = @getimagesize ($temp_source['location'].$temp_source['file']);
   }
   else
   {
@@ -420,6 +429,10 @@ if (!empty ($result))
     if ($temp_target['result'] && $temp_target['crypted'])
     {
       $media_size = @getimagesize ($temp_target['templocation'].$temp_target['tempfile']);
+    }
+    elseif ($temp_target['restored'])
+    {
+      $media_size = @getimagesize ($temp_target['location'].$temp_target['file']);
     }
     else
     {

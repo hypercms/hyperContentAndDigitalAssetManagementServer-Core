@@ -1368,4 +1368,7 @@ $hcms_lang['days']['ar'] = "ايام";
 $hcms_lang['enable-job']['ar'] = "تمكين الوظيفة";
 $hcms_lang['exported-files-will-be-saved-in']['ar'] = "سيتم حفظ الملفات المصدرة فى";
 $hcms_lang['files-need-to-be-placed-in']['ar'] = "ملفات IOS التى يجب ان توضع فى";
+$hcms_lang['move-media-files-to-export-directory']['ar'] = "نقل ملفات الوسائط لتصدير directory (جميع البيانات فى النظام)";
+$hcms_lang['export-to-directory']['ar'] = "الدليل على التصدير";
+$hcms_lang['import-from-directory']['ar'] = "استيراد من الدليل";
 ?>

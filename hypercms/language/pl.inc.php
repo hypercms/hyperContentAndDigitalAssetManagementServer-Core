@@ -1368,4 +1368,7 @@ $hcms_lang['days']['pl'] = "Dni";
 $hcms_lang['enable-job']['pl'] = "Zadanie udostępniania";
 $hcms_lang['exported-files-will-be-saved-in']['pl'] = "Wyeksportowane pliki zostaną zapisane w";
 $hcms_lang['files-need-to-be-placed-in']['pl'] = "Pliki muszą być umieszczone w";
+$hcms_lang['move-media-files-to-export-directory']['pl'] = "Przenieś pliki multimedialne do katalogu eksportu (wszystkie dane będą przechowywane w systemie)";
+$hcms_lang['export-to-directory']['pl'] = "Eksport do katalogu";
+$hcms_lang['import-from-directory']['pl'] = "Import z katalogu";
 ?>

@@ -1369,4 +1369,7 @@ $hcms_lang['days']['he'] = "ימים";
 $hcms_lang['enable-job']['he'] = "לאפשר עבודה";
 $hcms_lang['exported-files-will-be-saved-in']['he'] = "לייצא קבצים יהיה נשמר";
 $hcms_lang['files-need-to-be-placed-in']['he'] = "הקבצים צריכים להיות ממוקמים";
+$hcms_lang['move-media-files-to-export-directory']['he'] = "העבר קובצי מדיה כדי לייצא directory (כל הנתונים יהיו שמורים במערכת)";
+$hcms_lang['export-to-directory']['he'] = "ייצוא directory";
+$hcms_lang['import-from-directory']['he'] = "ייבוא מן directory";
 ?>

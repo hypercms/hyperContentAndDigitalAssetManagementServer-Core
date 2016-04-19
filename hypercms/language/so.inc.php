@@ -1368,4 +1368,7 @@ $hcms_lang['days']['so'] = "Maalmood";
 $hcms_lang['enable-job']['so'] = "Shaqo Gaarsiiso";
 $hcms_lang['exported-files-will-be-saved-in']['so'] = "Faylasha Dhoofa badbaadi doonaa oo";
 $hcms_lang['files-need-to-be-placed-in']['so'] = "Dhamaan faylasha loo baahan yahay in la geeynayo";
+$hcms_lang['move-media-files-to-export-directory']['so'] = "Saxaafadda guuro faylasha In Laga Dhoofiyo Dekaddii Agaasinka (dhammaan macluumaadka hayey doonaa nidaamka)";
+$hcms_lang['export-to-directory']['so'] = "Dhoofka u agaasinka";
+$hcms_lang['import-from-directory']['so'] = "Alaabtan soo gelinteedu agaasinka ka";
 ?>

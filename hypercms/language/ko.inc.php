@@ -1368,4 +1368,7 @@ $hcms_lang['days']['ko'] = "일";
 $hcms_lang['enable-job']['ko'] = "작업 활성화";
 $hcms_lang['exported-files-will-be-saved-in']['ko'] = "내보낸 파일이 저장되는 것입니다.";
 $hcms_lang['files-need-to-be-placed-in']['ko'] = "파일을 배치해야 합니다.";
+$hcms_lang['move-media-files-to-export-directory']['ko'] = "미디어 파일(모든 데이터가 시스템에 보관됩니다 디렉토리 내보내기 이동)";
+$hcms_lang['export-to-directory']['ko'] = "디렉토리 내보내기";
+$hcms_lang['import-from-directory']['ko'] = "디렉터리 가져오기";
 ?>

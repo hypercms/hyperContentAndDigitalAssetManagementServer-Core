@@ -1368,4 +1368,7 @@ $hcms_lang['days']['da'] = "Dage";
 $hcms_lang['enable-job']['da'] = "Aktiverer job";
 $hcms_lang['exported-files-will-be-saved-in']['da'] = "Eksporterede filer bliver gemt i";
 $hcms_lang['files-need-to-be-placed-in']['da'] = "Filerne skal placeres i";
+$hcms_lang['move-media-files-to-export-directory']['da'] = "Flyt filer til export directory (Alle data bliver opbevaret i systemet)";
+$hcms_lang['export-to-directory']['da'] = "Eksporter til nummerliste";
+$hcms_lang['import-from-directory']['da'] = "Import fra bibliotek";
 ?>

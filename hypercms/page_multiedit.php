@@ -251,6 +251,11 @@ foreach ($multiobject_array as $object)
       $media_root = $temp['templocation'];
       $mediafile = $temp['tempfile'];
     }
+    elseif ($temp['restored'])
+    {
+      $media_root = $temp['location'];
+      $mediafile = $temp['file'];
+    }
     
     // thumbnails preview
     if (is_file ($mediadir.$site."/".$thumbnail))

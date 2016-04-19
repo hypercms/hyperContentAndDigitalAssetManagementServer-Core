@@ -1369,4 +1369,7 @@ $hcms_lang['days']['zh-s'] = "天";
 $hcms_lang['enable-job']['zh-s'] = "启用作业";
 $hcms_lang['exported-files-will-be-saved-in']['zh-s'] = "导出的文件将被保存在";
 $hcms_lang['files-need-to-be-placed-in']['zh-s'] = "文件需要放置在";
+$hcms_lang['move-media-files-to-export-directory']['zh-s'] = "移动媒体文件要导出的目录(所有数据都将保留在系统中)";
+$hcms_lang['export-to-directory']['zh-s'] = "导出的目录。";
+$hcms_lang['import-from-directory']['zh-s'] = "导入的目录。";
 ?>

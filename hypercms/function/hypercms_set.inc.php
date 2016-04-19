@@ -152,9 +152,9 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
       if ($id != "")
       {
         // set array if input parameter is string
-        if ($typebuffer != "") $type[$id] = $typebuffer;
-        if ($artbuffer != "") $art[$id] = $artbuffer;
-        if ($userbuffer != "") $textuser[$id] = $userbuffer;  
+        if (!empty ($typebuffer)) $type[$id] = $typebuffer;
+        if (!empty ($artbuffer)) $art[$id] = $artbuffer;
+        if (!empty ($userbuffer)) $textuser[$id] = $userbuffer;  
         
         // remove freespaces
         $textcontent = trim ($text[$id]);  

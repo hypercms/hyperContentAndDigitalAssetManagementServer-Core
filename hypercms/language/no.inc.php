@@ -1368,4 +1368,7 @@ $hcms_lang['days']['no'] = "Dager";
 $hcms_lang['enable-job']['no'] = "Aktiverer jobb";
 $hcms_lang['exported-files-will-be-saved-in']['no'] = "Eksporterte filer blir lagret i";
 $hcms_lang['files-need-to-be-placed-in']['no'] = "Filer må være plassert i";
+$hcms_lang['move-media-files-to-export-directory']['no'] = "Flytte mediefiler til eksport-katalogen (alle data beholdes i systemet)";
+$hcms_lang['export-to-directory']['no'] = "Eksport til katalog";
+$hcms_lang['import-from-directory']['no'] = "Importere fra katalog";
 ?>

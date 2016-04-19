@@ -1369,4 +1369,7 @@ $hcms_lang['days']['bg'] = "Дни";
 $hcms_lang['enable-job']['bg'] = "Разрешаване на задача";
 $hcms_lang['exported-files-will-be-saved-in']['bg'] = "Изнесени файлове ще бъдат запазени в";
 $hcms_lang['files-need-to-be-placed-in']['bg'] = "Файлове трябва да бъдат поставени в";
+$hcms_lang['move-media-files-to-export-directory']['bg'] = "Преместете медийни файлове за износ на указателя (всички данни ще се съхранява в системата)";
+$hcms_lang['export-to-directory']['bg'] = "Износ в телефонния указател";
+$hcms_lang['import-from-directory']['bg'] = "Внос от телефонния указател";
 ?>

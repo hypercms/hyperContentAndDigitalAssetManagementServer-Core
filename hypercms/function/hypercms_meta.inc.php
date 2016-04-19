@@ -501,7 +501,11 @@ function copymetadata ($file_source, $file_dest)
         
         if ($temp_source['crypted'])
         {
-          $file_source = $location_dest.$media_dest;
+          $file_source = $temp_source['templocation'].$temp_source['tempfile'];
+        }
+        elseif ($temp_source['restored'])
+        {
+          $file_source = $temp_source['location'].$temp_source['file'];
         }
 
         // verify source media file
@@ -518,6 +522,10 @@ function copymetadata ($file_source, $file_dest)
         if ($temp_dest['crypted'])
         {
           $file_dest = $temp_dest['templocation'].$temp_dest['tempfile'];
+        }
+        elseif ($temp_dest['restored'])
+        {
+          $file_dest = $temp_dest['location'].$temp_dest['file'];
         }
         
         // verify destination media file
@@ -583,7 +591,14 @@ function extractmetadata ($file)
         // prepare media file
         $temp = preparemediafile ($site, $location, $media, $user);
         
-        if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
+        if ($temp['result'] && $temp['crypted'])
+        {
+          $file = $temp['templocation'].$temp['tempfile'];
+        }
+        elseif ($temp['restored'])
+        {
+          $file = $temp['location'].$temp['file'];
+        }
         
         // get image information using EXIFTOOL
         $cmd = $executable." -G \"".shellcmd_encode ($file)."\"";          
@@ -871,7 +886,14 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
     
-    if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
+    if ($temp['result'] && $temp['crypted'])
+    {
+      $file = $temp['templocation'].$temp['tempfile'];
+    }
+    elseif ($temp['restored'])
+    {
+      $file = $temp['location'].$temp['file'];
+    }
     
     if (is_file ($file))
     {
@@ -1052,7 +1074,14 @@ function xmp_getdata ($file)
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
     
-    if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
+    if ($temp['result'] && $temp['crypted'])
+    {
+      $file = $temp['templocation'].$temp['tempfile'];
+    }
+    elseif ($temp['restored'])
+    {
+      $file = $temp['location'].$temp['file'];
+    }
     
     // load file
     $content = file_get_contents ($file);
@@ -1203,8 +1232,15 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
         
-    if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
-
+    if ($temp['result'] && $temp['crypted'])
+    {
+      $file = $temp['templocation'].$temp['tempfile'];
+    }
+    elseif ($temp['restored'])
+    {
+      $file = $temp['location'].$temp['file'];
+    }
+    
     if (is_file ($file))
     {
       // define executable
@@ -1370,8 +1406,15 @@ function exif_getdata ($file)
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
     
-    if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
-		
+    if ($temp['result'] && $temp['crypted'])
+    {
+      $file = $temp['templocation'].$temp['tempfile'];
+		}
+    elseif ($temp['restored'])
+    {
+      $file = $temp['location'].$temp['file'];
+    }
+    
     // set encoding for EXIF to UTF-8
     ini_set ('exif.encode_unicode', 'UTF-8');  
     error_reporting (0);
@@ -1627,8 +1670,15 @@ function iptc_getdata ($file)
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
     
-    if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
-  
+    if ($temp['result'] && $temp['crypted'])
+    {
+      $file = $temp['templocation'].$temp['tempfile'];
+    }
+    elseif ($temp['restored'])
+    {
+      $file = $temp['location'].$temp['file'];
+    }
+    
     $size = getimagesize ($file, $info);
     
     if ($size) $iptc = iptcparse ($info['APP13']);
@@ -1882,7 +1932,14 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
     // prepare media file
     $temp = preparemediafile ($site, $location, $media, $user);
     
-    if ($temp['result'] && $temp['crypted']) $file = $temp['templocation'].$temp['tempfile'];
+    if ($temp['result'] && $temp['crypted'])
+    {
+      $file = $temp['templocation'].$temp['tempfile'];
+    }
+    elseif ($temp['restored'])
+    {
+      $file = $temp['location'].$temp['file'];
+    }
     
     if (is_file ($file))
     {
@@ -2552,6 +2609,11 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         {
           $medialocation = $temp['templocation'];
           $mediafile = $temp['tempfile'];
+        }
+        elseif ($temp['restored'])
+        {
+          $medialocation = $temp['location'];
+          $mediafile = $temp['file'];
         }
         
         // ------------------- ID3 -------------------
