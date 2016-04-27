@@ -1372,4 +1372,6 @@ $hcms_lang['files-need-to-be-placed-in']['id'] = "File ini perlu ditempatkan di"
 $hcms_lang['move-media-files-to-export-directory']['id'] = "Memindah file media ke direktori ekspor (semua data akan dipelihara di sistem)";
 $hcms_lang['export-to-directory']['id'] = "Direktori untuk ekspor";
 $hcms_lang['import-from-directory']['id'] = "Impor dari directory";
+$hcms_lang['taxonomy']['id'] = "Taksonomi";
+$hcms_lang['enable-taxonomy-browsing-and-search']['id'] = "Aktifkan Jelajah taksonomi dan mencari";
 ?>

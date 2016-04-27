@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['ar'] = "ملفات IOS التى يجب
 $hcms_lang['move-media-files-to-export-directory']['ar'] = "نقل ملفات الوسائط لتصدير directory (جميع البيانات فى النظام)";
 $hcms_lang['export-to-directory']['ar'] = "الدليل على التصدير";
 $hcms_lang['import-from-directory']['ar'] = "استيراد من الدليل";
+$hcms_lang['taxonomy']['ar'] = "تصنيف";
+$hcms_lang['enable-taxonomy-browsing-and-search']['ar'] = "تمكين التصفح والبحث taxonomy";
 ?>

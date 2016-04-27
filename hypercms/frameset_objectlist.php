@@ -49,7 +49,7 @@ if ($temp_sidebar && !$is_mobile) $objectlist_width = 75;
 else $objectlist_width = 100;
 
 // standard object explorer for given location
-if (($location != "" || is_array ($hcms_linking)))
+if ($location != "" || is_array ($hcms_linking))
 {
   if (!isset ($virtual)) $virtual = 0;
 
@@ -66,7 +66,7 @@ elseif ($action == "base_search")
   // control
   echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" scrolling=\"".$scrolling."\" src=\"loading.php\" frameBorder=\"0\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe>\n";
   // object list
-  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; width:".$objectlist_width."%; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"no\" src=\"search_objectlist.php?action=".$action."&search_dir=".$search_dir."&search_expression=".$search_expression."&maxhits=".$maxhits."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
+  echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; width:".$objectlist_width."%; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" scrolling=\"no\" src=\"search_objectlist.php?action=".$action."&site=".$site."&search_dir=".$search_dir."&search_expression=".$search_expression."&maxhits=".$maxhits."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
   // sidebar
   if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".(100 - $objectlist_width)."%; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" name=\"sidebarFrame\" scrolling=\"auto\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
 }

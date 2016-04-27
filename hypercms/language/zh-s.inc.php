@@ -1372,4 +1372,6 @@ $hcms_lang['files-need-to-be-placed-in']['zh-s'] = "文件需要放置在";
 $hcms_lang['move-media-files-to-export-directory']['zh-s'] = "移动媒体文件要导出的目录(所有数据都将保留在系统中)";
 $hcms_lang['export-to-directory']['zh-s'] = "导出的目录。";
 $hcms_lang['import-from-directory']['zh-s'] = "导入的目录。";
+$hcms_lang['taxonomy']['zh-s'] = "分类";
+$hcms_lang['enable-taxonomy-browsing-and-search']['zh-s'] = "启用分类浏览和搜索";
 ?>

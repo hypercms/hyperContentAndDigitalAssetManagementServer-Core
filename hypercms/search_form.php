@@ -91,8 +91,12 @@ function checkForm(select)
 function loadForm ()
 {
   selectbox = document.forms['searchform_advanced'].elements['template'];
-  template = selectbox.options[selectbox.selectedIndex].value;  
-  hcms_loadPage('contentLayer',null,'search_form_advanced.php?location=<?php echo url_encode($location_esc); ?>&template=' + template + '&css_display=inline-block');
+  template = selectbox.options[selectbox.selectedIndex].value;
+  
+  if (template != "")
+  {
+    hcms_loadPage('contentLayer',null,'search_form_advanced.php?location=<?php echo url_encode($location_esc); ?>&template=' + template + '&css_display=inline-block');
+  }
 }
 
 function startSearch (form)
@@ -153,26 +157,7 @@ $(document).ready(function()
 {
   // search history
   <?php
-  $keywords = array();
-  
-  if (is_file ($mgmt_config['abs_path_data']."log/search.log"))
-  {
-    // load search log
-    $data = file ($mgmt_config['abs_path_data']."log/search.log");
-  
-    if (is_array ($data))
-    {
-      foreach ($data as $record)
-      {
-        list ($date, $user, $keyword_add) = explode ("|", $record);
-  
-        $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
-      }
-      
-      // only unique expressions
-      $keywords = array_unique ($keywords);
-    }
-  }
+  $keywords = getsearchhistory();
   ?>
   var available_expressions = [<?php echo implode (",\n", $keywords); ?>];
 
@@ -527,9 +512,10 @@ function cal_on_autoclose (cal)
               <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['based-on-template'][$lang]); ?>:</td>
               <td>
                 <select name="template" onChange="loadForm();" style="width:220px;">
-                  <option value="">&nbsp;</option>
               <?php
               // load publication inheritance setting
+              $site_array = array();
+              
               if ($mgmt_config[$site]['inherit_tpl'] == true)
               {
                 $inherit_db = inherit_db_read ();
@@ -540,32 +526,37 @@ function cal_on_autoclose (cal)
               }
               else $site_array[] = $site;
               
-              foreach ($site_array as $site_source)
+              $template_array = array();
+              
+              if (is_array ($site_array) && sizeof ($site_array) > 0)
               {
-                $dir_template = dir ($mgmt_config['abs_path_template'].$site_source."/");
-      
-                if ($dir_template != false)
+                foreach ($site_array as $site_source)
                 {
-                  while ($entry = $dir_template->read())
+                  $dir_template = dir ($mgmt_config['abs_path_template'].$site_source."/");
+        
+                  if ($dir_template != false)
                   {
-                    if ($entry != "." && $entry != ".." && !is_dir ($entry) && !preg_match ("/.inc.tpl/", $entry) && !preg_match ("/.tpl.v_/", $entry))
+                    while ($entry = $dir_template->read())
                     {
-                      if ($cat == "page" && strpos ($entry, ".page.tpl") > 0)
+                      if ($entry != "." && $entry != ".." && !is_dir ($entry) && !preg_match ("/.inc.tpl/", $entry) && !preg_match ("/.tpl.v_/", $entry))
                       {
-                        $template_array[] = $entry;
+                        if ($cat == "page" && strpos ($entry, ".page.tpl") > 0)
+                        {
+                          $template_array[] = $entry;
+                        }
+                        elseif ($cat == "comp" && strpos ($entry, ".comp.tpl") > 0)
+                        {
+                          $template_array[] = $entry;
+                        }
+                        elseif ($cat == "comp" && strpos ($entry, ".meta.tpl") > 0)
+                        {
+                          $template_array[] = $entry;
+                        }                  
                       }
-                      elseif ($cat == "comp" && strpos ($entry, ".comp.tpl") > 0)
-                      {
-                        $template_array[] = $entry;
-                      }
-                      elseif ($cat == "comp" && strpos ($entry, ".meta.tpl") > 0)
-                      {
-                        $template_array[] = $entry;
-                      }                  
                     }
+        
+                    $dir_template->close();
                   }
-      
-                  $dir_template->close();
                 }
               }
     

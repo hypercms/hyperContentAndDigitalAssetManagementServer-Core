@@ -1355,7 +1355,7 @@ $hcms_lang['move-the-mouse-over-the-icons-to-get-more-information']['de'] = "Bew
 $hcms_lang['user-must-provide-metadata-for-file-uploads']['de'] = "Benutzer müssen Metadaten für Dateiuploads eingeben";
 $hcms_lang['please-enter-the-metadata-for-your-uploads']['de'] = "Bitte geben Sie die Metadaten für Ihre Uploads ein";
 $hcms_lang['user-wants-to-chat-with-you']['de'] = "Benutzer %user% will mit ihnen chatten.";
-$hcms_lang['enable-direct-file-uploads-in-pages']['de'] = "Ermöglichen den direkten Upload der Datei in Seiten";
+$hcms_lang['enable-direct-file-uploads-in-pages']['de'] = "Direkten Upload von Dateien in Seiten erlauben";
 $hcms_lang['use-local-media-storage']['de'] = "Verwendung des lokalen Medienspeichers";
 $hcms_lang['use-cloud-media-storage']['de'] = "Verwendung des Cloud-Medienspeichers";
 $hcms_lang['use-local-and-cloud-media-storage']['de'] = "Verwendung des lokalen und Cloud-Medienspeichers";
@@ -1373,4 +1373,6 @@ $hcms_lang['files-need-to-be-placed-in']['de'] = "Dateien müssen hier abgelegt 
 $hcms_lang['move-media-files-to-export-directory']['de'] = "Mediendateien in Exportverzeichnis verschieben (Alle Daten werden im System behalten)";
 $hcms_lang['export-to-directory']['de'] = "Export in Verzeichnis";
 $hcms_lang['import-from-directory']['de'] = "Import aus Verzeichnis";
+$hcms_lang['taxonomy']['de'] = "Taxonomie";
+$hcms_lang['enable-taxonomy-browsing-and-search']['de'] = "Taxonomie für Browsen und Suchen erlauben";
 ?>

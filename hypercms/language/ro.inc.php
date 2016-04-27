@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['ro'] = "Fişierele trebuie să fie pla
 $hcms_lang['move-media-files-to-export-directory']['ro'] = "Mutaţi fişiere media la export directory (toate datele vor fi păstrate în sistem)";
 $hcms_lang['export-to-directory']['ro'] = "Directorul de la export";
 $hcms_lang['import-from-directory']['ro'] = "Import din director";
+$hcms_lang['taxonomy']['ro'] = "Taxonomy";
+$hcms_lang['enable-taxonomy-browsing-and-search']['ro'] = "Permite taxonomy navigarea şi căutare";
 ?>

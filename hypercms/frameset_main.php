@@ -72,26 +72,7 @@ function maxNavFrame ()
 $(document).ready(function()
 {
   <?php
-  $keywords = array();
-  
-  if (is_file ($mgmt_config['abs_path_data']."log/search.log"))
-  {
-    // load search log
-    $data = file ($mgmt_config['abs_path_data']."log/search.log");
-  
-    if (is_array ($data))
-    {
-      foreach ($data as $record)
-      {
-        list ($date, $user, $keyword_add) = explode ("|", $record);
-  
-        $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
-      }
-      
-      // only unique expressions
-      $keywords = array_unique ($keywords);
-    }
-  }
+  $keywords = getsearchhistory ();
   ?>
   var available_expressions = [<?php echo implode (",\n", $keywords); ?>];
 

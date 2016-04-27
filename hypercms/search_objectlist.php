@@ -132,7 +132,9 @@ elseif ($action == "base_search" || $search_dir != "")
   elseif ($search_expression != "")
   {
     $search_textnode[0] = $search_expression;
-    $search_filename = $search_expression;
+    
+    if (strpos ("_".$search_expression, "%taxonomy%/") > 0) $search_filename = "";
+    else $search_filename = $search_expression;
   }
   
   // search for certain object types/formats
@@ -141,8 +143,9 @@ elseif ($action == "base_search" || $search_dir != "")
   // check permissions
   if ($action == "base_search" || ($cat == "comp" && checkglobalpermission ($site, 'component')) || ($cat == "page" && checkglobalpermission ($site, 'page')))
   {
-    if ($action == "base_search") 
-    {      
+    // no location provided
+    if ($action == "base_search" && !valid_locationname ($search_dir) && !valid_publicationname ($site)) 
+    {
       // page access of user
       foreach ($pageaccess as $site_name => $value)
       {
@@ -179,7 +182,19 @@ elseif ($action == "base_search" || $search_dir != "")
         }
       }
     }
-    else $search_dir_esc = convertpath ($site, $search_dir, $cat);
+    // location provided
+    elseif (valid_locationname ($search_dir))
+    {
+      $search_dir_esc = convertpath ($site, $search_dir, $cat);
+    }
+    // publication provided
+    elseif (valid_publicationname ($site))
+    {
+      $search_dir_esc = array();
+      
+      if (checkglobalpermission ($site, 'component')) $search_dir_esc[] = "%comp%/".$site."/";
+      if (checkglobalpermission ($site, 'page')) $search_dir_esc[] = "%page%/".$site."/";
+    }
     
     // max. hits
     if ($maxhits > 1000) $maxhits = 1000;

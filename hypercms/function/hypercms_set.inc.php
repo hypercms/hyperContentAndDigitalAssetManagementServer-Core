@@ -30,7 +30,119 @@ function setsession ($variable, $content="", $write=false)
   else return false;
 }
 
-// ========================================= SAVE CONTENT ============================================
+// ========================================== CONTENT ===========================================
+
+// ----------------------------------------- settaxonomy ------------------------------------------
+// function: settaxonomy()
+// input: publication name, container ID, content as array in form of array[text-ID]=text-content, 2-digit language code (optional)
+// output: result array / false on error
+
+// description:
+// Analyzes the content regarding all taxonomy keywords and returns an array (multilingual support based on taxonomies).
+// Global variable $taxonomy can be used to pass the taxonomy as array.
+
+function settaxonomy ($site, $container_id, $text_array, $langcode="")
+{
+  global $mgmt_config, $taxonomy;
+  
+  if (valid_publicationname ($site) && intval ($container_id) > 0 && is_array ($text_array) && sizeof ($text_array) > 0 && is_array ($mgmt_config))
+  {
+    // load publication management config
+    if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['taxonomy']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
+    
+    // if taxonomy is enabled
+    if (strtolower ($site) == "default" || (valid_publicationname ($site) && !empty ($mgmt_config[$site]['taxonomy'])))
+    { 
+      // load taxonomy of publication
+      if (!is_array ($taxonomy) && valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
+      {
+        include ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php");
+      }
+      // load default taxonomy
+      elseif (!is_array ($taxonomy) && is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php"))
+      {
+        include ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php");
+      }
+   
+      // search for taxonomy keyword and its childs
+      if (!empty ($taxonomy) && is_array ($taxonomy) && sizeof ($taxonomy) > 0)
+      {
+        $result = array();
+        
+        foreach ($text_array as $text_id=>$text)
+        {
+          $langcount = array();
+          
+          if ($text_id != "" && $text != "")
+          {
+            // clean text
+            $text = cleancontent ($text, "UTF-8");
+            $text = strtolower ($text);
+                    
+            reset ($taxonomy);
+            
+            // return key = taxonomy ID and value = keyword
+            foreach ($taxonomy as $lang=>$tax_array)
+            {
+              // language restriction
+              if ($lang == strtolower ($langcode) || $langcode == "")
+              {
+                $langcount[$lang] = 0;
+  
+                foreach ($tax_array as $path=>$keyword)
+                {
+                  // find taxonomy keyword in text
+                  if ($keyword != "" && strpos (" ".$text." ", strtolower (" ".$keyword)) > 0)
+                  {
+                    // get ID
+                    $path_temp = substr ($path, 0, -1);
+                    $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
+                    
+                    // result array
+                    $result[$text_id][$lang][$id] = $keyword;
+                                  
+                    // count number of found expressions per language and text ID if keyword has more than 5 digits
+                    if (strlen ($keyword) > 5) $langcount[$lang]++;
+                  }
+                }
+              }
+            }
+            
+            // analyze languages for text ID
+            if (is_array ($langcount) && sizeof ($langcount) > 1 && !empty ($result[$text_id]))
+            {
+              // get highest count
+              $count = max ($langcount);
+              
+              // get language with highest count
+              $langcode = array_search ($count, $langcount);
+              
+              // remove other languages
+              if (!empty ($langcode))
+              {
+                foreach ($result[$text_id] as $lang_delete=>$array)
+                {
+                  if ($lang_delete != $langcode) unset ($result[$text_id][$lang_delete]);
+                }
+              }
+            }
+          }
+        }
+        
+        rdbms_settaxonomy ($site, $container_id, $result);
+        
+        if (sizeof ($result) > 0) return $result;
+        else return false;
+      }
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
 
 // ------------------------------------------ article ----------------------------------------------
 // function: setarticle()
@@ -41,7 +153,7 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle, $artstatus, $
 {
   global $mgmt_config;
 
-  if ($contentdata != "" && is_array ($artstatus) && valid_objectname ($user))
+  if ($contentdata != "" && is_array ($artstatus) && valid_objectname ($user) && is_array ($mgmt_config))
   {
     // load xml schema
     $article_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "article.schema.xml.php"));
@@ -109,7 +221,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
 {
   global $mgmt_config, $publ_config;
 
-  if (valid_publicationname ($site) && valid_objectname ($contentfile) && $contentdata != "" && is_array ($text) && (is_array ($type) || $type != "") && (is_array ($art) || $art != "") && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_objectname ($contentfile) && $contentdata != "" && is_array ($text) && (is_array ($type) || $type != "") && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
     $link_db_updated = false;
     
@@ -154,7 +266,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
         // set array if input parameter is string
         if (!empty ($typebuffer)) $type[$id] = $typebuffer;
         if (!empty ($artbuffer)) $art[$id] = $artbuffer;
-        if (!empty ($userbuffer)) $textuser[$id] = $userbuffer;  
+        if (!empty ($userbuffer)) $textuser[$id] = $userbuffer;
         
         // remove freespaces
         $textcontent = trim ($text[$id]);  
@@ -162,13 +274,14 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
         // if microtime is added
         if ($addmicrotime === true) 
         {
-          if (strlen($textcontent) < 2 || strlen($textcontent) > 6800)
-          {
+          // text comment is too short or too long
+          if (strlen ($textcontent) < 2 || strlen ($textcontent) > 6800)
+          {          
             $continued = true;
             continue;
           }
           
-          $elemid = $id.":".microtime(true);
+          $elemid = $id.":".microtime (true);
         } 
         else 
         {
@@ -447,7 +560,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
       {
         $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
        
-        rdbms_setcontent ($container_id, $text, $user);                     
+        rdbms_setcontent ($site, $container_id, $text, $user);                     
       }       
       
       return $contentdatanew;
@@ -470,7 +583,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
 {
   global $mgmt_config;
 
-  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($mediafile) && (is_array ($art) || $art != "") && valid_objectname ($user))
+  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($mediafile) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
     // load xml schema
     $media_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "media.schema.xml.php"));
@@ -633,7 +746,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
           $text_array["media:".$key] = $object_id.$val;
         }
                      
-        rdbms_setcontent ($container_id, $text_array, $user);                     
+        rdbms_setcontent ($site, $container_id, $text_array, $user);                     
       }      
       
       return $contentdatanew;
@@ -652,7 +765,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhr
 {
   global $mgmt_config;
   
-  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($linkhref) && (is_array ($art) || $art != "") && valid_objectname ($user))
+  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($linkhref) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
     // load xml schema
     $link_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "link.schema.xml.php"));
@@ -798,7 +911,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhr
           $text_array["link:".$key] = $object_id.$val;
         }
                 
-        rdbms_setcontent ($container_id, $text_array, $user);                     
+        rdbms_setcontent ($site, $container_id, $text_array, $user);                     
       }  
     
       return $contentdatanew;
@@ -817,7 +930,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
 {
   global $mgmt_config;
   
-  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($component) && (is_array ($art) || $art != "") && valid_objectname ($user))
+  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($component) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
     // load xml schema
     $component_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "component.schema.xml.php"));
@@ -944,7 +1057,7 @@ function sethead ($site, $contentdata, $contentfile, $headcontent, $user, $chars
 {
   global $mgmt_config;
   
-  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($headcontent) && valid_objectname ($user))
+  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($headcontent) && valid_objectname ($user) && is_array ($mgmt_config))
   {
     reset ($headcontent);
   
@@ -992,7 +1105,7 @@ function sethead ($site, $contentdata, $contentfile, $headcontent, $user, $chars
 
         $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
                     
-        rdbms_setcontent ($container_id, $text_array, $user);
+        rdbms_setcontent ($site, $container_id, $text_array, $user);
       }  
     
       return $contentdata;
@@ -1002,7 +1115,7 @@ function sethead ($site, $contentdata, $contentfile, $headcontent, $user, $chars
   else return false; 
 }
 
-// ==================================== SET FILEPOINTER =======================================
+// ===================================== FILEPOINTER =======================================
 
 // ------------------------------------- setfilename ------------------------------------------
 

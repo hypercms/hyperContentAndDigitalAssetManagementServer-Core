@@ -12,7 +12,7 @@
 // include main management configuration
 if (empty ($mgmt_config['abs_path_cms']) && is_file ("../config.inc.php"))
 {
-  require ("../config.inc.php");
+  require_once ("../config.inc.php");
 }
 
 // include Get API
@@ -132,6 +132,12 @@ if (is_file ($mgmt_config['abs_path_cms']."function/hypercms_ui.inc.php"))
 if (is_file ($mgmt_config['abs_path_cms']."report/hypercms_report.inc.php"))
 {
   require_once ($mgmt_config['abs_path_cms']."report/hypercms_report.inc.php");
+}
+
+// include Im/Export API (not included in Free Edition)
+if (is_file ($mgmt_config['abs_path_cms']."connector/imexport/hypercms_imexport.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."connector/imexport/hypercms_imexport.inc.php");
 }
 
 // include update API

@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['ru'] = "Файлы должны быт
 $hcms_lang['move-media-files-to-export-directory']['ru'] = "Переместите файлы мультимедиа для экспорта каталога (все данные будут храниться в системе)";
 $hcms_lang['export-to-directory']['ru'] = "Экспорт в каталоге";
 $hcms_lang['import-from-directory']['ru'] = "Импорт из каталога";
+$hcms_lang['taxonomy']['ru'] = "Таксономия";
+$hcms_lang['enable-taxonomy-browsing-and-search']['ru'] = "Включить таксономии просмотр и поиск";
 ?>

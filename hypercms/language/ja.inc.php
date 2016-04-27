@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['ja'] = "ファイルを配置する必
 $hcms_lang['move-media-files-to-export-directory']['ja'] = "メディアファイルのディレクトリ ( すべてのデータがシステムに保持されをエクスポートするに移動します ) 。";
 $hcms_lang['export-to-directory']['ja'] = "ディレクトリをエクスポート";
 $hcms_lang['import-from-directory']['ja'] = "ディレクトリからインポート";
+$hcms_lang['taxonomy']['ja'] = "分類";
+$hcms_lang['enable-taxonomy-browsing-and-search']['ja'] = "分類の参照と検索を有効にする";
 ?>

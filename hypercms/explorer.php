@@ -24,6 +24,7 @@ if (file_exists ($mgmt_config['abs_path_data']."config/plugin.conf.php"))
 }
 else $mgmt_plugin = array();
 
+// input parameters
 $location = getrequest_esc ("location", "locationname", false);
 $rnr = getrequest_esc ("rnr", "locationname", false);
 
@@ -127,7 +128,7 @@ class hcms_menupoint
   }
   
   // set the data for the AJAX request
-  public function setAjaxData ($location, $rnr = '')
+  public function setAjaxData ($location, $rnr="")
   {
     // Add / at the end if not present
     if (substr ($location, strlen ($location)-1) != "/") $location .= "/";    
@@ -155,11 +156,11 @@ class hcms_menupoint
     $html[] = $lipart;
     
     // eventually the AJAX data
-    if(!empty ($this->ajax_location)) 
+    if (!empty ($this->ajax_location)) 
     {
       $html[] = '<span id="ajax_location_'.$this->id.'" style="display:none;">'.url_encode($this->ajax_location).'</span>';
       
-      if(!empty ($this->ajax_rnr))
+      if (!empty ($this->ajax_rnr))
       {
         $html[] = '<span id="ajax_rnr_'.$this->id.'" style="display:none;">'.url_encode($this->ajax_rnr).'</span>';
       }
@@ -409,6 +410,56 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
     }
   }
   else return false;
+}
+
+// function that reads the metadata schema and returns an array containing a hcms_menupoint for each of those
+function generateTaxonomyTree ($site, $tax_id, $runningNumber=1) 
+{
+  global $mgmt_config, $lang;
+
+  if (valid_publicationname ($site))
+  {
+    $id = "";
+    $rnrid = "";
+    $result = array();
+    
+    // get taxonomy keyword list
+    $tax_array = gettaxonomy_sublevel ($site, $lang, $tax_id);
+
+    // if we have access
+    if (is_array ($tax_array) && sizeof ($tax_array) > 0)
+    {
+      $index = 0;
+      $i = 1;
+      
+      foreach ($tax_array as $tax_id=>$tax_keyword)
+      {
+        $index++;
+        $id = 'tax_'.$site.'_';
+        
+        // generating the id from the running number so we don't have any ID problems
+        if (!empty ($runningNumber))
+        {
+          $id .= $runningNumber.'_';
+          $rnrid = $runningNumber.'_';
+        }
+        
+        $id .= $i;
+        $rnrid .= $i++;
+
+        // generating the menupoint object with the needed configuration
+        $point = new hcms_menupoint($tax_keyword, 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode("%taxonomy%/".$site."/all/".$tax_id."/0"), "folder_taxonomy.gif", $id);
+        $point->setOnClick('hcms_jstree_open("'.$id.'");');
+        $point->setTarget('workplFrame');
+        $point->setNodeCSSClass('jstree-closed jstree-reload');
+        $point->setAjaxData('%taxonomy%/'.$site.'/'.$lang.'/'.$tax_id.'/0', $rnrid);
+        $result[] = $point;
+      }
+    }
+    
+    return $result;
+  }
+  else return false;
 } 
 
 // Generates a list of menupoints based on the points array from the plugins Array
@@ -468,7 +519,17 @@ function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false,$site=
 // if requested via AJAX only generate the navigation tree to be included
 if (valid_locationname ($location))
 {
-  $tree = generateExplorerTree ($location, $user, $rnr);
+  // folder location
+  if (substr_count ($location, "%comp%/") > 0 || substr_count ($location, "%page%/") > 0)
+  {
+    $tree = generateExplorerTree ($location, $user, $rnr);
+  }
+  // taxonomy location
+  elseif (substr_count ($location, "%taxonomy%/") > 0)
+  {
+    list ($domain, $site, $lang, $tax_id, $levels) = explode ("/", $location);
+    $tree = generateTaxonomyTree ($site, $tax_id, $rnr);
+  }
 
   if (is_array ($tree)) 
   {
@@ -478,7 +539,7 @@ if (valid_locationname ($location))
       echo $point->generateHTML();
     }
   }
-} 
+}
 else 
 {
   $tree = "";
@@ -893,10 +954,19 @@ else
               foreach ($pluginmenu as $point) $publication->addSubPoint ($point);
             }
           }
-          
         }
         
-        // --------------------------------------------- component --------------------------------------------------
+        // ----------------------------------------- taxonomy ----------------------------------------------
+        if (!empty ($mgmt_config[$site]['taxonomy']) && (checkglobalpermission ($site, 'component') || checkglobalpermission ($site, 'page')))
+        {
+          $point = new hcms_menupoint($hcms_lang['taxonomy'][$lang], '#tax_'.$site, 'folder_taxonomy.gif', 'tax_'.$site);
+          $point->setOnClick('hcms_jstree_open("tax_'.$site.'", event);');
+          $point->setNodeCSSClass('jstree-closed jstree-reload');
+          $point->setAjaxData('%taxonomy%/'.$site.'/'.$lang.'/0/0');
+          $publication->addSubPoint($point);
+        }
+        
+        // ----------------------------------------- component ---------------------------------------------
         // category of content: cat=comp
         if (checkglobalpermission ($site, 'component') && (!isset ($hcms_linking['cat']) || $hcms_linking['cat'] == "comp"))
         {
@@ -931,9 +1001,9 @@ else
           $publication->addSubPoint($point);
         }
         
-        // ----------------------------------------------- page ----------------------------------------------------
+        // ----------------------------------------- page ----------------------------------------------
         // category of content: cat=page
-        if (checkglobalpermission ($site, 'page') && $mgmt_config[$site]['abs_path_page'] != "" && $mgmt_config[$site]['dam'] == false && (!isset ($hcms_linking['cat']) || $hcms_linking['cat'] == "page"))
+        if (checkglobalpermission ($site, 'page') && !empty ($mgmt_config[$site]['abs_path_page']) && empty ($mgmt_config[$site]['dam']) && (!isset ($hcms_linking['cat']) || $hcms_linking['cat'] == "page"))
         {
           // since version 5.6.3 the root folders also need to have containers
           // update page root
@@ -1070,7 +1140,7 @@ else
     // just open a single node
     function hcms_jstree_open(nodeName) 
     {
-      // We need to reload here because the content could have changed
+      // no need to reload here because the content could have been changed
       reloadNode("#"+nodeName);
       $("#menu").jstree("open_node","#"+nodeName);
       changeSelection($("#"+nodeName).children('a'));
@@ -1117,8 +1187,8 @@ else
     
     function loadForm ()
     {
-      selectbox = document.forms['searchform_advanced'].elements['template'];
-      template = selectbox.options[selectbox.selectedIndex].value;
+      var selectbox = document.forms['searchform_advanced'].elements['template'];
+      var template = selectbox.options[selectbox.selectedIndex].value;
       
       if (template != "")
       {
@@ -1240,6 +1310,29 @@ else
           parent.frames['workplFrame'].location = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_objectlist.php';
         }
         
+        // delete search_dir
+        if (document.getElementById('search_expression').disabled == false)
+        {
+          form.elements['search_dir'].value = "";
+        }
+        // set search dir
+        else
+        {
+          var selectbox = form.elements['template'];
+          var template = form.elements['template'].options[selectbox.selectedIndex].value;
+          
+          if (template != "")
+          {
+            var parts = template.split("/");
+            var domain = "%comp%";
+            
+            if (template.indexOf(".page.tpl") > 0) domain = "%page%";
+            
+            if (parts[0] != "") form.elements['search_dir'].value = domain + "/" + parts[0] + "/";
+          }
+        }
+        
+        
         // check if all file-types have been checked
         var filetypeLayer = document.getElementById('filetypeLayer');
         
@@ -1348,26 +1441,7 @@ else
     
       // search history
       <?php
-      $keywords = array();
-      
-      if (is_file ($mgmt_config['abs_path_data']."log/search.log"))
-      {
-        // load search log
-        $data = file ($mgmt_config['abs_path_data']."log/search.log");
-      
-        if (is_array ($data))
-        {
-          foreach ($data as $record)
-          {
-            list ($date, $user, $keyword_add) = explode ("|", $record);
-      
-            $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
-          }
-          
-          // only unique expressions
-          $keywords = array_unique ($keywords);
-        }
-      }
+      $keywords = getsearchhistory ();
       ?>
       var available_expressions = [<?php echo implode (",\n", $keywords); ?>];
     
@@ -1455,6 +1529,21 @@ else
         <div id="fulltextLayer"> 
           <label for="search_expression"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?></label><br />
           <input type="text" id="search_expression" name="search_expression" style="width:220px;" maxlength="200" /><br />
+          <label for="publication"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></label><br />
+          <select id="publication" name="site" style="width:220px;">
+            <option value=""><?php echo getescapedtext ($hcms_lang['select-all'][$lang]); ?></option>
+          <?php
+          if (!empty ($siteaccess) && is_array ($siteaccess))
+          {
+            $template_array = array();
+            
+            foreach ($siteaccess as $site)
+            {
+              if (!empty ($site)) echo "<option value=\"".$site."\">".$site."</option>\n";
+            }
+          }
+          ?>
+          </select><br />
           <label><input type="checkbox" name="search_cat" value="file" /><?php echo getescapedtext ($hcms_lang['only-object-names'][$lang]); ?></label><br />
         </div>
         <hr />
@@ -1474,6 +1563,8 @@ else
             
             foreach ($siteaccess as $site)
             {
+              $site_array = array();
+              
               // load publication inheritance setting
               if (!empty ($mgmt_config[$site]['inherit_tpl']))
               {
@@ -1519,10 +1610,6 @@ else
  
                 if (!empty ($tpl_name)) echo "<option value=\"".$value."\">".$tpl_name."</option>\n";
               }
-            }
-            else 
-            {
-              echo "<option value=\"\">&nbsp;</option>\n";
             }
           }
           ?>

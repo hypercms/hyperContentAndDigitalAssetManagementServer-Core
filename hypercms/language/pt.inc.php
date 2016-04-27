@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['pt'] = "Arquivos precisam ser colocado
 $hcms_lang['move-media-files-to-export-directory']['pt'] = "Mover arquivos de mídia para o diretório de exportação (todos os dados serão mantidos no sistema)";
 $hcms_lang['export-to-directory']['pt'] = "Exportar para o diretório";
 $hcms_lang['import-from-directory']['pt'] = "Importar a partir do diretório";
+$hcms_lang['taxonomy']['pt'] = "Taxonomia";
+$hcms_lang['enable-taxonomy-browsing-and-search']['pt'] = "Ativar a navegação e pesquisa de taxonomia";
 ?>

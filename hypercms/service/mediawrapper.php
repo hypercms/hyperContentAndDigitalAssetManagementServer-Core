@@ -224,11 +224,8 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
         $media_info_new = getfileinfo ($site, getobject ($media), "comp");
         
         // define new name
-        if ($name != "")
-        {
-          $name_info = getfileinfo ($site, getobject ($name), "comp");
-          $name = $name_info['filename'].$media_info_new['ext'];
-        }
+        $name_info = getfileinfo ($site, getobject ($name), "comp");
+        $name = $name_info['filename'].$media_info_new['ext'];
         
         $media_root = $media_target;
       }
@@ -257,13 +254,13 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
         $name = $media_info['name'];
         
         // replace file extension if file was converted
-        if (isset ($media_info_new['ext']) && $media_info_new['ext'] != "")
+        if (!empty ($media_info_new['ext']))
         {
           $name_info = getfileinfo ($site, getobject ($name), "comp");
           $name = $name_info['filename'].$media_info_new['ext'];
         }
       }
-      
+
       // stream file content
       downloadfile ($media_root.$media, $name, "wrapper", $user);
     }

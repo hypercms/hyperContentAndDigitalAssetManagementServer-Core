@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['no'] = "Filer må være plassert i";
 $hcms_lang['move-media-files-to-export-directory']['no'] = "Flytte mediefiler til eksport-katalogen (alle data beholdes i systemet)";
 $hcms_lang['export-to-directory']['no'] = "Eksport til katalog";
 $hcms_lang['import-from-directory']['no'] = "Importere fra katalog";
+$hcms_lang['taxonomy']['no'] = "Taksonomi";
+$hcms_lang['enable-taxonomy-browsing-and-search']['no'] = "Aktiverer taksonomi surfing og søk";
 ?>

@@ -75,39 +75,6 @@ function showkeywordlist ($keywords, $cat="", $sort_type="value", $css="hcmsButt
   else return false;
 }
 
-// function to transform keyword 
-function transformkeyword ($keyword)
-{
-  if (trim ($keyword) != "")
-  {
-    $search = array ("\"");
-    $replace = array ("\\\"");
-    
-    return $keyword = str_replace ($search, $replace, trim ($keyword));
-  }
-  else return "";
-}
-
-// split keyword string into array
-function splitkeywords ($string)
-{
-  if ($string != "")
-  {
-    $string = str_replace ("\n", "", $string);
-    $result_array = array();
-    $array1 = explode (",", $string);
-        
-    foreach ($array1 as $entry1)
-    {
-      if (strlen ($entry1) <= 255) $result_array[] = trim ($entry1);
-    }
-    
-    if (is_array ($result_array)) return $result_array;
-    else return false;
-  }
-  else return false;
-}
-
 // set default values
 $show = "";
 $show_comp_rank = "";
@@ -117,90 +84,39 @@ $show_page_sort = "";
 
 // get keywords from database
 if ($action == "regenerate" && checktoken ($token, $user) && valid_objectname ($text_id) && valid_publicationname ($site))
-{  
-  // connect to MySQL
-  $mysqli = new mysqli ($mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname']);      
-  if ($mysqli->connect_errno) $show .= "DB error (".$mysqli->connect_errno."): ".$mysqli->connect_error."<br/>\n";
+{
+  $store = "";
   
-  if ($show == "")
+  // component keywords
+  $keywords = rdbms_getkeywords ("%comp%/".$site."/", $text_id);
+  
+  if (is_array ($keywords) && sizeof ($keywords) > 0)
   {
-    $site = $mysqli->escape_string($site);
-    $text_id = $mysqli->escape_string($text_id);
+    $i = 0;
     
-    $store = "";
-    
-    // Select keywords from Assets
-    $sql = "SELECT textnodes.textcontent FROM textnodes, object WHERE textnodes.text_id='".$text_id."' AND textnodes.textcontent!='' AND textnodes.id=object.id AND object.objectpath LIKE '*comp*/".$site."/%'";
-  
-    if ($result = $mysqli->query ($sql))
+    foreach ($keywords as $keyword=>$count)
     {
-      $keywords = array();
-  
-      while ($row = $result->fetch_assoc())
-      {
-        $keywords_add = splitkeywords ($row['textcontent']);
-
-        $keywords = array_merge ($keywords, $keywords_add);
-      }
-      
-      if (sizeof ($keywords) > 0)
-      {
-        // list of mostly used keywords
-        $keywords_tmp = array_count_values ($keywords);
-
-        $i = 0;
-        
-        foreach ($keywords_tmp as $keyword=>$count)
-        {
-          if (is_string ($keyword) && strlen ($keyword) > 1)
-          {
-            $store .= "\$keywords_comp['".$count."-".$i."'] = \"".transformkeyword ($keyword)."\";\n";
-            $i++;
-          }
-        }
-      }
-    } 
-    else $show .= "DB error (".$mysqli->errno."): ".$mysqli->error."<br/>\n";
-    
-    // Select keywords from Pages
-    $sql = "SELECT textnodes.textcontent FROM textnodes, object WHERE textnodes.text_id='".$text_id."' AND textnodes.textcontent!='' AND textnodes.id=object.id AND object.objectpath LIKE '*page*/".$site."/%'";
-  
-    if ($result = $mysqli->query ($sql))
-    {
-      $keywords = array();
-      
-      while ($row = $result->fetch_assoc())
-      {
-        $keywords_add = splitkeywords ($row['textcontent']);
-
-        $keywords = array_merge ($keywords, $keywords_add);
-      }
-      
-      if (sizeof ($keywords) > 0)
-      {
-        // list of mostly used keywords
-        $keywords_tmp = array_count_values ($keywords);
-
-        $i = 0;
-        
-        foreach ($keywords_tmp as $keyword=>$count)
-        {
-          if (is_string ($keyword) && strlen ($keyword) > 1)
-          {
-            $store .= "\$keywords_page['".$count."-".$i."'] = \"".transformkeyword ($keyword)."\";\n";
-            $i++;
-          }
-        }
-      }
+      $store .= "\$keywords_comp['".$count."-".$i."'] = \"".$keyword."\";\n";
+      $i++;
     }
-    else $show .= "DB error (".$mysqli->errno."): ".$mysqli->error."<br/>\n";
-    
-    // save keywords
-    if ($store != "") savefile (getlocation ($keywordfile), getobject ($keywordfile), "<?php\n".$store."?>\n");
-
-    $result->close();
-    $mysqli->close();
   }
+
+  // component keywords
+  $keywords = rdbms_getkeywords ("%page%/".$site."/", $text_id);
+
+  if (is_array ($keywords) && sizeof ($keywords) > 0)
+  {
+    $i = 0;
+    
+    foreach ($keywords as $keyword=>$count)
+    {
+      $store .= "\$keywords_page['".$count."-".$i."'] = \"".$keyword."\";\n";
+      $i++;
+    }
+  }
+    
+  // save keywords
+  if ($store != "") savefile (getlocation ($keywordfile), getobject ($keywordfile), "<?php\n".$store."?>\n");
 }
 
 // days to seconds

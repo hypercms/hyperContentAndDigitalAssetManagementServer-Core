@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['ur'] = "فائلیں ضائع کردی
 $hcms_lang['move-media-files-to-export-directory']['ur'] = "اقدام میڈیا کی فائلیں تمام ایکسپورٹ ڈائریکٹری (کوائف) کے نظام میں رکھا جائے گا.";
 $hcms_lang['export-to-directory']['ur'] = "ڈائرکٹری برامد کریں";
 $hcms_lang['import-from-directory']['ur'] = "ڈائرکٹری سے درامد کریں";
+$hcms_lang['taxonomy']['ur'] = "اصول صنف بندی";
+$hcms_lang['enable-taxonomy-browsing-and-search']['ur'] = "اصول صنف بندی کی براؤز کاری اہل بنائیں اور تلاش";
 ?>

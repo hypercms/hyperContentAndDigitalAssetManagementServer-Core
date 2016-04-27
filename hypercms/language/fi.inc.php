@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['fi'] = "Tiedostot on siirretty";
 $hcms_lang['move-media-files-to-export-directory']['fi'] = "Siirrä mediatiedostoja voi viedä hakemistoon (kaikki tiedot säilytetään järjestelmässä)";
 $hcms_lang['export-to-directory']['fi'] = "Vie hakemisto";
 $hcms_lang['import-from-directory']['fi'] = "Tuo hakemisto";
+$hcms_lang['taxonomy']['fi'] = "Luokittelu";
+$hcms_lang['enable-taxonomy-browsing-and-search']['fi'] = "Jotta taksonomiaa selailu ja haku";
 ?>

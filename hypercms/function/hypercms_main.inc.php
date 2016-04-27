@@ -43,10 +43,39 @@ function correctnumber ($number)
 
 // ========================================== SPECIALCHARACTERS =======================================
 
+// ------------------------------------- cleancontent ------------------------------------------
+
+// function: cleancontent ()
+// input: expression (mixed), character set (optional)
+// output: converted expression / false on error
+
+function cleancontent ($text, $charset="UTF-8")
+{
+  global $mgmt_config;
+  
+  if ($text != "" && $charset != "")
+  {
+    // remove tags
+    $text = strip_tags ($text);
+    
+    // decode characters
+    $text = html_decode ($text, $charset);
+
+    // replace characters
+    $text = str_replace (array(".....", "....", "...", ".."), ".", $text);
+    $text = str_replace (array("_____", "____", "___", "__"), "_", $text);
+    $text = str_replace (array("\"", "'", "(", ")", "{", "}", "[", "]", ".", ",", ";", "_", "\t", "\r\n", "\r", "\n"), " ", $text);
+    $text = preg_replace ('/\s+/', " ", $text);
+
+    return $text;
+  }
+  else return false;
+}
+
 // ------------------------------------- convertchars ------------------------------------------
 
 // function: convertchars ()
-// input: expression (mixed), input character set, output character set
+// input: expression as string or array, input character set (optional), output character set (optional)
 // output: converted expression / false on error
 
 function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
@@ -868,7 +897,11 @@ function convertpath ($site, $path, $cat)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
-  if (valid_publicationname ($site) && $path != "" && is_array ($mgmt_config))
+  if (@substr_count ($path, "%page%") > 0 || @substr_count ($path, "%comp%") > 0)
+  {
+    return $path;
+  }
+  elseif (valid_publicationname ($site) && $path != "" && is_array ($mgmt_config))
   {  
     if (@substr_count ($path, "%page%") == 0 && @substr_count ($path, "%comp%") == 0)
     {
@@ -3166,7 +3199,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
 
 // -------------------------------------- downloadfile -------------------------------------------
 // function: downloadfile()
-// input: path to file [string], file name to show for download via http, force file wrapper, download or no file headers for WebDAV [download,wrapper,noheader], user name (optional)
+// input: path to file [string], file name to show for download via http, force file wrapper or download or no file headers for WebDAV [download,wrapper,noheader], user name (optional)
 // output: stream of file content / false on error
 
 // description:
@@ -3280,11 +3313,12 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       elseif ($force == "wrapper")
       {
         // content-type
+        header ("Content-Disposition: inline; filename=\"".$name."\"");
         header ("Content-Type: ".getmimetype ($filepath));
         header ("Cache-Control: max-age=2592000, public");
         header ("Expires: ".gmdate ('D, d M Y H:i:s', time() + 2592000) . ' GMT');
       }
-        
+      
       header ("Last-Modified: ".gmdate ('D, d M Y H:i:s', @filemtime ($filepath)) . ' GMT' );
       header ("Accept-Ranges: 0-".$end);
       
@@ -3525,8 +3559,8 @@ function loadcontainer ($container, $type="work", $user)
 
 // ----------------------------------------- savecontainer ---------------------------------------------
 // function: savecontainer()
-// input: container file name or container id (working container will be loaded by default), optional container type [published, work], container content, user, 
-//        save container initally [true/false] (optional)
+// input: container file name or container id (working container will be loaded by default), optional container type [published,work,version], container content, user, 
+//        save container initally [true,false] (optional)
 // output: true / false on error
 // requires: config.inc.php to be loaded before
 
@@ -3537,7 +3571,7 @@ function savecontainer ($container, $type="work", $data, $user, $init=false)
 {
   global $mgmt_config, $hcms_lang, $lang;
 
-  if (valid_objectname ($container) && $data != "" && ($type == "work" || $type == "published") && valid_objectname ($user))
+  if (valid_objectname ($container) && $data != "" && ($type == "work" || $type == "published" || $type == "version") && valid_objectname ($user))
   {
     // use temporary cache to reduce I/O if save is disabled
     if (getsession ("hcms_temp_save", "yes") == "no") 
@@ -3553,19 +3587,16 @@ function savecontainer ($container, $type="work", $data, $user, $init=false)
       $container_id = substr ($container, 0, strpos ($container, ".xml"));
     }
     // if container id (working container will be saved)
-    else $container_id = $container;
-    
-    if ($container_id != "")
+    elseif (intval ($container) > 0)
     {
-      if (strpos ($container, ".xml.wrk") > 0)
-      {
-        if ($type == "published") $container = $container_id.".xml";
-      }    
-      else
-      {
-        if ($type == "published") $container = $container_id.".xml";
-        else $container = $container_id.".xml.wrk";
-      }
+      $container_id = $container;
+    }
+    
+    if (!empty ($container_id))
+    {
+      if ($type == "published") $container = $container_id.".xml";
+      elseif ($type == "work") $container = $container_id.".xml.wrk";
+      elseif ($type == "version") $container = $container;
       
       $location = getcontentlocation ($container_id, 'abs_path_content');
       
@@ -5438,6 +5469,9 @@ function editpublication ($site_name, $setting, $user="sys")
     if (array_key_exists ('dam', $setting) && $setting['dam'] == true) $dam_new = "true";
     else $dam_new = "false";
     
+    if (array_key_exists ('taxonomy', $setting) && $setting['taxonomy'] == true) $taxonomy_new = "true";
+    else $taxonomy_new = "false";
+  
     if (array_key_exists ('upload_userinput', $setting) && $setting['upload_userinput'] == true) $upload_userinput = "true";
     else $upload_userinput = "false";
     
@@ -5605,6 +5639,10 @@ function editpublication ($site_name, $setting, $user="sys")
 // Use only as DAM
 // enable (false) or disable (true) restricted system usage as DAM
 \$mgmt_config['".$site_name."']['dam'] = ".$dam_new.";
+
+// Use taxonomy
+// enable (false) or disable (true) taxonomy browsing and search integration
+\$mgmt_config['".$site_name."']['taxonomy'] = ".$taxonomy_new.";
 
 // User must provide metadata for file uploads
 // enable (true) or disable (false) user input for metadata right after file upload
@@ -10443,7 +10481,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
               $imageheight = 0;
             }
 
-            // get new rendering settings and set image options (if given)
+            // get new rendering settings and set image options (if provided)
             if ($imagewidth > 0 && $imageheight > 0 && !empty ($imageformat))
             {
               $formats = "";
@@ -10475,14 +10513,16 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
             // remote client for uploaded original image
             remoteclient ("save", "abs_path_media", $site, $media_root, "", $media_update, "");
 
-            // remove indexed content if file extension has changed
+            // remove indexed content
             if ($file_ext_old != $file_ext_new)
             {
+              // use file name before renaming to remove textnodes from DB
               unindexcontent ($site, $media_root, $media_orig, $contentfile, "", $user);
             }
-            
+            else unindexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
+
             // index content of readable documents
-            indexcontent ($site, $media_root.$site, $media_update, $contentfile, "", $user);
+            indexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
           }
 
           // rename objects file extension, if file extension has changed
@@ -11013,7 +11053,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
       $page = correctfile ($location, $page, $user);
 
       // redefine location and object if page is a directory 
-      if ($page != "" && is_dir ($location.$page) && is_file ($location.$page."/.folder"))
+      if ($page != "" && $page != ".folder" && is_dir ($location.$page) && is_file ($location.$page."/.folder"))
       {
         $page = ".folder";
         $location = $location.$page."/";
@@ -11068,7 +11108,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           $page = correctfile ($location_source, $page, $user);
           
           // redefine location and object if page is a directory 
-          if ($page != "" && is_dir ($location_source.$page) && is_file ($location_source.$page."/.folder"))
+          if ($page != "" && $page != ".folder" && is_dir ($location_source.$page) && is_file ($location_source.$page."/.folder"))
           {
             $page = ".folder";
             $location_source = $location_source.$page."/";
@@ -12312,7 +12352,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
               if ($mgmt_config['db_connect_rdbms'] != "")
               {
                 rdbms_createobject ($contentfile_new_id, convertpath ($site, $location.$page_sec, $cat), $templatefile_self, $contentfile_new, $user);
-                if (isset ($text_array) && is_array ($text_array) && sizeof ($text_array) > 0) rdbms_setcontent ($contentfile_new_id, $text_array, $user);
+                if (isset ($text_array) && is_array ($text_array) && sizeof ($text_array) > 0) rdbms_setcontent ($site, $contentfile_new_id, $text_array, $user);
               }           
             }                
             
@@ -15672,16 +15712,17 @@ function notifyusers ($site, $location, $object, $event, $user_from)
   else return false;
 }
 
-// --------------------------------------- licensenotification -------------------------------------------
-// function: licensenotification()
+// --------------------------------------- sendlicensenotification -------------------------------------------
+// function: sendlicensenotification()
 // input: publication name, category [page,comp], folder path, text ID for text field, search from date (YYYY-MM-DD), search till date (YYYY-MM-DD), user name string or array (optional), 
 //        date format (optional), 
 // output: true / false on error
 
 // description:
-// Searches for objects with a date in a given text field that has to be between the given dates and sends a message to the given user
+// Searches for objects with a date in a defined text field that has to be between the defined date limits and sends a message to the defined users.
+// This is a helper function for function licensenotification.
 
-function licensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $date_end, $user, $format="%Y-%m-%d")
+function sendlicensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $date_end, $user, $format="%Y-%m-%d")
 {
   global $eventsystem, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
   
@@ -15801,6 +15842,115 @@ function licensenotification ($site, $cat, $folderpath, $text_id, $date_begin, $
     else return false;    
   }
   else return false;
+}
+
+// --------------------------------------- licensenotification -------------------------------------------
+// function: licensenotification()
+// input: % 
+// output: true / false on error
+
+// description:
+// This function reads the license notification configuration and looks up all objects with a date in a defined text field 
+// that has to be between the defined date limits and sends a message to the defined users.
+
+function licensenotification ()
+{
+  global $eventsystem, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
+  
+  // license notification configuration file
+  $config_dir = opendir ($mgmt_config['abs_path_data']."config/");
+      
+  if ($config_dir)
+  {
+    while ($file = @readdir ($config_dir))
+    {
+      if (strpos ($file, ".msg.dat") > 0 && is_file ($mgmt_config['abs_path_data']."config/".$file))
+      {
+        // load config file
+        $config_array = file ($mgmt_config['abs_path_data']."config/".$file);
+        
+        if (is_array ($config_array) && sizeof ($config_array) > 0)
+        {
+          sort ($config_array);
+        
+          foreach ($config_array as $config_folder)
+          {
+            $date_begin = "";
+            $date_end = "";
+          
+            list ($object_id, $text_id, $format, $period, $users) = explode ("|", $config_folder);
+             
+            $location = rdbms_getobject ($object_id);
+
+            // define format string (international date format that is used for queries in the database)
+            $format_db = "Y-m-d";
+
+            if ($location != "" && $text_id != "" && $period != "" && $users != "")
+            {
+              // for each first day of the month
+              if ($period == "monthly" && date ("d", time()) == "01") 
+              {
+                // current month plus 1 month
+                $month = intval (date ("m", time())) + 1;
+                // current year
+                $year = intval (date ("Y", time()));
+                // correct month and year
+                if ($month == 13)
+                {
+                  $month = 1;
+                  $year = $year + 1;
+                }      
+                // 1st day of month
+                $date_begin = date ($format_db, mktime (0, 0, 0, $month, 1, $year));
+                // one month later
+                $date_end = date ($format_db, mktime (0, 0, 0, ($month + 1), 0, $year));
+              }
+              // for each sunday
+              elseif ($period == "weekly" && strtolower (date ("D", time())) == "sun") 
+              {
+                // one week later
+                $date_begin = date ($format_db, time() + (60*60*24*7));
+                // two weeks later
+                $date_end = date ($format_db, time() + (60*60*24*14));
+              }
+              // for each day
+              elseif ($period == "daily") 
+              {
+                // tomorrow
+                $date_end = $date_begin = date ($format_db, time() + (60*60*24));
+              }
+              
+              // split users into array
+              $user_array = splitstring ($users);
+            
+              // send notifications tu users
+              if ($date_begin != "" && $date_end != "")
+              {
+                // .folder object must be removed!
+                $site = getpublication ($location);
+                $cat = getcategory ($site, $location);
+                $location = getlocation ($location);
+
+                sendlicensenotification ($site, $cat, $location, $text_id, $date_begin, $date_end, $user_array, $format);
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    return true;
+  }
+  else
+  {
+    $errcode = "10742";
+    $error[] = $mgmt_config['today']."|daily.php|error|$errcode|license notification can not be executed. Config directory is missing.";
+    
+    // save log
+    savelog (@$error); 
+    
+    return false;
+  }
 }
 
 // ====================================== TEXT DIFF =========================================

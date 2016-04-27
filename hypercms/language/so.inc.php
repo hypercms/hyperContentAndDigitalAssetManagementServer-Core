@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['so'] = "Dhamaan faylasha loo baahan ya
 $hcms_lang['move-media-files-to-export-directory']['so'] = "Saxaafadda guuro faylasha In Laga Dhoofiyo Dekaddii Agaasinka (dhammaan macluumaadka hayey doonaa nidaamka)";
 $hcms_lang['export-to-directory']['so'] = "Dhoofka u agaasinka";
 $hcms_lang['import-from-directory']['so'] = "Alaabtan soo gelinteedu agaasinka ka";
+$hcms_lang['taxonomy']['so'] = "Taxonomy";
+$hcms_lang['enable-taxonomy-browsing-and-search']['so'] = "Gaarsiiso taxonomy iska fiirfiirinayaa iyo raadinta";
 ?>

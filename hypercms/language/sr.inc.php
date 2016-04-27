@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['sr'] = "Datoteka treba da bude u";
 $hcms_lang['move-media-files-to-export-directory']['sr'] = "Taj potez medija fajlova za izvoz direktorijum (svi podaci će biti zadržan u sistemu)";
 $hcms_lang['export-to-directory']['sr'] = "Izvoz u direktorijum";
 $hcms_lang['import-from-directory']['sr'] = "Uvoz iz Direktorijum";
+$hcms_lang['taxonomy']['sr'] = "Taxonomy";
+$hcms_lang['enable-taxonomy-browsing-and-search']['sr'] = "Omogućiti pretraživanje taxonomy i rezultati";
 ?>

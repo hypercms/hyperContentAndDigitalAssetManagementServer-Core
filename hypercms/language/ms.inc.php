@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['ms'] = "Fail perlu ditempatkan dalam";
 $hcms_lang['move-media-files-to-export-directory']['ms'] = "Pindah fail media untuk eksport direktori (Semua data akan disimpan dalam sistem)";
 $hcms_lang['export-to-directory']['ms'] = "Eksport ke direktori";
 $hcms_lang['import-from-directory']['ms'] = "Import dari direktori";
+$hcms_lang['taxonomy']['ms'] = "Taxonomy";
+$hcms_lang['enable-taxonomy-browsing-and-search']['ms'] = "Aktifkan taxonomy pelayaran dan carian";
 ?>

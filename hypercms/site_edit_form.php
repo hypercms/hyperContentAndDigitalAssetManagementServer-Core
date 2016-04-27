@@ -76,9 +76,10 @@ function switchDAM ()
     document.getElementById('abs_publ_app').disabled = true;
     document.getElementById('linkengine').disabled = true;
     document.getElementById('crypt_content').disabled = false;
-    document.getElementById('storage_type1').disabled = false;
-    document.getElementById('storage_type2').disabled = false;
-    document.getElementById('storage_type3').disabled = false;
+    document.getElementById('upload_pages').disabled = true;
+    if (document.getElementById('storage_type1')) document.getElementById('storage_type1').disabled = false;
+    if (document.getElementById('storage_type2')) document.getElementById('storage_type2').disabled = false;
+    if (document.getElementById('storage_type3')) document.getElementById('storage_type3').disabled = false;
   }
   else
   {
@@ -89,9 +90,10 @@ function switchDAM ()
     document.getElementById('abs_publ_app').disabled = false;
     document.getElementById('linkengine').disabled = false;
     document.getElementById('crypt_content').disabled = true;
-    document.getElementById('storage_type1').disabled = true;
-    document.getElementById('storage_type2').disabled = true;
-    document.getElementById('storage_type3').disabled = true;
+    document.getElementById('upload_pages').disabled = false;
+    if (document.getElementById('storage_type1')) document.getElementById('storage_type1').disabled = true;
+    if (document.getElementById('storage_type2')) document.getElementById('storage_type2').disabled = true;
+    if (document.getElementById('storage_type3')) document.getElementById('storage_type3').disabled = true;
   }
 }
 -->
@@ -229,13 +231,17 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td nowrap="nowrap"> <input type="checkbox" id="dam" name="setting[dam]" onclick="switchDAM();" value="true" <?php if ($mgmt_config[$site_name]['dam'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr align="left" valign="top"> 
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['enable-taxonomy-browsing-and-search'][$lang]); ?>: </td>
+      <td nowrap="nowrap"> <input type="checkbox" name="setting[taxonomy]" value="true" <?php if (@$mgmt_config[$site_name]['taxonomy'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+    </tr>
+    <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['user-must-provide-metadata-for-file-uploads'][$lang]); ?>: </td>
       <td nowrap="nowrap"> <input type="checkbox" name="setting[upload_userinput]" value="true" <?php if (@$mgmt_config[$site_name]['upload_userinput'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <?php if (is_dir ($mgmt_config['abs_path_cms']."connector")) {	?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['enable-direct-file-uploads-in-pages'][$lang]); ?>: </td>
-      <td nowrap="nowrap"> <input type="checkbox" name="setting[upload_pages]" value="true" <?php if (@$mgmt_config[$site_name]['upload_pages'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td nowrap="nowrap"> <input type="checkbox" id="upload_pages" name="setting[upload_pages]" value="true" <?php if (@$mgmt_config[$site_name]['upload_pages'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <?php } ?>
     <tr align="left" valign="top"> 

@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['nl'] = "Bestanden worden geplaatst";
 $hcms_lang['move-media-files-to-export-directory']['nl'] = "Mediabestanden verplaatsen naar exportdirectory (alle gegevens worden bewaard in het systeem)";
 $hcms_lang['export-to-directory']['nl'] = "Uitvoer naar directory";
 $hcms_lang['import-from-directory']['nl'] = "Importeren uit telefoonboek";
+$hcms_lang['taxonomy']['nl'] = "Taxonomie";
+$hcms_lang['enable-taxonomy-browsing-and-search']['nl'] = "Enable taxonomie browsen en zoeken";
 ?>

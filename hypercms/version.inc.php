@@ -1126,7 +1126,7 @@ Release 01/2016
 - Implementation of new UI functions readnavigation, createnavigation and shownavigation (gernerating navigations for websites)
 - hyperCMS UI API will be loaded in hyperCMS API and has been removed from all files
 - Updates in Navigation template of demo website to work with new UI navigation functions
-- Implementation of new input paramater to enable and disable search expression logging for function rdbms_searchcontent
+- Implementation of new input parameter to enable and disable search expression logging for function rdbms_searchcontent
 - Improved error handling in template engine to display errors and render document without errors
 - Implementation of search history log for website search
 - Implementation of adLDAP version 4.0.4 (MS Active Directory support) in the Connector module.
@@ -1136,7 +1136,7 @@ Release 01/2016
 - Implementation of new function create_csv in Main API
 - Implementation of new function analyzeSQLselect in Report API
 - Implementation of report management in connector module of Enterprise Edition. The report management can be used to define and generate reports.
-- Implemetation of new functions createreport, editreport, loadreport, deletereport in Report API of Report module
+- Implementation of new functions createreport, editreport, loadreport, deletereport in Report API of Report module
 - Implementation of getrequest_esc for task name and description in task_list
 - Implementation of exact name for value extraction using explode in function readmediaplayer_config
 - Implementation of new functions showpiechart, showcolumnchart, showtimelinechart, showgeolocationchart in Report module
@@ -1147,8 +1147,8 @@ Release 01/2016
 - Renamed column sender to from_user and user to to_user in table recipient and DB connect
 - Implementation of object_id in table textnodes for object references
 - Implementation of date, media alt-text and link-text in function buildsearchform of template engine
-- Bug fix: removed deprected hidden date field from function buildview in template engine
-- Bug fix: frenach and russian language version or Rich Calendar included wrong characters at the end of the language file
+- Bug fix: Removed deprecated hidden date field from function buildview in template engine
+- Bug fix: French and Russian language version or Rich Calendar included wrong characters at the end of the language file
 - Various improvements in template engine regarding the date picker JS functions
 - Implementation of new function getdirectoryfiles
 - Implementation of home box for all reports
@@ -1157,19 +1157,19 @@ Version 6.0.1
 Release 01/2016
 - Update of old http-equiv meta tags with new charset meta tags
 - Implementation of new charset support in function getcharset
-- Bug fix: function buildview of the template engine included two charset meta tags
+- Bug fix: Function buildview of the template engine included two charset meta tags
 - Improvements in function gethtmltag
 - Improvements in function searchindex (search engine for websites)
 - Changed default zoom parameter for function showgelocationchart from 10 to 4
 - Bug fix: Function showcolumnchart did not verify the 2nd and 3rd y-values if their titles have been defined
-_ Display title on top of table in reports
+- Display title on top of table in reports
 - Bug fix: Function buildview of template engine did use JS function name for show the rich calendar for articles
 - Bug fix: user_sendlink referred to old "taskmgmt" directory
 - Improvements for date picker (rich calender functions) for articel_edit, user_sendlink, opup_publish and function buildview
 - Improvements in rich calendar JS library
 - Implementation of object creation for database in case the object hash could not be retrieved by function getwrapperlink and getdownloadlink
 - Bug fix: Function rdbms_getfilesize did use DISTINCT in count function when counting objects which led to zero as result
-- Bug fix: Funtion rdbms_searchcontent did include the publication twice for the search in objectpath when searching for a location 
+- Bug fix: Function rdbms_searchcontent did include the publication twice for the search in objectpath when searching for a location 
 - Added new column "planned" effort and renamed "duration" to "actual" effort in table "task"
 - Implementation of new field for planned effort into task management
 - Implementation of function update_database_v601 for update to version 6.0.1
@@ -1188,7 +1188,7 @@ _ Display title on top of table in reports
 - Implementation of search feature in explorer
 - Replaced all single dates fields in all search forms with date picker
 - Improved search result sorting in function rdbms_searchcontent by sorting only the object names and not the object path
-- Bug fix: table sorting JS funtion hcms_sortTable die not clean html tags proberly if a line break was used in a tag. JS function hcms_stripHTML removes all line breaks before stripping the tags from the string.
+- Bug fix: Table sorting JS funtion hcms_sortTable die not clean html tags proberly if a line break was used in a tag. JS function hcms_stripHTML removes all line breaks before stripping the tags from the string.
 - New input paramater for CSS-display in function buildsearchform in template engine
 - Bug fix: Function createuser did still check for file system based task list of user
 
@@ -1201,7 +1201,7 @@ Release 01/2016
 - Updates in xmlschema/usergroup for new project management permissions in all default groups
 - Integration of project management in explorer
 - Removed sensor from Google Maps API loader
-- Bug fix: serach_form_rdbms did load default page template without checking if it exists
+- Bug fix: Search_form_rdbms did load default page template without checking if it exists
 - Various improvements in function rdbms_searchcontent in DB Connect
 - Implementation of new help bubble info for workplace controls
 - Added various video file extensions to include/format_ext
@@ -1212,7 +1212,7 @@ Release 01/2016
 - Changed to JS function hcms_showHideLayers in template_help
 - Minor changes in CSS of standard theme
 - Function showinfobox shows infobox as long as user did not close it and remembers the close action in localstorage of browser
-- Bug fix: new infoboxes for workplace controls used onload event to close the infobox, this interferred with the existing onload event of the workplace control
+- Bug fix: New infoboxes for workplace controls used onload event to close the infobox, this interferred with the existing onload event of the workplace control
 - Placed sort of search result in search_objectlist and removed order by from rdbms_searchcontent
 - Bug fix: List value and text has not been supported for textl tag in function buildsearchform in template engine
 - Design changes in popup_status 
@@ -1422,8 +1422,70 @@ _ Implementation of support for synonyms in function rdbms_searchcontent
 - Implementation of support for symbolic links in function deletefile
 - Bug fix: Function deletefile did not write error log
 - Bug fix: Function manipulateobject did not proberly verify the cut & paste of objects into a subfolder of the source location of the objects
+
+Version 6.1.4
+Release 04/2016
+- Improvements in function rdbms_setcontent
+- Improvements in service mediawrapper
+- Bug fix: Function uploadfile used wrong input (media location) for call of function indexcontent
+- Bug fix: Function downloadfile did not set filename in HTML header when "wrapper" has been forced
+- Bug fix: JS Function loadForm did not verify template name in search_form
+- Bug fix: Cloud storage settings have not been verified in site_edit_form
+- Bug fix: Function downloadfile did not set correct http-header for content-disposition
+- Changed preview size of media in side bar
+- Moved stopwords and synonyms to data/include directory (which are not influenced by software updates)
+- Implementation of multilanguage taxaonomies (defintion in text files)
+- Implementation of taxonomy tree in explorer
+- Improvements in keyword plugin in order to clean keyword content
+- Improvements in function rdbms_setcontent in order to clean indexed content
+- Changes in function getkeywords in meta API to return array instead of keyword string
+- Implementation of new function splitkeywordsin meta API
+- Implementation of new function rdbms_gekeywords to select and count unique keywords by location and text ID
+- Implementation of new function createtaxanomy in meta API
+- Bug fix: Upload of pages checkbox in site_edit_form has not been disabled for DAM only usage
+- Added constraint attribute to textk tag for templates (keyword tag)
+- Implementation of new function gettaxonomy_sublevel in get API
+- Implementation of new function gettaxonomy_childs in get API
+- Implementation of new function gettaxonomy_id in get API
+- Implementation of new publication configuration setting for taxonomy browsing and search integration
+- Moved several get-functions from meta to get API
+- Implementation of new service getkeywords
+- Implementation of taxonomy query string in template engine for the list-source of keyword tags
+- Bug fix: Function scriptcode_clean_functions did not verify all variables
+- Implementation of location support in Explorer advanced search feature (based on the selected template)
+- Improvements in function convertpath in main API to return already converted path
+- Implementation of new function update_database_v614 (creates new table taxonomy)
+- Implementation of new table taxonomy in createtables.sql
+- Implementation of new input parameter for publication in function rdbms_setcontent and rdbms_deletecontent
+- Removed user parameter for function rdbms_deletecontent
+- Improvements regarding text preparation in function rdbms_setcontent
+- Implementation of new function cleancontent in main API
+- Integration of function cleancontent in several functions in order to replace the old logic
+- Implementation of new function settaxonomy in set API
+- Implementation of new function rdbms_settaxonomy, rdbms_setpublicationtaxonomy and rdbms_deletepublicationtaxonomy
+- Implementation of new function exportobjects and importobjects in new im/export API
+- Integration of im/export API in API loader
+- Integration of im/export API in API documentation
+- Rename of function licensenotification to sendlicensenotification (to be used as helper function) in main API
+- Implementation of new function licensenotificatio in main API
+- Replaced array_merge to array_replace_recursive in function userlogin in security API
+- Implementation of support for taxonomy based search in function rdbms_searchcontent
+- Implementation of publication selectbox in explorer search form
+- Added onload input parameter for function showinfopage in UI API
+- Removed meta-info attribute from tags of metadata templates in template editor
+- Improvements in function workflowaccept in workflow API
+- Renamed function cleancontent to cleantext in external website search engine API
+- Bug fix: JS function hcms_changeVTTlanguage called function autosave instead of autoSave
+- Implementation of new function getsearchhistory in get API
+- Implementation of CSS class name 'comment' for all comment textareas
+- Force of form post instead of AJAX if comments are used in order to reload the form ans display the new post
+- Improvements in input valiation in various set-functions
+- Bug fix: Function uploadfile did not call unindexcontent if file extension of updated file has not been changed
+- Bug fix: Function savecontainer did not verify and support container-type "version"
+- Function indexcontent will save not only working container but also the published container
+- Bug fix: Function manipulateobject did not verify folder objects correctly in order to correct the location of the object
 */
 
 // current version
-$version = "Version 6.1.3";
+$version = "Version 6.1.4";
 ?>

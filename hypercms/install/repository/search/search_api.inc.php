@@ -372,24 +372,22 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
   }
 }
 
-// ------------------------ cleancontent ------------------------
+// ------------------------ cleantext ------------------------
 // input: content as string, charset as string
 // output: cleaned content as string/false
 
-function cleancontent ($content, $charset="UTF-8")
+function cleantext ($content, $charset="UTF-8")
 {
   if ($content != "")
   {
     $content = strip_tags ($content);
-    $content = str_replace ("\r\n", " ", $content);
-    $content = str_replace ("\n\r", " ", $content);
-    $content = str_replace ("\n", " ", $content);	
     if ($charset != "") $content = html_entity_decode ($content, ENT_NOQUOTES | ENT_HTML401, $charset);
-    $content = preg_replace ('/\s+/', " ", $content);
-    $content = preg_replace ('<!--(.*?)-->', "", $content);
-    $content = str_replace ("|", "&#124;", $content);
     $content = str_replace (array(".....", "....", "...", ".."), ".", $content);
     $content = str_replace (array("_____", "____", "___", "__"), "_", $content);
+    $content = preg_replace ('<!--(.*?)-->', "", $content);
+    $content = str_replace ("|", "&#124;", $content);
+    $text = str_replace (array("\"", "'", "(", ")", "{", "}", "[", "]", ".", ",", ";", "_", "\t", "\r\n", "\r", "\n"), " ", $text);
+    $content = preg_replace ('/\s+/', " ", $content);
     $content = trim ($content);
 
     return $content;
@@ -419,9 +417,9 @@ function createindex ($newurl, $newtitle, $newdescription, $newcontent, $charset
     $newdata = "";
     $update = false;
   
-    $newtitle = cleancontent ($newtitle, $charset);  
-    $newdescription = cleancontent ($newdescription, $charset);  
-    $newcontent = cleancontent ($newcontent, $charset);
+    $newtitle = cleantext ($newtitle, $charset);  
+    $newdescription = cleantext ($newdescription, $charset);  
+    $newcontent = cleantext ($newcontent, $charset);
 
     // attributes string (add additional attributes to search index record, like language, group name, ...)
     if (is_array ($query_attribute)) $add_attributes = "|".implode ("|", $query_attribute);

@@ -355,4 +355,48 @@ function update_database_v601 ()
   
   return true;
 }
+
+// ------------------------------------------ update_database_v601 ----------------------------------------------
+// function: update_database_v614()
+// input: %
+// output: updated database, false on error
+
+// description: 
+// Update of database to version 6.1.4
+
+function update_database_v614 ()
+{
+  global $mgmt_config;
+  
+  // connect to MySQL
+  $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+  
+  // check if table exists
+  $sql = "SHOW TABLES LIKE 'taxonomy'";
+  $errcode = "50064";
+  $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'show');
+  $tableexists = $db->getNumRows ('show') > 0;
+  
+  if (!$tableexists)
+  {  
+    // create new table project
+    $sql = "CREATE TABLE `taxonomy` (
+  `id` int(11) NOT NULL,
+  `text_id` char(120) NOT NULL default '',
+  `taxonomy_id` int(11) NOT NULL default '0',
+  `lang` char(6) NOT NULL default '',
+  KEY `taxonomy` (`id`,`taxonomy_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+    
+    $errcode = "50065";
+    $db->query ($sql, $errcode, $mgmt_config['today'], 'create');
+  }
+  
+  // save log
+  savelog ($db->getError ());
+  savelog (@$error);
+  $db->close();
+  
+  return true;
+}
 ?>

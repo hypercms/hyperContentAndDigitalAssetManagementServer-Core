@@ -874,12 +874,12 @@ function hcms_changeVTTlanguage ()
       var autosave_active = document.getElementById('autosave');
       
       autosave_active.checked = true;
-      autosave();
+      autoSave();
       autosave_active.checked = false;
     }
     else
     {
-      autosave();
+      autoSave();
     }
   }
   

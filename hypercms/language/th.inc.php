@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['th'] = "ไฟล์ที่จำเ
 $hcms_lang['move-media-files-to-export-directory']['th'] = "ย้ายไฟล์มีเดียไปยังไดเรกทอรีของการส่งออกทั้งหมด ( ข้อมูลจะถูกเก็บไว้ในระบบ )";
 $hcms_lang['export-to-directory']['th'] = "ส่งออกไปยังไดเรกทอรี";
 $hcms_lang['import-from-directory']['th'] = "นำเข้าจากไดเรกทอรี";
+$hcms_lang['taxonomy']['th'] = "Taxonomy";
+$hcms_lang['enable-taxonomy-browsing-and-search']['th'] = "เปิดใช้การเรียกดูและการค้นหาการจัดหมวดหมู่";
 ?>

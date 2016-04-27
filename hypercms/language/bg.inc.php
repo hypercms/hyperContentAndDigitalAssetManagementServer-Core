@@ -1372,4 +1372,6 @@ $hcms_lang['files-need-to-be-placed-in']['bg'] = "Файлове трябва д
 $hcms_lang['move-media-files-to-export-directory']['bg'] = "Преместете медийни файлове за износ на указателя (всички данни ще се съхранява в системата)";
 $hcms_lang['export-to-directory']['bg'] = "Износ в телефонния указател";
 $hcms_lang['import-from-directory']['bg'] = "Внос от телефонния указател";
+$hcms_lang['taxonomy']['bg'] = "Систематика";
+$hcms_lang['enable-taxonomy-browsing-and-search']['bg'] = "Разрешаване на таксономията преглеждане и търсене";
 ?>

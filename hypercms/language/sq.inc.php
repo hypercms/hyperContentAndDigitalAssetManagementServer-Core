@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['sq'] = "Dosjet duhet të vendosen në"
 $hcms_lang['move-media-files-to-export-directory']['sq'] = "Të medias për të eksportuar dosjet directory (të gjitha të dhënat do të ruhen në sistem)";
 $hcms_lang['export-to-directory']['sq'] = "Drejtori depertues";
 $hcms_lang['import-from-directory']['sq'] = "Drejtori të importojë nga";
+$hcms_lang['taxonomy']['sq'] = "Sistematikës";
+$hcms_lang['enable-taxonomy-browsing-and-search']['sq'] = "Aftësohet sistematikës shfletimin dhe marketing";
 ?>

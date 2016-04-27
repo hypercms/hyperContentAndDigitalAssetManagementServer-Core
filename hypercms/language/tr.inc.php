@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['tr'] = "Dosyalar için yerleştirilebi
 $hcms_lang['move-media-files-to-export-directory']['tr'] = "Hareket ortam dosyalarını export directory (tüm veri saklanır.)";
 $hcms_lang['export-to-directory']['tr'] = "Ver directory";
 $hcms_lang['import-from-directory']['tr'] = "Al directory";
+$hcms_lang['taxonomy']['tr'] = "Taksonomi";
+$hcms_lang['enable-taxonomy-browsing-and-search']['tr'] = "Enable taksonomi tarama ve arama";
 ?>

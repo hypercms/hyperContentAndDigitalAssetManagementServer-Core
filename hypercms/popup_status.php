@@ -82,7 +82,7 @@ if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
 
 // execute action
 if ($authorized == true || $force == "stop")
-{   
+{
   // start/continue process
   if ($force == "start" || $force == "continue")
   { 

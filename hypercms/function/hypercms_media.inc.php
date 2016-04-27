@@ -26,7 +26,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($user))
   {
     $usedby = "";
-    
+
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
     
@@ -67,10 +67,10 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
     }
 
     if (!empty ($container_content) && ($usedby == "" || $usedby == $user) && $file_ext != "")
-    {    
+    {
       // prepare media file
       $temp = preparemediafile ($site, $location, $file, $user);
-      
+
       if ($temp['result'] && $temp['crypted'])
       {
         $location = $temp['templocation'];
@@ -81,7 +81,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         $location = $temp['location'];
         $file = $temp['file'];
       }
-      
+
       // verify local media file
       if (!is_file ($location.$file)) return false;
       
@@ -529,28 +529,36 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         if ($container_contentnew != false)
         {
           // relational DB connectivity
-          if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($container_id, $text_array, $user);  
+          if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, $text_array, $user);  
 
           // set modified date in container
           $container_contentnew = setcontent ($container_contentnew, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
           if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
           
           // save container
-          if ($container_contentnew != false) return savecontainer ($container, "work", $container_contentnew, $user);
+          if ($container_contentnew != false)
+          {
+            savecontainer ($container, "published", $container_contentnew, $user);
+            return savecontainer ($container, "work", $container_contentnew, $user);
+          }
         }
       }
       // if no content has been extracted, save user and date information
       else
       {
         // relational DB connectivity
-        if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($container_id, "", $user);
+        if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, "", $user);
 
         // set modified date in container
         $container_content = setcontent ($container_content, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
         if ($container_content != false) $container_content = setcontent ($container_content, "<hyperCMS>", "<contentuser>", $user, "", "");
         
         // save container
-        if ($container_content != false) return savecontainer ($container, "work", $container_content, $user);
+        if ($container_content != false)
+        {
+          savecontainer ($container, "published", $container_content, $user);
+          return savecontainer ($container, "work", $container_content, $user);
+        }
       }
     }
   }
@@ -569,7 +577,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 function unindexcontent ($site, $location, $file, $container, $container_content, $user)
 {
   global $mgmt_config, $mgmt_parser, $hcms_lang, $lang;
-  
+
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($container))
   {    
     // get container id
@@ -590,7 +598,22 @@ function unindexcontent ($site, $location, $file, $container, $container_content
       $container = $result['container'];
       $usedby = $result['user'];
       $container_content = loadcontainer ($container_id, "work", $user);
+      
+      $type = "work";
     }
+    elseif (strpos ($container, ".v_") > 0)
+    {
+      $type = "version";
+    }
+    elseif (strpos ($container, ".xml.wrk") > 0)
+    {
+      $type = "work";
+    }
+    elseif (strpos ($container, ".xml") > 0)
+    {
+      $type = "published";
+    }
+    else $type = "version";
 
     if ($container_content != false && $container_content != "" && ($usedby == "" || $usedby == $user))
     {
@@ -599,11 +622,20 @@ function unindexcontent ($site, $location, $file, $container, $container_content
       // relational DB connectivity
       if ($mgmt_config['db_connect_rdbms'] != "")
       {
-        rdbms_deletecontent ($container_id, $file, $user);
+        rdbms_deletecontent ($site, $container_id, $file);
       }
 
       // save container
-      if ($container_contentnew != false) return savecontainer ($container, "version", $container_contentnew, $user);
+      if ($container_contentnew != false)
+      {
+        // save published container if working container
+        if ($type == "work")
+        {
+          savecontainer ($container, "published", $container_contentnew, $user);
+          return savecontainer ($container, $type, $container_contentnew, $user);
+        }
+        else return savecontainer ($container, $type, $container_contentnew, $user);
+      }
       else return false;
     }  
   }

@@ -321,13 +321,13 @@ function showmessage ($show, $width="580px", $height="70px", $lang="en", $style=
 
 // --------------------------------------- showinfopage -------------------------------------------
 // function: showinfopage ()
-// input: message, language code (optional)
+// input: message, language code (optional), on load JS events (optional)
 // output: message on html info page / false on error
 
 // description:
 // Returns a full html info page
 
-function showinfopage ($show, $lang="en")
+function showinfopage ($show, $lang="en", $onload="")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang;
       
@@ -337,14 +337,13 @@ function showinfopage ($show, $lang="en")
 <html>
   <head>
     <title>hyperCMS</title>
-    <meta charset=\"".getcodepage ($lang)."\">
+    <meta charset=\"".getcodepage ($lang)."\" />
     <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
-    <script src=\"".$mgmt_config['url_path_cms']."javascript/click.js\" type=\"text/javascript\"></script>
   </head>  
-  <body class=\"hcmsWorkplaceGeneric\">
+  <body class=\"hcmsWorkplaceGeneric\" onload=\"".$onload."\">
     <div style=\"padding:20px;\">
-    <img src=\"".getthemelocation()."img/info.gif\" align=\"absmiddle\" /><span class=\"hcmsHeadline\">Info</span><br \>
-    <div style=\"display:block; padding:0px 0px 0px 28px;\">".$show."</div>
+      <img src=\"".getthemelocation()."img/info.gif\" align=\"absmiddle\" /><span class=\"hcmsHeadline\">Info</span><br \>
+      <div style=\"display:block; padding:0px 0px 0px 28px;\">".$show."</div>
     </div>
   </body>
 </html>";
@@ -2217,7 +2216,11 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
       $scalingfactor = 72 / $dpi; 
     }
     
-    return "<textarea id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\">".$contentbot."</textarea>
+    // define class-name for comment tags
+    if (strpos ("_".$hypertagname, "comment") == 1) $classname = "class=\"is_comment\"";
+    else $classname = "";
+    
+    return "<textarea id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" ".$classname.">".$contentbot."</textarea>
       <script type=\"text/javascript\">
       <!--
         CKEDITOR.replace( '".$hypertagname."_".$id."',

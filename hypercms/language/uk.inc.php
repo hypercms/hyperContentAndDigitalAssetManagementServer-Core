@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['uk'] = "Файли повинні бу
 $hcms_lang['move-media-files-to-export-directory']['uk'] = "Переміщення медіафайлів файлів для того, щоб експортувати каталогу (усі дані буде збережено у системі)";
 $hcms_lang['export-to-directory']['uk'] = "Експорт до каталогу";
 $hcms_lang['import-from-directory']['uk'] = "Імпорт з каталогу";
+$hcms_lang['taxonomy']['uk'] = "Екзаменаційними Навики";
+$hcms_lang['enable-taxonomy-browsing-and-search']['uk'] = "Увімкнути таксономії перегляд та пошук";
 ?>

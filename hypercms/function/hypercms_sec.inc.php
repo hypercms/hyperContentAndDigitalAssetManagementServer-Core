@@ -894,6 +894,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       // update database
       update_database_v586 ();
       update_database_v601 ();
+      update_database_v614 ();
     
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
       $charset = getcharset ("", $userdata); 
@@ -1070,12 +1071,12 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                 
                 if ($globalpermission_new != false)
                 {
-                  $result['globalpermission'] = array_merge ($result['globalpermission'], $globalpermission_new);
+                  $result['globalpermission'] = array_replace_recursive ($result['globalpermission'], $globalpermission_new);
                 }
                 
                 if ($localpermission_new != false)
                 {
-                  $result['localpermission'] = array_merge ($result['localpermission'], $localpermission_new);
+                  $result['localpermission'] = array_replace_recursive ($result['localpermission'], $localpermission_new);
                 }
               }           
             }
@@ -1244,12 +1245,12 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
 
                           if ($globalpermission_new != false)
                           {
-                            $result['globalpermission'] = array_merge ($result['globalpermission'], $globalpermission_new);
+                            $result['globalpermission'] = array_replace_recursive ($result['globalpermission'], $globalpermission_new);
                           }
                           
                           if ($localpermission_new != false)
                           {
-                            $result['localpermission'] = array_merge ($result['localpermission'], $localpermission_new);
+                            $result['localpermission'] = array_replace_recursive ($result['localpermission'], $localpermission_new);
                           }
                         }
                       }
@@ -1983,24 +1984,7 @@ function checkusersession ($user="sys", $CSRF_detection=true)
   // unauth. access
   if ($alarm == true)
   {
-    echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-    <html>
-    <head>
-    <title>hyperCMS</title>
-    <meta charset=\"UTF-8\">
-    <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\">
-    </head>
-    <body class=\"hcmsWorkplaceGeneric\" leftmargin=0 topmargin=0 marginwidth=0 marginheight=0 onLoad=\"top.location.href='".$mgmt_config['url_path_cms']."userlogout.php';\">
-    <table width=100% border=0 height=100%>
-    <tr>
-      <td align=\"center\" valign=\"middle\" class=hcmsHeadline>
-        <font size=4>Unauthorized Access!</font>
-      </td>
-    </tr>
-    </table>
-    </body>
-    </html>";
-  
+    echo showinfopage ("Unauthorized Access!", "en", "top.location='".$mgmt_config['url_path_cms']."userlogout.php';");
     exit;
   }
   // auth. access
@@ -2427,23 +2411,27 @@ function scriptcode_clean_functions ($content, $type=3, $application="PHP")
     $found = array();
     
     $scriptcode_array = scriptcode_extract ($content, $identifier_start, $identifier_end);
-    if (is_array ($scriptcode_array)) $scriptcode = implode ("", $scriptcode_array); 
+    
+    if (is_array ($scriptcode_array)) $scriptcode = implode ("", $scriptcode_array);
 
     // remove functions from content
-    foreach ($all_functions as $name)
+    if (!empty ($scriptcode))
     {
-      // convert all multispaces to space
-      $scriptcode = preg_replace ("/ +/", " ", $scriptcode);
-
-      // find expression followed by (
-      if ($name != "" && (substr_count ($scriptcode, $name." (") > 0 || substr_count ($scriptcode, $name."(") > 0))
+      foreach ($all_functions as $name)
       {
-        // found expression
-        $found[] = $name;
+        // convert all multispaces to space
+        $scriptcode = preg_replace ("/ +/", " ", $scriptcode);
+  
+        // find expression followed by (
+        if ($name != "" && (substr_count ($scriptcode, $name." (") > 0 || substr_count ($scriptcode, $name."(") > 0))
+        {
+          // found expression
+          $found[] = $name;
+        }
       }
     }
     
-    if (sizeof ($found) > 0)
+    if (!empty ($found) && is_array ($found) && sizeof ($found) > 0)
     {
       $found_list = implode (", ", $found);
       $passed = false;

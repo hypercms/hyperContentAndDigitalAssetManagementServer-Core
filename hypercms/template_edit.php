@@ -287,7 +287,6 @@ function format_tag (format)
   else var onedit = "";
   
   if (eval (document.forms['template_edit'].elements['infotype']) && document.forms['template_edit'].elements['infotype'].checked) var infotype = " infotype='meta'";
-  else if (eval (document.forms['template_edit'].elements['infotype_media']) && document.forms['template_edit'].elements['infotype_media'].value == "meta") var infotype = " infotype='meta'";  
   else var infotype = "";
     
   var constraint = "";
@@ -594,8 +593,7 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
   <?php
   if ($cat == "page" || $cat == "comp" || $cat == "meta" || $cat == "inc")
   {
-    if ($cat == "meta") $checkbox_metainfo = "&nbsp;&nbsp;&nbsp;<input type=\"hidden\" name=\"infotype_media\" value=\"meta\" />";
-    else $checkbox_metainfo = "<font color=\"#000000\">&nbsp;&nbsp;&nbsp;</font><input type=\"checkbox\" name=\"infotype\" value=\"meta\" /> ".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang);
+    if ($cat == "meta") $checkbox_metainfo = "<font color=\"#000000\">&nbsp;&nbsp;&nbsp;</font><input type=\"checkbox\" name=\"infotype\" value=\"meta\" /> ".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang);
     
     echo "<tr>
       <td>

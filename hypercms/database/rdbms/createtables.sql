@@ -87,6 +87,16 @@ CREATE TABLE `task` (
   KEY `task` (`to_user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `taxonomy`;
+
+CREATE TABLE `taxonomy` (
+  `id` int(11) NOT NULL,
+  `text_id` char(120) NOT NULL default '',
+  `taxonomy_id` int(11) NOT NULL default '0',
+  `lang` char(6) NOT NULL default '',
+  KEY `taxonomy` (`id`,`taxonomy_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `textnodes`;
 
 CREATE TABLE `textnodes` (

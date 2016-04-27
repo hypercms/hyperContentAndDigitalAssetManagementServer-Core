@@ -353,7 +353,7 @@ if ($usedby == "" || $usedby == $user)
           }
           
           // set modified date in DB
-          rdbms_setcontent ($container_id);
+          rdbms_setcontent ($site, $container_id);
         }
       }
       

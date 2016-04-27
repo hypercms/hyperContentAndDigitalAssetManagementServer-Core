@@ -1370,4 +1370,6 @@ $hcms_lang['files-need-to-be-placed-in']['sl'] = "Datoteke je treba dati v";
 $hcms_lang['move-media-files-to-export-directory']['sl'] = "Premikanje predstavnostne datoteke za izvoz valut (vsi podatki bodo shranjeni v sistemu)";
 $hcms_lang['export-to-directory']['sl'] = "Izvoz v imenik";
 $hcms_lang['import-from-directory']['sl'] = "Uvoz iz imenika";
+$hcms_lang['taxonomy']['sl'] = "Taksonomija";
+$hcms_lang['enable-taxonomy-browsing-and-search']['sl'] = "Taksonomija omogočiti pregled in iskanje";
 ?>

@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['hu'] = "A fájlokat kell elhelyezni.";
 $hcms_lang['move-media-files-to-export-directory']['hu'] = "Húzza félre a médiafájlokat a könyvtárban (az összes adatot a rendszer)";
 $hcms_lang['export-to-directory']['hu'] = "A könyvtár exportálása";
 $hcms_lang['import-from-directory']['hu'] = "A könyvtár importálása";
+$hcms_lang['taxonomy']['hu'] = "Taxonómiai";
+$hcms_lang['enable-taxonomy-browsing-and-search']['hu'] = "Keresés böngészés és taxonómiai engedélyezése";
 ?>

@@ -277,6 +277,44 @@ function getescapedtext ($text, $charset="", $lang="")
   return html_encode ($text);
 }
 
+// ----------------------------------------- getsearchhistory ------------------------------------------
+// function: getsearchhistory()
+// input: %
+// output: array holding all expressions of the search history / false on error
+
+function getsearchhistory ()
+{
+  global $mgmt_config;
+
+  if (is_file ($mgmt_config['abs_path_data']."log/search.log"))
+  {
+    // load search log
+    $data = file ($mgmt_config['abs_path_data']."log/search.log");
+  
+    if (is_array ($data) && sizeof ($data) > 0)
+    {
+      $keywords = array();
+      
+      foreach ($data as $record)
+      {
+        if (substr_count ($record, "|") > 0)
+        {
+          list ($date, $user, $keyword_add) = explode ("|", $record);
+    
+          $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
+        }
+      }
+      
+      // only unique expressions
+      $keywords = array_unique ($keywords);
+      
+      return $keywords;
+    }
+    else return false;
+  }
+  else return false;
+}
+
 // ----------------------------------------- getsynonym ------------------------------------------
 // function: getescapedtext()
 // input: word as string, 2-digit language code (optional)
@@ -289,7 +327,7 @@ function getsynonym ($text, $lang="")
 {
   global $mgmt_config;
   
-  require ($mgmt_config['abs_path_cms']."include/synonym.inc.php");
+  require ($mgmt_config['abs_path_data']."include/synonyms.inc.php");
   
   if ($text != "")
   {
@@ -343,6 +381,644 @@ function getsynonym ($text, $lang="")
     }
     else return array ($text);
   }
+  else return false;
+}
+
+// ----------------------------------------- gettaxonomy_sublevel ------------------------------------------
+// function: gettaxonomy_sublevel()
+// input: publication name, language code (optional), taxonomy parent ID (optional)
+// output: array holding all keywords of the next taxonomy level / false on error
+
+// description:
+// Returns sorted keywords of a taxonomy level (multilingual support based on taxonomies).
+// Global variable $taxonomy can be used to pass the taxonomy as array.
+
+function gettaxonomy_sublevel ($site, $lang="en", $tax_id="0")
+{
+  global $mgmt_config, $mgmt_lang_shortcut_default, $taxonomy;
+
+  if ($lang != "" && intval ($tax_id) >= 0 && is_array ($mgmt_config))
+  {
+    // load taxonomy of publication
+    if (!is_array ($taxonomy) && valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
+    {
+      include ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php");
+    }
+    // load default taxonomy
+    elseif (!is_array ($taxonomy) && is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php"))
+    {
+      include ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php");
+    }
+
+    // return key = taxonomy ID and value = keyword
+    if (!empty ($taxonomy[$lang]))
+    {
+      // get childs
+      $result = gettaxonomy_childs ($site, $lang, $tax_id, 1, true);
+
+      // remove root element
+      if (!empty ($result[$tax_id])) unset ($result[$tax_id]);
+
+      // return sorted array
+      natcasesort ($result);
+      return $result;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// ----------------------------------------- gettaxonomy_childs ------------------------------------------
+// function: gettaxonomy_childs()
+// input: publication name (optional), language code (optional), 
+//        taxonomy ID or expression or taxonomy path in the form %taxonomy%/publication-name or 'default'/language-code/taxonomy-ID/taxonomy-child-levels as string, 
+//        taxonomy child levels as integer (optional), only return taxonomy IDs without language and keyword information [true,false] (optional)
+// output: array holding all taxonomy IDs / false on error
+
+// description:
+// Returns keywords based on taxonomy defintion and synonyms if expression is a keyword (multilingual support based on taxonomies and synonyms).
+// The expression can be a taxonomy path in the form of %taxonomy%/site/language-code/taxonomy-ID/taxonomy-child-levels (use "all" for all languages and "0" for all taxonomy-IDs on first level).
+// Global variable $taxonomy can be used to pass the taxonomy as array.
+
+function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $id_only=true)
+{
+  global $mgmt_config, $mgmt_lang_shortcut_default, $taxonomy;
+
+  if ($childlevels >= 0 && is_array ($mgmt_config))
+  {
+    // get taxonomy parameters from search expression
+    if (strpos ("_".$expression, "%taxonomy%/") > 0)
+    {
+      $slice = explode ("/", $expression);
+      
+      if (!empty ($slice[0])) $domain = $slice[0];
+      if (!empty ($slice[1])) $site = $slice[1];
+      if (!empty ($slice[2])) $lang = $slice[2];
+      if (isset ($slice[3])) $tax_id = $slice[3];
+      if (isset ($slice[4])) $childlevels = $slice[4];
+
+      if (empty ($lang) || strtolower ($lang) == "all") $lang = "";
+    }
+    // search expression is taxonomy ID
+    elseif (is_numeric ($expression) && intval ($expression) >= 0)
+    {
+      $tax_id = strval ($expression);
+    }
+    // search expression is a keyword
+    elseif (is_string ($expression) && $expression != "" && strpos ("_".$expression, "*") < 1 && strpos ("_".$expression, "?") < 1)
+    {
+      // get synonyms if enabled
+      if (!empty ($mgmt_config['search_synonym'])) $expression_array = getsynonym ($expression);
+      else $expression_array = array ($expression);
+      
+      // to lower case
+      $expression_array = array_map ('strtolower', $expression_array);
+    }
+    // invalid
+    else return false;
+    
+    // load publication management config
+    if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['taxonomy']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
+    
+    $result = array();
+
+    // get taxonomy IDs and keywords
+    if (strtolower ($site) == "default" || (valid_publicationname ($site) && !empty ($mgmt_config[$site]['taxonomy'])))
+    {
+      // load taxonomy of publication
+      if (!is_array ($taxonomy) && valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
+      {
+        include ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php");
+      }
+      // load default taxonomy
+      elseif (!is_array ($taxonomy) && is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php"))
+      {
+        include ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php");
+      }
+      
+      // search for taxonomy keyword and its childs
+      if (!empty ($taxonomy) && is_array ($taxonomy) && sizeof ($taxonomy) > 0)
+      {
+        // verify language in taxonomy and set en as default
+        if (!empty ($lang) && empty ($taxonomy[$lang])) $lang = $mgmt_lang_shortcut_default;
+
+        // return key = taxonomy ID and value = keyword
+        foreach ($taxonomy as $tax_lang=>$tax_array)
+        {
+          // selected language or all languages
+          if ($tax_lang == $lang || empty ($lang))
+          {
+            foreach ($tax_array as $path=>$keyword)
+            {
+              // look up all root keywords on first level
+              if (isset ($tax_id) && $tax_id == "0" && (substr_count ($path, "/") - 2) < $childlevels)
+              {
+                // get ID
+                $path_temp = substr ($path, 0, -1);
+                $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
+                
+                if ($id_only == true) $result[$id] = $keyword;
+                else $result[$tax_lang][$id] = $keyword;
+              }
+              // look up taxonomy ID
+              elseif (!empty ($tax_id) && strpos ("_".$path, "/".$tax_id."/") > 0)
+              {
+                // count sublevels following the current ID
+                $levels = substr_count (substr ($path, strpos ($path, "/".$tax_id."/")), "/") - 2;
+
+                // verify child level limit
+                if ($levels <= $childlevels)
+                {
+                  // get ID
+                  $path_temp = substr ($path, 0, -1);
+                  $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
+                  
+                  if ($id_only == true) $result[$id] = $keyword;
+                  else $result[$tax_lang][$id] = $keyword;
+                }
+              }
+              // look up expression and get taxonomy ID if keyword is included in expressions array
+              elseif (!empty ($expression_array) && array_search (strtolower ($keyword), $expression_array) !== false)
+              {
+                // get ID
+                $path_temp = substr ($path, 0, -1);
+                $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
+
+                if ($id != "")
+                {
+                  if ($id_only == true) $result[$id] = $keyword;
+                  else $result[$tax_lang][$id] = $keyword;
+                  
+                  // set ID
+                  $tax_id = $id;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // return result
+      if (is_array ($result) && sizeof ($result) > 0) return $result;
+      else return false;
+    }
+    // taxonomy not enabled
+    else return false;
+  }
+  else return false;
+}
+
+// --------------------------------------- getkeywords -------------------------------------------
+// function: getkeywords ()
+// input: text as string, language to be used for stop word list [de,en,...] (optional), character set (optional) 
+// output: keywords as array /false on error
+
+// description:
+// Generates a keyword list from a plain text. Stop word lists are defined in data/include/stopwords.inc.php
+
+function getkeywords ($text, $language="en", $charset="UTF-8")
+{
+  global $mgmt_config;
+	
+  if ($text != "")
+  {
+    // include stopword lists
+    include ($mgmt_config['abs_path_data']."/include/stopwords.inc.php");
+    
+    $language = strtolower ($language);
+
+    // remove hmtl tags
+    $text = trim (strip_tags ($text));
+    
+    // clean content
+    $text = cleancontent ($text, $charset);
+    
+    // remove stopwords
+    if (is_array ($stopwords[$language])) $text = str_ireplace ($stopwords[$language]." ", "", $text);
+    
+    // extract the keywords
+    $pattern1 = '/\b[A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+ [A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+ [A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+|[A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+ [A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+|[A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+\b/';
+    $pattern2 = '/\b[A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+ [A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+ [A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+\b/';
+    $pattern3 = '/\b[A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+ [A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+\b/';
+    $pattern4 = '/\b[A-ZÄÖÜ]{1}+[A-Za-zäüöéèáàúùß]{2,}+\b/';
+    
+    preg_match_all ($pattern1, $text, $array1);
+    $tags2 = implode (', ', $array1[0]);
+    preg_match_all ($pattern2, $tags2, $array2);
+    $tags3 = implode (', ', $array1[0]);
+    preg_match_all ($pattern3, $tags3, $array3);
+    $tags4 = implode (', ', $array1[0]);
+    preg_match_all ($pattern4, $tags4, $array4);
+    
+    $array1[0] = array_map ('ucwords', array_map ('strtolower', $array1[0]));
+    $array2[0] = array_map ('ucwords', array_map ('strtolower', $array2[0]));
+    $array3[0] = array_map ('ucwords', array_map ('strtolower', $array3[0]));
+    $array4[0] = array_map ('ucwords', array_map ('strtolower', $array4[0]));
+    
+    $ausgabe1 = array_count_values ($array1[0]);
+    $ausgabe2 = array_count_values ($array2[0]);
+    $ausgabe3 = array_count_values ($array3[0]);
+    $ausgabe4 = array_count_values ($array4[0]);
+    
+    $new_keys = array_merge ($ausgabe1, $ausgabe2, $ausgabe3, $ausgabe4);
+    
+    // sort array
+    array_multisort ($new_keys, SORT_DESC);
+    
+    $new_keys = array_slice ($new_keys, 0, 39);
+    $keywords = array_keys ($new_keys);
+
+    return $keywords;
+  }
+  else return false;
+}
+
+// --------------------------------------- getdescription -------------------------------------------
+// function: getdescription ()
+// input: text as string
+// output: cleanded description of provided text /false on error
+
+// description:
+// Generates a description from a text, to be used as meta information.
+
+function getdescription ($text, $charset="UTF-8")
+{
+  if ($text != "")
+  {
+    // remove hmtl tags
+    $text = trim (strip_tags ($text));
+    
+    // remove multiple white spaces
+    $text = preg_replace ('/\s+/', ' ', $text);
+    
+    // decode html special characters
+    $text = html_entity_decode ($text, ENT_COMPAT, $charset);
+    
+    // remove newlines
+    $text = preg_replace ("/[\n\r]/", "", $text); 
+    
+    // shorten text
+    if (strlen ($text) > 155)
+    {
+      if (strpos ($text, ".") > 0) $text = substr ($text, 0, strpos ($text, ".", 125));
+      else $text = substr ($text, 0, strpos ($text, " ", 125));
+    }
+    
+    return $text;
+  }
+  else return false;
+}
+
+// --------------------------------------- getgooglesitemap -------------------------------------------
+// function: getgooglesitemap ()
+// input: publication anme, directory path, URL to directory, GET parameters to use for new versions of the URL as array (optional), permanent links text-ID to use for location as array (optional), 
+//        frequency of google scrawler [never,weekly,daily] (optional), priority [1 or less] (optional), 
+//        ignore file names as array (optional), allowed file types as array (optional), include frequenzy tag [true,false] (optional), include priority tag [true,false] (optional)
+// output: xml sitemap / false on error
+
+// description:
+// Generates a google sitemap xml-output
+
+// help function
+function collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $prio, $ignore_array, $filetypes_array, $show_freq, $show_prio)
+{
+  global $mgmt_config, $publ_config;
+  
+  if (valid_publicationname ($site) && $dir != "" && is_dir ($dir) && $url != "")
+  {
+    // add slash if not present at the end of the location string
+    if (substr ($dir, -1) != "/") $dir = $dir."/";
+    if (substr ($url, -1) != "/") $url = $url."/";
+
+    // ignore these files
+    $ignore_default = array('.', '..', 'sitemap.xml', '.folder', '.htaccess');
+
+    if (is_array ($ignore_array) && sizeof ($ignore_array) > 0) $ignore = array_merge ($ignore_array, $ignore_default);
+    else $ignore = $ignore_default;
+
+    // the replace array, this works as file => replacement, so 'index.php' => '', would make the index.php be listed as just /
+    $replace = array('index.php' => '', 'index.htm' => '', 'index.html' => '', 'index.xhtml' => '', 'index.jsp' => '', 'default.asp' => '', 'default.aspx' => '');
+      
+    // crawl dir
+    $handle = opendir ($dir);
+    $result_array = array();
+
+    if ($handle != false)
+    {
+      while ($file = readdir ($handle))
+      {
+        // check if this file needs to be ignored, if so, skip it
+        if (in_array ($file, $ignore)) continue;
+        
+        if (is_dir ($dir.$file))
+        {
+          $resultnew_array = collecturlnodes ($site, $dir.$file.'/', $url.$file.'/', $getpara, $permalink, $chfreq, $prio, $ignore_array, $filetypes_array, $show_freq, $show_prio);
+          if (is_array ($resultnew_array)) $result_array = array_merge ($result_array, $resultnew_array);
+        }
+
+        // check whether the file has one of the extensions allowed for this XML sitemap
+        $fileinfo = pathinfo ($dir.$file);
+        
+        if (isset ($fileinfo['extension']) && in_array ($fileinfo['extension'], $filetypes_array))
+        {
+          // create a W3C valid date for use in the XML sitemap based on the file modification time
+          $modified = date ('c', filemtime ($dir.$file));
+          
+          // replace the file with it's replacement from the settings, if needed
+          if (in_array ($file, $replace)) $file = $replace[$file];
+          
+          // define priority if not given
+          if ($prio == "" && $url != "")
+          {
+            $dirlevel = substr_count ($url, "/");
+            if ($dirlevel <= 4) $setprio = 1;
+            else $setprio = round ((4 / $dirlevel), 2);
+            
+            if ($setprio > 1) $setprio = 1;
+          }
+          else $setprio = 1;
+          
+          // use file path for location
+          $navlink = array();
+          $navlink[0] = $url.$file;
+
+          // read location of permalink
+          if (sizeof ($permalink) > 0)
+          {
+            $i = 0;
+            
+            // load content container of object
+            $xmldata = getobjectcontainer ($site, $dir, $file, "sys");
+    
+            if ($xmldata != "")
+            {
+              reset ($permalink);
+              
+              foreach ($permalink as $text_id)
+              {
+                $textnode = selectcontent ($xmldata, "<text>", "<text_id>", $text_id);
+
+                if ($textnode != false)
+                {
+                  $textcontent = getcontent ($textnode[0], "<textcontent>");
+      
+                  if (!empty ($textcontent[0]))
+                  {
+                    $navlink[$i] = substr ($url, 0, strpos ($url, "/", 8)).$textcontent[0];
+                    $i++;
+                  }
+                }
+              }
+            }
+          }
+
+          // creating the url nodes
+          if (is_array ($navlink) && sizeof ($navlink) > 0)
+          {
+            foreach ($navlink as $location)
+            {
+              $result_string = "
+  <url>
+    <loc>".$location."</loc>
+    <lastmod>".$modified."</lastmod>";
+          if ($show_freq) $result_string .= "
+    <changefreq>".$chfreq."</changefreq>";
+          if ($show_prio) $result_string .= "
+    <priority>".$setprio."</priority>";
+          $result_string .= "
+  </url>";
+  
+              $result_array[] = $result_string;
+            }
+          }
+          
+          // if GET parameters should be added to create new versions of the URL
+          if (is_array ($getpara) && sizeof ($getpara) > 0)
+          {
+            foreach ($getpara as $add)
+            {
+              if ($add != "") 
+              {
+                $result_string = "
+    <url>
+      <loc>".$url.$file."?".$add."</loc>
+      <lastmod>".$modified."</lastmod>";
+                if ($show_freq) $result_string .= "
+      <changefreq>".$chfreq."</changefreq>";
+                if ($show_prio) $result_string .= "
+      <priority>".$setprio."</priority>";
+                $result_string .= "
+    </url>";
+    
+                $result_array[] = $result_string;
+              }
+            }
+          }
+        }
+      }
+      
+      closedir ($handle);
+    }
+    
+    if (sizeof ($result_array) > 0) return $result_array;
+    else return false;
+  }
+  else return false;
+}
+
+function getgooglesitemap ($site, $dir, $url, $getpara=array(), $permalink=array(), $chfreq="weekly", $prio="", $ignore=array(), $filetypes=array('cfm','htm','html','xhtml','asp','aspx','jsp','php','pdf'), $show_freq=true, $show_prio=true)
+{
+  global $mgmt_config, $publ_config;
+  
+  if (valid_publicationname ($site) && $dir != "" && is_dir ($dir) && $url != "")
+  {  
+    // cget url nodes
+    $result_array = collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $prio, $ignore, $filetypes, $show_freq, $show_prio);
+
+    if (sizeof ($result_array) > 0)
+    {
+      $result = "<?xml version=\"1.0\" encoding=\"utf-8\"?>
+<urlset
+  xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"
+  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+  xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9
+      http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">\n";
+      
+      $result .= implode ("", $result_array)."\n";
+      
+      $result .= "</urlset>";
+      
+      return $result;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// ---------------------- getmetadata -----------------------------
+// function: getmetadata()
+// input: location, object (both optional if container is given), container name or container content (optional), 
+//        seperator of meta data fields [any string,array] (optional), publication name/template name to extract label names (optional)
+// output: string with all meta data from given object based on container / false
+
+function getmetadata ($location, $object, $container="", $seperator="\n", $template="")
+{
+	global $mgmt_config;
+  
+	if ((valid_locationname ($location) && valid_objectname ($object)) || $container != "")
+  {
+  	// check if object is folder or page/component
+    if ($container == "")
+    {
+      // if object is folder
+    	if (@is_dir ($location.$object))
+      {
+    		$location = $location.$object."/";
+    		$object = ".folder";
+    	}
+      
+      if (@is_file ($location.$object))
+      {
+    		// read file
+    		$objectdata = loadfile ($location, $object);
+        
+    		// get name of container
+    		if ($objectdata != "")
+        {
+          $container = getfilename ($objectdata, "content");
+          $template = getfilename ($objectdata, "template");
+        }
+        else $container = false;
+      }
+      else $container = false;
+    }
+    
+		// read meta data of media file
+		if ($container != false)
+    {
+      // container need to be loaded
+      if (valid_objectname ($container) && strpos ($container, "<container>") < 1)
+      {
+  			$container_id = substr ($container, 0, strpos ($container, ".xml")); 
+  			$result = getcontainername ($container);
+  			$container = $result['container'];
+  			$contentdata = loadcontainer ($container, "version", "sys");
+      }
+      // container content is available
+      else $contentdata = $container;
+      
+      $labels = Null;
+
+      // load template and define labels
+      if ($template != "" && strpos ($template, "/") > 0)
+      {
+        list ($site, $template) = explode ("/", $template);
+        
+        if ($site != "" && $template != "")
+        {
+          $result = loadtemplate ($site, $template);
+          
+          if ($result['content'] != "")
+          {
+            $hypertag_array = gethypertag ($result['content'], "text", 0);
+            
+            if (is_array ($hypertag_array))
+            {
+              $labels = array();
+              
+              foreach ($hypertag_array as $tag)
+              {
+                $id = getattribute ($tag, "id");
+                $label = getattribute ($tag, "label");
+                
+                if ($id != "" && $label != "") $labels[$id] = $label;
+                elseif ($id != "") $labels[$id] = str_replace ("_", " ", $id);
+              }
+            }
+          }
+        }
+      }
+      
+			if ($contentdata != false)
+      {
+        $metadata = Null;
+      
+        // if no template and no labels are defined
+        if (!is_array ($labels))
+        {
+  				$textnode = getcontent ($contentdata, "<text>");
+          
+  				if ($textnode != false)
+          {
+  					if (strtolower ($seperator) != "array") $metadata = "";
+            else $metadata = array();
+            
+  					foreach ($textnode as $buffer)
+            {
+              // get info from container
+  						$text_id = getcontent ($buffer, "<text_id>");
+              
+              // dont include comments or articles (they use :)
+              if (strpos ($text_id[0], ":") == 0)
+              {
+                $label = str_replace ("_", " ", $text_id[0]);
+              
+    						$text_content = getcontent ($buffer, "<textcontent>");
+    						$text_content[0] = str_replace ("\"", "'", strip_tags ($text_content[0]));
+                
+                // add space after comma
+                if (strpos ($text_content[0], ",") > 0 && strpos ($text_content[0], ", ") < 1)
+                {
+                  $text_content[0] = str_replace (",", ", ", $text_content[0]);
+                }
+                
+    						if (strtolower ($seperator) != "array") $metadata .= $label.": ".$text_content[0].$seperator;
+                else $metadata[$label] = $text_content[0];
+              }
+  					}
+  				}
+        }
+        // if labels were defined
+        elseif (is_array ($labels) && sizeof ($labels) > 0)
+        {
+          foreach ($labels as $id => $label)
+          {
+            $text_str = "";
+            
+            // dont include comments or articles (they use :)
+            if (strpos ($id, ":") == 0)
+            {
+              $textnode = selectcontent ($contentdata, "<text>", "<text_id>", $id);
+              
+              if ($textnode != false)
+              {
+                $text_content = getcontent ($textnode[0], "<textcontent>");
+                $text_content[0] = str_replace ("\"", "'", strip_tags ($text_content[0]));
+                
+                // add space after comma
+                if (strpos ($text_content[0], ",") > 0 && strpos ($text_content[0], ", ") < 1)
+                {
+                  $text_content[0] = str_replace (",", ", ", $text_content[0]);
+                }
+                
+    						$text_str = $text_content[0];
+              }
+            }
+        
+						if (strtolower ($seperator) != "array") $metadata .= $label.": ".$text_str.$seperator;
+            else $metadata[$label] = $text_str;
+          }
+        }
+        
+				return $metadata;
+			}
+      else return false;
+		}
+    else return false;
+	}
   else return false;
 }
 

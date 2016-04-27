@@ -1372,4 +1372,6 @@ $hcms_lang['files-need-to-be-placed-in']['he'] = "הקבצים צריכים לה
 $hcms_lang['move-media-files-to-export-directory']['he'] = "העבר קובצי מדיה כדי לייצא directory (כל הנתונים יהיו שמורים במערכת)";
 $hcms_lang['export-to-directory']['he'] = "ייצוא directory";
 $hcms_lang['import-from-directory']['he'] = "ייבוא מן directory";
+$hcms_lang['taxonomy']['he'] = "טקסונומיה";
+$hcms_lang['enable-taxonomy-browsing-and-search']['he'] = "אפשר גלישה טקסונומיה חיפוש";
 ?>

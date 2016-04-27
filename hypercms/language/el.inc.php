@@ -1372,4 +1372,6 @@ $hcms_lang['files-need-to-be-placed-in']['el'] = "Τα αρχεία πρέπει
 $hcms_lang['move-media-files-to-export-directory']['el'] = "Μετακινήστε τα αρχεία μέσων εξαγωγής directory (όλα τα στοιχεία που θα παραμείνουν στο σύστημα)";
 $hcms_lang['export-to-directory']['el'] = "Εξαγωγή σε directory";
 $hcms_lang['import-from-directory']['el'] = "Εισαγωγή από τον κατάλογο";
+$hcms_lang['taxonomy']['el'] = "Ταξινόμηση";
+$hcms_lang['enable-taxonomy-browsing-and-search']['el'] = "Ενεργοποίηση ταξινόμησης περιήγησης και αναζήτησης";
 ?>

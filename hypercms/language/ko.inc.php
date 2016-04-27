@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['ko'] = "파일을 배치해야 합니�
 $hcms_lang['move-media-files-to-export-directory']['ko'] = "미디어 파일(모든 데이터가 시스템에 보관됩니다 디렉토리 내보내기 이동)";
 $hcms_lang['export-to-directory']['ko'] = "디렉토리 내보내기";
 $hcms_lang['import-from-directory']['ko'] = "디렉터리 가져오기";
+$hcms_lang['taxonomy']['ko'] = "분류";
+$hcms_lang['enable-taxonomy-browsing-and-search']['ko'] = "분류 검색 및 검색 활성화";
 ?>

@@ -156,5 +156,16 @@ if (is_file ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.ph
   echo showAPIdocs ($file);
 }
 ?>
+
+<?php
+if (is_file ($mgmt_config['abs_path_cms']."connector/imexport/hypercms_imexport.inc.php"))
+{
+?>
+<h2>Import/Export API Functions</h2>
+<?php
+  $file = $mgmt_config['abs_path_cms']."connector/imexport/hypercms_imexport.inc.php";
+  echo showAPIdocs ($file);
+}
+?>
 </body>
 </html>

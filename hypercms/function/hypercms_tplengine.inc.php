@@ -2614,7 +2614,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           if ($tmpuser[0] == $user || checkadminpermission () || checkglobalpermission ($site, 'user'))
                           {
                             if ($buildview == "formedit" || $buildview == "formmeta") $contentcomment .= "
-                          <span style=\"float:right;\"><input id=\"textf_".$tmpid[0]."\" type=\"hidden\" name=\"textf[".$tmpid[0]."]\" DISABLED /><input id='delete_".$tmpid[0]."' type='checkbox' onclick=\"deleteComment(document.getElementById('textf_".$tmpid[0]."'), !this.checked);\"/>&nbsp;<label for=\"delete_".$tmpid[0]."\">".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."</label>&nbsp;</span>";
+                          <span style=\"float:right;\"><input id=\"textf_".$tmpid[0]."\" type=\"hidden\" name=\"textf[".$tmpid[0]."]\" DISABLED /><input id=\"delete_".$tmpid[0]."\" class=\"is_comment\" type=\"checkbox\" onclick=\"deleteComment(document.getElementById('textf_".$tmpid[0]."'), !this.checked);\"/>&nbsp;<label for=\"delete_".$tmpid[0]."\">".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."</label>&nbsp;</span>";
                             elseif ($buildview == "cmsview" || $buildview == "inlineview") $contentcomment .= "
                           <span style=\"float:right;\"><a hypercms_href=\"".$mgmt_config['url_path_cms']."service/savecontent.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&textf[".$tmpid[0]."]=&token=".$token."\" /><img src=\"".getthemelocation()."img/button_delete.gif\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" /></a></span> ";
                           }
@@ -2807,6 +2807,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       {
                         $add_submittext .= "submitText ('".$hypertagname."_".$id."', '".$hypertagname."[".$id."]');\n";
                         
+                        if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."','".$labelname."','".$constraint."'";
+                        
                         // if keyword list
                         if ($hypertagname == $searchtag."k")
                         {
@@ -2817,10 +2819,37 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           
                           if ($list_sourcefile != "")
                           {
-                            $list .= @file_get_contents ($list_sourcefile);
+                            // get taxonomy parameters
+                            if (strpos ("_".$list_sourcefile, "%taxonomy%/") > 0)
+                            {
+                              $slice = explode ("/", $list_sourcefile);
+
+                              if (!empty ($slice[0])) $domain = $slice[0];
+                              if (!empty ($slice[1])) $publication = $slice[1];
+                              if (!empty ($slice[2])) $language = $slice[2];
+                              if (isset ($slice[3])) $taxonomy_id = $slice[3];
+                              if (isset ($slice[4])) $taxonomy_levels = $slice[4];
+                              
+                              if (empty ($language) || strtolower ($language) == "all") $language = "";
+
+                              // reset source file to service/getkeywords
+                              if (!empty ($publication) && !empty ($language) && isset ($taxonomy_id))
+                              {
+                                if ($taxonomy_id == "") $taxonomy_id = 0;
+
+                                $list_sourcefile = $mgmt_config['url_path_cms']."service/getkeywords.php?site=".url_encode($publication)."&lang=".url_encode($language)."&id=".url_encode($taxonomy_id)."&levels=".url_encode($taxonomy_levels);
+                              }
+                              else $list_sourcefile = "";
+                            }
+
+                            // get keywords
+                            if (!empty ($list_sourcefile)) $list .= @file_get_contents ($list_sourcefile);
                           }
                           
-                          // extract text list
+                          // add comma
+                          if ($list != "") $list .= ",";
+                          
+                          // extract text list defined in tag
                           $list .= getattribute ($hypertag, "list");
 
                           // extract text list
@@ -2866,8 +2895,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         // if unformatted text
                         else
                         {
-                          if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."','".$labelname."','".$constraint."'";
-
                           $formitem[$key] = "
                         <tr>
                           <td align=left valign=top>
@@ -2894,6 +2921,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       }
                       else $taglink = "";
                     }
+                    // unformatted text
                     elseif ($searchtag == "arttext")
                     {
                       // create tag link for editor
@@ -2933,6 +2961,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       }
                       else $taglink = "";
                     }
+                    // unformatted comments
                     elseif ($searchtag == "comment")
                     {
                       if (!empty ($contentcomment) && ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview"))
@@ -2949,14 +2978,16 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <b>".$labelname."</b>
                         </td>";
                         if (!empty ($contentcomment)) $formitem[$key] .= "
-                        <td>".$contentcomment."</td>
+                        <td>
+                          ".$contentcomment."
+                        </td>
                       </tr>
                       <tr>
                         <td>&nbsp;</td>";
                         $formitem[$key] .= "
                         <td align=left valign=top>
                           <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
-                          <textarea name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled."></textarea>
+                          <textarea class=\"is_comment\" name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled."></textarea>
                         </td>
                       </tr>";
                       }                        
@@ -3050,6 +3081,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       }
                       else $taglink = "";
                     }
+                    // formatted text
                     elseif ($searchtag == "arttext")
                     {
                       // create tag link for editor
@@ -3112,6 +3144,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       }
                       else $taglink = "";
                     }
+                    // formatted comment
                     elseif ($searchtag == "comment")
                     {
                       if (!empty ($contentcomment) && ($buildview == "cmsview" || $buildview == "inlineview" || $buildview == "preview"))
@@ -3147,7 +3180,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <td align=left valign=top>
                             <b>".$labelname."</b>
                           </td>";
-                          if (!empty ($contentcomment)) $formitem[$key] .= "<td>".$contentcomment."</td></tr><tr><td>&nbsp;</td>";
+                          if (!empty ($contentcomment)) $formitem[$key] .= "
+                          <td>
+                            ".$contentcomment."
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>&nbsp;</td>";
                           $formitem[$key] .= "
                           <td align=left valign=top>
                             ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
@@ -7140,6 +7179,29 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     element.disabled = value;
   }
   
+  function isNewComment()
+  {
+    var comments = document.getElementsByClassName('is_comment');
+    
+    if (comments.length > 0)
+    {
+      // write content from ckeditor to textarea
+      $('textarea.is_comment').each(function () {
+         var \$textarea = $(this);
+         \$textarea.val(CKEDITOR.instances[\$textarea.attr('id')].getData());
+      });
+      
+      // look for new content or checked delete boxes
+      for (var i = 0; i < comments.length; i++)
+      {
+        if (comments[i].checked == true) return true;
+        else if (comments[i].name != '' && comments[i].value != '') return true;
+      }
+    }
+    
+    return false;
+  }
+  
   // ----- Save only -----
   function saveContent()
   {
@@ -7165,7 +7227,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       hcms_stringifyVTTrecords();
 
       // save content using form POST methode
-      if (methode == 'post') saveContent();
+      if (methode == 'post' || isNewComment()) saveContent();
       // save content using AJAX in all other cases
       else var save = autoSave(true);
       

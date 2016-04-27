@@ -1371,4 +1371,6 @@ $hcms_lang['files-need-to-be-placed-in']['sk'] = "Súbory musia byť umiestnené
 $hcms_lang['move-media-files-to-export-directory']['sk'] = "Presuňte súbory do adresára export (všetky údaje sa budú uchovávať v systéme)";
 $hcms_lang['export-to-directory']['sk'] = "Export do adresára";
 $hcms_lang['import-from-directory']['sk'] = "Import zo zoznamu";
+$hcms_lang['taxonomy']['sk'] = "Taxonómia";
+$hcms_lang['enable-taxonomy-browsing-and-search']['sk'] = "Taxonómia umožňuje prehliadanie a vyhľadávanie";
 ?>
