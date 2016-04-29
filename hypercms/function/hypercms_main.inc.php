@@ -2978,7 +2978,16 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
     if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_thumb, $user);
     // remote client
     remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
-
+    
+    // image annotation file
+    $mediafile_annotation = substr ($mediafile, 0, strrpos ($mediafile, ".")).".annotation.jpg";
+    // local media file
+    deletefile ($medialocation.$site."/", $mediafile_annotation, 0);
+    // cloud storage
+    if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_annotation, $user);
+    // remote client
+    remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_annotation, "");
+    
     // image file from RAW image
     if (is_rawimage ($mediafile))
     {

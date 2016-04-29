@@ -2830,7 +2830,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               if (isset ($slice[3])) $taxonomy_id = $slice[3];
                               if (isset ($slice[4])) $taxonomy_levels = $slice[4];
                               
-                              if (empty ($language) || strtolower ($language) == "all") $language = "";
+                              // set user language as default
+                              if (empty ($language) || strtolower ($language) == "all") $language = $lang;
 
                               // reset source file to service/getkeywords
                               if (!empty ($publication) && !empty ($language) && isset ($taxonomy_id))
@@ -6658,12 +6659,16 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <base href=\"".$mgmt_config['url_path_cms']."editor/\" />
   <meta charset=\"".$charset."\" />
   <meta name=\"robots\" content=\"noindex, nofollow\" />
+  <!-- hyperCMS -->
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css\" />
   <script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
+  <!-- JQuery -->
   <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-1.10.2.min.js\" type=\"text/javascript\"></script>
   <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.10.2.min.js\" type=\"text/javascript\"></script>
+  <!-- Editor -->
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."editor/ckeditor/ckeditor.js\"></script>
   <script type=\"text/javascript\">CKEDITOR.disableAutoInline = true;</script>
+  <!-- Calendar -->
   <link  rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.css\" />
   <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>
   <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
@@ -6672,9 +6677,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_pt.js\"></script>
   <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_ru.js\"></script>
   <script language=\"Javascript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/domready.js\"></script>
+  <!-- Tagging -->
   <script language=\"Javascript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/tag-it/tag-it.min.js\"></script>
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/tag-it/jquery.tagit.css\" />
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/tag-it/tagit.ui-zendesk.css\" />
+  <!-- Annotations -->
+  <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.css\">
   <script language=\"JavaScript\" type=\"text/javascript\">
   <!--
   ".$bodytag_controlreload."";
@@ -7205,7 +7213,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   // ----- Save only -----
   function saveContent()
   {
-    if (document.forms['hcms_formview']) document.forms['hcms_formview'].submit();
+    if (document.forms['hcms_formview'])
+    {
+      // write annotation image to hidden input
+      if (document.getElementById('annotation')) $('#annotation').annotate('flatten');
+    
+      document.forms['hcms_formview'].submit();
+    }
   }
   
   // ----- Set save type and save -----
@@ -7278,14 +7292,19 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         ".$add_submitlink."
         ".$add_submitcomp."
         hcms_stringifyVTTrecords();
-            
+        
+        // write content to textareas
         for (var i in CKEDITOR.instances)
         {
           CKEDITOR.instances[i].updateElement();
         }
         
+        // present saving message
         hcms_showHideLayers ('messageLayer','','show');
         $(\"#savetype\").val('auto');
+        
+        // write annotation image to hidden input
+        if (document.getElementById('annotation')) $('#annotation').annotate('flatten');
             
         $.ajax({
           type: 'POST',
@@ -7382,7 +7401,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     <input type=\"hidden\" id=\"savetype\" name=\"savetype\" value=\"\" />
     <input type=\"hidden\" name=\"forward\" value=\"\" />
     <input type=\"hidden\" name=\"wf_token\" value=\"".$wf_token."\" />
-    <input type=\"hidden\" name=\"token\" value=\"".$token."\" />";
+    <input type=\"hidden\" name=\"token\" value=\"".$token."\" />
+    <input type=\"hidden\" name=\"medianame\" id=\"medianame\" value=\"\" />
+    <input type=\"hidden\" name=\"mediadata\" id=\"mediadata\" value=\"\" />
+    ";
     
     $viewstore .= "
     <!-- top bar -->
@@ -7693,7 +7715,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
               {
                 $formitem[$key] = "
             <label for=\"datefield_".$id."\" style=\"display:".$css_display."; width:180px;\">".$label." </label>
-            <input type=\"text\" id=\"datefield_".$id."\" name=\"search_textnode[".$id."]\" value=\"\" readonly=\"readonly\" style=\"display:inline-block; margin:1px;\" /><img src=\"".getthemelocation()."img/button_datepicker.gif\" onclick=\"show_cal(this, 'datefield_".$id."', '".$format."');\" align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" /><br />";
+            <input type=\"text\" id=\"datefield_".$id."\" name=\"search_textnode[".$id."]\" value=\"\" style=\"display:inline-block; margin:1px;\" /><img src=\"".getthemelocation()."img/button_datepicker.gif\" onclick=\"show_cal(this, 'datefield_".$id."', '".$format."');\" align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang])."\" /><br />";
               }
             }
             // search field for media alternative text

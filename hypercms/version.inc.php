@@ -1467,7 +1467,7 @@ Release 04/2016
 - Integration of im/export API in API loader
 - Integration of im/export API in API documentation
 - Rename of function licensenotification to sendlicensenotification (to be used as helper function) in main API
-- Implementation of new function licensenotificatio in main API
+- Implementation of new function licensenotification in main API
 - Replaced array_merge to array_replace_recursive in function userlogin in security API
 - Implementation of support for taxonomy based search in function rdbms_searchcontent
 - Implementation of publication selectbox in explorer search form
@@ -1484,8 +1484,23 @@ Release 04/2016
 - Bug fix: Function savecontainer did not verify and support container-type "version"
 - Function indexcontent will save not only working container but also the published container
 - Bug fix: Function manipulateobject did not verify folder objects correctly in order to correct the location of the object
+- Update of installation routine to include new configuration setting for taxonomy
+
+Version 6.1.5
+Release 05/2016
+- Changes in default taxonomies for all languages
+- Removed readonly attribute from date search field in function buildsearchform in template engine
+- Set user language in template engine for taxonomies in keywords fields
+- Removed verification of taxonomy-setting in function gettaxonomy_childs
+- Implementation of new function base64_to_file in media API
+- Implementation of annotations for images (supports drawing lines, rectangles, circles, pointers and text)
+- Implementation of new input parameters for service/savecontent in order to save annotation image
+- Improvements in function showmedia regarding the rendering of temporary images
+- Only display annotions for images that are larger than the standard thumbnail size
+- Bug fix: Function cleantext in external website search engine API used wrong variable for character replacements in content string
+- Update of browser window features for new windows in control_objectlist_menu and control_content_menu
 */
 
 // current version
-$version = "Version 6.1.4";
+$version = "Version 6.1.5";
 ?>

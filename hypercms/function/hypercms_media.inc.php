@@ -641,6 +641,39 @@ function unindexcontent ($site, $location, $file, $container, $container_content
   }
 }
 
+// ---------------------- base64_to_file -----------------------------
+// function: createthumbnail_indesign()
+// input: base64 encoded string, path to destination dir, file name
+// output: new file name / false on error
+
+// description:
+// Decodes a base64 encoded straing and saves it to the file system.
+
+function base64_to_file ($base64_string, $location, $file)
+{
+  if ($base64_string != "" && valid_locationname ($location) && valid_objectname ($file))
+  {
+      // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+
+    // exctract image data from string (image/jpg;base64,$data)
+    if (strpos ("_".$base64_string, ",") > 0) list ($format, $data) = explode (",", $base64_string);
+    else $data = $base64_string;
+  
+    $filehandler = fopen ($location.$file, "wb"); 
+    
+    if ($filehandler)
+    {
+      fwrite ($filehandler, base64_decode ($data)); 
+      fclose ($filehandler); 
+
+      return $file;
+    }
+    else return false;
+  }
+  else return false; 
+}
+
 // ---------------------- createthumbnail_indesign -----------------------------
 // function: createthumbnail_indesign()
 // input: publication, path to source dir, path to destination dir, file name

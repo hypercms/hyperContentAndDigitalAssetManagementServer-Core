@@ -141,6 +141,10 @@ $componentm = getrequest ("componentm", "array");
 $artcomponentm = getrequest ("artcomponentm", "array");
 $condition = getrequest ("condition", "array");
 
+// base64 encoded JPEG annotation image
+$medianame = getrequest ("medianame");
+$mediadata = getrequest ("mediadata");
+
 if (isset ($_REQUEST['pagetitle'])) $pagetitle = getrequest ("pagetitle");
 if (isset ($_REQUEST['pageauthor'])) $pageauthor = getrequest ("pageauthor");
 if (isset ($_REQUEST['pagedescription'])) $pagedescription = getrequest ("pagedescription");
@@ -232,6 +236,9 @@ if ($usedby == "" || $usedby == $user)
     // write content in container if security token is available and matches the crypted location of the object (absolute path in file system is used as input for encryption!)
     if (checktoken ($token, $user) && valid_locationname ($location) && valid_objectname ($page))
     {
+      // ----------------------------------- write content -------------------------------------- 
+      
+      // set atricle
       if ($contentdatanew != false && is_array ($artstatus)) $contentdatanew = setarticle ($site, $contentdatanew, $contentfile, $arttitle, $artstatus, $artdatefrom, $artdateto, $user, $user);
     
       // text content
@@ -288,6 +295,18 @@ if ($usedby == "" || $usedby == $user)
         
         if (is_file ($object_mediafile))
         {
+          // ------------------------------- write annotation image ----------------------------------   
+
+          if (!empty ($medianame) && !empty ($mediadata))
+          {
+            $annotationfile = base64_to_file ($mediadata, $mediafile_location, $medianame);
+            
+            // save to cloud storage
+            if (!empty ($annotationfile) && function_exists ("savecloudobject")) savecloudobject ($site, $mediafile_location, $medianame, $user);
+          }
+        
+          // ----------------------------------- write metadata --------------------------------------  
+          
           // write IPTC data to media file
           $result_iptc = false;
           
@@ -515,7 +534,7 @@ if ($usedby == "" || $usedby == $user)
           $errcode = "20101";
           $error[] = $mgmt_config['today']."|page_save.inc.php|error|$errcode|unable to save data of container '$contentfile' using db_connect '$db_connect'";          
         }
-      }    
+      }
     }
     else
     {

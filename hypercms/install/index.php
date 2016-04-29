@@ -327,7 +327,9 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
           $setting['inherit_tpl'] = false;
           $setting['specialchr_disable'] = true;
           $setting['dam'] = false;
+          $setting['taxonomy'] = false;
           $setting['upload_userinput'] = false;
+          $setting['upload_pages'] = false;
           $setting['youtube'] = false;
           $setting['theme'] = "standard";
           $setting['storage'] = "";
@@ -358,7 +360,9 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
           $setting['inherit_tpl'] = false;
           $setting['specialchr_disable'] = false;
           $setting['dam'] = true;
+          $setting['taxonomy'] = false;
           $setting['upload_userinput'] = false;
+          $setting['upload_pages'] = false;
           $setting['youtube'] = false;
           $setting['theme'] = "standard";
           $setting['storage'] = "";

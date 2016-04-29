@@ -900,16 +900,40 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           // use thumbnail if it is valid (larger than 10 bytes)
           if (is_file ($thumb_root.$thumbfile))
           {
-            $viewfolder = $mgmt_config['abs_path_temp'];
-            $newext = 'png';
-            $typename = 'view';
-            
             // get thumbnail image information
             $thumb_size = @getimagesize ($thumb_root.$thumbfile);
             $mediaratio = $thumb_size[0] / $thumb_size[1];
+  
+            // create new image for annotations (only if annotations are enabled and image conversion software and permissions are given)
+            $annotationname = $file_info['filename'].'.annotation.jpg';
             
-            // predict the name to check if the file does exist and maybe is actual
-            $newname = $file_info['filename'].'.'.$typename.'.'.$width.'x'.$height.'.'.$newext;
+            if (!empty ($mgmt_config['annotation']) && !is_file ($thumb_root.$annotationname) && $viewtype == "preview" && is_supported ($mgmt_imagepreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+            {
+              $maxmediasize = 460;
+              
+              // set width and height for annotation image
+              if ($mediaratio >= 1)
+              {
+                $width = $maxmediasize;
+                $height = round (($width / $mediaratio), 0);
+              }
+              elseif ($mediaratio < 1)
+              {
+                $height = $maxmediasize;
+                $width = round (($height * $mediaratio), 0);
+              }
+              
+              if (is_array ($mgmt_imageoptions))
+              {
+                // define image format
+                $mgmt_imageoptions['.jpg.jpeg']['annotation'] = '-s '.$width.'x'.$height.' -f jpg';
+
+                // create new file for annotations
+                $result = createmedia ($site, $thumb_root, $thumb_root, $mediafile_orig, 'jpg', 'annotation', true);
+
+                if ($result) $mediafile = $result;
+              }
+            }
 
             // if thumbnail file is smaller than the defined size of a thumbnail due to a smaller original image
             if (is_array ($thumb_size) && $thumb_size[0] < 180 && $thumb_size[1] < 180)
@@ -919,26 +943,25 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $mediafile = $thumbfile;
             }
             // generate a new image file if the new image size is greater than 150% of the width or height of the thumbnail
-            elseif (is_array ($thumb_size) && ($width > 0 && $thumb_size[0] * 1.5 < $width) && ($height > 0 && $thumb_size[1] * 1.5 < $height) && is_array ($mgmt_imageoptions))
+            elseif (is_array ($thumb_size) && ($width > 0 && $thumb_size[0] * 1.5 < $width) && ($height > 0 && $thumb_size[1] * 1.5 < $height) && is_supported ($mgmt_imagepreview, $file_info['orig_ext']))
             {
+              // define parameters for view-images
+              $viewfolder = $mgmt_config['abs_path_temp'];
+              $newext = 'jpg';
+              $typename = '.view.'.$width.'x'.$height;
+                        
+              // predict the name to check if the file does exist and maybe is actual
+              $newname = $file_info['filename'].$typename.'.'.$newext;
+            
               // generate new file only when another one wasn't already created or is outdated (use thumbnail since the date of the decrypted temporary file is not representative)
               if (!is_file ($viewfolder.$newname) || @filemtime ($thumb_root.$thumbfile) > @filemtime ($viewfolder.$newname)) 
               {
-                // searching for the configuration we need
-                foreach ($mgmt_imageoptions as $formatstring => $settingArray)
+                if (!empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
                 {
-                  if (substr_count ($formatstring.".", '.'.$newext.'.') > 0)
-                  {
-                    $formats = $formatstring;
-                  }
-                }
-              
-                if ($formats != "")
-                {
-                  $mgmt_imageoptions[$formats][$typename.'.'.$width.'x'.$height] = '-s '.$width.'x'.$height.' -f '.$newext;
+                  $mgmt_imageoptions['.jpg.jpeg'][$typename] = '-s '.$width.'x'.$height.' -f '.$newext;
                   
                   // create new temporary thumbnail
-                  $result = createmedia ($site, $thumb_root, $viewfolder, $mediafile_orig, $newext, $typename.'.'.$width.'x'.$height, true);
+                  $result = createmedia ($site, $thumb_root, $viewfolder, $mediafile_orig, $newext, $typename, true);
 
                   if ($result) $mediafile = $result;
                 }
@@ -974,7 +997,18 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
             $mediaview .= "
           <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
-            <tr><td align=\"left\"><img src=\"".createviewlink ($site, $mediafile, $medianame, true)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style."/></td></tr>
+            <tr><td align=\"left\">";
+            
+            if (!empty ($mgmt_config['annotation']) && is_file ($thumb_root.$annotationname) && $viewtype == "preview" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+            {
+              $mediaview .= "<div style=\"margin-top:30px\"><div id=\"annotation\" style=\"position:relative\" class=\"".$class."\"></div></div>";
+            }
+            else
+            {
+              $mediaview .= "<img src=\"".createviewlink ($site, $mediafile, $medianame, true)."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" ".$style."/>";
+            }
+            
+            $mediaview .= "</td></tr>
             <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."</td></tr>";           
           }
           // if no thumbnail/preview exists
@@ -1003,6 +1037,41 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
         
         $mediaview .= "</table>\n";
+
+        // embed annoation script
+        if (!empty ($mgmt_config['annotation']) && is_file ($thumb_root.$annotationname) && $viewtype == "preview" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+        {
+          $mediaview .= "
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.js\"></script>
+	<script>
+    function setAnnoationButtons ()
+    {
+      document.getElementById('annotationRectangle').src = '".getthemelocation()."img/button_rectangle.gif';
+      document.getElementById('annotationCircle').src = '".getthemelocation()."img/button_circle.gif';
+      document.getElementById('annotationText').src = '".getthemelocation()."img/button_texttag.gif';
+      document.getElementById('annotationArrow').src = '".getthemelocation()."img/button_arrow.gif';
+      document.getElementById('annotationPen').src = '".getthemelocation()."img/button_pen.gif';
+      document.getElementById('annotationUndo').src = '".getthemelocation()."img/button_history_back.gif';
+      document.getElementById('annotationRedo').src = '".getthemelocation()."img/button_history_forward.gif';
+    }
+  
+		$(document).ready(function(){
+      // set annotaion image file name
+      $('#medianame').val('".$annotationname."');
+      
+      // create annotation image
+			$('#annotation').annotate({
+				color: 'red',
+				bootstrap: false,
+				images: ['".createviewlink ($site, $annotationname, $annotationname)."']
+      });
+      
+      // set images for buttons
+      setAnnoationButtons(); 
+		});
+	</script>
+  ";
+        }
       }
       // -------------------------------------- if flash --------------------------------------- 
       elseif ($file_info['ext'] != "" && substr_count ($swf_ext.".", $file_info['ext'].".") > 0)

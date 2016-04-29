@@ -485,36 +485,49 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
     
     $result = array();
 
-    // get taxonomy IDs and keywords
-    if (strtolower ($site) == "default" || (valid_publicationname ($site) && !empty ($mgmt_config[$site]['taxonomy'])))
+    // load taxonomy of publication
+    if (!is_array ($taxonomy) && valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
     {
-      // load taxonomy of publication
-      if (!is_array ($taxonomy) && valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
-      {
-        include ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php");
-      }
-      // load default taxonomy
-      elseif (!is_array ($taxonomy) && is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php"))
-      {
-        include ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php");
-      }
-      
-      // search for taxonomy keyword and its childs
-      if (!empty ($taxonomy) && is_array ($taxonomy) && sizeof ($taxonomy) > 0)
-      {
-        // verify language in taxonomy and set en as default
-        if (!empty ($lang) && empty ($taxonomy[$lang])) $lang = $mgmt_lang_shortcut_default;
+      include ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php");
+    }
+    // load default taxonomy
+    elseif (!is_array ($taxonomy) && is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php"))
+    {
+      include ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php");
+    }
+    
+    // search for taxonomy keyword and its childs
+    if (!empty ($taxonomy) && is_array ($taxonomy) && sizeof ($taxonomy) > 0)
+    {
+      // verify language in taxonomy and set en as default
+      if (!empty ($lang) && empty ($taxonomy[$lang])) $lang = $mgmt_lang_shortcut_default;
 
-        // return key = taxonomy ID and value = keyword
-        foreach ($taxonomy as $tax_lang=>$tax_array)
+      // return key = taxonomy ID and value = keyword
+      foreach ($taxonomy as $tax_lang=>$tax_array)
+      {
+        // selected language or all languages
+        if ($tax_lang == $lang || empty ($lang))
         {
-          // selected language or all languages
-          if ($tax_lang == $lang || empty ($lang))
+          foreach ($tax_array as $path=>$keyword)
           {
-            foreach ($tax_array as $path=>$keyword)
+            // look up all root keywords on first level
+            if (isset ($tax_id) && $tax_id == "0" && (substr_count ($path, "/") - 2) < $childlevels)
             {
-              // look up all root keywords on first level
-              if (isset ($tax_id) && $tax_id == "0" && (substr_count ($path, "/") - 2) < $childlevels)
+              // get ID
+              $path_temp = substr ($path, 0, -1);
+              $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
+              
+              if ($id_only == true) $result[$id] = $keyword;
+              else $result[$tax_lang][$id] = $keyword;
+            }
+            // look up taxonomy ID
+            elseif (!empty ($tax_id) && strpos ("_".$path, "/".$tax_id."/") > 0)
+            {
+              // count sublevels following the current ID
+              $levels = substr_count (substr ($path, strpos ($path, "/".$tax_id."/")), "/") - 2;
+
+              // verify child level limit
+              if ($levels <= $childlevels)
               {
                 // get ID
                 $path_temp = substr ($path, 0, -1);
@@ -523,38 +536,21 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
                 if ($id_only == true) $result[$id] = $keyword;
                 else $result[$tax_lang][$id] = $keyword;
               }
-              // look up taxonomy ID
-              elseif (!empty ($tax_id) && strpos ("_".$path, "/".$tax_id."/") > 0)
-              {
-                // count sublevels following the current ID
-                $levels = substr_count (substr ($path, strpos ($path, "/".$tax_id."/")), "/") - 2;
+            }
+            // look up expression and get taxonomy ID if keyword is included in expressions array
+            elseif (!empty ($expression_array) && array_search (strtolower ($keyword), $expression_array) !== false)
+            {
+              // get ID
+              $path_temp = substr ($path, 0, -1);
+              $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
 
-                // verify child level limit
-                if ($levels <= $childlevels)
-                {
-                  // get ID
-                  $path_temp = substr ($path, 0, -1);
-                  $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
-                  
-                  if ($id_only == true) $result[$id] = $keyword;
-                  else $result[$tax_lang][$id] = $keyword;
-                }
-              }
-              // look up expression and get taxonomy ID if keyword is included in expressions array
-              elseif (!empty ($expression_array) && array_search (strtolower ($keyword), $expression_array) !== false)
+              if ($id != "")
               {
-                // get ID
-                $path_temp = substr ($path, 0, -1);
-                $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
-
-                if ($id != "")
-                {
-                  if ($id_only == true) $result[$id] = $keyword;
-                  else $result[$tax_lang][$id] = $keyword;
-                  
-                  // set ID
-                  $tax_id = $id;
-                }
+                if ($id_only == true) $result[$id] = $keyword;
+                else $result[$tax_lang][$id] = $keyword;
+                
+                // set ID
+                $tax_id = $id;
               }
             }
           }

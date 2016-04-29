@@ -386,7 +386,7 @@ function cleantext ($content, $charset="UTF-8")
     $content = str_replace (array("_____", "____", "___", "__"), "_", $content);
     $content = preg_replace ('<!--(.*?)-->', "", $content);
     $content = str_replace ("|", "&#124;", $content);
-    $text = str_replace (array("\"", "'", "(", ")", "{", "}", "[", "]", ".", ",", ";", "_", "\t", "\r\n", "\r", "\n"), " ", $text);
+    $content = str_replace (array("\"", "'", "(", ")", "{", "}", "[", "]", ".", ",", ";", "_", "\t", "\r\n", "\r", "\n"), " ", $content);
     $content = preg_replace ('/\s+/', " ", $content);
     $content = trim ($content);
 
