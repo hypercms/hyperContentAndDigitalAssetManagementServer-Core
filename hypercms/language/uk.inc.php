@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['uk'] = "Експорт до каталогу"
 $hcms_lang['import-from-directory']['uk'] = "Імпорт з каталогу";
 $hcms_lang['taxonomy']['uk'] = "Екзаменаційними Навики";
 $hcms_lang['enable-taxonomy-browsing-and-search']['uk'] = "Увімкнути таксономії перегляд та пошук";
+$hcms_lang['rectangle']['uk'] = "Прямокутник";
+$hcms_lang['circle']['uk'] = "Коло";
+$hcms_lang['arrow']['uk'] = "Стрілка праворуч";
+$hcms_lang['pen']['uk'] = "Pen";
+$hcms_lang['undo']['uk'] = "Вернути";
+$hcms_lang['redo']['uk'] = "Повторити";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['uk'] = "Виберіть потрібний інструмент для того, щоб додати анотацію";
 ?>

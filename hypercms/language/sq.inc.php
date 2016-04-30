@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['sq'] = "Drejtori depertues";
 $hcms_lang['import-from-directory']['sq'] = "Drejtori të importojë nga";
 $hcms_lang['taxonomy']['sq'] = "Sistematikës";
 $hcms_lang['enable-taxonomy-browsing-and-search']['sq'] = "Aftësohet sistematikës shfletimin dhe marketing";
+$hcms_lang['rectangle']['sq'] = "Katërçipjes";
+$hcms_lang['circle']['sq'] = "Rrethi im";
+$hcms_lang['arrow']['sq'] = "Duke ikur si shigjetë";
+$hcms_lang['pen']['sq'] = "Pena";
+$hcms_lang['undo']['sq'] = "Lapërkon";
+$hcms_lang['redo']['sq'] = "Ribëj";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['sq'] = "Zgjidh një mjet për të shtuar një shënimi";
 ?>

@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['sr'] = "Izvoz u direktorijum";
 $hcms_lang['import-from-directory']['sr'] = "Uvoz iz Direktorijum";
 $hcms_lang['taxonomy']['sr'] = "Taxonomy";
 $hcms_lang['enable-taxonomy-browsing-and-search']['sr'] = "Omogućiti pretraživanje taxonomy i rezultati";
+$hcms_lang['rectangle']['sr'] = "Pravougaonik";
+$hcms_lang['circle']['sr'] = "Krug";
+$hcms_lang['arrow']['sr'] = "Strelicu";
+$hcms_lang['pen']['sr'] = "Pen";
+$hcms_lang['undo']['sr'] = "Poništi";
+$hcms_lang['redo']['sr'] = "Ponove";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['sr'] = "Odaberite sredstvo da bi se dodati i označavanje";
 ?>

@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['en'] = "Export to directory";
 $hcms_lang['import-from-directory']['en'] = "Import from directory";
 $hcms_lang['taxonomy']['en'] = "Taxonomy";
 $hcms_lang['enable-taxonomy-browsing-and-search']['en'] = "Enable taxonomy browsing and search";
+$hcms_lang['rectangle']['en'] = "Rectangle";
+$hcms_lang['circle']['en'] = "Circle";
+$hcms_lang['arrow']['en'] = "Arrow";
+$hcms_lang['pen']['en'] = "Pen";
+$hcms_lang['undo']['en'] = "Undo";
+$hcms_lang['redo']['en'] = "Redo";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['en'] = "Select a tool in order to add an annotation";
 ?>

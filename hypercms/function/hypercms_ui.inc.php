@@ -562,7 +562,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 {
   // $mgmt_imageoptions is used for image rendering (in case the format requires the rename of the object file extension)	 
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docconvert, $hcms_charset, $hcms_lang_codepage, $hcms_lang, $lang,
-         $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions;
+         $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions, $is_mobile;
   
   // Path to PDF.JS and Google Docs
   $pdfjs_path = $mgmt_config['url_path_cms']."javascript/pdfpreview/web/viewer.html?file=";
@@ -907,9 +907,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             // create new image for annotations (only if annotations are enabled and image conversion software and permissions are given)
             $annotationname = $file_info['filename'].'.annotation.jpg';
             
-            if (!empty ($mgmt_config['annotation']) && !is_file ($thumb_root.$annotationname) && $viewtype == "preview" && is_supported ($mgmt_imagepreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+            if (($thumb_size[0] >= 180 || $thumb_size[1] >= 180) && !empty ($mgmt_config['annotation']) && !is_file ($thumb_root.$annotationname) && $viewtype == "preview" && is_supported ($mgmt_imagepreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
             {
-              $maxmediasize = 460;
+              $maxmediasize = 520;
               
               // set width and height for annotation image
               if ($mediaratio >= 1)
@@ -999,7 +999,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           <table style=\"margin:0; border-spacing:0; border-collapse:collapse;\">
             <tr><td align=\"left\">";
             
-            if (!empty ($mgmt_config['annotation']) && is_file ($thumb_root.$annotationname) && $viewtype == "preview" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+            if (($thumb_size[0] >= 180 || $thumb_size[1] >= 180) && !empty ($mgmt_config['annotation']) && is_file ($thumb_root.$annotationname) && $viewtype == "preview" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
             {
               $mediaview .= "<div style=\"margin-top:30px\"><div id=\"annotation\" style=\"position:relative\" class=\"".$class."\"></div></div>";
             }
@@ -1039,7 +1039,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "</table>\n";
 
         // embed annoation script
-        if (!empty ($mgmt_config['annotation']) && is_file ($thumb_root.$annotationname) && $viewtype == "preview" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+        if (($thumb_size[0] >= 180 || $thumb_size[1] >= 180) && !empty ($mgmt_config['annotation']) && is_file ($thumb_root.$annotationname) && $viewtype == "preview" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
         {
           $mediaview .= "
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.js\"></script>
@@ -1047,12 +1047,36 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     function setAnnoationButtons ()
     {
       document.getElementById('annotationRectangle').src = '".getthemelocation()."img/button_rectangle.gif';
+      document.getElementById('annotationRectangle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
+      document.getElementById('annotationRectangle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['rectangle'][$lang], $hcms_charset, $lang)."');
+      
       document.getElementById('annotationCircle').src = '".getthemelocation()."img/button_circle.gif';
+      document.getElementById('annotationCircle').title = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
+      document.getElementById('annotationCircle').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['circle'][$lang], $hcms_charset, $lang)."');
+      
       document.getElementById('annotationText').src = '".getthemelocation()."img/button_texttag.gif';
+      document.getElementById('annotationText').title = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
+      document.getElementById('annotationText').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['text'][$lang], $hcms_charset, $lang)."');
+      
       document.getElementById('annotationArrow').src = '".getthemelocation()."img/button_arrow.gif';
+      document.getElementById('annotationArrow').title = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
+      document.getElementById('annotationArrow').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['arrow'][$lang], $hcms_charset, $lang)."');
+      
       document.getElementById('annotationPen').src = '".getthemelocation()."img/button_pen.gif';
+      document.getElementById('annotationPen').title = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
+      document.getElementById('annotationPen').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['pen'][$lang], $hcms_charset, $lang)."');
+      
       document.getElementById('annotationUndo').src = '".getthemelocation()."img/button_history_back.gif';
+      document.getElementById('annotationUndo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
+      document.getElementById('annotationUndo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['undo'][$lang], $hcms_charset, $lang)."');
+      
       document.getElementById('annotationRedo').src = '".getthemelocation()."img/button_history_forward.gif';
+      document.getElementById('annotationRedo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
+      document.getElementById('annotationRedo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
+      
+      document.getElementById('annotationHelp').src = '".getthemelocation()."img/button_help.gif';
+      document.getElementById('annotationHelp').title = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
+      document.getElementById('annotationHelp').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
     }
   
 		$(document).ready(function(){

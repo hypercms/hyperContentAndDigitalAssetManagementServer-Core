@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['no'] = "Eksport til katalog";
 $hcms_lang['import-from-directory']['no'] = "Importere fra katalog";
 $hcms_lang['taxonomy']['no'] = "Taksonomi";
 $hcms_lang['enable-taxonomy-browsing-and-search']['no'] = "Aktiverer taksonomi surfing og søk";
+$hcms_lang['rectangle']['no'] = "Rektangel";
+$hcms_lang['circle']['no'] = "Sirkel";
+$hcms_lang['arrow']['no'] = "Pil";
+$hcms_lang['pen']['no'] = "Penn";
+$hcms_lang['undo']['no'] = "Angre";
+$hcms_lang['redo']['no'] = "Gjenta";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['no'] = "Velg et verktøy for å legge til en merknad";
 ?>

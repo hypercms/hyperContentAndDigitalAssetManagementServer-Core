@@ -1374,4 +1374,11 @@ $hcms_lang['export-to-directory']['id'] = "Direktori untuk ekspor";
 $hcms_lang['import-from-directory']['id'] = "Impor dari directory";
 $hcms_lang['taxonomy']['id'] = "Taksonomi";
 $hcms_lang['enable-taxonomy-browsing-and-search']['id'] = "Aktifkan Jelajah taksonomi dan mencari";
+$hcms_lang['rectangle']['id'] = "Pendant Kotak";
+$hcms_lang['circle']['id'] = "Circle";
+$hcms_lang['arrow']['id'] = "Tanda panah";
+$hcms_lang['pen']['id'] = "Pen";
+$hcms_lang['undo']['id'] = "Mengurungkan";
+$hcms_lang['redo']['id'] = "Menjalankan langkah";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['id'] = "Pilih sebuah tool untuk menambahkan annotation";
 ?>

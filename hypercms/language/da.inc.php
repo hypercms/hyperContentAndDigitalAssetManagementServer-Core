@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['da'] = "Eksporter til nummerliste";
 $hcms_lang['import-from-directory']['da'] = "Import fra bibliotek";
 $hcms_lang['taxonomy']['da'] = "Taksonomi";
 $hcms_lang['enable-taxonomy-browsing-and-search']['da'] = "Aktiverer taksonomi browsing og søgning";
+$hcms_lang['rectangle']['da'] = "Rektangel";
+$hcms_lang['circle']['da'] = "Cirkel";
+$hcms_lang['arrow']['da'] = "Pil";
+$hcms_lang['pen']['da'] = "Pen";
+$hcms_lang['undo']['da'] = "Fortryd";
+$hcms_lang['redo']['da'] = "Annuller Fortryd";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['da'] = "Vælg et værktøj for at tilføje en kommentar";
 ?>

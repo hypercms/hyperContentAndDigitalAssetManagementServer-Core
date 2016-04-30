@@ -1374,4 +1374,11 @@ $hcms_lang['export-to-directory']['he'] = "ייצוא directory";
 $hcms_lang['import-from-directory']['he'] = "ייבוא מן directory";
 $hcms_lang['taxonomy']['he'] = "טקסונומיה";
 $hcms_lang['enable-taxonomy-browsing-and-search']['he'] = "אפשר גלישה טקסונומיה חיפוש";
+$hcms_lang['rectangle']['he'] = "מלבן";
+$hcms_lang['circle']['he'] = "מעגל";
+$hcms_lang['arrow']['he'] = "חץ";
+$hcms_lang['pen']['he'] = "עט";
+$hcms_lang['undo']['he'] = "לבטל";
+$hcms_lang['redo']['he'] = "לחזור";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['he'] = "בחר כלי כדי להוסיף הערה";
 ?>

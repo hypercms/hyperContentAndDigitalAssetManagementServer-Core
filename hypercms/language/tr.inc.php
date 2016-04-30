@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['tr'] = "Ver directory";
 $hcms_lang['import-from-directory']['tr'] = "Al directory";
 $hcms_lang['taxonomy']['tr'] = "Taksonomi";
 $hcms_lang['enable-taxonomy-browsing-and-search']['tr'] = "Enable taksonomi tarama ve arama";
+$hcms_lang['rectangle']['tr'] = "Dikdörtgen";
+$hcms_lang['circle']['tr'] = "Daire";
+$hcms_lang['arrow']['tr'] = "Ok";
+$hcms_lang['pen']['tr'] = "Kalem";
+$hcms_lang['undo']['tr'] = "Geri Al";
+$hcms_lang['redo']['tr'] = "Yinele";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['tr'] = "Bir takım, bir açıklama";
 ?>

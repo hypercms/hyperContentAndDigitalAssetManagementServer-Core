@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['ja'] = "ディレクトリをエクスポー�
 $hcms_lang['import-from-directory']['ja'] = "ディレクトリからインポート";
 $hcms_lang['taxonomy']['ja'] = "分類";
 $hcms_lang['enable-taxonomy-browsing-and-search']['ja'] = "分類の参照と検索を有効にする";
+$hcms_lang['rectangle']['ja'] = "長方形";
+$hcms_lang['circle']['ja'] = "円";
+$hcms_lang['arrow']['ja'] = "矢印";
+$hcms_lang['pen']['ja'] = "ペン";
+$hcms_lang['undo']['ja'] = "元に戻す";
+$hcms_lang['redo']['ja'] = "やり直し";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ja'] = "ツールを選択してアノテーションを追加するには、";
 ?>

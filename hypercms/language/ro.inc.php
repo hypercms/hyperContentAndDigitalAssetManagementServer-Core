@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['ro'] = "Directorul de la export";
 $hcms_lang['import-from-directory']['ro'] = "Import din director";
 $hcms_lang['taxonomy']['ro'] = "Taxonomy";
 $hcms_lang['enable-taxonomy-browsing-and-search']['ro'] = "Permite taxonomy navigarea şi căutare";
+$hcms_lang['rectangle']['ro'] = "Dreptunghi";
+$hcms_lang['circle']['ro'] = "Cerc";
+$hcms_lang['arrow']['ro'] = "Săgeată";
+$hcms_lang['pen']['ro'] = "Pen";
+$hcms_lang['undo']['ro'] = "Slăbiţi";
+$hcms_lang['redo']['ro'] = "Refaceţi";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ro'] = "Selectaţi un instrument pentru a adăuga o adnotare";
 ?>

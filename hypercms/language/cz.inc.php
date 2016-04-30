@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['cz'] = "Export to directory";
 $hcms_lang['import-from-directory']['cz'] = "Importovat z adresáře";
 $hcms_lang['taxonomy']['cz'] = "Taxonomie";
 $hcms_lang['enable-taxonomy-browsing-and-search']['cz'] = "Povolit taxonomie procházení a vyhledávání";
+$hcms_lang['rectangle']['cz'] = "Obdélník";
+$hcms_lang['circle']['cz'] = "Kruh";
+$hcms_lang['arrow']['cz'] = "Šipka dolů";
+$hcms_lang['pen']['cz'] = "Pero";
+$hcms_lang['undo']['cz'] = "Povolte";
+$hcms_lang['redo']['cz'] = "Opakovat";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['cz'] = "Vyberte nástroj s cílem přidat anotaci";
 ?>

@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['ar'] = "الدليل على التصدير";
 $hcms_lang['import-from-directory']['ar'] = "استيراد من الدليل";
 $hcms_lang['taxonomy']['ar'] = "تصنيف";
 $hcms_lang['enable-taxonomy-browsing-and-search']['ar'] = "تمكين التصفح والبحث taxonomy";
+$hcms_lang['rectangle']['ar'] = "المستطيل";
+$hcms_lang['circle']['ar'] = "دائرة";
+$hcms_lang['arrow']['ar'] = "السهم";
+$hcms_lang['pen']['ar'] = "القلم";
+$hcms_lang['undo']['ar'] = "تراجع";
+$hcms_lang['redo']['ar'] = "الاعادة";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ar'] = "حدد اداة لاضافة شرح";
 ?>

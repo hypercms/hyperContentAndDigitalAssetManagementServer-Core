@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['ur'] = "ڈائرکٹری برامد کریں"
 $hcms_lang['import-from-directory']['ur'] = "ڈائرکٹری سے درامد کریں";
 $hcms_lang['taxonomy']['ur'] = "اصول صنف بندی";
 $hcms_lang['enable-taxonomy-browsing-and-search']['ur'] = "اصول صنف بندی کی براؤز کاری اہل بنائیں اور تلاش";
+$hcms_lang['rectangle']['ur'] = "مستطیل";
+$hcms_lang['circle']['ur'] = "چکر";
+$hcms_lang['arrow']['ur'] = "تیر";
+$hcms_lang['pen']['ur'] = "قلم";
+$hcms_lang['undo']['ur'] = "کالعدم کریں";
+$hcms_lang['redo']['ur'] = "اعادہ کریں";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ur'] = "منتخب ٹول میں ایک شرح میں اضافہ کریں";
 ?>

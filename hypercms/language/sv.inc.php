@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['sv'] = "Exportera till katalog";
 $hcms_lang['import-from-directory']['sv'] = "Importera från katalog";
 $hcms_lang['taxonomy']['sv'] = "Taxonomi.";
 $hcms_lang['enable-taxonomy-browsing-and-search']['sv'] = "Aktivera taxonomi browsing och genomsöka";
+$hcms_lang['rectangle']['sv'] = "Rektangel";
+$hcms_lang['circle']['sv'] = "Cirkel";
+$hcms_lang['arrow']['sv'] = "Pilen";
+$hcms_lang['pen']['sv'] = "Penna";
+$hcms_lang['undo']['sv'] = "Ångra";
+$hcms_lang['redo']['sv'] = "Redo";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['sv'] = "Välj ett verktyg för att lägga till en anteckning";
 ?>

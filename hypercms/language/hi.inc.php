@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['hi'] = "निर्यात के लि�
 $hcms_lang['import-from-directory']['hi'] = "निर्देशिका से आयात";
 $hcms_lang['taxonomy']['hi'] = "वर्गीकरण";
 $hcms_lang['enable-taxonomy-browsing-and-search']['hi'] = "ब्राउज़िंग खोजें और वर्गीकरण को सक्षम करें";
+$hcms_lang['rectangle']['hi'] = "आयत";
+$hcms_lang['circle']['hi'] = "सर्कल";
+$hcms_lang['arrow']['hi'] = "तीर";
+$hcms_lang['pen']['hi'] = "कलम";
+$hcms_lang['undo']['hi'] = "बिगाडना";
+$hcms_lang['redo']['hi'] = "पुनर्लिखित";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['hi'] = "एक औजार के चयन को जोड़ने के लिए एक annotation";
 ?>

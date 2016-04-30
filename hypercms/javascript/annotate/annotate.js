@@ -120,16 +120,19 @@ Added methode flatten so save the image
         }
 
         self.$tool += "<div class=\"hcmsToolbarBlock\">"
-          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"rectangle\" checked><img id=\"annotationRectangle\" src=\"\" style=\"float:left; pointer-events:none;\" /></label></div>"
-          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"circle\"><img id=\"annotationCircle\" src=\"\" style=\"float:left; pointer-events:none;\" /></label></div>"
-          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"text\"><img id=\"annotationText\" src=\"\" style=\"float:left; pointer-events:none;\" /></label></div>"
-          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"arrow\"><img id=\"annotationArrow\" src=\"\" style=\"float:left; pointer-events:none;\" /></label></div>"
-          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"pen\"><img id=\"annotationPen\" src=\"\" style=\"float:left; pointer-events:none;\" /></label></div>"
+          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"rectangle\" checked><img id=\"annotationRectangle\" src=\"\" style=\"float:left;\" /></label></div>"
+          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"circle\"><img id=\"annotationCircle\" src=\"\" style=\"float:left;\" /></label></div>"
+          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"text\"><img id=\"annotationText\" src=\"\" style=\"float:left;\" /></label></div>"
+          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"arrow\"><img id=\"annotationArrow\" src=\"\" style=\"float:left;\" /></label></div>"
+          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"pen\"><img id=\"annotationPen\" src=\"\" style=\"float:left;\" /></label></div>"
           + "</div>"
           + "<div class=\"hcmsToolbarBlock\">"
-          + "<div id=\"undoaction\" class=\"annotate-undo hcmsButtonOff hcmsButtonSizeSquare\" style=\"float:left; margin-left:4px;\"><img id=\"annotationUndo\" src=\"\" /></div>"
+          + "<div id=\"undoaction\" class=\"annotate-undo hcmsButtonOff hcmsButtonSizeSquare\" style=\"float:left;\"><img id=\"annotationUndo\" src=\"\" /></div>"
           + "<div id=\"redoaction\" class=\"annotate-redo hcmsButtonOff hcmsButtonSizeSquare\" style=\"float:left;\"><img id=\"annotationRedo\" src=\"\" /></div>"
-          + "</div>";
+          + "</div>"
+          + "<div class=\"hcmsToolbarBlock\">"
+          + "<div id=\"help\" class=\"hcmsButton hcmsButtonSizeSquare\" style=\"float:left;\"><img id=\"annotationHelp\" src=\"\" /></div>"
+          + "</div>"
           + "</div>";
       }
       self.$tool = $(self.$tool);

@@ -1374,4 +1374,11 @@ $hcms_lang['export-to-directory']['el'] = "Εξαγωγή σε directory";
 $hcms_lang['import-from-directory']['el'] = "Εισαγωγή από τον κατάλογο";
 $hcms_lang['taxonomy']['el'] = "Ταξινόμηση";
 $hcms_lang['enable-taxonomy-browsing-and-search']['el'] = "Ενεργοποίηση ταξινόμησης περιήγησης και αναζήτησης";
+$hcms_lang['rectangle']['el'] = "Ορθογώνιο";
+$hcms_lang['circle']['el'] = "Κύκλος";
+$hcms_lang['arrow']['el'] = "Κάτω βέλος";
+$hcms_lang['pen']['el'] = "Γραφίδα";
+$hcms_lang['undo']['el'] = "Ξεσφίξτε";
+$hcms_lang['redo']['el'] = "Επανάληψη";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['el'] = "Επιλέξτε ένα εργαλείο για να προσθέσετε ένα σχόλιο";
 ?>

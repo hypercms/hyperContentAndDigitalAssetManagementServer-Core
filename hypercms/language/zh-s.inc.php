@@ -1374,4 +1374,11 @@ $hcms_lang['export-to-directory']['zh-s'] = "导出的目录。";
 $hcms_lang['import-from-directory']['zh-s'] = "导入的目录。";
 $hcms_lang['taxonomy']['zh-s'] = "分类";
 $hcms_lang['enable-taxonomy-browsing-and-search']['zh-s'] = "启用分类浏览和搜索";
+$hcms_lang['rectangle']['zh-s'] = "矩形";
+$hcms_lang['circle']['zh-s'] = "圆";
+$hcms_lang['arrow']['zh-s'] = "箭头";
+$hcms_lang['pen']['zh-s'] = "画笔";
+$hcms_lang['undo']['zh-s'] = "撤消";
+$hcms_lang['redo']['zh-s'] = "重做";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['zh-s'] = "选择一种工具,以便添加一条注释";
 ?>

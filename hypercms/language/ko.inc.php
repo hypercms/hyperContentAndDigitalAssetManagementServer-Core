@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['ko'] = "디렉토리 내보내기";
 $hcms_lang['import-from-directory']['ko'] = "디렉터리 가져오기";
 $hcms_lang['taxonomy']['ko'] = "분류";
 $hcms_lang['enable-taxonomy-browsing-and-search']['ko'] = "분류 검색 및 검색 활성화";
+$hcms_lang['rectangle']['ko'] = "사각형";
+$hcms_lang['circle']['ko'] = "원";
+$hcms_lang['arrow']['ko'] = "화살표";
+$hcms_lang['pen']['ko'] = "펜";
+$hcms_lang['undo']['ko'] = "실행 취소";
+$hcms_lang['redo']['ko'] = "다시 실행";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ko'] = "도구의 순서 주석 추가";
 ?>

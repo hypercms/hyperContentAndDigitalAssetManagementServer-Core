@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['fi'] = "Vie hakemisto";
 $hcms_lang['import-from-directory']['fi'] = "Tuo hakemisto";
 $hcms_lang['taxonomy']['fi'] = "Luokittelu";
 $hcms_lang['enable-taxonomy-browsing-and-search']['fi'] = "Jotta taksonomiaa selailu ja haku";
+$hcms_lang['rectangle']['fi'] = "Suorakulmio";
+$hcms_lang['circle']['fi'] = "Ympyrä";
+$hcms_lang['arrow']['fi'] = "Nuoli";
+$hcms_lang['pen']['fi'] = "Kynä";
+$hcms_lang['undo']['fi'] = "Löysää";
+$hcms_lang['redo']['fi'] = "Redo";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['fi'] = "Valitse työkalu, jotta merkinnän lisääminen";
 ?>

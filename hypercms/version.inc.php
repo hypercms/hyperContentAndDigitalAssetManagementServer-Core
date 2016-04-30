@@ -1499,6 +1499,7 @@ Release 05/2016
 - Only display annotions for images that are larger than the standard thumbnail size
 - Bug fix: Function cleantext in external website search engine API used wrong variable for character replacements in content string
 - Update of browser window features for new windows in control_objectlist_menu and control_content_menu
+- Added new text for annotations to all language files
 */
 
 // current version

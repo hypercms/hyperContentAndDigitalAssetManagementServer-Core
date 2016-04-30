@@ -1375,4 +1375,11 @@ $hcms_lang['export-to-directory']['de'] = "Export in Verzeichnis";
 $hcms_lang['import-from-directory']['de'] = "Import aus Verzeichnis";
 $hcms_lang['taxonomy']['de'] = "Taxonomie";
 $hcms_lang['enable-taxonomy-browsing-and-search']['de'] = "Taxonomie für Browsen und Suchen erlauben";
+$hcms_lang['rectangle']['de'] = "Rechteck";
+$hcms_lang['circle']['de'] = "Kreis";
+$hcms_lang['arrow']['de'] = "Pfeil";
+$hcms_lang['pen']['de'] = "Zeichenstift";
+$hcms_lang['undo']['de'] = "Rückgängig machen";
+$hcms_lang['redo']['de'] = "Wiederholen";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['de'] = "Wählen Sie ein Tool aus, um eine eine Anmerkung hinzuzufügen";
 ?>

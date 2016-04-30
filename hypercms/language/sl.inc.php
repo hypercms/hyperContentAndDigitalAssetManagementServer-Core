@@ -1372,4 +1372,11 @@ $hcms_lang['export-to-directory']['sl'] = "Izvoz v imenik";
 $hcms_lang['import-from-directory']['sl'] = "Uvoz iz imenika";
 $hcms_lang['taxonomy']['sl'] = "Taksonomija";
 $hcms_lang['enable-taxonomy-browsing-and-search']['sl'] = "Taksonomija omogočiti pregled in iskanje";
+$hcms_lang['rectangle']['sl'] = "Pravokotnik";
+$hcms_lang['circle']['sl'] = "Krog";
+$hcms_lang['arrow']['sl'] = "Puščica gor";
+$hcms_lang['pen']['sl'] = "Injekcijski peresnik";
+$hcms_lang['undo']['sl'] = "Razveljavitev";
+$hcms_lang['redo']['sl'] = "Ponovitev zadnjega dejanja";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['sl'] = "Izberite orodje za dodajanje zaznamka";
 ?>

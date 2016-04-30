@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['ru'] = "Экспорт в каталоге";
 $hcms_lang['import-from-directory']['ru'] = "Импорт из каталога";
 $hcms_lang['taxonomy']['ru'] = "Таксономия";
 $hcms_lang['enable-taxonomy-browsing-and-search']['ru'] = "Включить таксономии просмотр и поиск";
+$hcms_lang['rectangle']['ru'] = "Прямоугольник";
+$hcms_lang['circle']['ru'] = "Круг";
+$hcms_lang['arrow']['ru'] = "Стрелка вверх";
+$hcms_lang['pen']['ru'] = "Пера";
+$hcms_lang['undo']['ru'] = "Ослабьте затяжку";
+$hcms_lang['redo']['ru'] = "Повторить";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ru'] = "Выберите инструмент, с тем чтобы добавить аннотацию";
 ?>

@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['so'] = "Dhoofka u agaasinka";
 $hcms_lang['import-from-directory']['so'] = "Alaabtan soo gelinteedu agaasinka ka";
 $hcms_lang['taxonomy']['so'] = "Taxonomy";
 $hcms_lang['enable-taxonomy-browsing-and-search']['so'] = "Gaarsiiso taxonomy iska fiirfiirinayaa iyo raadinta";
+$hcms_lang['rectangle']['so'] = "Rectangle";
+$hcms_lang['circle']['so'] = "Calaamadi";
+$hcms_lang['arrow']['so'] = "Noqday Fallaar";
+$hcms_lang['pen']['so'] = "Qalin";
+$hcms_lang['undo']['so'] = "In ay baabi'iso";
+$hcms_lang['redo']['so'] = "Redo";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['so'] = "Soo xulo isticmaaleen raashinkii si aan ku dari annotation";
 ?>

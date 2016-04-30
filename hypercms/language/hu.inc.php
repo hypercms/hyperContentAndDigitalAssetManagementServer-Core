@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['hu'] = "A könyvtár exportálása";
 $hcms_lang['import-from-directory']['hu'] = "A könyvtár importálása";
 $hcms_lang['taxonomy']['hu'] = "Taxonómiai";
 $hcms_lang['enable-taxonomy-browsing-and-search']['hu'] = "Keresés böngészés és taxonómiai engedélyezése";
+$hcms_lang['rectangle']['hu'] = "Négyzet";
+$hcms_lang['circle']['hu'] = "A kör";
+$hcms_lang['arrow']['hu'] = "Nyíl";
+$hcms_lang['pen']['hu'] = "A toll";
+$hcms_lang['undo']['hu'] = "Lazítsa meg";
+$hcms_lang['redo']['hu'] = "Újra.";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['hu'] = "Válassza ki a berendezés annak érdekében, hogy hozzá egy jegyzetet.";
 ?>

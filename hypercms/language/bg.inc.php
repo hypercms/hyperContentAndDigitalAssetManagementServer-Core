@@ -1374,4 +1374,11 @@ $hcms_lang['export-to-directory']['bg'] = "Износ в телефонния у
 $hcms_lang['import-from-directory']['bg'] = "Внос от телефонния указател";
 $hcms_lang['taxonomy']['bg'] = "Систематика";
 $hcms_lang['enable-taxonomy-browsing-and-search']['bg'] = "Разрешаване на таксономията преглеждане и търсене";
+$hcms_lang['rectangle']['bg'] = "Правоъгълник";
+$hcms_lang['circle']['bg'] = "Кръг";
+$hcms_lang['arrow']['bg'] = "Стрелка";
+$hcms_lang['pen']['bg'] = "Писалка";
+$hcms_lang['undo']['bg'] = "Развийте";
+$hcms_lang['redo']['bg'] = "Redo";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['bg'] = "Изберете инструмент, за да се добавят анотация";
 ?>

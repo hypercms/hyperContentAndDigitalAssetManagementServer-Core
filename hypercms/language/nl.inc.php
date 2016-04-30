@@ -1373,4 +1373,11 @@ $hcms_lang['export-to-directory']['nl'] = "Uitvoer naar directory";
 $hcms_lang['import-from-directory']['nl'] = "Importeren uit telefoonboek";
 $hcms_lang['taxonomy']['nl'] = "Taxonomie";
 $hcms_lang['enable-taxonomy-browsing-and-search']['nl'] = "Enable taxonomie browsen en zoeken";
+$hcms_lang['rectangle']['nl'] = "Rechthoek";
+$hcms_lang['circle']['nl'] = "Cirkel";
+$hcms_lang['arrow']['nl'] = "Pijl";
+$hcms_lang['pen']['nl'] = "Pen";
+$hcms_lang['undo']['nl'] = "Ongedaan maken";
+$hcms_lang['redo']['nl'] = "Redo";
+$hcms_lang['select-a-tool-in-order-to-add-an-annotation']['nl'] = "Selecteer een hulpmiddel om een annotatie";
 ?>
