@@ -2533,7 +2533,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               <title>hyperCMS</title>
               <meta charset=\"".getcodepage ($lang)."\" />
               <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
-              <script src=\"".$mgmt_config['url_path_cms']."javascript/click.js\" type=\"text/javascript\"></script>
               </head>
               <body class=\"hcmsWorkplaceGeneric\">
                 <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [".$tagu."], [".$tagf."], [".$tagl."], [".$tagc."], [".$tagd."] ".$hcms_lang['and-or'][$lang]." [".$tagk."] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
@@ -5114,7 +5113,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               <title>hyperCMS</title>
               <meta charset=\"".$hcms_lang_codepage[$lang]."\" />
               <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
-              <script src=\"javascript/click.js\" type=\"".$mgmt_config['url_path_cms']."text/javascript\"></script>
               </head>
               <body class=\"hcmsWorkplaceGeneric\">
                 <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [$tags] ".$hcms_lang['and-or'][$lang]." [$tagm] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>

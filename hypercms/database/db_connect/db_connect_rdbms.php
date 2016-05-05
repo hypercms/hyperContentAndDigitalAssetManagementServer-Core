@@ -2707,7 +2707,7 @@ function rdbms_getnotification ($event="", $object="", $user="")
     // get recipients
     $sql = 'SELECT nfy.notify_id, nfy.object_id, obj.objectpath, nfy.user, nfy.oncreate, nfy.onedit, nfy.onmove, nfy.ondelete FROM notify AS nfy, object AS obj WHERE obj.object_id=nfy.object_id';
     if ($event != "") $sql .= ' AND nfy.'.$event.'=1';
-    if ($object != "") $sql .= ' AND (obj.objectpath="'.$object.'" || INSTR("'.$object.'", SUBSTR(obj.objectpath, 1, INSTR(obj.objectpath, ".folder") - 1))>0)';
+    if ($object != "") $sql .= ' AND (obj.objectpath="'.$object.'" OR (INSTR(obj.objectpath, ".folder") > 0 AND INSTR("'.$object.'", SUBSTR(obj.objectpath, 1, INSTR(obj.objectpath, ".folder") - 1)) > 0))';
     if ($user != "") $sql .= ' AND nfy.user="'.$user.'"';
     $sql .= ' ORDER BY obj.objectpath';
 

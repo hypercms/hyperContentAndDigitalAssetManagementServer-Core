@@ -422,7 +422,6 @@ if ($action == "unzip" && $authorized == true)
     <img src="<?php echo getthemelocation(); ?>img/loading.gif" />
   </div>
 </div>
-
 <?php
   // load object file and get container and media file
   $objectdata = loadfile ($location, $page);
@@ -462,12 +461,16 @@ if ($action == "unzip" && $authorized == true)
 }
 ?>
 
-<table width="100%" height="120" border=0 cellpadding="3" cellspacing="0">
-  <tr>
-    <td class="hcmsWorkplaceControlWallpaper" align="left" valign="top" width="20"><img src="<?php echo getthemelocation(); ?>img/info.gif" align="absmiddle"/></td>
-    <td align="left" valign="middle"><?php echo $show; ?></td>
-  </tr>
-</table>
+<?php
+echo showtopbar ("<img src=\"".getthemelocation()."img/info.gif\" align=\"absmiddle\" />&nbsp;".getescapedtext ($hcms_lang['information'][$lang]), $lang);
+?>
+<div class="hcmsWorkplaceFrame">
+  <table width="100%" height="140" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" valign="middle"><?php echo $show; ?></td>
+    </tr>
+  </table>
+</div>
 
 <script language="JavaScript">
 <!--

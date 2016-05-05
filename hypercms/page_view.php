@@ -200,7 +200,6 @@ else
         echo "<title>hyperCMS</title>\n";
         echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
         echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
-        echo "<script src=\"javascript/click.js\" type=\"text/javascript\" />\n";
         echo "</script>\n";
         echo "</head>\n";    
         echo "</head>\n";

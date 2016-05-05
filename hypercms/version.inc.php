@@ -1500,6 +1500,14 @@ Release 05/2016
 - Bug fix: Function cleantext in external website search engine API used wrong variable for character replacements in content string
 - Update of browser window features for new windows in control_objectlist_menu and control_content_menu
 - Added new text for annotations to all language files
+- Implementation of annotion image support in function createmedia of media API
+- Redesign of popup information windows
+- Improvements in various functions in set API
+- Bug fix: Removed replacement of comma from function cleancontent in order to support keyword extraction by function rdbms_getkeywords
+- Bug fix: The export did not verify folders in order to exclude them from deleteobject (export only removes objects and not folders)
+- Improvements in SQL statement of function rdbms_getnotification
+- Bug fix: Function localpermission used wrong  location in permission string for 'comprename'
+- Improvements in verson_content_compare
 */
 
 // current version

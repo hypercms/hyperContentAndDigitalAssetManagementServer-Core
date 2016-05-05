@@ -1546,9 +1546,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // CASE: document-based formats, encapsulated post script and vector graphics
                   if ($file_ext == ".pdf" || $file_ext == ".eps" || $file_ext == ".svg")
                   {
-                    if ($type == "thumbnail")
+                    if ($type == "thumbnail" || $type == "annotation")
                     {
-                      $newfile = $file_name.".thumb.jpg";
+                      if ($type == "annotation") $newfile = $file_name.".annotation.jpg";
+                      else $newfile = $file_name.".thumb.jpg";
                       
                       $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
@@ -1625,9 +1626,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       $imagecolorspace = "";
                     }
   
-                    if ($type == "thumbnail")
+                    if ($type == "thumbnail" || $type == "annotation")
                     {
-                      $newfile = $file_name.".thumb.jpg";
+                      if ($type == "annotation") $newfile = $file_name.".annotation.jpg";
+                      else $newfile = $file_name.".thumb.jpg";
                       
                       // reduce thumbnail size if original image is smaller then the defined thumbnail image size
                       if ($imagewidth_orig > 0 && $imagewidth_orig < $imagewidth && $imageheight_orig > 0 && $imageheight_orig < $imageheight)

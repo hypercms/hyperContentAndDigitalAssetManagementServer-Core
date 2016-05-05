@@ -1095,6 +1095,7 @@ else
     ?>
     
     <?php
+    // Cut, Copy, Linked-Copy Button
     if ($page != "" && $page != ".folder")
     {
       if ($hcms_linking['type'] != "Object" && $setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)

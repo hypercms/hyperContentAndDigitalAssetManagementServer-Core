@@ -256,7 +256,7 @@ function localpermission ($site_name, $permission_str)
         $localpermission[$site_name][$group_name]['compfolderrename'] = @$component[6];
         $localpermission[$site_name][$group_name]['compcreate'] = @$component[7];
         $localpermission[$site_name][$group_name]['compdelete'] = @$component[8];
-        $localpermission[$site_name][$group_name]['comprename'] = @$component[8];
+        $localpermission[$site_name][$group_name]['comprename'] = @$component[9];
         $localpermission[$site_name][$group_name]['comppublish'] = @$component[10];
         // content permissions
         $localpermission[$site_name][$group_name]['page'] = @$page[0];

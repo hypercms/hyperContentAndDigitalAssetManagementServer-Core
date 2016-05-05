@@ -64,7 +64,7 @@ function cleancontent ($text, $charset="UTF-8")
     // replace characters
     $text = str_replace (array(".....", "....", "...", ".."), ".", $text);
     $text = str_replace (array("_____", "____", "___", "__"), "_", $text);
-    $text = str_replace (array("\"", "'", "(", ")", "{", "}", "[", "]", ".", ",", ";", "_", "\t", "\r\n", "\r", "\n"), " ", $text);
+    $text = str_replace (array("\"", "'", "(", ")", "{", "}", "[", "]", ".", ";", "_", "\t", "\r\n", "\r", "\n"), " ", $text);
     $text = preg_replace ('/\s+/', " ", $text);
 
     return $text;

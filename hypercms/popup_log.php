@@ -51,14 +51,13 @@ popupfocus ();
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=0 topmargin=0 marginwidth=0 marginheight=0>
-
-<table width="100%" height="100%" border=0 cellpadding="3" cellspacing="0">
-  <tr>
-    <td class="hcmsWorkplaceControl" align="left" valign="top" width="20px"><img src="<?php echo getthemelocation(); ?>img/info.gif" align="absmiddle" /></td>
-    <td align="left" valign="top"><?php echo $description; ?></td>
-  </tr>
-</table>
+<body class="hcmsWorkplaceGeneric">
+<?php
+echo showtopbar ("<img src=\"".getthemelocation()."img/info.gif\" align=\"absmiddle\" />&nbsp;".getescapedtext ($hcms_lang['system-events'][$lang]), $lang);
+?>
+<div class="hcmsWorkplaceFrame">
+  <?php echo $description; ?>
+</div>
 
 </body>
 </html>

@@ -131,7 +131,7 @@ Added methode flatten so save the image
           + "<div id=\"redoaction\" class=\"annotate-redo hcmsButtonOff hcmsButtonSizeSquare\" style=\"float:left;\"><img id=\"annotationRedo\" src=\"\" /></div>"
           + "</div>"
           + "<div class=\"hcmsToolbarBlock\">"
-          + "<div id=\"help\" class=\"hcmsButton hcmsButtonSizeSquare\" style=\"float:left;\"><img id=\"annotationHelp\" src=\"\" /></div>"
+          + "<div id=\"help\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" style=\"float:left;\"><img id=\"annotationHelp\" src=\"\" /></div>"
           + "</div>"
           + "</div>";
       }

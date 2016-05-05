@@ -909,7 +909,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             
             if (($thumb_size[0] >= 180 || $thumb_size[1] >= 180) && !empty ($mgmt_config['annotation']) && !is_file ($thumb_root.$annotationname) && $viewtype == "preview" && is_supported ($mgmt_imagepreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
             {
-              $maxmediasize = 520;
+              $maxmediasize = 540;
               
               // set width and height for annotation image
               if ($mediaratio >= 1)

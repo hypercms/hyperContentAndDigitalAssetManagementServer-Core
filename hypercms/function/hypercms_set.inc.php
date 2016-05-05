@@ -178,7 +178,7 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle, $artstatus, $
         if (!isset ($artdateto[$artid])) $artdateto[$artid] = "";
         
         // set array if input parameter is string
-        if ($userbuffer != "") $artuser[$artid] = $userbuffer;
+        if (!empty ($userbuffer)) $artuser[$artid] = $userbuffer;
   
         // escape special characters for article title (transform all special chararcters into their html/xml equivalents)
         $arttitle[$artid] = str_replace ("&", "&amp;", $arttitle[$artid]);
@@ -197,7 +197,7 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle, $artstatus, $
         $contentdatanew = setcontent ($contentdatanew, "<article>", "<articledatefrom>", $artdatefrom[$artid], "<article_id>", $artid);
         $contentdatanew = setcontent ($contentdatanew, "<article>", "<articledateto>", $artdateto[$artid], "<article_id>", $artid);
         $contentdatanew = setcontent ($contentdatanew, "<article>", "<articlestatus>", $artstatus[$artid], "<article_id>", $artid);
-        if ($artuser[$artid] != "") $contentdatanew = setcontent ($contentdatanew, "<article>", "<articleuser>", $artuser[$artid], "<article_id>", $artid);
+        if (!empty ($artuser[$artid])) $contentdatanew = setcontent ($contentdatanew, "<article>", "<articleuser>", $artuser[$artid], "<article_id>", $artid);
   
         $contentdata = $contentdatanew;
         next ($artstatus);
@@ -398,13 +398,15 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
        
           // exctract previous (old) links
           $temp_array = selectcontent ($contentdata, "<text>", "<text_id>", $id);
-          if ($temp_array != false && $temp_array[0] != "") $temp_array = getcontent ($temp_array[0], "<textcontent>");
-          if ($temp_array != false && $temp_array[0] != "") $textcontent_old = $temp_array[0];
+          
+          if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>");
+          
+          if (!empty ($temp_array[0])) $textcontent_old = $temp_array[0];
           else $textcontent_old = "";
           
           $link_old_array = false;
           
-          if ($textcontent_old != "" && (strpos ($textcontent_old, " href") > 0 || strpos ($textcontent_old, " src") > 0))
+          if (!empty ($textcontent_old) && (strpos ($textcontent_old, " href") > 0 || strpos ($textcontent_old, " src") > 0))
           {
             $temp_array_href = extractlinks ($textcontent_old, "href");
             $temp_array_src = extractlinks ($textcontent_old, "src");
@@ -496,7 +498,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
             $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid);
           }
           
-          if ($textuser[$id] != "") $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid);
+          if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid);
         }
         // check if article
         elseif ($art[$id] == "yes")
@@ -518,7 +520,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
             }
             
             $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid);
-            if ($textuser[$id] != "") $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid);
+            if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid);
           }
         }       
         
@@ -556,7 +558,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
     if (!empty ($contentdatanew) && $contentdatanew != false)
     {
       // relational DB connectivity
-      if ($mgmt_config['db_connect_rdbms'] != "")
+      if (!empty ($mgmt_config['db_connect_rdbms']))
       {
         $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
        
@@ -622,8 +624,8 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
         if (!isset ($mediaheight[$id])) $mediaheight[$id] = ""; 
         
         // set array if input parameter is string
-        if ($artbuffer != "") $art[$id] = $artbuffer;
-        if ($userbuffer != "") $mediauser[$id] = $userbuffer;       
+        if (!empty ($artbuffer)) $art[$id] = $artbuffer;
+        if (!empty ($userbuffer)) $mediauser[$id] = $userbuffer;       
         
         $mediafile[$id] = urldecode ($mediafile[$id]);
         // remove dangerous script code
@@ -676,7 +678,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
           $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalign>", trim ($mediaalign[$id]), "<media_id>", $id);
           $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediawidth>", trim ($mediawidth[$id]), "<media_id>", $id);
           $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaheight>", trim ($mediaheight[$id]), "<media_id>", $id);
-          if ($mediauser[$id] != "") $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediauser>", $mediauser[$id], "<media_id>", $id);
+          if (!empty ($mediauser[$id])) $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediauser>", $mediauser[$id], "<media_id>", $id);
         }
         // check if article media
         elseif ($art[$id] == "yes")
@@ -704,7 +706,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
           $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalign>", trim ($mediaalign[$id]), "<media_id>", $id);
           $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediawidth>", trim ($mediawidth[$id]), "<media_id>", $id);
           $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaheight>", trim ($mediaheight[$id]), "<media_id>", $id);
-          if ($mediauser[$id] != "") $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediauser>", $mediauser[$id], "<media_id>", $id);
+          if (!empty ($mediauser[$id])) $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediauser>", $mediauser[$id], "<media_id>", $id);
         }
   
         // ------------------------- add link to link management file ---------------------------  
@@ -733,7 +735,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
     if ($contentdatanew != false)
     {
       // relational DB connectivity
-      if ($mgmt_config['db_connect_rdbms'] != "")
+      if (!empty ($mgmt_config['db_connect_rdbms']))
       {
         $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
                 
@@ -800,8 +802,8 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhr
         if (!isset ($linktarget[$id])) $linktarget[$id] = "";
         if (!isset ($linktext[$id])) $linktext[$id] = "";
         // set array if input parameter is string
-        if ($artbuffer != "") $art[$id] = $artbuffer;
-        if ($userbuffer != "") $linkuser[$id] = $userbuffer;        
+        if (!empty ($artbuffer)) $art[$id] = $artbuffer;
+        if (!empty ($userbuffer)) $linkuser[$id] = $userbuffer;        
             
         $linkhref[$id] = urldecode ($linkhref[$id]);
         // remove dangerous scipt code
@@ -815,7 +817,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhr
         // remove dangerous scipt code
         $linktext[$id] = scriptcode_encode ($linktext[$id]);
         // escape special characters (transform all special chararcters into their html/xml equivalents)  
-        if ($charset != "")
+        if (!empty ($charset))
         {
           $linktext[$id] = html_encode ($linktext[$id], $charset);
         }  
@@ -840,7 +842,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhr
           
           $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktarget>", trim ($linktarget[$id]), "<link_id>", $id);
           $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktext>", "<![CDATA[".trim ($linktext[$id])."]]>", "<link_id>", $id);
-          if ($linkuser[$id] != "") $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id);
+          if (!empty ($linkuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id);
         }
         // check if article link
         elseif ($art[$id] == "yes")
@@ -865,7 +867,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhr
           
           $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktarget>", trim ($linktarget[$id]), "<link_id>", $id);
           $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktext>", "<![CDATA[".trim ($linktext[$id])."]]>", "<link_id>", $id);
-          if ($linkuser[$id] != "") $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id);
+          if (!empty ($linkuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id);
         }
         
         // ------------------------- add link to link management file ---------------------------
@@ -898,7 +900,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhr
     if ($contentdatanew != false)
     {
       // relational DB connectivity
-      if ($mgmt_config['db_connect_rdbms'] != "")
+      if (!empty ($mgmt_config['db_connect_rdbms']))
       {
         $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
         
@@ -968,8 +970,8 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
         if (strpos ($component_conv[$id], ".off|") > 0) $component_conv[$id] = str_replace (".off|", "|", $component_conv[$id]);
 
         // set array if input parameter is string
-        if ($artbuffer != "") $art[$id] = $artbuffer;
-        if ($userbuffer != "") $compuser[$id] = $userbuffer;
+        if (!empty ($artbuffer)) $art[$id] = $artbuffer;
+        if (!empty ($userbuffer)) $compuser[$id] = $userbuffer;
   
         // check if page component
         if ($art[$id] == "no")
@@ -983,7 +985,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
             $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
           }
           
-          if ($compuser[$id] != "") $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
+          if (!empty ($compuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
           if (isset ($condition[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentcond>", $condition[$id], "<component_id>", $id);        
         }
         // check if article component
@@ -1007,7 +1009,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
             $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
           }
           
-          if ($compuser[$id] != "") $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
+          if (!empty ($compuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
           if (isset ($condition[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentcond>", $condition[$id], "<component_id>", $id);        
         }
     
@@ -1093,7 +1095,7 @@ function sethead ($site, $contentdata, $contentfile, $headcontent, $user, $chars
     if ($contentdata != false)
     {
       // relational DB connectivity
-      if ($mgmt_config['db_connect_rdbms'] != "")
+      if (!empty ($mgmt_config['db_connect_rdbms']))
       {
         $text_array = array();
         

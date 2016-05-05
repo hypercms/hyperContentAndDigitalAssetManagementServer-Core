@@ -225,7 +225,10 @@ if (is_array ($content_array))
 
     $result_diff = html_diff ($content[0], $content[1]);
     
-    $result[$id] = "<p><span class=\"hcmsHeadline\">".$id."</span> (".$hcms_lang['by-user'][$lang].": ".$textuser[$id][0]." &#10095; ".$textuser[$id][1].")<br /><div style=\"margin:2px; padding:2px; width:760px; border:1px solid #000000; background:#FFFFFF; min-height:18px;\">".$result_diff."</div></p>";
+    if (!empty ($hcms_lang['by-user'][$lang]) && !empty ($textuser[$id][1])) $user_compare = "(".$hcms_lang['by-user'][$lang].": ".$textuser[$id][0]." &#10095; ".$textuser[$id][1].")";
+    else $user_compare = "";
+    
+    $result[$id] = "<p><span class=\"hcmsHeadline\">".$id."</span>".$user_compare."<br /><div style=\"margin:2px; padding:2px; width:760px; border:1px solid #000000; background:#FFFFFF; min-height:18px;\">".$result_diff."</div></p>";
   }
   
   // output results
