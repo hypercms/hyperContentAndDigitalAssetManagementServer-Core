@@ -53,6 +53,7 @@ $temp_latitude = getsession ("hcms_temp_latitude");
 $temp_longitude = getsession ("hcms_temp_longitude");
 $temp_chatstate = getsession ("hcms_temp_chatstate");
 $temp_balancer_id = getsession ("hcms_temp_balancer_id");
+$temp_project_id = getsession ("hcms_temp_project_id");
 // the temporary storage is used to pass container content of files between functions
 // and to trigger saving of the file [yes/no]
 $temp_cache = getsession ("hcms_temp_cache", "");

@@ -103,7 +103,7 @@ if ($action == "regenerate" && checktoken ($token, $user) && is_file ($mgmt_conf
       $keywords[] = $keyword_add;
     }
     
-    if (sizeof ($keywords) > 0)
+    if (is_array ($keywords) && sizeof ($keywords) > 0)
     {
       // list of mostly used keywords
       $keywords_tmp = array_count_values ($keywords);

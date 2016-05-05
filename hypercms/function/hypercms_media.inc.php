@@ -3935,7 +3935,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
               }
               else return false;            
               
-              // create media objects          
+              // create media objects       
               $result = createmediaobjects ($site, $unzippath_temp, $location.$result['folder']."/", $user);
               
               // delete unzipped temporary files in temporary directory

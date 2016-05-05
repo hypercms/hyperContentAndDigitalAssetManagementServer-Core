@@ -164,7 +164,7 @@ function openEditWindow (objectpath)
     var index = objectpath.lastIndexOf("/") + 1;
     var location = objectpath.substring(0, index);
     var newpage = objectpath.substr(index);
-
+    
     iframe.src='page_view.php?rlreload=yes&location=' + location + '&page=' + newpage;
     window.style.display='inline';
     
@@ -187,7 +187,7 @@ function nextEditWindow ()
     var index = objectpath.lastIndexOf("/") + 1;
     var location = objectpath.substring(0, index);
     var newpage = objectpath.substr(index);
-    
+
     // load next object
     iframe.src='page_view.php?ctrlreload=yes&location=' + location + '&page=' + newpage;
     
@@ -440,11 +440,11 @@ $(document).ready(function ()
         if (file.indexOf("|") > 0)
         {
           var file_array = file.split("|");
-          
+
           for (var i=0; i < file_array.length; ++i)
           {
             // open meta data edit window in iframe
-            openEditWindow(file_array[i]);
+            if (file_array[i] != "") openEditWindow(file_array[i]);
           }
         }
         else

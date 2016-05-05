@@ -10333,7 +10333,13 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
         
         $result = createmediaobject ($site, $location, $global_files['Filedata']['name'], $global_files['Filedata']['tmp_name'], $user, $imagepercentage);
 
-        if ($result['result'] == false)
+        // on success, add location
+        if ($result['result'] == true)
+        {
+          $result['object'] = $location_esc.$result['object'];
+        }
+        // on error
+        else
         {
           $errcode = 20511;
           $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$global_files['Filedata']['name']."' could not be created by createmediaobject (".$result_createobject['message'].")";
@@ -10560,7 +10566,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
                 // set new page name
                 $page = $pagename = $page_nameonly.$file_ext_new;
                 // define new page
-                $result['object'] = specialchr_encode ($page);
+                $result['object'] = $location_esc.specialchr_encode ($page);
               }
               // on error
               else
@@ -10599,8 +10605,8 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
     if (is_file ($temp_file)) unlink ($temp_file);
     
     // include object name or object paths (uncompressed ZIP files) in message
-    if (empty ($show_command) && !empty ($result['object'])) $show_command = "[".$result['location_esc'].$result['object']."]";
-  
+    if (empty ($show_command) && !empty ($result['object'])) $show_command = "[".$result['object']."]";
+
     // return message and command to flash object
     $result['result'] = true;
     $result['header'] = "HTTP/1.1 200 OK";
@@ -10653,7 +10659,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 
     if (is_file ($path_source_file))
     {
-      // create multimedia object
+      // create new multimedia object
       $result = createobject ($site, $location, $file, "default.meta.tpl", $user);
 
       // copy file
@@ -10851,7 +10857,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
             }
           }
         }
-        
+
         @closedir ($dir);
         return $result;
       }

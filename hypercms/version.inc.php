@@ -1508,6 +1508,16 @@ Release 05/2016
 - Improvements in SQL statement of function rdbms_getnotification
 - Bug fix: Function localpermission used wrong  location in permission string for 'comprename'
 - Improvements in verson_content_compare
+- Implementation of new parameter object ID for function settask in task APi and rdbms_settask in DB Connect
+- Bug fix: Reset of object in task did not work in project management
+- Implementation of object reset in task management
+- Bug fix: Project management did not allow reset of start and finish date of task if it has been left empty when the task has been created
+- Implementation of support to remove objects from projects and tasks
+- Implementation of project ID memory to open last edited project automatically
+- Bug fix: Function getprojectstructure did not properly evalute start date of main project
+- Various improvements in task management
+- Improvements in popup_upload_html regarding ZIP files
+- Bug fix: Function uploadfile added location to objectpath again for unzipped files
 */
 
 // current version
