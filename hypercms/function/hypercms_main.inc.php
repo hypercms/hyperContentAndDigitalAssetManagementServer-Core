@@ -1674,7 +1674,7 @@ function createversion ($site, $file, $user="sys")
         $media_root = getmedialocation ($site, $file, "abs_path_media").$site."/";
 
         // verify media file
-        if (!is_cloudobject ($media_root.$file) && !is_file ($media_root.$file)) return true;
+        if (!is_cloudobject ($media_root.$file) && (!is_file ($media_root.$file) || filesize ($media_root.$file) < 10)) return true;
       
         $file_info = getfileinfo ($site, $file, "comp");
         

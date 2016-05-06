@@ -782,10 +782,6 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
               
               echo "<option value=\"template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($value)."\">".$tpl_name."</option>\n";
             }
-          }
-          else 
-          {
-            echo "<option value=\"\"> ----------------- </option>\n";
           }          
           ?>
         </select>

@@ -1518,8 +1518,13 @@ Release 05/2016
 - Various improvements in task management
 - Improvements in popup_upload_html regarding ZIP files
 - Bug fix: Function uploadfile added location to objectpath again for unzipped files
+
+Version 6.1.6
+Release 05/2016
+- Bug fix: Function creatversion did not verify file size before creating a new version (this verification has been removed in version 6.1.4)
+- Bug fix: control_content_menu did not present proper template entries in select bix if no templates are available 
 */
 
 // current version
-$version = "Version 6.1.5";
+$version = "Version 6.1.6";
 ?>
