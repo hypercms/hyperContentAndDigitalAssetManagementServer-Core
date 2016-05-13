@@ -1522,7 +1522,11 @@ Release 05/2016
 Version 6.1.6
 Release 05/2016
 - Bug fix: Function creatversion did not verify file size before creating a new version (this verification has been removed in version 6.1.4)
-- Bug fix: control_content_menu did not present proper template entries in select bix if no templates are available 
+- Bug fix: control_content_menu did not present proper template entries in select bix if no templates are available
+- Set height of iframe in report_form to 600px instead of 99% since the height in percent has not been recognized by all browsers
+- Improvements in home boxes regarding display of unique entries
+- Improvements in project management
+- Improvements in NTLM connector
 */
 
 // current version
