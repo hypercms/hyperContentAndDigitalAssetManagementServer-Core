@@ -13,8 +13,6 @@ define ("SESSION", "create");
 require ("config.inc.php");
 // hyperCMS API
 require ("function/hypercms_api.inc.php");
-// version info
-require ("version.inc.php");
 ?>
 <!DOCTYPE html>
 <html>
@@ -24,7 +22,6 @@ require ("version.inc.php");
 <meta name="viewport" content="width=380; initial-scale=0.9; maximum-scale=1.0; user-scalable=0;">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/click.js" type="text/javascript"></script>
 </head>
 
 <body class="hcmsStartScreen" onload="location='userlogin.php';">
@@ -49,7 +46,6 @@ else
 
 <div class="hcmsStartBar">
   <div style="position:absolute; top:10px; left:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation(); ?>img/logo.png" alt="hyperCMS" /></div>
-  <div style="position:absolute; top:48px; right:10px; text-align:right;"><?php echo $version; ?></div>
 </div>
 
 <p class="hcmsTextGreen">

@@ -15,8 +15,6 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // template engine
 require ("function/hypercms_tplengine.inc.php");
-// version info
-require ("version.inc.php");
 
 
 // input parameters
@@ -177,7 +175,6 @@ function submitHomeBoxes ()
   <!-- logo -->
   <div id="logo" style="position:fixed; top:10px; left:10px;">
     <img src="<?php echo getthemelocation(); ?>img/logo_server.png" style="width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>" />
-    <div id="version" style="position:fixed; top:30px; left:12px;"><?php echo $version; ?></div>
   </div>
   
   <!-- plus/minus button -->
@@ -266,7 +263,7 @@ function submitHomeBoxes ()
     </form>
   </div>
   
-  <div id="spacer" style="width:94%; height:44px; display:block;"></div>
+  <div id="spacer" style="width:94%; height:32px; display:block;"></div>
 
   <!-- show boxes -->
   <?php 
