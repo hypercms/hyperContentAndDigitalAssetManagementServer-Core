@@ -30,7 +30,7 @@ On client-side:
 
 
 Installation:
-1. Copy all files from the compressed ZIP file to the webservers root directory, so you can access them via browser. 
+1. Extract and copy all files from the compressed ZIP file to the webservers root directory, so you can access them via browser. Do not rename any directories or files from the installation package.
 2. Access http(s)://www.your-domain.com/hypercms/install and follow the installation process
 3. After the successful installation you will be forwarded to the logon of the system. Use username "admin" and your password to access the system.
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of
- * hyper Content Management Server - http://www.hypercms.com
+ * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
  *
  * You should have received a copy of the License along with hyperCMS.
@@ -54,7 +54,7 @@ if (sizeof ($config_files) > 0)
       
       if (is_array ($inherit_db))
       {
-        // --------------------------------------------- FOR EACH PUBLICATION -----------------------------------------------
+        // ------------------------------------------- FOR EACH PUBLICATION ---------------------------------------------
         
         foreach ($inherit_db as $site => $array)
         {
@@ -64,12 +64,15 @@ if (sizeof ($config_files) > 0)
             require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
           }
           
+          // ---------------------------------------------- UPDATE TAXONOMY ----------------------------------------------
+          
           // remove taxonomies from DB
           if (function_exists ("rdbms_deletepublicationtaxonomy")) rdbms_deletepublicationtaxonomy ($site);
 
           // set taxonomies in DB
           if (function_exists ("rdbms_setpublicationtaxonomy")) rdbms_setpublicationtaxonomy ($site, false);
 
+          // ----------------------------------------------- STORAGE SPACE -----------------------------------------------
           // calculate used storage space
           // create filesize.dat files in order to check storage limit (MB) for each publication
           if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage_limit'] > 0)
@@ -129,7 +132,7 @@ if (sizeof ($config_files) > 0)
         closedir ($dir);
       }
       
-      // -------------------------------------------------- DISK KEY ----------------------------------------------------
+      // ----------------------------------------------- DISK KEY ----------------------------------------------------
       
       // check disk key
       checkdiskkey ();
@@ -139,7 +142,7 @@ if (sizeof ($config_files) > 0)
       // send task notification to users
       if (function_exists ("tasknotification")) tasknotification (date("Y-m-d"));
       
-      // ------------------------------------------------- LICENSE ---------------------------------------------------
+      // ------------------------------------------------ LICENSE ---------------------------------------------------
       
       // send license notification to users
       if (function_exists ("licensenotification")) licensenotification ();
@@ -154,15 +157,15 @@ if (sizeof ($config_files) > 0)
       // import job
       if (function_exists ("importobjects")) importobjects ();
   
-      // ------------------------------------------------- CLOUD SYNC ---------------------------------------------------
+      // ----------------------------------------------- CLOUD SYNC -------------------------------------------------
       
       // synchronize media files in repository with cloud storage
       if (function_exists ("synccloudobjects")) synccloudobjects ("sys");
       
-      // ------------------------------------------------- TAXONOMY ---------------------------------------------------
-
+      // ------------------------------------------- TAXONOMY DEFINITIONS -------------------------------------------
+      
       // create taxonomy defintion files
-      if (function_exists ("createtaxonomy")) createtaxonomy ();
+      if (function_exists ("createtaxonomy")) createtaxonomy (false);
     }
   }
 }

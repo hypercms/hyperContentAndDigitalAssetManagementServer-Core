@@ -3154,7 +3154,7 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user, $
 
 // ----------------------------------------------- set task -------------------------------------------------
 
-function rdbms_settask ($task_id, $project_id="", $to_user="", $startdate="", $finishdate="", $taskname="", $description="", $priority="", $status="", $planned="", $actual="")
+function rdbms_settask ($task_id, $object_id="", $project_id="", $to_user="", $startdate="", $finishdate="", $taskname="", $description="", $priority="", $status="", $planned="", $actual="")
 {
   global $mgmt_config;
   
@@ -3165,6 +3165,7 @@ function rdbms_settask ($task_id, $project_id="", $to_user="", $startdate="", $f
     // clean input
     $sql_update = array();
     
+    if ($object_id != "") $sql_update[] = 'object_id="'.intval($object_id).'"';
     if ($project_id != "") $sql_update[] = 'project_id="'.intval($project_id).'"';
     if ($to_user != "") $sql_update[] = 'to_user="'.$db->escape_string ($to_user).'"';
     if ($startdate != "") $sql_update[] = 'startdate="'.$db->escape_string ($startdate).'"';

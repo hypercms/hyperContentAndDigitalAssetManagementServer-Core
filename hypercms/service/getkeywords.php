@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of
- * hyper Content Management Server - http://www.hypercms.com
+ * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
  *
  * You should have received a copy of the License along with hyperCMS.
@@ -37,7 +37,7 @@ if ($id >= 0)
   
   $keywords_array = gettaxonomy_childs ($site, $lang, $id, $levels);
 
-  if (is_array ($keywords_array) && sizeof ($keywords_array) > 0) echo implode (",", $keywords_array);
+  if (is_array ($keywords_array) && sizeof ($keywords_array) > 0) echo implode (",", array_unique ($keywords_array));
   else echo "";
 }
 else echo "";

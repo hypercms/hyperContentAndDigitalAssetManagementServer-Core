@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of
- * hyper Content Management Server - http://www.hypercms.com
+ * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
  *
  * You should have received a copy of the License along with hyperCMS.
@@ -74,7 +74,7 @@ $(document).ready(function()
   <?php
   $keywords = getsearchhistory ();
   ?>
-  var available_expressions = [<?php echo implode (",\n", $keywords); ?>];
+  var available_expressions = [<?php if (is_array ($keywords)) echo implode (",\n", $keywords); ?>];
 
   $("#search_expression").autocomplete({
     source: available_expressions
@@ -91,7 +91,7 @@ $(document).ready(function()
   <table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
     <tr> 
       <td width="5">&nbsp;</td>
-      <td width="320" align="left" valign="middle" nowrap="nowrap"><a href="javascript:openInfo();"><img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" border="0" align="absmiddle" title="hyper Content Management Server" alt="hyper Content Management Server" /></a></td>
+      <td width="320" align="left" valign="middle" nowrap="nowrap"><a href="javascript:openInfo();"><img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" style="border:0; height:28px;" align="absmiddle" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" /></a></td>
       <td>&nbsp;</td>
       <td align="right" valign="middle" nowrap="nowrap"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>: </span><span class="hcmsHeadlineTiny hcmsTextWhite"><?php echo getsession ('hcms_user'); ?></span></td>
       <td width="20" nowrap="nowrap">&nbsp;&nbsp;</td>

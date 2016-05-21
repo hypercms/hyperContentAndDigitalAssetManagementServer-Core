@@ -115,6 +115,7 @@ function updateChat ()
           if (update == true) 
           {
             openChat();
+            audio.play();
           }							  
         }
         instance = false;

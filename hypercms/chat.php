@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of
- * hyper Content Management Server - http://www.hypercms.com
+ * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
  *
  * You should have received a copy of the License along with hyperCMS.
@@ -59,6 +59,9 @@ var username = "<?php echo $user; ?>";
 
 // strip tags
 username = username.replace(/(<([^>]+)>)/ig,"");
+
+// audio file
+var audio = new Audio('javascript/ding.mp3');
 	
 // start chat
 var chat =  new Chat();
@@ -133,7 +136,7 @@ $users_online = getusersonline ();
 if (!empty ($mgmt_config['chat-support']))
 {
   if (!is_array ($users_online)) $users_online = array();
-  $users_online[] = $mgmt_config['chat-support'];
+  if (!in_array ($mgmt_config['chat-support'], $users_online)) $users_online[] = $mgmt_config['chat-support'];
 }
 
 if (is_array ($users_online) && sizeof ($users_online) > 1)

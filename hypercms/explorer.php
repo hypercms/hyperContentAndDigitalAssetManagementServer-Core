@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of
- * hyper Content Management Server - http://www.hypercms.com
+ * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
  *
  * You should have received a copy of the License along with hyperCMS.
@@ -1443,7 +1443,7 @@ else
       <?php
       $keywords = getsearchhistory ();
       ?>
-      var available_expressions = [<?php echo implode (",\n", $keywords); ?>];
+      var available_expressions = [<?php if (is_array ($keywords)) echo implode (",\n", $keywords); ?>];
     
       $("#search_expression").autocomplete({
         source: available_expressions

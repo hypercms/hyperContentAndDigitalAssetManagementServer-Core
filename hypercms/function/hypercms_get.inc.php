@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of
- * hyper Content Management Server - http://www.hypercms.com
+ * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
  *
  * You should have received a copy of the License along with hyperCMS.
@@ -3027,7 +3027,11 @@ function getusersonline ()
       }
     }
     
-    if (sizeof ($result) > 0) return $result;
+    if (sizeof ($result) > 0)
+    {
+      $result = array_unique ($result);
+      return $result;
+    }
     else return false;
   }
   else return false;

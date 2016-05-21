@@ -1528,8 +1528,18 @@ Release 05/2016
 - Improvements in project management
 - Improvements in NTLM connector
 - Removed version number from home screen and logout screen
+
+Version 6.1.7
+Release 05/2016
+- Improvements in chat including sound for new chat messages
+- Removed double entries in function getusersonline
+- Implementation of chat support-user verification in chat service
+- Improvements of logo style in top frame
+- Update of product name in the comment header of all files
+- Implementation of function getsearchhistory in frameset_main_linking
+- Implementation of keywords verification before adding them as JS array to the general search field in frameset_main, frameset_main_linking, and explorer
 */
 
 // current version
-$version = "Version 6.1.6";
+$version = "Version 6.1.7";
 ?>
