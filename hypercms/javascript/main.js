@@ -119,9 +119,110 @@ function hcms_sharelinkPinterest (image_url, title, description)
   else return false;
 }
 
+// ------------------------ translate text function -------------------------
+
+function hcms_translateText (sourceText, sourceLang, targetLang)
+{
+  if (sourceText != "" && targetLang != "")
+  {
+    var translatedText = "";
+    
+    if (sourceLang == "") sourceLang = 'auto';
+    
+    // remove html tags
+    sourceText = hcms_stripTags (sourceText);
+    
+    var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" 
+              + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + encodeURIComponent(sourceText);
+    
+    var xmlhttp = new XMLHttpRequest();
+
+    // synchronous request
+    xmlhttp.open('POST', url, false);
+    xmlhttp.send();
+    
+    var json = xmlhttp.responseText;
+    
+    // correct empty entries between commas (need to be used twice!)
+    json = json.replace(/,,/g, ",\"\",");
+    json = json.replace(/,,/g, ",\"\",");
+
+    var result = JSON.parse(json);    
+    var result = result[0];
+    
+    for (var i=0; i<result.length; i++)
+    {
+      if (result[i][0] != "")
+      {
+        if (translatedText != "" && translatedText.slice(-2) != "\n") translatedText = translatedText + " ";
+        translatedText = translatedText + result[i][0];
+      }
+    }
+
+    if (translatedText != "" && translatedText != sourceText) return translatedText;
+    else return false;
+  }
+  else return false;
+}
+
+function hcms_translateRichTextField (ckeditor_id, sourcelang_id, targetlang_id)
+{
+  var sourceText = "";
+  var sourceLang = "";
+  var targetLang = "";
+  
+  if (CKEDITOR.instances[ckeditor_id]) sourceText = CKEDITOR.instances[ckeditor_id].getData();
+  if (document.getElementById(sourcelang_id)) sourceLang = document.getElementById(sourcelang_id).value;
+  if (document.getElementById(targetlang_id)) targetLang = document.getElementById(targetlang_id).value;
+
+  if (sourceText != "" && targetLang != "")
+  {
+    var translated = hcms_translateText (sourceText, sourceLang, targetLang);
+  
+    if (translated != "")
+    {
+      CKEDITOR.instances[ckeditor_id].setData(translated);
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+function hcms_translateTextField (textarea_id, sourcelang_id, targetlang_id)
+{
+  var sourceText = "";
+  var sourceLang = "";
+  var targetLang = "";
+  
+  if (document.getElementById(textarea_id)) sourceText = document.getElementById(textarea_id).value;
+  if (document.getElementById(sourcelang_id)) sourceLang = document.getElementById(sourcelang_id).value;
+  if (document.getElementById(targetlang_id)) targetLang = document.getElementById(targetlang_id).value;
+
+  if (sourceText != "" && targetLang != "")
+  {
+    var translated = hcms_translateText (sourceText, sourceLang, targetLang);
+
+    if (translated != "")
+    {
+      document.getElementById(textarea_id).value = translated;
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 // --------------------------- standard functions ----------------------------
 
-function hcms_getcontentByName(name)
+function hcms_stripTags (html)
+{
+   var tmp = document.createElement("DIV");
+   tmp.innerHTML = html;
+   return tmp.textContent || tmp.innerText || "";
+}
+
+function hcms_getcontentByName (name)
 {
   if (name != "" && document.getElementsByName(name))
   {
@@ -649,7 +750,7 @@ function hcms_stripHTML (_str)
 
   var _reg=/<.*?>/gi;
   
-  while (_str.match(_reg)!=null)
+  while (_str.match(_reg) != null)
   {
     _str=_str.replace(_reg, "");
   }

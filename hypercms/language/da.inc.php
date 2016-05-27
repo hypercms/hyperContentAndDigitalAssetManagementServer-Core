@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['da'] = "Pen";
 $hcms_lang['undo']['da'] = "Fortryd";
 $hcms_lang['redo']['da'] = "Annuller Fortryd";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['da'] = "Vælg et værktøj for at tilføje en kommentar";
+$hcms_lang['translate']['da'] = "Oversætte";
+$hcms_lang['enable-languages-for-translation']['da'] = "Aktiveret sprog oversættelse";
 ?>

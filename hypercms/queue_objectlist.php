@@ -242,7 +242,7 @@ function resizecols()
       <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:200px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>
       </td> 
-      <td id="c4" nClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['date'][$lang]); ?>
       </td>
       <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="width:60px; white-space:nowrap;">

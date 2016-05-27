@@ -5544,10 +5544,11 @@ function editpublication ($site_name, $setting, $user="sys")
     // watermark for videos
     if (!array_key_exists ('watermark_video', $setting) || $setting['watermark_video'] == "") $watermark_video = "";
     else $watermark_video = $setting['watermark_video'];
-    
+ 
     // correct path for excluded folders
     if (array_key_exists ('url_path_page', $setting)) $url_path_page_new = correctpath ($setting['url_path_page'], "/");
     else $url_path_page_new = "";
+    
     if (array_key_exists ('abs_path_page', $setting)) $abs_path_page_new = correctpath ($setting['abs_path_page'], "/");
     else $abs_path_page_new = "";
 
@@ -5582,9 +5583,13 @@ function editpublication ($site_name, $setting, $user="sys")
     if (array_key_exists('publ_os', $setting)) $publ_os_new = $setting['publ_os'];
     else $publ_os_new = "UNIX";
     
-    //set remote client
+    // set remote client
     if (array_key_exists('remoteclient', $setting)) $remoteclient_new = $setting['remoteclient'];
     else $remoteclient_new = "";
+    
+    // set languages for translation
+    if (array_key_exists('translate', $setting)) $translate_new = $setting['translate'];
+    else $translate_new = "";
     
     // config file of management system
     $site_mgmt_config = "<?php
@@ -5673,6 +5678,7 @@ function editpublication ($site_name, $setting, $user="sys")
 \$mgmt_config['".$site_name."']['storage_type'] = \"".$storage_type_new."\";
 
 ";
+
   $site_mgmt_config .= "
 // Encrypt content on server
 // enable (false) or disable (true) encryption of content
@@ -5694,6 +5700,10 @@ function editpublication ($site_name, $setting, $user="sys")
 // enable (false) or disable (true) restricted system usage of youtube uploader. 
 // youtube_token is the permanent session key for the upload interface
 \$mgmt_config['".$site_name."']['youtube'] = ".$youtube_new.";
+
+// Enable translation
+// enabled languages for translation service
+\$mgmt_config['".$site_name."']['translate'] = \"".$translate_new."\";
 
 ";
   $site_mgmt_config .= "

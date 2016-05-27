@@ -82,6 +82,7 @@ $id = getrequest_esc ("id", "objectname");
 $toolbar = getrequest_esc ("toolbar");
 $width = getrequest_esc ("width", "numeric");
 $height = getrequest_esc ("height", "numeric");
+$constraint = getrequest_esc ("constraint");
 
 $linkhref_curr = getrequest ("inkhref_curr", "array");
 $linkhref = getrequest ("linkhref", "array");

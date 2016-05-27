@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['hi'] = "कलम";
 $hcms_lang['undo']['hi'] = "बिगाडना";
 $hcms_lang['redo']['hi'] = "पुनर्लिखित";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['hi'] = "एक औजार के चयन को जोड़ने के लिए एक annotation";
+$hcms_lang['translate']['hi'] = "अनुवाद";
+$hcms_lang['enable-languages-for-translation']['hi'] = "भाषाओं में अनुवाद करने के लिए सक्षम है";
 ?>

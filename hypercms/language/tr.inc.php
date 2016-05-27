@@ -1339,7 +1339,7 @@ $hcms_lang['project-management']['tr'] = "Proje Yönetimi";
 $hcms_lang['task']['tr'] = "Görev";
 $hcms_lang['tasks']['tr'] = "Görevler";
 $hcms_lang['projects']['tr'] = "Projeler";
-$hcms_lang['gantt-chart']['tr'] = "Gantt çizelgesi";
+$hcms_lang['gantt-chart']['tr'] = "Gantt";
 $hcms_lang['subproject']['tr'] = "Subproject";
 $hcms_lang['create-new-project']['tr'] = "Yeni Proje Oluşturun";
 $hcms_lang['show-finished-projects']['tr'] = "Show bitmiş projeler";
@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['tr'] = "Kalem";
 $hcms_lang['undo']['tr'] = "Geri Al";
 $hcms_lang['redo']['tr'] = "Yinele";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['tr'] = "Bir takım, bir açıklama";
+$hcms_lang['translate']['tr'] = "Translate";
+$hcms_lang['enable-languages-for-translation']['tr'] = "Özellikli diller çeviri için";
 ?>

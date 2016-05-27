@@ -1339,7 +1339,7 @@ $hcms_lang['project-management']['hu'] = "Projekt menedzsment";
 $hcms_lang['task']['hu'] = "A feladat";
 $hcms_lang['tasks']['hu'] = "A feladatok";
 $hcms_lang['projects']['hu'] = "A projektek";
-$hcms_lang['gantt-chart']['hu'] = "Gantt-diagram";
+$hcms_lang['gantt-chart']['hu'] = "Gantt";
 $hcms_lang['subproject']['hu'] = "Az alprojekt";
 $hcms_lang['create-new-project']['hu'] = "Új projekt létrehozása";
 $hcms_lang['show-finished-projects']['hu'] = "A kész projektek megjelenítése";
@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['hu'] = "A toll";
 $hcms_lang['undo']['hu'] = "Lazítsa meg";
 $hcms_lang['redo']['hu'] = "Újra.";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['hu'] = "Válassza ki a berendezés annak érdekében, hogy hozzá egy jegyzetet.";
+$hcms_lang['translate']['hu'] = "Fordítás";
+$hcms_lang['enable-languages-for-translation']['hu'] = "A fordítási nyelvek bekapcsolása";
 ?>

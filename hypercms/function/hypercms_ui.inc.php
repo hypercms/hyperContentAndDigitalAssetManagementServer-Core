@@ -902,12 +902,19 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             // get thumbnail image information
             $thumb_size = @getimagesize ($thumb_root.$thumbfile);
-            $mediaratio = $thumb_size[0] / $thumb_size[1];
+            if (!empty ($thumb_size[0]) && !empty ($thumb_size[1])) $mediaratio = $thumb_size[0] / $thumb_size[1];
   
             // create new image for annotations (only if annotations are enabled and image conversion software and permissions are given)
             $annotationname = $file_info['filename'].'.annotation.jpg';
             
-            if (($thumb_size[0] >= 180 || $thumb_size[1] >= 180) && !empty ($mgmt_config['annotation']) && !is_file ($thumb_root.$annotationname) && $viewtype == "preview" && is_supported ($mgmt_imagepreview, $file_info['orig_ext']) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+            if (
+                 !empty ($mediaratio) && ($thumb_size[0] >= 180 || $thumb_size[1] >= 180) && 
+                 !empty ($mgmt_config['annotation']) && 
+                 (!is_file ($thumb_root.$annotationname) || filemtime ($thumb_root.$annotationname) < filemtime ($thumb_root.$thumbfile)) && 
+                 $viewtype == "preview" && 
+                 is_supported ($mgmt_imagepreview, $file_info['orig_ext']) && 
+                 $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1
+               )
             {
               $maxmediasize = 540;
               
@@ -936,14 +943,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             }
 
             // if thumbnail file is smaller than the defined size of a thumbnail due to a smaller original image
-            if (is_array ($thumb_size) && $thumb_size[0] < 180 && $thumb_size[1] < 180)
+            if (!empty ($mediaratio) && $thumb_size[0] < 180 && $thumb_size[1] < 180)
             {
               $width = $thumb_size[0];
               $height = $thumb_size[1];
               $mediafile = $thumbfile;
             }
             // generate a new image file if the new image size is greater than 150% of the width or height of the thumbnail
-            elseif (is_array ($thumb_size) && ($width > 0 && $thumb_size[0] * 1.5 < $width) && ($height > 0 && $thumb_size[1] * 1.5 < $height) && is_supported ($mgmt_imagepreview, $file_info['orig_ext']))
+            elseif (!empty ($mediaratio) && ($width > 0 && $thumb_size[0] * 1.5 < $width) && ($height > 0 && $thumb_size[1] * 1.5 < $height) && is_supported ($mgmt_imagepreview, $file_info['orig_ext']))
             {
               // define parameters for view-images
               $viewfolder = $mgmt_config['abs_path_temp'];
@@ -1038,8 +1045,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         
         $mediaview .= "</table>\n";
 
-        // embed annoation script
-        if (($thumb_size[0] >= 180 || $thumb_size[1] >= 180) && !empty ($mgmt_config['annotation']) && is_file ($thumb_root.$annotationname) && $viewtype == "preview" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+        // embed annotation script
+        if (!empty ($mediaratio) && ($thumb_size[0] >= 180 || $thumb_size[1] >= 180) && !empty ($mgmt_config['annotation']) && is_file ($thumb_root.$annotationname) && $viewtype == "preview" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
         {
           $mediaview .= "
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.js\"></script>
@@ -4158,6 +4165,67 @@ function showselect ($value_array, $only_text=false, $selected_value="", $id="",
     }
     
     $result .= "  </select>\n";
+    
+    return $result;
+  }
+  else return false;
+}
+
+// ------------------------- showtranslator -----------------------------
+// function: showtranslator()
+// input: publication name, editor/text-tag ID, unformatted or formatted texttag-type [u,f], character set (optional), language code (optional), style of div tag (optional)
+// output: HTML translator box presentation / false
+
+function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style="")
+{
+  global $mgmt_config, $hcms_lang;
+
+  if (valid_publicationname ($site) && $id != "" && ($type == "u" || $type == "f") && !empty ($mgmt_config[$site]['translate']))
+  {
+    // JS function to be used
+    if ($type == "u") $JSfunction = "hcms_translateTextField";
+    else $JSfunction = "hcms_translateRichTextField";
+    
+    // define unique name for button
+    $button_id = uniqid();
+  
+    $result = "
+  <div style=\"".$style."\">
+    ".getescapedtext ($hcms_lang['translate'][$lang], $charset, $lang)."&nbsp;
+    <select id=\"sourceLang_".$id."\" style=\"width:55px;\">
+      <option value=\"\">Automatic</option>";
+
+    $langcode_array = getlanguageoptions();
+
+    if ($langcode_array != false)
+    {
+      foreach ($langcode_array as $code => $lang_short)
+      {
+        if (substr_count  (",".$mgmt_config[$site]['translate'].",", ",".$code.",") > 0) $result .= "
+      <option value=\"".$code."\">".$lang_short."</option>";
+      }
+    }
+
+    $result .= "
+    </select>
+    &#10095;
+    <select id=\"targetLang_".$id."\" style=\"width:55px;\">";
+
+    $langcode_array = getlanguageoptions();
+    
+    if ($langcode_array != false)
+    {
+      foreach ($langcode_array as $code => $lang_short)
+      {
+        if (substr_count  (",".$mgmt_config[$site]['translate'].",", ",".$code.",") > 0) $result .= "
+      <option value=\"".$code."\">".$lang_short."</option>";
+      }
+    }
+
+    $result .= "
+    </select>
+    <img name=\"Button_".$button_id."\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" style=\"margin-right:2px;\" src=\"".getthemelocation()."img/button_OK.gif\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button_".$button_id."','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" onClick=\"".$JSfunction."('".$id."', 'sourceLang_".$id."', 'targetLang_".$id."');\" />
+  </div>";
     
     return $result;
   }

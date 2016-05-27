@@ -1381,4 +1381,6 @@ $hcms_lang['pen']['he'] = "עט";
 $hcms_lang['undo']['he'] = "לבטל";
 $hcms_lang['redo']['he'] = "לחזור";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['he'] = "בחר כלי כדי להוסיף הערה";
+$hcms_lang['translate']['he'] = "לתרגם";
+$hcms_lang['enable-languages-for-translation']['he'] = "מאופשר שפות עבור תרגום";
 ?>

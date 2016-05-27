@@ -1339,7 +1339,7 @@ $hcms_lang['project-management']['sr'] = "Upravljanje projektom";
 $hcms_lang['task']['sr'] = "Zadatak";
 $hcms_lang['tasks']['sr'] = "Zadaci";
 $hcms_lang['projects']['sr'] = "Projekti";
-$hcms_lang['gantt-chart']['sr'] = "Grafikon Gantt";
+$hcms_lang['gantt-chart']['sr'] = "Gantt";
 $hcms_lang['subproject']['sr'] = "Subproject";
 $hcms_lang['create-new-project']['sr'] = "Stvoriti novi projekat";
 $hcms_lang['show-finished-projects']['sr'] = "Pokazuju završili projekte";
@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['sr'] = "Pen";
 $hcms_lang['undo']['sr'] = "Poništi";
 $hcms_lang['redo']['sr'] = "Ponove";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['sr'] = "Odaberite sredstvo da bi se dodati i označavanje";
+$hcms_lang['translate']['sr'] = "Prevodi";
+$hcms_lang['enable-languages-for-translation']['sr'] = "5 jezika za prevod";
 ?>

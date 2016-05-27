@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['pl'] = "Pen";
 $hcms_lang['undo']['pl'] = "Cofnij";
 $hcms_lang['redo']['pl'] = "Ponów";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['pl'] = "Wybierz narzędzie w celu dodawania adnotacji";
+$hcms_lang['translate']['pl'] = "Przetłumacz";
+$hcms_lang['enable-languages-for-translation']['pl'] = "Języki włączona do tłumaczenia";
 ?>

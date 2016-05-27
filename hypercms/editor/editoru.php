@@ -132,119 +132,82 @@ $token = createtoken ($user);
 <!DOCTYPE html>
 <html>
 <head>
-<title>hyperCMS</title>
-<meta charset="<?php echo $charset; ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script src="../javascript/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
-<script src="../javascript/main.js" type="text/javascript"></script>
-<script language="JavaScript">
-<!--
-function validateForm() 
-{
-  var i,p,q,nm,test,num,min,max,errors='',args=validateForm.arguments;
-  
-  for (i=0; i<(args.length-2); i+=3) 
-  { 
-    test=args[i+2]; val=hcms_findObj(args[i]);
+  <title>hyperCMS</title>
+  <meta charset="<?php echo $charset; ?>" />
+  <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
+  <script src="../javascript/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
+  <script src="../javascript/main.js" type="text/javascript"></script>
+  <script language="JavaScript">
+  function validateForm() 
+  {
+    var i,p,q,nm,test,num,min,max,errors='',args=validateForm.arguments;
     
-    if (val) 
+    for (i=0; i<(args.length-2); i+=3) 
     { 
-      nm=val.name; 
+      test=args[i+2]; val=hcms_findObj(args[i]);
       
-      if ((val=val.value)!="") 
-      {
-        if (test.indexOf('isEmail')!=-1) 
-        { 
-          p=val.indexOf('@');
-          if (p<1 || p==(val.length-1)) errors+='<?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>.\n';
-        } 
-        else if (test!='R') 
-        { 
-          num = parseFloat(val);
-          if (isNaN(val)) errors+='<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang); ?>.\n';
-          if (test.indexOf('inRange') != -1) 
+      if (val) 
+      { 
+        nm=val.name; 
+        
+        if ((val=val.value)!="") 
+        {
+          if (test.indexOf('isEmail')!=-1) 
           { 
-            p=test.indexOf(':');
-            if(test.substring(0,1) == 'R') {
-              min=test.substring(8,p); 
-            } else {
-              min=test.substring(7,p); 
-            }
-            max=test.substring(p+1);
-            if (num<min || max<num) errors+='<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
+            p=val.indexOf('@');
+            if (p<1 || p==(val.length-1)) errors+='<?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>.\n';
+          } 
+          else if (test!='R') 
+          { 
+            num = parseFloat(val);
+            if (isNaN(val)) errors+='<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang); ?>.\n';
+            if (test.indexOf('inRange') != -1) 
+            { 
+              p=test.indexOf(':');
+              if(test.substring(0,1) == 'R') {
+                min=test.substring(8,p); 
+              } else {
+                min=test.substring(7,p); 
+              }
+              max=test.substring(p+1);
+              if (num<min || max<num) errors+='<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
+            } 
           } 
         } 
-      } 
-      else if (test.charAt(0) == 'R') errors += '<?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>.\n'; 
-    }
-  } 
-  
-  if (errors) 
-  {
-    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>:\n'+errors));
-    return false;
-  }  
-  else return true;
-}
-
-function submitText(selectname, targetname)
-{
-  document.forms['hcms_formview'].elements[targetname].value = document.forms['hcms_formview'].elements[selectname].value;
-}
-
-function setsavetype(type)
-{
-  <?php echo $add_constraint; ?>
-  
-  if (check == true)
-  { 
-    document.forms['hcms_formview'].elements['savetype'].value = type;
-    submitText ('<?php echo $tagname."_".$id ?>', '<?php echo $tagname."[".$id."]"; ?>');
-    document.forms['hcms_formview'].submit();
-    return true;
-  }  
-  else return false;
-}
-<?php if (intval ($mgmt_config['autosave']) > 0) { ?>
-function autosave ()
-{
-	var test = $("#autosave").is(":checked");
-  
-	if (test == true)
-  {
-		hcms_showHideLayers('messageLayer','','show');
-		$("#savetype").val('auto');
-    submitText ('<?php echo $tagname."_".$id ?>', '<?php echo $tagname."[".$id."]"; ?>');
+        else if (test.charAt(0) == 'R') errors += '<?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>.\n'; 
+      }
+    } 
     
+    if (errors) 
+    {
+      alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>:\n'+errors));
+      return false;
+    }  
+    else return true;
+  }
+  
+  function submitText(selectname, targetname)
+  {
+    document.forms['hcms_formview'].elements[targetname].value = document.forms['hcms_formview'].elements[selectname].value;
+  }
+  
+  function setsavetype(type)
+  {
     <?php echo $add_constraint; ?>
     
-    if(check == true) {
-      $.post(
-        "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php", 
-        $("#hcms_formview").serialize(), 
-        function(data)
-        {
-          if(data.message.length !== 0)
-          {
-            alert(hcms_entity_decode(data.message));
-          }				
-          setTimeout("hcms_showHideLayers('messageLayer','','hide')", 1500);
-        }, 
-        "json"
-      );
-    } else {
-      hcms_showHideLayers('messageLayer','','hide');
-    }
-	}
-	setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
-}
-setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
-<?php } ?>
-//-->
-</script>
+    if (check == true)
+    { 
+      document.forms['hcms_formview'].elements['savetype'].value = type;
+      submitText ('<?php echo $tagname."_".$id ?>', '<?php echo $tagname."[".$id."]"; ?>');
+      document.forms['hcms_formview'].submit();
+      return true;
+    }  
+    else return false;
+  }
+  </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 marginwidth=0 marginheight=0>
+<body class="hcmsWorkplaceGeneric" onload="">
 
   <!-- top bar -->
   <?php
@@ -272,20 +235,23 @@ setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>
       
       <table border="0" cellspacing="2">
         <tr>
-          <td nowrap="nowrap">
-          <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editoru_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" align="absmiddle" />   
-          <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editoru_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" /> 
-          <?php if (intval ($mgmt_config['autosave']) > 0) { ?>
+          <td nowrap="nowrap" align="left">
+            <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editoru_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" align="absmiddle" />   
+            <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editoru_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" /> 
+            <?php if (intval ($mgmt_config['autosave']) > 0) { ?>
             <div class="hcmsButton" style="height:22px;">
     		      <input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" /><label for="autosave">&nbsp;<?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?></label>
-            </div>        
-          <?php } ?>
+            </div>
+            <?php } ?>
+          </td>
+          <td nowrap="nowrap" align="right">
+           <?php echo showtranslator ($site, $tagname."_".$id, "u", $charset, $lang); ?>
           </td>
         </tr>
         <tr>
           <td colspan="2"> 
-          <input type="hidden" name="<?php echo $tagname."[".$id."]"; ?>" />
-          <textarea id="<?php echo $tagname."_".$id ?>" name="<?php echo $tagname."_".$id ?>" style="width:<?php echo $width; ?>px; height:<?php echo $height; ?>px;"><?php echo $contentbot; ?></textarea>
+            <input type="hidden" name="<?php echo $tagname."[".$id."]"; ?>" />
+            <textarea id="<?php echo $tagname."_".$id ?>" name="<?php echo $tagname."_".$id ?>" style="width:<?php echo $width; ?>px; height:<?php echo $height; ?>px;"><?php echo $contentbot; ?></textarea>
           </td>
         </tr>
       </table>
@@ -304,6 +270,49 @@ setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>
       </tr>
     </table>
   </div>
+
+  <?php if (intval ($mgmt_config['autosave']) > 0) { ?>
+  <script language="JavaScript">
+  function autosave ()
+  {
+  	var test = $("#autosave").is(":checked");
+    
+  	if (test == true)
+    {
+  		hcms_showHideLayers('messageLayer','','show');
+  		$("#savetype").val('auto');
+      submitText ('<?php echo $tagname."_".$id ?>', '<?php echo $tagname."[".$id."]"; ?>');
+      
+      <?php echo $add_constraint; ?>
+      
+      if (check == true)
+      {
+        $.post(
+          "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php", 
+          $("#hcms_formview").serialize(), 
+          function(data)
+          {
+            if(data.message.length !== 0)
+            {
+              alert(hcms_entity_decode(data.message));
+            }				
+            setTimeout("hcms_showHideLayers('messageLayer','','hide')", 1500);
+          }, 
+          "json"
+        );
+      }
+      else
+      {
+        hcms_showHideLayers('messageLayer','','hide');
+      }
+  	}
+    
+  	setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
+  }
+  
+  setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
+  </script>
+  <?php } ?>
 
 </body>
 </html>

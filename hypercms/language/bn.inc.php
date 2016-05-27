@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['bn'] = "কলম";
 $hcms_lang['undo']['bn'] = "বিশ্বাসভাজনতার ফাঁকগুলির সামনে রুখে দাঁড়াবার ও সেগুলি";
 $hcms_lang['redo']['bn'] = "Redo";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['bn'] = "একটি টুল সিলেক্ট করে annotation একটি যোগ করুন";
+$hcms_lang['translate']['bn'] = "অনুবাদ";
+$hcms_lang['enable-languages-for-translation']['bn'] = "ভাষার জন্য অনুকূল অনুবাদ";
 ?>

@@ -1339,7 +1339,7 @@ $hcms_lang['project-management']['sv'] = "Projektledning";
 $hcms_lang['task']['sv'] = "Uppgift";
 $hcms_lang['tasks']['sv'] = "Uppgifter";
 $hcms_lang['projects']['sv'] = "Projekt";
-$hcms_lang['gantt-chart']['sv'] = "Gantt-diagrammet";
+$hcms_lang['gantt-chart']['sv'] = "Gantt";
 $hcms_lang['subproject']['sv'] = "Delprojekt";
 $hcms_lang['create-new-project']['sv'] = "Skapa nytt projekt";
 $hcms_lang['show-finished-projects']['sv'] = "Visa avslutade projekt";
@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['sv'] = "Penna";
 $hcms_lang['undo']['sv'] = "Ångra";
 $hcms_lang['redo']['sv'] = "Redo";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['sv'] = "Välj ett verktyg för att lägga till en anteckning";
+$hcms_lang['translate']['sv'] = "Översätta";
+$hcms_lang['enable-languages-for-translation']['sv'] = "Aktiverad språk för översättning";
 ?>

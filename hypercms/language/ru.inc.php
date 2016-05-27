@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['ru'] = "Пера";
 $hcms_lang['undo']['ru'] = "Ослабьте затяжку";
 $hcms_lang['redo']['ru'] = "Повторить";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ru'] = "Выберите инструмент, с тем чтобы добавить аннотацию";
+$hcms_lang['translate']['ru'] = "Перевести";
+$hcms_lang['enable-languages-for-translation']['ru'] = "Включена языков для перевода";
 ?>

@@ -1339,7 +1339,7 @@ $hcms_lang['project-management']['no'] = "Prosjektledelse";
 $hcms_lang['task']['no'] = "Oppgave";
 $hcms_lang['tasks']['no'] = "Oppgaver";
 $hcms_lang['projects']['no'] = "Prosjekter";
-$hcms_lang['gantt-chart']['no'] = "Gantt-diagram";
+$hcms_lang['gantt-chart']['no'] = "Gantt";
 $hcms_lang['subproject']['no'] = "Delprosjekt";
 $hcms_lang['create-new-project']['no'] = "Opprett nytt prosjekt";
 $hcms_lang['show-finished-projects']['no'] = "Vis avsluttede prosjekter";
@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['no'] = "Penn";
 $hcms_lang['undo']['no'] = "Angre";
 $hcms_lang['redo']['no'] = "Gjenta";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['no'] = "Velg et verktøy for å legge til en merknad";
+$hcms_lang['translate']['no'] = "Oversette";
+$hcms_lang['enable-languages-for-translation']['no'] = "Aktivert språk for oversettelse";
 ?>

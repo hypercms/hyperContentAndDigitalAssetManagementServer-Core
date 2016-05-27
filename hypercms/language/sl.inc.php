@@ -1379,4 +1379,6 @@ $hcms_lang['pen']['sl'] = "Injekcijski peresnik";
 $hcms_lang['undo']['sl'] = "Razveljavitev";
 $hcms_lang['redo']['sl'] = "Ponovitev zadnjega dejanja";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['sl'] = "Izberite orodje za dodajanje zaznamka";
+$hcms_lang['translate']['sl'] = "Prevajanje";
+$hcms_lang['enable-languages-for-translation']['sl'] = "Omogočeni jeziki za prevajanje";
 ?>

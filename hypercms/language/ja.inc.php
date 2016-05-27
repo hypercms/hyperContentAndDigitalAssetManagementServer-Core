@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['ja'] = "ペン";
 $hcms_lang['undo']['ja'] = "元に戻す";
 $hcms_lang['redo']['ja'] = "やり直し";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ja'] = "ツールを選択してアノテーションを追加するには、";
+$hcms_lang['translate']['ja'] = "変換";
+$hcms_lang['enable-languages-for-translation']['ja'] = "翻訳のために有効になっている言語";
 ?>

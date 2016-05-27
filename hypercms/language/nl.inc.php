@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['nl'] = "Pen";
 $hcms_lang['undo']['nl'] = "Ongedaan maken";
 $hcms_lang['redo']['nl'] = "Redo";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['nl'] = "Selecteer een hulpmiddel om een annotatie";
+$hcms_lang['translate']['nl'] = "Vertaal";
+$hcms_lang['enable-languages-for-translation']['nl'] = "Enabled talen voor vertaling";
 ?>

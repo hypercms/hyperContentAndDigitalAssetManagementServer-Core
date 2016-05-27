@@ -1339,7 +1339,7 @@ $hcms_lang['project-management']['sq'] = "Manaxhimi i Projekteve";
 $hcms_lang['task']['sq'] = "Detyrën";
 $hcms_lang['tasks']['sq'] = "Punët";
 $hcms_lang['projects']['sq'] = "Projektet";
-$hcms_lang['gantt-chart']['sq'] = "Diagram Gantt";
+$hcms_lang['gantt-chart']['sq'] = "Gantt";
 $hcms_lang['subproject']['sq'] = "Nenprojektin";
 $hcms_lang['create-new-project']['sq'] = "Krijimi i projektit të ri";
 $hcms_lang['show-finished-projects']['sq'] = "Tregojnë projektet që kanë mbaruar";
@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['sq'] = "Pena";
 $hcms_lang['undo']['sq'] = "Lapërkon";
 $hcms_lang['redo']['sq'] = "Ribëj";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['sq'] = "Zgjidh një mjet për të shtuar një shënimi";
+$hcms_lang['translate']['sq'] = "Përkthej";
+$hcms_lang['enable-languages-for-translation']['sq'] = "Mundësuar gjuhët për përkthim";
 ?>

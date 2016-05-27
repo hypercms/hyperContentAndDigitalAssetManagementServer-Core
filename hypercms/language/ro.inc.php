@@ -1339,7 +1339,7 @@ $hcms_lang['project-management']['ro'] = "Management de proiect";
 $hcms_lang['task']['ro'] = "Sarcină";
 $hcms_lang['tasks']['ro'] = "Sarcini";
 $hcms_lang['projects']['ro'] = "Proiecte";
-$hcms_lang['gantt-chart']['ro'] = "Diagrama Gantt";
+$hcms_lang['gantt-chart']['ro'] = "Gantt";
 $hcms_lang['subproject']['ro'] = "Subproject";
 $hcms_lang['create-new-project']['ro'] = "Creare proiect nou";
 $hcms_lang['show-finished-projects']['ro'] = "Afişare finisate Proiecte";
@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['ro'] = "Pen";
 $hcms_lang['undo']['ro'] = "Slăbiţi";
 $hcms_lang['redo']['ro'] = "Refaceţi";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ro'] = "Selectaţi un instrument pentru a adăuga o adnotare";
+$hcms_lang['translate']['ro'] = "Traducere";
+$hcms_lang['enable-languages-for-translation']['ro'] = "Activat limbi pentru traducere";
 ?>

@@ -64,7 +64,6 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $action 
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
-<!--
 function switchDAM ()
 {
   if (document.getElementById('dam').checked == true)
@@ -96,7 +95,88 @@ function switchDAM ()
     if (document.getElementById('storage_type3')) document.getElementById('storage_type3').disabled = true;
   }
 }
--->
+
+function moveBoxEntry(fbox, tbox)
+{
+  var arrFbox = new Array();
+  var arrTbox = new Array();
+  var arrLookup = new Array();
+  var i;
+
+  for (i = 0; i < tbox.options.length; i++)
+  {
+    arrLookup[tbox.options[i].text] = tbox.options[i].value;
+    arrTbox[i] = tbox.options[i].text;
+  }
+
+  var fLength = 0;
+  var tLength = arrTbox.length;
+
+  for(i = 0; i < fbox.options.length; i++)
+  {
+    arrLookup[fbox.options[i].text] = fbox.options[i].value;
+    if (fbox.options[i].selected && fbox.options[i].value != '')
+    {
+      arrTbox[tLength] = fbox.options[i].text;
+      tLength++;
+    }
+    else
+    {
+      arrFbox[fLength] = fbox.options[i].text;
+      fLength++;
+    }
+  }
+
+  arrFbox.sort();
+  arrTbox.sort();
+  fbox.length = 0;
+  tbox.length = 0;
+  var c;
+
+  for(c = 0; c < arrFbox.length; c++)
+  {
+    var no = new Option();
+    no.value = arrLookup[arrFbox[c]];
+    no.text = arrFbox[c];
+    fbox[c] = no;
+  }
+
+  for(c = 0; c < arrTbox.length; c++)
+  {
+    var no = new Option();
+    no.value = arrLookup[arrTbox[c]];
+    no.text = arrTbox[c];
+    tbox[c] = no;
+  }
+}
+
+function submitLanguage (selectname, targetname)
+{
+  var content = '' ;
+  var select = document.forms['siteform'].elements[selectname];
+  var target = document.forms['siteform'].elements[targetname];
+
+  if (select.options.length > 0)
+  {
+    for (var i=0; i<select.options.length; i++)
+    {
+      content = content + select.options[i].value + ',' ;
+    }
+  }
+  else
+  {
+    content = '';
+  }
+
+  target.value = content;  
+  return true;
+}
+
+function submitForm ()
+{
+  submitLanguage ('list2', 'setting[translate]');
+  document.forms['siteform'].submit();
+}
 </script>
 </head>
 
@@ -316,6 +396,64 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
         </select>
       </td>
     </tr>
+    
+    <?php if (is_dir ($mgmt_config['abs_path_cms']."connector/")) { ?>
+    <tr align="left" valign="top"> 
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['enable-languages-for-translation'][$lang]); ?>: </td>
+      <td nowrap="nowrap">
+        <input type="hidden" name="setting[translate]" value="">
+        <table cellpadding=0 cellspacing=0 border=0>
+          <tr>
+            <td>
+              <?php echo getescapedtext ($hcms_lang['available-languages'][$lang]); ?>:<br />
+              <select multiple size="10" name="list1" style="width:150px;">
+              <?php
+              // get languages
+              $langcode_array = getlanguageoptions();
+      
+              if ($langcode_array != false)
+              {
+                foreach ($langcode_array as $code => $lang_short)
+                {
+                  if (empty ($mgmt_config[$site_name]['translate']) || substr_count ($mgmt_config[$site_name]['translate'], $code) == 0)
+                  {
+                    echo "
+                        <option value=\"".$code."\">".$lang_short."</option>";
+                  }
+                  else
+                  {
+                    $list2_array[] = "
+                        <option value=\"".$code."\">".$lang_short."</option>";
+                  }
+                }
+              }
+              ?>
+              </select>
+            </td>
+            <td align="center" valign="middle">
+              <br />
+              <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['list2'],this.form.elements['list1'])" value="&lt;&lt;" />
+              <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['list1'],this.form.elements['list2'])" value="&gt;&gt;" />
+            </td>
+            <td>
+              <?php echo getescapedtext ($hcms_lang['selected-languages'][$lang]); ?>:<br />
+              <select multiple size="10" name="list2" style="width:150px;">
+              <?php
+              if (!empty ($list2_array) && sizeof ($list2_array) > 0)
+              {
+                foreach ($list2_array as $list2)
+                {
+                  echo $list2;
+                }
+              }
+              ?>
+              </select>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <?php } ?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap" colspan=2>&nbsp;</td>
     </tr>      
@@ -379,7 +517,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
      <?php if ($preview != "yes") { ?>             
     <tr>
       <td nowrap="nowrap"><b><?php echo getescapedtext ($hcms_lang['save-publication-configuration'][$lang]); ?>: </b></td>
-      <td nowrap="nowrap"> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['siteform'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /></td>
+      <td nowrap="nowrap"> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /></td>
     </tr>
     <?php } ?>
   </table>

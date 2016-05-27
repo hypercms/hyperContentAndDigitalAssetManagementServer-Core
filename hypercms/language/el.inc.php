@@ -1381,4 +1381,6 @@ $hcms_lang['pen']['el'] = "Γραφίδα";
 $hcms_lang['undo']['el'] = "Ξεσφίξτε";
 $hcms_lang['redo']['el'] = "Επανάληψη";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['el'] = "Επιλέξτε ένα εργαλείο για να προσθέσετε ένα σχόλιο";
+$hcms_lang['translate']['el'] = "Μετάφραση";
+$hcms_lang['enable-languages-for-translation']['el'] = "Ενεργοποιημένη γλώσσα για μετάφραση.";
 ?>

@@ -158,7 +158,7 @@ function getuserip ()
 function getlanguageoptions ()
 {
   global $mgmt_config;
-  
+
   if (is_file ($mgmt_config['abs_path_cms']."include/languagecode.dat"))
   {
     $result = array();

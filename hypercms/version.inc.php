@@ -1538,8 +1538,30 @@ Release 05/2016
 - Update of product name in the comment header of all files
 - Implementation of function getsearchhistory in frameset_main_linking
 - Implementation of keywords verification before adding them as JS array to the general search field in frameset_main, frameset_main_linking, and explorer
+
+Version 6.1.8
+Release 05/2016
+- Bug fix: queue_objectlist used incorrect mouse-event on date column header
+- Updates in language files
+- Implementation of Google translation API in connector library
+- Implementation of new JS function hcms_stripTags and hcms_translateText (using Googles translation engine)
+- Implementation of translator for all unformatted and formatted text-tags in form views, easyedit views, but not in inline editing view
+- Implementation of new publication configuration setting for supported language translations
+- Implementation of new translation parameter in function editpublication
+- Bug fix: JS function submitLanguage of template engine did not properly close a command line with semicolon
+- Update of language codes in include/languagecode.dat based on Google translate
+- Implementation of new function showtranslator in UI API
+- Updates in Aministrators Guide and Users Guide
+- Bug fix: Function showmedia did not verify thumbnail image dimensions
+- Bug fix: template_edit did not declare $checkbox_metainfo
+- Bug fix: Service savecontent used missing input variable $constraint
+- Bug fix: Function showmedia did not recreate annotation image if the media file has been updated
+
+Version 6.1.9
+Release 06/2016
+- Bug fix: Language codes in include/languagecode.dat used a single non-UTF-8 character
 */
 
 // current version
-$version = "Version 6.1.7";
+$version = "Version 6.1.9";
 ?>

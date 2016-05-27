@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['ar'] = "القلم";
 $hcms_lang['undo']['ar'] = "تراجع";
 $hcms_lang['redo']['ar'] = "الاعادة";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ar'] = "حدد اداة لاضافة شرح";
+$hcms_lang['translate']['ar'] = "ترجمة";
+$hcms_lang['enable-languages-for-translation']['ar'] = "تمكين لغات للترجمة";
 ?>

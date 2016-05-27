@@ -151,51 +151,12 @@ $token = createtoken ($user);
     <script type="text/javascript" src="ckeditor/ckeditor.js"></script>
     <script type="text/javascript" src="../javascript/main.js" ></script>
     <script type="text/javascript">
-      <!--
-      function setsavetype(type)
-      {
-        document.forms['hcms_formview'].elements['savetype'].value = type;
-        document.forms['hcms_formview'].submit();
-        return true;
-      }
-      <?php 
-      if (intval ($mgmt_config['autosave']) > 0) { 
-      ?>
-      function autosave ()
-      {
-        var test = $("#autosave").is(":checked");
-        
-        if (test == true)
-        {
-          for(var i in CKEDITOR.instances)
-          {
-            CKEDITOR.instances[i].updateElement();
-          }
-          
-          hcms_showHideLayers('messageLayer','','show');
-          $("#savetype").val('auto');
-          
-          $.post(
-            "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php", 
-            $("#hcms_formview").serialize(), 
-            function(data)
-            {
-              if(data.message.length !== 0)
-              {
-                alert(hcms_entity_decode(data.message));
-              }				
-              setTimeout("hcms_showHideLayers('messageLayer','','hide')", 1500);
-            }, 
-            "json"
-          );
-        }
-        setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
-      }
-      setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
-      <?php 
-      } 
-      ?>
-      //-->
+    function setsavetype(type)
+    {
+      document.forms['hcms_formview'].elements['savetype'].value = type;
+      document.forms['hcms_formview'].submit();
+      return true;
+    }
     </script>
     <?php echo showvideoplayer_head (false); ?>
   </head>
@@ -228,18 +189,17 @@ $token = createtoken ($user);
         
         <table border="0" cellspacing="2">
           <tr>
-            <td nowrap="nowrap">
+            <td nowrap="nowrap" align="left">
               <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" align="absmiddle" />   
               <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" />
-              <?php 
-              if (intval ($mgmt_config['autosave']) > 0) {
-              ?>
+              <?php if (intval ($mgmt_config['autosave']) > 0) { ?>
               <div class="hcmsButton" style="height:22px;">
                 &nbsp;<input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" /><label for="autosave">&nbsp;<?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?></label>&nbsp;
               </div>
-              <?php 
-              } 
-              ?>
+              <?php } ?>
+            </td>
+            <td nowrap="nowrap" align="right">
+              <?php echo showtranslator ($site, $tagname."_".$id, "f", $charset, $lang); ?>
             </td>
           </tr>
           <tr>
@@ -263,6 +223,44 @@ $token = createtoken ($user);
         </tr>
       </table>
     </div>
+    
+    <?php if (intval ($mgmt_config['autosave']) > 0) { ?>
+    <script type="text/javascript">
+    function autosave ()
+    {
+      var test = $("#autosave").is(":checked");
+      
+      if (test == true)
+      {
+        for(var i in CKEDITOR.instances)
+        {
+          CKEDITOR.instances[i].updateElement();
+        }
+        
+        hcms_showHideLayers('messageLayer','','show');
+        $("#savetype").val('auto');
+        
+        $.post(
+          "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php", 
+          $("#hcms_formview").serialize(), 
+          function(data)
+          {
+            if(data.message.length !== 0)
+            {
+              alert(hcms_entity_decode(data.message));
+            }				
+            setTimeout("hcms_showHideLayers('messageLayer','','hide')", 1500);
+          }, 
+          "json"
+        );
+      }
+      
+      setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
+    }
+    
+    setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
+    <?php } ?>
+    </script>
     
   </body>
 </html>

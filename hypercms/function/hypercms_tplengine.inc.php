@@ -2081,7 +2081,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         ".getescapedtext ($hcms_lang['selected-languages'][$lang], $charset, $lang).":<br />
                         <select multiple size=\"10\" name=\"list2\" style=\"width:250px;\"".$disabled.">";
               
-                  if (sizeof ($list2_array) >= 1)
+                  if (sizeof ($list2_array) > 0)
                   {
                     foreach ($list2_array as $list2)
                     {
@@ -2902,7 +2902,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           </td>
                           <td align=left valign=top>
                             <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
-                            <textarea name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea>
+                            ".showtranslator ($site, $hypertagname."_".$id, "u", $charset, $lang, "width:".$sizewidth."px; text-align:right; padding:1px 0px 1px 0px; border:1px solid #C0C0C0;")."
+                            <textarea id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."_".$id."\" style=\"width:".($sizewidth-4)."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea>
                           </td>
                         </tr>";
                         }
@@ -2942,7 +2943,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           </td>
                           <td align=left valign=top>
                             <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
-                            <textarea name=\"".$hypertagname."_".$artid."_".$elementid."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea>
+                            ".showtranslator ($site, $hypertagname."_".$id, "u", $charset, $lang, "width:".$sizewidth."px; text-align:right; padding:1px 0px 1px 0px; border:1px solid #C0C0C0;")."
+                            <textarea id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."_".$artid."_".$elementid."\" style=\"width:".($sizewidth-4)."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea>
                           </td>
                         </tr>";
                       }
@@ -3062,7 +3064,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                             <b>".$labelname."</b>
                           </td>
                           <td align=left valign=top>
-                          ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
+                            ".showtranslator ($site, $hypertagname."_".$id, "f", $charset, $lang, "width:".$sizewidth."px; text-align:right; padding:1px 0px 1px 0px; border:1px solid #C0C0C0;")."
+                            ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
                           </td>
                         </tr>";
                         }
@@ -3124,7 +3127,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                             <b>".$label."</b> ".$arttaglink[$artid]."
                           </td>
                           <td align=left valign=top>
-                          ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
+                            ".showtranslator ($site, $hypertagname."_".$id, "f", $charset, $lang, "width:".$sizewidth."px; text-align:right; padding:1px 0px 1px 0px border:1px solid #C0C0C0;")."
+                            ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
                           </td>
                         </tr>";
                         }
@@ -3189,6 +3193,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <td>&nbsp;</td>";
                           $formitem[$key] .= "
                           <td align=left valign=top>
+                            ".showtranslator ($site, $hypertagname."_".$id, "f", $charset, $lang, "width:".$sizewidth."px; text-align:right; padding:1px 0px 1px 0px; border:1px solid #C0C0C0;")."
                             ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
                           </td>
                         </tr>";
@@ -7113,7 +7118,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   {
     var content = '' ;
     var select = document.forms['hcms_formview'].elements[selectname];
-    var target = document.forms['hcms_formview'].elements[targetname]
+    var target = document.forms['hcms_formview'].elements[targetname];
   
     if(select.options.length > 0)
     {

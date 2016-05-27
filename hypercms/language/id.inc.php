@@ -1381,4 +1381,6 @@ $hcms_lang['pen']['id'] = "Pen";
 $hcms_lang['undo']['id'] = "Mengurungkan";
 $hcms_lang['redo']['id'] = "Menjalankan langkah";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['id'] = "Pilih sebuah tool untuk menambahkan annotation";
+$hcms_lang['translate']['id'] = "Menerjemahkan";
+$hcms_lang['enable-languages-for-translation']['id'] = "Bahasa yang berkemampuan untuk penerjemahan";
 ?>

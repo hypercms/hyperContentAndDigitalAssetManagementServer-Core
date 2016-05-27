@@ -594,6 +594,7 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
   if ($cat == "page" || $cat == "comp" || $cat == "meta" || $cat == "inc")
   {
     if ($cat == "meta") $checkbox_metainfo = "<font color=\"#000000\">&nbsp;&nbsp;&nbsp;</font><input type=\"checkbox\" name=\"infotype\" value=\"meta\" /> ".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang);
+    else $checkbox_metainfo = "";
     
     echo "<tr>
       <td>

@@ -1339,7 +1339,7 @@ $hcms_lang['project-management']['it'] = "Gestione del progetto";
 $hcms_lang['task']['it'] = "Compito";
 $hcms_lang['tasks']['it'] = "Compiti";
 $hcms_lang['projects']['it'] = "Progetti";
-$hcms_lang['gantt-chart']['it'] = "Diagramma di Gantt";
+$hcms_lang['gantt-chart']['it'] = "Gantt";
 $hcms_lang['subproject']['it'] = "Sottoprogetto.";
 $hcms_lang['create-new-project']['it'] = "Creare un nuovo progetto";
 $hcms_lang['show-finished-projects']['it'] = "Visualizza i progetti finiti";
@@ -1380,4 +1380,6 @@ $hcms_lang['pen']['it'] = "Penna";
 $hcms_lang['undo']['it'] = "Annulla";
 $hcms_lang['redo']['it'] = "Ripeti";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['it'] = "Selezionare un utensile al fine di aggiungere un'annotazione";
+$hcms_lang['translate']['it'] = "Tradurre";
+$hcms_lang['enable-languages-for-translation']['it'] = "Abilitata lingue per la traduzione";
 ?>
