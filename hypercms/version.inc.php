@@ -1,6 +1,6 @@
 <?php
 /*
-new features of major releases:
+Version history of the hyper Content & Digital Asset Management Server
 
 Version 1.0.x
 Release 05/2002 - 10/2002
@@ -1560,6 +1560,9 @@ Release 05/2016
 Version 6.1.9
 Release 06/2016
 - Bug fix: Language codes in include/languagecode.dat used a single non-UTF-8 character
+- Several descriptions in the main API have been corrected
+- Update of the Programmers Guide
+- Implementation of API functions help in hypercms/help
 */
 
 // current version

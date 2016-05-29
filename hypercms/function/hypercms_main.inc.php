@@ -2035,7 +2035,7 @@ function deleteversion ($site, $container_version, $user="sys")
 
 // --------------------------------------- deleteversions -------------------------------------------
 // function: deleteversions()
-// input: type [content, template] or valid path in filesystem, report [yes,no], user name (optional)
+// input: type [content,template] or valid path in filesystem, report [yes,no], user name (optional)
 // output: true [report=no] or report [report=yes], false on error
 
 // description:
@@ -2111,20 +2111,13 @@ function deleteversions ($type, $report, $user="sys")
 
 // ========================================== FILE OPERATION =======================================
 
-// description:
-// loadfile and savefile function load and save files without locking them.
-// loadfile will wait 10 seconds for loading locked files.
-// loadlockfile and savelockfile includes a locking mechanismen for files.
-// every time you want to lock a file during your operations use loadlockfile.
-// it is important to use savelockfile to save and unlock the file again.
-// savelockfile requires the file to be opened by loadlockfile before.
-// deletefile removes files and empty directories.
-// appendfile appends the given content at the end of the file content.
-
 // ------------------------------------------- loadfile_header -------------------------------------------
 // function: loadfile_header()
 // input: path to file, file name 
 // output: file content
+
+// description:
+// Loads the file header, represented by a defined header size.
 
 function loadfile_header ($abs_path, $filename)
 {
@@ -2308,6 +2301,10 @@ function loadfile ($abs_path, $filename)
 
 // description:
 // This function loads and locks a file for a sepecific user. It waits up to 3 seconds for locked files to be unlocked.
+// Function loadlockfile and savelockfile includes a locking mechanismen for files.
+// Every time you want to lock a file during your operations use loadlockfile.
+// It is important to use savelockfile to save and unlock the file again.
+// savelockfile requires the file to be opened by loadlockfile before.
 
 function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
 {
@@ -2491,6 +2488,10 @@ function savefile ($abs_path, $filename, $filedata)
 
 // description:
 // Saves content to a locked file. It requires the file to be opened by loadlockfile.
+// Function loadlockfile and savelockfile includes a locking mechanismen for files.
+// Every time you want to lock a file during your operations use loadlockfile.
+// It is important to use savelockfile to save and unlock the file again.
+// savelockfile requires the file to be opened by loadlockfile before.
 
 function savelockfile ($user, $abs_path, $filename, $filedata)
 {
