@@ -1563,6 +1563,11 @@ Release 06/2016
 - Several descriptions in the main API have been corrected
 - Update of the Programmers Guide
 - Implementation of API functions help in hypercms/help
+- Redesigned template engine that uses DIV-tags instead of tables for form layout
+- Form labels and content fields are now organized in rows instead of columns
+- The share link layer has a fixed position
+- Implementation of new CSS classes named hcmsFormRowLabel and hcmsFormRowContent used in form views
+- Implementation of new mediawith on mobile devices for frameset_content
 */
 
 // current version

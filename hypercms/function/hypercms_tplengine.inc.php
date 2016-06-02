@@ -1547,16 +1547,16 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       }
       
       $viewstore = "<!DOCTYPE html>
-      <html>
-      <head>
-      <title>hyperCMS</title>
-      <meta charset=\"".$charset."\" />
-      <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
-      </head>
-      <body class=\"hcmsWorkplaceGeneric\">
-      <div class=\"hcmsWorkplaceFrame\">".$viewstore."</div>
-      </body>
-      </html>";
+  <html>
+  <head>
+  <title>hyperCMS</title>
+  <meta charset=\"".$charset."\" />
+  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+  </head>
+  <body class=\"hcmsWorkplaceGeneric\">
+  <div class=\"hcmsWorkplaceFrame\">".$viewstore."</div>
+  </body>
+  </html>";
     }
     
     // ============================================== included files ==============================================
@@ -1973,11 +1973,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   else $labelname = "Content-type";
                   
                   $formitem[$key] = "
-                <tr>
-                  <td align=left valign=top>
+                  <div class=\"hcmsFormRowLabel\">
                     <b>".$labelname."</b>
-                  </td>
-                  <td>
+                  </div>
+                  <div class=\"hcmsFormRowContent\">
                     <table cellpadding=0 cellspacing=0 border=0>
                       <tr>
                         <td style=\"width:150px;\">
@@ -2014,8 +2013,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         </td>
                       </tr>
                     </table>
-                  </td>
-                </tr>\n";              
+                  </div>";              
                 }   
               }
               // if page language
@@ -2031,11 +2029,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   $add_submitlanguage = "submitLanguage ('list2', '".$hypertagname."');\n";
                              
                   $formitem[$key] = "
-                <tr>
-                  <td align=left valign=top>
+                  <div class=\"hcmsFormRowLabel\">
                     <b>".$labelname."</b>
-                  </td>
-                  <td>
+                  </div>
+                  <div class=\"hcmsFormRowContent\">
                     <input type=\"hidden\" name=\"".$hypertagname."\" value=\"\">
                     <table cellpadding=0 cellspacing=0 border=0>
                       <tr>
@@ -2094,8 +2091,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       </td>
                     </tr>
                   </table>
-                </td>
-              </tr>\n";              
+                </div>";              
                 }    
               }            
               // if page customer tracking
@@ -2123,11 +2119,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 if ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                 {
                   $formitem[$key] = "
-                <tr>
-                  <td align=left valign=top>
+                  <div class=\"hcmsFormRowLabel\">
                     <b>".$labelname."</b>
-                  </td>
-                  <td>
+                  </div>
+                  <div class=\"hcmsFormRowContent\">
                     <table cellpadding=0 cellspacing=0 border=0>
                       <tr>
                         <td style=\"width:150px;\">
@@ -2180,8 +2175,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         </td>
                       </tr>
                     </table>
-                  </td>
-                </tr>\n";              
+                  </div>";              
                 }
                 
                 // empty contentbot for customer tracking since the content won't replace teh tag  
@@ -2196,14 +2190,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 if ($buildview == "formedit" || $buildview == "formlock" || $buildview == "formmeta")
                 {
                   $formitem[$key] = "
-                <tr>
-                  <td align=left valign=top>
+                  <div class=\"hcmsFormRowLabel\">
                     <b>".$labelname."</b>
-                  </td>
-                  <td align=left valign=top>
+                  </div>
+                  <div class=\"hcmsFormRowContent\">
                     <textarea name=\"".$hypertagname."\" wrap=\"VIRTUAL\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot[0]."</textarea>
-                  </td>
-                </tr>\n";            
+                  </div>";            
                 }            
               }
             }
@@ -2228,11 +2220,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           $setcontenttype = "yes";
           
           $formitem['0'] = "
-            <tr>
-              <td align=left valign=top>
+              <div class=\"hcmsFormRowLabel\">
                 <b>Content-type</b>
-              </td>
-              <td>
+              </div>
+              <div class=\"hcmsFormRowContent\">
                 <table cellpadding=0 cellspacing=0 border=0>
                   <tr>
                     <td style=\"width:150px;\">
@@ -2269,8 +2260,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                    </td>
                  </tr>
                </table>
-             </td>
-           </tr>\n";              
+             </div>";              
         }        
       }
 
@@ -2528,17 +2518,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             if ($control_sum >= 2)
             {
               $result['view'] = "<!DOCTYPE html>
-              <html>
-              <head>
-              <title>hyperCMS</title>
-              <meta charset=\"".getcodepage ($lang)."\" />
-              <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
-              </head>
-              <body class=\"hcmsWorkplaceGeneric\">
-                <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [".$tagu."], [".$tagf."], [".$tagl."], [".$tagc."], [".$tagd."] ".$hcms_lang['and-or'][$lang]." [".$tagk."] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
-                ".$hcms_lang['please-note-the-tag-identification-must-be-unique-for-different-tag-types-of-the-same-tag-set'][$lang]."
-              </body>
-              </html>";
+  <html>
+  <head>
+  <title>hyperCMS</title>
+  <meta charset=\"".getcodepage ($lang)."\" />
+  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+  </head>
+  <body class=\"hcmsWorkplaceGeneric\">
+    <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [".$tagu."], [".$tagf."], [".$tagl."], [".$tagc."], [".$tagd."] ".$hcms_lang['and-or'][$lang]." [".$tagk."] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
+    ".$hcms_lang['please-note-the-tag-identification-must-be-unique-for-different-tag-types-of-the-same-tag-set'][$lang]."
+  </body>
+  </html>";
               
               $result['release'] = 0; 
               $result['container'] = $contentfile;
@@ -2882,30 +2872,26 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     $('#".$hypertagname."_".$id."').tagit({".$keywords_tagit."singleField:true, singleFieldDelimiter:',', singleFieldNode:$('#".$hypertagname."_".$id."')});";
                           
                           $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b>
-                          </td>
-                          <td align=left valign=top style=\"width:".$sizewidth.(strpos ($sizewidth, "%") > 0 ? "" : "px")."\">
+                          </div>
+                          <div class=\"hcmsFormRowContent\" style=\"width:".$sizewidth.(strpos ($sizewidth, "%") > 0 ? "" : "px")."\">
                             <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
                             <input name=\"".$hypertagname."_".$id."\" id=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px;\"".$disabled." value=\"".$contentbot."\" />
-                          </td>
-                        </tr>";
+                          </div>";
                         }
                         // if unformatted text
                         else
                         {
                           $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b>
-                          </td>
-                          <td align=left valign=top>
+                          </div>
+                          <div class=\"hcmsFormRowContent\">
                             <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
                             ".showtranslator ($site, $hypertagname."_".$id, "u", $charset, $lang, "width:".$sizewidth."px; text-align:right; padding:1px 0px 1px 0px; border:1px solid #C0C0C0;")."
                             <textarea id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."_".$id."\" style=\"width:".($sizewidth-4)."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea>
-                          </td>
-                        </tr>";
+                          </div>";
                         }
                       }                        
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
@@ -2937,16 +2923,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if ($constraint != "") $constraint_array[$key] = "'".$hypertagname."_".$id."','".$labelname."','".$constraint."'";
                         
                         $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b> ".$arttaglink[$artid]."
-                          </td>
-                          <td align=left valign=top>
+                          </div>
+                          <div class=\"hcmsFormRowContent\">
                             <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
                             ".showtranslator ($site, $hypertagname."_".$id, "u", $charset, $lang, "width:".$sizewidth."px; text-align:right; padding:1px 0px 1px 0px; border:1px solid #C0C0C0;")."
                             <textarea id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."_".$artid."_".$elementid."\" style=\"width:".($sizewidth-4)."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea>
-                          </td>
-                        </tr>";
+                          </div>";
                       }
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
@@ -2975,23 +2959,20 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $add_submittext .= "submitText ('".$hypertagname."_".$id."', '".$hypertagname."[".$id."]');\n";
                         
                         $formitem[$key] = "
-                      <tr>
-                        <td align=left valign=top>
+                        <div class=\"hcmsFormRowLabel\">
                           <b>".$labelname."</b>
-                        </td>";
+                        </div>";
+                        
                         if (!empty ($contentcomment)) $formitem[$key] .= "
-                        <td>
+                        <div class=\"hcmsFormRowContent\">
                           ".$contentcomment."
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>&nbsp;</td>";
+                        </div>";
+                        
                         $formitem[$key] .= "
-                        <td align=left valign=top>
+                        <div class=\"hcmsFormRowContent\">
                           <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
                           <textarea class=\"is_comment\" name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled."></textarea>
-                        </td>
-                      </tr>";
+                        </div>";
                       }                        
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
@@ -3041,11 +3022,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if ($buildview == "formlock")
                         {
                           $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b>
-                          </td>
-                          <td align=left valign=top>
+                          </div>
+                          <div class=\"hcmsFormRowContent\">
                             <table border=0 cellspacing=1 bgcolor=#000000 style=\"width:".$sizewidth."px; height:".$sizeheight."px;\">
                               <tr>
                                 <td bgcolor=\"#FFFFFF\" align=left valign=top>
@@ -3053,21 +3033,18 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                 </td>
                               </tr>
                             </table>
-                          </td>
-                        </tr>";
+                          </div>";
                         }
                         else
                         {
                           $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b>
-                          </td>
-                          <td align=left valign=top>
+                          </div>
+                          <div class=\"hcmsFormRowContent\">
                             ".showtranslator ($site, $hypertagname."_".$id, "f", $charset, $lang, "width:".$sizewidth."px; text-align:right; padding:1px 0px 1px 0px; border:1px solid #C0C0C0;")."
                             ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
-                          </td>
-                        </tr>";
+                          </div>";
                         }
                       }                      
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
@@ -3104,11 +3081,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if ($buildview == "formlock")
                         {
                           $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
-                            <b>".$label."</b>
-                          </td>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
+                            <b>".$labelname."</b>
+                          </div>
+                          <div>
                             <table border=0 cellspacing=1 bgcolor=#000000 style=\"width:".$sizewidth."px; height:".$sizeheight."px;\">
                               <tr>
                                 <td bgcolor=bgcolor=\"#FFFFFF\" align=left valign=top>
@@ -3116,21 +3092,18 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                 </td>
                               </tr>
                             </table>
-                          </td>
-                        </tr>";
+                          <div>";
                         }
                         else
                         {
                           $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
-                            <b>".$label."</b> ".$arttaglink[$artid]."
-                          </td>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
+                            <b>".$labelname."</b> ".$arttaglink[$artid]."
+                          </div>
+                          <div class=\"hcmsFormRowContent\">
                             ".showtranslator ($site, $hypertagname."_".$id, "f", $charset, $lang, "width:".$sizewidth."px; text-align:right; padding:1px 0px 1px 0px border:1px solid #C0C0C0;")."
                             ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
-                          </td>
-                        </tr>";
+                          </div>";
                         }
                       }                      
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
@@ -3168,35 +3141,30 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if ($buildview == "formlock")
                         {
                           $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b>
-                          </td>
-                          <td>
+                          </div>
+                          <div class=\"hcmsFormRowContent\">
                             ".$contentcomment."
-                          </td>
-                        </tr>";
+                          </div>";
                         }
                         else 
                         {
                           $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b>
-                          </td>";
+                          </div>";
+                          
                           if (!empty ($contentcomment)) $formitem[$key] .= "
-                          <td>
+                          <div class=\"hcmsFormRowContent\">
                             ".$contentcomment."
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>&nbsp;</td>";
+                          </div>";
+                          
                           $formitem[$key] .= "
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowContent\">
                             ".showtranslator ($site, $hypertagname."_".$id, "f", $charset, $lang, "width:".$sizewidth."px; text-align:right; padding:1px 0px 1px 0px; border:1px solid #C0C0C0;")."
                             ".showeditor ($site, $hypertagname, $id, $contentbot, $sizewidth, $sizeheight, $toolbar, $lang, $dpi)."
-                          </td>
-                        </tr>";
+                          </div>";
                         }
                       }                        
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
@@ -3246,11 +3214,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           $list_array = explode ("|", $list);
   
                           $formitem[$key] = "
-                          <tr>
-                            <td align=left valign=top>
+                            <div class=\"hcmsFormRowLabel\">
                               <b>".$labelname."</b>
-                            </td>
-                            <td align=left valign=top>
+                            </div>
+                            <div class=\"hcmsFormRowContent\">
                               <select name=\"".$hypertagname."[".$id."]\"".$disabled.">\n";
                           
                           foreach ($list_array as $list_entry)
@@ -3273,8 +3240,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                          
                           $formitem[$key] .= "
                               </select>
-                            </td>
-                          </tr>";
+                            </div>";
                         }
                       }
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
@@ -3305,11 +3271,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $list_array = explode ("|", $list);
 
                         $formitem[$key] = "
-                      <tr>
-                        <td align=left valign=top>
+                        <div class=\"hcmsFormRowLabel\">
                           <b>".$labelname."</b> ".$arttaglink[$artid]."
-                        </td>
-                        <td align=left valign=top>
+                        </div>
+                        <div class=\"hcmsFormRowContent\">
                           <select name=\"".$hypertagname."[".$id."]\"".$disabled.">\n";
                         
                         foreach ($list_array as $list_entry)
@@ -3332,8 +3297,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                        
                         $formitem[$key] .= "
                           </select>
-                        </td>
-                      </tr>";
+                        </div>";
                       }                      
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
@@ -3379,15 +3343,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         else $checked = "";
                         
                         $formitem[$key] = "
-                      <tr>
-                        <td align=left valign=top>
+                        <div class=\"hcmsFormRowLabel\">
                           <b>".$labelname."</b>
-                        </td>
-                        <td align=left valign=top>
+                        </div>
+                        <div class=\"hcmsFormRowContent\">
                           <input type=\"hidden\" name=\"".$hypertagname."[".$id."]"."\" value=\"\" />
                           <input type=\"checkbox\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".$checked.$disabled." /> ".$value."
-                        </td>
-                      </tr>";
+                        </div>";
                       }
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
@@ -3416,15 +3378,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         else $checked = "";
                                               
                         $formitem[$key] = "
-                      <tr>
-                        <td align=left valign=top>
+                        <div class=\"hcmsFormRowLabel\">
                           <b>".$labelname."</b> ".$arttaglink[$artid]."
-                        </td>
-                        <td align=left valign=top>
+                        </div>
+                        <div class=\"hcmsFormRowContent\">
                           <input type=\"hidden\" name=\"".$hypertagname."[".$id."]"."\" value=\"\" />
                           <input type=\"checkbox\" name=\"".$hypertagname."[".$id."]\" value=\"".$value."\"".$checked.$disabled." /> ".$value."
-                        </td>
-                      </tr>";
+                        </div>";
                       }                      
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
@@ -3470,14 +3430,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         else $showcalendar = "";
                         
                         $formitem[$key] = "
-                      <tr>
-                        <td align=left valign=top>
+                        <div class=\"hcmsFormRowLabel\">
                           <b>".$labelname."</b>
-                        </td>
-                        <td align=left valign=top>
+                        </div>
+                        <div class=\"hcmsFormRowContent\">
                           <input type=\"text\" id=\"datefield_".$id."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" readonly=\"readonly\" ".$disabled." /><img src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />                                          
-                        </td>
-                      </tr>";
+                        </div>";
                       }
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
@@ -3506,14 +3464,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         else $showcalendar = "";
                                               
                         $formitem[$key] = "
-                      <tr>
-                        <td align=left valign=top>
+                        <div class=\"hcmsFormRowLabel\">
                           <b>".$labelname."</b> ".$arttaglink[$artid]."
-                        </td>
-                        <td align=left valign=top>
+                        </div>
+                        <div class=\"hcmsFormRowContent\">
                           <input type=\"text\" id=\"datefield_".$artid."_".$elementid."\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" readonly=\"readonly\" ".$disabled." /><img src=\"".getthemelocation()."img/button_datepicker.gif\" ".$showcalendar." align=\"absmiddle\" style=\"width:22px; height:22px; border:0; cursor:pointer; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang)."\" ".$disabled." />                                           
-                        </td>
-                      </tr>";
+                        </div>";
                       }                      
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
@@ -4010,7 +3966,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         }
                         else $taglink = "";
                         
-                        $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b></td><td align=left valign=top><table>\n";
+                        $formitem[$key] = "
+                        <div class=\"hcmsFormRowLabel\">
+                          <b>".$labelname."</b>
+                        </div>
+                        <div class=\"hcmsFormRowContent\">
+                          <table>";
 
                         if ($mediafilebot[$id][$tagid] != "*Null*")
                         {
@@ -4026,7 +3987,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           
                           if ($mediatype[$id] != "") $constraint_array[$key] = "'".$hypertagname_file[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['multimedia-file'][$lang]."', '".$mediatype[$id]."'";
                           
-                          $formitem[$key] .= "<tr><td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering")."</td>
+                          $formitem[$key] .= "
+                          <tr>
+                            <td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering")."</td>
                           </tr>
                           <tr>
                             <td width=\"150\">".getescapedtext ($hcms_lang['multimedia-file'][$lang], $charset, $lang).":</td>
@@ -4035,7 +3998,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               <input type=\"hidden\" name=\"mediaobject[".$id."]\" value=\"".$mediaobjectbot[$id]."\" />
                               <input name=\"".$hypertagname_file[$id]."[".$id."]\" value=\"".convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:350px;\" ".$disabled." />".$taglink."
                             </td>
-                          </tr>\n";
+                          </tr>";
                         }
                         
                         if ($mediaalttextbot[$id] != "*Null*") $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['alternative-text'][$lang], $charset, $lang).":</td><td><input name=\"".$hypertagname_text[$id]."[".$id."]\" value=\"".$mediaalttextbot[$id]."\" style=\"width:350px;\"".$disabled." /></td></tr>\n";
@@ -4065,7 +4028,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).":</td><td><input name=\"".$hypertagname_height[$id]."[".$id."]\" value=\"".$mediaheightbot[$id]."\" size=4".$disabled." /></td></tr>\n";
                         }
                         
-                        $formitem[$key] .= "</table></td></tr>";
+                        $formitem[$key] .= "
+                          </table>
+                        </div>";
                       }
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
@@ -4098,7 +4063,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         }
                         else $taglink = "";
                         
-                        $formitem[$key] = "<tr><td align=left valign=top><b>".$labelname."</b> ".$arttaglink[$artid]."</td><td align=left valign=top><table>\n";
+                        $formitem[$key] = "
+                        <div class=\"hcmsFormRowLabel\">
+                          <b>".$labelname."</b> ".$arttaglink[$artid]."
+                        </div>
+                        <div class=\"hcmsFormRowContent\">
+                          <table>";
 
                         if ($mediafilebot[$id][$tagid] != "*Null*")
                         {
@@ -4114,7 +4084,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           
                           if ($mediatype[$id] != "") $constraint_array[$key] = "'".$hypertagname_file[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['multimedia-file'][$lang]."', '".$mediatype[$id]."'";
                                        
-                          $formitem[$key] .= "<tr><td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering")."</td>
+                          $formitem[$key] .= "
+                          <tr>
+                            <td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering")."</td>
                           </tr>
                           <tr>
                             <td width=\"150\">".getescapedtext ($hcms_lang['multimedia-file'][$lang], $charset, $lang).":</td>
@@ -4123,10 +4095,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               <input type=\"hidden\" name=\"artmediaobject[".$id."]\" value=\"".$mediaobjectbot[$id]."\" />
                               <input name=\"".$hypertagname_file[$id]."[".$id."]\" value=\"".convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:350px;\"".$disabled." />".$taglink."
                             </td>
-                          </tr>\n";
+                          </tr>";
                         }
                         
-                        if ($mediaalttextbot[$id] != "*Null*") $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['alternative-text'][$lang], $charset, $lang).":</td><td><input type=\"hidden\" name=\"".$hypertagname_text[$id]."[".$id."]\" /><input name=\"".$hypertagname_text[$id]."_".$artid."_".$elementid."\" value=\"".$mediaalttextbot[$id]."\" style=\"width:350px;\"".$disabled."></td></tr>\n";
+                        if ($mediaalttextbot[$id] != "*Null*") $formitem[$key] .= "
+                          <tr>
+                            <td width=\"150\">".getescapedtext ($hcms_lang['alternative-text'][$lang], $charset, $lang).":</td>
+                            <td>
+                              <input type=\"hidden\" name=\"".$hypertagname_text[$id]."[".$id."]\" />
+                              <input name=\"".$hypertagname_text[$id]."_".$artid."_".$elementid."\" value=\"".$mediaalttextbot[$id]."\" style=\"width:350px;\"".$disabled." />
+                            </td>
+                          </tr>";
                         
                         if ($mediaalignbot[$id] != "*Null*")
                         {
@@ -4144,7 +4123,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if ($mediawidthbot[$id] != "*Null*")
                         {
                           $constraint_array[$key] = "'".$hypertagname_width[$id]."[".$id."]', '".$labelname.", ".$hcms_lang['width'][$lang]."','NisNum'";
-                          $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).":</td><td><input name=\"".$hypertagname_width[$id]."[".$id."]\" value=\"".$mediawidthbot[$id]."\" size=4".$disabled."></td></tr>\n";
+                          $formitem[$key] .= "
+                          <tr>
+                            <td width=\"150\">".getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).":</td>
+                            <td><input name=\"".$hypertagname_width[$id]."[".$id."]\" value=\"".$mediawidthbot[$id]."\" size=4".$disabled." /></td>
+                          </tr>";
                         }
                         
                         if ($mediaheightbot[$id] != "*Null*")
@@ -4153,7 +4136,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).":</td><td><input name=\"".$hypertagname_height[$id]."[".$id."]\" value=\"".$mediaheightbot[$id]."\" size=4".$disabled."></td></tr>\n";
                         }
                         
-                        $formitem[$key] .= "</table></td></tr>";                  
+                        $formitem[$key] .= "
+                        </table>
+                      </div>";                  
                       }
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
@@ -4664,11 +4649,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         else $taglink = "";
                        
                         $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b>
-                          </td>
-                          <td align=left valign=top>
+                          </div>
+                          <div class=\"hcmsFormRowContent\">
                             <table>";
                         
                         if ($linkhrefbot[$id] != "*Null*") $formitem[$key] .= "
@@ -4731,8 +4715,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         
                         $formitem[$key] .= "
                             </table>
-                          </td>
-                        </tr>\n";
+                          </div>";
                       }                        
                       elseif ($buildview == "template")
                       {
@@ -4767,11 +4750,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         else $taglink = "";
                         
                         $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b> ".$arttaglink[$artid]."
-                          </td>
-                          <td align=left valign=top>
+                          </div>
+                          <div class=\"hcmsFormRowContent\">
                             <table>";
                         
                         if ($linkhrefbot[$id] != "*Null*") $formitem[$key] .= "
@@ -4814,7 +4796,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                     <option value=\"_blank\""; if ($linktargetbot[$id] == "_blank") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['in-new-browser-window'][$lang], $charset, $lang)."</option>
                                   </select>
                                 </td>
-                              </tr>\n";
+                              </tr>";
                         }
                          
                         if ($linktextbot[$id] != "*Null*")
@@ -4827,10 +4809,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                 <td>
                                   <input type=\"text\" name=\"".$hypertagname_text[$id]."[".$id."]\" value=\"".$linktextbot[$id]."\" style=\"width:350px;\"".$disabled.">
                                 </td>
-                              </tr>\n";
+                              </tr>";
                         }
                         
-                        $formitem[$key] .= "</table></td></tr>\n";
+                        $formitem[$key] .= "
+                          </table>
+                        </div>";
                       }                      
                       elseif ($buildview == "template")
                       {
@@ -4843,7 +4827,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               </b>".getescapedtext ($hcms_lang['here-you-can-add-a-link'][$lang], $charset, $lang)."</font>
                             </td>
                           </tr>
-                        </table>\n";
+                        </table>";
                       }
                       else $taglink = "";
                     }
@@ -5113,17 +5097,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             if ($control_sum >= 2)
             {
               $result['view'] = "<!DOCTYPE html>
-              <html>
-              <head>
-              <title>hyperCMS</title>
-              <meta charset=\"".$hcms_lang_codepage[$lang]."\" />
-              <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
-              </head>
-              <body class=\"hcmsWorkplaceGeneric\">
-                <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [$tags] ".$hcms_lang['and-or'][$lang]." [$tagm] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
-                ".$hcms_lang['please-note-the-tag-identification-must-be-unique-for-different-tag-types-of-the-same-tag-set'][$lang]."
-              </body>
-              </html>";
+  <html>
+  <head>
+  <title>hyperCMS</title>
+  <meta charset=\"".$hcms_lang_codepage[$lang]."\" />
+  <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />
+  </head>
+  <body class=\"hcmsWorkplaceGeneric\">
+    <p class=hcmsHeadline>".$hcms_lang['the-tags'][$lang]." [$tags] ".$hcms_lang['and-or'][$lang]." [$tagm] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
+    ".$hcms_lang['please-note-the-tag-identification-must-be-unique-for-different-tag-types-of-the-same-tag-set'][$lang]."
+  </body>
+  </html>";
               
               $result['release'] = 0; 
               $result['container'] = $contentfile;
@@ -5246,11 +5230,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if (strlen ($comp_entry_name) > 50) $comp_entry_name = "...".substr (substr ($comp_entry_name, -50), strpos (substr ($comp_entry_name, -50), "/"));                          
                         
                         $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b>
-                          </td>
-                          <td align=left valign=top>
+                          </div>
+                          <div class=\"hcmsFormRowContent\">
                             <table cellpadding=0 cellspacing=0 border=0>
                               <tr>";
                               
@@ -5306,8 +5289,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         
                         $formitem[$key] .= "  
                             </table>
-                          </td>
-                        </tr>";   
+                          </div>";   
                       }                      
                       elseif ($buildview == "template")
                       {
@@ -5336,11 +5318,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if (strlen ($comp_entry_name) > 50) $comp_entry_name = "...".substr (substr ($comp_entry_name, -50), strpos (substr ($comp_entry_name, -50), "/"));                        
                         
                         $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b> ".$arttaglink[$artid]."
-                          </td>
-                          <td align=left valign=top>
+                          </div>
+                          <div class=\"hcmsFormRowContent\">
                             <table cellpadding=0 cellspacing=0 border=0>
                               <tr>
                                 <td width=\"150\">
@@ -5383,8 +5364,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                 </td>
                               </tr>
                             </table>
-                          </td>
-                        </tr>\n";                     
+                          </div>";                     
                       }                        
                       elseif ($buildview == "template")
                       {
@@ -5433,11 +5413,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $add_submitcomp .= "submitMultiComp ('".$hypertagname."_".$id."', '".$hypertagname."[".$id."]');\n";
 
                         $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b>
-                          </td>
-                          <td align=left valign=top>
+                          </div>
+                          <div class=\"hcmsFormRowContent\">
                             <table cellpadding=0 cellspacing=0 border=0>
                               <tr>";
                               
@@ -5521,8 +5500,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         
                         $formitem[$key] .= "
                             </table>
-                          </td>
-                        </tr>\n";                    
+                          </div>";                    
                       }                        
                       elseif ($buildview == "template")
                       {
@@ -5550,11 +5528,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $add_submitcomp .= "submitMultiComp ('".$hypertagname."_".$artid."_".$elementid."', '".$hypertagname."[".$id."]');\n";
                       
                         $formitem[$key] = "
-                        <tr>
-                          <td align=left valign=top>
+                          <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b> ".$arttaglink[$artid]."
-                          </td>
-                          <td align=left valign=top>
+                          </div>
+                          <div class=\"hcmsFormRowContent\">
                             <table cellpadding=0 cellspacing=0 border=0>
                               <tr>
                                 <td align=left valign=top width=\"150\">
@@ -5625,8 +5602,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               </td>
                             </tr>
                           </table>
-                        </td>
-                      </tr>\n";  
+                        </div>";  
                       }                        
                       elseif ($buildview == "template")
                       {
@@ -6308,22 +6284,21 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // get HTML body-tag
             if (@substr_count (strtolower ($viewstore), "<body") == 0 && @substr_count (strtolower ($viewstore), ":body") == 0)
             {
-              $viewstore = "
-              <!DOCTYPE html>
-              <html>
-              <head>
-              <title>hyperCMS</title>
-              <meta charset=\"".$charset."\" />
-              ".$line_css."
-              </head>
-              <body class=\"hcmsWorkplaceGeneric\">
-              <table class=\"hcmsTemplateField\">
-                <tr>
-                  <td>".$viewstore."</td>
-                </tr>
-              </table>
-              </body>
-              </html>";                     
+              $viewstore = "<!DOCTYPE html>
+  <html>
+  <head>
+  <title>hyperCMS</title>
+  <meta charset=\"".$charset."\" />
+  ".$line_css."
+  </head>
+  <body class=\"hcmsWorkplaceGeneric\">
+  <table class=\"hcmsTemplateField\">
+    <tr>
+      <td>".$viewstore."</td>
+    </tr>
+  </table>
+  </body>
+  </html>";                     
             }
           }
          
@@ -6611,16 +6586,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // add html and body tags if missing
             if (strpos (strtolower ("_".$viewstore), "<html") < 1)
             {
-              $viewstore = "
-<!DOCTYPE html>
-<html>
-<head>
-<title>hyperCMS</title>
-<meta charset=\"UTF-8\">
-<body>
-".$viewstore."
-</body>
-</html>";
+              $viewstore = "<!DOCTYPE html>
+  <html>
+  <head>
+  <title>hyperCMS</title>
+  <meta charset=\"UTF-8\">
+  <body>
+  ".$viewstore."
+  </body>
+  </html>";
             }
           }
           else
@@ -7454,14 +7428,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (is_dir ($mgmt_config['abs_path_cms']."connector/") && !empty ($mgmt_config[$site]['sharesociallink']) && $mediafile != "" && (is_image ($mediafile) || is_video ($mediafile)) && $buildview != "formlock")
       {
         $sharelink = createwrapperlink ($site, $location, $page, "comp");        
-        $viewstore .= showsharelinks ($sharelink, $lang, "position:absolute; top:40px; right:12px;");
+        $viewstore .= showsharelinks ($sharelink, $lang, "position:fixed; top:40px; right:12px;");
       }
 
       // table for form
       $viewstore .= "
     <!-- form for content -->
-    <div class=\"hcmsWorkplaceFrame\" style=\"z-index:1;\">
-      <table>\n";
+    <div class=\"hcmsWorkplaceFrame\" style=\"z-index:1;\">";
         
         // add preview of media file (for media view the characters set is always UTF-8)
         if ($mediafile != false && $mediafile != "")
@@ -7469,7 +7442,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           if ($buildview == "formedit" || $buildview == "formmeta") $mediaview = "preview";
           else $mediaview = "preview_no_rendering";
           
-          $viewstore .= "<tr><td align=left valign=top><b>".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."</b></td><td align=left valign=top>".showmedia ($site."/".$mediafile, convertchars ($name_orig, $hcms_lang_codepage[$lang], $charset), $mediaview)."</td></tr>\n";
+          $viewstore .= "
+          <div class=\"hcmsFormRowLabel\">
+            <b>".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."</b>
+          </div>
+          <div class=\"hcmsFormRowContent\">
+            ".showmedia ($site."/".$mediafile, convertchars ($name_orig, $hcms_lang_codepage[$lang], $charset), $mediaview)."
+          </div>";
         }
       
         if (isset ($formitem) && is_array ($formitem))
@@ -7485,8 +7464,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         }      
         
         $viewstore .= "
-      </table>
-    </div>\n";        
+    </div>";        
  
       $viewstore .= "
   </form>
