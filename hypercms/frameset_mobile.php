@@ -73,7 +73,9 @@ $(document).ready(function()
 
   <!-- header -->
   <div id="topbar" class="ui-header ui-bar-b" data-role="header">
+    <?php if (!is_array ($hcms_linking)) { ?>
     <a href="#navigator">Navigator</a>
+    <?php } ?>
     <h1>hyperCMS <?php echo ucfirst ($hcms_themename); ?></h1>
     <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true && !$is_iphone) { ?><a href="#chat"><?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?></a><?php } ?>
   </div> 

@@ -127,11 +127,9 @@ if ($user != "" && $passwd != "" && $hcms_user == "")
   // check session of user
   checkusersession ($user);
   
-  // define frameset for mobile access (also via mail link)
-  if ($is_mobile || getsession ("hcms_mobile")) $result_frameset = "frameset_mobile.php"; 
-  // define frameset for access via mail link
-  elseif (is_array ($hcms_linking)) $result_frameset = "frameset_main_linking.php";
-  // frameset for standard logon
+  // define frameset for mobile access (also via access link)
+  if ($is_mobile || getsession ("hcms_mobile")) $result_frameset = "frameset_mobile.php";
+  // frameset for standard logonor access links
   else $result_frameset = "frameset_main.php";
   
   // forward to main frameset if check was passed
@@ -257,22 +255,19 @@ if (checkuserip (getuserip ()) == true)
     // register current timestamp in session
     setsession ('hcms_temp_sessiontime', time());
     
-    // define frameset for access via mail link
+    // set object linking information in session
     if (!empty ($login_result['hcms_linking']) && is_array ($login_result['hcms_linking']))
     {
       setsession ('hcms_linking', $login_result['hcms_linking']);
-
-      if ($login_result['mobile']) $result_frameset = "frameset_mobile.php";
-      else $result_frameset = "frameset_main_linking.php";
     }
-    // frameset for standard logon
     else
     {
       setsession ('hcms_linking', Null);
-      
-      if ($login_result['mobile']) $result_frameset = "frameset_mobile.php";
-      else $result_frameset = "frameset_main.php";
     }
+    
+    // define frameset
+    if ($login_result['mobile']) $result_frameset = "frameset_mobile.php";
+    else $result_frameset = "frameset_main.php";
 
     // write hypercms session file
     $login_result['writesession'] = writesession ($login_result['user'], $login_result['passwd'], $login_result['checksum']);

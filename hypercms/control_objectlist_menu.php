@@ -1251,7 +1251,7 @@ else
     }   
     ?>
     <?php
-    if (!$is_mobile && is_array ($hcms_linking))
+    if (is_array ($hcms_linking))
     {
       // logout button
       echo "<img onClick=\"top.location='userlogout.php';\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_logout\" src=\"".getthemelocation()."img/button_logout.gif\" alt=\"".getescapedtext ($hcms_lang['logout'][$lang])."\" title=\"".getescapedtext ($hcms_lang['logout'][$lang])."\" /></td>\n";

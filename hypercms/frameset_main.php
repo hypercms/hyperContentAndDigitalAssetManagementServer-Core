@@ -121,6 +121,7 @@ $(document).ready(function()
 $servertime->InstallClockBody();
 ?>
 
+<?php if (!is_array ($hcms_linking)) { ?>
 <!-- explorer -->
 <div id="navLayer" style="position:fixed; top:32px; bottom:0; left:0; width:260px; margin:0; padding:0;">
   <iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php?refresh=1" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
@@ -130,6 +131,12 @@ $servertime->InstallClockBody();
 <div id="workplLayer" style="position:fixed; top:32px; right:0; bottom:0; left:260px; margin:0; padding:0;">
   <iframe id="workplFrame" name="workplFrame" scrolling="no" src="home.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
 </div>
+<?php } else { ?>
+<!-- workplace -->
+<div id="workplLayer" style="position:fixed; top:32px; bottom:0; left:0; width:100%; margin:0; padding:0;">
+  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</div>
+<?php } ?>
 
 <!-- chat sidebar -->
 <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>

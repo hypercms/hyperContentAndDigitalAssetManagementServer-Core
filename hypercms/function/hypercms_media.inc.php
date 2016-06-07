@@ -3957,16 +3957,15 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
   else return false;
 }    
 
-// ---------------------- zipfiles -----------------------------
-// function: zipfiles()
-// input: publication, array with path to source zip files, destination location (if this is null then the $location where the zip-file resists will be used), 
-//        name of ZIP-file, user name, activity that need to be set for daily stats [download] (optional)
+// ---------------------- clonefolder -----------------------------
+// function: clonefolder()
+// input: publication name, source location, destination location, user name, activity that need to be set for daily stats [download] (optional)
 // output: true/false
 
 // description:
-// Help function that reads and copies all multimedia files from multimedia components to the structure based on the multimedia component names
+// Help function for function zipfiles that reads all multimedia files from their multimedia objects and copies them to the same folder structure using the object names.
 
-function cloneFolder ($site, $source, $destination, $user, $activity="")
+function clonefolder ($site, $source, $destination, $user, $activity="")
 {
   global $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission;
   
@@ -3990,7 +3989,7 @@ function cloneFolder ($site, $source, $destination, $user, $activity="")
         {
           if (is_dir ($source."/".$file))
           {
-            cloneFolder ($site, $source."/".$file, $destDir, $user, $activity);
+            clonefolder ($site, $source."/".$file, $destDir, $user, $activity);
           }
           else
           {  
@@ -4027,11 +4026,21 @@ function cloneFolder ($site, $source, $destination, $user, $activity="")
       }
       
       closedir ($dir);
+      return true;
     }
     else return false;    
   }
   else return false;
 }
+
+// ---------------------- zipfiles -----------------------------
+// function: zipfiles()
+// input: publication, array with path to source zip files, destination location (if this is null then the $location where the zip-file resists will be used), 
+//        name of ZIP-file, user name, activity that need to be set for daily stats [download] (optional)
+// output: true/false
+
+// description:
+// Compresses all media files and includes their folder structure in a ZIP file.
 
 function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $user, $activity="")
 {
@@ -4057,6 +4066,37 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
         if (($filesize / 1024) > $mgmt_config['maxzipsize']) return false;
       }
     }  
+    
+    // check if ZIP file exists and there are no new files that need to be included
+    if (is_file ($destination.$zipfilename.".zip"))
+    {
+      // get ZIP file time
+      $zipfiletime = filemtime ($destination.$zipfilename.".zip");
+      $zipfiledate = date ("Y-m-d H:i:s", $zipfiletime);
+      
+      // query for files that are new or have been updated after the ZIP file has been created
+      foreach ($multiobject_array as $multiobject)
+      {
+        $multiobject = convertpath ($site, $multiobject, "comp");
+        
+        // remove folder object
+        if (getobject ($multiobject) == ".folder") $multiobject = getlocation ($multiobject);
+        
+        // if location path
+        if (substr ($multiobject, -1) == "/")
+        {
+          $updates = rdbms_externalquery ("SELECT object.objectpath FROM object INNER JOIN container ON object.id=container.id WHERE object.objectpath LIKE \"".$multiobject."%\" AND container.date>=\"".$zipfiledate."\"");
+        }
+        // if object path
+        else
+        {
+          $updates = rdbms_externalquery ("SELECT object.objectpath FROM object INNER JOIN container ON object.id=container.id WHERE object.objectpath=\"".$multiobject."\" AND container.date>=\"".$zipfiledate."\"");
+        }
+      }
+      
+      // if no objects have been found
+      if (!is_array ($updates) || sizeof ($updates) < 1) return true;
+    }
 
     // temporary directory for file collection
     $tempDir = $mgmt_config['abs_path_temp'];
@@ -4106,7 +4146,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
           $destinationFolder = str_replace ($commonRoot, "", $location);
           @mkdir ($tempFolder."/".$destinationFolder, $mgmt_config['fspermission'], true);
       
-          if ($filename != ".folder" && @is_file ($location.$filename))
+          if ($filename != ".folder" && is_file ($location.$filename))
           {
             $objectdata = loadfile ($location, $filename);
         
@@ -4149,7 +4189,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
               $location = substr ($location, 0, -1);
             }
             
-            cloneFolder ($site, $location.$filename, $tempFolder."/".specialchr_decode ($destinationFolder), $user, $activity);
+            clonefolder ($site, $location.$filename, $tempFolder."/".specialchr_decode ($destinationFolder), $user, $activity);
           }
         }
       }

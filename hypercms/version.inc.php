@@ -1412,9 +1412,9 @@ _ Implementation of support for synonyms in function rdbms_searchcontent
 - Implementation of support for exported media files in version_content
 - Bug fix: Function uploadfile did not return full objectpath when updating a media file
 - Improvements in function getobjectinfo
-- Implementation of new function rollbackvsion in main API
-- Implementation of new function deletebackvsion in main API
-- Improvements in function deletebackvsions in main API
+- Implementation of new function rollbackversion in main API
+- Implementation of new function deleteversion in main API
+- Improvements in function deleteversions in main API
 - Improvements in function getobjectinfo in get API
 - Improvements in popup_upload_html
 - Implementation workflow token in tabs of control_content_menu
@@ -1568,8 +1568,18 @@ Release 06/2016
 - The share link layer has a fixed position
 - Implementation of new CSS classes named hcmsFormRowLabel and hcmsFormRowContent used in form views
 - Implementation of new mediawith on mobile devices for frameset_content
+
+Version 6.1.10
+Release 06/2016
+- Implementation of the verificaton of new files before the recreation of a ZIP file by function zipfiles
+- Removed ZIP file verification from service mediadownload (removed 24 hour caching of ZIP files for download links)
+- Implementation of mobile version support for access links
+- Removed frameset_main_linking (replaced by frameset_main)
+- Implementation of support for access links (object linking) in frameset_main
+- Implementation of support for access links (object linking) in frameset_mobile
+- Enable logout button in task bar for access links (object linking) in control_objectclist_menu for the mobile edition
 */
 
 // current version
-$version = "Version 6.1.9";
+$version = "Version 6.1.10";
 ?>
