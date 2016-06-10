@@ -365,8 +365,9 @@ else
 <html>
 <head>
 <title>hyperCMS</title>
+<meta charset="<?php echo getcodepage ($lang); ?>" />
+<meta name="theme-color" content="#464646" />
 <meta name="viewport" content="width=380; initial-scale=0.9; maximum-scale=1.0; user-scalable=0;" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 <link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/main.css" type="text/css">
 

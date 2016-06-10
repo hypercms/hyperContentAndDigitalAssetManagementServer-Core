@@ -632,7 +632,7 @@ elseif ($is_video || $is_audio)
 <html>
 	<head>
   <title>hyperCMS</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>" />
+  <meta charset="<?php echo $charset; ?>" />
   <meta name="viewport" content="width=580; initial-scale=0.9; maximum-scale=1.0; user-scalable=1;" />
   
   <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-1.10.2.min.js"></script>

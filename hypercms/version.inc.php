@@ -1578,8 +1578,13 @@ Release 06/2016
 - Implementation of support for access links (object linking) in frameset_main
 - Implementation of support for access links (object linking) in frameset_mobile
 - Enable logout button in task bar for access links (object linking) in control_objectclist_menu for the mobile edition
+
+Version 6.1.11
+Release 06/2016
+- Updated charset meta-tag in various files
+- Added theme-color meta-tag for mobile browsers
 */
 
 // current version
-$version = "Version 6.1.10";
+$version = "Version 6.1.11";
 ?>

@@ -28,6 +28,7 @@ checkusersession ($user, false);
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
+<meta name="theme-color" content="#464646" />
 <meta name="viewport" content="width=1024; initial-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css">

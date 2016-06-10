@@ -155,7 +155,7 @@ if ($playercode != "")
 <html>
   <head>
     <title>hyperCMS Videoplayer</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta charset="UTF-8" />
     <?php 
     if ($audio) echo showaudioplayer_head (false);
     else echo showvideoplayer_head (false);

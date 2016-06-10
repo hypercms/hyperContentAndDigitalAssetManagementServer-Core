@@ -40,7 +40,7 @@ $show = "";
 <html>
 <head>
 <title>hyperCMS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $mgmt_config[$site]['default_codepage']; ?>">
+<meta charset="<?php echo $mgmt_config[$site]['default_codepage']; ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 </head>
