@@ -30,9 +30,6 @@ $rnr = getrequest_esc ("rnr", "locationname", false);
 
 // ------------------------------ permission section --------------------------------
 
-// kill session if object linking is used and explorer is accessed
-if (!$is_mobile && is_array ($hcms_linking)) killsession ($user);
-
 // check session of user
 checkusersession ($user, false);
 
@@ -531,7 +528,7 @@ if (valid_locationname ($location))
     $tree = generateTaxonomyTree ($site, $tax_id, $rnr);
   }
 
-  if (is_array ($tree)) 
+  if (!empty ($tree) && is_array ($tree)) 
   {
     // Generate the html for each point
     foreach ($tree as $point) 
@@ -549,21 +546,27 @@ else
   $token = createtoken ($user);
 
   // create main Menu points
-  // ----------------------------------------- logout ---------------------------------------------- 
-  $point = new hcms_menupoint ($hcms_lang['logout'][$lang], '#', 'logout.gif');
-  $point->setOnClick('javascript:top.location="userlogout.php"');
-  $point->setOnMouseOver('hcms_resetContext();');
-  $maintree .= $point->generateHTML();
+  // ---------------------------------------- logout ---------------------------------------------
+  if (empty ($hcms_assetbrowser))
+  {
+    $point = new hcms_menupoint ($hcms_lang['logout'][$lang], '#', 'logout.gif');
+    $point->setOnClick('javascript:top.location="userlogout.php"');
+    $point->setOnMouseOver('hcms_resetContext();');
+    $maintree .= $point->generateHTML();
+  }
 
   // ----------------------------------------- home ---------------------------------------------- 
-  $point = new hcms_menupoint ($hcms_lang['home'][$lang], 'home.php', 'home.gif');
-  $point->setOnClick('changeSelection(this)');
-  $point->setTarget('workplFrame');
-  $point->setOnMouseOver('hcms_resetContext();');
-  $maintree .= $point->generateHTML();
+  if (empty ($hcms_assetbrowser))
+  {
+    $point = new hcms_menupoint ($hcms_lang['home'][$lang], 'home.php', 'home.gif');
+    $point->setOnClick('changeSelection(this)');
+    $point->setTarget('workplFrame');
+    $point->setOnMouseOver('hcms_resetContext();');
+    $maintree .= $point->generateHTML();
+  }
   
   // ----------------------------------------- chat ----------------------------------------------
-  if (!$is_mobile && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true)
+  if (empty ($hcms_assetbrowser) && !$is_mobile && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true)
   {
     $point = new hcms_menupoint ($hcms_lang['chat'][$lang], '#', 'chat.gif');
     $point->setOnClick('changeSelection(this); hcms_openChat();');
@@ -572,7 +575,7 @@ else
   }
   
   // ----------------------------------------- desktop ---------------------------------------------- 
-  if (!isset ($hcms_linking['location']) && checkrootpermission ('desktop'))
+  if (empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && checkrootpermission ('desktop'))
   {
     $point = new hcms_menupoint($hcms_lang['desktop'][$lang], '#desktop', 'desk.gif', 'desktop');
     $point->setOnClick('hcms_jstree_toggle_preventDefault("desktop", event);');
@@ -645,7 +648,7 @@ else
   }
 
   // ----------------------------------------- plugins ----------------------------------------------
-  if (!empty ($mgmt_plugin))
+  if (empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && !empty ($mgmt_plugin))
   { 
     foreach ($mgmt_plugin as $key => $data)
     {
@@ -663,380 +666,385 @@ else
   {
     $siteaccess = array ($hcms_linking['publication']);
   }
-  else
+  elseif (is_array ($siteaccess))
   {
     natcasesort ($siteaccess);
     reset ($siteaccess);
   }
-  
+
   $set_site_admin = false;
   $index = 0;
 
-  // loop through all publications
-  foreach ($siteaccess as $site)  
-  { 
-    $index++;
-
-    if (valid_publicationname ($site) || $site == "hcms_empty")
-    {
-      // include configuration file of site
-      if (valid_publicationname ($site) && @is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
-      {
-        @require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");  
-      }
-      // no publication available
-      else
-      {
-        $mgmt_config[$site]['site_admin'] = true;
-      }
-    
-      // Publication specific Menu Points
-      // ----------------------------------------- main administration ----------------------------------------------  
-      if (!isset ($hcms_linking['location']) && $set_site_admin == false && $mgmt_config[$site]['site_admin'] == true)
-      {
-        $set_site_admin = true;
-      
-        if ((checkrootpermission ('site') || checkrootpermission ('user')) && strtolower ($diskkey) == "server")
-        {
-          $point = new hcms_menupoint($hcms_lang['administration'][$lang], '#main', 'admin.gif', 'main');
-          $point->setOnClick('hcms_jstree_toggle_preventDefault("main", event);');
-          $point->setOnMouseOver('hcms_resetContext();');
-          
-          if (is_file ($mgmt_config['abs_path_cms']."connector/instance/frameset_instance.php") && $mgmt_config['instances'] && checkadminpermission () && checkrootpermission ('site'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['instance-management'][$lang], "connector/instance/frameset_instance.php?site=*Null*", 'instance.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          if (checkrootpermission ('site'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['publication-management'][$lang], "frameset_site.php?site=*Null*", 'site.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          if (checkrootpermission ('user'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['user-management'][$lang], "frameset_user.php?site=*Null*", 'user.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          if (checkrootpermission ('site'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php", 'event.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          if (checkrootpermission ('site'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['publishing-queue'][$lang], "frameset_queue.php", 'queue.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          if (is_file ($mgmt_config['abs_path_cms']."connector/imexport/frameset_imexport.php") && $site != "hcms_empty" && checkrootpermission ('site'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['importexport'][$lang], "connector/imexport/frameset_imexport.php?site=*Null*", 'imexport.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-
-          if (is_file ($mgmt_config['abs_path_cms']."report/frameset_report.php") && $site != "hcms_empty" && checkrootpermission ('site'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['report-management'][$lang], "report/frameset_report.php?site=*Null*", 'template.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          if (checkrootpermission ('site'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['plugins'][$lang], "plugin_management.php", 'plugin.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          $maintree .= $point->generateHTML();
-        }  
-      }   
-      
-      // ------------------------------------------- publication node -----------------------------------------------
-      if ($site != "hcms_empty")
-      {
-        $publication = new hcms_menupoint($site, '#site_'.$site, 'site.gif', 'site_'.$site);
-        $publication->setOnClick('hcms_jstree_toggle_preventDefault("site_'.$site.'", event);');
-        $publication->setOnMouseOver('hcms_resetContext();');
-      
-        // -------------------------------------------- administration ------------------------------------------------
-        if (!isset ($hcms_linking['location']) && (checkglobalpermission ($site, 'user') || checkglobalpermission ($site, 'group')))
-        {
-          $point = new hcms_menupoint($hcms_lang['administration'][$lang], '#admin_'.$site, 'admin.gif', 'admin_'.$site);
-          $point->setOnMouseOver('hcms_resetContext();');
-          $point->setOnClick('hcms_jstree_toggle_preventDefault("admin_'.$site.'", event);');
-            
-          if (checkglobalpermission ($site, 'user'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['user-management'][$lang], "frameset_user.php?site=".url_encode($site), 'user.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          if (checkglobalpermission ($site, 'group'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['group-management'][$lang], "frameset_group.php?site=".url_encode($site), 'usergroup.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          // display system log if it is not a server diskkey
-          if (checkglobalpermission ($site, 'user') && strtolower ($diskkey) != "server")
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php", 'event.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          // display custom system log if cutom log fiel exists
-          if (checkglobalpermission ($site, 'user') && is_file ($mgmt_config['abs_path_data']."log/".$site.".custom.log"))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['custom-system-events'][$lang], "frameset_log.php?site=".url_encode($site), 'event.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-                
-          $publication->addSubPoint($point);
-        }
-        
-        // ------------------------------------------ personalization -------------------------------------------------
-        if (!$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'pers') && $mgmt_config[$site]['dam'] == false)
-        {
-          $point = new hcms_menupoint($hcms_lang['personalization'][$lang], '#pers_'.$site, 'pers_registration.gif', 'pers_'.$site);
-          $point->setOnClick('hcms_jstree_toggle_preventDefault("pers_'.$site.'", event);');
-            
-          if (checkglobalpermission ($site, 'perstrack'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['customer-tracking'][$lang], "frameset_pers.php?site=".url_encode($site)."&cat=tracking", 'pers_registration.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          if (checkglobalpermission ($site, 'persprof'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['customer-profiles'][$lang], "frameset_pers.php?site=".url_encode($site)."&cat=profile", 'pers_profile.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          $publication->addSubPoint($point);
-        }
-        
-        // --------------------------------------------- workflow -----------------------------------------------------
-        if (is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php") && !$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'workflow'))
-        {
-          $point = new hcms_menupoint($hcms_lang['workflow'][$lang], '#wrkflw_'.$site, 'workflow.gif', 'wrkflw_'.$site);
-          $point->setOnClick('hcms_jstree_toggle_preventDefault("wrkflw_'.$site.'", event);');
-            
-          if (checkglobalpermission ($site, 'workflowproc'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['workflow-management'][$lang], "workflow/frameset_workflow.php?site=".url_encode($site)."&cat=man", 'workflow.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          if (checkglobalpermission ($site, 'workflowscript'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['workflow-scripts'][$lang], "workflow/frameset_workflow.php?site=".url_encode($site)."&cat=script", 'workflowscript.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          $publication->addSubPoint($point);
-        }
-        
-        // --------------------------------------------- template ---------------------------------------------------
-        if (!$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'template'))
-        {
-          $point = new hcms_menupoint($hcms_lang['templates'][$lang], '#template_'.$site, 'template.gif', 'template_'.$site);
-          $point->setOnMouseOver('hcms_resetContext();');
-          $point->setOnClick('hcms_jstree_toggle_preventDefault("template_'.$site.'", event);');
-            
-          if (checkglobalpermission ($site, 'tpl') && $mgmt_config[$site]['dam'] == false)
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['page-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=page", 'template_page.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          if (checkglobalpermission ($site, 'tpl') && $mgmt_config[$site]['dam'] == false)
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['component-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=comp", 'template_comp.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          if (checkglobalpermission ($site, 'tpl') && $mgmt_config[$site]['dam'] == false)
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['template-includes'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=inc", 'template_inc.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          if (checkglobalpermission ($site, 'tpl'))
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['meta-data-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=meta", 'template_media.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          if (checkglobalpermission ($site, 'tplmedia') && $mgmt_config[$site]['dam'] == false)
-          {
-            $subpoint = new hcms_menupoint($hcms_lang['template-media'][$lang], "frameset_media.php?site=".url_encode($site)."&mediacat=tpl", 'media.gif');
-            $subpoint->setOnClick('changeSelection(this)');
-            $subpoint->setTarget('workplFrame');
-            $subpoint->setOnMouseOver('hcms_resetContext();');
-            $point->addSubPoint($subpoint);
-          }
-          
-          $publication->addSubPoint($point);
-        }
-        
-        // ----------------------------------------- plugins ----------------------------------------------
-        if (!empty ($mgmt_plugin))
-        { 
-          foreach ($mgmt_plugin as $key => $data)
-          {
-            // Only active plugins which have the correct keys are used
-            if (is_array ($data) && array_key_exists ('active', $data) && $data['active'] == true && array_key_exists ('menu', $data) && is_array ($data['menu']) && array_key_exists ('publication', $data['menu']) && is_array ($data['menu']['publication']))
-            {
-              $pluginmenu = generatePluginTree ($data['menu']['publication'], $key, $data['folder'], false, $site);
-              foreach ($pluginmenu as $point) $publication->addSubPoint ($point);
-            }
-          }
-        }
-        
-        // ----------------------------------------- taxonomy ----------------------------------------------
-        if (!empty ($mgmt_config[$site]['taxonomy']) && (checkglobalpermission ($site, 'component') || checkglobalpermission ($site, 'page')))
-        {
-          $point = new hcms_menupoint($hcms_lang['taxonomy'][$lang], '#tax_'.$site, 'folder_taxonomy.gif', 'tax_'.$site);
-          $point->setOnClick('hcms_jstree_open("tax_'.$site.'", event);');
-          $point->setNodeCSSClass('jstree-closed jstree-reload');
-          $point->setAjaxData('%taxonomy%/'.$site.'/'.$lang.'/0/0');
-          $publication->addSubPoint($point);
-        }
-        
-        // ----------------------------------------- component ---------------------------------------------
-        // category of content: cat=comp
-        if (checkglobalpermission ($site, 'component') && (!isset ($hcms_linking['cat']) || $hcms_linking['cat'] == "comp"))
-        {
-          // since version 5.6.3 the root folders also need to have containers
-          // update comp/assets root
-          $comp_root = deconvertpath ("%comp%/".$site."/", "file");
-          // create folder object if it does not exist  
-          if (!is_file ($comp_root.".folder")) createobject ($site, $comp_root, ".folder", "default.meta.tpl", "sys");
-          
-          // reset root location if linking is used
-          if (isset ($hcms_linking['location']) && valid_locationname ($hcms_linking['location']))
-          {
-            if (isset ($hcms_linking['object']) && valid_objectname ($hcms_linking['object']))
-            {
-              $file_info = getfileinfo ($site, $hcms_linking['location'].$hcms_linking['object'], "comp");
-              if ($file_info['type'] == "Folder") $location_root = $hcms_linking['location'].$hcms_linking['object']."/";
-            }
-            else $location_root = $hcms_linking['location'];
-            
-            $location_root = convertpath ($site, $location_root, "comp");
-          }
-          // use component root
-          else $location_root = "%comp%/".$site."/";
+  if (is_array ($siteaccess))
+  {
+    // loop through all publications
+    foreach ($siteaccess as $site)  
+    { 
+      $index++;
   
-          $point = new hcms_menupoint($hcms_lang['assets'][$lang], "frameset_objectlist.php?site=".url_encode($site)."&cat=comp&location=".url_encode($location_root)."&virtual=1", 'folder_comp.gif', 'comp_'.$site);
-          $point->setOnClick('hcms_jstree_open("comp_'.$site.'", event);');
-          $point->setTarget('workplFrame');
-          $point->setNodeCSSClass('jstree-closed jstree-reload');
-          $point->setAjaxData($location_root);
-          $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "comp", "'.getlocation($location_root).'", ".folder", "'.getescapedtext ($hcms_lang['assets'][$lang]).'", "Folder", "", "'.getobject($location_root).'", "comp_'.$site.'", $("#context_token").text());');
-          $point->setOnMouseOut('hcms_resetContext();');
-          $publication->addSubPoint($point);
-        }
-        
-        // ----------------------------------------- page ----------------------------------------------
-        // category of content: cat=page
-        if (checkglobalpermission ($site, 'page') && !empty ($mgmt_config[$site]['abs_path_page']) && empty ($mgmt_config[$site]['dam']) && (!isset ($hcms_linking['cat']) || $hcms_linking['cat'] == "page"))
+      if (valid_publicationname ($site) || $site == "hcms_empty")
+      {
+        // include configuration file of site
+        if (valid_publicationname ($site) && @is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
         {
-          // since version 5.6.3 the root folders also need to have containers
-          // update page root
-          $page_root = deconvertpath ("%page%/".$site."/", "file");
-          // create folder object if it does not exist
-          if (!is_file ($page_root.".folder")) createobject ($site, $page_root, ".folder", "default.meta.tpl", "sys");
-            
-          // reset root location if linking is used
-          if (isset ($hcms_linking['location']) && valid_locationname ($hcms_linking['location']))
-          {
-            if (isset ($hcms_linking['object']) && valid_objectname ($hcms_linking['object']))
-            {
-              $file_info = getfileinfo ($site, $hcms_linking['location'].$hcms_linking['object'], "page");
-              if ($file_info['type'] == "Folder") $location_root = $hcms_linking['location'].$hcms_linking['object']."/";
-            }
-            else $location_root = $hcms_linking['location'];
-            
-            $location_root = convertpath ($site, $location_root, "page");
-          }
-          // use page root
-          else $location_root = "%page%/".$site."/";
-          
-          $point = new hcms_menupoint($hcms_lang['pages'][$lang], "frameset_objectlist.php?site=".url_encode($site)."&cat=page&location=".url_encode($location_root)."&virtual=1", 'folder_page.gif', 'page_'.$site);
-          $point->setOnClick('hcms_jstree_open("page_'.$site.'", event);');
-          $point->setTarget('workplFrame');
-          $point->setNodeCSSClass('jstree-closed jstree-reload');
-          $point->setAjaxData($location_root);
-          $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "page", "'.getlocation($location_root).'", ".folder", "'.getescapedtext ($hcms_lang['pages'][$lang]).'", "Folder", "", "'.getobject($location_root).'", "comp_'.$site.'", $("#context_token").text());');
-          $point->setOnMouseOut('hcms_resetContext();');
-          $publication->addSubPoint($point);
+          @require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");  
         }
+        // no publication available
+        else
+        {
+          $mgmt_config[$site]['site_admin'] = true;
+        }
+      
+        // Publication specific Menu Points
+        // ----------------------------------------- main administration ----------------------------------------------  
+        if (empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && $set_site_admin == false && $mgmt_config[$site]['site_admin'] == true)
+        {
+          $set_site_admin = true;
         
-        $tree .= $publication->generateHTML();
+          if ((checkrootpermission ('site') || checkrootpermission ('user')) && strtolower ($diskkey) == "server")
+          {
+            $point = new hcms_menupoint($hcms_lang['administration'][$lang], '#main', 'admin.gif', 'main');
+            $point->setOnClick('hcms_jstree_toggle_preventDefault("main", event);');
+            $point->setOnMouseOver('hcms_resetContext();');
+            
+            if (is_file ($mgmt_config['abs_path_cms']."connector/instance/frameset_instance.php") && $mgmt_config['instances'] && checkadminpermission () && checkrootpermission ('site'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['instance-management'][$lang], "connector/instance/frameset_instance.php?site=*Null*", 'instance.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            if (checkrootpermission ('site'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['publication-management'][$lang], "frameset_site.php?site=*Null*", 'site.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            if (checkrootpermission ('user'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['user-management'][$lang], "frameset_user.php?site=*Null*", 'user.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            if (checkrootpermission ('site'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php", 'event.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            if (checkrootpermission ('site'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['publishing-queue'][$lang], "frameset_queue.php", 'queue.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            if (is_file ($mgmt_config['abs_path_cms']."connector/imexport/frameset_imexport.php") && $site != "hcms_empty" && checkrootpermission ('site'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['importexport'][$lang], "connector/imexport/frameset_imexport.php?site=*Null*", 'imexport.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+  
+            if (is_file ($mgmt_config['abs_path_cms']."report/frameset_report.php") && $site != "hcms_empty" && checkrootpermission ('site'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['report-management'][$lang], "report/frameset_report.php?site=*Null*", 'template.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            if (checkrootpermission ('site'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['plugins'][$lang], "plugin_management.php", 'plugin.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            $maintree .= $point->generateHTML();
+          }  
+        }   
+        
+        // ------------------------------------------- publication node -----------------------------------------------
+        if ($site != "hcms_empty")
+        {
+          $publication = new hcms_menupoint($site, '#site_'.$site, 'site.gif', 'site_'.$site);
+          $publication->setOnClick('hcms_jstree_toggle_preventDefault("site_'.$site.'", event);');
+          $publication->setOnMouseOver('hcms_resetContext();');
+        
+          // -------------------------------------------- administration ------------------------------------------------
+          if (empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && (checkglobalpermission ($site, 'user') || checkglobalpermission ($site, 'group')))
+          {
+            $point = new hcms_menupoint($hcms_lang['administration'][$lang], '#admin_'.$site, 'admin.gif', 'admin_'.$site);
+            $point->setOnMouseOver('hcms_resetContext();');
+            $point->setOnClick('hcms_jstree_toggle_preventDefault("admin_'.$site.'", event);');
+              
+            if (checkglobalpermission ($site, 'user'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['user-management'][$lang], "frameset_user.php?site=".url_encode($site), 'user.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            if (checkglobalpermission ($site, 'group'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['group-management'][$lang], "frameset_group.php?site=".url_encode($site), 'usergroup.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            // display system log if it is not a server diskkey
+            if (checkglobalpermission ($site, 'user') && strtolower ($diskkey) != "server")
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['system-events'][$lang], "frameset_log.php", 'event.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            // display custom system log if a custom log file exists
+            if (checkglobalpermission ($site, 'user') && is_file ($mgmt_config['abs_path_data']."log/".$site.".custom.log"))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['custom-system-events'][$lang], "frameset_log.php?site=".url_encode($site), 'event.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+                  
+            $publication->addSubPoint($point);
+          }
+          
+          // ------------------------------------------ personalization -------------------------------------------------
+          if (empty ($hcms_assetbrowser) && !$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'pers') && $mgmt_config[$site]['dam'] == false)
+          {
+            $point = new hcms_menupoint($hcms_lang['personalization'][$lang], '#pers_'.$site, 'pers_registration.gif', 'pers_'.$site);
+            $point->setOnClick('hcms_jstree_toggle_preventDefault("pers_'.$site.'", event);');
+              
+            if (checkglobalpermission ($site, 'perstrack'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['customer-tracking'][$lang], "frameset_pers.php?site=".url_encode($site)."&cat=tracking", 'pers_registration.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            if (checkglobalpermission ($site, 'persprof'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['customer-profiles'][$lang], "frameset_pers.php?site=".url_encode($site)."&cat=profile", 'pers_profile.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            $publication->addSubPoint($point);
+          }
+          
+          // --------------------------------------------- workflow -----------------------------------------------------
+          if (empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php") && !$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'workflow'))
+          {
+            $point = new hcms_menupoint($hcms_lang['workflow'][$lang], '#wrkflw_'.$site, 'workflow.gif', 'wrkflw_'.$site);
+            $point->setOnClick('hcms_jstree_toggle_preventDefault("wrkflw_'.$site.'", event);');
+              
+            if (checkglobalpermission ($site, 'workflowproc'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['workflow-management'][$lang], "workflow/frameset_workflow.php?site=".url_encode($site)."&cat=man", 'workflow.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            if (checkglobalpermission ($site, 'workflowscript'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['workflow-scripts'][$lang], "workflow/frameset_workflow.php?site=".url_encode($site)."&cat=script", 'workflowscript.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            $publication->addSubPoint($point);
+          }
+          
+          // --------------------------------------------- template ---------------------------------------------------
+          if (empty ($hcms_assetbrowser) && !$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'template'))
+          {
+            $point = new hcms_menupoint($hcms_lang['templates'][$lang], '#template_'.$site, 'template.gif', 'template_'.$site);
+            $point->setOnMouseOver('hcms_resetContext();');
+            $point->setOnClick('hcms_jstree_toggle_preventDefault("template_'.$site.'", event);');
+              
+            if (checkglobalpermission ($site, 'tpl') && $mgmt_config[$site]['dam'] == false)
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['page-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=page", 'template_page.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            if (checkglobalpermission ($site, 'tpl') && $mgmt_config[$site]['dam'] == false)
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['component-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=comp", 'template_comp.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            if (checkglobalpermission ($site, 'tpl') && $mgmt_config[$site]['dam'] == false)
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['template-includes'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=inc", 'template_inc.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            if (checkglobalpermission ($site, 'tpl'))
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['meta-data-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=meta", 'template_media.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            if (checkglobalpermission ($site, 'tplmedia') && $mgmt_config[$site]['dam'] == false)
+            {
+              $subpoint = new hcms_menupoint($hcms_lang['template-media'][$lang], "frameset_media.php?site=".url_encode($site)."&mediacat=tpl", 'media.gif');
+              $subpoint->setOnClick('changeSelection(this)');
+              $subpoint->setTarget('workplFrame');
+              $subpoint->setOnMouseOver('hcms_resetContext();');
+              $point->addSubPoint($subpoint);
+            }
+            
+            $publication->addSubPoint($point);
+          }
+          
+          // ----------------------------------------- plugins ----------------------------------------------
+          if (empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && !empty ($mgmt_plugin))
+          { 
+            foreach ($mgmt_plugin as $key => $data)
+            {
+              // Only active plugins which have the correct keys are used
+              if (is_array ($data) && array_key_exists ('active', $data) && $data['active'] == true && array_key_exists ('menu', $data) && is_array ($data['menu']) && array_key_exists ('publication', $data['menu']) && is_array ($data['menu']['publication']))
+              {
+                $pluginmenu = generatePluginTree ($data['menu']['publication'], $key, $data['folder'], false, $site);
+                foreach ($pluginmenu as $point) $publication->addSubPoint ($point);
+              }
+            }
+          }
+          
+          // ----------------------------------------- taxonomy ----------------------------------------------
+          if (!empty ($mgmt_config[$site]['taxonomy']) && !isset ($hcms_linking['location']) && (checkglobalpermission ($site, 'component') || checkglobalpermission ($site, 'page')))
+          {
+            $point = new hcms_menupoint($hcms_lang['taxonomy'][$lang], '#tax_'.$site, 'folder_taxonomy.gif', 'tax_'.$site);
+            $point->setOnClick('hcms_jstree_open("tax_'.$site.'", event);');
+            $point->setNodeCSSClass('jstree-closed jstree-reload');
+            $point->setAjaxData('%taxonomy%/'.$site.'/'.$lang.'/0/0');
+            $publication->addSubPoint($point);
+          }
+          
+          // ----------------------------------------- component ---------------------------------------------
+          // category of content: cat=comp
+          if (is_dir ($mgmt_config['abs_path_comp'].$site."/") && checkglobalpermission ($site, 'component') && (!isset ($hcms_linking['cat']) || $hcms_linking['cat'] == "comp"))
+          {
+            // since version 5.6.3 the root folders also need to have containers
+            // update comp/assets root
+            $comp_root = deconvertpath ("%comp%/".$site."/", "file");
+            // create folder object if it does not exist  
+            if (!is_file ($comp_root.".folder")) createobject ($site, $comp_root, ".folder", "default.meta.tpl", "sys");
+            
+            // reset root location if linking is used
+            if (isset ($hcms_linking['location']) && valid_locationname ($hcms_linking['location']))
+            {
+              if (isset ($hcms_linking['object']) && valid_objectname ($hcms_linking['object']))
+              {
+                $file_info = getfileinfo ($site, $hcms_linking['location'].$hcms_linking['object'], "comp");
+                
+                if ($file_info['type'] == "Folder") $location_root = $hcms_linking['location'].$hcms_linking['object']."/";
+                else $location_root = "";
+              }
+              else $location_root = $hcms_linking['location'];
+              
+              $location_root = convertpath ($site, $location_root, "comp");
+            }
+            // use component root
+            else $location_root = "%comp%/".$site."/";
+    
+            $point = new hcms_menupoint($hcms_lang['assets'][$lang], "frameset_objectlist.php?site=".url_encode($site)."&cat=comp&location=".url_encode($location_root)."&virtual=1", 'folder_comp.gif', 'comp_'.$site);
+            $point->setOnClick('hcms_jstree_open("comp_'.$site.'", event);');
+            $point->setTarget('workplFrame');
+            $point->setNodeCSSClass('jstree-closed jstree-reload');
+            $point->setAjaxData($location_root);
+            $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "comp", "'.getlocation($location_root).'", ".folder", "'.getescapedtext ($hcms_lang['assets'][$lang]).'", "Folder", "", "'.getobject($location_root).'", "comp_'.$site.'", $("#context_token").text());');
+            $point->setOnMouseOut('hcms_resetContext();');
+            $publication->addSubPoint($point);
+          }
+          
+          // ----------------------------------------- page ----------------------------------------------
+          // category of content: cat=page
+          if (empty ($hcms_assetbrowser) && !empty ($mgmt_config[$site]['abs_path_page']) && is_dir ($mgmt_config[$site]['abs_path_page']) && checkglobalpermission ($site, 'page') && empty ($mgmt_config[$site]['dam']) && (!isset ($hcms_linking['cat']) || $hcms_linking['cat'] == "page"))
+          {
+            // since version 5.6.3 the root folders also need to have containers
+            // update page root
+            $page_root = deconvertpath ("%page%/".$site."/", "file");
+            // create folder object if it does not exist
+            if (!is_file ($page_root.".folder")) createobject ($site, $page_root, ".folder", "default.meta.tpl", "sys");
+              
+            // reset root location if linking is used
+            if (isset ($hcms_linking['location']) && valid_locationname ($hcms_linking['location']))
+            {
+              if (isset ($hcms_linking['object']) && valid_objectname ($hcms_linking['object']))
+              {
+                $file_info = getfileinfo ($site, $hcms_linking['location'].$hcms_linking['object'], "page");
+                if ($file_info['type'] == "Folder") $location_root = $hcms_linking['location'].$hcms_linking['object']."/";
+              }
+              else $location_root = $hcms_linking['location'];
+              
+              $location_root = convertpath ($site, $location_root, "page");
+            }
+            // use page root
+            else $location_root = "%page%/".$site."/";
+            
+            $point = new hcms_menupoint($hcms_lang['pages'][$lang], "frameset_objectlist.php?site=".url_encode($site)."&cat=page&location=".url_encode($location_root)."&virtual=1", 'folder_page.gif', 'page_'.$site);
+            $point->setOnClick('hcms_jstree_open("page_'.$site.'", event);');
+            $point->setTarget('workplFrame');
+            $point->setNodeCSSClass('jstree-closed jstree-reload');
+            $point->setAjaxData($location_root);
+            $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "page", "'.getlocation($location_root).'", ".folder", "'.getescapedtext ($hcms_lang['pages'][$lang]).'", "Folder", "", "'.getobject($location_root).'", "comp_'.$site.'", $("#context_token").text());');
+            $point->setOnMouseOut('hcms_resetContext();');
+            $publication->addSubPoint($point);
+          }
+          
+          $tree .= $publication->generateHTML();
+        }
       }
     }
   }  

@@ -73,7 +73,7 @@ function togglesidebar ($view)
 
 // --------------------------------------- setfilter -------------------------------------------
 // function: setfilter ()
-// input: set of filtera as array with keys [comp,image,document,video,audio] and value [0,1]
+// input: set of filters as array with keys [comp,image,document,video,audio] and value [0,1]
 // output: true / false
 
 // description:
@@ -1098,7 +1098,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       });
       
       // set images for buttons
-      setAnnoationButtons(); 
+      if (!hcms_iOS()) setAnnoationButtons();
+      else document.getElementById('annotationToolbar').disabled = true;
 		});
 	</script>
   ";
@@ -2671,7 +2672,8 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 jq_inline.post(
                   \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
                   jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
-                  function(data) {
+                  function(data)
+                  {
                     if(data.message.length !== 0)
                     {
                       alert(hcms_entity_decode(data.message));
@@ -2735,8 +2737,9 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                   jq_inline.post(
                     \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
                     jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
-                    function(data) {
-                      if(data.message.length !== 0)
+                    function(data)
+                    {
+                      if (data.message.length !== 0)
                       {
                         alert(hcms_entity_decode(data.message));
                       }				
@@ -2843,23 +2846,24 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           {
             var oldtext_".$hypertagname."_".$id." = \"\";
             jq_inline('#".$hypertagname."_".$id."').click(function(event) {
-            event.stopPropagation();
-          
-            elem = jq_inline(this);
-            txtarea = jq_inline('#hcms_txtarea_".$hypertagname."_".$id."');
-            form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
+              event.stopPropagation();
             
-            oldtext_".$hypertagname."_".$id." = hcms_entity_decode(elem.html().replace(/\<br\>/g, '\\n'));
-            
-            if (oldtext_".$hypertagname."_".$id." == '".$defaultText."') oldtext_".$hypertagname."_".$id." = '';
-            
-            elem.hide();
-            form.css('display', 'inline');
-            
-            txtarea.val('');
-            txtarea.focus();
-            txtarea.val(oldtext_".$hypertagname."_".$id.");
+              elem = jq_inline(this);
+              txtarea = jq_inline('#hcms_txtarea_".$hypertagname."_".$id."');
+              form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
+              
+              oldtext_".$hypertagname."_".$id." = hcms_entity_decode(elem.html().replace(/\<br\>/g, '\\n'));
+              
+              if (oldtext_".$hypertagname."_".$id." == hcms_entity_decode('".$defaultText."')) oldtext_".$hypertagname."_".$id." = '';
+              
+              elem.hide();
+              form.css('display', 'inline');
+              
+              txtarea.val('');
+              txtarea.focus();
+              txtarea.val(oldtext_".$hypertagname."_".$id.");
             });
+            
             jq_inline('#hcms_txtarea_".$hypertagname."_".$id."').click(function(event)
             {
               event.stopPropagation();
@@ -2875,20 +2879,20 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
               
               if (oldtext_".$hypertagname."_".$id." != newtext && (constraint == \"\" || (check = hcms_validateForm('hcms_txtarea_".$hypertagname."_".$id."','', constraint)))".$confirm_save.") 
               {  
-                  oldtext_".$hypertagname."_".$id." = newtext;
-                  jq_inline.post(
-                    \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
-                    jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
-                    function(data)
-                      {
-                        if(data.message.length !== 0)
-                        {
-                          alert(hcms_entity_decode(data.message));
-                        }				
-                      }, 
-                    \"json\"
-                    );
-                  elem.html(newtext.replace(/\\r?\\n|\\r/g, '<br>'));
+                oldtext_".$hypertagname."_".$id." = newtext;
+                jq_inline.post(
+                  \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
+                  jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
+                  function(data)
+                  {
+                    if(data.message.length !== 0)
+                    {
+                      alert(hcms_entity_decode(data.message));
+                    }				
+                  }, 
+                  \"json\"
+                );
+                elem.html(newtext.replace(/\\r?\\n|\\r/g, '<br>'));
               }
               else if (!check)
               {
@@ -2907,7 +2911,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           </script>
         ";
         // textarea
-        $element = "<textarea title=\"".$labelname.": ".getescapedtext ($hcms_lang['edit-unformatted-text'][$lang], $hcms_charset, $lang)."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" onkeyup=\"hcms_adjustTextarea(this);\" class=\"hcms_editable_textarea\">".$contentbot."</textarea>";
+        $element = "<textarea title=\"".$labelname.": ".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\" onkeyup=\"hcms_adjustTextarea(this);\" class=\"hcms_editable_textarea\">".$contentbot."</textarea>";
         break;
         
       // text options/list
@@ -2919,19 +2923,20 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
           {
             var oldselect_".$hypertagname."_".$id." = \"\";
             jq_inline('#".$hypertagname."_".$id."').click(function(event) {
-            event.stopPropagation();
-          
-            elem = jq_inline(this);
-            selectbox = jq_inline('#hcms_selectbox_".$hypertagname."_".$id."');
-            form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
+              event.stopPropagation();
             
-            oldselect_".$hypertagname."_".$id." = selectbox.val();
-            
-            elem.hide();
-            form.css('display', 'inline');
-            
-            selectbox.focus();
+              elem = jq_inline(this);
+              selectbox = jq_inline('#hcms_selectbox_".$hypertagname."_".$id."');
+              form = jq_inline('#hcms_form_".$hypertagname."_".$id."');
+              
+              oldselect_".$hypertagname."_".$id." = selectbox.val();
+              
+              elem.hide();
+              form.css('display', 'inline');
+              
+              selectbox.focus();
             });
+            
             jq_inline('#hcms_selectbox_".$hypertagname."_".$id."').click(function(event)
             {
               event.stopPropagation();
@@ -2949,18 +2954,21 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                   \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
                   jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
                   function(data)
+                  {
+                    if (data.message.length !== 0)
                     {
-                      if(data.message.length !== 0)
-                      {
-                        alert(hcms_entity_decode(data.message));
-                      }				
-                    }, 
+                      alert(hcms_entity_decode(data.message));
+                    }				
+                  }, 
                   \"json\"
-                  );
+                );
                 elem.text(newselect);
-              } else {
+              }
+              else
+              {
                 selectbox.val(oldselect_".$hypertagname."_".$id.");
               }
+              
               form.hide();
               elem.show();
             });
@@ -3024,16 +3032,19 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 on: {
                   focus: function( event ) {
                     oldtext_".$hypertagname."_".$id." = jq_inline.trim(event.editor.getData());
-                    if(oldtext_".$hypertagname."_".$id." == '<p>".$defaultText."</p>') {
+
+                    if (hcms_stripTags(oldtext_".$hypertagname."_".$id.") == hcms_stripTags('".$defaultText."'))
+                    {
                       oldtext_".$hypertagname."_".$id." = '';
                     }
+                    
                     event.editor.setData(oldtext_".$hypertagname."_".$id.");
                   },
                   blur: function (event)
                   {
                     var newtext = jq_inline.trim(event.editor.getData());
                     
-                    if(oldtext_".$hypertagname."_".$id." != newtext".$confirm_save.")
+                    if (oldtext_".$hypertagname."_".$id." != newtext".$confirm_save.")
                     {
                       oldtext_".$hypertagname."_".$id." = newtext;
                       jq_inline('#hcms_txtarea_".$hypertagname."_".$id."').val(event.editor.getData());
@@ -3041,19 +3052,22 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                         \"".$mgmt_config['url_path_cms']."service/savecontent.php\", 
                         jq_inline('#hcms_form_".$hypertagname."_".$id."').serialize(), 
                         function(data)
+                        {
+                          if(data.message.length !== 0)
                           {
-                            if(data.message.length !== 0)
-                            {
-                              alert(hcms_entity_decode(data.message));
-                            }
-                            
-                          }, 
+                            alert(hcms_entity_decode(data.message));
+                          }
+                          
+                        }, 
                         \"json\"
-                        );
-                    } else {
+                      );
+                    }
+                    else
+                    {
                       event.editor.setData(oldtext_".$hypertagname."_".$id.");
                     }
-                    if(event.editor.getData() == '')
+                    
+                    if (event.editor.getData() == '')
                     {
                       event.editor.setData('<p>".$defaultText."</p>');
                     }
@@ -3063,7 +3077,8 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
             });
           </script>
         ";
-        $element = "<textarea title=\"".$labelname.": ".getescapedtext ($hcms_lang['edit-formatted-text'][$lang], $hcms_charset, $lang)."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\">".$contentbot."</textarea>";
+        
+        $element = "<textarea title=\"".$labelname.": ".$title."\" id=\"hcms_txtarea_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id."]\">".$contentbot."</textarea>";
         break;
       default:
         break;

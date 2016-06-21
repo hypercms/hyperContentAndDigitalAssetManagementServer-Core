@@ -22,6 +22,14 @@ $location = getrequest_esc ("location", "locationname");
 $folder = getrequest_esc ("folder", "objectname");
 $page = getrequest_esc ("page", "objectname");
 
+// location and object is set by assetbrowser
+if ($location == "" && !empty ($hcms_assetbrowser_location) && !empty ($hcms_assetbrowser_object))
+{
+  $location = $hcms_assetbrowser_location;
+  $page = $hcms_assetbrowser_object;
+}
+
+// add folder
 if ($folder != "") $location = $location.$folder."/";
 
 // get publication and category
@@ -116,8 +124,8 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 <title>hyperCMS</title>
 <meta charset="<?php echo $charset; ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/click.js" type="text/javascript"></script>
+<script type="text/javascript" language="JavaScript" src="javascript/main.js"></script>
+<script type="text/javascript" language="JavaScript" src="javascript/click.js"></script>
 <?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) echo showaudioplayer_head (false); ?>
 <?php if (!empty ($file_info['ext']) && is_video ($file_info['ext'])) echo showvideoplayer_head (false, false); ?>
 </head>

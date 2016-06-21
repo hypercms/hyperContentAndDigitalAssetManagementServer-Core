@@ -43,6 +43,8 @@ if (valid_locationname ($location) && valid_publicationname ($site) && ($cat == 
   }
       
   $data['object_id'] = rdbms_getobject_id ($location);
+  $data['object_hash'] = rdbms_getobject_hash ($location);
+
   if ($data['object_id'] > 0) $data['success'] = true;
 }
   

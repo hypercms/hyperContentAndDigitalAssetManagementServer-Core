@@ -70,11 +70,11 @@ require ("../version.inc.php");
 
 
 // check for existing installation (using check.dat)
-if (@is_file ($mgmt_config['abs_path_data']."check.dat"))
+if (is_file ($mgmt_config['abs_path_data']."check.dat"))
 {
   $data = loadfile ($mgmt_config['abs_path_data'], "check.dat");
-  
-  if ($data != 0)
+
+  if (!empty ($data))
   {
 ?>
 <!DOCTYPE html>
@@ -82,12 +82,13 @@ if (@is_file ($mgmt_config['abs_path_data']."check.dat"))
 <head>
 <title>hyperCMS</title>
 <meta charset=UTF-8" />
+<meta name="theme-color" content="#464646" />
 <meta name="viewport" content="width=device-width; initial-scale=0.7; maximum-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="../theme/standard/css/main.css" />
 </head>
 <body class="hcmsWorkplaceGeneric">
 <div class="hcmsHeadline" style="width:380px; margin: 20px auto 20px auto;">
-  hyperCMS is already installed!
+  The hyper Content &amp; Digital Asset Management has been installed already!
 </div>
 </body>
 </html>

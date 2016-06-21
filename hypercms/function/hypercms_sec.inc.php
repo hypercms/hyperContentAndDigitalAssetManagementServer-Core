@@ -1431,6 +1431,9 @@ function registerinstance ($instance, $load_config=true)
 // output: MD5 checksum
 // requires: hypercms_api.inc.php
 
+// description:
+// Creates the checksum of the user permissions
+
 function createchecksum ($permissions="")
 {
   if (is_array ($permissions))
@@ -1965,7 +1968,7 @@ function checkusersession ($user="sys", $CSRF_detection=true)
   if (valid_objectname ($user) && @is_file ($mgmt_config['abs_path_data']."session/".$user.".dat") && is_array ($_SESSION['hcms_siteaccess']) && is_array ($_SESSION['hcms_rootpermission']))
   {
     $session_array = @file ($mgmt_config['abs_path_data']."session/".$user.".dat");
-  
+
     if ($session_array != false && sizeof ($session_array) >= 1)
     {
       foreach ($session_array as $session)
@@ -1984,8 +1987,8 @@ function checkusersession ($user="sys", $CSRF_detection=true)
   // unauth. access
   if ($alarm == true)
   {
-    echo showinfopage ("Unauthorized Access!", "en", "top.location='".$mgmt_config['url_path_cms']."userlogout.php';");
-    exit;
+    //echo showinfopage ("Unauthorized Access!", "en", "top.location='".$mgmt_config['url_path_cms']."userlogout.php';");
+    //exit;
   }
   // auth. access
   else return true; 

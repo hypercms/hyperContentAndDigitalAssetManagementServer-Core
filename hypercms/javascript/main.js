@@ -253,12 +253,12 @@ function hcms_mobileBrowser ()
   else return false;
 }
 
-function hcms_iPhonePad ()
+function hcms_iOS ()
 {
   var userAgent = window.navigator.userAgent;
   
-  // iPad or iPhone
-  if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i)) return true;
+  // iPod, iPad or iPhone
+  if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)) return true;
   else return false;
 }
 

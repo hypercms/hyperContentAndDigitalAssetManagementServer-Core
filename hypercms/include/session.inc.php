@@ -39,6 +39,10 @@ $is_iphone = getsession ("hcms_iphone");
 $html5file = getsession ("hcms_html5file");
 // mail linking parameter (array)
 $hcms_linking = getsession ("hcms_linking");
+// asset browser
+$hcms_assetbrowser = getsession ("hcms_assetbrowser");
+$hcms_assetbrowser_location = getsession ("hcms_assetbrowser_location");
+$hcms_assetbrowser_object = getsession ("hcms_assetbrowser_object");
 // other temporary session parameters
 $temp_sessiontime = getsession ("hcms_temp_sessiontime");
 $temp_clipboard = getsession ("hcms_temp_clipboard");

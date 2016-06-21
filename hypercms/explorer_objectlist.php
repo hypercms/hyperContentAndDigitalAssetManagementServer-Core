@@ -96,8 +96,8 @@ elseif (strtolower ($cat) == "comp")
 
 // collect all objects for list
 if (
-     (valid_locationname ($location) && $hcms_linking['location'] == "") || 
-     ($hcms_linking['location'] != "" && $hcms_linking['object'] == "" && substr_count ($location, $hcms_linking['location']) > 0)
+     (valid_locationname ($location) && empty ($hcms_linking['location'])) || 
+     (!empty ($hcms_linking['location']) && empty ($hcms_linking['object']) && substr_count ($location, $hcms_linking['location']) > 0)
    )
 {  
   // generate page or component list using access permission data
@@ -557,7 +557,7 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
 
         // if linking is used display download buttons, display edit button for mobile edition
         $linking_buttons = "";
-        
+
         if ($mediafile != false && is_array (getsession ('hcms_linking')) && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
         {
           // check download of original file
@@ -568,12 +568,19 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
             <a href=\"".createviewlink ($site, $mediafile, $object_name, false, "download")."\" target=\"_blank\"><button class=\"hcmsButtonDownload\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
           }
         }
-        
+
         // if mobile edition is used display edit button
         if ($is_mobile && (($mediafile == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || ($mediafile != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
         {   
           $linking_buttons .= "
           <button class=\"hcmsButtonDownload\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', '800', '600');\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
+        }
+        
+        // if assetbrowser is used display edit button
+        if (!empty ($hcms_assetbrowser) && $mediafile != "" && $setlocalpermission['root'] == 1)
+        {   
+          $linking_buttons .= "
+          <button class=\"hcmsButtonDownload\" style=\"width:154px;\" onClick=\"parent.parent.returnMedia('".url_encode($location_esc.$object)."', '".$object_name."', '".$imgwidth."', '".$imgheight."', '".$file_time."', '".$file_size."');\">".getescapedtext ($hcms_lang['select'][$lang])."</button>";
         }
         
         if ($linking_buttons != "")
@@ -583,7 +590,7 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
             
           $linking_buttons = "<div style=\"width:".$width."; margin-left:auto; margin-right:auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
         }
-        
+
         $galleryview .= "
                         <td id=\"t".$items_row."\" style=\"width:".$cell_width."; height:180px; text-align:center; vertical-align:bottom;\">
                           <div ".$selectclick." ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"cursor:pointer; display:block; text-align:center;\">".
@@ -619,11 +626,11 @@ else $objects_counted = 0;
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
-<script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
-<script src="javascript/contextmenu.js" language="JavaScript" type="text/javascript"></script>
-<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
-<script type="text/javascript" src="javascript/chat.js"></script>
+<script type="text/javascript" language="JavaScript" src="javascript/main.js"></script>
+<script type="text/javascript" language="JavaScript" src="javascript/contextmenu.js"></script>
+<script type="text/javascript" language="JavaScript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" language="JavaScript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
+<script type="text/javascript" language="JavaScript" src="javascript/chat.js"></script>
 <script language="JavaScript">
 <!--
 // context menu

@@ -46,7 +46,6 @@ toggleview ($view);
 </head> 
 
 <script type='text/javascript'>
-<!--
 $(document).ready(function()
 {
   $("#workplFrame").height($(window).height() - $("#topbar").height());
@@ -65,7 +64,14 @@ $(document).ready(function()
     if ($("#chatFrame")) $("#chatFrame").height($(window).height());
   };
 });
--->
+
+<?php
+// assetbrowser
+if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connector/assetbrowser/config.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."connector/assetbrowser/config.inc.php");
+}
+?>
 </script>
 
 <body>
@@ -74,11 +80,9 @@ $(document).ready(function()
 
   <!-- header -->
   <div id="topbar" class="ui-header ui-bar-b" data-role="header">
-    <?php if (!is_array ($hcms_linking)) { ?>
     <a href="#navigator">Navigator</a>
-    <?php } ?>
     <h1>hyperCMS <?php echo ucfirst ($hcms_themename); ?></h1>
-    <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true && !$is_iphone) { ?><a href="#chat"><?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?></a><?php } ?>
+    <?php if (empty ($hcms_assetbrowser) && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true && !$is_iphone) { ?><a href="#chat"><?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?></a><?php } ?>
   </div> 
 
   <!-- navigator panel -->
@@ -111,13 +115,20 @@ $(document).ready(function()
   <div id="content" data-role="content" style="padding:0; margin:0;">
     <?php if (is_array ($hcms_linking)) { ?>
     <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php" frameBorder="0" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
+    <?php } elseif (!empty ($hcms_assetbrowser)) { ?>
+      <?php // location set by assetbrowser
+      if (!empty ($hcms_assetbrowser_location)) { ?>
+      <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php?location=<?php echo url_encode($hcms_assetbrowser_location); ?>" frameBorder="0" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
+      <?php } else { ?>
+      <iframe id="workplFrame" name="workplFrame" src="empty.php" frameBorder="0" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
+      <?php } ?>
     <?php } else { ?>
     <iframe id="workplFrame" name="workplFrame" src="home.php" frameBorder="0" style="padding:0; margin:0; border:0; width:100%; overflow:auto;"></iframe>
     <?php } ?>
   </div>
   
   <!-- chat panel -->
-  <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true && !$is_iphone) { ?>
+  <?php if (empty ($hcms_assetbrowser) && !empty ($mgmt_config['chat']) && !$is_iphone) { ?>
   <div id="chat" data-role="panel" data-display="overlay" data-position="right" style="padding:0; margin:0; width:300px;">    
     <div id="chatContainer" style="position:absolute; top:0; right:0; padding:0; margin:0; border:0; width:300px; overflow:auto; -webkit-overflow-scrolling:touch;">
       <iframe id="chatFrame" scrolling="yes" src="chat.php" frameBorder="0" style="border:0; width:300px;"></iframe>

@@ -34,6 +34,11 @@ $is_iphone = getrequest ("is_iphone");
 $html5support = getrequest ("html5support");
 $lang = getrequest ("lang");
 $token = getrequest ("token");
+// input parameters (assetbrowser)
+$sentinstance = getrequest ("instance", "publicationname");
+$userhash = getrequest ("userhash");
+$objecthash = url_encode (getrequest ("objecthash"));
+$filter = getrequest ("filter"); 
 // deprecated since version 5.6.1 but still supported:
 // input parameters (mail-link logon)
 $hcms_user = getrequest ("hcms_user");
@@ -48,7 +53,7 @@ $hcms_id_token = getrequest ("hcms_id_token");
 $al = getrequest ("al");
 
 // detect browser and set theme
-if (is_mobilebrowser () || $is_mobile == "yes")
+if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes")
 {
   $themename = "mobile";
 }
@@ -144,6 +149,20 @@ elseif ($user != "" && $hcms_user != "")
 // set default language
 if (!isset ($lang) || $lang == false || $lang == "") $lang = $mgmt_lang_shortcut_default;
 
+// set filter
+$filter_array = splitstring ($filter);
+$filter_set = array();
+
+if (is_array ($filter_array) && sizeof ($filter_array) > 0)
+{
+  foreach ($filter_array as $filter_name)
+  {
+    $filter_set[$filter_name] = 1;
+  }
+  
+  setfilter ($filter_set);
+}
+
 // create secure token
 $token_new = createtoken ("sys");
 
@@ -174,6 +193,11 @@ if (checkuserip (getuserip ()) == true)
   {
     $login_result = userlogin ($hcms_user, $hcms_pass, "", $hcms_objref, $hcms_objcode);
   }
+  // user hash provided
+  elseif (!empty ($userhash))
+  {
+    $login_result = userlogin ("", "", $userhash, "", "");
+  }
   // standard user logon
   elseif (!empty ($sentuser) && !empty ($sentpasswd) && checktoken ($token, "sys"))
   {
@@ -181,7 +205,7 @@ if (checkuserip (getuserip ()) == true)
   }
   else $login_result = false;
   
-  if (is_array ($login_result) && $login_result['auth'])
+  if (!empty ($login_result['auth']))
   {	
     // start session
     session_name ("hyperCMS");
@@ -223,14 +247,14 @@ if (checkuserip (getuserip ()) == true)
     if (!empty ($hcms_objformats)) setsession ('hcms_downloadformats', $hcms_objformats);
     
     // reset mobile settings by values of client side browser detection (JavaScript)
-    if ($is_mobile == "1" || $is_mobile == "yes")
+    if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes")
     {
       $login_result['mobile'] = true;
       $login_result['themename'] = "mobile";
     }
     
     // iphone setting
-    if ($is_iphone == "1")
+    if (is_iOS() || $is_iphone == "1" || $is_iphone == "yes")
     {
       $login_result['iphone'] = true;
     }
@@ -259,10 +283,34 @@ if (checkuserip (getuserip ()) == true)
     if (!empty ($login_result['hcms_linking']) && is_array ($login_result['hcms_linking']))
     {
       setsession ('hcms_linking', $login_result['hcms_linking']);
+      setsession ('hcms_temp_explorerview', "medium");
     }
     else
     {
       setsession ('hcms_linking', Null);
+    }
+    
+    // user hash is only provided for assetbrowser
+    if (!empty ($userhash))
+    {
+      // set assetbrowser mode information in session
+      setsession ('hcms_assetbrowser', true);
+      
+      // set assetbrowser location and object in session
+      if (!empty ($objecthash))
+      {
+        $objectpath = rdbms_getobject ($objecthash);
+        
+        if (!empty ($objectpath))
+        {
+          setsession ('hcms_assetbrowser_location', getlocation ($objectpath));
+          setsession ('hcms_assetbrowser_object', getobject ($objectpath));
+        }
+      }
+      
+      // reset temporary view settings
+      setsession ('hcms_temp_explorerview', "small");
+      setsession ('hcms_temp_sidebar', true);
     }
     
     // define frameset
@@ -415,7 +463,7 @@ function is_mobilebrowser()
 
 function is_iphone()
 {
-  if (eval (document.forms['login']) && hcms_iPhonePad()) document.forms['login'].elements['is_iphone'].value = '1';
+  if (eval (document.forms['login']) && hcms_iOS()) document.forms['login'].elements['is_iphone'].value = '1';
 }
 
 function html5support()

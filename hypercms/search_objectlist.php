@@ -617,6 +617,13 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               <button class=\"hcmsButtonDownload\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
             }
             
+            // if assetbrowser is used display edit button
+            if (!empty ($hcms_assetbrowser) && $mediafile != "" && $setlocalpermission['root'] == 1)
+            {   
+              $linking_buttons .= "
+              <button class=\"hcmsButtonDownload\" style=\"width:154px;\" onClick=\"parent.parent.returnMedia('".url_encode($location_esc.$object)."', '".$object_name."', '".$imgwidth."', '".$imgheight."', '".$file_time."', '".$file_size."');\">".getescapedtext ($hcms_lang['select'][$lang])."</button>";
+            }
+            
             if ($linking_buttons != "")
             {
               if (!$is_mobile) $width = "160px";

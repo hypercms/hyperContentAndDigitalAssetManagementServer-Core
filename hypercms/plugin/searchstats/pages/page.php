@@ -98,9 +98,11 @@ if ($action == "regenerate" && checktoken ($token, $user) && is_file ($mgmt_conf
 
     foreach ($data as $record)
     {
-      list ($date, $user, $keyword_add) = explode ("|", $record);
-
-      $keywords[] = $keyword_add;
+      if (strpos ($record, "|") > 0)
+      {
+        list ($date, $user, $keyword_add) = explode ("|", $record);
+        if ($keyword_add != "")) $keywords[] = $keyword_add;
+      }
     }
     
     if (is_array ($keywords) && sizeof ($keywords) > 0)

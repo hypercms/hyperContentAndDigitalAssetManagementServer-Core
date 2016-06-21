@@ -42,7 +42,6 @@ $servertime = new servertime;
 $servertime->InstallClockHead();
 ?>
 <script language="JavaScript">
-<!--
 function openInfo()
 {
   hcms_openWindow('top_info.php', 'help', 'resizable=no,scrollbars=no', '640', '400');
@@ -80,13 +79,24 @@ $(document).ready(function()
   $("#search_expression").autocomplete({
     source: available_expressions
   });
-});    
--->
+});
+
+
+<?php
+// assetbrowser
+if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connector/assetbrowser/config.inc.php"))
+{
+  require_once ($mgmt_config['abs_path_cms']."connector/assetbrowser/config.inc.php");
+}
+?>
 </script>
 </head>
 
 <body style="width:100%; height:100%; margin:0; padding:0;">
 
+<?php if (empty ($hcms_assetbrowser))
+{
+?>
 <!-- top bar -->
 <div class="hcmsWorkplaceTop" style="position:fixed; left:0px; top:0px; width:100%; height:32px;">
   <table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
@@ -119,10 +129,41 @@ $(document).ready(function()
   </table>
 </div>
 <?php
-$servertime->InstallClockBody();
+  $servertime->InstallClockBody();
+}
 ?>
 
-<?php if (!is_array ($hcms_linking)) { ?>
+<?php if (is_array ($hcms_linking)) { ?>
+<!-- workplace -->
+<div id="workplLayer" style="position:fixed; top:32px; bottom:0; left:0; width:100%; margin:0; padding:0;">
+  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</div>
+<?php } elseif (!empty ($hcms_assetbrowser)) {
+  // location set by assetbrowser
+  if (!empty ($hcms_assetbrowser_location)) { ?>
+<!-- explorer -->
+<div id="navLayer" style="position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;">
+  <iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</div>
+
+<!-- workplace -->
+<div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;">
+  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php?location=<?php echo url_encode($hcms_assetbrowser_location); ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</div>
+<?php } 
+  // no location set by assetbrowser
+  else { ?>
+<!-- explorer -->
+<div id="navLayer" style="position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;">
+  <iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</div>
+
+<!-- workplace -->
+<div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;">
+  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="empty.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
+</div>
+<?php }
+} else { ?>
 <!-- explorer -->
 <div id="navLayer" style="position:fixed; top:32px; bottom:0; left:0; width:260px; margin:0; padding:0;">
   <iframe id="navFrame" name="navFrame" scrolling="yes" src="explorer.php?refresh=1" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
@@ -131,11 +172,6 @@ $servertime->InstallClockBody();
 <!-- workplace -->
 <div id="workplLayer" style="position:fixed; top:32px; right:0; bottom:0; left:260px; margin:0; padding:0;">
   <iframe id="workplFrame" name="workplFrame" scrolling="no" src="home.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
-</div>
-<?php } else { ?>
-<!-- workplace -->
-<div id="workplLayer" style="position:fixed; top:32px; bottom:0; left:0; width:100%; margin:0; padding:0;">
-  <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
 </div>
 <?php } ?>
 

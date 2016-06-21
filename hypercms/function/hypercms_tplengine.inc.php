@@ -7193,7 +7193,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     if (document.forms['hcms_formview'])
     {
       // write annotation image to hidden input
-      if (document.getElementById('annotation')) $('#annotation').annotate('flatten');
+      if (!hcms_iOS() && document.getElementById('annotation')) $('#annotation').annotate('flatten');
     
       document.forms['hcms_formview'].submit();
     }
@@ -7281,7 +7281,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         $(\"#savetype\").val('auto');
         
         // write annotation image to hidden input
-        if (document.getElementById('annotation')) $('#annotation').annotate('flatten');
+        if (!hcms_iOS() && document.getElementById('annotation')) $('#annotation').annotate('flatten');
             
         $.ajax({
           type: 'POST',
