@@ -1383,6 +1383,79 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
   else return false;
 }
 
+// ---------------------- createobjectaccesslink -----------------------------
+// function: createobjectaccesslink()
+// input: publication (optional), location (optional), object (optional), category [page,comp] (optional), object ID (optional), container-ID (optional)
+// output: URL for download of the multimedia file of the given object or folder / false on error
+
+function createobjectaccesslink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="")
+{
+  global $user, $mgmt_config, $hcms_lang, $lang;
+
+  if (isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
+  {
+    $object_hash = false;
+    
+    // check if object is folder or page/component
+    if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
+    {
+      $location = deconvertpath ($location, "file"); 
+      
+      if (@is_dir ($location.$object))
+      {
+        $location = $location.$object."/";
+        $object = ".folder";
+      } 
+      
+      $objectpath = convertpath ($site, $location.$object, $cat);
+      
+      // get object id
+      $object_hash = rdbms_getobject_hash ($objectpath);
+      
+      // try to recreate object entry in database
+      if ($object_hash == false)
+      {
+        $object_info = getobjectinfo ($site, $location, $object, $user);
+        
+        if (!empty ($object_info['container_id']) && !empty ($object_info['template']))
+        {
+          $container_id = $object_info['container_id'];
+          rdbms_createobject ($object_info['container_id'], $objectpath, $object_info['template'], $object_info['content'], $user);
+          
+          // get object id
+          $object_hash = rdbms_getobject_hash ($objectpath);
+        }
+      }
+    }
+    // if object id
+    elseif ($object_id != "")
+    {
+      $object_hash = rdbms_getobject_hash ($object_id);
+    }
+    // if container id
+    elseif ($container_id != "")
+    {
+      $object_hash = rdbms_getobject_hash ("", $container_id);
+    }
+
+    if ($object_hash != false)
+    {  
+      // object access link
+      return $mgmt_config['url_path_cms']."?oal=".$object_hash;
+    }
+    else
+    {
+      $errcode = "40912";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createobjectaccesslink failed due to missing object id for: $objectpath";
+      
+      savelog (@$error);  
+      
+      return false;
+    }
+  }
+  else return false;
+}
+
 // ---------------------- createwrapperlink -----------------------------
 // function: createwrapperlink()
 // input: publication (optional), location (optional), object (optional), category [page,comp] (optional), object ID (optional), container-ID (optional)
@@ -5605,6 +5678,10 @@ function editpublication ($site_name, $setting, $user="sys")
     if (array_key_exists('mailserver', $setting)) $mailserver_new = $setting['mailserver'];
     else $mailserver_new = "";
     
+    // set user account for general accesslinks
+    if (array_key_exists('accesslinkuser', $setting)) $accesslinkuser_new = $setting['accesslinkuser'];
+    else $accesslinkuser_new = "";
+    
     // set OS
     if (array_key_exists('publ_os', $setting)) $publ_os_new = $setting['publ_os'];
     else $publ_os_new = "UNIX";
@@ -5671,6 +5748,10 @@ function editpublication ($site_name, $setting, $user="sys")
 // Mailserver name, necessary if sendmail is activated
 // (an account named hyperCMS@mailserver should be available)
 \$mgmt_config['".$site_name."']['mailserver'] = \"".$mailserver_new."\";
+
+// Accesslink user account, necessary to generate and use general accesslinks
+// (an user account must be created and assigned to a user group)
+\$mgmt_config['".$site_name."']['accesslinkuser'] = \"".$accesslinkuser_new."\";
 
 // Special characters in object and folder names
 // allow (false) or forbid (true) special characters in object and folder names.

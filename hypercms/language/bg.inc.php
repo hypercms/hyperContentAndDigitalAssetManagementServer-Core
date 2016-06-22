@@ -1383,4 +1383,5 @@ $hcms_lang['redo']['bg'] = "Redo";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['bg'] = "Изберете инструмент, за да се добавят анотация";
 $hcms_lang['translate']['bg'] = "Привеждам";
 $hcms_lang['enable-languages-for-translation']['bg'] = "Активиран езици за превод";
+$hcms_lang['user-for-access-links']['bg'] = "Потребител за достъп връзки";
 ?>

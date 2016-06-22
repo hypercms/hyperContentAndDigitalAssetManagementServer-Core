@@ -1382,4 +1382,5 @@ $hcms_lang['redo']['ro'] = "Refaceţi";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ro'] = "Selectaţi un instrument pentru a adăuga o adnotare";
 $hcms_lang['translate']['ro'] = "Traducere";
 $hcms_lang['enable-languages-for-translation']['ro'] = "Activat limbi pentru traducere";
+$hcms_lang['user-for-access-links']['ro'] = "Utilizator pentru acces links";
 ?>

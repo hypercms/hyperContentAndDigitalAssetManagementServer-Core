@@ -1382,4 +1382,5 @@ $hcms_lang['redo']['ur'] = "اعادہ کریں";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ur'] = "منتخب ٹول میں ایک شرح میں اضافہ کریں";
 $hcms_lang['translate']['ur'] = "ترجمہ کرنا";
 $hcms_lang['enable-languages-for-translation']['ur'] = "کی بدولت زبانیں کے ترجمہ";
+$hcms_lang['user-for-access-links']['ur'] = "صارف کی رسائی روابط";
 ?>

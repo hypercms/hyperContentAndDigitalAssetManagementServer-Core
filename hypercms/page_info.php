@@ -225,13 +225,17 @@ if ($pagestore != false)
       // download link  
       if ($mgmt_config['db_connect_rdbms'] != "") $filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
       elseif ($media != "") $filewrapperdownload = createviewlink ($site, $media, $page, false, "download");
+      
+      // object access link
+      if ($mgmt_config['db_connect_rdbms'] != "") $fileaccesslink = createobjectaccesslink ($site, $location, $page, $cat);
     }
 
     // file access links
     if (!empty ($filedirectlink)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['direct-link'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filedirectlink."</td></tr>\n";
     if (!empty ($filewrapperlink)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['wrapper-link'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filewrapperlink."</td></tr>\n";
     if (!empty ($filewrapperdownload)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['download-link'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filewrapperdownload."</td></tr>\n";
-    
+    if (!empty ($fileaccesslink)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['access-link'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$fileaccesslink."</td></tr>\n";
+ 
     // MD5 Checksum of media file
     if (!empty ($fileMD5)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['md5-code-of-the-file'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$fileMD5."</td></tr>\n";
     

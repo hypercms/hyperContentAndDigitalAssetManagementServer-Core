@@ -3947,11 +3947,11 @@ function getdirectoryfiles ($dir, $pattern="")
 // requires: config.inc.php
 
 // description:
-// This function creates an assoziative array with user information for the user select box
+// This function creates an assoziative array with user information, e.g. for a user select box.
 
 function getuserinformation ()
 {
-  global $mgmt_config;
+  global $mgmt_config, $user;
 
   // load user file
   $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
@@ -3983,6 +3983,7 @@ function getuserinformation ()
       if ($temp != "")
       {
         $login = getcontent ($temp, "<login>");
+        if ($user == "sys") $hashcode = getcontent ($temp, "<hashcode>");
         $admin = getcontent ($temp, "<admin>");
         $email = getcontent ($temp, "<email>");
         $realname = getcontent ($temp, "<realname>");
@@ -3998,6 +3999,7 @@ function getuserinformation ()
             if ($pub_temp != "")
             {
               $username = $login[0];
+              if (!empty ($hashcode[0])) $user_array[$pub_temp][$username]['hashcode'] = $hashcode[0];
               $user_array[$pub_temp][$username]['email'] = $email[0];
               $user_array[$pub_temp][$username]['realname'] = $realname[0];
               $user_array[$pub_temp][$username]['signature'] = $signature[0];
@@ -4013,6 +4015,7 @@ function getuserinformation ()
             if ($pub_temp != "")
             {
               $username = $login[0];
+              if (!empty ($hashcode[0])) $user_array[$pub_temp][$username]['hashcode'] = $hashcode[0];
               $user_array[$pub_temp][$username]['email'] = $email[0];
               $user_array[$pub_temp][$username]['realname'] = $realname[0];
               $user_array[$pub_temp][$username]['signature'] = $signature[0];

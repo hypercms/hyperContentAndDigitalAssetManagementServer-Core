@@ -1382,4 +1382,5 @@ $hcms_lang['redo']['sk'] = "Zopakovanie";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['sk'] = "Vyberte nástroj k tomu, aby bolo možné pridať anotáciu";
 $hcms_lang['translate']['sk'] = "Na nebesá";
 $hcms_lang['enable-languages-for-translation']['sk'] = "Povolené jazyky pre preklad";
+$hcms_lang['user-for-access-links']['sk'] = "Užívateľa pre prístup k prepojeniam";
 ?>

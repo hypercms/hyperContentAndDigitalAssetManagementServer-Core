@@ -1382,4 +1382,5 @@ $hcms_lang['redo']['hi'] = "पुनर्लिखित";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['hi'] = "एक औजार के चयन को जोड़ने के लिए एक annotation";
 $hcms_lang['translate']['hi'] = "अनुवाद";
 $hcms_lang['enable-languages-for-translation']['hi'] = "भाषाओं में अनुवाद करने के लिए सक्षम है";
+$hcms_lang['user-for-access-links']['hi'] = "उपयोगकर्ता की पहुंच के लिए सम्पर्क";
 ?>

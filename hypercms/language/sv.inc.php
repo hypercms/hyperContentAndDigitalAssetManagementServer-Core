@@ -1382,4 +1382,5 @@ $hcms_lang['redo']['sv'] = "Redo";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['sv'] = "Välj ett verktyg för att lägga till en anteckning";
 $hcms_lang['translate']['sv'] = "Översätta";
 $hcms_lang['enable-languages-for-translation']['sv'] = "Aktiverad språk för översättning";
+$hcms_lang['user-for-access-links']['sv'] = "Användaren tillgång länkar";
 ?>

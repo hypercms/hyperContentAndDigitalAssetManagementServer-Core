@@ -1585,16 +1585,16 @@ Release 06/2016
 - Added theme-color meta-tag for mobile browsers
 - Implementation of component path verification in explorer (Navigator)
 - Bug fix: Function editpublication used single and double quotes for empty storage-type configuration
-- Implmenetation of an Asset Browser in the connector module (for third-party CMS integration)
+- Implmenetation of an Assetbrowser in the connector module (for third-party CMS integration)
 - Minor improvements in userlogin
 - Bug fix: Added iPhone and iPad support in Mobile Edition to enable scrolling of an asset when adding metadata during upload
 - Bug fix: Annotations for images are disabled for iPhone or iPad due to issues with the annotate-JS-comand
 - Added tag ID for annotation toolbar, to disable id for iPhone and iPad
 - Bug fix: Function showinlineeditor did compare encoded and unecoded text strings before reseting the text content of formatted and unformatted tags
-- Implementation of new session variables for assetbrowser in include/session.inc
+- Implementation of new session variables for Assetbrowser in include/session.inc
 - Bug fix: Function manipulateobject did not allow to cut and paste objects in a subfolder of the source location
 - Implementation of object hash support as output of service getobject_id
-- Implementation of assetbrowser support (call of JS function returnMedia) in explorer_objectlist and search_objectlist
+- Implementation of Assetbrowser support (call of JS function returnMedia) in explorer_objectlist and search_objectlist
 - Added file extension cdr as image file type to include/format_ext
 - Improvements of mobile detection in userlogin
 - Added iPad in function is_mobilebrowser
@@ -1607,8 +1607,20 @@ Release 06/2016
 - Bug fix: Variable location_root has not been set in case of an accesslink to an object
 - Bug fix: Variable tree has not been set in case of an accesslink
 - Session variable explorerview will be set to "medium" if an accesslink is used
+
+Version 6.1.12
+Release 07/2016
+- Minor improvements in Assetbrowser
+- Implementation of accesslinks for objects using a general user account for access
+- Implementation of a new publication setting for the accesslink user account "accesslinkuser" in site_edit_form and function editpublication
+- Implementation of the new function createobjectaccesslink in main API
+- Implementation of object accesslink in page_info
+- Implementation of hashcode support in function getuserinformation in get API
+- Implementation of object access links support in userlogin
+- Bug fix: Search has not been executed if accesslinks have been used
+- Updates in all languages files
 */
 
 // current version
-$version = "Version 6.1.11";
+$version = "Version 6.1.12";
 ?>

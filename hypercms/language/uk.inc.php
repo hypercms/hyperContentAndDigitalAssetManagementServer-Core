@@ -1382,4 +1382,5 @@ $hcms_lang['redo']['uk'] = "Повторити";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['uk'] = "Виберіть потрібний інструмент для того, щоб додати анотацію";
 $hcms_lang['translate']['uk'] = "Переклад";
 $hcms_lang['enable-languages-for-translation']['uk'] = "Увімкнено мов для перекладу";
+$hcms_lang['user-for-access-links']['uk'] = "Користувачеві запит щодо доступу посилання";
 ?>

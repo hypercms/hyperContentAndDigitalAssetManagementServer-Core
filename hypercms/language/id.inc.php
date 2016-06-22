@@ -1383,4 +1383,5 @@ $hcms_lang['redo']['id'] = "Menjalankan langkah";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['id'] = "Pilih sebuah tool untuk menambahkan annotation";
 $hcms_lang['translate']['id'] = "Menerjemahkan";
 $hcms_lang['enable-languages-for-translation']['id'] = "Bahasa yang berkemampuan untuk penerjemahan";
+$hcms_lang['user-for-access-links']['id'] = "Untuk pengguna mengakses link";
 ?>

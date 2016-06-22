@@ -1382,4 +1382,5 @@ $hcms_lang['redo']['so'] = "Redo";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['so'] = "Soo xulo isticmaaleen raashinkii si aan ku dari annotation";
 $hcms_lang['translate']['so'] = "U bedel Ingirisi";
 $hcms_lang['enable-languages-for-translation']['so'] = "Afafka Suuragelisay fasiraadii,";
+$hcms_lang['user-for-access-links']['so'] = "Uu bixiyo isticmaalaha adeegga inay isticmaalaan links,";
 ?>

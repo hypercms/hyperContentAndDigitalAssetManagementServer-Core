@@ -1382,4 +1382,5 @@ $hcms_lang['redo']['ms'] = "Ulangcara";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ms'] = "Pilih alat untuk tambah satu anotasi";
 $hcms_lang['translate']['ms'] = "Terjemah";
 $hcms_lang['enable-languages-for-translation']['ms'] = "Diaktifkan bahasa untuk terjemahan";
+$hcms_lang['user-for-access-links']['ms'] = "Pengguna untuk akses pautan";
 ?>

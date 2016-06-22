@@ -24,13 +24,22 @@ if ($eventsystem['onaccess'] == 1) onaccess ($_REQUEST);
 
 // ------------------- access link parameters -------------------
 
-//   new hash parameter for mail-link
+//   new hash parameter for mail-link (accesslink)
 $al = getrequest ("al", "url");
 
 if ($al != "")
 {
   $forward = "userlogin.php?al=".url_encode($al);
 }
+
+// new hash parameter for general access link (new in version 6.1.12)
+$oal = getrequest ("oal", "url");
+
+if ($oal != "")
+{
+  $forward = "userlogin.php?oal=".url_encode($oal);
+}
+
 
 // deprecated since version 5.6.1 but still supported:
 //   standard input parameters (mail-link logon)

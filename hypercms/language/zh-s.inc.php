@@ -1383,4 +1383,5 @@ $hcms_lang['redo']['zh-s'] = "重做";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['zh-s'] = "选择一种工具,以便添加一条注释";
 $hcms_lang['translate']['zh-s'] = "翻译";
 $hcms_lang['enable-languages-for-translation']['zh-s'] = "启用的语言翻译";
+$hcms_lang['user-for-access-links']['zh-s'] = "用户的访问链接。";
 ?>

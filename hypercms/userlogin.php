@@ -51,6 +51,7 @@ $hcms_user_token = getrequest ("hcms_user_token");
 $hcms_id_token = getrequest ("hcms_id_token");
 // input parameters (unique hash is used for access-link)
 $al = getrequest ("al");
+$oal = getrequest ("oal");
 
 // detect browser and set theme
 if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes")
@@ -82,6 +83,48 @@ if ($al != "")
     
     // if type is download link forward to file download
     if ($result_al['type'] == "dl") header ("Location: service/mediadownload.php?dl=".url_encode($al));
+  }
+}
+
+// object access link sice version 6.1.12
+if ($oal != "" && !empty ($mgmt_config['db_connect_rdbms']))
+{
+  $objectpath_esc = rdbms_getobject ($oal);
+  
+  if ($objectpath_esc != "")
+  {
+    $accesslink['hcms_linking']['publication'] = $site = getpublication ($objectpath_esc);
+    $accesslink['hcms_linking']['cat'] = getcategory ($site, $objectpath_esc);
+    $objectpath = deconvertpath ($objectpath_esc, "file");
+    
+    if (getobject ($objectpath) == ".folder")
+    {
+      $accesslink['hcms_linking']['location'] = getlocation ($objectpath);
+      $accesslink['hcms_linking']['object'] = "";
+      $accesslink['hcms_linking']['type'] = "Folder";
+    }
+    else
+    {
+      $accesslink['hcms_linking']['location'] = getlocation ($objectpath);
+      $accesslink['hcms_linking']['object'] = getobject ($objectpath);
+      $accesslink['hcms_linking']['type'] = "Object";
+    }
+
+    // publication management config
+    if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    
+    // is user is set for accesslinks
+    if (!empty ($mgmt_config[$site]['accesslinkuser']))
+    {
+      $accesslinkuser = $mgmt_config[$site]['accesslinkuser'];
+      
+      // get user data
+      $user = "sys";
+      $userdata = getuserinformation ();
+      
+      // get user hashcode
+      if (!empty ($userdata[$site][$accesslinkuser]['hashcode'])) $userhash = $userdata[$site][$accesslinkuser]['hashcode'];
+    }
   }
 }
 
@@ -285,13 +328,18 @@ if (checkuserip (getuserip ()) == true)
       setsession ('hcms_linking', $login_result['hcms_linking']);
       setsession ('hcms_temp_explorerview', "medium");
     }
+    elseif (!empty ($accesslink['hcms_linking']) && is_array ($accesslink['hcms_linking']))
+    {
+      setsession ('hcms_linking', $accesslink['hcms_linking']);
+      setsession ('hcms_temp_explorerview', "medium");
+    }
     else
     {
       setsession ('hcms_linking', Null);
     }
     
-    // user hash is only provided for assetbrowser
-    if (!empty ($userhash))
+    // user hash is provided for the assetbrowser or object access links
+    if (!empty ($userhash) && empty ($oal))
     {
       // set assetbrowser mode information in session
       setsession ('hcms_assetbrowser', true);

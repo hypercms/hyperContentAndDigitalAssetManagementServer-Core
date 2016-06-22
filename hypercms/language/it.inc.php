@@ -1382,4 +1382,5 @@ $hcms_lang['redo']['it'] = "Ripeti";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['it'] = "Selezionare un utensile al fine di aggiungere un'annotazione";
 $hcms_lang['translate']['it'] = "Tradurre";
 $hcms_lang['enable-languages-for-translation']['it'] = "Abilitata lingue per la traduzione";
+$hcms_lang['user-for-access-links']['it'] = "Utente per accedere ai link";
 ?>

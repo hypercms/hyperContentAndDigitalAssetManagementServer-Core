@@ -1383,4 +1383,5 @@ $hcms_lang['redo']['he'] = "לחזור";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['he'] = "בחר כלי כדי להוסיף הערה";
 $hcms_lang['translate']['he'] = "לתרגם";
 $hcms_lang['enable-languages-for-translation']['he'] = "מאופשר שפות עבור תרגום";
+$hcms_lang['user-for-access-links']['he'] = "המשתמש עבור גישה קישורים";
 ?>

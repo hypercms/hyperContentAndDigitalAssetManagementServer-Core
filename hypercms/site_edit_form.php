@@ -303,6 +303,38 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td nowrap="nowrap"> <input type="text" name="setting[mailserver]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['mailserver']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr align="left" valign="top"> 
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['user-for-access-links'][$lang]); ?>: </td>
+      <td nowrap="nowrap">
+        <select name="setting[accesslinkuser]" style="width:350px;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>>
+          <option value=""><?php echo $hcms_lang['please-select-a-user'][$lang]; ?></option>
+        <?php
+        // user information
+        $user_array = getuserinformation ();
+        $user_option = array();
+        
+        if (is_array ($user_array) && sizeof ($user_array) > 0)
+        {
+          foreach ($user_array[$site_name] as $login=>$value)
+          {
+            if (@$mgmt_config[$site_name]['accesslinkuser'] == $login) $selected = "selected=\"selected\"";
+            else $selected = "";
+            
+            $text = "";
+            if ($value['realname'] != "") $text .= $login." (".$value['realname'].")";            
+            if (!isset ($user_option[$text])) $user_option[$text] = "";
+  
+            $user_option[$text] .= "
+            <option value=\"".$login."\" ".$selected.">".$text."</option>";
+          }
+          
+          ksort ($user_option, SORT_STRING | SORT_FLAG_CASE);
+          echo implode ("", $user_option);
+        }
+        ?>
+        </select>
+      </td>
+    </tr>  
+    <tr align="left" valign="top"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['disable-special-characters-in-object-names'][$lang]); ?>: </td>
       <td nowrap="nowrap"> <input type="checkbox" name="setting[specialchr_disable]" value="true" <?php if (@$mgmt_config[$site_name]['specialchr_disable'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>

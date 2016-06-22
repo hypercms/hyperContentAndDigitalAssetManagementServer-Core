@@ -1382,4 +1382,5 @@ $hcms_lang['redo']['th'] = "ทำซ้ำ";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['th'] = "เลือกเครื่องมือในการสั่งซื้อเพื่อเพิ่มคำอธิบายประกอบ";
 $hcms_lang['translate']['th'] = "แปล";
 $hcms_lang['enable-languages-for-translation']['th'] = "การเปิดใช้งานภาษาสำหรับการแปล";
+$hcms_lang['user-for-access-links']['th'] = "ผู้ใช้สำหรับการเข้าใช้ลิงค์";
 ?>

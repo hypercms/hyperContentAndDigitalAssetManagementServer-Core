@@ -1382,4 +1382,5 @@ $hcms_lang['redo']['hu'] = "Újra.";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['hu'] = "Válassza ki a berendezés annak érdekében, hogy hozzá egy jegyzetet.";
 $hcms_lang['translate']['hu'] = "Fordítás";
 $hcms_lang['enable-languages-for-translation']['hu'] = "A fordítási nyelvek bekapcsolása";
+$hcms_lang['user-for-access-links']['hu'] = "A felhasználó hozzáférési kapcsolatok";
 ?>

@@ -1382,4 +1382,5 @@ $hcms_lang['redo']['ko'] = "다시 실행";
 $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ko'] = "도구의 순서 주석 추가";
 $hcms_lang['translate']['ko'] = "번역";
 $hcms_lang['enable-languages-for-translation']['ko'] = "번역 사용 언어";
+$hcms_lang['user-for-access-links']['ko'] = "액세스 사용자";
 ?>
