@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ko'] = "도구의 순
 $hcms_lang['translate']['ko'] = "번역";
 $hcms_lang['enable-languages-for-translation']['ko'] = "번역 사용 언어";
 $hcms_lang['user-for-access-links']['ko'] = "액세스 사용자";
+$hcms_lang['read-only-content']['ko'] = "읽기 전용 콘텐츠";
 ?>

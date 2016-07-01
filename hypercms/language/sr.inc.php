@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['sr'] = "Odaberite sre
 $hcms_lang['translate']['sr'] = "Prevodi";
 $hcms_lang['enable-languages-for-translation']['sr'] = "5 jezika za prevod";
 $hcms_lang['user-for-access-links']['sr'] = "Korisnik internet linkovi";
+$hcms_lang['read-only-content']['sr'] = "Pročitajte-samo sadržaj";
 ?>

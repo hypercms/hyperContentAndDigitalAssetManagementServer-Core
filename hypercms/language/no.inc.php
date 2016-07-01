@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['no'] = "Velg et verkt
 $hcms_lang['translate']['no'] = "Oversette";
 $hcms_lang['enable-languages-for-translation']['no'] = "Aktivert språk for oversettelse";
 $hcms_lang['user-for-access-links']['no'] = "Bruker for tilgang til koblinger";
+$hcms_lang['read-only-content']['no'] = "Skrivebeskyttet innhold";
 ?>

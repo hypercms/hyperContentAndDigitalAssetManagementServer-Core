@@ -568,7 +568,7 @@ function rdbms_setpublicationtaxonomy ($site, $recreate=false)
   if (!empty ($mgmt_config[$site]['taxonomy']))
   {
     // remove all taxonomy entries from publication
-    if ($recreate == true) rdbms_deletepublicationtaxonomy ($site);
+    if ($recreate == true) rdbms_deletepublicationtaxonomy ($site, true);
     
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
@@ -1049,7 +1049,7 @@ function rdbms_deletecontent ($site, $container_id, $text_id)
 
 // ------------------------------------------ delete taxonomy of a publication --------------------------------------------
 
-function rdbms_deletepublicationtaxonomy ($site)
+function rdbms_deletepublicationtaxonomy ($site, $force=false)
 {
   global $mgmt_config;
   
@@ -1059,8 +1059,8 @@ function rdbms_deletepublicationtaxonomy ($site)
     require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
   }
   
-  // if taxonomy is enabled
-  if (!empty ($mgmt_config[$site]['taxonomy']))
+  // if taxonomy is disabled
+  if (empty ($mgmt_config[$site]['taxonomy']) || $force == true)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     

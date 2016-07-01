@@ -1987,8 +1987,8 @@ function checkusersession ($user="sys", $CSRF_detection=true)
   // unauth. access
   if ($alarm == true)
   {
-    //echo showinfopage ("Unauthorized Access!", "en", "top.location='".$mgmt_config['url_path_cms']."userlogout.php';");
-    //exit;
+    echo showinfopage ("Unauthorized Access!", "en", "top.location='".$mgmt_config['url_path_cms']."userlogout.php';");
+    exit;
   }
   // auth. access
   else return true; 

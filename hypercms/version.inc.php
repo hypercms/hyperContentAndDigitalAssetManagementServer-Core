@@ -1619,6 +1619,23 @@ Release 07/2016
 - Implementation of object access links support in userlogin
 - Bug fix: Search has not been executed if accesslinks have been used
 - Updates in all languages files
+- Bug fix: JS function isNewComment in template engine did notz verify if rich text editor instance exists before writing the content into the textarea
+- Implementation of new template variable %object_id% in template engine
+- Implementation of date and time and publication access of user to each chat entry
+- Implementation of new presentation logic of chat in order to show only messages based on the users publication access
+- Bug fix: Function link_db_restore of Link API did not have access to user
+- Bug fix: Function link_db_restore was notz able to access working content container due to wrong verification
+- Implementation of new function valid_tagname in XML API
+- Implementation of sys-user support in function loadcontainer
+- Implementation of tag name verification in all write functions of XML API
+- Implementation of new readonly attribute in template engine for all hyperCMS tags
+- Implementation of user name as input parameter for function getsearchhistory
+- Implementation uf user based search history filtering in all search forms
+- Improvements in image gallery templates in the installation folder
+- Implementation of file-attribute for hyperCMS textl tag that supports list entries based on a taxonomy
+- Implementation of folder structure support for list-attribute of hyperCMS textk and textl tags
+- Changed order of values of list and file attributes for list and keywords fields
+- Implementation of new input parameter force for function rdbms_deletepublicationtaxonomy
 */
 
 // current version

@@ -1384,4 +1384,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['bg'] = "Избере�
 $hcms_lang['translate']['bg'] = "Привеждам";
 $hcms_lang['enable-languages-for-translation']['bg'] = "Активиран езици за превод";
 $hcms_lang['user-for-access-links']['bg'] = "Потребител за достъп връзки";
+$hcms_lang['read-only-content']['bg'] = "Само за четене съдържание";
 ?>

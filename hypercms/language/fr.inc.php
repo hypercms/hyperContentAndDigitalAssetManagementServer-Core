@@ -1384,4 +1384,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['fr'] = "Sélectionnez
 $hcms_lang['translate']['fr'] = "Traduire";
 $hcms_lang['enable-languages-for-translation']['fr'] = "Activé langues pour la traduction";
 $hcms_lang['user-for-access-links']['fr'] = "Utilisateur pour accéder aux liens";
+$hcms_lang['read-only-content']['fr'] = "Le contenu en lecture seule";
 ?>

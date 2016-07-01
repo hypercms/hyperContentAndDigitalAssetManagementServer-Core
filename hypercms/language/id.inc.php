@@ -1384,4 +1384,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['id'] = "Pilih sebuah 
 $hcms_lang['translate']['id'] = "Menerjemahkan";
 $hcms_lang['enable-languages-for-translation']['id'] = "Bahasa yang berkemampuan untuk penerjemahan";
 $hcms_lang['user-for-access-links']['id'] = "Untuk pengguna mengakses link";
+$hcms_lang['read-only-content']['id'] = "Konten hanya-baca";
 ?>

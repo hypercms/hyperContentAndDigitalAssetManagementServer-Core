@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['cz'] = "Vyberte nást
 $hcms_lang['translate']['cz'] = "Translate";
 $hcms_lang['enable-languages-for-translation']['cz'] = "Aktivní jazyků pro překlad";
 $hcms_lang['user-for-access-links']['cz'] = "Uživatel pro přístup odkazy";
+$hcms_lang['read-only-content']['cz'] = "Pouze ke čtení obsahu";
 ?>

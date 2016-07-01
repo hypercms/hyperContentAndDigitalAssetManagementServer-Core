@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['sk'] = "Vyberte nást
 $hcms_lang['translate']['sk'] = "Na nebesá";
 $hcms_lang['enable-languages-for-translation']['sk'] = "Povolené jazyky pre preklad";
 $hcms_lang['user-for-access-links']['sk'] = "Užívateľa pre prístup k prepojeniam";
+$hcms_lang['read-only-content']['sk'] = "Iba na čítanie obsahu";
 ?>

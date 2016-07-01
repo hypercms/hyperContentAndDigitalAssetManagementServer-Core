@@ -75,7 +75,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     </tr>
     <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['text-option-from-text-list'][$lang]); ?></td>
-      <td class="hcmsRowData1">[hyperCMS:textl id='...' list='...']</td>
+      <td class="hcmsRowData1">[hyperCMS:textl id='...' list='...' file='...']</td>
     </tr>
     <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['checkbox'][$lang]); ?></td>
@@ -87,7 +87,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     </tr>
     <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['keywords-with-optional-mandatory-or-open-list'][$lang]); ?></td>
-      <td class="hcmsRowData1">[hyperCMS:textk id='...' list='...' file='...' onlylist=1/0]</td>
+      <td class="hcmsRowData1">[hyperCMS:textk id='...' list='...' file='...' onlylist='yes/no']</td>
     </tr>
     <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['display-name-optional'][$lang]); ?></td>
@@ -100,6 +100,10 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['hide-content-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">onPublish='hidden'</td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['read-only-content'][$lang]); ?></td>
+      <td class="hcmsRowData1">readonly='readonly'</td>
     </tr>
     <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['width-of-editorfield-in-pixel-optional'][$lang]); ?></td>

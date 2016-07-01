@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ar'] = "حدد ادا
 $hcms_lang['translate']['ar'] = "ترجمة";
 $hcms_lang['enable-languages-for-translation']['ar'] = "تمكين لغات للترجمة";
 $hcms_lang['user-for-access-links']['ar'] = "المستخدم ارتباطات الوصول";
+$hcms_lang['read-only-content']['ar'] = "محتوى للقراءة فقط";
 ?>

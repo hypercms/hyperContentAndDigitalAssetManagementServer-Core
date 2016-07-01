@@ -13,6 +13,30 @@
 // function getcontent, selectcontent, getxmlcontent, selectxmlcontent will return an array
 // function setcontent, addcontent, updatecontent, deletecontent will return a XML-string in a single variable
 
+
+// ------------------------------------ valid_tagname ----------------------------------------------
+
+// function: valid_tagname()
+// input: tag name
+// output: true / false on error
+
+// description:
+// Verifies a tag name
+
+function valid_tagname ($tagname)
+{
+  if ($tagname != "")
+  {
+    $start = substr_count ($tagname, "<");
+    $end = substr_count ($tagname, ">");
+    $total = $start + $end;
+    
+    if ($total == 0 || $total == 2) return true;
+    else return false;
+  }
+  else return true;
+}
+
 // ------------------------------------ setxmlparameter ----------------------------------------------
 
 // function: setxmlparameter()
@@ -1222,7 +1246,7 @@ function deleteicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag="", $condvalue="")
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
+  if (!valid_tagname ($startparenttagname) || !valid_tagname ($starttagname) || !valid_tagname ($startcondtag) || $xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -1308,7 +1332,7 @@ function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, 
 function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag, $condvalue)
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
+  if (!valid_tagname ($startparenttagname) || !valid_tagname ($starttagname) || !valid_tagname ($startcondtag) || $xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -1398,7 +1422,7 @@ function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew,
 function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $contentnew, $startcondtag="", $condvalue="")
 {
   // if filedata contains no content
-  if ($xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
+  if (!valid_tagname ($startparenttagname) || !valid_tagname ($starttagname) || !valid_tagname ($startcondtag) || $xmldata == "" || $starttagname == "" || !is_string ($xmldata) || !is_string ($starttagname))
   {
     return false;
   }
@@ -1495,7 +1519,7 @@ function updatecontent ($xmldata, $xmlnode, $xmlnodenew)
 function insertcontent ($xmldata, $insertxmldata, $starttagname)
 {
   // if variables contain no content
-  if ($xmldata == "" || $insertxmldata == "" || !is_string ($xmldata) || !is_string ($insertxmldata))
+  if (!valid_tagname ($starttagname) || $xmldata == "" || $insertxmldata == "" || !is_string ($xmldata) || !is_string ($insertxmldata))
   {
     return false;
   }
@@ -1546,7 +1570,7 @@ function insertcontent ($xmldata, $insertxmldata, $starttagname)
 function inserticontent ($xmldata, $insertxmldata, $starttagname)
 {  
   // if variables contain no content
-  if ($xmldata == "" || $insertxmldata == "" || !is_string ($xmldata) || !is_string ($insertxmldata))
+  if (!valid_tagname ($starttagname) || $xmldata == "" || $insertxmldata == "" || !is_string ($xmldata) || !is_string ($insertxmldata))
   {
     return false;
   }
@@ -1608,7 +1632,7 @@ function inserticontent ($xmldata, $insertxmldata, $starttagname)
 function addcontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, $condvalue, $startparenttagname, $starttagname, $contentnew)
 {
   // if variables contain no content
-  if ($xmldata == "" || $sub_xmldata == "" || !is_string ($xmldata) || !is_string ($sub_xmldata))
+  if (!valid_tagname ($startgrandtagname) || !valid_tagname ($startparenttagname) || !valid_tagname ($starttagname) || !valid_tagname ($startcondtag) || $xmldata == "" || $sub_xmldata == "" || !is_string ($xmldata) || !is_string ($sub_xmldata))
   {
     return false;
   }
@@ -1703,7 +1727,7 @@ function addcontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, 
 function addicontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, $condvalue, $startparenttagname, $starttagname, $contentnew)
 {
   // if variables contain no content
-  if ($xmldata == "" || $sub_xmldata == "" || !is_string ($xmldata) || !is_string ($sub_xmldata))
+  if (!valid_tagname ($startgrandtagname) || !valid_tagname ($startparenttagname) || !valid_tagname ($starttagname) || !valid_tagname ($startcondtag) || $xmldata == "" || $sub_xmldata == "" || !is_string ($xmldata) || !is_string ($sub_xmldata))
   {
     return false;
   }

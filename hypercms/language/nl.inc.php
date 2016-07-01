@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['nl'] = "Selecteer een
 $hcms_lang['translate']['nl'] = "Vertaal";
 $hcms_lang['enable-languages-for-translation']['nl'] = "Enabled talen voor vertaling";
 $hcms_lang['user-for-access-links']['nl'] = "Gebruiker voor toegang links";
+$hcms_lang['read-only-content']['nl'] = "Alleen-lezen inhoud";
 ?>

@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['pl'] = "Wybierz narz�
 $hcms_lang['translate']['pl'] = "Przetłumacz";
 $hcms_lang['enable-languages-for-translation']['pl'] = "Języki włączona do tłumaczenia";
 $hcms_lang['user-for-access-links']['pl'] = "Użytkownik Łącza dostępowe";
+$hcms_lang['read-only-content']['pl'] = "Tylko do odczytu zawartości";
 ?>

@@ -279,10 +279,10 @@ function getescapedtext ($text, $charset="", $lang="")
 
 // ----------------------------------------- getsearchhistory ------------------------------------------
 // function: getsearchhistory()
-// input: %
+// input: user name (optional)
 // output: array holding all expressions of the search history / false on error
 
-function getsearchhistory ()
+function getsearchhistory ($user="")
 {
   global $mgmt_config;
 
@@ -299,9 +299,9 @@ function getsearchhistory ()
       {
         if (substr_count ($record, "|") > 0)
         {
-          list ($date, $user, $keyword_add) = explode ("|", $record);
+          list ($date, $searchuser, $keyword_add) = explode ("|", $record);
     
-          $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
+          if ($searchuser == $user || $user == "") $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
         }
       }
       

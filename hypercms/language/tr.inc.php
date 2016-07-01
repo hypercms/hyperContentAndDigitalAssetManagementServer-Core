@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['tr'] = "Bir takım, b
 $hcms_lang['translate']['tr'] = "Translate";
 $hcms_lang['enable-languages-for-translation']['tr'] = "Özellikli diller çeviri için";
 $hcms_lang['user-for-access-links']['tr'] = "Kullanıcı için erişim linkler";
+$hcms_lang['read-only-content']['tr'] = "Yalnızca içerik";
 ?>

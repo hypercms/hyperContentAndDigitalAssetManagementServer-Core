@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['hi'] = "एक औज
 $hcms_lang['translate']['hi'] = "अनुवाद";
 $hcms_lang['enable-languages-for-translation']['hi'] = "भाषाओं में अनुवाद करने के लिए सक्षम है";
 $hcms_lang['user-for-access-links']['hi'] = "उपयोगकर्ता की पहुंच के लिए सम्पर्क";
+$hcms_lang['read-only-content']['hi'] = "केवल पढ़ने के लिए सामग्री";
 ?>

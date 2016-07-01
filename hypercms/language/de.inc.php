@@ -1385,4 +1385,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['de'] = "Wählen Sie e
 $hcms_lang['translate']['de'] = "Übersetzen";
 $hcms_lang['enable-languages-for-translation']['de'] = "Sprachen für die Übersetzung freigeben";
 $hcms_lang['user-for-access-links']['de'] = "Benutzer für Zugriff-Links";
+$hcms_lang['read-only-content']['de'] = "Schreibgeschützte Inhalte";
 ?>

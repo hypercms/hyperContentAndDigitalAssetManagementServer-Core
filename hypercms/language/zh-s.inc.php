@@ -1384,4 +1384,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['zh-s'] = "选择一�
 $hcms_lang['translate']['zh-s'] = "翻译";
 $hcms_lang['enable-languages-for-translation']['zh-s'] = "启用的语言翻译";
 $hcms_lang['user-for-access-links']['zh-s'] = "用户的访问链接。";
+$hcms_lang['read-only-content']['zh-s'] = "只读的内容。";
 ?>

@@ -3586,8 +3586,8 @@ function loadcontainer ($container, $type="work", $user)
       // get container info
       $container_info = getcontainername ($container);
   
-      // try to load container if it is locked by another user and current user is superadmin
-      if ($type == "work" && !empty ($_SESSION['hcms_superadmin']) && $_SESSION['hcms_superadmin'] == 1 && !empty ($container_info['container']) && is_file ($location.$container_info['container']))
+      // try to load container if it is locked by another user and current user is superadmin or sys-user
+      if ($type == "work" && ($user == "sys" || !empty ($_SESSION['hcms_superadmin']) && $_SESSION['hcms_superadmin'] == 1) && !empty ($container_info['container']) && is_file ($location.$container_info['container']))
       {
         $contentdata = loadfile ($location, $container_info['container']);
       }

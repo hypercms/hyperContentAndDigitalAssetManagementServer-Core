@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ro'] = "Selectaţi un
 $hcms_lang['translate']['ro'] = "Traducere";
 $hcms_lang['enable-languages-for-translation']['ro'] = "Activat limbi pentru traducere";
 $hcms_lang['user-for-access-links']['ro'] = "Utilizator pentru acces links";
+$hcms_lang['read-only-content']['ro'] = "Continutul doar în citire";
 ?>

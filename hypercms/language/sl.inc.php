@@ -1382,4 +1382,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['sl'] = "Izberite orod
 $hcms_lang['translate']['sl'] = "Prevajanje";
 $hcms_lang['enable-languages-for-translation']['sl'] = "Omogočeni jeziki za prevajanje";
 $hcms_lang['user-for-access-links']['sl'] = "Uporabnik za dostop povezave";
+$hcms_lang['read-only-content']['sl'] = "Samo za branje vsebine";
 ?>

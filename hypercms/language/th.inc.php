@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['th'] = "เลือ�
 $hcms_lang['translate']['th'] = "แปล";
 $hcms_lang['enable-languages-for-translation']['th'] = "การเปิดใช้งานภาษาสำหรับการแปล";
 $hcms_lang['user-for-access-links']['th'] = "ผู้ใช้สำหรับการเข้าใช้ลิงค์";
+$hcms_lang['read-only-content']['th'] = "เนื้อหาแบบอ่านอย่างเดียว";
 ?>

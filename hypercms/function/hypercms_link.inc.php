@@ -11,7 +11,7 @@
 
 // ----------------------------------------- link_db_restore ---------------------------------------------
 // function: link_db_restore()
-// input: publication name (optinal)
+// input: publication name (optional)
 // output: true / false on error
 // requires: hypercms_api.inc.php, config.inc.php
 
@@ -28,27 +28,26 @@ function link_db_restore ($site="")
     $loc = $mgmt_config['abs_path_data']."content/";
     
     // 1 st level (content container blocks)
-    $publdir = opendir ($loc);
+    $blockdir = opendir ($loc);
     
     $i = 0;    
     $time_1 = time();
     $link_db_entry = null;
-    
+
     // browse all containers in content repository
-    while ($container = readdir ($publdir))
+    while ($block = readdir ($blockdir))
     {
-      if (is_dir ($loc.$container) && $container != "." && $container != ".." && is_numeric ($container))
+      if (is_dir ($loc.$block) && $block != "." && $block != ".." && is_numeric ($block))
       {
         // 2nd level (specific content container folder)
-        $contdir = opendir ($loc.$container);
+        $contdir = opendir ($loc.$block);
         
-        while ($file = readdir ($contdir))
+        while ($container_id = readdir ($contdir))
         {
-          if (@is_file ($loc.$container."/".$file) && substr_count ($file, $container.".xml.wrk") == 1 && strpos ($file, ".bak") == 0)
+          if (is_dir ($loc.$block."/".$container_id))
           {
             // update page links
-            $container = getcontainername ($container);
-            $contentdata = loadcontainer ($container, "work", $user);     
+            $contentdata = loadcontainer ($container_id, "work", "sys");     
             
             if ($contentdata != false) 
             {
@@ -56,7 +55,7 @@ function link_db_restore ($site="")
             
               // extract publication vom origin location of the object
               $objorigin_array = getcontent ($contentdata, "<contentorigin>");
-              $objref_array = getcontent ($contentdata, "<contentobjects>"); 
+              $objref_array = getcontent ($contentdata, "<contentobjects>");
               
               $publication1 = getpublication ($objorigin_array[0]);
               $publication2 = getpublication ($objref_array[0]);
@@ -72,21 +71,24 @@ function link_db_restore ($site="")
                 elseif (!in_array ($publication, $publication_array)) $publication_array[] = $publication;
                 
                 // container reference
-                $link_db_entry[$publication] .= "\n".$container.".xml:|";
+                $link_db_entry[$publication] .= "\n".$container_id.".xml:|";
                 
                 // object references
                 $link_db_entry[$publication] .= $objref_array[0].":|";
                 
                 // page references
-                $linkobj_array = getcontent ($contentdata, "<link>");         
+                $linkobj_array = getcontent ($contentdata, "<link>");
                 
                 if (is_array ($linkobj_array) && sizeof ($linkobj_array) > 0)
                 {
                   foreach ($linkobj_array as $linkobj)  
                   {
                     $link_href = getcontent ($linkobj, "<linkhref>");
-                      
-                    $link_db_entry[$publication] .= $link_href[0]."|";
+                    
+                    if (!empty ($link_href[0]))
+                    {
+                      $link_db_entry[$publication] .= $link_href[0]."|";
+                    }
                   }
                 }
                 
@@ -98,18 +100,49 @@ function link_db_restore ($site="")
                   foreach ($compobj_array as $compobj)  
                   {
                     $component_files = getcontent ($compobj, "<componentfiles>");
-                    $component_files = trim ($component_files[0]);
                     
-                    // if multi component
-                    if (@substr_count ($component_files, "|") >= 1)
+                    if (!empty ($component_files[0]))
                     {
-                      if ($component_files[strlen ($component_files)-1] == "|")
-                      { 
-                        $component_files = substr ($component_files, 0, strlen ($component_files)-1);
+                      $component_files = trim ($component_files[0]);
+                      
+                      // if multi component
+                      if (@substr_count ($component_files, "|") >= 1)
+                      {
+                        if ($component_files[strlen ($component_files)-1] == "|")
+                        { 
+                          $component_files = substr ($component_files, 0, strlen ($component_files)-1);
+                        }
                       }
+                      
+                      if ($component_files != "") $link_db_entry[$publication] .= $component_files."|"; 
                     }
+                  }
+                }
+                
+                // media references     
+                $mediaobj_array = getcontent ($contentdata, "<media>");   
+                
+                if (is_array ($mediaobj_array) && sizeof ($mediaobj_array) > 0)
+                {      
+                  foreach ($mediaobj_array as $mediaobj)  
+                  {
+                    $media_files = getcontent ($mediaobj, "<mediaobject>");
                     
-                    if ($component_files != "") $link_db_entry[$publication] .= $component_files."|"; 
+                    if (!empty ($media_files[0]))
+                    {
+                      $media_files = trim ($media_files[0]);
+                      
+                      // if multi component
+                      if (@substr_count ($component_files, "|") >= 1)
+                      {
+                        if ($media_files[strlen ($media_files)-1] == "|")
+                        { 
+                          $media_files = substr ($media_files, 0, strlen ($media_files)-1);
+                        }
+                      }
+                      
+                      if ($media_files != "") $link_db_entry[$publication] .= $media_files."|"; 
+                    }
                   }
                 }
               }
@@ -121,7 +154,7 @@ function link_db_restore ($site="")
       }
     }
     
-    closedir ($publdir);
+    closedir ($blockdir);
     
     $time_2 = time();    
     $duration = $time_2 - $time_1;    
@@ -143,7 +176,7 @@ function link_db_restore ($site="")
         else
         {
           $errcode = "10810";
-          $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|$errcode|could not regernate and save link index for publication '".$publication."' (execution time: ".$duration." sec)";
+          $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|$errcode|could not regenerate and save link index for publication '".$publication."' (execution time: ".$duration." sec)";
         }                  
       }
       

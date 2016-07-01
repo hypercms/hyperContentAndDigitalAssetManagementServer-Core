@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['fi'] = "Valitse työk
 $hcms_lang['translate']['fi'] = "Translate";
 $hcms_lang['enable-languages-for-translation']['fi'] = "Käytössä käännöskielistä";
 $hcms_lang['user-for-access-links']['fi'] = "Käyttäjää pyydetään suurhävikkisten etäkäyttölinkkien vaikutusta";
+$hcms_lang['read-only-content']['fi'] = "Vain luku -sisältö";
 ?>

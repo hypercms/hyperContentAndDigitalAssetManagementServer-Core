@@ -157,7 +157,7 @@ $(document).ready(function()
 {
   // search history
   <?php
-  $keywords = getsearchhistory();
+  $keywords = getsearchhistory($user);
   ?>
   var available_expressions = [<?php echo implode (",\n", $keywords); ?>];
 

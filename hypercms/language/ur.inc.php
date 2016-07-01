@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ur'] = "منتخب ٹ
 $hcms_lang['translate']['ur'] = "ترجمہ کرنا";
 $hcms_lang['enable-languages-for-translation']['ur'] = "کی بدولت زبانیں کے ترجمہ";
 $hcms_lang['user-for-access-links']['ur'] = "صارف کی رسائی روابط";
+$hcms_lang['read-only-content']['ur'] = "فقط مطالعہ مشمول";
 ?>

@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['ja'] = "ツールを�
 $hcms_lang['translate']['ja'] = "変換";
 $hcms_lang['enable-languages-for-translation']['ja'] = "翻訳のために有効になっている言語";
 $hcms_lang['user-for-access-links']['ja'] = "リンクにアクセスするためのユーザー";
+$hcms_lang['read-only-content']['ja'] = "読み取り専用のコンテンツ";
 ?>

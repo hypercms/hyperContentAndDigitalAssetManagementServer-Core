@@ -1449,7 +1449,7 @@ else
     
       // search history
       <?php
-      $keywords = getsearchhistory ();
+      $keywords = getsearchhistory ($user);
       ?>
       var available_expressions = [<?php if (is_array ($keywords)) echo implode (",\n", $keywords); ?>];
     

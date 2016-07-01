@@ -1383,4 +1383,5 @@ $hcms_lang['select-a-tool-in-order-to-add-an-annotation']['bn'] = "একটি 
 $hcms_lang['translate']['bn'] = "অনুবাদ";
 $hcms_lang['enable-languages-for-translation']['bn'] = "ভাষার জন্য অনুকূল অনুবাদ";
 $hcms_lang['user-for-access-links']['bn'] = "ওয়েব প্রবেশের জন্য ইউজার";
+$hcms_lang['read-only-content']['bn'] = "পাঠ-শুধু কনটেন্ট";
 ?>

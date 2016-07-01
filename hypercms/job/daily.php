@@ -67,7 +67,7 @@ if (sizeof ($config_files) > 0)
           // ---------------------------------------------- UPDATE TAXONOMY ----------------------------------------------
           
           // remove taxonomies from DB
-          if (function_exists ("rdbms_deletepublicationtaxonomy")) rdbms_deletepublicationtaxonomy ($site);
+          if (function_exists ("rdbms_deletepublicationtaxonomy")) rdbms_deletepublicationtaxonomy ($site, false);
 
           // set taxonomies in DB
           if (function_exists ("rdbms_setpublicationtaxonomy")) rdbms_setpublicationtaxonomy ($site, false);
