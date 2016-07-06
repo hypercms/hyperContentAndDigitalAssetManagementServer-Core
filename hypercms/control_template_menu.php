@@ -311,57 +311,22 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
           <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
           <?php
-          $dir_template = @dir ($mgmt_config['abs_path_template'].$site."/");
-
-          $i = 0;
-          $template_files = array();
           $template_option_edit = array();
 
-          if ($dir_template != false)
+          $template_files = getlocaltemplates ($site, $cat);
+
+          if (sizeof ($template_files) >= 1)
           {
-            while ($entry = $dir_template->read())
+            foreach ($template_files as $value)
             {
-              if ($entry != "." && $entry != ".." && !is_dir ($entry) && substr_count ($entry, ".tpl.v_") == 0 && substr_count ($entry, ".bak") == 0)
-              {
-                if ($cat == "page" && strpos ($entry, ".page.tpl") > 0)
-                {
-                  $template_files[$i] = $entry;
-                }
-                elseif ($cat == "comp" && strpos ($entry, ".comp.tpl") > 0)
-                {
-                  $template_files[$i] = $entry;
-                }
-                elseif ($cat == "meta" && strpos ($entry, ".meta.tpl") > 0)
-                {
-                  $template_files[$i] = $entry;
-                }                
-                elseif ($cat == "inc" && strpos ($entry, ".inc.tpl") > 0)
-                {
-                  $template_files[$i] = $entry;
-                }
-
-                $i++;
-              }
-            }
-
-            $dir_template->close();
-
-            if (sizeof ($template_files) >= 1)
-            {
-               sort ($template_files);
-               reset ($template_files);
-
-               foreach ($template_files as $value)
-               {
-                 if ($cat == "inc" || strpos ($value, ".inc.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".inc.tpl"));
-                 elseif ($cat == "page" || strpos ($value, ".page.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".page.tpl"));
-                 elseif ($cat == "comp" || strpos ($value, ".comp.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".comp.tpl"));
-                 elseif ($cat == "meta" || strpos ($value, ".meta.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".meta.tpl"));
-
-                 if ($value != "default.meta.tpl") echo "<option value=\"template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($value)."\">".$tpl_name."</option>\n";
-
-                 $template_option_edit[] = "<option value=\"frameset_template_edit.php?site=".url_encode($site)."&cat=".url_encode($cat)."&save=no&template=".url_encode($value)."\">".$tpl_name."</option>\n";
-               }
+              if ($cat == "inc" || strpos ($value, ".inc.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".inc.tpl"));
+              elseif ($cat == "page" || strpos ($value, ".page.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".page.tpl"));
+              elseif ($cat == "comp" || strpos ($value, ".comp.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".comp.tpl"));
+              elseif ($cat == "meta" || strpos ($value, ".meta.tpl") > 0) $tpl_name = substr ($value, 0, strpos ($value, ".meta.tpl"));
+  
+              if ($value != "default.meta.tpl") echo "<option value=\"template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($value)."\">".$tpl_name."</option>\n";
+  
+              $template_option_edit[] = "<option value=\"frameset_template_edit.php?site=".url_encode($site)."&cat=".url_encode($cat)."&save=no&template=".url_encode($value)."\">".$tpl_name."</option>\n";
             }
           }
           ?>

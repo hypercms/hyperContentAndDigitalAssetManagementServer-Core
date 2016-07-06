@@ -490,3 +490,23 @@ hr
   color: #0ACA03;
   background-color: #8EA9EC;
 }
+
+.hcmsRowHead1
+{
+  background-color: #42B551;
+}
+
+.hcmsRowHead2
+{
+  background-color: #94CE9C;
+}
+
+.hcmsRowData1
+{
+  background-color: #B7CFF4;
+}
+
+.hcmsRowData2
+{
+  background-color: #C7D9F5;
+}

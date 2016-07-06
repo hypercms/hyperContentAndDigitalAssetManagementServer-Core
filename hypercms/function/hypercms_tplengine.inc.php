@@ -7783,15 +7783,6 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
           // get format (if date)
           $format = getattribute ($hypertag, "format");
           if ($format == "") $format = "%Y-%m-%d";
-          
-          // get readonly attribute
-          $readonly = getattribute ($hypertag, "readonly");
-          
-          if ($buildview != "formlock")
-          {
-            if ($readonly != false) $disabled = " disabled=\"disabled\"";
-            else $disabled = "";
-          }
 
           // get group access
           $groupaccess = getattribute ($hypertag, "groups");

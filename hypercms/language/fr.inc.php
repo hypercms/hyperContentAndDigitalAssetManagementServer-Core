@@ -1385,4 +1385,5 @@ $hcms_lang['translate']['fr'] = "Traduire";
 $hcms_lang['enable-languages-for-translation']['fr'] = "Activé langues pour la traduction";
 $hcms_lang['user-for-access-links']['fr'] = "Utilisateur pour accéder aux liens";
 $hcms_lang['read-only-content']['fr'] = "Le contenu en lecture seule";
+$hcms_lang['reindex-content-of-all-media-files']['fr'] = "Réindexer le contenu de tous les fichiers multimédias";
 ?>

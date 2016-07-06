@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['hi'] = "अनुवाद";
 $hcms_lang['enable-languages-for-translation']['hi'] = "भाषाओं में अनुवाद करने के लिए सक्षम है";
 $hcms_lang['user-for-access-links']['hi'] = "उपयोगकर्ता की पहुंच के लिए सम्पर्क";
 $hcms_lang['read-only-content']['hi'] = "केवल पढ़ने के लिए सामग्री";
+$hcms_lang['reindex-content-of-all-media-files']['hi'] = "सभी मीडिया फ़ाइलों की सामग्री Reindex";
 ?>

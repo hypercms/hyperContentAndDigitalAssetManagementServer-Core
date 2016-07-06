@@ -49,13 +49,48 @@ if (sizeof ($config_files) > 0)
     
     if (!empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_data']))
     {
+      // ------------------------------------------- TAXONOMY DEFINITIONS -------------------------------------------
+      
+      // create taxonomy defintion files
+      if (function_exists ("createtaxonomy")) createtaxonomy (false);
+      
+      // ----------------------------------------------- DISK KEY ----------------------------------------------------
+      
+      // check disk key
+      checkdiskkey ();
+      
+      // -------------------------------------------------- TASK ----------------------------------------------------
+      
+      // send task notification to users
+      if (function_exists ("tasknotification")) tasknotification (date("Y-m-d"));
+      
+      // ------------------------------------------------ LICENSE ---------------------------------------------------
+      
+      // send license notification to users
+      if (function_exists ("licensenotification")) licensenotification ();
+
+      // ------------------------------------------------- EXPORT ---------------------------------------------------
+      
+      // export job
+      if (function_exists ("exportobjects")) exportobjects ();
+      
+      // ------------------------------------------------- IMPORT ---------------------------------------------------
+      
+      // import job
+      if (function_exists ("importobjects")) importobjects ();
+  
+      // ----------------------------------------------- CLOUD SYNC -------------------------------------------------
+      
+      // synchronize media files in repository with cloud storage
+      if (function_exists ("synccloudobjects")) synccloudobjects ("sys");
+      
+      // ------------------------------------------- FOR EACH PUBLICATION ---------------------------------------------
+      
       // load inheritance DB
       $inherit_db = inherit_db_read ();
       
       if (is_array ($inherit_db))
       {
-        // ------------------------------------------- FOR EACH PUBLICATION ---------------------------------------------
-        
         foreach ($inherit_db as $site => $array)
         {
           // load publication config if not available
@@ -63,7 +98,7 @@ if (sizeof ($config_files) > 0)
           {
             require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
           }
-          
+
           // ---------------------------------------------- UPDATE TAXONOMY ----------------------------------------------
           
           // remove taxonomies from DB
@@ -131,41 +166,6 @@ if (sizeof ($config_files) > 0)
         
         closedir ($dir);
       }
-      
-      // ----------------------------------------------- DISK KEY ----------------------------------------------------
-      
-      // check disk key
-      checkdiskkey ();
-      
-      // -------------------------------------------------- TASK ----------------------------------------------------
-      
-      // send task notification to users
-      if (function_exists ("tasknotification")) tasknotification (date("Y-m-d"));
-      
-      // ------------------------------------------------ LICENSE ---------------------------------------------------
-      
-      // send license notification to users
-      if (function_exists ("licensenotification")) licensenotification ();
-
-      // ------------------------------------------------- EXPORT ---------------------------------------------------
-      
-      // export job
-      if (function_exists ("exportobjects")) exportobjects ();
-      
-      // ------------------------------------------------- IMPORT ---------------------------------------------------
-      
-      // import job
-      if (function_exists ("importobjects")) importobjects ();
-  
-      // ----------------------------------------------- CLOUD SYNC -------------------------------------------------
-      
-      // synchronize media files in repository with cloud storage
-      if (function_exists ("synccloudobjects")) synccloudobjects ("sys");
-      
-      // ------------------------------------------- TAXONOMY DEFINITIONS -------------------------------------------
-      
-      // create taxonomy defintion files
-      if (function_exists ("createtaxonomy")) createtaxonomy (false);
     }
   }
 }

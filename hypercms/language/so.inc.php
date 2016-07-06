@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['so'] = "U bedel Ingirisi";
 $hcms_lang['enable-languages-for-translation']['so'] = "Afafka Suuragelisay fasiraadii,";
 $hcms_lang['user-for-access-links']['so'] = "Uu bixiyo isticmaalaha adeegga inay isticmaalaan links,";
 $hcms_lang['read-only-content']['so'] = "Akhri-mushahaaradiinnana raalli keliya";
+$hcms_lang['reindex-content-of-all-media-files']['so'] = "Mushahaaradiinnana Raalli Reindex dhamaan faylasha saxaafadda";
 ?>

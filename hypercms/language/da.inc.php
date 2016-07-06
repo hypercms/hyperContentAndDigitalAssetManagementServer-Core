@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['da'] = "Oversætte";
 $hcms_lang['enable-languages-for-translation']['da'] = "Aktiveret sprog oversættelse";
 $hcms_lang['user-for-access-links']['da'] = "Bruger for adgang links";
 $hcms_lang['read-only-content']['da'] = "Skrivebeskyttet indhold";
+$hcms_lang['reindex-content-of-all-media-files']['da'] = "Reindex indholdet af alle mediefiler";
 ?>

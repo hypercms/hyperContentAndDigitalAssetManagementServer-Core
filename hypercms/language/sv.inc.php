@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['sv'] = "Översätta";
 $hcms_lang['enable-languages-for-translation']['sv'] = "Aktiverad språk för översättning";
 $hcms_lang['user-for-access-links']['sv'] = "Användaren tillgång länkar";
 $hcms_lang['read-only-content']['sv'] = "Skrivskyddat innehåll";
+$hcms_lang['reindex-content-of-all-media-files']['sv'] = "Justera innehållet i alla mediefiler";
 ?>

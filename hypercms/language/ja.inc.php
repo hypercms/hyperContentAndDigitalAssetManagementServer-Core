@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['ja'] = "変換";
 $hcms_lang['enable-languages-for-translation']['ja'] = "翻訳のために有効になっている言語";
 $hcms_lang['user-for-access-links']['ja'] = "リンクにアクセスするためのユーザー";
 $hcms_lang['read-only-content']['ja'] = "読み取り専用のコンテンツ";
+$hcms_lang['reindex-content-of-all-media-files']['ja'] = "すべてのメディアファイルのコンテンツのインデックスを再作成";
 ?>

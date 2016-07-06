@@ -227,7 +227,7 @@ if ($pagestore != false)
       elseif ($media != "") $filewrapperdownload = createviewlink ($site, $media, $page, false, "download");
       
       // object access link
-      if ($mgmt_config['db_connect_rdbms'] != "") $fileaccesslink = createobjectaccesslink ($site, $location, $page, $cat);
+      if ($mgmt_config['db_connect_rdbms'] != "" && !empty ($mgmt_config[$site]['accesslinkuser'])) $fileaccesslink = createobjectaccesslink ($site, $location, $page, $cat);
     }
 
     // file access links

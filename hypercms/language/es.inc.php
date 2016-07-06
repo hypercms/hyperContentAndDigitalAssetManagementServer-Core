@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['es'] = "Traducir";
 $hcms_lang['enable-languages-for-translation']['es'] = "Los idiomas habilitados para la traducción";
 $hcms_lang['user-for-access-links']['es'] = "Usuario para acceder a los enlaces";
 $hcms_lang['read-only-content']['es'] = "Contenido de sólo lectura";
+$hcms_lang['reindex-content-of-all-media-files']['es'] = "Reindexar el contenido de todos los archivos multimedia";
 ?>

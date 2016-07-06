@@ -1385,4 +1385,5 @@ $hcms_lang['translate']['bg'] = "Привеждам";
 $hcms_lang['enable-languages-for-translation']['bg'] = "Активиран езици за превод";
 $hcms_lang['user-for-access-links']['bg'] = "Потребител за достъп връзки";
 $hcms_lang['read-only-content']['bg'] = "Само за четене съдържание";
+$hcms_lang['reindex-content-of-all-media-files']['bg'] = "Reindex съдържание на всички медийни файлове";
 ?>

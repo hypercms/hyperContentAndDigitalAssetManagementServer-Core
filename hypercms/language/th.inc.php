@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['th'] = "แปล";
 $hcms_lang['enable-languages-for-translation']['th'] = "การเปิดใช้งานภาษาสำหรับการแปล";
 $hcms_lang['user-for-access-links']['th'] = "ผู้ใช้สำหรับการเข้าใช้ลิงค์";
 $hcms_lang['read-only-content']['th'] = "เนื้อหาแบบอ่านอย่างเดียว";
+$hcms_lang['reindex-content-of-all-media-files']['th'] = "ทำดัชนีเนื้อหาของไฟล์มีเดียทั้งหมด";
 ?>

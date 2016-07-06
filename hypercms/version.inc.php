@@ -1619,7 +1619,7 @@ Release 07/2016
 - Implementation of object access links support in userlogin
 - Bug fix: Search has not been executed if accesslinks have been used
 - Updates in all languages files
-- Bug fix: JS function isNewComment in template engine did notz verify if rich text editor instance exists before writing the content into the textarea
+- Bug fix: JS function isNewComment in template engine did not verify if rich text editor instance exists before writing the content into the textarea
 - Implementation of new template variable %object_id% in template engine
 - Implementation of date and time and publication access of user to each chat entry
 - Implementation of new presentation logic of chat in order to show only messages based on the users publication access
@@ -1631,13 +1631,49 @@ Release 07/2016
 - Implementation of new readonly attribute in template engine for all hyperCMS tags
 - Implementation of user name as input parameter for function getsearchhistory
 - Implementation uf user based search history filtering in all search forms
-- Improvements in image gallery templates in the installation folder
 - Implementation of file-attribute for hyperCMS textl tag that supports list entries based on a taxonomy
 - Implementation of folder structure support for list-attribute of hyperCMS textk and textl tags
 - Changed order of values of list and file attributes for list and keywords fields
 - Implementation of new input parameter force for function rdbms_deletepublicationtaxonomy
+
+Version 6.1.13
+Release 07/2016
+- Implementation of keywords search (new database tables keywords and keywords_container)
+- New attribute type in table textnodes
+- Implementation of new function update_database_v6113
+- Improvements in function splitkeywords
+- Implementation of new function rdbms_getkeywords, rdbms_setkeywords, and rdbms_setpublicationkeywords in DB Connectivity
+- Improvements in daily jobs
+- Improvements in image gallery templates in the installation folder
+- Removed keyword Plugin
+- Implementation of new function gettemplates
+- Moved get and set functions from main API to get and set API
+- Renamed function getdescription to getmetadescription and getkeywords to getmetakeywords
+- Implementation of new function getkeywords
+- Modifications in OpenAPI, renamed function set_fields to save_content
+- Renamed photoshop XMP domain to adobe in meta API and media mappings
+- Implementation of new input parameter type in function rdbms_setcontent
+- Implementation of component references (database table textnodes) in function setcomplink
+- Implementation of textnodes support in function rdbms_deleteobject
+- Implementation of new table classes to navigator.css for all themes
+- Implementation of new function rdbms_getcontent in DB Connect
+- Removed text_array parameter from function settaxonomy and implemented rdbms_getcontent instead
+- Bug fix: Function xmp_writefile did not verify variable errorCode
+- Bug fix: Solved syntax error in Plugin seachstats
+- Implementation of new special characters to clean from text in function cleancontent
+- Bug fix: Function setmetadata did not save extracted content in database if savecontainer input parameter has been set to false
+- Bug fix: Function deletefolder, is_emptyfolder, and licensenotification did not use closedir
+- Implementation of new function reindexcontent
+- Implementation of reindex content feature in metadata mapping
+- Changed metadata format write order in function setmetdata
+- Implementation of new function rdbms_copycontent to copy content in the database based on container IDs
+- Implementation of rdbms_copycontent in function manipulateobject for copy and paste of objects
+- Implementation of support for arrays for input in function cleancontent
+- Implementation of content type support in function save_content of openAPI
+- Added type to element textfield in openAPI WSDL (service_orig.wsdl)
+- Implementation of new type parameter in media mapping (mapping-value=type:text-ID)
 */
 
 // current version
-$version = "Version 6.1.12";
+$version = "Version 6.1.13";
 ?>

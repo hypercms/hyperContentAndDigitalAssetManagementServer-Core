@@ -1385,4 +1385,5 @@ $hcms_lang['translate']['he'] = "לתרגם";
 $hcms_lang['enable-languages-for-translation']['he'] = "מאופשר שפות עבור תרגום";
 $hcms_lang['user-for-access-links']['he'] = "המשתמש עבור גישה קישורים";
 $hcms_lang['read-only-content']['he'] = "תוכן לקריאה בלבד";
+$hcms_lang['reindex-content-of-all-media-files']['he'] = "תוכן Reindex של כל קובצי המדיה";
 ?>

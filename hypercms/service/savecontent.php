@@ -253,8 +253,9 @@ if ($usedby == "" || $usedby == $user)
       if (isset ($arttextc) && is_array ($arttextc) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $arttextc, "c", "yes", $user, $user, $charset);
       if (isset ($textd) && is_array ($textd) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $textd, "d", "no", $user, $user, $charset);
       if (isset ($arttextd) && is_array ($arttextd) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $arttextd, "d", "yes", $user, $user, $charset);
-      if (isset ($textk) && is_array ($textk) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $textk, "u", "no", $user, $user, $charset);
-      // only when not autosaving
+      // keywords only apply for metadata templates (no support for articles)
+      if (isset ($textk) && is_array ($textk) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $textk, "k", "no", $user, $user, $charset);
+      // only if autosaving is not used
       if (isset ($commentu) && is_array ($commentu) && $contentdatanew != false && $auto == false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $commentu, "u", "no", $user, $user, $charset, true);
       if (isset ($commentf) && is_array ($commentf) && $contentdatanew != false && $auto == false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $commentf, "f", "no", $user, $user, $charset, true);
       

@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['sk'] = "Na nebesá";
 $hcms_lang['enable-languages-for-translation']['sk'] = "Povolené jazyky pre preklad";
 $hcms_lang['user-for-access-links']['sk'] = "Užívateľa pre prístup k prepojeniam";
 $hcms_lang['read-only-content']['sk'] = "Iba na čítanie obsahu";
+$hcms_lang['reindex-content-of-all-media-files']['sk'] = "Reindex obsah všetky mediálne súbory";
 ?>

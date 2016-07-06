@@ -501,3 +501,23 @@ hr
   color: #0ACA03;
   background-color: #C0C0C0;
 }
+
+.hcmsRowHead1
+{
+  background-color: #86D391;
+}
+
+.hcmsRowHead2
+{
+  background-color: #AFCBB3;
+}
+
+.hcmsRowData1
+{
+  background-color: #DADDE2;
+}
+
+.hcmsRowData2
+{
+  background-color: #D2D2D2;
+}

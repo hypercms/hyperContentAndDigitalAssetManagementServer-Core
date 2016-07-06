@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['en'] = "Translate";
 $hcms_lang['enable-languages-for-translation']['en'] = "Enable languages for translation";
 $hcms_lang['user-for-access-links']['en'] = "User for access links";
 $hcms_lang['read-only-content']['en'] = "Read-only content";
+$hcms_lang['reindex-content-of-all-media-files']['en'] = "Reindex content of all media files";
 ?>

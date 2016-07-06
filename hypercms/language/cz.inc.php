@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['cz'] = "Translate";
 $hcms_lang['enable-languages-for-translation']['cz'] = "Aktivní jazyků pro překlad";
 $hcms_lang['user-for-access-links']['cz'] = "Uživatel pro přístup odkazy";
 $hcms_lang['read-only-content']['cz'] = "Pouze ke čtení obsahu";
+$hcms_lang['reindex-content-of-all-media-files']['cz'] = "Obsah vytočení všech multimediálních souborů";
 ?>

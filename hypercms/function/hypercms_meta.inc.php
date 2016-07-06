@@ -149,6 +149,7 @@ function splitkeywords ($keywords)
   if (trim ($keywords) != "")
   {
     $result_array = array();
+    $keywords = cleancontent ($keywords);
     $keyword_array = explode (",", $keywords);
         
     foreach ($keyword_array as $keyword)
@@ -156,13 +157,11 @@ function splitkeywords ($keywords)
       // max. length of keyword must not exceed 100
       if (strlen ($keyword) <= 100)
       {
-        $keyword = cleancontent ($keyword);
-        
-        if (is_string ($keyword) && strlen ($keyword) > 1) $result_array[] = trim ($keyword);
+        if (is_string ($keyword) && strlen (trim ($keyword)) > 1) $result_array[] = trim ($keyword);
       }
     }
     
-    if (is_array ($result_array)) return $result_array;
+    if (is_array ($result_array) && sizeof ($result_array) > 0) return $result_array;
     else return false;
   }
   else return false;
@@ -826,22 +825,22 @@ function xmp_getdata ($file)
       $mapping['dc:type'] = "Type";
 
       // XMP -> Adobe PhotoShop namespace tags
-      $mapping['photoshop:Source'] = "Source";
-      $mapping['photoshop:Credit'] = "Credit";
-      $mapping['photoshop:DateCreated'] = "Creation date";
-      $mapping['photoshop:AuthorsPosition'] = "Authors position";
-      $mapping['photoshop:CaptionWriter'] = "Caption writer";
-      $mapping['photoshop:Category'] = "Category";
-      $mapping['photoshop:SupplementalCategories'] = "Supplemental categories";
-      $mapping['photoshop:City'] = "City";
-      $mapping['photoshop:State'] = "State";
-      $mapping['photoshop:Country'] = "Country";
-      $mapping['photoshop:DocumentAncestors'] = "Document ancestors";
-      $mapping['photoshop:DocumentAncestorID'] = "Document ancestor ID";
-      $mapping['photoshop:Headline'] = "Headline";
-      $mapping['photoshop:Instructions'] = "Instructions";
-      $mapping['photoshop:History'] = "History";
-      $mapping['photoshop:Urgency'] = "Urgency";
+      $mapping['adobe:Source'] = "Source";
+      $mapping['adobe:Credit'] = "Credit";
+      $mapping['adobe:DateCreated'] = "Creation date";
+      $mapping['adobe:AuthorsPosition'] = "Authors position";
+      $mapping['adobe:CaptionWriter'] = "Caption writer";
+      $mapping['adobe:Category'] = "Category";
+      $mapping['adobe:SupplementalCategories'] = "Supplemental categories";
+      $mapping['adobe:City'] = "City";
+      $mapping['adobe:State'] = "State";
+      $mapping['adobe:Country'] = "Country";
+      $mapping['adobe:DocumentAncestors'] = "Document ancestors";
+      $mapping['adobe:DocumentAncestorID'] = "Document ancestor ID";
+      $mapping['adobe:Headline'] = "Headline";
+      $mapping['adobe:Instructions'] = "Instructions";
+      $mapping['adobe:History'] = "History";
+      $mapping['adobe:Urgency'] = "Urgency";
       // ColorMode:
       // 0 = Bitmap
       // 1 = Grayscale
@@ -851,14 +850,14 @@ function xmp_getdata ($file)
       // 7 = Multichannel
       // 8 = Duotone
       // 9 = Lab	
-      $mapping['photoshop:ColorMode'] = "Color mode";
-      $mapping['photoshop:ICCProfileName'] = "ICC Profile name";
-      $mapping['photoshop:LegacyIPTCDigest'] = "Legacy IPTC digest";
-      $mapping['photoshop:SidecarForExtension'] = "Sidecar for extension";
-      $mapping['photoshop:TextLayers'] = "Text layers";
-      $mapping['photoshop:TextLayerName'] = "Text layer name";
-      $mapping['photoshop:TextLayerText'] = "Text layer text";
-      $mapping['photoshop:TransmissionReference'] = "Transmission reference";
+      $mapping['adobe:ColorMode'] = "Color mode";
+      $mapping['adobe:ICCProfileName'] = "ICC Profile name";
+      $mapping['adobe:LegacyIPTCDigest'] = "Legacy IPTC digest";
+      $mapping['adobe:SidecarForExtension'] = "Sidecar for extension";
+      $mapping['adobe:TextLayers'] = "Text layers";
+      $mapping['adobe:TextLayerName'] = "Text layer name";
+      $mapping['adobe:TextLayerText'] = "Text layer text";
+      $mapping['adobe:TransmissionReference'] = "Transmission reference";
       
       // get XMP meta data
       $xmp = getcontent ($content, "<x:xmpmeta *>");
@@ -984,7 +983,7 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
           avoidfilecollision ($media);
           
           // save media stats and move temp file on success
-          if ($movetempfile && empty ($errorCode) || $errorCode < 1)
+          if ($movetempfile && (empty ($errorCode) || $errorCode < 1))
           {
             // write media information to DB
             $container_id = getmediacontainerid ($file);
@@ -1044,7 +1043,7 @@ function xmp_create ($site, $text)
       foreach ($mapping as $tag => $id)
       {
         // set XMP tag (tag => value)
-        if ($tag != "" && $id != "" && isset ($text[$id]) && (substr ($tag, 0, 3) == "dc:" || substr ($tag, 0, 10) == "photoshop:"))
+        if ($tag != "" && $id != "" && isset ($text[$id]) && (substr ($tag, 0, 3) == "dc:" || substr ($tag, 0, 10) == "adobe:"))
         {
           $result[$tag] = $text[$id];
         }
@@ -1956,11 +1955,11 @@ function getmapping ($site)
     return '// Mapping definition: Meta data tag => "hyperCMS tag-ID"
 
 // IPTC tags
-iptc:title => "Title"
-iptc:keywords => "Keywords"
-iptc:description => "Description"
-iptc:photographer => "Creator"
-iptc:source => "Copyright"
+iptc:title => "textu:Title"
+iptc:keywords => "textk:Keywords"
+iptc:description => "textu:Description"
+iptc:photographer => "textu:Creator"
+iptc:source => "textu:Copyright"
 iptc:urgency => ""
 iptc:category => ""
 iptc:supp_categories => ""
@@ -1978,11 +1977,11 @@ iptc:photo_source => ""
 iptc:charset => ""
 
 // XMP -> Dublin Core namespace tags
-dc:title => "Title"
-dc:subject => "Keywords"
-dc:description => "Description"
-dc:creator => "Creator"
-dc:rights => "Copyright"
+dc:title => "textu:Title"
+dc:subject => "textk:Keywords"
+dc:description => "textu:Description"
+dc:creator => "textu:Creator"
+dc:rights => "textu:Copyright"
 dc:contributor => ""
 dc:coverage => ""
 dc:date => ""
@@ -1996,10 +1995,10 @@ dc:source => ""
 dc:type => ""
 
 // XMP -> Adobe PhotoShop namespace tags
-photoshop:AuthorsPosition => ""
-photoshop:CaptionWriter => ""
-photoshop:Category => ""
-photoshop:City => ""
+adobe:AuthorsPosition => ""
+adobe:CaptionWriter => ""
+adobe:Category => ""
+adobe:City => ""
 // ColorMode:
 // 0 = Bitmap
 // 1 = Grayscale
@@ -2009,26 +2008,27 @@ photoshop:City => ""
 // 7 = Multichannel
 // 8 = Duotone
 // 9 = Lab
-photoshop:ColorMode => ""
-photoshop:Country => ""
-photoshop:Credit => ""
-photoshop:DateCreated => ""
-photoshop:DocumentAncestors => ""
-photoshop:DocumentAncestorID => ""
-photoshop:Headline => ""
-photoshop:History => ""
-photoshop:ICCProfileName => ""
-photoshop:Instructions => ""
-photoshop:LegacyIPTCDigest => ""
-photoshop:SidecarForExtension => ""
-photoshop:Source => ""
-photoshop:State => ""
-photoshop:SupplementalCategories => ""
-photoshop:TextLayers => ""
-photoshop:TextLayerName => ""
-photoshop:TextLayerText => ""
-photoshop:TransmissionReference => ""
-photoshop:Urgency => ""
+adobe:ColorMode => ""
+adobe:Country => ""
+adobe:Credit => ""
+adobe:DateCreated => ""
+adobe:DocumentAncestors => ""
+adobe:DocumentAncestorID => ""
+adobe:Headline => ""
+adobe:History => ""
+adobe:ICCProfileName => ""
+adobe:Instructions => ""
+adobe:LegacyIPTCDigest => ""
+adobe:SidecarForExtension => ""
+adobe:Source => ""
+adobe:State => ""
+adobe:SupplementalCategories => ""
+adobe:TextLayers => ""
+adobe:TextLayerName => ""
+adobe:TextLayerText => ""
+adobe:TransmissionReference => ""
+adobe:Urgency => ""
+adobe:hierarchicalSubject => ""
 
 // EXIF tags
 // EXIF-Sections:
@@ -2067,18 +2067,18 @@ exif:EXIF.DateTimeOriginal => ""
 exif:EXIF.DateTimeDigitized => ""
 
 // ID3 -> ID3 namespace tags
-id3:title => "Title"
-id3:artist => "Creator"
+id3:title => "textu:Title"
+id3:artist => "textu:Creator"
 id3:album => ""
 id3:year => ""
-id3:comment => "Description"
+id3:comment => "textu:Description"
 id3:track => ""
 id3:genre => ""
 id3:tracknumber => ""
 id3:band => ""
 
 // Image Resolution defines Quality [Print, Web]
-hcms:quality => "Quality"';
+hcms:quality => "textl:Quality"';
   }
 }
 
@@ -2115,13 +2115,13 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       // IPTC tags
       $mapping['iptc:charset'] = "";
       $mapping['iptc:object_type'] = "";
-      $mapping['iptc:title'] = "Title";
+      $mapping['iptc:title'] = "textu:Title";
       $mapping['iptc:edit_status'] = "";
       $mapping['iptc:urgency'] = "";
       $mapping['iptc:category'] = "";
       $mapping['iptc:supplemental_categories'] = "";
-      $mapping['iptc:keywords'] = "Keywords";
-      $mapping['iptc:photographer'] = "Creator";
+      $mapping['iptc:keywords'] = "textk:Keywords";
+      $mapping['iptc:photographer'] = "textu:Creator";
       $mapping['iptc:source'] = "";  
       $mapping['iptc:expiriation_date'] = "";
       $mapping['iptc:expiriation_time'] = "";
@@ -2130,7 +2130,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       $mapping['iptc:creation_time'] = "";
       $mapping['iptc:digital_creation_date'] = "";
       $mapping['iptc:digital_creation_time'] = "";
-      $mapping['iptc:photographer'] = "Creator";
+      $mapping['iptc:photographer'] = "textu:Creator";
       $mapping['iptc:photographer_title'] = "";
       $mapping['iptc:city'] = "";
       $mapping['iptc:state'] = "";
@@ -2138,21 +2138,21 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       $mapping['iptc:otr'] = "";
       $mapping['iptc:headline'] = "";
       $mapping['iptc:credit'] = "";
-      $mapping['iptc:source'] = "Copyright";
+      $mapping['iptc:source'] = "textu:Copyright";
       $mapping['iptc:copyright'] = "";
       $mapping['iptc:contact'] = "";
-      $mapping['iptc:description'] = "Description";
+      $mapping['iptc:description'] = "textu:Description";
       $mapping['iptc:description_author'] = "";
       $mapping['iptc:image_type'] = "";
       $mapping['iptc:image_orientation'] = "";
       $mapping['iptc:language'] = "";
 
       // XMP -> Dublin Core namespace tags
-      $mapping['dc:title'] = "Title";
-      $mapping['dc:subject'] = "Keywords";
-      $mapping['dc:description'] = "Description";
-      $mapping['dc:creator'] = "Creator";
-      $mapping['dc:rights'] = "Copyright";
+      $mapping['dc:title'] = "textu:Title";
+      $mapping['dc:subject'] = "textk:Keywords";
+      $mapping['dc:description'] = "textu:Description";
+      $mapping['dc:creator'] = "textu:Creator";
+      $mapping['dc:rights'] = "textu:Copyright";
       $mapping['dc:contributor'] = "";
       $mapping['dc:coverage'] = "";
       $mapping['dc:date'] = "";
@@ -2165,22 +2165,22 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       $mapping['dc:type'] = "";
 
       // XMP -> Adobe PhotoShop namespace tags
-      $mapping['photoshop:Source'] = "";
-      $mapping['photoshop:Credit'] = "";
-      $mapping['photoshop:DateCreated'] = "";
-      $mapping['photoshop:AuthorsPosition'] = "";
-      $mapping['photoshop:CaptionWriter'] = "";
-      $mapping['photoshop:Category'] = "";
-      $mapping['photoshop:SupplementalCategories'] = "";
-      $mapping['photoshop:City'] = "";
-      $mapping['photoshop:State'] = "";
-      $mapping['photoshop:Country'] = "";
-      $mapping['photoshop:DocumentAncestors'] = "";
-      $mapping['photoshop:DocumentAncestorID'] = "";
-      $mapping['photoshop:Headline'] = "";
-      $mapping['photoshop:Instructions'] = "";
-      $mapping['photoshop:History'] = "";
-      $mapping['photoshop:Urgency'] = "";
+      $mapping['adobe:Source'] = "";
+      $mapping['adobe:Credit'] = "";
+      $mapping['adobe:DateCreated'] = "";
+      $mapping['adobe:AuthorsPosition'] = "";
+      $mapping['adobe:CaptionWriter'] = "";
+      $mapping['adobe:Category'] = "";
+      $mapping['adobe:SupplementalCategories'] = "";
+      $mapping['adobe:City'] = "";
+      $mapping['adobe:State'] = "";
+      $mapping['adobe:Country'] = "";
+      $mapping['adobe:DocumentAncestors'] = "";
+      $mapping['adobe:DocumentAncestorID'] = "";
+      $mapping['adobe:Headline'] = "";
+      $mapping['adobe:Instructions'] = "";
+      $mapping['adobe:History'] = "";
+      $mapping['adobe:Urgency'] = "";
       // ColorMode:
       // 0 = Bitmap
       // 1 = Grayscale
@@ -2190,14 +2190,15 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       // 7 = Multichannel
       // 8 = Duotone
       // 9 = Lab	
-      $mapping['photoshop:ColorMode'] = "";
-      $mapping['photoshop:ICCProfileName'] = "";
-      $mapping['photoshop:LegacyIPTCDigest'] = "";
-      $mapping['photoshop:SidecarForExtension'] = "";
-      $mapping['photoshop:TextLayers'] = "";
-      $mapping['photoshop:TextLayerName'] = "";
-      $mapping['photoshop:TextLayerText'] = "";
-      $mapping['photoshop:TransmissionReference'] = "";
+      $mapping['adobe:ColorMode'] = "";
+      $mapping['adobe:ICCProfileName'] = "";
+      $mapping['adobe:LegacyIPTCDigest'] = "";
+      $mapping['adobe:SidecarForExtension'] = "";
+      $mapping['adobe:TextLayers'] = "";
+      $mapping['adobe:TextLayerName'] = "";
+      $mapping['adobe:TextLayerText'] = "";
+      $mapping['adobe:TransmissionReference'] = "";
+      $mapping['adobe:hierarchicalSubject'] = "";
       
       // EXIF tags
       // EXIF-Sections:
@@ -2236,18 +2237,18 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       $mapping['exif:EXIF.DateTimeDigitized'] = "";
       
       // ID3 -> ID3 namespace tags
-      $mapping['id3:title'] = "Title";
-      $mapping['id3:artist'] = "Creator";
+      $mapping['id3:title'] = "textu:Title";
+      $mapping['id3:artist'] = "textu:Creator";
       $mapping['id3:album'] = "";
       $mapping['id3:year'] = "";
-      $mapping['id3:comment'] = "Description";
+      $mapping['id3:comment'] = "textu:Description";
       $mapping['id3:track'] = "";
       $mapping['id3:genre'] = "";
       $mapping['id3:tracknumber'] = "";
       $mapping['id3:band'] = "";
       
       // Image Resolution defines Quality [Print, Web]
-      $mapping['hcms:quality'] = "Quality";
+      $mapping['hcms:quality'] = "textl:Quality";
     }
   }
 
@@ -2294,10 +2295,10 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       if (is_array ($charset_array)) $charset_dest = $charset_array['charset'];
       else $charset_dest = "UTF-8";
 
-      // read metadata based on EXIF, XMP, IPTC in this order (so IPTC will overwrite EXIF and XMP if not empty)
+      // read metadata based on EXIF, IPTC, XMP in this order (so XMP will overwrite EXIF and IPTC if not empty)
       // XMP should be UTF-8 encoded but Adobe does not provide proper encoding of special characters 
       if ($mediadata != false && $containerdata != false)
-      {        
+      {
         // load text XML-schema
         $text_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "text.schema.xml.php"));
         
@@ -2336,6 +2337,13 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             {          
               // get ID3 tag name
               if (strpos ($key, ":") > 0) list ($namespace, $key) = explode (":", $key);
+              
+              // get type and text ID
+              if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
+              elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
+              else $type = "textu";
+              
+              if (!empty ($type)) $type_array[$text_id] = $type;
               
               // get data
               if (!empty ($id3_data[$key])) $id3str = $id3_data[$key];
@@ -2424,12 +2432,12 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 {
                   $exif_info[$key] = convertchars ($exif_info[$key], $charset_source, $charset_dest);
                 }
-  
-                // html encode string
-                $exif_info[$key] = html_encode ($exif_info[$key], $charset_source);
-  
+                
                 // textnodes search index in database
                 $text_array[$text_id] = $exif_info[$key];
+
+                // html encode string
+                $exif_info[$key] = html_encode ($exif_info[$key], $charset_source);
                                                 
                 $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
           
@@ -2443,63 +2451,6 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 if ($containerdata_new != false) $containerdata = $containerdata_new;
                 else return false;
               }
-            }
-          }
-        }
-    
-        // ------------------- XMP-based -------------------
-        
-        // inject meta data based on mapping
-        reset ($mapping);
-        
-        foreach ($mapping as $key => $text_id)
-        {
-          // only for XMP (XML-based) tags (DC, PhotoShop ...)
-          if (substr_count ($key, "iptc:") == 0 && substr_count ($key, "hcms:") == 0 && substr_count ($key, "exif:") == 0 && $text_id != "")
-          {          
-            $dcstr = "";
-            
-            // extract XMP information
-            $dc = getcontent ($mediadata, "<".$key.">");
-            if ($dc != false) $dc = getcontent ($dc[0], "<rdf:li *>");
-            if ($dc != false) $dcstr = implode (", ", $dc);
-        
-            if ($dcstr != "")
-            {
-              // remove tags
-              $dcstr = strip_tags ($dcstr);           
-              
-              // XMP always using UTF-8 so should any other XML-based format
-              $charset_source = "UTF-8";              
-              
-              // convert string for container
-              if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
-              {
-                $dcstr = convertchars ($dcstr, $charset_source, $charset_dest);
-              }
-              elseif ($charset_dest == "UTF-8")
-              {
-                // encode to UTF-8
-                if (!is_utf8 ($dcstr)) $dcstr = utf8_encode ($dcstr);
-              }
-
-              // html encode string
-              $dcstr = html_encode ($dcstr, $charset_dest);
-
-              // textnodes search index in database
-              $text_array[$text_id] = $dcstr;
-                                              
-              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id);
-        
-              if ($containerdata_new == false)
-              {
-                $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id);
-                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
-              }
-        
-              if ($containerdata_new != false) $containerdata = $containerdata_new;
-              else return false;
             }
           }
         }
@@ -2596,6 +2547,13 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               {           
                 if ($iptc_info[$key] != "")
                 {
+                  // get type and text ID
+                  if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
+                  elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
+                  else $type = "textu";
+                  
+                  if (!empty ($type)) $type_array[$text_id] = $type;
+                
                   // remove tags
                   $iptc_info[$key] = strip_tags ($iptc_info[$key]);
                   
@@ -2613,12 +2571,12 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                     // encode to UTF-8
                     if (!is_utf8 ($iptc_info[$key])) $iptc_info[$key] = utf8_encode ($iptc_info[$key]);              
                   }
+                  
+                  // textnodes for search index in database
+                  $text_array[$text_id] = $iptc_info[$key];
 
                   // html encode string
                   $iptc_info[$key] = html_encode ($iptc_info[$key], $charset_dest);                      
-
-                  // textnodes for search index in database
-                  $text_array[$text_id] = $iptc_info[$key];
 
                   $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$iptc_info[$key]."]]>", "<text_id>", $text_id);
             
@@ -2635,6 +2593,70 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               }
             }
           }     
+        }
+        
+        // ------------------- XMP-based -------------------
+        
+        // inject meta data based on mapping
+        reset ($mapping);
+        
+        foreach ($mapping as $key => $text_id)
+        {
+          // only for XMP (XML-based) tags (DC, Adobe ...)
+          if (substr_count ($key, "iptc:") == 0 && substr_count ($key, "hcms:") == 0 && substr_count ($key, "exif:") == 0 && $text_id != "")
+          {          
+            $dcstr = "";
+          
+            // get type and text ID
+            if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
+            elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
+            else $type = "textu";
+            
+            if (!empty ($type)) $type_array[$text_id] = $type;
+            
+            // extract XMP information
+            $dc = getcontent ($mediadata, "<".$key.">");
+            if ($dc != false) $dc = getcontent ($dc[0], "<rdf:li *>");
+            if ($dc != false) $dcstr = implode (", ", $dc);
+        
+            if ($dcstr != "")
+            {
+              // remove tags
+              $dcstr = strip_tags ($dcstr);           
+              
+              // XMP always using UTF-8 so should any other XML-based format
+              $charset_source = "UTF-8";              
+              
+              // convert string for container
+              if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
+              {
+                $dcstr = convertchars ($dcstr, $charset_source, $charset_dest);
+              }
+              elseif ($charset_dest == "UTF-8")
+              {
+                // encode to UTF-8
+                if (!is_utf8 ($dcstr)) $dcstr = utf8_encode ($dcstr);
+              }
+              
+              // textnodes search index in database
+              $text_array[$text_id] = $dcstr;
+
+              // html encode string
+              $dcstr = html_encode ($dcstr, $charset_dest);
+                              
+              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id);
+        
+              if ($containerdata_new == false)
+              {
+                $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$dcstr."]]>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+              }
+        
+              if ($containerdata_new != false) $containerdata = $containerdata_new;
+              else return false;
+            }
+          }
         }
         
         // ------------------- define and set image quality -------------------
@@ -2704,17 +2726,18 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         // delete temp file
         if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
 
-        // save container
         if ($containerdata != false)
         {
+          // save content in database (Important!)
+          if ($mgmt_config['db_connect_rdbms'] != "" && is_array ($text_array))
+          {
+            include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
+            rdbms_setcontent ($site, $container_id, $text_array, $type_array, $user);
+          }
+          
+          // save container
           if ($savecontainer == true)
           {
-            if ($mgmt_config['db_connect_rdbms'] != "")
-            {
-              include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
-              rdbms_setcontent ($site, $container_id, $text_array, $user);
-            }
-
             $save = savecontainer ($container, "work", $containerdata, $user);
             
             if ($save == false)

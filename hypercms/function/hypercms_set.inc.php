@@ -34,18 +34,18 @@ function setsession ($variable, $content="", $write=false)
 
 // ----------------------------------------- settaxonomy ------------------------------------------
 // function: settaxonomy()
-// input: publication name, container ID, content as array in form of array[text-ID]=text-content, 2-digit language code (optional)
+// input: publication name, container ID, 2-digit language code (optional)
 // output: result array / false on error
 
 // description:
-// Analyzes the content regarding all taxonomy keywords and returns an array (multilingual support based on taxonomies).
+// Analyzes the content regarding all taxonomy keywords, saves results in database and returns an array (multilingual support based on taxonomies).
 // Global variable $taxonomy can be used to pass the taxonomy as array.
 
-function settaxonomy ($site, $container_id, $text_array, $langcode="")
+function settaxonomy ($site, $container_id, $langcode="")
 {
   global $mgmt_config, $taxonomy;
   
-  if (valid_publicationname ($site) && intval ($container_id) > 0 && is_array ($text_array) && sizeof ($text_array) > 0 && is_array ($mgmt_config))
+  if (valid_publicationname ($site) && intval ($container_id) > 0 && is_array ($mgmt_config))
   {
     // load publication management config
     if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['taxonomy']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
@@ -72,67 +72,73 @@ function settaxonomy ($site, $container_id, $text_array, $langcode="")
       {
         $result = array();
         
-        foreach ($text_array as $text_id=>$text)
+        // get content of container
+        $text_array = rdbms_getcontent ($site, $container_id);
+        
+        if (is_array ($text_array) && sizeof ($text_array) > 0)
         {
-          $langcount = array();
-          
-          if ($text_id != "" && $text != "")
+          foreach ($text_array as $text_id=>$text)
           {
-            // clean text
-            $text = cleancontent ($text, "UTF-8");
-            $text = strtolower ($text);
-                    
-            reset ($taxonomy);
+            $langcount = array();
             
-            // return key = taxonomy ID and value = keyword
-            foreach ($taxonomy as $lang=>$tax_array)
+            if ($text_id != "" && $text != "")
             {
-              // language restriction
-              if ($lang == strtolower ($langcode) || $langcode == "")
+              // clean text
+              $text = cleancontent ($text, "UTF-8");
+              $text = strtolower ($text);
+                      
+              reset ($taxonomy);
+              
+              // return key = taxonomy ID and value = keyword
+              foreach ($taxonomy as $lang=>$tax_array)
               {
-                $langcount[$lang] = 0;
-  
-                foreach ($tax_array as $path=>$keyword)
+                // language restriction
+                if ($lang == strtolower ($langcode) || $langcode == "")
                 {
-                  // find taxonomy keyword in text
-                  if ($keyword != "" && strpos (" ".$text." ", strtolower (" ".$keyword)) > 0)
+                  $langcount[$lang] = 0;
+    
+                  foreach ($tax_array as $path=>$keyword)
                   {
-                    // get ID
-                    $path_temp = substr ($path, 0, -1);
-                    $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
-                    
-                    // result array
-                    $result[$text_id][$lang][$id] = $keyword;
-                                  
-                    // count number of found expressions per language and text ID if keyword has more than 5 digits
-                    if (strlen ($keyword) > 5) $langcount[$lang]++;
+                    // find taxonomy keyword in text
+                    if ($keyword != "" && strpos (" ".$text." ", strtolower (" ".$keyword)) > 0)
+                    {
+                      // get ID
+                      $path_temp = substr ($path, 0, -1);
+                      $id = substr ($path_temp, strrpos ($path_temp, "/") + 1);
+                      
+                      // result array
+                      $result[$text_id][$lang][$id] = $keyword;
+                                    
+                      // count number of found expressions per language and text ID if keyword has more than 5 digits
+                      if (strlen ($keyword) > 5) $langcount[$lang]++;
+                    }
+                  }
+                }
+              }
+              
+              // analyze languages for text ID
+              if (is_array ($langcount) && sizeof ($langcount) > 1 && !empty ($result[$text_id]))
+              {
+                // get highest count
+                $count = max ($langcount);
+                
+                // get language with highest count
+                $langcode = array_search ($count, $langcount);
+                
+                // remove other languages
+                if (!empty ($langcode))
+                {
+                  foreach ($result[$text_id] as $lang_delete=>$array)
+                  {
+                    if ($lang_delete != $langcode) unset ($result[$text_id][$lang_delete]);
                   }
                 }
               }
             }
-            
-            // analyze languages for text ID
-            if (is_array ($langcount) && sizeof ($langcount) > 1 && !empty ($result[$text_id]))
-            {
-              // get highest count
-              $count = max ($langcount);
-              
-              // get language with highest count
-              $langcode = array_search ($count, $langcount);
-              
-              // remove other languages
-              if (!empty ($langcode))
-              {
-                foreach ($result[$text_id] as $lang_delete=>$array)
-                {
-                  if ($lang_delete != $langcode) unset ($result[$text_id][$lang_delete]);
-                }
-              }
-            }
           }
+          
+          rdbms_settaxonomy ($site, $container_id, $result);
         }
-        
-        rdbms_settaxonomy ($site, $container_id, $result);
         
         if (sizeof ($result) > 0) return $result;
         else return false;
@@ -213,7 +219,7 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle, $artstatus, $
 
 // -------------------------------------------- settext -----------------------------------------------
 // function: settext()
-// input: publication name, container (XML), container name, text array, type array or string of text [u,f,l,c,d], article array or string [yes,no], 
+// input: publication name, container (XML), container name, text array, type array or string [u,f,l,c,d,k], article array or string [yes,no], 
 //        text user array or string, user name, character set of text content, add microtime to ID [true,false] used for comments
 // output: updated content container (XML), false on error
 
@@ -288,7 +294,6 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
           $elemid = $id;
         }
         
-        // formatted text
         // formatted text by CKEditor is already escaped!
         if ($type[$id] == "f")
         {
@@ -317,7 +322,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
             $textcontent = str_replace (array ("\\'", "\\\""), array ("'", "\""), $textcontent);
           }
         }
-        // if date
+        // date
         elseif ($type[$id] == "d")
         {
           // convert to international time format for database (deprecated since version 5.6.7)
@@ -327,7 +332,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
           // escape special characters (transform all special chararcters into their html/xml equivalents)
           $textcontent  = html_encode ($textcontent);          
         }
-        // checkbox value, text options
+        // checkbox value, text options, keywords
         else
         {
           // escape special characters
@@ -562,7 +567,8 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
       {
         $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
        
-        rdbms_setcontent ($site, $container_id, $text, $user);                     
+        // set content in database
+        rdbms_setcontent ($site, $container_id, $text, $type, $user);          
       }       
       
       return $contentdatanew;
@@ -738,17 +744,21 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
       if (!empty ($mgmt_config['db_connect_rdbms']))
       {
         $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
-                
-        while (list ($key, $val) = each ($mediaalttext))
+        
+        $text_array = array();
+        $type = array();
+        
+        while (list ($key, $value) = each ($mediaalttext))
         {
           // get object ID
           if (!empty ($mediaobject[$key])) $object_id = $mediaobject[$key]."|";
           else $object_id = "";
           
-          $text_array["media:".$key] = $object_id.$val;
+          $text_array["media:".$key] = $object_id.$value;
+          $type_array["media:".$key] = "media";
         }
                      
-        rdbms_setcontent ($site, $container_id, $text_array, $user);                     
+        rdbms_setcontent ($site, $container_id, $text_array, $type_array, $user);                     
       }      
       
       return $contentdatanew;
@@ -904,16 +914,20 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhr
       {
         $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
         
-        while (list ($key, $val) = each ($linktext))
+        $text_array = array();
+        $type_array = array();
+        
+        while (list ($key, $value) = each ($linktext))
         {
           // get object ID
           if (!empty ($linkhref[$key])) $object_id = $linkhref[$key]."|";
           else $object_id = "";
           
-          $text_array["link:".$key] = $object_id.$val;
+          $text_array["link:".$key] = $object_id.$value;
+          $type_array["link:".$key] = "link";
         }
                 
-        rdbms_setcontent ($site, $container_id, $text_array, $user);                     
+        rdbms_setcontent ($site, $container_id, $text_array, $type_array, $user);                     
       }  
     
       return $contentdatanew;
@@ -963,7 +977,10 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
       if ($id != "")
       {  
         // convert object path to object ID if DAM
-        if ($mgmt_config[$site]['dam']) $component_conv[$id] = getobjectid ($component[$id]);
+        $component_object_id[$id] = getobjectid ($component[$id]);
+        
+        // save object ID if DAM
+        if ($mgmt_config[$site]['dam']) $component_conv[$id] = $component_object_id[$id];
         else $component_conv[$id] = $component[$id];
         
         // correct extension if object is unpublished
@@ -1041,8 +1058,54 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
     savelog (@$error);    
     
     // return container
-    if ($contentdatanew != false) return $contentdatanew;
-    else return false;      
+    if ($contentdatanew != false)
+    {
+      // relational DB connectivity
+      if (!empty ($mgmt_config['db_connect_rdbms']))
+      {
+        $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
+        
+        $text_array = array();
+        $type_array = array();
+        
+        while (list ($key, $value) = each ($component_object_id))
+        {
+          // multiple components
+          if (!empty ($value) && strpos ("_".$value, "|") > 0)
+          {
+            $object_ids = explode ("|", $value);
+            
+            if (is_array ($object_ids) && sizeof ($object_ids) > 0)
+            {
+              foreach ($object_ids as $object_id)
+              {
+                $i = 0;
+                
+                if ($object_id != "")
+                {
+                  if (empty ($object_id)) $object_id = "0";
+                  $text_array["comp:".$key.":".$i] = $object_id."|";
+                  $type_array["comp:".$key.":".$i] = "comp";
+                  $i++;
+                }
+              }
+            }
+          }
+          // single component
+          else
+          {
+            if (empty ($value)) $value = "0";
+            $text_array["comp:".$key] = $value."|";
+            $type_array["comp:".$key] = "comp";
+          }
+        }
+                
+        rdbms_setcontent ($site, $container_id, $text_array, $type_array, $user);
+      }
+    
+      return $contentdatanew;
+    }
+    else return false;
   }
   else return false;
 }
@@ -1098,16 +1161,36 @@ function sethead ($site, $contentdata, $contentfile, $headcontent, $user, $chars
       if (!empty ($mgmt_config['db_connect_rdbms']))
       {
         $text_array = array();
+        $type_array = array();
         
         // standard text-based meta information
-        if (isset ($headcontent['pagetitle'])) $text_array['head:pagetitle'] = $headcontent['pagetitle'];
-        if (isset ($headcontent['pageauthor'])) $text_array['head:pageauthor'] = $headcontent['pageauthor'];
-        if (isset ($headcontent['pagedescription'])) $text_array['head:pagedescription'] = $headcontent['pagedescription'];
-        if (isset ($headcontent['pagekeywords'])) $text_array['head:pagekeywords'] = $headcontent['pagekeywords'];
-
+        if (isset ($headcontent['pagetitle']))
+        {
+          $text_array['head:pagetitle'] = $headcontent['pagetitle'];
+          $type_array['head:pagetitle'] = "head";
+        }
+        
+        if (isset ($headcontent['pageauthor']))
+        {
+          $text_array['head:pageauthor'] = $headcontent['pageauthor'];
+          $type_array['head:pagetitle'] = "head";
+        }
+        
+        if (isset ($headcontent['pagedescription']))
+        {
+          $text_array['head:pagedescription'] = $headcontent['pagedescription'];
+          $type_array['head:pagetitle'] = "head";
+        }
+        
+        if (isset ($headcontent['pagekeywords']))
+        {
+          $text_array['head:pagekeywords'] = $headcontent['pagekeywords'];
+          $type_array['head:pagetitle'] = "head";
+        }
+        
         $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
                     
-        rdbms_setcontent ($site, $container_id, $text_array, $user);
+        rdbms_setcontent ($site, $container_id, $text_array, $type_array, $user);
       }  
     
       return $contentdata;
@@ -1180,6 +1263,58 @@ function setfilename ($filedata, $tagname, $value)
       
       return $filedata;   
     }
+  }
+  else return false;
+}
+
+// ====================================== HOME BOXES =========================================
+
+// --------------------------------------- setboxes -------------------------------------------
+// function: setboxes ()
+// input: home box names as array or string, user name
+// output: true / false
+
+function setboxes ($name_array, $user)
+{
+  global $mgmt_config;
+  
+  if (valid_objectname ($user))
+  {
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".home.dat";
+    
+    // set input as array if it is string and not empty
+    if (!is_array ($name_array))
+    {
+      $name_array = trim ($name_array, "|");
+      
+      // provided input has seperators
+      if (substr_count ($name_array, "|") > 0)
+      {
+        $name_array = explode ("|", $name_array);
+      }
+      // provided input is single value as string
+      else
+      {
+        $temp = $name_array;      
+        $name_array = array();
+        $name_array[0] = $temp;
+      }
+    }
+    
+    $data = "|";
+
+    // save box in file
+    foreach ($name_array as $name)
+    {
+      if (valid_objectname ($name) && is_file ($mgmt_config['abs_path_cms']."box/".$name.".inc.php"))
+      {
+        $data .= $name."|";
+      }
+    }
+    
+    // save file
+    return savefile ($dir, $file, $data);
   }
   else return false;
 }

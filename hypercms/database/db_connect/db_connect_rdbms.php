@@ -180,6 +180,26 @@ class hcms_db
     }
   }
   
+  // Returns the last inserted key (ID)
+  
+  public function getInsertId ()
+  {
+    global $mgmt_config;
+    
+    if ($this->_isMySqli ())
+    {
+      return $this->_db->insert_id;
+    }
+    elseif ($this->_isODBC ())
+    {
+      return odbc_cursor ($this->_result);
+    }
+    else
+    {
+      $this->_typeError ();
+    }
+  }
+  
   // Closes the database connection and frees all results
   public function close()
   {
@@ -263,7 +283,9 @@ class hcms_db
 }
 
 // ------------------------------------------------ ODBC escape string ------------------------------------------------
-// alternative to mysql_real_escape_string (PHP odbc_prepare would be optimal)
+
+// description:
+// Alternative to mysql_real_escape_string (PHP odbc_prepare would be optimal)
 
 function odbc_escape_string ($connection, $value)
 {
@@ -276,7 +298,13 @@ function odbc_escape_string ($connection, $value)
 }
 
 // ------------------------------------------------ convert dbcharset ------------------------------------------------
-// some conversions from mySQL charset names to PHP charset names
+
+// function: convert_dbcharset()
+// input: character set
+// output: true / false
+
+// description:
+// Conversions from mySQL charset names to PHP charset names.
 
 function convert_dbcharset ($charset)
 {
@@ -296,6 +324,13 @@ function convert_dbcharset ($charset)
  
 // ------------------------------------------------ create object -------------------------------------------------
 
+// function: rdbms_createobject()
+// input: container ID, object path, template name, content container name, user name
+// output: true / false
+
+// description:
+// Creates new object in database.
+
 function rdbms_createobject ($container_id, $object, $template, $container, $user)
 {
   global $mgmt_config;
@@ -307,7 +342,7 @@ function rdbms_createobject ($container_id, $object, $template, $container, $use
       
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
         
-    $container_id = $db->escape_string($container_id);
+    $container_id = intval($container_id);
     $object = $db->escape_string($object);
     $template = $db->escape_string($template);
     if ($container != "") $container = $db->escape_string($container);
@@ -349,22 +384,22 @@ function rdbms_createobject ($container_id, $object, $template, $container, $use
     if (!empty ($container) && !empty ($user) && !empty ($_SESSION['hcms_temp_latitude']) && is_numeric ($_SESSION['hcms_temp_latitude']) && !empty ($_SESSION['hcms_temp_longitude']) && is_numeric ($_SESSION['hcms_temp_longitude']))
     {
       $sql = 'INSERT INTO container (id, container, createdate, date, latitude, longitude, user) ';
-      $sql .= 'VALUES ('.intval ($container_id).', "'.$container.'", "'.$date.'", "'.$date.'", '.floatval($_SESSION['hcms_temp_latitude']).', '.floatval($_SESSION['hcms_temp_longitude']).', "'.$user.'")';
+      $sql .= 'VALUES ('.$container_id.', "'.$container.'", "'.$date.'", "'.$date.'", '.floatval($_SESSION['hcms_temp_latitude']).', '.floatval($_SESSION['hcms_temp_longitude']).', "'.$user.'")';
     }
     elseif (!empty ($container) && !empty ($user))
     {
       $sql = 'INSERT INTO container (id, container, date, user) ';
-      $sql .= 'VALUES ('.intval ($container_id).', "'.$container.'", "'.$date.'", "'.$user.'")';
+      $sql .= 'VALUES ('.$container_id.', "'.$container.'", "'.$date.'", "'.$user.'")';
     }
     elseif (!empty ($user))
     {
       $sql = 'UPDATE container SET user="'.$user.'", date="'.$date.'" ';
-      $sql .= 'WHERE id='.intval ($container_id).'';
+      $sql .= 'WHERE id='.$container_id.'';
     }
     else
     {
       $sql = 'UPDATE container SET date="'.$date.'" ';
-      $sql .= 'WHERE id='.intval ($container_id).'';
+      $sql .= 'WHERE id='.$container_id.'';
     }
     
     $errcode = "50002";
@@ -379,12 +414,121 @@ function rdbms_createobject ($container_id, $object, $template, $container, $use
   else return false;
 }
 
-// ----------------------------------------------- set content -------------------------------------------------
+// ----------------------------------------------- get content -------------------------------------------------
 
-function rdbms_setcontent ($site, $container_id, $text_array="", $user="")
+// function: rdbms_copycontent()
+// input: source container ID, destination container ID, user name
+// output: true / false
+
+// description:
+// Selects content for a container in the database and inserts it for another container.
+
+function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
 {
   global $mgmt_config;
-  
+
+  if (intval ($container_id_source) > 0 && intval ($container_id_dest) > 0 && valid_objectname ($user))
+  {
+    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+    
+    $container_id_source = intval($container_id_source);  
+    $container_id_dest = intval($container_id_dest);
+    $user = $db->escape_string($user);
+
+    // copy textnodes
+    $sql = 'SELECT * FROM textnodes WHERE id="'.$container_id_source.'"';
+               
+    $errcode = "50101";
+    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'textnodes');
+
+    if ($done)
+    {
+      if ($row = $db->getResultRow ('textnodes'))
+      {
+        $sql = 'INSERT INTO textnodes (id, text_id, textcontent, object_id, type, user) ';
+        $sql .= 'VALUES ('.$container_id_dest.', "'.$row['text_id'].'", "'.$row['textcontent'].'", "'.$row['object_id'].'", "'.$row['type'].'", "'.$user.'")';
+        
+        $errcode = "50102";
+        $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+      }
+    }
+    
+    // copy media
+    $sql = 'SELECT * FROM media WHERE id="'.$container_id_source.'"';
+               
+    $errcode = "50103";
+    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'media');
+
+    if ($done)
+    {
+      if ($row = $db->getResultRow ('media'))
+      {
+        $sql = 'INSERT INTO media (id, filesize, filetype, width, height, red, green, blue, colorkey, imagetype, md5_hash) ';
+        $sql .= 'VALUES ('.$container_id_dest.', "'.$row['filesize'].'", "'.$row['filetype'].'", "'.$row['width'].'", "'.$row['height'].'", "'.$row['red'].'", "'.$row['green'].'", "'.$row['blue'].'", "'.$row['colorkey'].'", "'.$row['imagetype'].'", "'.$row['md5_hash'].'")';
+        
+        $errcode = "50104";
+        $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+      }
+    }
+    
+    // copy keywords
+    $sql = 'SELECT * FROM keywords_container WHERE id="'.$container_id_source.'"';
+               
+    $errcode = "50105";
+    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'keywords');
+
+    if ($done)
+    {
+      while ($row = $db->getResultRow ('keywords'))
+      {
+        $sql = 'INSERT INTO keywords_container (id, keyword_id) ';
+        $sql .= 'VALUES ('.$container_id_dest.', "'.$row['keyword_id'].'")';
+        
+        $errcode = "50106";
+        $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+      }
+    }
+    
+    // copy taxonomy
+    $sql = 'SELECT * FROM taxonomy WHERE id="'.$container_id_source.'"';
+               
+    $errcode = "50107";
+    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'taxonomy');
+
+    if ($done)
+    {
+      while ($row = $db->getResultRow ('taxonomy'))
+      {
+        $sql = 'INSERT INTO taxonomy (id, text_id, taxonomy_id, lang) ';
+        $sql .= 'VALUES ('.$container_id_dest.', "'.$row['text_id'].'", "'.$row['taxonomy_id'].'", "'.$row['lang'].'")';
+        
+        $errcode = "50108";
+        $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+      }
+    }
+
+    // save log
+    savelog ($db->getError ());    
+    $db->close();
+
+    return true;
+  }
+  else return false;
+}
+
+// ----------------------------------------------- set content -------------------------------------------------
+
+// function: rdbms_setcontent()
+// input: publication name, container ID, content as array in form of array[text-ID]=text-content (optional), type as array in form of array[text-ID]=type (optional), user name (optional)
+// output: true / false
+
+// description:
+// Saves the content in database.
+
+function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="", $user="")
+{
+  global $mgmt_config;
+
   if (intval ($container_id) > 0)
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -415,6 +559,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $user="")
       reset ($text_array);
       
       $i = 1;
+      $update = false;
       
       while (list ($text_id, $text) = each ($text_array))
       {
@@ -422,61 +567,96 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $user="")
         
         if ($text_id != "") 
         {
-          $sql = 'SELECT id FROM textnodes ';
-          $sql .= 'WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
+          $sql = 'SELECT id, textcontent, object_id FROM textnodes WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
                
           $errcode = "50004";
           $done = $db->query ($sql, $errcode, $mgmt_config['today'], $i);
 
           if ($done)
           {
-            // prepare text value for link and media items
-            if ((strpos ("_".$text_id, "link:") > 0 || strpos ("_".$text_id, "media:") > 0) && strpos ("_".$text, "|") > 0)
+            $row = $db->getResultRow ($i);
+            
+            // only save content in database if content has been changed
+            if ($row['textcontent'] != cleancontent ($text, "UTF-8") && $row['object_id']."|".$row['textcontent'] != cleancontent ($text, "UTF-8"))
             {
-              // extract object ID
-              $object_id = substr ($text, 0, strpos ($text, "|"));
-              $text = substr ($text, strpos ($text, "|") + 1);
+              // content has changed
+              $update = true;
               
-              // check and get object ID from object path
-              if ($object_id != "" && intval ($object_id) < 1) $object_id = rdbms_getobject_id ($object_id);
-              // recheck
-              if ($object_id != "" && intval ($object_id) < 1) $object_id = 0;
-            }
-            else $object_id = 0;
+              // define type
+              if (!empty ($type_array[$text_id]))
+              {
+                $type = $type_array[$text_id];
+                
+                // add text prefix if only text type letter has been provided
+                if ($type == "u" || $type == "f" || $type == "l" || $type == "c" || $type == "d" || $type == "k") $type = "text".$type;
+              }
+              else $type = "";
             
-            // clean text
-            if ($text != "")
-            {
-              $text = cleancontent ($text, "UTF-8");
-              $text = $db->escape_string($text);
-            }
+              // prepare text value for link and media items
+              if ((strpos ("_".$text_id, "link:") > 0 || strpos ("_".$text_id, "media:") > 0 || strpos ("_".$text_id, "comp:") > 0) && strpos ("_".$text, "|") > 0)
+              {
+                // delete entries for multiple components, example for text ID: comp:compname:0
+                if (strpos ("_".$text_id, "comp:") > 0 && substr_count ($text_id, ":") == 2)
+                {
+                  $text_id_base = substr ($text_id, 0, strrpos ($text_id, ":"));
+                  $sql = 'DELETE FROM textnodes WHERE id="'.$container_id.'" AND text_id LIKE "'.$text_id.':%"';
+                       
+                  $errcode = "50007";
+                  $done = $db->query ($sql, $errcode, $mgmt_config['today'], $i);
+                }
+              
+                // extract object ID
+                $object_id = substr ($text, 0, strpos ($text, "|"));
+                $text = substr ($text, strpos ($text, "|") + 1);
+                
+                // check and get object ID from object path
+                if ($object_id != "" && intval ($object_id) < 1) $object_id = rdbms_getobject_id ($object_id);
+                // recheck
+                if ($object_id != "" && intval ($object_id) < 1) $object_id = 0;
+              }
+              else $object_id = 0;
+              
+              // clean text
+              if ($text != "")
+              {
+                $text = cleancontent ($text, "UTF-8");
+                $text = $db->escape_string($text);
+              }
+              
+              $num_rows = $db->getNumRows ($i);          
             
-            $num_rows = $db->getNumRows ($i);          
-          
-            if ($num_rows > 0)
-            {
-              // query 
-              $sql = 'UPDATE textnodes SET textcontent="'.$text.'", object_id="'.$object_id.'", user="'.$user.'" ';
-              $sql .= 'WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"'; 
-
-              $errcode = "50005";
-              $db->query ($sql, $errcode, $mgmt_config['today'], ++$i);
+              if ($num_rows > 0)
+              {
+                // query 
+                $sql = 'UPDATE textnodes SET textcontent="'.$text.'", object_id="'.$object_id.'", user="'.$user.'" ';
+                if ($type != "") $sql .= ', type="'.$type.'" ';
+                $sql .= 'WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
+  
+                $errcode = "50005";
+                $db->query ($sql, $errcode, $mgmt_config['today'], ++$i);
+              }
+              elseif ($num_rows == 0)
+              {
+                // query    
+                $sql = 'INSERT INTO textnodes (id, text_id, textcontent, object_id'.($type != "" ? ', type' : '').', user) ';
+                $sql .= 'VALUES ('.$container_id.', "'.$text_id.'", "'.$text.'", "'.$object_id.'"'.($type != "" ? ', "'.$type.'"' : '').', "'.$user.'")';
+  
+                $errcode = "50006";
+                $db->query ($sql, $errcode, $mgmt_config['today'], ++$i);
+              }
             }
-            elseif ($num_rows == 0)
-            {
-              // query    
-              $sql = 'INSERT INTO textnodes (id, text_id, textcontent, object_id, user) ';      
-              $sql .= 'VALUES ('.$container_id.', "'.$text_id.'", "'.$text.'", "'.$object_id.'", "'.$user.'")';  
-
-              $errcode = "50006";
-              $db->query ($sql, $errcode, $mgmt_config['today'], ++$i);
-            }                 
           }
         }
       }
       
-      // set taxonomy
-      settaxonomy ($site, $container_id, $text_array);
+      if ($update == true)
+      {
+        // set taxonomy
+        settaxonomy ($site, $container_id);
+      
+        // set keywords
+        rdbms_setkeywords ($site, $container_id);
+      }
     }
 
     // save log
@@ -488,7 +668,189 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $user="")
   else return false;
 }
 
+// ----------------------------------------------- set keywords -------------------------------------------------
+
+// function: rdbms_setkeywords()
+// input: publication name, container ID, content as array in form of array[text-ID]=text-content
+// output: true / false
+
+// description:
+// Analyzes the keyword content regarding its keywords, saves results in database.
+
+function rdbms_setkeywords ($site, $container_id)
+{
+  global $mgmt_config;
+
+  if (valid_publicationname ($site) && intval ($container_id) > 0)
+  {
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    $container_id = intval ($container_id);
+
+    // memory for all used keyword IDs
+    $memory = array();
+    $keywords_array = array();
+    
+    // select keyword content for container
+    $sql = 'SELECT textcontent FROM textnodes WHERE id="'.$container_id.'" AND type="textk"';
+    
+    $errcode = "50300";
+    $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'select1');
+    
+    if ($done)
+    {
+      while ($row = $db->getResultRow ('select1'))
+      {
+        // extract keywords
+        if (trim ($row['textcontent']) != "")
+        {
+          $keywords_add = splitkeywords ($row['textcontent']);
+          
+          if (is_array ($keywords_add)) $keywords_array = array_merge ($keywords_array, $keywords_add);
+        }
+      }
+    }
+
+    // if keywords have been extracted
+    if (is_array ($keywords_array) && sizeof ($keywords_array) > 0)
+    {
+      // remove duplicates
+      $keywords_array = array_unique ($keywords_array);
+
+      foreach ($keywords_array as $keyword)
+      {
+        // select keyword ID
+        $sql = 'SELECT keyword_id FROM keywords WHERE keyword="'.$keyword.'"';
+             
+        $errcode = "50301";
+        $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'select2');
+
+        // keyword exists  
+        if ($done && $db->getNumRows ('select2') > 0)
+        {
+          $row = $db->getResultRow ('select2');
+          
+          $memory[] = $keyword_id = $row['keyword_id'];
+
+          // select container ID
+          $sql = 'SELECT id FROM keywords_container WHERE keyword_id='.$keyword_id.' AND id='.$container_id;
+        
+          $errcode = "50302";
+          $db->query ($sql, $errcode, $mgmt_config['today'], 'select2');
+        
+          // container ID does not exist
+          if ($db->getNumRows ('select2') < 1)
+          {
+            // insert new taxonomy entries    
+            $sql = 'INSERT INTO keywords_container (id, keyword_id) VALUES ('.$container_id.', '.$keyword_id.')';
+
+            $errcode = "50303";
+            $db->query ($sql, $errcode, $mgmt_config['today'], 'insert1');
+          }
+        }
+        // keyword does not exist
+        else
+        {
+          $keyword = $db->escape_string($keyword);
+          
+          // insert new keyword  
+          $sql = 'INSERT INTO keywords (keyword) VALUES ("'.$keyword.'");';
+          
+          $errcode = "50304";
+          $db->query ($sql, $errcode, $mgmt_config['today'], 'insert2');
+
+          // get last keyword ID
+          $memory[] = $keyword_id = $db->getInsertId();
+          
+          // insert new keyword container relationship    
+          $sql = 'INSERT INTO keywords_container (id, keyword_id) VALUES ('.$container_id.', '.$keyword_id.')';
+
+          $errcode = "50305";
+          $db->query ($sql, $errcode, $mgmt_config['today'], 'insert3');
+        }
+      }
+    }
+
+    // remove all unused keywords for container
+    if (sizeof ($memory) > 0)
+    {
+      $sql = 'DELETE FROM keywords_container WHERE id='.$container_id.' AND keyword_id NOT IN ('.implode (",", $memory).')';
+    }
+    // no keywords provided by container
+    else
+    {
+      $sql = 'DELETE FROM keywords_container WHERE id='.$container_id.'';
+    }
+
+    $errcode = "50307";
+    $db->query ($sql, $errcode, $mgmt_config['today'], 'delete');
+
+    // save log
+    savelog ($db->getError ());    
+    $db->close();
+  
+    return true;
+  }
+  else return false;
+}
+
+// ----------------------------------------------- set keywords for a publication ------------------------------------------------- 
+
+// function: rdbms_setpublicationkeywords()
+// input: publication name, recreate [true,false]
+// output: true / false
+
+// description:
+// Saves all keywords of a publication in database.
+
+function rdbms_setpublicationkeywords ($site, $recreate=false)
+{
+  global $mgmt_config;
+
+  if (valid_publicationname ($site))
+  {
+    // remove all taxonomy entries from publication
+    if ($recreate == true) rdbms_deletepublicationkeywords ($site);
+    
+    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // clean input
+    $site_escaped = $db->escape_string ($site);
+
+    // select container IDs with keywords
+    $sql = "SELECT DISTINCT textnodes.id FROM textnodes INNER JOIN object ON textnodes.id=object.id WHERE textnodes.textcontent!='' AND textnodes.type='textk'";
+    $sql .= " AND (object.objectpath LIKE _utf8'*page*/".$site_escaped."/%' COLLATE utf8_bin OR object.objectpath LIKE _utf8'*comp*/".$site_escaped."/%' COLLATE utf8_bin)";
+
+    $errcode = "50033";
+    $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+  
+    if ($done)  
+    {
+      $text_array = array();
+      
+      while ($row = $db->getResultRow ())
+      {
+        rdbms_setkeywords ($site, $row['id']);
+      }
+    }
+
+    // save log
+    savelog ($db->getError ());    
+    $db->close();    
+      
+    return true;
+  }
+  else return false;
+}
+
 // ----------------------------------------------- set taxonomy -------------------------------------------------
+
+// function: rdbms_settaxonomy()
+// input: publication name, container ID, taxonomy array in form of array[text-ID][lang][taxonomy-ID]=keyword
+// output: true / false
+
+// description:
+// Saves the used taxonomy IDs of a container in database if the taxonomy is enabled for the publication.
 
 function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
 {
@@ -554,6 +916,13 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
 
 // ----------------------------------------- set taxonomy for a publication --------------------------------------------
 
+// function: rdbms_setpublicationtaxonomy()
+// input: publication name, recreate [true,false]
+// output: true / false
+
+// description:
+// Saves all taxonomy keywords of a publication in database.
+
 function rdbms_setpublicationtaxonomy ($site, $recreate=false)
 {
   global $mgmt_config;
@@ -587,27 +956,10 @@ function rdbms_setpublicationtaxonomy ($site, $recreate=false)
     
     if ($containers)
     {
-      while ($row1 = $db->getResultRow ('containers'))
+      while ($row = $db->getResultRow ('containers'))
       {
-        // get content
-        $sql = 'SELECT text_id, textcontent FROM textnodes WHERE id="'.$row1['id'].'"';
-           
-        $errcode = "50354";
-        $contents = $db->query ($sql, $errcode, $mgmt_config['today'], 'contents');
-        
-        if ($contents)
-        {
-          $text_array = array();
-          
-          while ($row2 = $db->getResultRow ('contents'))
-          {
-            // define text array
-            $text_array[$row2['text_id']] = $row2['textcontent'];
-          }
-          
-          // set taxonomy for container
-          settaxonomy ($site, $row1['id'], $text_array);
-        }
+        // set taxonomy for container
+        settaxonomy ($site, $row1['id']);
       }
     }
     
@@ -951,35 +1303,41 @@ function rdbms_deleteobject ($object, $object_id="")
           $errcode = "50024";
           $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete3');
           
+          // delete keywords
+          $sql = 'DELETE FROM keywords_container WHERE id="'.$container_id.'"';
+
+          $errcode = "50025";
+          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete4');
+          
           // delete media attributes  
           $sql = 'DELETE FROM media WHERE id="'.$container_id.'"';
 
           $errcode = "50016";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete4');
+          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete5');
 
           // delete dailytstat 
           $sql = 'DELETE FROM dailystat WHERE id="'.$container_id.'"';
 
           $errcode = "50017";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete5');        
+          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete6');        
 
           // delete queue
           $sql = 'DELETE FROM queue WHERE object_id="'.$row_id['object_id'].'"';
 
           $errcode = "50018";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete6');
+          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete7');
           
           // delete accesslink
           $sql = 'DELETE FROM accesslink WHERE object_id="'.$row_id['object_id'].'"';
 
           $errcode = "50019";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete7');
+          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete8');
           
           // delete task
           $sql = 'DELETE FROM task WHERE object_id="'.$row_id['object_id'].'"';
 
           $errcode = "50023";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete7');    
+          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete9');    
         }
         // delete only the object reference and queue entry
         elseif ($row_id && $num_rows > 1)
@@ -987,20 +1345,26 @@ function rdbms_deleteobject ($object, $object_id="")
           $sql = 'DELETE FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
 
           $errcode = "50020";
-          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete7');
+          $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete10');
         }
 
         // delete queue
         $sql = 'DELETE FROM queue WHERE object_id="'.$row_id['object_id'].'"';   
 
         $errcode = "50021";
-        $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete8');
+        $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete11');
         
         // delete notification
         $sql = 'DELETE FROM notify WHERE object_id="'.$row_id['object_id'].'"';   
 
         $errcode = "50022";
-        $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete9');
+        $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'delete12');
+        
+        // delete/update textnodes
+        $sql = 'UPDATE textnodes SET object_id="" WHERE object_id="'.$row_id['object_id'].'"';   
+
+        $errcode = "50023";
+        $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'update1');
       }
     }
 
@@ -1035,8 +1399,46 @@ function rdbms_deletecontent ($site, $container_id, $text_id)
     // delete taxonomy
     $sql = 'DELETE FROM taxonomy WHERE id="'.$container_id.'" AND text_id="'.$text_id.'"';
        
-    $errcode = "50022";
+    $errcode = "50028";
     $db->query ($sql, $errcode, $mgmt_config['today']);
+    
+    // save log
+    savelog ($db->getError ());    
+    $db->close();
+        
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ delete keywords of a publication --------------------------------------------
+
+function rdbms_deletepublicationkeywords ($site)
+{
+  global $mgmt_config;
+  
+  // load publication management config
+  if (valid_publicationname ($site))
+  {
+    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+    
+    // select containers of publication
+    $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/" COLLATE utf8_bin';
+       
+    $errcode = "50053";
+    $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
+    
+    if ($done)
+    {
+      while ($row = $db->getResultRow ('select'))
+      {
+        // delete taxonomy
+        $sql = 'DELETE FROM keywords_container WHERE id="'.$row['id'].'"';
+           
+        $errcode = "50054";
+        $db->query ($sql, $errcode, $mgmt_config['today']);
+      }
+    }
     
     // save log
     savelog ($db->getError ());    
@@ -1065,7 +1467,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     // select containers of publication
-    $sql = 'SELECT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/" COLLATE utf8_bin';
+    $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE _utf8"*comp*/'.$site.'/" COLLATE utf8_bin OR objectpath LIKE _utf8"*page*/'.$site.'/" COLLATE utf8_bin';
        
     $errcode = "50053";
     $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
@@ -1092,6 +1494,16 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 }
 
 // ----------------------------------------------- search content ------------------------------------------------- 
+
+// function: rdbms_replacecontent()
+// input: location (optional), exlude locations/folders (optional), object-type (optional), filter for start modified date (optional), filter for end modified date (optional), 
+//        filter for template name (optional), search expression as array (optional), search expression for object/file name (optional), 
+//        filter for files size in KB (optional), image width in pixel (optional), image height in pixel (optional), primary image color (optional), image-type (optional), 
+//        SW geo-border as float value (optional), NE geo-border as float value (optional), maximum search results/hits to return (optional), count search result entries [true,false] (optional), log search expression [true/false] (optional), taxonomy level to include  as integer (optional)
+// output: result array with object paths of all found objects / false
+
+// description:
+// Searches one or more expressions in the content.
 
 function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", $date_from="", $date_to="", $template="", $expression_array="", $expression_filename="", $filesize="", $imagewidth="", $imageheight="", $imagecolor="", $imagetype="", $geo_border_sw="", $geo_border_ne="", $maxhits=1000, $count=false, $search_log=true, $taxonomy_level=2)
 {
@@ -1287,131 +1699,157 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       foreach ($expression_array as $key=>$expression)
       {
         // define search log entry
-        if ($expression != "" && is_string ($expression) && strpos ("_".$expression, "%taxonomy%/") < 1)
+        if ($expression != "" && is_string ($expression) && strpos ("_".$expression, "%taxonomy%/") < 1 && strpos ("_".$expression, "%keyword%/") < 1)
         {
           $expression_log[] = $mgmt_config['today']."|".$user."|".$expression;
         }
         
-        // look up expression in taxonomy (in all languages)
-        $taxonomy_ids = gettaxonomy_childs (@$site, "", $expression, 1, true);
-        
-        // search in taxonomy table
-        if (!empty ($taxonomy_ids) && is_array ($taxonomy_ids) && sizeof ($taxonomy_ids) > 0)
+        // search for speciifc keyword
+        if (strpos ("_".$expression, "%keyword%/") > 0)
         {
-          // advanced text-ID based search in taxonomy
-          if ($expression != "" && $key != "" && $key != "0")
+          $keyword_id = getobject ($expression);
+        
+          if ($keyword_id > 0)
           {
             // add taxonomy table
             if ($i == 1)
             {
-              $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
+              $sql_table['textnodes'] .= ' LEFT JOIN keywords_container AS kc1 ON obj.id=kc1.id';
             }
             elseif ($i > 1)
             {
               $j = $i - 1;
-              $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx'.$i.' ON tx'.$j.'.id=tx'.$i.'.id';
+              $sql_table['textnodes'] .= ' LEFT JOIN keywords_container AS kc'.$i.' ON kc'.$j.'.id=kc'.$i.'.id';
             }
           
-            $sql_expr_advanced[$i] .= '(tx'.$i.'.text_id="'.$key.'" AND tx'.$i.'.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).'))';
+            $sql_expr_advanced[$i] .= 'kc'.$i.'.keyword_id='.intval ($keyword_id);
             $i++;
           }
-          // general search in taxonomy (only one search expression possible -> break out of loop)
-          elseif ($expression != "")
-          {
-            // add taxonomy table
-            $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
-            
-            $sql_where_textnodes = 'tx1.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).')';
-
-            break;
-          }
         }
-        // search in textnodes table
+        // search for expression (using taxonomy if enabled or full text index)
         else
-        {  
-          // advanced text-ID based search in textnodes
-          if ($expression != "" && $key != "" && $key != "0")
-          {            
-            // get synonyms
-            $expression_array = getsynonym ($expression, @$lang);
-  
-            $r = 0;
-            $sql_expr_advanced[$i] = "";
-            
-            if (is_array ($expression_array) && sizeof ($expression_array) > 0)
+        {
+          // look up expression in taxonomy (in all languages)
+          $taxonomy_ids = gettaxonomy_childs (@$site, "", $expression, 1, true);
+          
+          // search in taxonomy table
+          if (!empty ($taxonomy_ids) && is_array ($taxonomy_ids) && sizeof ($taxonomy_ids) > 0)
+          {
+            // advanced text-ID based search in taxonomy
+            if ($expression != "" && $key != "" && $key != "0")
             {
-              // add textnodes table
+              // add taxonomy table
               if ($i == 1)
               {
-                $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tn1 ON obj.id=tn1.id';
+                $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
               }
               elseif ($i > 1)
               {
                 $j = $i - 1;
-                $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tn'.$i.' ON tn'.$j.'.id=tn'.$i.'.id';
+                $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx'.$i.' ON tx'.$j.'.id=tx'.$i.'.id';
               }
             
-              foreach ($expression_array as $expression)
-              {
-                $expression = str_replace ("%", '\%', $expression);
-                $expression = str_replace ("_", '\_', $expression);          
-                $expression = str_replace ("*", "%", $expression);
-                $expression = str_replace ("?", "_", $expression);
-                $expression_esc = htmlentities ($expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
-                $expression = $db->escape_string ($expression);
-                
-                if ($r > 0) $sql_expr_advanced[$i] .= ' OR ';
-      
-                if ($expression != $expression_esc) $sql_expr_advanced[$i] .= '(tn'.$i.'.text_id="'.$key.'" AND (tn'.$i.'.textcontent LIKE _utf8"%'.$expression.'%" OR tn'.$i.'.textcontent LIKE _utf8"%'.$expression_esc.'%"))';
-                else $sql_expr_advanced[$i] .= '(tn'.$i.'.text_id="'.$key.'" AND tn'.$i.'.textcontent LIKE _utf8"%'.$expression.'%")';
-                
-                // add brackets since OR is used
-                if ($sql_expr_advanced[$i] != "") $sql_expr_advanced[$i] = "(".$sql_expr_advanced[$i].")";
-                
-                $r++;
-              }
-    
+              $sql_expr_advanced[$i] .= '(tx'.$i.'.text_id="'.$key.'" AND tx'.$i.'.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).'))';
               $i++;
             }
-          }
-          // general search in all textnodes (only one search expression possible -> break out of loop)
-          elseif ($expression != "")
-          {
-            // get synonyms
-            $expression_array = getsynonym ($expression, @$lang);
-            
-            $r = 0;
-            $sql_where_textnodes = "";
-            
-            if (is_array ($expression_array) && sizeof ($expression_array) > 0)
-            { 
-              // add textnodes table
-              $sql_table['textnodes'] = "LEFT JOIN textnodes AS tn1 ON obj.id=tn1.id ".$sql_table['textnodes'];
-                
-              foreach ($expression_array as $expression)
-              {
-                $expression = str_replace ("%", '\%', $expression);
-                $expression = str_replace ("_", '\_', $expression);        
-                $expression = str_replace ("*", "%", $expression);
-                $expression = str_replace ("?", "_", $expression);
-                $expression_esc = htmlentities ($expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
-                $expression = $db->escape_string ($expression);
-                
-                if ($r > 0) $sql_where_textnodes .= ' OR ';
-                 
-                if ($expression != $expression_esc) $sql_where_textnodes .= '(tn1.textcontent LIKE _utf8"%'.$expression.'%" OR tn1.textcontent LIKE _utf8"%'.$expression_esc.'%")';
-                else $sql_where_textnodes .= 'tn1.textcontent LIKE _utf8"%'.$expression.'%"';
-                
-                $r++;
-              }
+            // general search in taxonomy (only one search expression possible -> break out of loop)
+            elseif ($expression != "")
+            {
+              // add taxonomy table
+              $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
               
-              // add brackets since OR is used
-              if ($sql_where_textnodes != "") $sql_where_textnodes = "(".$sql_where_textnodes.")";
+              $sql_where_textnodes = 'tx1.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).')';
+  
+              break;
             }
-
-            break;
           }
-        } 
+          // search in textnodes table
+          else
+          {  
+            // advanced text-ID based search in textnodes
+            if ($expression != "" && $key != "" && $key != "0")
+            {            
+              // get synonyms
+              $expression_array = getsynonym ($expression, @$lang);
+    
+              $r = 0;
+              $sql_expr_advanced[$i] = "";
+              
+              if (is_array ($expression_array) && sizeof ($expression_array) > 0)
+              {
+                // add textnodes table
+                if ($i == 1)
+                {
+                  $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tn1 ON obj.id=tn1.id';
+                }
+                elseif ($i > 1)
+                {
+                  $j = $i - 1;
+                  $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tn'.$i.' ON tn'.$j.'.id=tn'.$i.'.id';
+                }
+              
+                foreach ($expression_array as $expression)
+                {
+                  $expression = str_replace ("%", '\%', $expression);
+                  $expression = str_replace ("_", '\_', $expression);          
+                  $expression = str_replace ("*", "%", $expression);
+                  $expression = str_replace ("?", "_", $expression);
+                  $expression_esc = htmlentities ($expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
+                  $expression = $db->escape_string ($expression);
+                  
+                  if ($r > 0) $sql_expr_advanced[$i] .= ' OR ';
+        
+                  if ($expression != $expression_esc) $sql_expr_advanced[$i] .= '(tn'.$i.'.text_id="'.$key.'" AND (tn'.$i.'.textcontent LIKE _utf8"%'.$expression.'%" OR tn'.$i.'.textcontent LIKE _utf8"%'.$expression_esc.'%"))';
+                  else $sql_expr_advanced[$i] .= '(tn'.$i.'.text_id="'.$key.'" AND tn'.$i.'.textcontent LIKE _utf8"%'.$expression.'%")';
+                  
+                  // add brackets since OR is used
+                  if ($sql_expr_advanced[$i] != "") $sql_expr_advanced[$i] = "(".$sql_expr_advanced[$i].")";
+                  
+                  $r++;
+                }
+      
+                $i++;
+              }
+            }
+            // general search in all textnodes (only one search expression possible -> break out of loop)
+            elseif ($expression != "")
+            {
+              // get synonyms
+              $expression_array = getsynonym ($expression, @$lang);
+              
+              $r = 0;
+              $sql_where_textnodes = "";
+              
+              if (is_array ($expression_array) && sizeof ($expression_array) > 0)
+              { 
+                // add textnodes table
+                $sql_table['textnodes'] .= 'LEFT JOIN textnodes AS tn1 ON obj.id=tn1.id '.$sql_table['textnodes'];
+                  
+                foreach ($expression_array as $expression)
+                {
+                  $expression = str_replace ("%", '\%', $expression);
+                  $expression = str_replace ("_", '\_', $expression);        
+                  $expression = str_replace ("*", "%", $expression);
+                  $expression = str_replace ("?", "_", $expression);
+                  $expression_esc = htmlentities ($expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
+                  $expression = $db->escape_string ($expression);
+                  
+                  if ($r > 0) $sql_where_textnodes .= ' OR ';
+                   
+                  if ($expression != $expression_esc) $sql_where_textnodes .= '(tn1.textcontent LIKE _utf8"%'.$expression.'%" OR tn1.textcontent LIKE _utf8"%'.$expression_esc.'%")';
+                  else $sql_where_textnodes .= 'tn1.textcontent LIKE _utf8"%'.$expression.'%"';
+                  
+                  $r++;
+                }
+                
+                // add brackets since OR is used
+                if ($sql_where_textnodes != "") $sql_where_textnodes = "(".$sql_where_textnodes.")";
+              }
+  
+              break;
+            }
+          }
+        }
       }
       
       // save search expression in search expression log
@@ -1561,7 +1999,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     if (isset ($starthits) && intval($starthits) >= 0 && isset ($endhits) && intval($endhits) > 0) $sql .= ' LIMIT '.intval($starthits).','.intval($endhits);
     elseif (isset ($maxhits) && intval($maxhits) > 0) $sql .= ' LIMIT 0,'.intval($maxhits);
 
-    $errcode = "50022";
+    $errcode = "50082";
     $done = $db->query ($sql, $errcode, $mgmt_config['today']);
 
     if ($done)
@@ -1592,7 +2030,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         $sql .= implode (" AND ", $sql_where);
       }
       
-      $errcode = "50022";
+      $errcode = "50081";
       $done = $db->query ($sql, $errcode, $mgmt_config['today']);
 
       if ($done && ($row = $db->getResultRow ()))
@@ -1618,9 +2056,16 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
   else return false;
 }
 
-// ----------------------------------------------- replace content ------------------------------------------------- 
+// ----------------------------------------------- replace content -------------------------------------------------
 
-function rdbms_replacecontent ($folderpath, $object_type, $date_from, $date_to, $search_expression, $replace_expression, $user="sys")
+// function: rdbms_replacecontent()
+// input: location, object-type (optional), filter for start modified date (optional), filter for end modified date (optional), search expression, replace expression, user name (optional)
+// output: result array with object paths of all touched objects / false
+
+// description:
+// Replaces an expression by another in the content.
+
+function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $date_to="", $search_expression, $replace_expression, $user="sys")
 {
   global $mgmt_config;
 
@@ -1874,6 +2319,98 @@ function rdbms_replacecontent ($folderpath, $object_type, $date_from, $date_to, 
   else return false;
 }
 
+// ----------------------------------------------- get content -------------------------------------------------
+
+// function: rdbms_getcontent()
+// input: publication name, container ID, filter for text-ID (optional), filter for type (optional), filter for user name (optional)
+// output: result array with text ID as key and content as value / false
+
+// description:
+// Selects content for a container in the database.
+
+function rdbms_getcontent ($site, $container_id, $text_id="", $type="", $user="")
+{
+  global $mgmt_config;
+  
+  if (intval ($container_id) > 0)
+  {
+    $result = array();
+    
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+    
+    if ($type == "u" || $type == "f" || $type == "l" || $type == "c" || $type == "d" || $type == "k") $type = "text".$type;
+    
+    $container_id = intval ($container_id);
+    if ($text_id != "") $text_id = $db->escape_string($text_id);
+    if ($type != "") $type = $db->escape_string($type);
+    if ($user != "") $user = $db->escape_string($user);
+
+    $sql = 'SELECT text_id, textcontent FROM textnodes WHERE id="'.$container_id.'"';
+    if ($text_id != "") $sql .= ' AND text_id="'.$text_id.'"';
+    if ($type != "") $sql .= ' AND type="'.$type.'"';
+    if ($user != "") $sql .= ' AND user="'.$user.'"';
+               
+    $errcode = "50099";
+    $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+
+    if ($done)
+    {
+      while ($row = $db->getResultRow ())
+      {
+        $result[$row['text_id']] = $row['textcontent'];
+      }
+    }
+
+    // save log
+    savelog ($db->getError ());    
+    $db->close();
+    
+    if (is_array ($result) && sizeof ($result) > 0) return $result;
+    else return false;
+  }
+  else return false;
+}
+
+// ----------------------------------------------- get keywords ------------------------------------------------- 
+
+function rdbms_getkeywords ($site)
+{
+  global $mgmt_config;
+  
+  $result = array();
+
+  $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+  
+  if ($site != "" && $site != "*Null*") $site = $db->escape_string ($site);
+
+  $sql = 'SELECT keywords.keyword_id, keywords.keyword, COUNT(keywords_container.id) AS count FROM keywords INNER JOIN keywords_container ON keywords.keyword_id=keywords_container.keyword_id';
+  if ($site != "" && $site != "*Null*") $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
+  $sql .= ' GROUP BY keywords.keyword_id ORDER BY keywords.keyword';
+
+  $errcode = "50041";
+  $done = $db->query($sql, $errcode, $mgmt_config['today']);
+  
+  if ($done)
+  {
+    while ($row = $db->getResultRow ())
+    {
+      if ($row['keyword_id'] != "" && $row['keyword'] != "" && $row['count'] > 0)
+      {
+        $id = $row['keyword_id'];
+        
+        $result[$id] = $row['keyword']."|".$row['count'];
+      }
+    }
+  }
+
+  // save log
+  savelog ($db->getError ());    
+  $db->close();
+    
+  if (is_array ($result) && sizeof ($result) > 0) return $result;
+  else return false;
+} 
+
 // ----------------------------------------------- search user ------------------------------------------------- 
 
 function rdbms_searchuser ($site, $user, $maxhits=1000)
@@ -1886,12 +2423,12 @@ function rdbms_searchuser ($site, $user, $maxhits=1000)
     
     if ($site != "" && $site != "*Null*") $site = $db->escape_string ($site);
     $user = $db->escape_string ($user);
-    if ($maxhits != "") $maxhits = $db->escape_string ($maxhits);
+    $maxhits = intval ($maxhits);
     
     $sql = 'SELECT obj.objectpath, obj.hash FROM object AS obj, container AS cnt WHERE obj.id=cnt.id AND cnt.user="'.$user.'"';
     if ($site != "" && $site != "*Null*") $sql .= ' AND (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
     $sql .= ' ORDER BY cnt.date DESC';
-    if ($maxhits != "" && $maxhits > 0) $sql .= ' LIMIT 0,'.intval($maxhits);
+    if ($maxhits > 0) $sql .= ' LIMIT 0,'.intval($maxhits);
 
     $errcode = "50025";
     $done = $db->query($sql, $errcode, $mgmt_config['today']);
@@ -2186,60 +2723,6 @@ function rdbms_getobjects ($container_id, $template="")
     $db->close();    
       
     if (sizeof ($objectpath) > 0) return $objectpath;
-    else return false;
-  }
-  else return false;
-}
-
-// ----------------------------------------------- get keywords by lcoation and text ID ------------------------------------------------- 
-
-function rdbms_getkeywords ($location, $text_id)
-{
-  global $mgmt_config;
-
-  if ($location != "" &&  (substr_count ($location, "%page%") > 0 || substr_count ($location, "%comp%") > 0) && $text_id != "")
-  {
-    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
-    // clean input
-    $text_id = $db->escape_string ($text_id);
-    $location = $db->escape_string ($location);
-    
-    $location = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $location);
-
-    $result = array();
-    
-    // Select keywords from Assets
-    $sql = "SELECT textnodes.textcontent FROM textnodes, object WHERE textnodes.text_id='".$text_id."' AND textnodes.textcontent!='' AND textnodes.id=object.id AND object.objectpath LIKE '".$location."%'";
-  
-    $errcode = "50033";
-    $done = $db->query ($sql, $errcode, $mgmt_config['today']);
-  
-    if ($done)  
-    {
-      $keywords = array();
-  
-      while ($row = $db->getResultRow ())
-      {
-        // split keywords to array
-        $keywords_add = splitkeywords ($row['textcontent']);
-        
-        // merge arrays
-        $keywords = array_merge ($keywords, $keywords_add);
-      }
-      
-      if (sizeof ($keywords) > 0)
-      {
-        // list of mostly used keywords (array: keyword => count)
-        $result = array_count_values ($keywords);
-      }
-    } 
-
-    // save log
-    savelog ($db->getError ());    
-    $db->close();    
-      
-    if (sizeof ($result) > 0) return $result;
     else return false;
   }
   else return false;

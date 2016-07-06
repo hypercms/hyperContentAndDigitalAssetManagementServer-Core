@@ -330,7 +330,7 @@ function update_database_v601 ()
       $errcode = "50062";
       $db->query ($sql, $errcode, $mgmt_config['today'], 'alter');
       
-      // create new table project
+      // create new table
       $sql = "CREATE TABLE `project` (
   `project_id` int(11) NOT NULL auto_increment,
   `subproject_id` int(11) NOT NULL default '0',
@@ -356,7 +356,7 @@ function update_database_v601 ()
   return true;
 }
 
-// ------------------------------------------ update_database_v601 ----------------------------------------------
+// ------------------------------------------ update_database_v614 ----------------------------------------------
 // function: update_database_v614()
 // input: %
 // output: updated database, false on error
@@ -379,7 +379,7 @@ function update_database_v614 ()
   
   if (!$tableexists)
   {  
-    // create new table project
+    // create new table
     $sql = "CREATE TABLE `taxonomy` (
   `id` int(11) NOT NULL,
   `text_id` char(120) NOT NULL default '',
@@ -397,6 +397,164 @@ function update_database_v614 ()
   savelog (@$error);
   $db->close();
   
+  return true;
+}
+
+// ------------------------------------------ update_database_v6113 ----------------------------------------------
+// function: update_database_v6113()
+// input: %
+// output: updated database, false on error
+
+// description: 
+// Update of database to version 6.1.13
+
+function update_database_v6113 ()
+{
+  global $mgmt_config;
+  
+  // connect to MySQL
+  $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+  
+  // check if table exists
+  $sql = "SHOW TABLES LIKE 'keywords'";
+  $errcode = "50066";
+  $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'show');
+  $tableexists = $db->getNumRows ('show') > 0;
+  
+  if (!$tableexists)
+  {
+    // alter table textnodes
+    $sql = "ALTER TABLE textnodes ADD type CHAR(6) AFTER object_id;";
+    
+    $errcode = "50067";
+    $db->query ($sql, $errcode, $mgmt_config['today']);
+    
+    $sql = "ALTER TABLE textnodes ADD INDEX `textnodes_id_type` (`id`,`type`);";
+    
+    $errcode = "50068";
+    $db->query ($sql, $errcode, $mgmt_config['today']);
+   
+    // create new table
+    $sql = "CREATE TABLE `keywords` (
+  `keyword_id` int(11) NOT NULL auto_increment,
+  `keyword` char (100) NOT NULL default '',
+  PRIMARY KEY (`keyword_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+    
+    $errcode = "50069";
+    $db->query ($sql, $errcode, $mgmt_config['today']);
+    
+    // create new table
+    $sql = "CREATE TABLE `keywords_container` (
+  `id` int(11) NOT NULL default '0',
+  `keyword_id` int(11) NOT NULL default '0',
+  PRIMARY KEY (`id`,`keyword_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+    
+    $errcode = "50070";
+    $db->query ($sql, $errcode, $mgmt_config['today']);
+    
+    // update media textnodes
+    $sql = "UPDATE textnodes SET type=\"media\" WHERE text_id LIKE \"media:%\"";
+    
+    $errcode = "50072";
+    $db->query ($sql, $errcode, $mgmt_config['today']);
+    
+    // update link textnodes
+    $sql = "UPDATE textnodes SET type=\"link\" WHERE text_id LIKE \"link:%\"";
+    
+    $errcode = "50073";
+    $db->query ($sql, $errcode, $mgmt_config['today']);
+    
+    // update link textnodes
+    $sql = "UPDATE textnodes SET type=\"head\" WHERE text_id LIKE \"head:%\"";
+    
+    $errcode = "50074";
+    $db->query ($sql, $errcode, $mgmt_config['today']);
+    
+    // update link textnodes
+    $sql = "UPDATE textnodes SET type=\"file\" WHERE text_id LIKE \"%.%\"";
+    
+    $errcode = "50075";
+    $db->query ($sql, $errcode, $mgmt_config['today']);
+    
+    // insert type in textnodes
+    if (function_exists ("rdbms_setpublicationkeywords"))
+    {
+      ini_set('max_execution_time', 36000);
+      $inherit_db = inherit_db_read ();
+
+      if ($inherit_db != false && sizeof ($inherit_db) > 0)
+      {
+        foreach ($inherit_db as $inherit_db_record)
+        {
+          if ($inherit_db_record['parent'] != "")
+          {
+            $site = $inherit_db_record['parent'];
+            
+            // update standard media mapping
+            if (valid_publicationname ($site) && @is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
+            {
+              $mapdata = loadfile ($mgmt_config['abs_path_data']."config/", $site.".media.map.php");
+              
+              $mapdata = str_replace (array("\"Title\"", "\"Keywords\"", "\"Description\"", "\"Creator\"", "\"Copyright\"", "\"Quality\""), array("\"textu:Title\"", "\"textk:Keywords\"", "\"textu:Description\"", "\"textu:Creator\"", "\"textu:Copyright\"", "\"textl:Quality\""), $mapdata);
+              
+              if ($mapdata != "") savefile ($mgmt_config['abs_path_data']."config/", $site.".media.map.php", $mapdata);
+            } 
+
+            // collect template information
+            $templates = getlocaltemplates ($site);
+        
+            if (is_array ($templates) && sizeof ($templates) > 0)
+            {
+              foreach ($templates as $template)
+              {
+                $template_data = loadtemplate ($site, $template);
+                
+                if (!empty ($template_data['content']))
+                {
+                  $hypertag_array = gethypertag ($template_data['content'], "text", 0);
+                  
+                  if ($hypertag_array != false)
+                  {
+                    foreach ($hypertag_array as $hypertag)
+                    {
+                      // get tag id
+                      $text_id = getattribute ($hypertag, "id");
+                      
+                      // get tag name
+                      $hypertagname = gethypertagname ($hypertag);
+                      
+                      // remove article prefix
+                      if (substr ($hypertagname, 0, 3) == "art") $hypertagname = substr ($hypertagname, 3);
+        
+                      // update textnodes table
+                      if ($text_id != "" && $hypertagname != "")
+                      {
+                        $sql = "UPDATE textnodes INNER JOIN object ON textnodes.id=object.id SET textnodes.type=\"".$hypertagname."\" WHERE textnodes.text_id=\"".$text_id."\" AND object.template=\"".$template."\"";
+                        
+                        $errcode = "50071";
+                        $db->query ($sql, $errcode, $mgmt_config['today']);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          
+            // insert keywords
+            rdbms_setpublicationkeywords ($site);
+          }
+        }
+      }
+    }
+  }
+  
+  // save log
+  savelog ($db->getError ());
+  savelog (@$error);
+  $db->close();
+
   return true;
 }
 ?>

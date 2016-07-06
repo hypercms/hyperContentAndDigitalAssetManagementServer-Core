@@ -46,8 +46,8 @@ function correctnumber ($number)
 // ------------------------------------- cleancontent ------------------------------------------
 
 // function: cleancontent ()
-// input: expression (mixed), character set (optional)
-// output: converted expression / false on error
+// input: text as string or array, character set (optional)
+// output: cleaned text / false on error
 
 function cleancontent ($text, $charset="UTF-8")
 {
@@ -55,19 +55,30 @@ function cleancontent ($text, $charset="UTF-8")
   
   if ($text != "" && $charset != "")
   {
-    // remove tags
-    $text = strip_tags ($text);
-    
-    // decode characters
-    $text = html_decode ($text, $charset);
+    if (!is_array ($text))
+    {
+      // decode characters
+      $text = html_decode ($text, $charset);
+      
+      // remove tags
+      $text = strip_tags ($text);
+  
+      // replace characters
+      $text = str_replace (array(".....", "....", "...", ".."), ".", $text);
+      $text = str_replace (array("_____", "____", "___", "__"), "_", $text);
+      $text = str_replace (array("&quot;", "&#xA;", "&#10;", "\\", "\"", "'", "(", ")", "{", "}", "[", "]", ".", ";", "_", "\t", "\r\n", "\r", "\n"), " ", $text);
+      $text = preg_replace ('/\s+/', " ", $text);
+    }
+    elseif (is_array ($text))
+    {
+      foreach ($text as &$value)
+      {
+        $value = cleancontent ($value, $charset);
+      }
+    }
 
-    // replace characters
-    $text = str_replace (array(".....", "....", "...", ".."), ".", $text);
-    $text = str_replace (array("_____", "____", "___", "__"), "_", $text);
-    $text = str_replace (array("\"", "'", "(", ")", "{", "}", "[", "]", ".", ";", "_", "\t", "\r\n", "\r", "\n"), " ", $text);
-    $text = preg_replace ('/\s+/', " ", $text);
-
-    return $text;
+    if (!empty ($text)) return $text;
+    else return false;
   }
   else return false;
 }
@@ -348,6 +359,7 @@ function is_emptyfolder ($dir)
       if ($entry != "." && $entry != ".." && $entry != ".folder" && substr ($entry, -4) != ".off") return false;
     }
     
+    closedir ($handle);
     return true;
   }
   else return false;
@@ -2867,7 +2879,7 @@ function deletefile ($abs_path, $filename, $recursive=false)
           }
         }
         
-        @closedir ($dir);
+        closedir ($dir);
       }
       
       // delete directory itself
@@ -3738,161 +3750,6 @@ function savecontainer ($container, $type="work", $data, $user, $init=false)
 
 // ========================================= WORKFLOW ============================================
 
-// -------------------------------------- getworkflowitem ----------------------------------------
-// function: getworkflowitem()
-// input: publication name [string], location name [string], object name [string], workflow file name [string], workflow [XML-string], user name [string]
-// output: workflow item [XML-string]
-// requires: config.inc.php, editcontent
-
-function getworkflowitem ($site, $workflow_file, $workflow, $user)
-{
-  global $mgmt_config, $hcms_lang, $lang;
-  
-  if (valid_publicationname ($site) && valid_objectname ($workflow_file) && $workflow != "" && valid_objectname ($user))
-  {
-    // get usergroup users
-    $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-    $buffer_array = selectcontent ($userdata, "<user>", "<login>", "$user");  
-    $buffer_array = selectcontent ($buffer_array[0], "<memberof>", "<publication>", "$site");
-    $buffer_array = getcontent ($buffer_array[0], "<usergroup>");  
-    $group_str = substr ($buffer_array[0], 1, strlen ($buffer_array[0])-2);
-    $group_array = explode ("|", $group_str);
-    
-    // check if user owns workflow items
-    $item_array = getxmlcontent ($workflow, "<item>");
-    
-    foreach ($item_array as $item)
-    {
-      $type_array = getcontent ($item, "<type>");
-      
-      if ($type_array[0] == "user")
-      {
-        $buffer_array = getcontent ($item, "<user>");
-        
-        if ($buffer_array[0] == $user) $useritem_array[] = $item;
-      }
-      elseif ($type_array[0] == "usergroup")
-      {
-        $buffer_array = getcontent ($item, "<group>");
-        
-        if (in_array ($buffer_array[0], $group_array)) $useritem_array[] = $item;
-      }
-    }
-    
-    // if user own items and the predecessors have not passed their items
-    if (is_array ($useritem_array) && sizeof ($useritem_array) > 0)
-    { 
-      // check if predecessors are available and if they passed their item
-      foreach ($useritem_array as $useritem)
-      {
-        $id_array = getcontent ($useritem, "<id>");        
-        $passed_array = getcontent ($useritem, "<passed>");
-        $pre_array = getcontent ($useritem, "<pre>");
-  
-        // if item has predecessors
-        if ($pre_array != false)
-        {
-          foreach ($pre_array as $pre)
-          {
-            $buffer_array = selectcontent ($workflow, "<item>", "<id>", $pre);   
-            
-            // if a predecessor was found
-            if ($buffer_array != false) 
-            {
-              $prepassed_array = getcontent ($buffer_array[0], "<passed>");
-    
-              if ($prepassed_array != false)
-              {
-                // check if the predecessor has passed the workflow (this is a must)
-                if ($prepassed_array[0] == 1) 
-                {
-                  $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $id_array[0]);
-                  $sucpassed_array = getcontent ($buffer_array[0], "<passed>");
-                  
-                  // if item has sucessors
-                  if ($sucpassed_array != false) 
-                  {
-                    // check if the sucessor has not already passed the workflow
-                    if ($sucpassed_array[0] != 1) 
-                    {
-                      if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
-                      else $passeditem_array[] = $useritem;
-                    }
-                  }
-                  // otherwise item is last instance in workflow branch
-                  else
-                  {
-                    if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
-                    else $passeditem_array[] = $useritem;                
-                  }
-                }     
-              }     
-            }  
-          }   
-        }
-        // if item has no predecessors, this must be the user who owns start item
-        else
-        {
-          $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $id_array[0]);
-          $sucpassed_array = getcontent ($buffer_array[0], "<passed>");
-  
-          // if item has sucessors
-          if ($sucpassed_array != false) 
-          {
-            // check if the sucessor has not already passed the workflow
-            if ($sucpassed_array[0] != 1) 
-            {
-              if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
-              else $passeditem_array[] = $useritem;   
-            }
-            // sucessor passed his item
-            else
-            {
-              // find a last passed instance in workflow (end of workflow or a branch was reached)
-              foreach ($item_array as $item)
-              {
-                $buffer_array = getcontent ($item, "<id>");
-                $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $buffer_array[0]);  
-                
-                if ($buffer_array == false)
-                {
-                  $buffer_array = getcontent ($item, "<passed>");
-                  
-                  if ($buffer_array[0] == 1)
-                  {
-                    $passeditem_array[] = $useritem;
-                    break;
-                  }
-                } 
-              }         
-            }
-          }
-          // otherwise item is last instance in workflow branch
-          else
-          {
-            if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
-            else $passeditem_array[] = $useritem;           
-          }
-        }        
-      }
-    }
-    else return false;
-   
-    // check for free items of the user
-    if (is_array ($freeitem_array) && sizeof ($freeitem_array) > 0)
-    {
-      return $freeitem_array[0];
-    }
-    // check for passed items of the user
-    elseif (is_array ($passeditem_array) && sizeof ($passeditem_array) > 0)
-    {
-      return $passeditem_array[0];
-    }
-    else return false;
-  }
-  else return false;
-}
-
 // -------------------------------------------- checkworkflow -------------------------------------------
 // function: checkworkflow()
 // input: publication name [string], location [string], object name [string], category [page,comp] (optional), container name [string] (optional), container [XML string] (optional), view name [string] (optional), view store [string] (optional), user name [string]
@@ -4606,29 +4463,6 @@ function inherit_db_deleteparent ($inherit_db, $parent)
 }
 
 // ======================================= INSTANCE OPERATIONS ==========================================
-
-// ------------------------- getconfigvalue -----------------------------
-// function: getconfigvalue()
-// input: settings array, value/substring in array key (optional)
-// output: value of setting
-
-// description:
-// Help function for createinstance
-
-function getconfigvalue ($config, $in_key="")
-{
-  if (is_array ($config))
-  {
-    foreach ($config as $key => $value)
-    {
-      if ($in_key != "" && substr_count ($key, $in_key) > 0 && $value != "") return $value;
-      elseif ($in_key == "" && $value != "") return $value;
-    }
-    
-    return "";
-  }
-  else return "";
-}
 
 // ------------------------- createinstance -----------------------------
 // function: createinstance()
@@ -6178,8 +6012,9 @@ function deletepublication ($site_name, $user="sys")
     while ($file = @readdir ($handle))
     {
       if ($file != "." && $file != ".." && $file != ".folder") $file_count++;
-    }    
-    @closedir ($handle);
+    }
+    
+    closedir ($handle);
   }
   
   // check if page folder is empty
@@ -6192,8 +6027,9 @@ function deletepublication ($site_name, $user="sys")
     while ($file = @readdir ($handle))
     {
       if ($file != "." && $file != ".." && $file != ".folder") $file_count++;
-    }    
-    @closedir ($handle);
+    }
+       
+    closedir ($handle);
   }
 
   if ($file_count > 0)
@@ -6666,85 +6502,6 @@ function createtemplate ($site, $template, $cat)
   $result['message'] = $show;  
   
   return $result;     
-}
-
-// ----------------------------------------- gettemplates ---------------------------------------------
-// function: gettemplates()
-// input: publication name, object category [page,comp,meta]
-// output: template file name list as array / false on error
-// requires: config.inc.php to be loaded before
-
-// description:
-// This function returns a list of all templates for pages or components.
-// Based on the inheritance settings of the publication the template will be loaded with highest priority from the own publication and if not available from a parent publication.
-
-function gettemplates ($site, $cat)
-{
-  global $user, $mgmt_config, $hcms_lang, $lang;
-  
-  $result = array();
-  
-  // set default language
-  if ($lang == "") $lang = "en";
-  
-  if (valid_publicationname ($site) && ($cat == "page" || $cat == "comp" || $cat == "meta"))
-  {
-    $site_array = array();
-    
-    // load publication inheritance setting
-    if ($mgmt_config[$site]['inherit_tpl'] == true)
-    {
-      $inherit_db = inherit_db_read ();
-      $site_array = inherit_db_getparent ($inherit_db, $site);
-      
-      // add own publication
-      $site_array[] = $site;
-    }
-    else $site_array[] = $site;
-    
-    $template_array = array();
-
-    foreach ($site_array as $site_source)
-    {
-      $dir_template = dir ($mgmt_config['abs_path_template'].$site_source."/");
-
-      if ($dir_template != false)
-      {
-        while ($entry = $dir_template->read())
-        {
-          if ($entry != "." && $entry != ".." && !is_dir ($entry) && !preg_match ("/.inc.tpl/", $entry) && !preg_match ("/.tpl.v_/", $entry))
-          {
-            if ($cat == "page" && strpos ($entry, ".page.tpl") > 0)
-            {
-              $template_array[] = $entry;
-            }
-            elseif ($cat == "comp" && strpos ($entry, ".comp.tpl") > 0)
-            {
-              $template_array[] = $entry;
-            }
-            elseif ($cat == "meta" && strpos ($entry, ".meta.tpl") > 0)
-            {
-              $template_array[] = $entry;
-            }            
-          }
-        }
-
-        $dir_template->close();
-      }
-    }
-
-    if (is_array ($template_array) && sizeof ($template_array) > 0)
-    {
-      // remove double entries (double entries due to parent publications won't be listed)
-      $template_array = array_unique ($template_array);
-      natcasesort ($template_array);
-      reset ($template_array);
-      
-      return $template_array;
-    }
-    else return false;
-  }
-  else return false;
 }
 
 // ----------------------------------------- loadtemplate ---------------------------------------------
@@ -9237,6 +8994,8 @@ function deletefolder ($site, $location, $folder, $user)
           break;
         }
       }
+      
+      closedir ($fh);
     }
     
     // folder exists
@@ -12450,43 +12209,12 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
             // relational DB connectivity
             if ($mgmt_config['db_connect_rdbms'] != "")
             {
-              // extract text content
-              $textnode = null;
-              $textnode = getcontent ($containerdata, "<text>");
+              // create new object in DB
+              rdbms_createobject ($contentfile_new_id, convertpath ($site, $location.$page_sec, $cat), $templatefile_self, $contentfile_new, $user);
               
-              if (is_array ($textnode) && sizeof ($textnode) > 0)
-              {
-                foreach ($textnode as $text)
-                {
-                  $text_id = getcontent ($text, "<text_id>");
-                  $id = $text_id[0];
-                  $textcontent = getcontent ($text, "<textcontent>");
-                  if ($id != "" && $textcontent[0] != "") $text_array[$id] = $textcontent[0];
-                }
-              }
-              
-              // extract media content
-              $textnode = null;
-              $textnode = getcontent ($containerdata, "<multimedia>");
-              
-              if (is_array ($textnode) && sizeof ($textnode) > 0)
-              {
-                foreach ($textnode as $text)
-                {
-                  $text_id = getcontent ($text, "<file>");
-                  $id = $text_id[0];
-                  $textcontent = getcontent ($text, "<content>");
-                  if ($id != "" && $textcontent[0] != "") $text_array[$id] = $textcontent[0];
-                }
-              }                
-
-              // relational DB connectivity
-              if ($mgmt_config['db_connect_rdbms'] != "")
-              {
-                rdbms_createobject ($contentfile_new_id, convertpath ($site, $location.$page_sec, $cat), $templatefile_self, $contentfile_new, $user);
-                if (isset ($text_array) && is_array ($text_array) && sizeof ($text_array) > 0) rdbms_setcontent ($site, $contentfile_new_id, $text_array, $user);
-              }           
-            }                
+              // copy content in DB
+              rdbms_copycontent ($contentfile_id, $contentfile_new_id, $user);
+            }
             
             // save object
             if ($pagedata != false)
@@ -12502,14 +12230,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
               @copy (getmedialocation ($site, $mediafile_self, "abs_path_media").$site."/".$mediafile_self, getmedialocation ($site, $mediafile_new, "abs_path_media").$site."/".$mediafile_new);
               $mediafile_self_thumb = substr ($mediafile_self, 0, strrpos ($mediafile_self, ".")).".thumb.jpg";
               $mediafile_new_thumb = substr ($mediafile_new, 0, strrpos ($mediafile_new, ".")).".thumb.jpg";
-              
-              // copy/write media information to DB
-              if ($contentcount != "" && $contentfile_id != "")
-              {
-                $rdbms_media = rdbms_getmedia (intval ($contentfile_id));
-                if (is_array ($rdbms_media)) rdbms_setmedia ($contentcount, $rdbms_media['filesize'], $rdbms_media['filetype'], $rdbms_media['width'], $rdbms_media['height'], $rdbms_media['red'], $rdbms_media['green'], $rdbms_media['blue'], $rdbms_media['colorkey'], $rdbms_media['imagetype'], $rdbms_media['md5_hash']);
-              }
-              
+
               // remote client
               remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self, "abs_path_media").$site."/", "", $mediafile_self, $mediafile_new);                 
               
@@ -13266,101 +12987,6 @@ function lockobject ($site, $location, $page, $user)
   $result['objecttype'] = $filetype;   
   
   return $result;
-} 
-
-// ---------------------------------------- getlockobjects --------------------------------------------
-// function: getlockobjects()
-// input: user name
-// output: object path array / false
-
-function getlockedobjects ($user)
-{      
-  global $mgmt_config;
-  
-  if (valid_objectname ($user))
-  {
-    $dir = $mgmt_config['abs_path_data']."checkout/";
-    $file = $user.".dat";
-    
-    $save = false;
-    
-    // get checked out objects of user
-    $data = loadfile_fast ($dir, $file);
-    
-    if ($data != "")
-    {
-      $checkedout_array = explode ("\n", $data);
-      
-      if (is_array ($checkedout_array))
-      {
-        $object_array = array();
-        
-        foreach ($checkedout_array as $checkedout_rec)
-        {
-          if (substr_count ($checkedout_rec, "|") > 0)
-          {
-            // get container name            
-            list ($site, $cat, $container) = explode ("|", trim ($checkedout_rec));
-  
-            // if no corresponding siteaccess for this user
-            if (!checkpublicationpermission ($site))
-            {
-              // get container id
-              $container_id = substr ($container, 0, strpos ($container, ".xml"));
-      
-              // check-in content container
-              $test = unlockfile ($user, getcontentlocation ($container_id, 'abs_path_content'), $container.".wrk");
-            
-              // remove entry from list
-              if ($test == true)
-              {
-                $data = str_replace ($checkedout_rec."\n", "", $data);              
-                $save = true;
-              }
-            }
-            // user has access
-            else
-            {
-              // find corresponding objects in link management database
-              $result_array = getconnectedobject ($container);
-              
-              if ($result_array != false)
-              {  
-                foreach ($result_array as $result)
-                {
-                  $location = $result['convertedlocation'];
-                  $page = $result['object'];
-                  $page = correctfile ($location, $page, $user);
-                  
-                  // check if file exists
-                  if ($page != false)
-                  {
-                    $object_array[] = $location.$page;
-                  }
-                }
-              }
-            }
-          }
-        }
-        
-        // update checked out list if necessary
-        if ($save)
-        {
-          savefile ($dir, $file, $data);
-        }
-        
-        if (sizeof ($object_array) > 0)
-        {
-          natcasesort ($object_array);
-          return $object_array;
-        }
-        else return false;
-      }
-      else return false;
-    }
-    else return false;
-  }
-  else return false;
 }
 
 // ---------------------------------------- unlockobject --------------------------------------------
@@ -16070,7 +15696,8 @@ function licensenotification ()
         }
       }
     }
-    
+
+    closedir ($config_dir);
     return true;
   }
   else
@@ -16224,66 +15851,6 @@ function createfavorite ($site="", $location="", $page="", $id="", $user)
   else return false;
 }
 
-// --------------------------------------- getfavorites -------------------------------------------
-// function: getfavorites ()
-// input: user name, output [path,id] (optional)
-// output: object path or id array of users favorites / false
-
-function getfavorites ($user, $output="path")
-{
-  global $mgmt_config;
-  
-  if (valid_objectname ($user))
-  {
-    $dir = $mgmt_config['abs_path_data']."checkout/";
-    $file = $user.".fav";
-    
-    if (is_file ($dir.$file))
-    {
-      $data = loadfile ($dir, $file);
-      
-      if ($data != false && trim ($data) != "")
-      {
-        $data = trim ($data, "|");
-        $object_id_array = explode ("|", $data);
-        
-        if (is_array ($object_id_array))
-        {
-          if (strtolower ($output) == "id")
-          {
-            sort ($object_id_array);
-            return $object_id_array;
-          }
-          else
-          {
-            $object_path_array = array();
-            
-            foreach ($object_id_array as $object_id)
-            {
-              if ($object_id != "")
-              {
-                $object_path = rdbms_getobject ($object_id);
-                if (!empty ($object_path)) $object_path_array[] = $object_path;
-              }
-            }
-            
-            if (sizeof ($object_path_array) > 0)
-            {
-              natcasesort ($object_path_array);
-              return $object_path_array;
-            }
-            else return false;
-          }
-        }
-        else return false;
-      }
-      else return false;
-    }
-    else return false;
-  }
-  else return false;
-}
-
 // --------------------------------------- deletefavorite -------------------------------------------
 // function: deletefavorite ()
 // input: publication name (optional), location (optional), object name (optional), identifier (object ID, object hash) (optional), user name
@@ -16331,94 +15898,6 @@ function deletefavorite ($site="", $location="", $page="", $id="", $user)
         return savefile ($dir, $file, $data);
       }
       else return false;
-    }
-    else return false;
-  }
-  else return false;
-}
-
-// ====================================== HOME BOXES =========================================
-
-// --------------------------------------- setboxes -------------------------------------------
-// function: setboxes ()
-// input: home box names as array or string, user name
-// output: true / false
-
-function setboxes ($name_array, $user)
-{
-  global $mgmt_config;
-  
-  if (valid_objectname ($user))
-  {
-    $dir = $mgmt_config['abs_path_data']."checkout/";
-    $file = $user.".home.dat";
-    
-    // set input as array if it is string and not empty
-    if (!is_array ($name_array))
-    {
-      $name_array = trim ($name_array, "|");
-      
-      // provided input has seperators
-      if (substr_count ($name_array, "|") > 0)
-      {
-        $name_array = explode ("|", $name_array);
-      }
-      // provided input is single value as string
-      else
-      {
-        $temp = $name_array;      
-        $name_array = array();
-        $name_array[0] = $temp;
-      }
-    }
-    
-    $data = "|";
-
-    // save box in file
-    foreach ($name_array as $name)
-    {
-      if (valid_objectname ($name) && is_file ($mgmt_config['abs_path_cms']."box/".$name.".inc.php"))
-      {
-        $data .= $name."|";
-      }
-    }
-    
-    // save file
-    return savefile ($dir, $file, $data);
-  }
-  else return false;
-}
-
-// --------------------------------------- getboxes -------------------------------------------
-// function: getboxes ()
-// input: user name
-// output: selected home box names of user as array / false
-
-function getboxes ($user)
-{
-  global $mgmt_config;
-  
-  if (valid_objectname ($user))
-  {
-    $dir = $mgmt_config['abs_path_data']."checkout/";
-    $file = $user.".home.dat";
-    
-    if (is_file ($dir.$file))
-    {
-      $data = loadfile ($dir, $file);
-      
-      if ($data != false && trim ($data) != "")
-      {
-        $data = trim ($data, "|");
-        $name_array = explode ("|", $data);
-        
-        if (is_array ($name_array) && sizeof ($name_array) > 0)
-        {
-          return $name_array;
-        }
-        else return array();
-      }
-      else return array();
     }
     else return false;
   }

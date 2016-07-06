@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['sr'] = "Prevodi";
 $hcms_lang['enable-languages-for-translation']['sr'] = "5 jezika za prevod";
 $hcms_lang['user-for-access-links']['sr'] = "Korisnik internet linkovi";
 $hcms_lang['read-only-content']['sr'] = "Pročitajte-samo sadržaj";
+$hcms_lang['reindex-content-of-all-media-files']['sr'] = "Reindex sadržaj svih medija fajlova";
 ?>

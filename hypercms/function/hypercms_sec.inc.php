@@ -895,6 +895,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       update_database_v586 ();
       update_database_v601 ();
       update_database_v614 ();
+      update_database_v6113 ();
     
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
       $charset = getcharset ("", $userdata); 
@@ -2259,7 +2260,7 @@ function html_encode ($expression, $encoding="", $js_protection=false)
 
 // ------------------------- html_decode -----------------------------
 // function: html_decode()
-// input: variable as string or array, conversion of all special characters based on given character set (optional)
+// input: epxression as string or array, conversion of all special characters based on character set (optional)
 // output: html decoded value as array or string / false on error
 
 // description:

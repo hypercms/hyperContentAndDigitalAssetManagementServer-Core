@@ -1385,4 +1385,5 @@ $hcms_lang['translate']['el'] = "Μετάφραση";
 $hcms_lang['enable-languages-for-translation']['el'] = "Ενεργοποιημένη γλώσσα για μετάφραση.";
 $hcms_lang['user-for-access-links']['el'] = "Χρήστη για πρόσβαση σε διασυνδέσεις";
 $hcms_lang['read-only-content']['el'] = "Μόνο ανάγνωση περιεχομένου";
+$hcms_lang['reindex-content-of-all-media-files']['el'] = "Κάντε νέα δεικτοδότηση περιεχόμενο όλων των αρχείων μέσων";
 ?>

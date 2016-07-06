@@ -49,6 +49,29 @@ function getserverload ()
   
   return $result;
 }
+
+// ------------------------- getconfigvalue -----------------------------
+// function: getconfigvalue()
+// input: settings array, value/substring in array key (optional)
+// output: value of setting
+
+// description:
+// Help function for createinstance
+
+function getconfigvalue ($config, $in_key="")
+{
+  if (is_array ($config))
+  {
+    foreach ($config as $key => $value)
+    {
+      if ($in_key != "" && substr_count ($key, $in_key) > 0 && $value != "") return $value;
+      elseif ($in_key == "" && $value != "") return $value;
+    }
+    
+    return "";
+  }
+  else return "";
+}
  
 // =========================================== REQUESTS AND SESSION ==============================================
  
@@ -569,13 +592,28 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
 
 // --------------------------------------- getkeywords -------------------------------------------
 // function: getkeywords ()
+// input: publication name (optional) 
+// output: keywords as array / false on error
+
+// description:
+// Generates an array holding all keywords and the number as value and keyword ID as key.
+
+function getkeywords ($site="")
+{
+  global $mgmt_config;
+	
+  return rdbms_getkeywords ($site);
+}
+
+// --------------------------------------- getmetakeywords -------------------------------------------
+// function: getmetakeywords ()
 // input: text as string, language to be used for stop word list [de,en,...] (optional), character set (optional) 
 // output: keywords as array /false on error
 
 // description:
 // Generates a keyword list from a plain text. Stop word lists are defined in data/include/stopwords.inc.php
 
-function getkeywords ($text, $language="en", $charset="UTF-8")
+function getmetakeywords ($text, $language="en", $charset="UTF-8")
 {
   global $mgmt_config;
 	
@@ -632,15 +670,15 @@ function getkeywords ($text, $language="en", $charset="UTF-8")
   else return false;
 }
 
-// --------------------------------------- getdescription -------------------------------------------
-// function: getdescription ()
+// --------------------------------------- getmetadescription -------------------------------------------
+// function: getmetadescription ()
 // input: text as string
 // output: cleanded description of provided text /false on error
 
 // description:
 // Generates a description from a text, to be used as meta information.
 
-function getdescription ($text, $charset="UTF-8")
+function getmetadescription ($text, $charset="UTF-8")
 {
   if ($text != "")
   {
@@ -1851,6 +1889,142 @@ function getcontainerversions ($container)
   else return false;
 }
 
+// ---------------------- getlocaltemplates -----------------------------
+// function: getlocaltemplates()
+// input: publication name, template category [page,comp,meta,inc] (optional)
+// output: array with all template names / false
+
+// description:
+// This function returns a list of all templates of a publication without inherited templates from other publications.
+
+function getlocaltemplates ($site, $cat="")
+{
+  global $mgmt_config;
+  
+  if (valid_publicationname ($site))
+  {
+    $dir_template = @dir ($mgmt_config['abs_path_template'].$site."/");
+
+    $template_files = array();
+  
+    if ($dir_template != false)
+    {
+      while ($entry = $dir_template->read())
+      {
+        if ($entry != "." && $entry != ".." && !is_dir ($entry) && substr_count ($entry, ".tpl.v_") == 0 && substr_count ($entry, ".bak") == 0)
+        {
+          if ($cat == "page" && strpos ($entry, ".page.tpl") > 0)
+          {
+            $template_files[] = $entry;
+          }
+          elseif ($cat == "comp" && strpos ($entry, ".comp.tpl") > 0)
+          {
+            $template_files[] = $entry;
+          }
+          elseif ($cat == "meta" && strpos ($entry, ".meta.tpl") > 0)
+          {
+            $template_files[] = $entry;
+          }                
+          elseif ($cat == "inc" && strpos ($entry, ".inc.tpl") > 0)
+          {
+            $template_files[] = $entry;
+          }
+          elseif ($cat == "")
+          {
+            $template_files[] = $entry;
+          }
+        }
+      }
+  
+      $dir_template->close();
+    }
+      
+    if (sizeof ($template_files) > 0)
+    {
+      natcasesort ($template_files);
+      reset ($template_files);
+      
+      return $template_files;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// ----------------------------------------- gettemplates ---------------------------------------------
+// function: gettemplates()
+// input: publication name, object category [page,comp,meta]
+// output: template file name list as array / false on error
+// requires: config.inc.php to be loaded before
+
+// description:
+// This function returns a list of all templates for pages or components.
+// Based on the inheritance settings of the publication the template will be loaded with highest priority from the own publication and if not available from a parent publication.
+
+function gettemplates ($site, $cat)
+{
+  global $user, $mgmt_config, $hcms_lang, $lang;
+
+  if (valid_publicationname ($site) && ($cat == "page" || $cat == "comp" || $cat == "meta"))
+  {
+    $site_array = array();
+    
+    // load publication inheritance setting
+    if ($mgmt_config[$site]['inherit_tpl'] == true)
+    {
+      $inherit_db = inherit_db_read ();
+      $site_array = inherit_db_getparent ($inherit_db, $site);
+      
+      // add own publication
+      $site_array[] = $site;
+    }
+    else $site_array[] = $site;
+    
+    $template_array = array();
+
+    foreach ($site_array as $site_source)
+    {
+      $dir_template = dir ($mgmt_config['abs_path_template'].$site_source."/");
+
+      if ($dir_template != false)
+      {
+        while ($entry = $dir_template->read())
+        {
+          if ($entry != "." && $entry != ".." && !is_dir ($entry) && !preg_match ("/.inc.tpl/", $entry) && !preg_match ("/.tpl.v_/", $entry))
+          {
+            if ($cat == "page" && strpos ($entry, ".page.tpl") > 0)
+            {
+              $template_array[] = $entry;
+            }
+            elseif ($cat == "comp" && strpos ($entry, ".comp.tpl") > 0)
+            {
+              $template_array[] = $entry;
+            }
+            elseif ($cat == "meta" && strpos ($entry, ".meta.tpl") > 0)
+            {
+              $template_array[] = $entry;
+            }            
+          }
+        }
+
+        $dir_template->close();
+      }
+    }
+
+    if (is_array ($template_array) && sizeof ($template_array) > 0)
+    {
+      // remove double entries (double entries due to parent publications won't be listed)
+      $template_array = array_unique ($template_array);
+      natcasesort ($template_array);
+      reset ($template_array);
+      
+      return $template_array;
+    }
+    else return false;
+  }
+  else return false;
+}
+            
 // ---------------------- gettemplateversions -----------------------------
 // function: gettemplateversions()
 // input: publication name, template name
@@ -1892,8 +2066,7 @@ function gettemplateversions ($site, $template)
     
     if (sizeof ($result) > 0)
     {
-      ksort ($result);
-      return $result;
+      return ksort ($result);
     }
     else return false;
   }
@@ -2991,6 +3164,199 @@ function getlockedfileinfo ($location, $file)
   else return false; 
 }
 
+// ---------------------------------------- getlockobjects --------------------------------------------
+// function: getlockobjects()
+// input: user name
+// output: object path array / false
+
+function getlockedobjects ($user)
+{      
+  global $mgmt_config;
+  
+  if (valid_objectname ($user))
+  {
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".dat";
+    
+    $save = false;
+    
+    // get checked out objects of user
+    $data = loadfile_fast ($dir, $file);
+    
+    if ($data != "")
+    {
+      $checkedout_array = explode ("\n", $data);
+      
+      if (is_array ($checkedout_array))
+      {
+        $object_array = array();
+        
+        foreach ($checkedout_array as $checkedout_rec)
+        {
+          if (substr_count ($checkedout_rec, "|") > 0)
+          {
+            // get container name            
+            list ($site, $cat, $container) = explode ("|", trim ($checkedout_rec));
+  
+            // if no corresponding siteaccess for this user
+            if (!checkpublicationpermission ($site))
+            {
+              // get container id
+              $container_id = substr ($container, 0, strpos ($container, ".xml"));
+      
+              // check-in content container
+              $test = unlockfile ($user, getcontentlocation ($container_id, 'abs_path_content'), $container.".wrk");
+            
+              // remove entry from list
+              if ($test == true)
+              {
+                $data = str_replace ($checkedout_rec."\n", "", $data);              
+                $save = true;
+              }
+            }
+            // user has access
+            else
+            {
+              // find corresponding objects in link management database
+              $result_array = getconnectedobject ($container);
+              
+              if ($result_array != false)
+              {  
+                foreach ($result_array as $result)
+                {
+                  $location = $result['convertedlocation'];
+                  $page = $result['object'];
+                  $page = correctfile ($location, $page, $user);
+                  
+                  // check if file exists
+                  if ($page != false)
+                  {
+                    $object_array[] = $location.$page;
+                  }
+                }
+              }
+            }
+          }
+        }
+        
+        // update checked out list if necessary
+        if ($save)
+        {
+          savefile ($dir, $file, $data);
+        }
+        
+        if (sizeof ($object_array) > 0)
+        {
+          natcasesort ($object_array);
+          return $object_array;
+        }
+        else return false;
+      }
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// --------------------------------------- getfavorites -------------------------------------------
+// function: getfavorites ()
+// input: user name, output [path,id] (optional)
+// output: object path or id array of users favorites / false
+
+function getfavorites ($user, $output="path")
+{
+  global $mgmt_config;
+  
+  if (valid_objectname ($user))
+  {
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".fav";
+    
+    if (is_file ($dir.$file))
+    {
+      $data = loadfile ($dir, $file);
+      
+      if ($data != false && trim ($data) != "")
+      {
+        $data = trim ($data, "|");
+        $object_id_array = explode ("|", $data);
+        
+        if (is_array ($object_id_array))
+        {
+          if (strtolower ($output) == "id")
+          {
+            sort ($object_id_array);
+            return $object_id_array;
+          }
+          else
+          {
+            $object_path_array = array();
+            
+            foreach ($object_id_array as $object_id)
+            {
+              if ($object_id != "")
+              {
+                $object_path = rdbms_getobject ($object_id);
+                if (!empty ($object_path)) $object_path_array[] = $object_path;
+              }
+            }
+            
+            if (sizeof ($object_path_array) > 0)
+            {
+              natcasesort ($object_path_array);
+              return $object_path_array;
+            }
+            else return false;
+          }
+        }
+        else return false;
+      }
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// ====================================== HOME BOXES =========================================
+
+// --------------------------------------- getboxes -------------------------------------------
+// function: getboxes ()
+// input: user name
+// output: selected home box names of user as array / false
+
+function getboxes ($user)
+{
+  global $mgmt_config;
+  
+  if (valid_objectname ($user))
+  {
+    $dir = $mgmt_config['abs_path_data']."checkout/";
+    $file = $user.".home.dat";
+    
+    if (is_file ($dir.$file))
+    {
+      $data = loadfile ($dir, $file);
+      
+      if ($data != false && trim ($data) != "")
+      {
+        $data = trim ($data, "|");
+        $name_array = explode ("|", $data);
+        
+        if (is_array ($name_array) && sizeof ($name_array) > 0)
+        {
+          return $name_array;
+        }
+        else return array();
+      }
+      else return array();
+    }
+    else return false;
+  }
+  else return false;
+}
+
 // =========================== CHAT ==================================
 
 // ---------------------- getusersonline -----------------------------
@@ -4028,6 +4394,163 @@ function getuserinformation ()
   }
   
   if (!empty ($user_array) && is_array ($user_array)) return $user_array;
+  else return false;
+}
+
+// ========================================= WORKFLOW ============================================
+
+// -------------------------------------- getworkflowitem ----------------------------------------
+// function: getworkflowitem()
+// input: publication name [string], location name [string], object name [string], workflow file name [string], workflow [XML-string], user name [string]
+// output: workflow item [XML-string]
+// requires: config.inc.php, editcontent
+
+function getworkflowitem ($site, $workflow_file, $workflow, $user)
+{
+  global $mgmt_config, $hcms_lang, $lang;
+  
+  if (valid_publicationname ($site) && valid_objectname ($workflow_file) && $workflow != "" && valid_objectname ($user))
+  {
+    // get usergroup users
+    $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+    $buffer_array = selectcontent ($userdata, "<user>", "<login>", "$user");  
+    $buffer_array = selectcontent ($buffer_array[0], "<memberof>", "<publication>", "$site");
+    $buffer_array = getcontent ($buffer_array[0], "<usergroup>");  
+    $group_str = substr ($buffer_array[0], 1, strlen ($buffer_array[0])-2);
+    $group_array = explode ("|", $group_str);
+    
+    // check if user owns workflow items
+    $item_array = getxmlcontent ($workflow, "<item>");
+    
+    foreach ($item_array as $item)
+    {
+      $type_array = getcontent ($item, "<type>");
+      
+      if ($type_array[0] == "user")
+      {
+        $buffer_array = getcontent ($item, "<user>");
+        
+        if ($buffer_array[0] == $user) $useritem_array[] = $item;
+      }
+      elseif ($type_array[0] == "usergroup")
+      {
+        $buffer_array = getcontent ($item, "<group>");
+        
+        if (in_array ($buffer_array[0], $group_array)) $useritem_array[] = $item;
+      }
+    }
+    
+    // if user own items and the predecessors have not passed their items
+    if (is_array ($useritem_array) && sizeof ($useritem_array) > 0)
+    { 
+      // check if predecessors are available and if they passed their item
+      foreach ($useritem_array as $useritem)
+      {
+        $id_array = getcontent ($useritem, "<id>");        
+        $passed_array = getcontent ($useritem, "<passed>");
+        $pre_array = getcontent ($useritem, "<pre>");
+  
+        // if item has predecessors
+        if ($pre_array != false)
+        {
+          foreach ($pre_array as $pre)
+          {
+            $buffer_array = selectcontent ($workflow, "<item>", "<id>", $pre);   
+            
+            // if a predecessor was found
+            if ($buffer_array != false) 
+            {
+              $prepassed_array = getcontent ($buffer_array[0], "<passed>");
+    
+              if ($prepassed_array != false)
+              {
+                // check if the predecessor has passed the workflow (this is a must)
+                if ($prepassed_array[0] == 1) 
+                {
+                  $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $id_array[0]);
+                  $sucpassed_array = getcontent ($buffer_array[0], "<passed>");
+                  
+                  // if item has sucessors
+                  if ($sucpassed_array != false) 
+                  {
+                    // check if the sucessor has not already passed the workflow
+                    if ($sucpassed_array[0] != 1) 
+                    {
+                      if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
+                      else $passeditem_array[] = $useritem;
+                    }
+                  }
+                  // otherwise item is last instance in workflow branch
+                  else
+                  {
+                    if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
+                    else $passeditem_array[] = $useritem;                
+                  }
+                }     
+              }     
+            }  
+          }   
+        }
+        // if item has no predecessors, this must be the user who owns start item
+        else
+        {
+          $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $id_array[0]);
+          $sucpassed_array = getcontent ($buffer_array[0], "<passed>");
+  
+          // if item has sucessors
+          if ($sucpassed_array != false) 
+          {
+            // check if the sucessor has not already passed the workflow
+            if ($sucpassed_array[0] != 1) 
+            {
+              if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
+              else $passeditem_array[] = $useritem;   
+            }
+            // sucessor passed his item
+            else
+            {
+              // find a last passed instance in workflow (end of workflow or a branch was reached)
+              foreach ($item_array as $item)
+              {
+                $buffer_array = getcontent ($item, "<id>");
+                $buffer_array = selectcontent ($workflow, "<item>", "<pre>", $buffer_array[0]);  
+                
+                if ($buffer_array == false)
+                {
+                  $buffer_array = getcontent ($item, "<passed>");
+                  
+                  if ($buffer_array[0] == 1)
+                  {
+                    $passeditem_array[] = $useritem;
+                    break;
+                  }
+                } 
+              }         
+            }
+          }
+          // otherwise item is last instance in workflow branch
+          else
+          {
+            if ($passed_array[0] != 1) $freeitem_array[] = $useritem;
+            else $passeditem_array[] = $useritem;           
+          }
+        }        
+      }
+    }
+    else return false;
+   
+    // check for free items of the user
+    if (is_array ($freeitem_array) && sizeof ($freeitem_array) > 0)
+    {
+      return $freeitem_array[0];
+    }
+    // check for passed items of the user
+    elseif (is_array ($passeditem_array) && sizeof ($passeditem_array) > 0)
+    {
+      return $passeditem_array[0];
+    }
+    else return false;
+  }
   else return false;
 }
 ?>

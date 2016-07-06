@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['ro'] = "Traducere";
 $hcms_lang['enable-languages-for-translation']['ro'] = "Activat limbi pentru traducere";
 $hcms_lang['user-for-access-links']['ro'] = "Utilizator pentru acces links";
 $hcms_lang['read-only-content']['ro'] = "Continutul doar în citire";
+$hcms_lang['reindex-content-of-all-media-files']['ro'] = "Reindexaţi unghiul conţinutul de toate fişierele media";
 ?>

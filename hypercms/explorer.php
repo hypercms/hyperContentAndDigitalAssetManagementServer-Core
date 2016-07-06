@@ -1303,7 +1303,7 @@ else
       });
     }
 
-    function startSearch ()
+    function startSearch (type)
     {
       // iframe for search result
       var iframe = parent.frames['workplFrame'].frames['mainFrame'];
@@ -1337,6 +1337,32 @@ else
             if (template.indexOf(".page.tpl") > 0) domain = "%page%";
             
             if (parts[0] != "") form.elements['search_dir'].value = domain + "/" + parts[0] + "/";
+          }
+        }
+        
+        
+        // check if at least one keyword has been checked
+        var keywordsLayer = document.getElementById('keywordsLayer');
+        var keywordChecked = false;
+        
+        if (keywordsLayer && keywordsLayer.style.display != "none")
+        {
+          var unchecked = false;
+          var childs = keywordsLayer.getElementsByTagName('*');
+          
+          for (var i=0; i<childs.length; i++)
+          {
+            // found unchecked element
+            if (childs[i].tagName == "INPUT" && childs[i].checked == true)
+            {
+              keywordChecked = true;
+              break;
+            }
+          }
+          
+          if (!keywordChecked)
+          {
+            return false;
           }
         }
         
@@ -1532,7 +1558,7 @@ else
 
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></b>
-          <img onClick="hcms_showInfo('fulltextLayer',0); hcms_hideInfo('advancedLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+          <img onClick="hcms_showInfo('fulltextLayer',0); hcms_hideInfo('advancedLayer'); hcms_hideInfo('keywordsLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
         </div>
         <div id="fulltextLayer"> 
           <label for="search_expression"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?></label><br />
@@ -1558,7 +1584,7 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['advanced-search'][$lang]); ?></b>
-          <img onClick="hcms_hideInfo('fulltextLayer'); hcms_showInfo('advancedLayer',0); hcms_hideInfo('imageLayer'); hcms_showInfo('filetypeLayer',0);" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+          <img onClick="hcms_hideInfo('fulltextLayer'); hcms_showInfo('advancedLayer',0); hcms_hideInfo('keywordsLayer'); hcms_hideInfo('imageLayer'); hcms_showInfo('filetypeLayer',0);" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
         </div>
         <div id="advancedLayer" style="display:none;">
           <label for="template"><?php echo getescapedtext ($hcms_lang['based-on-template'][$lang]); ?></label><br />
@@ -1629,8 +1655,72 @@ else
         <hr />
         
         <div style="display:block; margin-bottom:3px;">
+          <b><?php echo getescapedtext ($hcms_lang['keywords'][$lang]); ?></b>
+          <img onClick="hcms_hideInfo('fulltextLayer',0); hcms_hideInfo('advancedLayer'); hcms_hideInfo('imageLayer'); hcms_showInfo('keywordsLayer',0);" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+        </div>
+        <div id="keywordsLayer" style="display:none;">
+          <label for="publication"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></label><br />
+          <select id="publication" name="site" style="width:220px;">
+            <option value=""><?php echo getescapedtext ($hcms_lang['select-all'][$lang]); ?></option>
+          <?php
+          $keywords = array();
+          
+          if (!empty ($siteaccess) && is_array ($siteaccess))
+          {
+            $template_array = array();
+            
+            foreach ($siteaccess as $site)
+            {
+              if (!empty ($site)) echo "
+            <option value=\"".$site."\">".$site."</option>";
+            
+              $keywords_add = getkeywords ($site);
+              if (is_array ($keywords_add)) $keywords = array_merge ($keywords, $keywords_add);
+            }
+          }
+          ?>
+          </select><br />
+          <table style="width:100%; margin-top:4px; padding:0; border-spacing:0; border-collapse:collapse;">
+          <?php
+          if (is_array ($keywords) && sizeof ($keywords) > 0)
+          {
+            // remove duplicates
+            $keywords = array_unique ($keywords);
+            
+            $color = false;
+            
+            foreach ($keywords as $keyword_id => $keyword)
+            {
+              // define row color
+              if ($color == true)
+              {
+                $rowcolor = "hcmsRowData1";
+                $color = false;
+              }
+              else
+              {
+                $rowcolor = "hcmsRowData2";
+                $color = true;
+              }
+      
+              list ($keyword, $count) = explode ("|", $keyword);
+              
+              echo "
+            <tr class=\"".$rowcolor."\"><td align=\"left\" title=\"".$keyword."\"><label><input type=\"checkbox\" onclick=\"startSearch('auto')\" name=\"search_textnode[]\" value=\"%keyword%/".$keyword_id."\" />&nbsp;".getescapedtext (showshorttext ($keyword, 24))."</label></td><td align=\"right\">".$count."</td></tr>\n";
+            }
+          }
+          else
+          {
+            echo "<tr><td>".getescapedtext ($hcms_lang['no-items-were-found'][$lang])."</td></tr>";
+          }
+          ?>
+          </table>
+        </div>
+        <hr />
+        
+        <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['image-search'][$lang]); ?></b>
-          <img onClick="hcms_showInfo('fulltextLayer',0); hcms_hideInfo('advancedLayer'); hcms_showInfo('imageLayer',0); hcms_hideInfo('filetypeLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+          <img onClick="hcms_showInfo('fulltextLayer',0); hcms_hideInfo('advancedLayer'); hcms_hideInfo('keywordsLayer'); hcms_showInfo('imageLayer',0); hcms_hideInfo('filetypeLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
         </div>
         <div id="imageLayer" style="display:none;">
              
@@ -1735,7 +1825,7 @@ else
         <hr />
 
         <label><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?>:</label>
-    	  <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="startSearch();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+    	  <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="startSearch('post');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
       </form>
     </div>
     

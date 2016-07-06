@@ -46,6 +46,14 @@ $show = "";
 </head>
 
 <body class="hcmsWorkplaceGeneric">
+
+<!-- saving --> 
+<div id="savelayer" class="hcmsWorkplaceGeneric" style="position:fixed; width:100%; height:100%; margin:0; padding:0; left:0px; top:0px; visibility:hidden; z-index:10;">
+	<span style="position:absolute; top:50%; height:150px; margin-top:-75px; width:200px; left:50%; margin-left:-100px;">
+		<img src="<?php echo getthemelocation(); ?>img/loading.gif" />
+	</span>
+</div>
+
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <?php
@@ -63,6 +71,15 @@ else
   $mapping_data = getmapping ($site);
 }
 
+// reindex all media files
+if (valid_publicationname ($site) && $save == "reindex" && checktoken ($token, $user))
+{
+  // creating mapping from definition
+  $result = reindexcontent ($site);
+  
+  if ($result) $show = $hcms_lang['the-data-was-saved-successfully'][$lang];
+  else $show = $hcms_lang['the-data-could-not-be-saved'][$lang];
+}
 ?>
 <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['meta-data-mapping'][$lang]); ?></p>
 
@@ -88,6 +105,15 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
     </tr>
   </table>  
 </form>
+
+<div style="margin-top:10px; padding:2px;">
+  <form id="reindex" name="reindex" action="" method="post">
+    <input type="hidden" name="site" value="<?php echo $site; ?>" />
+    <input type="hidden" name="save" value="reindex" />
+    <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
+    <?php echo getescapedtext ($hcms_lang['reindex-content-of-all-media-files'][$lang]); ?>: <img name="Button" onClick="hcms_showHideLayers('savelayer','','show'); document.forms['reindex'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /> 
+  </form>
+</div>
 
 </div>
 </body>

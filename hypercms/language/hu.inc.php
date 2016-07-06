@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['hu'] = "Fordítás";
 $hcms_lang['enable-languages-for-translation']['hu'] = "A fordítási nyelvek bekapcsolása";
 $hcms_lang['user-for-access-links']['hu'] = "A felhasználó hozzáférési kapcsolatok";
 $hcms_lang['read-only-content']['hu'] = "A csak olvasható tartalom";
+$hcms_lang['reindex-content-of-all-media-files']['hu'] = "Tartalom elforgatása ütközőponttól ütközőpontig a médiafájlokat";
 ?>

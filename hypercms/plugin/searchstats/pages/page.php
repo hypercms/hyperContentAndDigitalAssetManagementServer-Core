@@ -101,7 +101,7 @@ if ($action == "regenerate" && checktoken ($token, $user) && is_file ($mgmt_conf
       if (strpos ($record, "|") > 0)
       {
         list ($date, $user, $keyword_add) = explode ("|", $record);
-        if ($keyword_add != "")) $keywords[] = $keyword_add;
+        if ($keyword_add != "") $keywords[] = $keyword_add;
       }
     }
     

@@ -1384,4 +1384,5 @@ $hcms_lang['translate']['sq'] = "Përkthej";
 $hcms_lang['enable-languages-for-translation']['sq'] = "Mundësuar gjuhët për përkthim";
 $hcms_lang['user-for-access-links']['sq'] = "Perdoruesi për qasje lidhje";
 $hcms_lang['read-only-content']['sq'] = "Lexoni përmbajtjen e vetme";
+$hcms_lang['reindex-content-of-all-media-files']['sq'] = "Reindex përmbajtjen e dosjeve të gjitha mediat";
 ?>

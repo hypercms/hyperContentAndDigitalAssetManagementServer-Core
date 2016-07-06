@@ -11,7 +11,7 @@
 
 // ---------------------------------------- indexcontent --------------------------------------------
 // function: indexcontent()
-// input: publication name, path to multimedia file, multimedia file name (file to be indexed), container name or ID, container XML-content (optional), user name
+// input: publication name, path to multimedia file, multimedia file name (file to be indexed), container name or ID (optional), container XML-content (optional), user name
 // output: true / false
 
 // description:
@@ -84,7 +84,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
       // verify local media file
       if (!is_file ($location.$file)) return false;
-      
+
       // ------------------------ Adobe PDF -----------------------
       // get file content from PDF
       if (($file_ext == ".pdf" || $file_ext == ".ai") && $mgmt_parser['.pdf'] != "")
@@ -497,6 +497,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         
         // set array to save content as UTF-8 in database before converting it
         $text_array[$file] = $insert_content;
+        $type_array[$file] = "file";
         
         // convert content if destination charset is not UTF-8     
         if ($charset_dest != "UTF-8")
@@ -529,7 +530,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         if ($container_contentnew != false)
         {
           // relational DB connectivity
-          if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, $text_array, $user);  
+          if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, $text_array, $type_array, $user);  
 
           // set modified date in container
           $container_contentnew = setcontent ($container_contentnew, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
@@ -547,7 +548,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       else
       {
         // relational DB connectivity
-        if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, "", $user);
+        if ($mgmt_config['db_connect_rdbms'] != "") rdbms_setcontent ($site, $container_id, "", "", $user);
 
         // set modified date in container
         $container_content = setcontent ($container_content, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
@@ -639,6 +640,48 @@ function unindexcontent ($site, $location, $file, $container, $container_content
       else return false;
     }  
   }
+}
+
+// ------------------------------------------ reindexcontent --------------------------------------------- 
+
+// function: reindexcontent()
+// input: publication name
+// output: true / false
+
+// description:
+// Reindexes all media files of a publication.
+
+function reindexcontent ($site)
+{
+  global $mgmt_config;
+
+  if (valid_publicationname ($site) && !empty ($mgmt_config['abs_path_media']))
+  {
+    $mediadir_array = array();
+    
+    if (!is_array ($mgmt_config['abs_path_media']))
+    {
+      $mediadir_array[] = $mgmt_config['abs_path_media'];
+    }
+    else $mediadir_array = $mgmt_config['abs_path_media'];
+    
+    foreach ($mediadir_array as $mediadir)
+    {
+      $location = $mediadir.$site."/";
+      
+      $handle = opendir ($location);
+
+      while (false !== ($file = readdir ($handle)))
+      {
+        indexcontent ($site, $location, $file, "", "", "sys");
+      }
+      
+      closedir ($handle);
+    }
+    
+    return true;
+  }
+  else return false;
 }
 
 // ---------------------- base64_to_file -----------------------------

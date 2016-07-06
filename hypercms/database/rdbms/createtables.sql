@@ -97,6 +97,22 @@ CREATE TABLE `taxonomy` (
   KEY `taxonomy` (`id`,`taxonomy_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `keywords`;
+
+CREATE TABLE `keywords` (
+  `keyword_id` int(11) NOT NULL auto_increment,
+  `keyword` char (100) NOT NULL default '',
+  PRIMARY KEY (`keyword_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `keywords_container`;
+
+CREATE TABLE `keywords_container` (
+  `id` int(11) NOT NULL default '0',
+  `keyword_id` int(11) NOT NULL default '0',
+  PRIMARY KEY (`id`,`keyword_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `textnodes`;
 
 CREATE TABLE `textnodes` (
@@ -104,10 +120,12 @@ CREATE TABLE `textnodes` (
   `text_id` char(120) NOT NULL default '',
   `textcontent` text,
   `object_id` int(11) DEFAULT NULL,
+  `type` char(6) NOT NULL default '',
   `user` char(60) DEFAULT NULL,
   KEY `textnodes_id` (`id`),
   KEY `textnodes_text_id` (`text_id`),
   KEY `textnodes_object_id` (`object_id`),
+  KEY `textnodes_id_type` (`id`,`type`),
   FULLTEXT KEY `textnodes_content` (`text_content`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

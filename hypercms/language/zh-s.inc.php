@@ -1385,4 +1385,5 @@ $hcms_lang['translate']['zh-s'] = "翻译";
 $hcms_lang['enable-languages-for-translation']['zh-s'] = "启用的语言翻译";
 $hcms_lang['user-for-access-links']['zh-s'] = "用户的访问链接。";
 $hcms_lang['read-only-content']['zh-s'] = "只读的内容。";
+$hcms_lang['reindex-content-of-all-media-files']['zh-s'] = "重新编制索引的内容的所有多媒体文件。";
 ?>
