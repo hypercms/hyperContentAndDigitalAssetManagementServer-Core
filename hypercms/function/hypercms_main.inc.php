@@ -1324,13 +1324,15 @@ function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type
 
   if (isset ($mgmt_config) && valid_publicationname ($site) && valid_objectname ($mediafile))
   {
-    if ($force_reload) $add = "&ts=".time();
-    else $add = "";
+    $add = "";
     
+    if (is_string ($name) && trim ($name) != "") $add .= "&name=".urlencode($name);
+    if ($force_reload) $add .= "&ts=".time();
+
     if (strtolower ($type) == "download") $servicename = "mediadownload";
     else $servicename = "mediawrapper";
     
-    return $mgmt_config['url_path_cms']."service/".$servicename.".php?site=".urlencode($site)."&media=".urlencode($site."/".$mediafile)."&token=".hcms_crypt ($site."/".$mediafile)."&name=".urlencode($name).$add;
+    return $mgmt_config['url_path_cms']."service/".$servicename.".php?site=".urlencode($site)."&media=".urlencode($site."/".$mediafile)."&token=".hcms_crypt ($site."/".$mediafile).$add;
   }
   else return false;
 }
@@ -3432,9 +3434,11 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       // provide content of file inline for wrapper
       elseif ($force == "wrapper")
       {
-        // content-type
+        // display inline
         header ("Content-Disposition: inline; filename=\"".$name."\"");
+        // content-type
         header ("Content-Type: ".getmimetype ($filepath));
+        // keep in cache for 30 days
         header ("Cache-Control: max-age=2592000, public");
         header ("Expires: ".gmdate ('D, d M Y H:i:s', time() + 2592000) . ' GMT');
       }

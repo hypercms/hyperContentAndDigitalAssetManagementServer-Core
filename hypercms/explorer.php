@@ -1673,40 +1673,37 @@ else
             {
               if (!empty ($site)) echo "
             <option value=\"".$site."\">".$site."</option>";
-            
-              $keywords_add = getkeywords ($site);
-              if (is_array ($keywords_add)) $keywords = array_merge ($keywords, $keywords_add);
             }
           }
           ?>
           </select><br />
           <table style="width:100%; margin-top:4px; padding:0; border-spacing:0; border-collapse:collapse;">
           <?php
+          $keywords = getkeywords ($siteaccess);
+          
           if (is_array ($keywords) && sizeof ($keywords) > 0)
           {
-            // remove duplicates
-            $keywords = array_unique ($keywords);
-            
             $color = false;
             
-            foreach ($keywords as $keyword_id => $keyword)
+            foreach ($keywords as $keyword_id => $keyword_array)
             {
-              // define row color
-              if ($color == true)
+              foreach ($keyword_array as $count => $keyword)
               {
-                $rowcolor = "hcmsRowData1";
-                $color = false;
-              }
-              else
-              {
-                $rowcolor = "hcmsRowData2";
-                $color = true;
-              }
-      
-              list ($keyword, $count) = explode ("|", $keyword);
-              
-              echo "
+                // define row color
+                if ($color == true)
+                {
+                  $rowcolor = "hcmsRowData1";
+                  $color = false;
+                }
+                else
+                {
+                  $rowcolor = "hcmsRowData2";
+                  $color = true;
+                }
+                
+                echo "
             <tr class=\"".$rowcolor."\"><td align=\"left\" title=\"".$keyword."\"><label><input type=\"checkbox\" onclick=\"startSearch('auto')\" name=\"search_textnode[]\" value=\"%keyword%/".$keyword_id."\" />&nbsp;".getescapedtext (showshorttext ($keyword, 24))."</label></td><td align=\"right\">".$count."</td></tr>\n";
+              }
             }
           }
           else

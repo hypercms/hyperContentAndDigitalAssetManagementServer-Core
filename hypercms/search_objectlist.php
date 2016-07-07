@@ -341,11 +341,6 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             $items_row++;
           }
         }
-        // clean from db
-        else
-        {
-          //rdbms_deleteobject ($location_esc.$folder);
-        }
       }        
     }
     // object items
@@ -645,12 +640,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                             
             $items_row++;
           }
-        }
-        // clean from db
-        else
-        {
-          //rdbms_deleteobject ($objectpath);
-        }        
+        }      
       }
     }
     

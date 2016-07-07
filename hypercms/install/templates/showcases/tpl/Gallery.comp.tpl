@@ -5,9 +5,10 @@
 <category>comp</category>
 <extension>php</extension>
 <application>php</application>
-<content><![CDATA[[hyperCMS:objectview name='inlineview']
+<content><![CDATA[
+[hyperCMS:objectview name='inlineview']
 [hyperCMS:tplinclude file='ServiceCollectMedia.inc.tpl']
-[hyperCMS:scriptbegin	
+[hyperCMS:scriptbegin
 global $mgmt_config;	
 
 // INIT
@@ -23,11 +24,23 @@ $picture_extensions = ".jpg.png.gif.bmp";
 // User entry - picture / folder
 $picture = "[hyperCMS:mediafile id='picture' onEdit='hidden']";
 $pictureTagId = "picture";
+// Metadata IDs to display
+$metaTitleId = "Title";
+$metaDescriptionId = "Description";
 
-//USER ENTRIES
+// USER ENTRIES
 $galleriaWidth = "[hyperCMS:textu id='galleriaWidth' onEdit='hidden' default='400']";
 $galleriaHeight = "[hyperCMS:textu id='galleriaHeight' onEdit='hidden' default='274']";
 $showInfo = "[hyperCMS:textc id='showInfo' onEdit='hidden']";
+$filtername = "[hyperCMS:textl id='filterName' onEdit='hidden']";
+$filtervalue = "[hyperCMS:textu id='filterValue' onEdit='hidden']";
+
+// SET FILTER
+if ("[hyperCMS:textl id='filterName' onEdit='hidden']" != "")
+{
+  $filter = array ("name" => $filtername, "value" => $filtervalue);
+}
+else $filter = "";
 
 // CMS VIEW => get user entry and create iframe code
 if ($view == "cmsview")
@@ -55,6 +68,9 @@ scriptend]
           <td>Show info</td><td><div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textc id='showInfo' value='true' default='false']</div></td>
         </tr>
         <tr>
+          <td>Filter by</td><td>Field-ID:<div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textl id='filterName' label='Name' list='|Title|Description|Keywords|Copyright|Creator|License']</div> contains <div style="display:inline-block; padding:2px; border:1px solid #000;">[hyperCMS:textu id='filterValue' label='Value']</div></td>
+        </tr>
+        <tr>
           <td>&nbsp;</td><td><button class="hcmsButtonGreen" type="button" onClick="location.reload();" >generate code</button></td>
         </tr>
       </table>
@@ -75,7 +91,7 @@ scriptend]
 scriptend]
       <strong>HTML body segment</strong>
       <br />
-      Mark and copy the code from the text area box (keys ctrl + A and Ctrl + C for copy or right mouse button -> copy).  insert this code into your HTML Body of the page, where the image-zoom will be integrated (keys Crtl + V or right mouse button -> insert).
+      Mark and copy the code from the text area box (keys ctrl + A and Ctrl + C for copy or right mouse button -> copy).  Insert this code into your HTML Body of the page, where the snippet will be integrated (keys Crtl + V or right mouse button -> insert).
       <br />
       <br />
       <textarea id="codesegment" wrap="VIRTUAL" style="height:80px; width:98%">[hyperCMS:scriptbegin echo html_encode($embed_code); scriptend]</textarea>
@@ -86,7 +102,7 @@ scriptend]
 }
 else
 {
-  if ($view == "publish")
+  if ($view == "publish" || $view == "preview")
   {
     //published file should be a valid html
 scriptend]
@@ -111,7 +127,7 @@ scriptend]
         }
       </style>
 [hyperCMS:scriptbegin
-  if ($view == "publish")
+  if ($view == "publish" || $view == "preview")
   {
 scriptend]
   </head>
@@ -127,9 +143,9 @@ scriptend]
   }
   else
   {
-    $mediaFiles = collectMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions );
+    $mediaFiles = collectMedia ($site, $container_id, $pictureTagId, $abs_comp, $picture_extensions, $metaTitleId, $metaDescriptionId, $filter);
 
-    if(empty($mediaFiles))
+    if (empty ($mediaFiles))
     {
 scriptend]
  <p>Folder could not be read!</p>
@@ -138,37 +154,56 @@ scriptend]
     else
     {
 scriptend]
-<div id="galleria" >
+<div id="galleria" ></div>
+<script>
+var data = [
 [hyperCMS:scriptbegin
+      $i = 0;
+
       foreach ($mediaFiles as $media)
       {
+        if ($i > 0) echo "    ,\r\n";
 scriptend]
-  <a hypercms_href="[hyperCMS:scriptbegin echo $media['link']; scriptend]" >
-    <img data-title="[hyperCMS:scriptbegin echo (empty($media['title']) ? $media['name'] : $media['title']); scriptend]" data-description="[hyperCMS:scriptbegin  echo (empty($media['description']) ? $media['name'] : $media['description']); scriptend]" src="[hyperCMS:scriptbegin echo $media['thumb_link']; scriptend]" />
-  </a>
+    {
+        image: '[hyperCMS:scriptbegin echo $media['link']; scriptend]',
+        thumb: '[hyperCMS:scriptbegin echo $media['thumb_link']; scriptend]',
+        title: '[hyperCMS:scriptbegin echo (empty($media['title']) ? $media['name'] : $media['title']); scriptend]',
+        description: '[hyperCMS:scriptbegin  echo (empty($media['description']) ? $media['name'] : $media['description']); scriptend]'
+    }
 [hyperCMS:scriptbegin
+
+        $i++;
       }
 scriptend]
-</div>
-<script>
+];
+
   // Load the classic theme
   Galleria.loadTheme("[hyperCMS:scriptbegin echo $mgmt_config['url_path_cms']; scriptend]javascript/iframe_galleria/galleria.classic.min.js");
+
   // Initialize Galleria
   $('#galleria').galleria({
-       lightbox: false,
-       showInfo: [hyperCMS:scriptbegin echo $showInfo;  scriptend]
+     lightbox: false,
+     thumbnails: 'lazy',
+     showInfo: [hyperCMS:scriptbegin if (!empty ($showInfo)) echo "true"; else echo "false";  scriptend],
+     dataSource: data,
+
+     // extend options              
+     extend: function() {
+       this.lazyLoadChunks(10);
+       this.setPlaytime(1000);
+    }
   });
 </script>
 [hyperCMS:scriptbegin
-    
     }
   }		
-  if($view == "publish") {
+  if($view == "publish" || $view == "preview") {
 scriptend]
   </body>
 </html>
 [hyperCMS:scriptbegin 
   }
 }
-scriptend]]]></content>
+scriptend]
+]]></content>
 </template>

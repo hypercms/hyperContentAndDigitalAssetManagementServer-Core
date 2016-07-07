@@ -5,14 +5,15 @@
 <category>inc</category>
 <extension></extension>
 <application></application>
-<content><![CDATA[[hyperCMS:scriptbegin
+<content><![CDATA[
+[hyperCMS:scriptbegin
 
 /*
 helper function for sorting outcome
 */
 function sortByName ($a, $b)
 {
-  return strnatcmp($a['name'], $b['name']);
+  return strnatcmp ($a['name'], $b['name']);
 }
 
 /*
@@ -25,7 +26,7 @@ than all mediafiles of this location.
 @param string abs_comp
 @return array array of array where each array contains name / link / thumb_link of a mediafile
 */	
-function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFileExtensions = "", $metaTitleId = "", $metaDescriptionId = "")
+function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFileExtensions="", $metaTitleId="", $metaDescriptionId="", $filter="")
 {
   global $mgmt_config;
   
@@ -69,6 +70,7 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
   $item_site = getpublication ($location_esc);
   $files = array();
   $dir_handle = opendir ($folder);
+  $i = 0;
   
   while ($file = readdir ($dir_handle))
   {
@@ -81,8 +83,10 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
 
       if (substr_count ($allowedFileExtensions, $mediafileinfo['ext']) > 0)
       {
+        $i++;
+
         $medialocation = getmedialocation ($item_site, $objectinfo['media'], "abs_path_media");
-        $link = createwrapperlink($item_site, $folder, $file, "comp");        
+        $link = createwrapperlink ($item_site, $folder, $file, "comp");        
         $abspath = $medialocation.$item_site."/";
         
         // create thumbnail link
@@ -96,19 +100,38 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
         }
 
         // retrieve additional
-        $contentdata = loadcontainer($objectinfo['container_id'], "work", "sys");
+        $contentdata = loadcontainer ($objectinfo['container_id'], "work", "sys");
 
         if (!empty($contentdata))
         {
-          $titletext = selectcontent($contentdata, "<text>", "<text_id>", "Title");
-          $desctext = selectcontent($contentdata, "<text>", "<text_id>", "Description");
-          $title = ($titletext) ? current(getcontent($titletext[0], "<textcontent>")) : ''; 
-          $desc = ($desctext) ? current(getcontent($desctext[0], "<textcontent>")) : '';
+          if (!empty ($metaTitleId))
+          {
+            $titletext = selectcontent ($contentdata, "<text>", "<text_id>", $metaTitleId);
+            $title = ($titletext) ? current(getcontent($titletext[0], "<textcontent>")) : '';
+          }
+          else $title = "";
+          
+          if (!empty ($metaDescriptionId))
+          {
+            $desctext = selectcontent ($contentdata, "<text>", "<text_id>", $metaDescriptionId);          
+            $desc = ($desctext) ? current(getcontent($desctext[0], "<textcontent>")) : '';
+          }
+          else $desc = "";
+          
+          if (!empty ($filter['name']))
+          {
+            $filtertext = selectcontent ($contentdata, "<text>", "<text_id>", $filter['name']);
+            $filtervalue = ($filtertext) ? current(getcontent($filtertext[0], "<textcontent>")) : '';
+          }
+          else $filtervalue = "";
         }
 
         // return array
-        $files[] = array("name" => $fileinfo['name'], "title"=>$title, "description"=>$desc, "link" => $link, "thumb_link" => $thumb_link, "abspath"  => $abspath, "filename" => $objectinfo['media']);
-        
+        if (!is_array ($filter) || (!empty ($filter['name']) && strpos ("_".$filtervalue, $filter['value']) > 0))
+        {
+          $files[] = array("name" => $fileinfo['name'], "title"=>$title, "description"=>$desc, "link" => $link, "thumb_link" => $thumb_link, "abspath"  => $abspath, "filename" => $objectinfo['media']);
+        }
+
         // sort result via usort and helperfunction
         usort($files, "sortByName");
       }
@@ -117,5 +140,6 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
 
   return $files;
 }
-scriptend]]]></content>
+scriptend]
+]]></content>
 </template>

@@ -1644,7 +1644,7 @@ Release 07/2016
 - Improvements in function splitkeywords
 - Implementation of new function rdbms_getkeywords, rdbms_setkeywords, and rdbms_setpublicationkeywords in DB Connectivity
 - Improvements in daily jobs
-- Improvements in image gallery templates in the installation folder
+- Improvements in image gallery templates of the installation folder (using JSON for gallery data, support of lazy image loading)
 - Removed keyword Plugin
 - Implementation of new function gettemplates
 - Moved get and set functions from main API to get and set API

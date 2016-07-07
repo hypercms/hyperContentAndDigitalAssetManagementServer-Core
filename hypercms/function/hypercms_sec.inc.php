@@ -2628,12 +2628,15 @@ function hcms_crypt ($string, $start=0, $length=0)
       if (strpos ($string, ".thumb.") > 0) $string = str_replace (".thumb.", ".", $string);
       else $string = substr ($string, -8);
     }
+    
     // encoding algorithm
     $string_encoded = crypt ($string, substr ($string, 0, 1));
     $string_encoded = md5 ($string_encoded);
+    
     // extract substring
     if ($length > 0) $string_encoded = substr ($string_encoded, $start, $length);
     else $string_encoded = substr ($string_encoded, $start);
+    
     // urlencode string
     $string_encoded = urlencode ($string_encoded);
 

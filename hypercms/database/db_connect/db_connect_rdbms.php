@@ -1625,7 +1625,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     }
     
     // add file name search if expression array is of size 1
-    if (empty ($expression_filename) && is_array ($expression_array) && sizeof ($expression_array) == 1 && !empty ($expression_array[0]) && strpos ("_".$expression_array[0], "%taxonomy%/") < 1) 
+    if (empty ($expression_filename) && is_array ($expression_array) && sizeof ($expression_array) == 1 && !empty ($expression_array[0]) && strpos ("_".$expression_array[0], "%taxonomy%/") < 1 && strpos ("_".$expression_array[0], "%keyword%/") < 1) 
     {
       $expression_filename = $expression_array[0];
     }
@@ -2373,7 +2373,14 @@ function rdbms_getcontent ($site, $container_id, $text_id="", $type="", $user=""
 
 // ----------------------------------------------- get keywords ------------------------------------------------- 
 
-function rdbms_getkeywords ($site)
+// function: rdbms_getkeywords()
+// input: publication names as string or array (optional)
+// output: result array with keyword ID as key and keyword and count as value / false
+
+// description:
+// Selects all keywords in the database.
+
+function rdbms_getkeywords ($sites="")
 {
   global $mgmt_config;
   
@@ -2381,10 +2388,28 @@ function rdbms_getkeywords ($site)
 
   $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
   
-  if ($site != "" && $site != "*Null*") $site = $db->escape_string ($site);
-
   $sql = 'SELECT keywords.keyword_id, keywords.keyword, COUNT(keywords_container.id) AS count FROM keywords INNER JOIN keywords_container ON keywords.keyword_id=keywords_container.keyword_id';
-  if ($site != "" && $site != "*Null*") $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
+  
+  if (is_array ($sites))
+  {
+    $i = 0;
+    
+    foreach ($sites as $site)
+    {
+      $site = $db->escape_string ($site);
+      
+      if ($i < 1) $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
+      else $sql .= ' OR (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
+      
+      $i++;
+    }
+  }
+  else if ($sites != "" && $sites != "*Null*")
+  {
+    $site = $db->escape_string ($sites);
+    $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
+  }
+  
   $sql .= ' GROUP BY keywords.keyword_id ORDER BY keywords.keyword';
 
   $errcode = "50041";
@@ -2397,8 +2422,9 @@ function rdbms_getkeywords ($site)
       if ($row['keyword_id'] != "" && $row['keyword'] != "" && $row['count'] > 0)
       {
         $id = $row['keyword_id'];
+        $count = $row['count'];
         
-        $result[$id] = $row['keyword']."|".$row['count'];
+        $result[$id][$count] = $row['keyword'];
       }
     }
   }
