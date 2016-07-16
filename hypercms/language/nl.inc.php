@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['nl'] = "Enabled talen voor verta
 $hcms_lang['user-for-access-links']['nl'] = "Gebruiker voor toegang links";
 $hcms_lang['read-only-content']['nl'] = "Alleen-lezen inhoud";
 $hcms_lang['reindex-content-of-all-media-files']['nl'] = "Indexeer de inhoud van alle mediabestanden";
+$hcms_lang['meta-data-hierarchy']['nl'] = "Metadata/inhoud hiërarchie";
+$hcms_lang['select-hierarchy']['nl'] = "Selecteer hiërarchie";
+$hcms_lang['text-id']['nl'] = "Tekst-ID";
+$hcms_lang['label']['nl'] = "Label";
+$hcms_lang['level']['nl'] = "Niveau";
 ?>

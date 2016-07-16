@@ -579,7 +579,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
             // only save content in database if content has been changed
             if ($row['textcontent'] != cleancontent ($text, "UTF-8") && $row['object_id']."|".$row['textcontent'] != cleancontent ($text, "UTF-8"))
             {
-              // content has changed
+              // content has been changed
               $update = true;
               
               // define type
@@ -611,6 +611,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
                 
                 // check and get object ID from object path
                 if ($object_id != "" && intval ($object_id) < 1) $object_id = rdbms_getobject_id ($object_id);
+                
                 // recheck
                 if ($object_id != "" && intval ($object_id) < 1) $object_id = 0;
               }
@@ -705,7 +706,7 @@ function rdbms_setkeywords ($site, $container_id)
         if (trim ($row['textcontent']) != "")
         {
           $keywords_add = splitkeywords ($row['textcontent']);
-          
+
           if (is_array ($keywords_add)) $keywords_array = array_merge ($keywords_array, $keywords_add);
         }
       }
@@ -1495,7 +1496,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 
 // ----------------------------------------------- search content ------------------------------------------------- 
 
-// function: rdbms_replacecontent()
+// function: rdbms_searchcontent()
 // input: location (optional), exlude locations/folders (optional), object-type (optional), filter for start modified date (optional), filter for end modified date (optional), 
 //        filter for template name (optional), search expression as array (optional), search expression for object/file name (optional), 
 //        filter for files size in KB (optional), image width in pixel (optional), image height in pixel (optional), primary image color (optional), image-type (optional), 
@@ -1509,6 +1510,9 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 {
   // user will be provided as global for search expression logging
   global $mgmt_config, $lang, $user;
+  
+  // enable search log by default
+  $mgmt_config['search_log'] = true;
 
   // set object_type if the search is image or video related
   if (!is_array ($object_type) && (!empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype)))
@@ -1516,28 +1520,69 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     $object_type = array("image", "video", "flash");
   }
   
-  // get publication for taxonomy based search (only applies if search is publication specific)
-  if (!empty ($folderpath))
+  // if hierarchy URL has been provided
+  if (!empty ($expression_array[0]) && strpos ("_".$expression_array[0], "%hierarchy%/") > 0)
   {
-    if (is_string ($folderpath))
+    // disable search log
+    $mgmt_config['search_log'] = false;
+  
+    // analyze hierarchy
+    $hierarchy_url = trim ($expression_array[0], "/");
+    $hierarchy_array = explode ("/", $hierarchy_url);
+    
+    if (is_array ($hierarchy_array))
     {
-      $site = getpublication ($folderpath);
-    }
-    elseif (is_array ($folderpath) && sizeof ($folderpath) > 0)
-    {
-      foreach ($folderpath as $temp)
+      // look for the exact expression
+      $mgmt_config['search_exact'] = true;
+      
+      // analyze hierarchy URL
+      $domain = $hierarchy_array[0];
+      $site = $hierarchy_array[1];
+      $name = $hierarchy_array[2];
+      $level = $hierarchy_array[3];
+      
+      $expression_array = array();
+      
+      foreach ($hierarchy_array as $hierarchy_element)
       {
-        $site = getpublication ($temp);
-
-        // if the name changed
-        if (!empty ($site_prev) && $site != $site_prev)
+        if (strpos ($hierarchy_element, "=") > 0)
         {
-          unset ($site);
-          break;
+          list ($key, $value) = explode ("=", $hierarchy_element);
+          
+          // unescape / and = in value
+          $value = str_replace ("&#47;", "/", $value);
+          $value = str_replace ("&#61;", "=", $value);
+          
+          $expression_array[$key] = $value;
         }
-        
-        // remember as previous name
-        $site_prev = $site;
+      }
+    }
+  }
+  else
+  {
+    // get publication for taxonomy based search (only applies if search is publication specific)
+    if (!empty ($folderpath))
+    {
+      if (is_string ($folderpath))
+      {
+        $site = getpublication ($folderpath);
+      }
+      elseif (is_array ($folderpath) && sizeof ($folderpath) > 0)
+      {
+        foreach ($folderpath as $temp)
+        {
+          $site = getpublication ($temp);
+  
+          // if the name changed
+          if (!empty ($site_prev) && $site != $site_prev)
+          {
+            unset ($site);
+            break;
+          }
+          
+          // remember as previous name
+          $site_prev = $site;
+        }
       }
     }
   }
@@ -1693,13 +1738,17 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     if (is_array ($expression_array) && sizeof ($expression_array) > 0)
     {
       $i = 1;
+      $i_kc = 1;
+      $i_tx = 1;
+      $i_tn = 1;
+      
       reset ($expression_array);
       $expression_log = array();
       
       foreach ($expression_array as $key=>$expression)
       {
         // define search log entry
-        if ($expression != "" && is_string ($expression) && strpos ("_".$expression, "%taxonomy%/") < 1 && strpos ("_".$expression, "%keyword%/") < 1)
+        if (!empty ($mgmt_config['search_log']) && $expression != "" && is_string ($expression) && strpos ("_".$expression, "%taxonomy%/") < 1 && strpos ("_".$expression, "%keyword%/") < 1)
         {
           $expression_log[] = $mgmt_config['today']."|".$user."|".$expression;
         }
@@ -1711,19 +1760,26 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         
           if ($keyword_id > 0)
           {
-            // add taxonomy table
-            if ($i == 1)
+            // add keywords_container table
+            if ($i_kc == 1)
             {
               $sql_table['textnodes'] .= ' LEFT JOIN keywords_container AS kc1 ON obj.id=kc1.id';
             }
-            elseif ($i > 1)
+            elseif ($i_kc > 1)
             {
-              $j = $i - 1;
-              $sql_table['textnodes'] .= ' LEFT JOIN keywords_container AS kc'.$i.' ON kc'.$j.'.id=kc'.$i.'.id';
+              $j = $i_kc - 1;
+              $sql_table['textnodes'] .= ' LEFT JOIN keywords_container AS kc'.$i_kc.' ON kc'.$j.'.id=kc'.$i_kc.'.id';
             }
           
-            $sql_expr_advanced[$i] .= 'kc'.$i.'.keyword_id='.intval ($keyword_id);
-            $i++;
+            $sql_expr_advanced[$i] .= 'kc'.$i_kc.'.keyword_id='.intval ($keyword_id);
+            
+            $i_kc++;
+          }
+          // objects with no keywords
+          else
+          {
+            $sql_table['textnodes'] .= ' INNER JOIN textnodes AS tn1 ON obj.id=tn1.id';
+            $sql_expr_advanced[$i_kc] .= 'tn'.$i_kc.'.type="textk" AND tn'.$i_kc.'.textcontent=""';
           }
         }
         // search for expression (using taxonomy if enabled or full text index)
@@ -1739,18 +1795,19 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
             if ($expression != "" && $key != "" && $key != "0")
             {
               // add taxonomy table
-              if ($i == 1)
+              if ($i_tx == 1)
               {
                 $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
               }
-              elseif ($i > 1)
+              elseif ($i_tx > 1)
               {
-                $j = $i - 1;
-                $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx'.$i.' ON tx'.$j.'.id=tx'.$i.'.id';
+                $j = $i_tx - 1;
+                $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx'.$i_tx.' ON tx'.$j.'.id=tx'.$i_tx.'.id';
               }
-            
-              $sql_expr_advanced[$i] .= '(tx'.$i.'.text_id="'.$key.'" AND tx'.$i.'.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).'))';
-              $i++;
+
+              $sql_expr_advanced[$i] .= '(tx'.$i_tx.'.text_id="'.$key.'" AND tx'.$i_tx.'.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).'))';
+              
+              $i_tx++;
             }
             // general search in taxonomy (only one search expression possible -> break out of loop)
             elseif ($expression != "")
@@ -1758,7 +1815,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
               // add taxonomy table
               $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
               
-              $sql_where_textnodes = 'tx1.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).')';
+              $sql_expr_advanced[$i] = 'tx1.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).')';
   
               break;
             }
@@ -1770,25 +1827,25 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
             if ($expression != "" && $key != "" && $key != "0")
             {            
               // get synonyms
-              $expression_array = getsynonym ($expression, @$lang);
+              $synonym_array = getsynonym ($expression, @$lang);
     
               $r = 0;
               $sql_expr_advanced[$i] = "";
               
-              if (is_array ($expression_array) && sizeof ($expression_array) > 0)
+              if (is_array ($synonym_array) && sizeof ($synonym_array) > 0)
               {
                 // add textnodes table
-                if ($i == 1)
+                if ($i_tn == 1)
                 {
                   $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tn1 ON obj.id=tn1.id';
                 }
-                elseif ($i > 1)
+                elseif ($i_tn > 1)
                 {
-                  $j = $i - 1;
-                  $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tn'.$i.' ON tn'.$j.'.id=tn'.$i.'.id';
+                  $j = $i_tn - 1;
+                  $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tn'.$i_tn.' ON tn'.$j.'.id=tn'.$i_tn.'.id';
                 }
               
-                foreach ($expression_array as $expression)
+                foreach ($synonym_array as $expression)
                 {
                   $expression = str_replace ("%", '\%', $expression);
                   $expression = str_replace ("_", '\_', $expression);          
@@ -1797,10 +1854,20 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   $expression_esc = htmlentities ($expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
                   $expression = $db->escape_string ($expression);
                   
+                  // use OR for synonyms
                   if ($r > 0) $sql_expr_advanced[$i] .= ' OR ';
         
-                  if ($expression != $expression_esc) $sql_expr_advanced[$i] .= '(tn'.$i.'.text_id="'.$key.'" AND (tn'.$i.'.textcontent LIKE _utf8"%'.$expression.'%" OR tn'.$i.'.textcontent LIKE _utf8"%'.$expression_esc.'%"))';
-                  else $sql_expr_advanced[$i] .= '(tn'.$i.'.text_id="'.$key.'" AND tn'.$i.'.textcontent LIKE _utf8"%'.$expression.'%")';
+                  // look for exact expression
+                  if (!empty ($mgmt_config['search_exact']))
+                  {
+                    $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND tn'.$i_tn.'.textcontent="'.$expression.'")';
+                  }
+                  // look for expression in content
+                  else
+                  {
+                    if ($expression != $expression_esc) $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (tn'.$i_tn.'.textcontent LIKE _utf8"%'.$expression.'%" OR tn'.$i_tn.'.textcontent LIKE _utf8"%'.$expression_esc.'%"))';
+                    else $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND tn'.$i_tn.'.textcontent LIKE _utf8"%'.$expression.'%")';
+                  }
                   
                   // add brackets since OR is used
                   if ($sql_expr_advanced[$i] != "") $sql_expr_advanced[$i] = "(".$sql_expr_advanced[$i].")";
@@ -1808,24 +1875,24 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   $r++;
                 }
       
-                $i++;
+                $i_tn++;
               }
             }
             // general search in all textnodes (only one search expression possible -> break out of loop)
             elseif ($expression != "")
             {
               // get synonyms
-              $expression_array = getsynonym ($expression, @$lang);
+              $synonym_array = getsynonym ($expression, @$lang);
               
               $r = 0;
               $sql_where_textnodes = "";
               
-              if (is_array ($expression_array) && sizeof ($expression_array) > 0)
+              if (is_array ($synonym_array) && sizeof ($synonym_array) > 0)
               { 
                 // add textnodes table
                 $sql_table['textnodes'] .= 'LEFT JOIN textnodes AS tn1 ON obj.id=tn1.id '.$sql_table['textnodes'];
                   
-                foreach ($expression_array as $expression)
+                foreach ($synonym_array as $expression)
                 {
                   $expression = str_replace ("%", '\%', $expression);
                   $expression = str_replace ("_", '\_', $expression);        
@@ -1834,10 +1901,20 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   $expression_esc = htmlentities ($expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
                   $expression = $db->escape_string ($expression);
                   
+                  // use OR for synonyms
                   if ($r > 0) $sql_where_textnodes .= ' OR ';
-                   
-                  if ($expression != $expression_esc) $sql_where_textnodes .= '(tn1.textcontent LIKE _utf8"%'.$expression.'%" OR tn1.textcontent LIKE _utf8"%'.$expression_esc.'%")';
-                  else $sql_where_textnodes .= 'tn1.textcontent LIKE _utf8"%'.$expression.'%"';
+                  
+                  // look for exact expression
+                  if (!empty ($mgmt_config['search_exact']))
+                  {
+                    $sql_where_textnodes .= 'tn1.textcontent="'.$expression.'"';
+                  }
+                  // look for expression in content
+                  else
+                  {
+                    if ($expression != $expression_esc) $sql_where_textnodes .= '(tn1.textcontent LIKE _utf8"%'.$expression.'%" OR tn1.textcontent LIKE _utf8"%'.$expression_esc.'%")';
+                    else $sql_where_textnodes .= 'tn1.textcontent LIKE _utf8"%'.$expression.'%"';
+                  }
                   
                   $r++;
                 }
@@ -1993,7 +2070,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     $sql = 'SELECT DISTINCT obj.objectpath, obj.hash FROM object AS obj';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= ' '.implode (' ', $sql_table);
     if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' WHERE '.implode (' AND ', $sql_where);
-    // removed order by due to poor DB performance and moved to array sort
+    // removed "order by" due to poor DB performance and moved to array sort
     // $sql .= ' ORDER BY SUBSTRING_INDEX(obj.objectpath,"/",-1)';
 
     if (isset ($starthits) && intval($starthits) >= 0 && isset ($endhits) && intval($endhits) > 0) $sql .= ' LIMIT '.intval($starthits).','.intval($endhits);
@@ -2017,7 +2094,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         if ($row['objectpath'] != "") $objectpath[$row['hash']] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
       }      
     }
-    
+
     //count searchresults
     if (!empty ($count))
     {
@@ -2083,7 +2160,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
     $folderpath = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $folderpath);
     
     // query object type
-    if ($filesize > 0 || is_array ($object_type) && sizeof ($object_type) > 0)
+    if (is_array ($object_type) && sizeof ($object_type) > 0)
     {
       // add media table
       $sql_table['media'] = "";
@@ -2133,7 +2210,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
       }
       
       // join media table
-      if (!empty ($sql_where['format']) || $filesize > 0) $sql_table['media'] = 'LEFT JOIN media AS med on obj.id=med.id';
+      if (!empty ($sql_where['format']) || $filesize > 0) $sql_table['media'] = 'LEFT JOIN media AS med ON obj.id=med.id';
     }  
     
     // folder path
@@ -2161,10 +2238,10 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
       else $sql_where['textnodes'] = 'tn1.textcontent LIKE _utf8"%'.$expression.'%" COLLATE utf8_bin';
     }    
     
-    $sql = 'SELECT obj.objectpath, cnt.id, cnt.container, tn1.text_id, tn1.textcontent FROM object AS obj, container AS cnt, textnodes AS tn1 ';
-    if (!empty ($sql_table)) $sql .= $sql_table.' ';
-    $sql .= 'WHERE obj.id=cnt.id AND cnt.id=tn1.id AND ';    
-    $sql .= implode (" AND ", $sql_where);
+    $sql = 'SELECT obj.objectpath, cnt.id, cnt.container, tn1.text_id, tn1.textcontent FROM object AS obj INNER JOIN container AS cnt ON cnt.id=obj.id INNER JOIN textnodes AS tn1 ON tn1.id=cnt.id';
+    if (is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= ' '.implode (" ", $sql_table);
+    $sql .= ' WHERE obj.id=cnt.id AND cnt.id=tn1.id AND';    
+    if (is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' '.implode (" AND ", $sql_where);
 
     $errcode = "50063";
     $done = $db->query ($sql, $errcode, $mgmt_config['today'], "select");
@@ -2319,6 +2396,60 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
   else return false;
 }
 
+// ----------------------------------------------- search user ------------------------------------------------- 
+
+// function: rdbms_searchuser()
+// input: publication name, user name, max. hits (optional)
+// output: objectpath array with hashcode as key and path as value / false
+
+// description:
+// Queries all objects of a user.
+
+function rdbms_searchuser ($site, $user, $maxhits=1000)
+{
+  global $mgmt_config;
+
+  if ($user != "")
+  {
+    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+    
+    if ($site != "" && $site != "*Null*") $site = $db->escape_string ($site);
+    $user = $db->escape_string ($user);
+    $maxhits = intval ($maxhits);
+    
+    $sql = 'SELECT obj.objectpath, obj.hash FROM object AS obj, container AS cnt WHERE obj.id=cnt.id AND cnt.user="'.$user.'"';
+    if ($site != "" && $site != "*Null*") $sql .= ' AND (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
+    $sql .= ' ORDER BY cnt.date DESC';
+    if ($maxhits > 0) $sql .= ' LIMIT 0,'.intval($maxhits);
+
+    $errcode = "50025";
+    $done = $db->query($sql, $errcode, $mgmt_config['today']);
+    
+    if ($done)
+    {
+      $objectpath = array();
+      
+      while ($row = $db->getResultRow ())
+      {
+        if ($row['objectpath'] != "")
+        {
+          $hash = $row['hash'];
+          $objectpath[$hash] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+        }   
+      }
+    }
+    else $objectpath = Null;
+
+    // save log
+    savelog ($db->getError ());    
+    $db->close();
+      
+    if (is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
+    else return false;
+  }
+  else return false;
+} 
+
 // ----------------------------------------------- get content -------------------------------------------------
 
 // function: rdbms_getcontent()
@@ -2350,7 +2481,7 @@ function rdbms_getcontent ($site, $container_id, $text_id="", $type="", $user=""
     if ($type != "") $sql .= ' AND type="'.$type.'"';
     if ($user != "") $sql .= ' AND user="'.$user.'"';
                
-    $errcode = "50099";
+    $errcode = "50199";
     $done = $db->query ($sql, $errcode, $mgmt_config['today']);
 
     if ($done)
@@ -2412,7 +2543,7 @@ function rdbms_getkeywords ($sites="")
   
   $sql .= ' GROUP BY keywords.keyword_id ORDER BY keywords.keyword';
 
-  $errcode = "50041";
+  $errcode = "50541";
   $done = $db->query($sql, $errcode, $mgmt_config['today']);
   
   if ($done)
@@ -2435,54 +2566,150 @@ function rdbms_getkeywords ($sites="")
     
   if (is_array ($result) && sizeof ($result) > 0) return $result;
   else return false;
-} 
+}
 
-// ----------------------------------------------- search user ------------------------------------------------- 
+// ----------------------------------------------- get empty keywords ------------------------------------------------- 
 
-function rdbms_searchuser ($site, $user, $maxhits=1000)
+// function: rdbms_getemptykeywords()
+// input: publication names as string or array (optional)
+// output: number of objects without keywords / false
+
+// description:
+// Queries the number of objects without keywords.
+
+function rdbms_getemptykeywords ($sites="")
 {
   global $mgmt_config;
 
-  if ($user != "")
+  $result = array();
+
+  $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+  $sql = 'SELECT COUNT(object.id) AS count FROM object INNER JOIN textnodes ON textnodes.id=object.id WHERE';
+  
+  if (is_array ($sites))
   {
+    $i = 0;
+    $sql_objectpath = "";
+    
+    foreach ($sites as $site)
+    {
+      $site = $db->escape_string ($site);
+      
+      if ($i < 1) $sql_objectpath .= ' (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
+      else $sql_objectpath .= ' OR (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
+      
+      $i++;
+    }
+    
+    $sql .= '('.$sql_objectpath.')';
+  }
+  else if ($sites != "" && $sites != "*Null*")
+  {
+    $site = $db->escape_string ($sites);
+    $sql .= ' (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
+  }
+  
+  $sql .= ' AND textnodes.type="textk" AND textnodes.textcontent="" GROUP BY object.id';
+  
+  $errcode = "50542";
+  $done = $db->query($sql, $errcode, $mgmt_config['today']);
+  
+  if ($done)
+  {
+    if ($row = $db->getResultRow ())
+    {
+      if ($row['count']) $result = $row['count'];
+    }
+  }
+
+  // save log
+  savelog ($db->getError ());    
+  $db->close();
+    
+  if (!empty ($result)) return $result;
+  else return 0;
+}
+
+// ----------------------------------------------- get hierarchy sublevel ------------------------------------------------- 
+
+// function: rdbms_gethierarchy_sublevel()
+// input: publication name, text ID that holds the content, conditions array with text ID as key and content as value (optional)
+// output: array with hashcode as key and path as value / false
+
+// description:
+// Queries all objects of a user.
+
+function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array="")
+{
+  global $mgmt_config;
+
+  if ($site != "" && $get_text_id != "")
+  {
+    $result = array();
+    $sql_textnodes = array();
+    
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
-    if ($site != "" && $site != "*Null*") $site = $db->escape_string ($site);
-    $user = $db->escape_string ($user);
-    $maxhits = intval ($maxhits);
+    $site = $db->escape_string ($site);
+    $get_text_id = $db->escape_string ($get_text_id);
     
-    $sql = 'SELECT obj.objectpath, obj.hash FROM object AS obj, container AS cnt WHERE obj.id=cnt.id AND cnt.user="'.$user.'"';
-    if ($site != "" && $site != "*Null*") $sql .= ' AND (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
-    $sql .= ' ORDER BY cnt.date DESC';
-    if ($maxhits > 0) $sql .= ' LIMIT 0,'.intval($maxhits);
-
-    $errcode = "50025";
-    $done = $db->query($sql, $errcode, $mgmt_config['today']);
+    // query database
+    $sql = 'SELECT DISTINCT tn1.textcontent, tn1.type FROM textnodes AS tn1';
     
-    if ($done)
+    if (is_array ($text_id_array) && sizeof ($text_id_array) > 0)
     {
-      $objectpath = array();
-      
-      while ($row = $db->getResultRow ())
+      $i = 2;
+
+      foreach ($text_id_array as $text_id => $value)
       {
-        if ($row['objectpath'] != "")
-        {
-          $hash = $row['hash'];
-          $objectpath[$hash] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
-        }   
+        $j = $i - 1;
+        $sql .= ' LEFT JOIN textnodes AS tn'.$i.' ON tn'.$j.'.id=tn'.$i.'.id';
+  
+        $text_id = $db->escape_string ($text_id);
+        $value = $db->escape_string ($value);
+        
+        $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND tn'.$i.'.textcontent="'.$value.'"';
+        $i++;
       }
     }
-    else $objectpath = Null;
+    
+    $sql .= ' INNER JOIN object ON object.id=tn1.id';
+    $sql .= ' WHERE (tn1.type="textu" OR tn1.type="textl" OR tn1.type="textc" OR tn1.type="textd" OR tn1.type="textk")';
+    $sql .= ' AND (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
+    $sql .= ' AND tn1.text_id="'.$get_text_id.'"';
+    if (is_array ($sql_textnodes) && sizeof ($sql_textnodes) > 0) $sql .= ' AND '.implode (" AND ", $sql_textnodes);
+    
+    $errcode = "50542";
+    $done = $db->query($sql, $errcode, $mgmt_config['today']);
+
+    if ($done)
+    {
+      while ($row = $db->getResultRow ())
+      {
+        if ($row['type'] == "textk")
+        {
+          $result_add = splitkeywords ($row['textcontent']);
+          
+          if (is_array ($result_add)) $result = array_merge ($result, $result_add);
+        }
+        else $result[] = $row['textcontent'];
+      }
+    }
 
     // save log
     savelog ($db->getError ());    
     $db->close();
       
-    if (is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
+    if (is_array ($result) && sizeof ($result) > 0)
+    {
+      $result = array_unique ($result);
+      return $result;
+    }
     else return false;
   }
   else return false;
-} 
+}
 
 // ----------------------------------------------- get object_id ------------------------------------------------- 
 
@@ -3200,15 +3427,69 @@ function rdbms_getnotification ($event="", $object="", $user="")
     
     if ($object != "")
     {
+      $object_id_array = array();
+      
       // correct object name 
       if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
+      
       // get publication
       $site = getpublication ($object);
       $fileinfo = getfileinfo ($site, $object, "");
       if (getobject ($object) == ".folder") $object = getlocation ($object);
+
       // clean input
       $object = $db->escape_string ($object);
-      $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object); 
+      $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+
+      // get connected objects
+      $sql = 'SELECT DISTINCT object_id, id FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
+      
+      $errcode = "50097";
+      $done = $db->query($sql, $errcode, $mgmt_config['today'], 'connected');
+      
+      if ($done)
+      {
+        // get object ID and container ID of object
+        if ($row = $db->getResultRow ('connected'))
+        {
+          $object_id = $row['object_id'];
+          $container_id = $row['id'];
+        }
+        
+        // get object IDs of connected objects
+        if (!empty ($container_id))
+        {
+          $sql = 'SELECT DISTINCT object_id FROM object WHERE id="'.$container_id.'" AND object_id!="'.$object_id.'"';
+      
+          $errcode = "50298";
+          $done = $db->query($sql, $errcode, $mgmt_config['today'], 'connected');
+          
+          if ($done)
+          {
+            while ($row = $db->getResultRow ('connected'))
+            {
+              $object_id_array[] = $row['object_id'];
+            }
+          }
+        }
+      }
+      
+      // get objects that referred to the object
+      if (!empty ($object_id))
+      {
+        $sql = 'SELECT object.object_id FROM textnodes INNER JOIN object ON object.id=textnodes.id WHERE textnodes.object_id="'.$object_id.'"';
+        
+        $errcode = "50299";
+        $done = $db->query($sql, $errcode, $mgmt_config['today'], 'linked');
+        
+        if ($done)
+        {
+          while ($row = $db->getResultRow ('linked'))
+          {
+            $object_id_array[] = $row['object_id'];
+          }
+        }
+      }
     }
     
     if ($user != "") $user = $db->escape_string ($user);
@@ -3217,6 +3498,7 @@ function rdbms_getnotification ($event="", $object="", $user="")
     $sql = 'SELECT nfy.notify_id, nfy.object_id, obj.objectpath, nfy.user, nfy.oncreate, nfy.onedit, nfy.onmove, nfy.ondelete FROM notify AS nfy, object AS obj WHERE obj.object_id=nfy.object_id';
     if ($event != "") $sql .= ' AND nfy.'.$event.'=1';
     if ($object != "") $sql .= ' AND (obj.objectpath="'.$object.'" OR (INSTR(obj.objectpath, ".folder") > 0 AND INSTR("'.$object.'", SUBSTR(obj.objectpath, 1, INSTR(obj.objectpath, ".folder") - 1)) > 0))';
+    if (!empty ($object_id_array) && sizeof ($object_id_array) > 0) $sql .= ' OR nfy.object_id IN ('.implode (",", $object_id_array).')'; 
     if ($user != "") $sql .= ' AND nfy.user="'.$user.'"';
     $sql .= ' ORDER BY obj.objectpath';
 
@@ -3567,7 +3849,7 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
     
     $sql = 'SELECT '.$sqlfilesize.' FROM media '.$sqladd;
     
-    $errcode = "50041";
+    $errcode = "50543";
     $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'selectfilesize');
     
     if ($done)

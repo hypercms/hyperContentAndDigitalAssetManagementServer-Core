@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['ar'] = "تمكين لغات لل
 $hcms_lang['user-for-access-links']['ar'] = "المستخدم ارتباطات الوصول";
 $hcms_lang['read-only-content']['ar'] = "محتوى للقراءة فقط";
 $hcms_lang['reindex-content-of-all-media-files']['ar'] = "مضمون جميع وسائل الاعلام Reindex الملفات";
+$hcms_lang['meta-data-hierarchy']['ar'] = "الفوقية/Content التسلسل الهرمى";
+$hcms_lang['select-hierarchy']['ar'] = "حدد التسلسل الهرمى";
+$hcms_lang['text-id']['ar'] = "Text-ID";
+$hcms_lang['label']['ar'] = "العلامة";
+$hcms_lang['level']['ar'] = "مستوى";
 ?>

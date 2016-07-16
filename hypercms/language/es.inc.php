@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['es'] = "Los idiomas habilitados 
 $hcms_lang['user-for-access-links']['es'] = "Usuario para acceder a los enlaces";
 $hcms_lang['read-only-content']['es'] = "Contenido de sólo lectura";
 $hcms_lang['reindex-content-of-all-media-files']['es'] = "Reindexar el contenido de todos los archivos multimedia";
+$hcms_lang['meta-data-hierarchy']['es'] = "Jerarquía de metadatos/Contenido";
+$hcms_lang['select-hierarchy']['es'] = "Seleccione la jerarquía";
+$hcms_lang['text-id']['es'] = "Texto-ID";
+$hcms_lang['label']['es'] = "Etiqueta";
+$hcms_lang['level']['es'] = "Nivel";
 ?>

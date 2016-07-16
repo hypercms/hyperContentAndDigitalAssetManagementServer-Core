@@ -497,8 +497,8 @@ function update_database_v6113 ()
             {
               $mapdata = loadfile ($mgmt_config['abs_path_data']."config/", $site.".media.map.php");
               
-              $mapdata = str_replace ("photoshop:", "adobe:", $mapdata);
               $mapdata = str_replace (array("\"Title\"", "\"Keywords\"", "\"Description\"", "\"Creator\"", "\"Copyright\"", "\"Quality\""), array("\"textu:Title\"", "\"textk:Keywords\"", "\"textu:Description\"", "\"textu:Creator\"", "\"textu:Copyright\"", "\"textl:Quality\""), $mapdata);
+              $mapdata = str_replace (array("=> Title", "=> Keywords", "=> Description", "=> Creator", "=> Copyright", "=> Quality"), array("=> textu:Title", "=> textk:Keywords", "=> textu:Description", "=> textu:Creator", "=> textu:Copyright", "=> textl:Quality"), $mapdata);
               
               if ($mapdata != "") savefile ($mgmt_config['abs_path_data']."config/", $site.".media.map.php", $mapdata);
             } 

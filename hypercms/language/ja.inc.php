@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['ja'] = "翻訳のために有効
 $hcms_lang['user-for-access-links']['ja'] = "リンクにアクセスするためのユーザー";
 $hcms_lang['read-only-content']['ja'] = "読み取り専用のコンテンツ";
 $hcms_lang['reindex-content-of-all-media-files']['ja'] = "すべてのメディアファイルのコンテンツのインデックスを再作成";
+$hcms_lang['meta-data-hierarchy']['ja'] = "メタデータ、コンテンツ階層";
+$hcms_lang['select-hierarchy']['ja'] = "ヒエラルキを選択した";
+$hcms_lang['text-id']['ja'] = "テキスト ID";
+$hcms_lang['label']['ja'] = "ラベル";
+$hcms_lang['level']['ja'] = "レベル";
 ?>

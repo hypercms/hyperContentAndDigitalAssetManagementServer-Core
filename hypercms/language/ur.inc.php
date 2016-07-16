@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['ur'] = "کی بدولت زبان
 $hcms_lang['user-for-access-links']['ur'] = "صارف کی رسائی روابط";
 $hcms_lang['read-only-content']['ur'] = "فقط مطالعہ مشمول";
 $hcms_lang['reindex-content-of-all-media-files']['ur'] = "فائلیں ضائع کے تمام ذرائع ابلاغ Reindex مشمول";
+$hcms_lang['meta-data-hierarchy']['ur'] = "میٹا ڈیٹا/مشمول درجہ بندی";
+$hcms_lang['select-hierarchy']['ur'] = "فرشتوں کا انتخاب کریں";
+$hcms_lang['text-id']['ur'] = "متن کے عید";
+$hcms_lang['label']['ur'] = "لیبل";
+$hcms_lang['level']['ur'] = "سطح";
 ?>

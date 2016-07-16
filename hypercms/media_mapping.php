@@ -40,9 +40,21 @@ $show = "";
 <html>
 <head>
 <title>hyperCMS</title>
-<meta charset="<?php echo $mgmt_config[$site]['default_codepage']; ?>">
+<meta charset="<?php echo getcodepage ($lang); ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
+<script type="text/javascript">
+function checkReindex ()
+{
+  check = confirm ("<?php echo getescapedtext ($hcms_lang['reindex-content-of-all-media-files'][$lang]); ?>");
+
+  if (check == true)
+  {   
+    hcms_showHideLayers('savelayer','','show');
+    document.forms['reindex'].submit();
+  }
+}
+</script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
@@ -111,7 +123,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="save" value="reindex" />
     <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
-    <?php echo getescapedtext ($hcms_lang['reindex-content-of-all-media-files'][$lang]); ?>: <img name="Button" onClick="hcms_showHideLayers('savelayer','','show'); document.forms['reindex'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /> 
+    <?php echo getescapedtext ($hcms_lang['reindex-content-of-all-media-files'][$lang]); ?>: <img name="Button" onClick="checkReindex()" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /> 
   </form>
 </div>
 

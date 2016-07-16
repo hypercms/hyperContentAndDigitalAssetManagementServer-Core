@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['sk'] = "Povolené jazyky pre pre
 $hcms_lang['user-for-access-links']['sk'] = "Užívateľa pre prístup k prepojeniam";
 $hcms_lang['read-only-content']['sk'] = "Iba na čítanie obsahu";
 $hcms_lang['reindex-content-of-all-media-files']['sk'] = "Reindex obsah všetky mediálne súbory";
+$hcms_lang['meta-data-hierarchy']['sk'] = "Metaúdaje a obsah hierarchia";
+$hcms_lang['select-hierarchy']['sk'] = "Vyberte položku hierarchia";
+$hcms_lang['text-id']['sk'] = "Text-ID";
+$hcms_lang['label']['sk'] = "Štítok";
+$hcms_lang['level']['sk'] = "Úroveň";
 ?>

@@ -42,9 +42,19 @@ if ($is_mobile && substr_count ($location, "/") > 2)
   }
 }
 
+// correct location for access permission
+if ($folder != "")
+{
+  $location_ACCESS = $location.$folder."/";
+}
+else
+{
+  $location_ACCESS = $location;
+}
+
 // get publication and category
-$site = getpublication ($location);
-$cat = getcategory ($site, $location); 
+$site = getpublication ($location_ACCESS);
+$cat = getcategory ($site, $location_ACCESS); 
 
 // initalize object linking
 if ($location == "" && is_array ($hcms_linking)) 
@@ -62,18 +72,6 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 if (valid_publicationname ($site)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
 
 // ------------------------------ permission section --------------------------------
-
-// correct location for access permission
-if ($folder != "" || $page == ".folder")
-{
-  $location_ACCESS = deconvertpath ($location.$folder."/", "file");
-  $location_ACCESS_esc = convertpath ($site, $location_ACCESS, $cat);
-}
-else
-{
-  $location_ACCESS = deconvertpath ($location, "file");
-  $location_ACCESS_esc = convertpath ($site, $location_ACCESS, $cat);
-}
 
 // check access permissions
 $ownergroup = accesspermission ($site, $location_ACCESS, $cat);

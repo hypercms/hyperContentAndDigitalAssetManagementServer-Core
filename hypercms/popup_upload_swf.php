@@ -85,7 +85,7 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#464646" />
-<meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/file_upload.css" type="text/css" />
 <script type="text/javascript" src="javascript/main.js"></script>

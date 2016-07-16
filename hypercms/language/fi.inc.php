@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['fi'] = "Käytössä käännöski
 $hcms_lang['user-for-access-links']['fi'] = "Käyttäjää pyydetään suurhävikkisten etäkäyttölinkkien vaikutusta";
 $hcms_lang['read-only-content']['fi'] = "Vain luku -sisältö";
 $hcms_lang['reindex-content-of-all-media-files']['fi'] = "Ajonvakautusjärjestelmällä varustetussa autossa kukin mediatiedostoja";
+$hcms_lang['meta-data-hierarchy']['fi'] = "Metatiedot/pitoisuus hierarkia";
+$hcms_lang['select-hierarchy']['fi'] = "Valitse hierarkia";
+$hcms_lang['text-id']['fi'] = "Text-tunnus";
+$hcms_lang['label']['fi'] = "Tarra";
+$hcms_lang['level']['fi'] = "Taso";
 ?>

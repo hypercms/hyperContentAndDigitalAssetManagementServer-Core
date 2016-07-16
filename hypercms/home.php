@@ -39,7 +39,7 @@ if ($action == "save")
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<meta name="viewport" content="width=device-width; initial-scale=0.9; maximum-scale=1.0; user-scalable=0;" />
+<meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=1.0, user-scalable=0" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>

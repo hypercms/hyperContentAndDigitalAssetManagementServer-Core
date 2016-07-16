@@ -1651,7 +1651,6 @@ Release 07/2016
 - Renamed function getdescription to getmetadescription and getkeywords to getmetakeywords
 - Implementation of new function getkeywords
 - Modifications in OpenAPI, renamed function set_fields to save_content
-- Renamed photoshop XMP domain to adobe in meta API and media mappings
 - Implementation of new input parameter type in function rdbms_setcontent
 - Implementation of component references (database table textnodes) in function setcomplink
 - Implementation of textnodes support in function rdbms_deleteobject
@@ -1672,8 +1671,48 @@ Release 07/2016
 - Implementation of content type support in function save_content of openAPI
 - Added type to element textfield in openAPI WSDL (service_orig.wsdl)
 - Implementation of new type parameter in media mapping (mapping-value=type:text-ID)
+- Implementation of new input paramater for character set in function splitkeywords
+- Implementation of new filters for special characters in function splitkeywords
+
+Version 6.1.14
+Release 07/2016
+- Improvements of keyword indexing in function getmetadata in meta API
+- Support for dynamic assignment of Lightroom hierarchicalSubject to tag ID and contents
+- Removed html_encode from function setmetadata
+- Implementation of new input parameter for specific container IDs in function reindexcontent in media API
+- Removed general html encoding of content from files based on UTF-8 in function indexcontent
+- Support of container ID as input for function getmetadata
+- Bug finx: Function indexcontent did not veriy max. string lenght of 100 for keywords from XMP
+- Improvements in function splitkeywords (leave tags in keyword-string and verify tags in each single keyword)
+- Bug fix: Removed cleaning of special characters in function splitkeywords due to issues
+- Implementation of new function getlistelements for support of file attribute in keyword and text-list tags
+- Implementation of new function getlistelements in template engine and page_multiedit
+- Implementation of metadata presentation of assets in media selector
+- Implementation of new input parameter for character set in function showshorttext in UI API
+- Implementation of multibyte character support in function showshorttext
+- Implementation of new function correctcontainername
+- Implementation of notification for connected and linked objects in function rdbms_getnotification
+- Implementation of rules based on content for the export of objects
+- Waiting time has been extended to 2000 ms for the iframe to be loaded when using the search in the Navigator
+- Bug fix: If a users name has not been provided the user entry for access-links in site_edit_form has been left empty
+- Bug fix: Duplicate error codes in DB Connect
+- Implementation of new function rdbms_getemptykeywords
+- Implementation of objects with no keywords in keyword list
+- Bug fix: control_objectlist_menu did not extract the publication from the root folder
+- Allow spaces in tag keywords
+- Added read-only attribut for keyword tag
+- Support of geometry for video watermarks in function createmedia in media API
+- Implementation of new function gethierarchy_defintion in get API
+- Implementation of support for delete of taxonomy cand hierarchy configuration files in function deletepubliucation in main API
+- Implementation of new function gethierarchy_sublevel in get API
+- Implementation of new function rdbms_gethierarchy_sublevel in DB Connect
+- Implementation of main configuration $mgmt_config['search_exact'] and $mgmt_config['search_log']in function rdbms_searchcontent in DB Connect for search of exact expression
+- Bug fix: Replaced semicolon with comma
+- Bug fix: Function rdbms_searchcontent in DB Connect did reassign synonyms to the input expression array
+- Bug fix: Function rdbms_searchcontent did not use inner joins for tables object, container, textnodes
+- Bug fix: The character sets for media_hierarchy and media_mapping were defined by the publication character set and not the language character set of the main configuration
 */
 
 // current version
-$version = "Version 6.1.13";
+$version = "Version 6.1.14";
 ?>

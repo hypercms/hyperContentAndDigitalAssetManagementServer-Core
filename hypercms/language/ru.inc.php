@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['ru'] = "Включена язы�
 $hcms_lang['user-for-access-links']['ru'] = "Пользователя для получения доступа к ссылкам";
 $hcms_lang['read-only-content']['ru'] = "Только для чтения содержимого";
 $hcms_lang['reindex-content-of-all-media-files']['ru'] = "Перепрограммируйте содержание всех мультимедийных файлов";
+$hcms_lang['meta-data-hierarchy']['ru'] = "Метаданные/Content иерархии";
+$hcms_lang['select-hierarchy']['ru'] = "Выберите Иерархия";
+$hcms_lang['text-id']['ru'] = "Текст-ID";
+$hcms_lang['label']['ru'] = "Обозначение";
+$hcms_lang['level']['ru'] = "Уровень";
 ?>

@@ -1386,4 +1386,9 @@ $hcms_lang['enable-languages-for-translation']['id'] = "Bahasa yang berkemampuan
 $hcms_lang['user-for-access-links']['id'] = "Untuk pengguna mengakses link";
 $hcms_lang['read-only-content']['id'] = "Konten hanya-baca";
 $hcms_lang['reindex-content-of-all-media-files']['id'] = "Konten Reindex dari semua file media";
+$hcms_lang['meta-data-hierarchy']['id'] = "Hirarki Konten/Metadata";
+$hcms_lang['select-hierarchy']['id'] = "Pilih hierarki";
+$hcms_lang['text-id']['id'] = "ID-Teks";
+$hcms_lang['label']['id'] = "Label";
+$hcms_lang['level']['id'] = "Tingkat";
 ?>

@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['uk'] = "Увімкнено мо�
 $hcms_lang['user-for-access-links']['uk'] = "Користувачеві запит щодо доступу посилання";
 $hcms_lang['read-only-content']['uk'] = "Лише для читання вмісту";
 $hcms_lang['reindex-content-of-all-media-files']['uk'] = "Reindex вмісту всіх мультимедійних файлів";
+$hcms_lang['meta-data-hierarchy']['uk'] = "Метадані/Content ієрархію";
+$hcms_lang['select-hierarchy']['uk'] = "Виберіть ієрархію";
+$hcms_lang['text-id']['uk'] = "Текст-ID";
+$hcms_lang['label']['uk'] = "Наклейка";
+$hcms_lang['level']['uk'] = "Рівень";
 ?>

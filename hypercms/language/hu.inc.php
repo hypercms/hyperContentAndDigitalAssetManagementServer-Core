@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['hu'] = "A fordítási nyelvek be
 $hcms_lang['user-for-access-links']['hu'] = "A felhasználó hozzáférési kapcsolatok";
 $hcms_lang['read-only-content']['hu'] = "A csak olvasható tartalom";
 $hcms_lang['reindex-content-of-all-media-files']['hu'] = "Tartalom elforgatása ütközőponttól ütközőpontig a médiafájlokat";
+$hcms_lang['meta-data-hierarchy']['hu'] = "A metaadatok/Tartalom hierarchiában";
+$hcms_lang['select-hierarchy']['hu'] = "Válassza ki a hierarchiában";
+$hcms_lang['text-id']['hu'] = "A szöveg-ID";
+$hcms_lang['label']['hu'] = "Címke";
+$hcms_lang['level']['hu'] = "Szint";
 ?>

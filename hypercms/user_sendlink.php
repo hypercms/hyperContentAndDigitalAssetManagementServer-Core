@@ -1056,7 +1056,7 @@ $token_new = createtoken ($user);
   <head>
     <title>hyperCMS</title>
     <meta charset="<?php echo getcodepage ($lang); ?>" />
-    <meta name="viewport" content="width=580; initial-scale=0.9; maximum-scale=1.0; user-scalable=1;" />
+    <meta name="viewport" content="width=580, initial-scale=0.9, maximum-scale=1.0, user-scalable=1" />
     <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
     <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css">
     <script src="javascript/main.js" type="text/javascript"></script>

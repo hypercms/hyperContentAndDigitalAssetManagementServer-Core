@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['sq'] = "Mundësuar gjuhët për 
 $hcms_lang['user-for-access-links']['sq'] = "Perdoruesi për qasje lidhje";
 $hcms_lang['read-only-content']['sq'] = "Lexoni përmbajtjen e vetme";
 $hcms_lang['reindex-content-of-all-media-files']['sq'] = "Reindex përmbajtjen e dosjeve të gjitha mediat";
+$hcms_lang['meta-data-hierarchy']['sq'] = "/përmbajtje metadata hierarki";
+$hcms_lang['select-hierarchy']['sq'] = "Zgjidh hierarki";
+$hcms_lang['text-id']['sq'] = "Tekst-ID";
+$hcms_lang['label']['sq'] = "Cilësoj";
+$hcms_lang['level']['sq'] = "Të lartë";
 ?>

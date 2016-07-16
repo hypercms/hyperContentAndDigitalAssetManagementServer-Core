@@ -91,7 +91,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       {
         // use of XPDF to parse PDF files.
         // please note: the executable "pdftotext" must be copied to "bin" directory!
-        // as pdftotext ist compiled for several platforms you have to know which
+        // as pdftotext is compiled for several platforms you have to know which
         // OS you are using for the content management server.
         // known problems: MS IIS causes troubles executing XPDF (unable to fork...), set permissions for cmd.exe  
         // the second argument "-" tells XPDF to output the text to stdout.
@@ -471,10 +471,6 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         $file_content = strip_tags ($file_content);
         $file_content = trim ($file_content);
         $file = trim ($file);
-        
-        // escape special characters using UTF-8
-        $insert_content = htmlentities ($file_content, ENT_IGNORE, "UTF-8");
-        if ($insert_content == "") $insert_content = $file_content;
             
         // get destination character set
         $charset_array = getcharset ($site, $container_content);
@@ -496,13 +492,13 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         }
         
         // set array to save content as UTF-8 in database before converting it
-        $text_array[$file] = $insert_content;
+        $text_array[$file] = $file_content;
         $type_array[$file] = "file";
         
         // convert content if destination charset is not UTF-8     
         if ($charset_dest != "UTF-8")
         {
-          $insert_content = convertchars ($insert_content, "UTF-8", $charset_dest);
+          $file_content = convertchars ($file_content, "UTF-8", $charset_dest);
         }
 
         // update existing content
@@ -510,7 +506,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         
         if ($container_contentnew != false)
         {          
-          $container_contentnew = setcontent ($container_contentnew, "<multimedia>", "<content>", "<![CDATA[".$insert_content."]]>", "", "");
+          $container_contentnew = setcontent ($container_contentnew, "<multimedia>", "<content>", "<![CDATA[".$file_content."]]>", "", "");
         }
         // insert new multimedia xml-node
         else
@@ -518,7 +514,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           $multimedia_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "multimedia.schema.xml.php"));
           
           $multimedia_node = setcontent ($multimedia_schema_xml, "<multimedia>", "<file>", $file, "", "");
-          $multimedia_node = setcontent ($multimedia_node, "<multimedia>", "<content>", "<![CDATA[".$insert_content."]]>", "", "");
+          $multimedia_node = setcontent ($multimedia_node, "<multimedia>", "<content>", "<![CDATA[".$file_content."]]>", "", "");
                   
           if ($multimedia_node != false) $container_contentnew = insertcontent ($container_content, $multimedia_node, "<container>");
         }
@@ -645,13 +641,13 @@ function unindexcontent ($site, $location, $file, $container, $container_content
 // ------------------------------------------ reindexcontent --------------------------------------------- 
 
 // function: reindexcontent()
-// input: publication name
+// input: publication name, container IDs as array (optional)
 // output: true / false
 
 // description:
-// Reindexes all media files of a publication.
+// Reindexes all media files of a publication and only for specific containers.
 
-function reindexcontent ($site)
+function reindexcontent ($site, $container_id_array="")
 {
   global $mgmt_config;
 
@@ -659,12 +655,23 @@ function reindexcontent ($site)
   {
     $mediadir_array = array();
     
+    // convert to integer
+    if (is_array ($container_id_array))
+    {
+      foreach ($container_id_array as &$value)
+      {
+        $value = intval ($value);
+      }
+    }
+    
+    // create array for media repository path
     if (!is_array ($mgmt_config['abs_path_media']))
     {
       $mediadir_array[] = $mgmt_config['abs_path_media'];
     }
     else $mediadir_array = $mgmt_config['abs_path_media'];
     
+    // walk the media directory
     foreach ($mediadir_array as $mediadir)
     {
       $location = $mediadir.$site."/";
@@ -673,12 +680,41 @@ function reindexcontent ($site)
 
       while (false !== ($file = readdir ($handle)))
       {
-        indexcontent ($site, $location, $file, "", "", "sys");
+        if (is_file ($location.$file) && !is_thumbnail ($file, false) && !is_config ($file) && !is_tempfile ($file))
+        {
+          if (is_array ($container_id_array))
+          {
+            $id = getmediacontainerid ($file);
+            
+            if (in_array (intval ($id), $container_id_array)) $found = true;
+            else $found = false;
+          }
+          else $found = true;
+          
+          if ($found)
+          {
+            $result = indexcontent ($site, $location, $file, "", "", "sys");
+  
+            if ($result)
+            {
+              $errcode = "00501";
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|information|$errcode|reindex of content was successful for: ".$site."/".$file;             
+            }
+            else
+            {
+              $errcode = "20501";
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|reindex of content failed for: ".$site."/".$file;   
+            }
+            
+            // save log
+            savelog (@$error);
+          }
+        }
       }
       
       closedir ($handle);
     }
-    
+
     return true;
   }
   else return false;
@@ -1550,10 +1586,29 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // -composite ... parameter, which tells ImageMagick to add the watermark image we’ve just specified to the image. 
                     list ($watermark, $gravity, $geometry) = explode ("->", $watermarking);
                     
-                    if (strtolower(trim($gravity)) == "topleft") $gravity = "northwest";
-                    elseif (strtolower(trim($gravity)) == "topright") $gravity = "northeast";
-                    elseif (strtolower(trim($gravity)) == "bottomleft") $gravity = "southwest";
-                    elseif (strtolower(trim($gravity)) == "bottomleft") $gravity = "southeast";
+                    if (!empty ($geometry)) $geometry = intval ($geometry);
+                    else $geometry = 0;
+                    
+                    if (strtolower(trim($gravity)) == "topleft")
+                    {
+                      $gravity = "northwest";
+                      $geometry = "+".$geometry."+".$geometry;
+                    }
+                    elseif (strtolower(trim($gravity)) == "topright")
+                    {
+                      $gravity = "northeast";
+                      $geometry = "-".$geometry."+".$geometry;
+                    }
+                    elseif (strtolower(trim($gravity)) == "bottomleft")
+                    {
+                      $gravity = "southwest";
+                      $geometry = "+".$geometry."-".$geometry;
+                    }
+                    elseif (strtolower(trim($gravity)) == "bottomleft")
+                    {
+                      $gravity = "southeast";
+                      $geometry = "-".$geometry."-".$geometry;
+                    }
                     
                     if ($watermark != "" && $gravity != "" && $geometry != "")
                     {
@@ -2407,16 +2462,27 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 {
                   // get watermark defined by media option 
                   $watermarking = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-wm");
-                  list ($watermark, $positioning) = explode ("->", $watermarking);
-  
+                  list ($watermark, $positioning, $geometry) = explode ("->", $watermarking);
+
+                  if (!empty ($geometry))
+                  {
+                    $geometry = intval (@$geometry);
+                    $geometry_x = $geometry_y = $geometry;
+                  }
+                  else
+                  {
+                    $geometry_x = 0;
+                    $geometry_y = 0;
+                  }
+                  
                   // top left corner
-                  if (strtolower(trim($positioning)) == "topleft") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=10:10 [out]";
+                  if (strtolower(trim($positioning)) == "topleft") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=".shellcmd_encode (trim($geometry_x)).":".shellcmd_encode (trim($geometry_y))." [out]";
                   // top right corner
-                  elseif (strtolower(trim($positioning)) == "topright") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=main_w-overlay_w-10:10 [out]";
+                  elseif (strtolower(trim($positioning)) == "topright") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=main_w-overlay_w-".shellcmd_encode (trim($geometry_x)).":".shellcmd_encode (trim($geometry_y))." [out]";
                   // bottom left corner
-                  elseif (strtolower(trim($positioning)) == "bottomleft") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=10:main_h-overlay_h-10 [out]";
+                  elseif (strtolower(trim($positioning)) == "bottomleft") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=".shellcmd_encode (trim($geometry_x)).":main_h-overlay_h-".shellcmd_encode (trim($geometry_y))." [out]";
                   // bottom right corner
-                  elseif (strtolower(trim($positioning)) == "bottomright") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=main_w-overlay_w-10:main_h-overlay_h-10 [out]";
+                  elseif (strtolower(trim($positioning)) == "bottomright") $vfilter_wm = "movie=".shellcmd_encode (trim($watermark))." [watermark]; [in][watermark] overlay=main_w-overlay_w:main_h-overlay_h-".shellcmd_encode (trim($geometry_y))." [out]";
   
                   $tmpfile2 = $file_name.".tmp2.".$format_set;
                   

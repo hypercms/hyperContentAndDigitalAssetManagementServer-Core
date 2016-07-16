@@ -66,7 +66,7 @@ function cleancontent ($text, $charset="UTF-8")
       // replace characters
       $text = str_replace (array(".....", "....", "...", ".."), ".", $text);
       $text = str_replace (array("_____", "____", "___", "__"), "_", $text);
-      $text = str_replace (array("&quot;", "&#xA;", "&#10;", "\\", "\"", "'", "(", ")", "{", "}", "[", "]", ".", ";", "_", "\t", "\r\n", "\r", "\n"), " ", $text);
+      $text = str_replace (array("&quot;", "&#xA;", "&#10;", "\\", "\"", "'", "(", ")", "{", "}", "[", "]", ";", "_", "\t", "\r\n", "\r", "\n"), " ", $text);
       $text = preg_replace ('/\s+/', " ", $text);
     }
     elseif (is_array ($text))
@@ -3570,7 +3570,7 @@ function loadcontainer ($container, $type="work", $user)
       // container data exists in cache
       if (getsession ("hcms_temp_cache") != "") return $contentdata = getsession ("hcms_temp_cache");
     }
-      
+ 
     // if container holds file name
     if (strpos ($container, ".xml") > 0)
     {
@@ -3581,7 +3581,7 @@ function loadcontainer ($container, $type="work", $user)
     {
       $container_id = getmediacontainerid ($container);
     }
-    else $container_id = $container;
+    else $container_id = correctcontainername ($container);
     
     // if container id
     if ($container_id != "" && is_numeric ($container_id))
@@ -5672,6 +5672,17 @@ function editpublication ($site_name, $setting, $user="sys")
 
 // Enable (true) or disable (false) Remote Client 
 \$mgmt_config['".$site_name."']['remoteclient'] = \"".$remoteclient_new."\";
+
+";
+
+  // publication management config
+  if (valid_publicationname ($site_name)) require ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
+  
+  if (!empty ($mgmt_config[$site_name]['hierarchy'])) $site_mgmt_config .= "
+// Metadata/Content Hierarchy
+\$mgmt_config['".$site_name."']['hierarchy'][] = \"".$hierarchy."\";
+";
+  $site_mgmt_config .= "
 ?>";
     
     // set path values
@@ -5896,7 +5907,7 @@ allow_ip = ".$allow_ip_new;
 
 // ------------------------- editpublicationsetting -----------------------------
 // function: editpublicationsetting()
-// input: publication name, publication settings name ['site_admin','linkengine','sendmail','webdav','http_incl','inherit_obj','inherit_comp','inherit_tpl','specialchr_disable','default_codepage','exclude_folders'], value, user name  
+// input: publication name, publication settings name (see publication config file for details), value, user name  
 // output: true/false
 
 // description:
@@ -6133,11 +6144,11 @@ function deletepublication ($site_name, $user="sys")
       $dir_temp = $mgmt_config['abs_path_data']."workflow_master/";
       $files = @dir ($dir_temp);
     
-      if (@is_object ($files))
+      if (is_object ($files))
       {
         while ($entry = $files->read())
         {
-          if (preg_match ("/^".$site_name."./", $entry))
+          if (is_file ($dir_temp.$entry) && preg_match ("/^".$site_name."./", $entry))
           {
             deletefile ($dir_temp, $entry, 0);
           }
@@ -6159,6 +6170,29 @@ function deletepublication ($site_name, $user="sys")
       {
         deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".media.map.php", 0);  
       }
+      
+      // hierarchy configuration file
+      if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".hierarchy.dat"))
+      {
+        deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".hierarchy.dat", 0);  
+      }
+      
+      // taxonomy configuration file
+      $dir_temp = $mgmt_config['abs_path_data']."include/";
+      $files = @dir ($dir_temp);
+    
+      if (is_object ($files))
+      {
+        while ($entry = $files->read())
+        {
+          if (is_file ($dir_temp.$entry) && strpos ("_".$entry, $site_name.".") > 0 && (strpos ($entry, ".taxonomy.dat") > 0 || strpos ($entry, ".taxonomy.inc.php") > 0))
+          {
+            deletefile ($dir_temp, $entry, 0);
+          }
+        }
+    
+        $files->close();
+      }  
      
       // remove site_name value from inheritance database
       $inherit_db = inherit_db_deleteparent ($inherit_db, $site_name);
@@ -9345,6 +9379,33 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
   return $result;    
 }
 
+// ---------------------------------------- correctcontainername --------------------------------------------
+// function: correctcontainername()
+// input: container ID
+// output: corrected name / false on error
+
+// description:
+// This function adds zeros to the container ID to create the correct file name of the content container.
+
+function correctcontainername ($container_id)
+{
+  if ($container_id > 0)
+  {
+    $contentcountlen = strlen ($container_id);
+    $zerolen = 7 - $contentcountlen;
+    $zerostring =  "";
+
+    for ($i = 1; $i <= $zerolen; $i++)
+    {
+      $zerostring = $zerostring."0";
+    }
+    
+    // correct content container id file name
+    return $zerostring.$container_id;
+  }
+  else return false;
+}
+
 // ---------------------------------------- createobject --------------------------------------------
 // function: createobject()
 // input: site, location, object, template
@@ -9536,18 +9597,8 @@ function createobject ($site, $location, $page, $template, $user)
         if ($show == "")
         {
           // create the name of the content file based on the unique content count value
-          $contentcountlen = strlen ($contentcount);
-          $zerolen = 7 - $contentcountlen;
-          $zerostring =  "";
-    
-          for ($i = 1; $i <= $zerolen; $i++)
-          {
-            $zerostring = $zerostring."0";
-          }
-          
-          // define content container id and name
-          $container_id = $zerostring.$contentcount;
-          $contentfile = $zerostring.$contentcount.".xml";
+          $container_id = correctcontainername ($contentcount);
+          $contentfile = $container_id.".xml";
     
           // define page URL for contentorigin
           $contentorigin = convertpath ($site, $location.$pagename, "$cat");

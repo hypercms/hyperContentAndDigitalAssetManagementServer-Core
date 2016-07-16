@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['ro'] = "Activat limbi pentru tra
 $hcms_lang['user-for-access-links']['ro'] = "Utilizator pentru acces links";
 $hcms_lang['read-only-content']['ro'] = "Continutul doar în citire";
 $hcms_lang['reindex-content-of-all-media-files']['ro'] = "Reindexaţi unghiul conţinutul de toate fişierele media";
+$hcms_lang['meta-data-hierarchy']['ro'] = "Metadatele/ierarhiei de conţinut";
+$hcms_lang['select-hierarchy']['ro'] = "Selectaţi ierarhie";
+$hcms_lang['text-id']['ro'] = "Text-ID";
+$hcms_lang['label']['ro'] = "Eticheta";
+$hcms_lang['level']['ro'] = "Nivel";
 ?>

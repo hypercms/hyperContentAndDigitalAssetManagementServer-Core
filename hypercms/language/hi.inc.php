@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['hi'] = "भाषाओं म�
 $hcms_lang['user-for-access-links']['hi'] = "उपयोगकर्ता की पहुंच के लिए सम्पर्क";
 $hcms_lang['read-only-content']['hi'] = "केवल पढ़ने के लिए सामग्री";
 $hcms_lang['reindex-content-of-all-media-files']['hi'] = "सभी मीडिया फ़ाइलों की सामग्री Reindex";
+$hcms_lang['meta-data-hierarchy']['hi'] = "Metadata/सामग्री पदानुक्रम";
+$hcms_lang['select-hierarchy']['hi'] = "हाइराकीऩ चुनें";
+$hcms_lang['text-id']['hi'] = "पाठ-ID";
+$hcms_lang['label']['hi'] = "लेबल";
+$hcms_lang['level']['hi'] = "स्तर पर";
 ?>

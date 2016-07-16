@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['cz'] = "Aktivní jazyků pro př
 $hcms_lang['user-for-access-links']['cz'] = "Uživatel pro přístup odkazy";
 $hcms_lang['read-only-content']['cz'] = "Pouze ke čtení obsahu";
 $hcms_lang['reindex-content-of-all-media-files']['cz'] = "Obsah vytočení všech multimediálních souborů";
+$hcms_lang['meta-data-hierarchy']['cz'] = "Metadata/Obsah hierarchie";
+$hcms_lang['select-hierarchy']['cz'] = "Vyberte hierarchii";
+$hcms_lang['text-id']['cz'] = "Text-ID";
+$hcms_lang['label']['cz'] = "Štítek";
+$hcms_lang['level']['cz'] = "Úroveň";
 ?>

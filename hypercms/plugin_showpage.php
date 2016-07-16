@@ -63,7 +63,7 @@ if (is_array ($mgmt_plugin) && array_key_exists ($plugin, $mgmt_plugin) && is_ar
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<meta name="viewport" content="width=800; initial-scale=1.0; user-scalable=1;" />
+<meta name="viewport" content="width=800, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
 <script language="JavaScript">

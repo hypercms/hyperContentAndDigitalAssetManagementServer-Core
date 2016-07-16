@@ -2826,75 +2826,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           
                           if ($list_sourcefile != "")
                           {
-                            // get taxonomy parameters
-                            if (strpos ("_".$list_sourcefile, "%taxonomy%/") > 0)
-                            {
-                              $slice = explode ("/", $list_sourcefile);
-
-                              if (!empty ($slice[0])) $domain = $slice[0];
-                              if (!empty ($slice[1])) $publication = $slice[1];
-                              if (!empty ($slice[2])) $language = $slice[2];
-                              if (isset ($slice[3])) $taxonomy_id = $slice[3];
-                              if (isset ($slice[4])) $taxonomy_levels = $slice[4];
-                              
-                              // set user language as default
-                              if (empty ($language) || strtolower ($language) == "all") $language = $lang;
-
-                              // reset source file to service/getkeywords
-                              if (!empty ($publication) && !empty ($language) && isset ($taxonomy_id))
-                              {
-                                if ($taxonomy_id == "") $taxonomy_id = 0;
-
-                                $list_sourcefile = $mgmt_config['url_path_cms']."service/getkeywords.php?site=".url_encode($publication)."&lang=".url_encode($language)."&id=".url_encode($taxonomy_id)."&levels=".url_encode($taxonomy_levels);
-                              }
-                              else $list_sourcefile = "";
-                              
-                              // get keywords
-                              if (!empty ($list_sourcefile)) $list .= @file_get_contents ($list_sourcefile);
-                            }
-                            // get folder structure parameters
-                            elseif (is_dir ($list_sourcefile) || strpos ("_".$list_sourcefile, "%comp%/") > 0 || strpos ("_".$list_sourcefile, "%page%/") > 0)
-                            {
-                              $sourcelocation = deconvertpath ($list_sourcefile, "file");
-                              
-                              if (is_dir ($sourcelocation))
-                              {
-                                $handle = opendir ($sourcelocation);
-                                
-                                if ($handle != false)
-                                {
-                                  $folder_array = array();
-                                  
-                                  while ($item = @readdir ($handle)) 
-                                  {
-                                    if (is_dir ($sourcelocation.$item) && $item != '.' && $item != '..') 
-                                    {
-                                      $folder_array[] = specialchr_decode ($item);
-                                    }
-                                  }
-                                  
-                                  if (is_array ($folder_array) && sizeof ($folder_array) > 0)
-                                  {
-                                    natcasesort ($folder_array);
-                                    $list .= implode (",", $folder_array);
-                                  }
-                                }
-                                
-                                closedir ($handle);
-                              }
-                            }
-                            // get parameters from file or service (must be comma-seperated)
-                            elseif (is_file ($list_sourcefile) || strpos ("_".$list_sourcefile, "://") > 0)
-                            {
-                              $list .= @file_get_contents ($list_sourcefile);
-                            }
+                            $list .= getlistelements ($list_sourcefile);
                           }
                           
                           // extract text list
                           $list_add = getattribute ($hypertag, "list");
           
                           // add seperator
-                          if ($list_add != "") $list = $list_add."|".$list;
+                          if ($list_add != "") $list = $list_add.",".$list;
 
                           // extract text list
                           $onlylist = strtolower (getattribute ($hypertag, "onlylist"));
@@ -2921,9 +2860,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                             }
                           }
                           else $keywords_tagit = "";
-                          
+
                           $add_onload .= "
-    $('#".$hypertagname."_".$id."').tagit({".$keywords_tagit."singleField:true, singleFieldDelimiter:',', singleFieldNode:$('#".$hypertagname."_".$id."')});";
+    $('#".$hypertagname."_".$id."').tagit({".$keywords_tagit.(!empty ($disabled) ? "readOnly:true, " : "")."singleField:true, allowSpaces:true, singleFieldDelimiter:',', singleFieldNode:$('#".$hypertagname."_".$id."')});";
                           
                           $formitem[$key] = "
                           <div class=\"hcmsFormRowLabel\">
@@ -2931,7 +2870,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           </div>
                           <div class=\"hcmsFormRowContent\" style=\"width:".$sizewidth.(strpos ($sizewidth, "%") > 0 ? "" : "px")."\">
                             <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
-                            <input name=\"".$hypertagname."_".$id."\" id=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px;\"".$disabled." value=\"".$contentbot."\" />
+                            <input name=\"".$hypertagname."_".$id."\" id=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px;\" ".$disabled." value=\"".$contentbot."\" />
                           </div>";
                         }
                         // if unformatted text
@@ -2944,7 +2883,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <div class=\"hcmsFormRowContent\">
                             <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
                             ".showtranslator ($site, $hypertagname."_".$id, "u", $charset, $lang, "width:".$sizewidth."px; text-align:right; padding:1px 0px 1px 0px; border:1px solid #C0C0C0;")."
-                            <textarea id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."_".$id."\" style=\"width:".($sizewidth-4)."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea>
+                            <textarea id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."_".$id."\" style=\"width:".($sizewidth-4)."px; height:".$sizeheight."px;\" ".$disabled.">".$contentbot."</textarea>
                           </div>";
                         }
                       }                        
@@ -2983,7 +2922,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <div class=\"hcmsFormRowContent\">
                             <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
                             ".showtranslator ($site, $hypertagname."_".$id, "u", $charset, $lang, "width:".$sizewidth."px; text-align:right; padding:1px 0px 1px 0px; border:1px solid #C0C0C0;")."
-                            <textarea id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."_".$artid."_".$elementid."\" style=\"width:".($sizewidth-4)."px; height:".$sizeheight."px;\"".$disabled.">".$contentbot."</textarea>
+                            <textarea id=\"".$hypertagname."_".$id."\" name=\"".$hypertagname."_".$artid."_".$elementid."\" style=\"width:".($sizewidth-4)."px; height:".$sizeheight."px;\" ".$disabled.">".$contentbot."</textarea>
                           </div>";
                       }
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
@@ -3025,7 +2964,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $formitem[$key] .= "
                         <div class=\"hcmsFormRowContent\">
                           <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" />
-                          <textarea class=\"is_comment\" name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\"".$disabled."></textarea>
+                          <textarea class=\"is_comment\" name=\"".$hypertagname."_".$id."\" style=\"width:".$sizewidth."px; height:".$sizeheight."px;\" ".$disabled."></textarea>
                         </div>";
                       }                        
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
@@ -3257,69 +3196,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
                     if ($list_sourcefile != "")
                     {
-                      // get taxonomy parameters
-                      if (strpos ("_".$list_sourcefile, "%taxonomy%/") > 0)
-                      {
-                        $slice = explode ("/", $list_sourcefile);
-
-                        if (!empty ($slice[0])) $domain = $slice[0];
-                        if (!empty ($slice[1])) $publication = $slice[1];
-                        if (!empty ($slice[2])) $language = $slice[2];
-                        if (isset ($slice[3])) $taxonomy_id = $slice[3];
-                        if (isset ($slice[4])) $taxonomy_levels = $slice[4];
-                        
-                        // set user language as default
-                        if (empty ($language) || strtolower ($language) == "all") $language = $lang;
-
-                        // reset source file to service/getkeywords
-                        if (!empty ($publication) && !empty ($language) && isset ($taxonomy_id))
-                        {
-                          if ($taxonomy_id == "") $taxonomy_id = 0;
-
-                          $list_sourcefile = $mgmt_config['url_path_cms']."service/getkeywords.php?site=".url_encode($publication)."&lang=".url_encode($language)."&id=".url_encode($taxonomy_id)."&levels=".url_encode($taxonomy_levels);
-                        }
-                        else $list_sourcefile = "";
-    
-                        // get keywords
-                        if (!empty ($list_sourcefile)) $list .= @file_get_contents ($list_sourcefile);
-                      }
-                      // get folder structure parameters
-                      elseif (is_dir ($list_sourcefile))
-                      {
-                        $sourcelocation = deconvertpath ($list_sourcefile, "file");
-                        
-                        if (is_dir ($sourcelocation))
-                        {
-                          $handle = opendir ($sourcelocation);
-                          
-                          if ($handle != false)
-                          {
-                            $folder_array = array();
-                            
-                            while ($item = @readdir ($handle)) 
-                            {
-                              if (is_dir ($sourcelocation.$item) && $item != '.' && $item != '..') 
-                              {
-                                $folder_array[] = specialchr_decode ($item);
-                              }
-                            }
-                            
-                            if (is_array ($folder_array) && sizeof ($folder_array) > 0)
-                            {
-                              natcasesort ($folder_array);
-                              $list .= implode ("|", $folder_array);
-                            }
-                          }
-                          
-                          closedir ($handle);
-                        }
-                      }
-                      // get parameters from file or service (must be comma-seperated)
-                      elseif (is_file ($list_sourcefile) || strpos ("_".$list_sourcefile, "://") > 0)
-                      {
-                        $list .= @file_get_contents ($list_sourcefile);
-                        $list = str_replace (array (",", ";"), "|", $list);
-                      }
+                      $list .= getlistelements ($list_sourcefile);
+                      // replace commas
+                      $list = str_replace (",", "|", $list);
                     }
                         
                     // extract text list
@@ -3348,7 +3227,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               <b>".$labelname."</b>
                             </div>
                             <div class=\"hcmsFormRowContent\">
-                              <select name=\"".$hypertagname."[".$id."]\"".$disabled.">\n";
+                              <select name=\"".$hypertagname."[".$id."]\" ".$disabled.">\n";
                           
                           foreach ($list_array as $list_entry)
                           {
@@ -7816,71 +7695,11 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 
                 if ($list_sourcefile != "")
                 {
-                  // get taxonomy parameters
-                  if (strpos ("_".$list_sourcefile, "%taxonomy%/") > 0)
-                  {
-                    $slice = explode ("/", $list_sourcefile);
-
-                    if (!empty ($slice[0])) $domain = $slice[0];
-                    if (!empty ($slice[1])) $publication = $slice[1];
-                    if (!empty ($slice[2])) $language = $slice[2];
-                    if (isset ($slice[3])) $taxonomy_id = $slice[3];
-                    if (isset ($slice[4])) $taxonomy_levels = $slice[4];
-                    
-                    // set user language as default
-                    if (empty ($language) || strtolower ($language) == "all") $language = $lang;
-
-                    // reset source file to service/getkeywords
-                    if (!empty ($publication) && !empty ($language) && isset ($taxonomy_id))
-                    {
-                      if ($taxonomy_id == "") $taxonomy_id = 0;
-
-                      $list_sourcefile = $mgmt_config['url_path_cms']."service/getkeywords.php?site=".url_encode($publication)."&lang=".url_encode($language)."&id=".url_encode($taxonomy_id)."&levels=".url_encode($taxonomy_levels);
-                    }
-                    else $list_sourcefile = "";
-
-                    // get keywords
-                    if (!empty ($list_sourcefile)) $list .= @file_get_contents ($list_sourcefile);
-                  }
-                  // get folder structure parameters
-                  elseif (strpos ("_".$list_sourcefile, "%comp%/") > 0 || strpos ("_".$list_sourcefile, "%page%/") > 0 || is_dir ($list_sourcefile))
-                  {
-                    $sourcelocation = deconvertpath ($list_sourcefile, "file");
-                    
-                    if (is_dir ($sourcelocation))
-                    {
-                      $handle = opendir ($sourcelocation);
-                      
-                      if ($handle != false)
-                      {
-                        $folder_array = array();
-                        
-                        while ($item = @readdir ($handle))
-                        {
-                          if (is_dir ($sourcelocation.$item) && $item != '.' && $item != '..') 
-                          {
-                            $folder_array[] = specialchr_decode ($item);
-                          }
-                        }
-                        
-                        if (is_array ($folder_array) && sizeof ($folder_array) > 0)
-                        {
-                          natcasesort ($folder_array);
-                          $list .= implode ("|", $folder_array);
-                        }
-                      }
-                      
-                      closedir ($handle);
-                    }
-                  }
-                  // get parameters from file or service (must be comma-seperated)
-                  elseif (is_file ($list_sourcefile) || strpos ("_".$list_sourcefile, "://") > 0)
-                  {
-                    $list .= @file_get_contents ($list_sourcefile);
-                    $list = str_replace (array (",", ";"), "|", $list);
-                  }
+                  $list .= getlistelements ($list_sourcefile);
+                  // replace commas by 
+                  $list = str_replace (",", "|", $list);
                 }
-                              
+           
                 // extract text list
                 $list_add = getattribute ($hypertag, "list");
 
@@ -7892,9 +7711,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
                 {
                   $list = rtrim ($list, "|");
                   $list_array = explode ("|", $list);
-                          
-                  $list_array = explode ("|", $list);
-
+                  
                   $formitem[$key] = "
             <label for=\"textl_".$id."\" style=\"display:".$css_display."; width:180px;\">".$label." </label>
             <select id=\"textl_".$id."\" name=\"search_textnode[".$id."]\" style=\"display:inline-block; width:220px; margin:1px;\">

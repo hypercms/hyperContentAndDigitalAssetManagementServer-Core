@@ -1386,4 +1386,9 @@ $hcms_lang['enable-languages-for-translation']['zh-s'] = "启用的语言翻译"
 $hcms_lang['user-for-access-links']['zh-s'] = "用户的访问链接。";
 $hcms_lang['read-only-content']['zh-s'] = "只读的内容。";
 $hcms_lang['reindex-content-of-all-media-files']['zh-s'] = "重新编制索引的内容的所有多媒体文件。";
+$hcms_lang['meta-data-hierarchy']['zh-s'] = "元数据/内容的层次结构";
+$hcms_lang['select-hierarchy']['zh-s'] = "请选择层次结构";
+$hcms_lang['text-id']['zh-s'] = "文本标识";
+$hcms_lang['label']['zh-s'] = "标签";
+$hcms_lang['level']['zh-s'] = "一级";
 ?>

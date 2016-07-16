@@ -25,7 +25,6 @@ $mediacat = getrequest ("mediacat", "objectname");
 $scaling = getrequest ("scaling", "numeric");
 $mediatype = getrequest ("mediatype", "objectname");
 $save = getrequest ("save");
-$mediafile = getrequest ("mediafile", "objectname");
 $content = getrequest ("content");
 $token = getrequest ("token");
 
@@ -74,29 +73,35 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;"
 ?>
 
 <?php
-// read media file
+// read media file from media object
 if ($mediaobject != "")
 {
   $site = getpublication ($mediaobject);
   $location = getlocation ($mediaobject);
   $object = getobject ($mediaobject);
-  $object_info = getfileinfo ($site, $object, "comp");
+  $file_info = getfileinfo ($site, $object, "comp");
+  $object_info = getobjectinfo ($site, $location, $object, $user);
   
-  // load object file
-  if ($mediafile == "")
-  {
-    $pagedata = loadfile (deconvertpath ($location, "file"), $object);  
-    
-    if ($pagedata != false) 
-    {
-      // get media and template file name
-      $mediafile = getfilename ($pagedata, "media");
-      
-      if ($mediafile != false) $mediafile = $site."/".$mediafile;
-    }
-  }
+  // media file
+  $mediafile = $site."/".$object_info['media'];
+  
+  // load container
+  $contentdata = loadcontainer ($object_info['content'], "work", "sys");
+  
+  // get character set and content-type
+  $charset_array = getcharset ($site, $contentdata);
+  
+  // set character set
+  if (!empty ($charset_array['charset'])) $charset = $charset_array['charset'];
+  else $charset = $mgmt_config[$site]['default_codepage'];
+  
+  $hcms_charset = $charset;
+  
+  // convert object name
+  $name = convertchars ($file_info['name'], "UTF-8", $charset);
 }
 
+// media preview
 if (substr_count ($mediafile, "Null_media.gif") == 1)
 {
   echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['no-file-selected'][$lang])."</p>";
@@ -106,9 +111,31 @@ elseif ($mediafile != "")
   if ($mediacat == "tpl" && checkglobalpermission ($site, 'tpledit')) $view = "template";
   else $view = "preview_no_rendering";
   
-  if (!isset ($object_info['name'])) $object_info['name'] = getobject ($mediafile);
+  if (!isset ($file_info['name'])) $file_info['name'] = getobject ($mediafile);
 
-  echo showmedia ($mediafile, $object_info['name'], $view);
+  echo showmedia ($mediafile, $file_info['name'], $view);
+}
+
+// meta data
+if (!empty ($contentdata))
+{
+  // meta data
+  $metadata_array = getmetadata ("", "", $contentdata, "array", $site."/".$object_info['template']);
+
+  if (is_array ($metadata_array))
+  {
+    $rows = "";
+    
+    foreach ($metadata_array as $key => $value)
+    {
+      if (trim ($key) != "") $key = $key.":";
+      $rows .= "<tr><td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\">".$value."</td></tr>\n";
+    }
+    
+    if ($rows != "") $metadata = "<hr /><table>\n".$rows."</table>\n";
+  }
+  
+  if (!empty ($metadata)) echo $metadata;
 }
 
 // retrieving image metrics to update the height and width field

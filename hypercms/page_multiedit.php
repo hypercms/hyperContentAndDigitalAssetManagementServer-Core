@@ -633,7 +633,7 @@ elseif ($is_video || $is_audio)
 	<head>
   <title>hyperCMS</title>
   <meta charset="<?php echo $charset; ?>" />
-  <meta name="viewport" content="width=580; initial-scale=0.9; maximum-scale=1.0; user-scalable=1;" />
+  <meta name="viewport" content="width=580, initial-scale=0.9, maximum-scale=1.0, user-scalable=1" />
   
   <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-1.10.2.min.js"></script>
   <script src="javascript/jquery/plugins/jquery.color.js"></script>
@@ -2225,43 +2225,48 @@ elseif ($is_video || $is_audio)
           {
             $list = "";
             
-            // extract source file (file path or URL) for text list
-            if ($tagdata->file != "")
+            if ($disabled == "")
             {
-              $list .= @file_get_contents ($tagdata->file);
-            }
-            
-            // extract text list
-            $list .= $tagdata->list;
-
-            // extract text list
-            $onlylist = strtolower ($tagdata->onlylist);
-            
-            // get list entries
-            if ($list != "")
-            {
-              // replace line breaks
-              $list = str_replace ("\r\n", ",", $list);
-              $list = str_replace ("\n", ",", $list);
-              $list = str_replace ("\r", ",", $list);
-              // escape single quotes
-              $list = str_replace ("'", "\\'", $list);
-              // create array
-              $list_array = explode (",", $list);
-              // create keyword string for Javascript
-              $keywords = "['".implode ("', '", $list_array)."']";
+              // extract text list
+              $list .= $tagdata->list;
               
-              $keywords_tagit = "availableTags:".$keywords.", ";
-
-              if ($onlylist == "true" || $onlylist == "yes" || $onlylist == "1")
+              // extract source file (file path or URL) for text list
+              if ($tagdata->file != "")
               {
-                $keywords_tagit .= "beforeTagAdded: function(event, ui) { if ($.inArray(ui.tagLabel, ".$keywords.") == -1) { return false; } }, ";
+                $list_add = getlistelements ($tagdata->file);
+                
+                if ($list_add != "") $list .= ",".$list_add;
               }
+  
+              // extract text list
+              $onlylist = strtolower ($tagdata->onlylist);
+              
+              // get list entries
+              if ($list != "")
+              {
+                // replace line breaks
+                $list = str_replace ("\r\n", ",", $list);
+                $list = str_replace ("\n", ",", $list);
+                $list = str_replace ("\r", ",", $list);
+                // escape single quotes
+                $list = str_replace ("'", "\\'", $list);
+                // create array
+                $list_array = explode (",", $list);
+                // create keyword string for Javascript
+                $keywords = "['".implode ("', '", $list_array)."']";
+                
+                $keywords_tagit = "availableTags:".$keywords.", ";
+  
+                if ($onlylist == "true" || $onlylist == "yes" || $onlylist == "1")
+                {
+                  $keywords_tagit .= "beforeTagAdded: function(event, ui) { if ($.inArray(ui.tagLabel, ".$keywords.") == -1) { return false; } }, ";
+                }
+              }
+              else $keywords_tagit = "";
+              
+              $add_onload .= "
+              $('#".$id."').tagit({".$keywords_tagit."singleField:true, allowSpaces:true, singleFieldDelimiter:',', singleFieldNode:$('#".$id."')});";
             }
-            else $keywords_tagit = "";
-            
-            $add_onload .= "
-            $('#".$id."').tagit({".$keywords_tagit."singleField:true, singleFieldDelimiter:',', singleFieldNode:$('#".$id."')});";
           ?>
             <div style="display:inline-block; width:<?php echo $tagdata->width; ?>px;"><input id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" <?php echo $disabled; ?> value="<?php if ($tagdata->ignore == false) echo $tagdata->fieldvalue; ?>" /></div>
           <?php 
@@ -2324,8 +2329,25 @@ elseif ($is_video || $is_audio)
           } 
           elseif ($tagdata->type == "l")
           {
+            $list = "";
+            
+            // extract text list
+            $list .= $tagdata->list;
+            
+            // extract source file (file path or URL) for text list
+            if ($tagdata->file != "")
+            {
+              $list_add = getlistelements ($tagdata->file);
+              
+              if ($list_add != "")
+              {
+                $list_add = str_replace (",", "|", $list_add);
+                $list .= "|".$list_add;
+              }
+            }
+            
             // get list entries
-            $list_array = explode ("|", $tagdata->list);
+            $list_array = explode ("|", $list);
             ?>
             <select name="<?php echo $tagdata->hypertagname."[".$key."]"; ?>" id="<?php echo $id; ?>" <?php echo $disabled; ?>>
             <?php

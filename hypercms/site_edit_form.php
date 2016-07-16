@@ -314,17 +314,19 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
         
         if (is_array ($user_array) && sizeof ($user_array) > 0)
         {
-          foreach ($user_array[$site_name] as $login=>$value)
+          foreach ($user_array[$site_name] as $login => $value)
           {
-            if (@$mgmt_config[$site_name]['accesslinkuser'] == $login) $selected = "selected=\"selected\"";
-            else $selected = "";
-            
-            $text = "";
-            if ($value['realname'] != "") $text .= $login." (".$value['realname'].")";            
-            if (!isset ($user_option[$text])) $user_option[$text] = "";
-  
-            $user_option[$text] .= "
-            <option value=\"".$login."\" ".$selected.">".$text."</option>";
+            if ($login != "admin")
+            {
+              if (@$mgmt_config[$site_name]['accesslinkuser'] == $login) $selected = "selected=\"selected\"";
+              else $selected = "";
+              
+              $text = $login;
+              if ($value['realname'] != "") $text .= " (".$value['realname'].")";
+    
+              $user_option[$text] = "
+              <option value=\"".$login."\" ".$selected.">".$text."</option>";
+            }
           }
           
           ksort ($user_option, SORT_STRING | SORT_FLAG_CASE);

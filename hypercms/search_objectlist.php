@@ -133,7 +133,10 @@ elseif ($action == "base_search" || $search_dir != "")
   {
     $search_textnode[0] = $search_expression;
     
-    if (strpos ("_".$search_expression, "%taxonomy%/") > 0) $search_filename = "";
+    if (strpos ("_".$search_expression, "%taxonomy%/") > 0 || strpos ("_".$search_expression, "%keyword%/") > 0 || strpos ("_".$search_expression, "%hierarchy%/") > 0)
+    {
+      $search_filename = "";
+    }
     else $search_filename = $search_expression;
   }
   
@@ -656,7 +659,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
 <script src="javascript/contextmenu.js" language="JavaScript" type="text/javascript"></script>

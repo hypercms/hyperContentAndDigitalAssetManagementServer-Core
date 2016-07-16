@@ -77,7 +77,7 @@ class hcms_menupoint
       $this->id = $id;
     }
     
-    // building of the link
+    // building the link
     if ($link == "#") $link = "#".$this->id;
     
     $this->link = $link;  
@@ -221,7 +221,7 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
   if (($cat == "comp" || $cat == "page") && valid_publicationname ($site) && valid_locationname ($location))
   {
     $location_esc = $location;
-    $location = deconvertpath($location);
+    $location = deconvertpath ($location);
     $id = "";
     $rnrid = "";
 
@@ -258,8 +258,6 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
         // if we have access
         if (sizeof ($folder_array) > 0)
         {
-          $index = 0;
-          
           natcasesort ($folder_array);
           reset ($folder_array);
           
@@ -267,8 +265,6 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
           
           foreach ($folder_array as $folder)
           {
-            $index++;
-            
             $folderinfo = getfileinfo ($site, $location.$folder, $cat);
             $foldername = $folderinfo['name'];
             $icon = $folderinfo['icon'];
@@ -423,15 +419,12 @@ function generateTaxonomyTree ($site, $tax_id, $runningNumber=1)
     // get taxonomy keyword list
     $tax_array = gettaxonomy_sublevel ($site, $lang, $tax_id);
 
-    // if we have access
     if (is_array ($tax_array) && sizeof ($tax_array) > 0)
     {
-      $index = 0;
       $i = 1;
       
-      foreach ($tax_array as $tax_id=>$tax_keyword)
+      foreach ($tax_array as $tax_id => $tax_keyword)
       {
-        $index++;
         $id = 'tax_'.$site.'_';
         
         // generating the id from the running number so we don't have any ID problems
@@ -445,12 +438,87 @@ function generateTaxonomyTree ($site, $tax_id, $runningNumber=1)
         $rnrid .= $i++;
 
         // generating the menupoint object with the needed configuration
-        $point = new hcms_menupoint($tax_keyword, 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode("%taxonomy%/".$site."/all/".$tax_id."/0"), "folder_taxonomy.gif", $id);
+        $point = new hcms_menupoint(showshorttext ($tax_keyword, 22), 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode("%taxonomy%/".$site."/all/".$tax_id."/0"), "folder_taxonomy.gif", $id);
         $point->setOnClick('hcms_jstree_open("'.$id.'");');
         $point->setTarget('workplFrame');
         $point->setNodeCSSClass('jstree-closed jstree-reload');
+        $point->setOnMouseOver('hcms_resetContext();');
         $point->setAjaxData('%taxonomy%/'.$site.'/'.$lang.'/'.$tax_id.'/0', $rnrid);
         $result[] = $point;
+      }
+    }
+    
+    return $result;
+  }
+  else return false;
+}
+
+// function that reads a specific text ID and returns an array containing a hcms_menupoint for each of those
+function generateHierarchyTree ($hierarchy_url, $runningNumber=1) 
+{
+  global $mgmt_config, $hcms_lang, $lang;
+
+  if ($hierarchy_url != "" && strpos ($hierarchy_url, "/") > 0)
+  {
+    $id = "";
+    $rnrid = "";
+    $result = array();
+    
+    // analyze hierarchy URL
+    $hierarchy_url = trim ($hierarchy_url, "/");
+    $hierarchy_array = explode ("/", $hierarchy_url);
+    $site = $hierarchy_array[1];
+    
+    // get hierarchy keyword list
+    $text_array = gethierarchy_sublevel ($hierarchy_url);
+
+    if (is_array ($text_array) && sizeof ($text_array) > 0)
+    {
+      $i = 1;
+      
+      foreach ($text_array as $hierarchy_url => $label)
+      {
+        $id = 'text_'.$site.'_';
+        
+        // generating the id from the running number so we don't have any ID problems
+        if (!empty ($runningNumber))
+        {
+          $id .= $runningNumber.'_';
+          $rnrid = $runningNumber.'_';
+        }
+        
+        $id .= $i;
+        $rnrid .= $i++;
+        
+        $hierarchy_url = trim ($hierarchy_url, "/");
+        $hierarchy_array = explode ("/", $hierarchy_url);
+        
+        $site = $hierarchy_array[1];
+        $last_text_id = end ($hierarchy_array);
+        
+        // if no text content is availbale
+        if (trim ($label) == "") $label = $hcms_lang['none'][$lang];
+        
+        // generating the menupoint object with the needed configuration
+        if (strpos ($last_text_id, "=") > 0)
+        {
+          $point = new hcms_menupoint(showshorttext ($label, 22), 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode($hierarchy_url), "folder_taxonomy.gif", $id);
+          $point->setOnClick('hcms_jstree_open("'.$id.'");');
+          $point->setTarget('workplFrame');
+          $point->setNodeCSSClass('jstree-closed jstree-reload');
+          $point->setOnMouseOver('hcms_resetContext();');
+          $point->setAjaxData($hierarchy_url, $rnrid);
+          $result[] = $point;
+        }
+        else
+        {
+          $point = new hcms_menupoint(showshorttext ($label, 22), '#'.$id, "folder.gif", $id);
+          $point->setOnClick('hcms_jstree_open("'.$id.'");');
+          $point->setNodeCSSClass('jstree-closed jstree-reload');
+          $point->setOnMouseOver('hcms_resetContext();');
+          $point->setAjaxData($hierarchy_url, $rnrid);
+          $result[] = $point;
+        }
       }
     }
     
@@ -514,7 +582,7 @@ function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false,$site=
 }
 
 // if requested via AJAX only generate the navigation tree to be included
-if (valid_locationname ($location))
+if ($location != "")
 {
   // folder location
   if (substr_count ($location, "%comp%/") > 0 || substr_count ($location, "%page%/") > 0)
@@ -527,7 +595,12 @@ if (valid_locationname ($location))
     list ($domain, $site, $lang, $tax_id, $levels) = explode ("/", $location);
     $tree = generateTaxonomyTree ($site, $tax_id, $rnr);
   }
-
+  // taxonomy location
+  elseif (substr_count ($location, "%hierarchy%/") > 0)
+  {
+    $tree = generateHierarchyTree ($location, $rnr);
+  }
+  
   if (!empty ($tree) && is_array ($tree)) 
   {
     // Generate the html for each point
@@ -673,15 +746,12 @@ else
   }
 
   $set_site_admin = false;
-  $index = 0;
 
   if (is_array ($siteaccess))
   {
     // loop through all publications
     foreach ($siteaccess as $site)  
     { 
-      $index++;
-  
       if (valid_publicationname ($site) || $site == "hcms_empty")
       {
         // include configuration file of site
@@ -971,6 +1041,33 @@ else
             $publication->addSubPoint($point);
           }
           
+          // --------------------------------- metadata/content hierarchy -------------------------------------
+          if (!isset ($hcms_linking['location']) && (checkglobalpermission ($site, 'component') || checkglobalpermission ($site, 'page')))
+          {
+            $hierarchy = gethierarchy_defintion ($site);
+            
+            if (is_array ($hierarchy) && sizeof ($hierarchy) > 0)
+            {
+              foreach ($hierarchy as $name => $level_array)
+              {
+                foreach ($level_array[1] as $text_id => $label_array)
+                {
+                  if ($text_id != "")
+                  {
+                    if (!empty ($label_array[$lang])) $label = $label_array[$lang];
+                    else $label = $label_array['default'];
+                  
+                    $point = new hcms_menupoint($label, '#text_'.$site, 'folder.gif', 'text_'.$site);
+                    $point->setOnClick('hcms_jstree_open("text_'.$site.'", event);');
+                    $point->setNodeCSSClass('jstree-closed jstree-reload');
+                    $point->setAjaxData('%hierarchy%/'.$site.'/'.$name.'/1/'.$text_id);
+                    $publication->addSubPoint($point);
+                  }
+                }
+              }
+            }
+          }
+          
           // ----------------------------------------- component ---------------------------------------------
           // category of content: cat=comp
           if (is_dir ($mgmt_config['abs_path_comp'].$site."/") && checkglobalpermission ($site, 'component') && (!isset ($hcms_linking['cat']) || $hcms_linking['cat'] == "comp"))
@@ -1054,7 +1151,7 @@ else
   <head>
     <title>hyperCMS</title>
     <meta charset="<?php echo getcodepage ($lang); ?>" />
-    <meta name="viewport" content="width=260; initial-scale=1.0; user-scalable=0;" />
+    <meta name="viewport" content="width=260, initial-scale=1.0, user-scalable=0" />
     
     <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" />
     <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
@@ -1417,8 +1514,8 @@ else
           
           return true;
         }
-        // wait 100 ms
-        else window.setTimeout(startSearch, 100);
+        // wait 2000 ms
+        else window.setTimeout(startSearch, 2000);
       }
       else return false;
     }
@@ -1679,6 +1776,10 @@ else
           </select><br />
           <table style="width:100%; margin-top:4px; padding:0; border-spacing:0; border-collapse:collapse;">
           <?php
+          $count = rdbms_getemptykeywords ($siteaccess);
+          ?>
+            <tr class="hcmsRowData1"><td align="left" title="<?php echo getescapedtext ($hcms_lang['none'][$lang]); ?>"><label><input type="checkbox" onclick="startSearch('auto')" name="search_textnode[]" value="%keyword%/" />&nbsp;<?php echo getescapedtext ($hcms_lang['none'][$lang]); ?></label></td><td align="right"><?php echo $count; ?>&nbsp;&nbsp;</td></tr>
+          <?php
           $keywords = getkeywords ($siteaccess);
           
           if (is_array ($keywords) && sizeof ($keywords) > 0)
@@ -1702,7 +1803,7 @@ else
                 }
                 
                 echo "
-            <tr class=\"".$rowcolor."\"><td align=\"left\" title=\"".$keyword."\"><label><input type=\"checkbox\" onclick=\"startSearch('auto')\" name=\"search_textnode[]\" value=\"%keyword%/".$keyword_id."\" />&nbsp;".getescapedtext (showshorttext ($keyword, 24))."</label></td><td align=\"right\">".$count."</td></tr>\n";
+            <tr class=\"".$rowcolor."\"><td align=\"left\" title=\"".$keyword."\"><label><input type=\"checkbox\" onclick=\"startSearch('auto')\" name=\"search_textnode[]\" value=\"%keyword%/".$keyword_id."\" />&nbsp;".getescapedtext (showshorttext ($keyword, 22))."</label></td><td align=\"right\">".$count."&nbsp;&nbsp;</td></tr>\n";
               }
             }
           }

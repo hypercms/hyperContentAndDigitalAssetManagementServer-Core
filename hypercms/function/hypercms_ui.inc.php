@@ -154,27 +154,30 @@ function objectfilter ($file)
 // --------------------------------------- showshorttext -------------------------------------------
 // function: showshorttext ()
 // input: text as string, max. length of text (minus length starting from the end) (optional),
-//        line break instead of cut [true,false] only if length is positive (optional)
+//        line break instead of cut [true,false] only if length is positive (optional), character set for encoding (optional)
 // output: shortened text if possible, or orignal text
 
 // description:
 // Reduce the length of a string and add "..." at the end
 
-function showshorttext ($text, $length=0, $linebreak=false)
+function showshorttext ($text, $length=0, $linebreak=false, $charset="UTF-8")
 {
   if ($text != "" && $length > 0)
   {
     if (!$linebreak)
     {
-      if (strlen ($text) > $length) return substr ($text, 0, $length)."...";
+      if (mb_strlen ($text, $charset) > $length)
+      {
+        return mb_substr ($text, 0, $length, $charset)."...";
+      }
       else return $text;
     }
     else
     {
       // max. 3 lines
-      if (strlen ($text) > ($length * 3)) $text = substr ($text, 0, $length)."<br />\n".substr ($text, $length, $length)."<br />\n".substr ($text, ($length*2), ($length-2))."...";
-      elseif (strlen ($text) > ($length * 2)) $text = substr ($text, 0, $length)."<br />\n".substr ($text, $length, $length)."<br />\n".substr ($text, ($length*2));
-      elseif (strlen ($text) > $length) $text = substr ($text, 0, $length)."<br />\n".substr ($text, $length);
+      if (mb_strlen ($text, $charset) > ($length * 3)) $text = mb_substr ($text, 0, $length, $charset)."<br />\n".mb_substr ($text, $length, $length, $charset)."<br />\n".mb_substr ($text, ($length*2), ($length-2), $charset)."...";
+      elseif (mb_strlen ($text, $charset) > ($length * 2)) $text = mb_substr ($text, 0, $length, $charset)."<br />\n".mb_substr ($text, $length, $length, $charset)."<br />\n".mb_substr ($text, ($length*2), $charset);
+      elseif (mb_strlen ($text,$charset) > $length) $text = mb_substr ($text, 0, $length)."<br />\n".mb_substr ($text, $length, $charset);
       
       // keep 
       return "<div style=\"vertical-align:top; height:50px; display:block;\">".$text."</div>";
@@ -182,7 +185,7 @@ function showshorttext ($text, $length=0, $linebreak=false)
   }
   elseif ($text != "" && $length < 0)
   {
-    if (strlen ($text) > ($length * -1)) return "...".substr ($text, $length);
+    if (mb_strlen ($text, $charset) > ($length * -1)) return "...".mb_substr ($text, $length, $charset);
     else return $text;
   }
   else return $text;
@@ -897,7 +900,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $thumbfile = $temp['file'];
           }
           
-          // use thumbnail if it is valid (larger than 10 bytes)
+          // use thumbnail if it is valid
           if (is_file ($thumb_root.$thumbfile))
           {
             // get thumbnail image information
@@ -955,7 +958,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               // define parameters for view-images
               $viewfolder = $mgmt_config['abs_path_temp'];
               $newext = 'jpg';
-              $typename = '.view.'.$width.'x'.$height;
+              $typename = 'view.'.$width.'x'.$height;
                         
               // predict the name to check if the file does exist and maybe is actual
               $newname = $file_info['filename'].$typename.'.'.$newext;

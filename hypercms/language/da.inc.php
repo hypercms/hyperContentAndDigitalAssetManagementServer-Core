@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['da'] = "Aktiveret sprog oversæt
 $hcms_lang['user-for-access-links']['da'] = "Bruger for adgang links";
 $hcms_lang['read-only-content']['da'] = "Skrivebeskyttet indhold";
 $hcms_lang['reindex-content-of-all-media-files']['da'] = "Reindex indholdet af alle mediefiler";
+$hcms_lang['meta-data-hierarchy']['da'] = "Metadata/indhold hierarki";
+$hcms_lang['select-hierarchy']['da'] = "Vælg hierarki";
+$hcms_lang['text-id']['da'] = "Tekst-ID";
+$hcms_lang['label']['da'] = "Etiket";
+$hcms_lang['level']['da'] = "Niveau";
 ?>

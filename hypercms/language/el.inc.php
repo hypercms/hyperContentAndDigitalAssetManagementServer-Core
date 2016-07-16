@@ -1386,4 +1386,9 @@ $hcms_lang['enable-languages-for-translation']['el'] = "Ενεργοποιημέ
 $hcms_lang['user-for-access-links']['el'] = "Χρήστη για πρόσβαση σε διασυνδέσεις";
 $hcms_lang['read-only-content']['el'] = "Μόνο ανάγνωση περιεχομένου";
 $hcms_lang['reindex-content-of-all-media-files']['el'] = "Κάντε νέα δεικτοδότηση περιεχόμενο όλων των αρχείων μέσων";
+$hcms_lang['meta-data-hierarchy']['el'] = "Μεταδεδομένα/Περιεχόμενο ιεραρχία";
+$hcms_lang['select-hierarchy']['el'] = "Επιλογή ιεραρχίας";
+$hcms_lang['text-id']['el'] = "Κείμενο-ID";
+$hcms_lang['label']['el'] = "Ετικέτα";
+$hcms_lang['level']['el'] = "Επίπεδο";
 ?>

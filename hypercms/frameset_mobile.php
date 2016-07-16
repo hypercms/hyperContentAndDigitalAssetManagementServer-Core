@@ -33,7 +33,7 @@ toggleview ($view);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#464646" />
-<meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=0;"></meta>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0"></meta>
 <link rel="stylesheet" href="javascript/jquery-ui/jquery.mobile-1.3.1.min.css" />
 <!-- 57 x 57 Android and iPhone 3 icon -->
 <link rel="apple-touch-icon" media="screen and (resolution: 163dpi)" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />

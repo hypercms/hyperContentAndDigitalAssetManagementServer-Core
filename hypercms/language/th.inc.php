@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['th'] = "การเปิดใ
 $hcms_lang['user-for-access-links']['th'] = "ผู้ใช้สำหรับการเข้าใช้ลิงค์";
 $hcms_lang['read-only-content']['th'] = "เนื้อหาแบบอ่านอย่างเดียว";
 $hcms_lang['reindex-content-of-all-media-files']['th'] = "ทำดัชนีเนื้อหาของไฟล์มีเดียทั้งหมด";
+$hcms_lang['meta-data-hierarchy']['th'] = "เมตาดาต้า / เนื้อหาในลำดับชั้น";
+$hcms_lang['select-hierarchy']['th'] = "เลือกลำดับชั้น";
+$hcms_lang['text-id']['th'] = "ID ข้อความ";
+$hcms_lang['label']['th'] = "ป้ายกำกับ";
+$hcms_lang['level']['th'] = "ระดับ";
 ?>

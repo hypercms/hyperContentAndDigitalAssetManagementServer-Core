@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['sr'] = "5 jezika za prevod";
 $hcms_lang['user-for-access-links']['sr'] = "Korisnik internet linkovi";
 $hcms_lang['read-only-content']['sr'] = "Pročitajte-samo sadržaj";
 $hcms_lang['reindex-content-of-all-media-files']['sr'] = "Reindex sadržaj svih medija fajlova";
+$hcms_lang['meta-data-hierarchy']['sr'] = "Metapodataka/Sadržaj hijerarhija";
+$hcms_lang['select-hierarchy']['sr'] = "Odaberite hijerarhija";
+$hcms_lang['text-id']['sr'] = "Tekst-ID";
+$hcms_lang['label']['sr'] = "Etiketa";
+$hcms_lang['level']['sr'] = "Nivo";
 ?>

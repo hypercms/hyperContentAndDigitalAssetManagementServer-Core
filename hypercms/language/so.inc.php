@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['so'] = "Afafka Suuragelisay fasi
 $hcms_lang['user-for-access-links']['so'] = "Uu bixiyo isticmaalaha adeegga inay isticmaalaan links,";
 $hcms_lang['read-only-content']['so'] = "Akhri-mushahaaradiinnana raalli keliya";
 $hcms_lang['reindex-content-of-all-media-files']['so'] = "Mushahaaradiinnana Raalli Reindex dhamaan faylasha saxaafadda";
+$hcms_lang['meta-data-hierarchy']['so'] = "Metadata/kuna Xasilay xuduudohooda";
+$hcms_lang['select-hierarchy']['so'] = "Xuduudohooda soocda ";
+$hcms_lang['text-id']['so'] = "Qoraalkaan-CIID";
+$hcms_lang['label']['so'] = "Dusheeda";
+$hcms_lang['level']['so'] = "Heerka";
 ?>

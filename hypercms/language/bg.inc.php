@@ -1386,4 +1386,9 @@ $hcms_lang['enable-languages-for-translation']['bg'] = "Активиран ез�
 $hcms_lang['user-for-access-links']['bg'] = "Потребител за достъп връзки";
 $hcms_lang['read-only-content']['bg'] = "Само за четене съдържание";
 $hcms_lang['reindex-content-of-all-media-files']['bg'] = "Reindex съдържание на всички медийни файлове";
+$hcms_lang['meta-data-hierarchy']['bg'] = "Метаданни/Съдържание йерархия";
+$hcms_lang['select-hierarchy']['bg'] = "Изберете йерархия";
+$hcms_lang['text-id']['bg'] = "Текст-ID";
+$hcms_lang['label']['bg'] = "Етикет";
+$hcms_lang['level']['bg'] = "Ниво";
 ?>

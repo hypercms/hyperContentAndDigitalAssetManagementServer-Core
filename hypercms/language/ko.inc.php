@@ -1385,4 +1385,9 @@ $hcms_lang['enable-languages-for-translation']['ko'] = "번역 사용 언어";
 $hcms_lang['user-for-access-links']['ko'] = "액세스 사용자";
 $hcms_lang['read-only-content']['ko'] = "읽기 전용 콘텐츠";
 $hcms_lang['reindex-content-of-all-media-files']['ko'] = "모든 미디어 파일을 reindex 콘텐츠";
+$hcms_lang['meta-data-hierarchy']['ko'] = "메타데이터/콘텐츠 계층";
+$hcms_lang['select-hierarchy']['ko'] = "계층 선택";
+$hcms_lang['text-id']['ko'] = "텍스트-ID";
+$hcms_lang['label']['ko'] = "레이블";
+$hcms_lang['level']['ko'] = "레벨";
 ?>

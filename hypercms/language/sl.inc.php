@@ -1384,4 +1384,9 @@ $hcms_lang['enable-languages-for-translation']['sl'] = "Omogočeni jeziki za pre
 $hcms_lang['user-for-access-links']['sl'] = "Uporabnik za dostop povezave";
 $hcms_lang['read-only-content']['sl'] = "Samo za branje vsebine";
 $hcms_lang['reindex-content-of-all-media-files']['sl'] = "Reindex vsebino vseh predstavnostnih datotek";
+$hcms_lang['meta-data-hierarchy']['sl'] = "Metapodatki/Content hierarhija";
+$hcms_lang['select-hierarchy']['sl'] = "Izberite hierarhija";
+$hcms_lang['text-id']['sl'] = "Besedilo-ID";
+$hcms_lang['label']['sl'] = "Nalepka";
+$hcms_lang['level']['sl'] = "Raven";
 ?>

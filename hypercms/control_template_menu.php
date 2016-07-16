@@ -232,7 +232,13 @@ function checkForm_file_upload()
     {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location='media_mapping.php?site=".url_encode($site)."';\" name=\"media_edit\" src=\"".getthemelocation()."img/button_mapping.gif\" alt=\"".getescapedtext ($hcms_lang['meta-data-mapping'][$lang])."\" title=\"".getescapedtext ($hcms_lang['meta-data-mapping'][$lang])."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation()."img/button_mapping.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
-    ?>   
+    ?>
+    <?php
+    if ($cat == "meta" && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location='media_hierarchy.php?site=".url_encode($site)."';\" name=\"media_edit\" src=\"".getthemelocation()."img/button_hierarchy.gif\" alt=\"".getescapedtext ($hcms_lang['meta-data-hierarchy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['meta-data-hierarchy'][$lang])."\" />\n";}
+    else
+    {echo "<img src=\"".getthemelocation()."img/button_hierarchy.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
+    ?> 
   </div>
   <div class="hcmsToolbarBlock">
     <?php

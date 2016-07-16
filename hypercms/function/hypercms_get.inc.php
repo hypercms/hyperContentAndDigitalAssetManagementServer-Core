@@ -590,6 +590,204 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
   else return false;
 }
 
+// ----------------------------------------- gethierarchy_defintion ------------------------------------------
+// function: gethierarchy_defintion()
+// input: publication name, hierarchy name (optional) 
+// output: hierarchy array in form of array[name][level][text-id][language] = label / false on error
+
+// description:
+// Reads the metadata/content hierarchy defintion and returns a multidimensinal array.
+
+function gethierarchy_defintion ($site, $selectname="")
+{
+  global $mgmt_config;
+  
+  if (valid_publicationname ($site) && !empty ($mgmt_config['abs_path_data']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".hierarchy.dat"))
+  {
+    $result = array();
+
+    // load hierarchy file
+    $record_array = file ($mgmt_config['abs_path_data']."config/".$site.".hierarchy.dat");
+    
+    if (is_array ($record_array) && sizeof ($record_array) > 0)
+    {      
+      foreach ($record_array as $record)
+      {
+        $hierarchy_array = explode ("|", trim ($record));
+
+        if (is_array ($hierarchy_array) && sizeof ($hierarchy_array) > 0)
+        {
+          $name = $hierarchy_array[0];
+          $result[$name] = array();
+          $label = array();
+          
+          if (empty ($selectname) || $selectname == $name)
+          {
+            foreach ($hierarchy_array as $hierarchy)
+            {
+              if (strpos ($hierarchy, "->") > 0)
+              {
+                list ($level, $text_id, $labels) = explode ("->", $hierarchy);
+                
+                // get labels
+                if (!empty ($labels))
+                {
+                  // multiple labels
+                  if (substr_count ($labels, ";") > 0)
+                  {
+                    $labels_array = explode (";", $labels);
+                    
+                    if (is_array ($labels_array) && sizeof ($labels_array) > 0)
+                    {
+                      foreach ($labels_array as $label_entry)
+                      {
+                        list ($langcode, $text) = explode (":", $label_entry);
+                        
+                        $label[trim ($langcode)] = trim ($text);
+                      }
+                    }
+                  }
+                  // single label and language
+                  else
+                  {
+                    if (substr_count ($labels, ":") > 0)
+                    {
+                      list ($langcode, $label['default']) = explode (":", $labels);
+                    }
+                    else $label['default'] = $labels;
+                  }
+                }
+                // or use text ID
+                else $label['default'] = trim ($text_id);
+                
+                // result array
+                $result[$name][$level][$text_id] = $label;
+              }
+            }
+          }
+        }
+
+        if ($selectname == $name) break;
+      }
+    }
+
+    if (is_array ($result) && sizeof ($result) > 0)
+    {
+      ksort ($result);
+      return $result;
+    }
+    else return false;
+  }
+  else return false;
+}
+
+// ----------------------------------------- gethierarchy_sublevel ------------------------------------------
+// function: gethierarchy_sublevel()
+// input: hierarchy URL in form  of %hierarchy%/publication-name/hierarchy-name/hierarchy-level-of-last-element/text-ID-1=value-1/text-ID-2=value-2/text-ID-3
+// output: array holding all hierarchy URLs as key and text content or label as value / false on error
+
+// description:
+// Returns sorted values of a metadata/content hierarchy level.
+
+function gethierarchy_sublevel ($hierarchy_url)
+{
+  global $mgmt_config, $lang;
+
+  if (is_string ($hierarchy_url) && strpos ($hierarchy_url, "/") > 0 && is_array ($mgmt_config))
+  {
+    $result = array();
+    
+    // analyze hierarchy
+    $hierarchy_url = trim ($hierarchy_url, "/");
+    $hierarchy_array = explode ("/", $hierarchy_url);
+    
+    if (is_array ($hierarchy_array))
+    {
+      $domain = $hierarchy_array[0];
+      $site = $hierarchy_array[1];
+      $name = $hierarchy_array[2];
+      $level = $hierarchy_array[3];
+      $last_text_id = end ($hierarchy_array);
+
+      // create new hierarchy URL for next level
+      $hierarchy_url_new = str_replace ("/".$site."/".$name."/".$level."/", "/".$site."/".$name."/".($level + 1)."/", $hierarchy_url);
+
+      // last hierarchy element presents a value pair
+      if (strpos ($last_text_id, "=") > 0)
+      {
+        $hierarchy = gethierarchy_defintion ($site, $name);
+        
+        if (is_array ($hierarchy) && sizeof ($hierarchy) > 0)
+        {
+          foreach ($hierarchy as $level_array)
+          {
+            if ($level > 0 && !empty ($level_array[$level]))
+            {
+              // select elements of requested level
+              foreach ($level_array[$level] as $text_id => $label_array)
+              {
+                if ($text_id != "")
+                {
+                  if (!empty ($lang) && !empty ($label_array[$lang])) $label = $label_array[$lang];
+                  else $label = $label_array['default'];
+                  
+                  // create new hierarchy URL
+                  $url = $hierarchy_url."/".$text_id;
+  
+                  $result[$url] = $label;
+                }
+              }
+            }
+          }
+        }     
+      }
+      // last hierarchy element presents a text ID
+      elseif ($last_text_id != "")
+      {
+        $text_id_array = array();
+        
+        // get text ID and value pairs
+        foreach ($hierarchy_array as $hierarchy_element)
+        {
+          if (strpos ($hierarchy_element, "=") > 0)
+          {
+            list ($text_id, $value) = explode ("=", $hierarchy_element);
+            $text_id_array[$text_id] = $value;
+          }
+        }
+      
+        $values = rdbms_gethierarchy_sublevel ($site, $last_text_id, $text_id_array);
+
+        if (is_array ($values) && sizeof ($values) > 0)
+        {
+          foreach ($values as $value)
+          {
+            // escape / and = in value
+            $value = str_replace ("/", "&#47;", $value);
+            $value = str_replace ("=", "&#61;", $value);
+            
+            // create new hierarchy URL with same level number
+            $url = $hierarchy_url_new."=".$value;
+            
+            $result[$url] = trim ($value);
+          }
+        }
+      }
+  
+      // return key = taxonomy ID and value = keyword
+      if (is_array ($result) && sizeof ($result) > 0)
+      {
+        // return sorted array
+        natcasesort ($result);
+        return $result;
+      }
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
 // --------------------------------------- getkeywords -------------------------------------------
 // function: getkeywords ()
 // input: publication name (optional) 
@@ -892,9 +1090,91 @@ function getgooglesitemap ($site, $dir, $url, $getpara=array(), $permalink=array
   else return false;
 }
 
+// ---------------------- getlistelements -----------------------------
+// function: getlistelements()
+// input: content of file attribute of list of keyword tag, seperator of list elements as string (optional)
+// output: string with list/keyword elements sperated by commas / false
+
+function getlistelements ($list_sourcefile)
+{
+	global $mgmt_config;
+  
+	if (valid_locationname ($list_sourcefile))
+  {
+    $list = "";
+    
+    // get taxonomy parameters
+    if (strpos ("_".$list_sourcefile, "%taxonomy%/") > 0)
+    {
+      $slice = explode ("/", $list_sourcefile);
+
+      if (!empty ($slice[0])) $domain = $slice[0];
+      if (!empty ($slice[1])) $publication = $slice[1];
+      if (!empty ($slice[2])) $language = $slice[2];
+      if (isset ($slice[3])) $taxonomy_id = $slice[3];
+      if (isset ($slice[4])) $taxonomy_levels = $slice[4];
+      
+      // set user language as default
+      if (empty ($language) || strtolower ($language) == "all") $language = $lang;
+
+      // reset source file to service/getkeywords
+      if (!empty ($publication) && !empty ($language) && isset ($taxonomy_id))
+      {
+        if ($taxonomy_id == "") $taxonomy_id = 0;
+
+        $list_sourcefile = $mgmt_config['url_path_cms']."service/getkeywords.php?site=".url_encode($publication)."&lang=".url_encode($language)."&id=".url_encode($taxonomy_id)."&levels=".url_encode($taxonomy_levels);
+      }
+      else $list_sourcefile = "";
+      
+      // get keywords
+      if (!empty ($list_sourcefile)) $list .= @file_get_contents ($list_sourcefile);
+    }
+    // get folder structure parameters
+    elseif (is_dir ($list_sourcefile) || strpos ("_".$list_sourcefile, "%comp%/") > 0 || strpos ("_".$list_sourcefile, "%page%/") > 0)
+    {
+      $sourcelocation = deconvertpath ($list_sourcefile, "file");
+      
+      if (is_dir ($sourcelocation))
+      {
+        $handle = opendir ($sourcelocation);
+        
+        if ($handle != false)
+        {
+          $folder_array = array();
+          
+          while ($item = @readdir ($handle)) 
+          {
+            if (is_dir ($sourcelocation.$item) && $item != '.' && $item != '..') 
+            {
+              $folder_array[] = specialchr_decode ($item);
+            }
+          }
+          
+          if (is_array ($folder_array) && sizeof ($folder_array) > 0)
+          {
+            natcasesort ($folder_array);
+            $list .= implode (",", $folder_array);
+          }
+        }
+        
+        closedir ($handle);
+      }
+    }
+    // get parameters from file or service (must be comma-seperated)
+    elseif (is_file ($list_sourcefile) || strpos ("_".$list_sourcefile, "://") > 0)
+    {
+      $list .= @file_get_contents ($list_sourcefile);
+    }
+    
+    if ($list != "") return $list;
+    else return false;
+  }
+  else return false;
+}
+
 // ---------------------- getmetadata -----------------------------
 // function: getmetadata()
-// input: location, object (both optional if container is given), container name or container content (optional), 
+// input: location, object (both optional if container is given), container name/ID or container content (optional), 
 //        seperator of meta data fields [any string,array] (optional), publication name/template name to extract label names (optional)
 // output: string with all meta data from given object based on container / false
 
@@ -936,7 +1216,16 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
       // container need to be loaded
       if (valid_objectname ($container) && strpos ($container, "<container>") < 1)
       {
-  			$container_id = substr ($container, 0, strpos ($container, ".xml")); 
+  			if (strpos ($container, ".xml") > 0)
+        {
+          $container_id = substr ($container, 0, strpos ($container, ".xml")); 
+        }
+        elseif (intval ($container) > 0)
+        {
+          $container_id = $container;
+          $container = $container_id.".xml";
+        }
+        
   			$result = getcontainername ($container);
   			$container = $result['container'];
   			$contentdata = loadcontainer ($container, "version", "sys");
@@ -1953,7 +2242,7 @@ function getlocaltemplates ($site, $cat="")
 
 // ----------------------------------------- gettemplates ---------------------------------------------
 // function: gettemplates()
-// input: publication name, object category [page,comp,meta]
+// input: publication name, object category [page,comp,meta] (optional)
 // output: template file name list as array / false on error
 // requires: config.inc.php to be loaded before
 
@@ -1961,11 +2250,11 @@ function getlocaltemplates ($site, $cat="")
 // This function returns a list of all templates for pages or components.
 // Based on the inheritance settings of the publication the template will be loaded with highest priority from the own publication and if not available from a parent publication.
 
-function gettemplates ($site, $cat)
+function gettemplates ($site, $cat="")
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
-  if (valid_publicationname ($site) && ($cat == "page" || $cat == "comp" || $cat == "meta"))
+  if (valid_publicationname ($site) && ($cat == "" || $cat == "page" || $cat == "comp" || $cat == "meta"))
   {
     $site_array = array();
     
@@ -2003,7 +2292,8 @@ function gettemplates ($site, $cat)
             elseif ($cat == "meta" && strpos ($entry, ".meta.tpl") > 0)
             {
               $template_array[] = $entry;
-            }            
+            }
+            else $template_array[] = $entry;          
           }
         }
 
