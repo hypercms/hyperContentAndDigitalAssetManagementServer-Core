@@ -83,7 +83,7 @@ Release 03/2004 - 01/2007
 - New feature "Journey through Time" that allows a visit of the website in the past
 - Changes in the Database Connectivity when writing data to external data sources 
 - Changes in the Tamino Database Connectivity due to a Tamino bug concerning writing
-  XML documents in Tamino (Tamino can not determine the character set!)
+  XML documents in Tamino (Tamino cannot determine the character set!)
 - Changes and improvments in the database connectivity and event system
 - Advanced support for other browser 
 - Image gallery view
@@ -1256,7 +1256,7 @@ Release 02/2016
 - Bug fix: Function transformlink of template engine did transform links used in JS functions of template engine
 - Bug fix: Function HTTP_Post did not verify the fsockopen result
 - Bug fix: Install script could not create demo website due to a reset of the $mgmt_config array
-- Changed license verification in function userlogin to avoid issue when license server can not be accessed
+- Changed license verification in function userlogin to avoid issue when license server cannot be accessed
 - Bug fix: Initalization of output varibles in function showobject
 - Bug fix: Verification of variable $tpl_name has been missing in explorer
 - Improvements in function tpl_globals_extended of the template engine
@@ -1276,7 +1276,7 @@ Release 02/2016
 - Bug fix: Save and close button did not use post methode and therfore did not close the form view created by the template engine
 - Improvements in popup_publish
 - Bug fix: JS function hcms_openWindow used in various files declared windows size as string and not as integer
-- Bug: MS Edge opens window in same dimension of parent window if not in fullscreen mode. This is an issue of MS Edge and can not be solved.
+- Bug: MS Edge opens window in same dimension of parent window if not in fullscreen mode. This is an issue of MS Edge and cannot be solved.
 
 Version 6.0.6
 Release 02/2016
@@ -1302,7 +1302,7 @@ Release 02/2016
 
 Version 6.0.7
 Release 02/2016
-- Reorganisation of connector modules and external APIs
+- Reorganization of connector modules and external APIs
 - Implementation of direct file upload in the page structure. The connector module is required. The uploaded files are not managed by the system.
 - Changes in popup_upload to support the file upload in the page structure
 - Changes in function editpublication for new stetting of page file upload
@@ -1711,8 +1711,18 @@ Release 07/2016
 - Bug fix: Function rdbms_searchcontent in DB Connect did reassign synonyms to the input expression array
 - Bug fix: Function rdbms_searchcontent did not use inner joins for tables object, container, textnodes
 - Bug fix: The character sets for media_hierarchy and media_mapping were defined by the publication character set and not the language character set of the main configuration
+
+Version 6.1.15
+Release 07/2016
+- Bug fix: Function setmetadata did not seperate type and text ID for hcms:quality metadata mapping
+- Bug fix: Metadata hierarchies in explorer used same tree ID
+- Bug fix: Function rdbms_searchcontent did use taxonomy and was not looking for exact textcontent match if hierarchies were used
+- Added hyperCMS tag name as type to the metadata hierarchy definition
+- Support for keywords in function gethierarchy_sublevel in get API, rdbms_searchcontent, and rdbms_gethierarchy_sublevel in DB Connect
+- Bug fix: Function rdbms_searchcontent did not loook for empty content when exact match was requested
+- Bug fix: Function gettemplateversions did return sort result and not result array
 */
 
 // current version
-$version = "Version 6.1.14";
+$version = "Version 6.1.15";
 ?>

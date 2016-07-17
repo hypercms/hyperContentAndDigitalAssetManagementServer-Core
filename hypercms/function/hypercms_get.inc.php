@@ -658,7 +658,14 @@ function gethierarchy_defintion ($site, $selectname="")
                   }
                 }
                 // or use text ID
-                else $label['default'] = trim ($text_id);
+                else
+                {
+                  if (substr_count ($text_id, ":") > 0)
+                  {
+                    list ($type, $label['default']) = explode (":", $text_id);
+                  }
+                  else $label['default'] = trim ($text_id);
+                }
                 
                 // result array
                 $result[$name][$level][$text_id] = $label;
@@ -752,6 +759,7 @@ function gethierarchy_sublevel ($hierarchy_url)
           if (strpos ($hierarchy_element, "=") > 0)
           {
             list ($text_id, $value) = explode ("=", $hierarchy_element);
+
             $text_id_array[$text_id] = $value;
           }
         }
@@ -762,8 +770,9 @@ function gethierarchy_sublevel ($hierarchy_url)
         {
           foreach ($values as $value)
           {
-            // escape / and = in value
+            // escape /, : and = in value
             $value = str_replace ("/", "&#47;", $value);
+            $value = str_replace (":", "&#58;", $value);
             $value = str_replace ("=", "&#61;", $value);
             
             // create new hierarchy URL with same level number
@@ -2356,7 +2365,8 @@ function gettemplateversions ($site, $template)
     
     if (sizeof ($result) > 0)
     {
-      return ksort ($result);
+      ksort ($result);
+      return $result;
     }
     else return false;
   }

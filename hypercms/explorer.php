@@ -468,6 +468,7 @@ function generateHierarchyTree ($hierarchy_url, $runningNumber=1)
     $hierarchy_url = trim ($hierarchy_url, "/");
     $hierarchy_array = explode ("/", $hierarchy_url);
     $site = $hierarchy_array[1];
+    $name = $hierarchy_array[2];
     
     // get hierarchy keyword list
     $text_array = gethierarchy_sublevel ($hierarchy_url);
@@ -478,7 +479,7 @@ function generateHierarchyTree ($hierarchy_url, $runningNumber=1)
       
       foreach ($text_array as $hierarchy_url => $label)
       {
-        $id = 'text_'.$site.'_';
+        $id = 'text_'.$site.'_'.$name.'_';
         
         // generating the id from the running number so we don't have any ID problems
         if (!empty ($runningNumber))
@@ -1057,8 +1058,8 @@ else
                     if (!empty ($label_array[$lang])) $label = $label_array[$lang];
                     else $label = $label_array['default'];
                   
-                    $point = new hcms_menupoint($label, '#text_'.$site, 'folder.gif', 'text_'.$site);
-                    $point->setOnClick('hcms_jstree_open("text_'.$site.'", event);');
+                    $point = new hcms_menupoint($label, '#text_'.$site.'_'.$name, 'folder.gif', 'text_'.$site.'_'.$name);
+                    $point->setOnClick('hcms_jstree_open("text_'.$site.'_'.$name.'", event);');
                     $point->setNodeCSSClass('jstree-closed jstree-reload');
                     $point->setAjaxData('%hierarchy%/'.$site.'/'.$name.'/1/'.$text_id);
                     $publication->addSubPoint($point);

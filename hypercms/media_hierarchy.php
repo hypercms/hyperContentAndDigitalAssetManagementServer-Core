@@ -142,8 +142,12 @@ if (!empty ($mgmt_config['abs_path_data']))
           foreach ($hypertag_array as $hypertag)
           {
             $text_id = getattribute ($hypertag, "id");
+            $type = gethypertagname ($hypertag);
+            
+            // remove article prefix
+            if (substr ($type, 0, 3) == "art") $type = substr ($type, 3);
 
-            $attributes_all[$text_id] = $text_id;
+            $attributes_all[$type.":".$text_id] = $text_id;
           }
         }
       }

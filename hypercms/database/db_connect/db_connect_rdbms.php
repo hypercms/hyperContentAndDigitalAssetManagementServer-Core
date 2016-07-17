@@ -1525,7 +1525,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
   {
     // disable search log
     $mgmt_config['search_log'] = false;
-  
+
     // analyze hierarchy
     $hierarchy_url = trim ($expression_array[0], "/");
     $hierarchy_array = explode ("/", $hierarchy_url);
@@ -1548,11 +1548,12 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         if (strpos ($hierarchy_element, "=") > 0)
         {
           list ($key, $value) = explode ("=", $hierarchy_element);
-          
-          // unescape / and = in value
+
+          // unescape /, : and = in value
           $value = str_replace ("&#47;", "/", $value);
+          $value = str_replace ("&#58;", ":", $value);
           $value = str_replace ("&#61;", "=", $value);
-          
+
           $expression_array[$key] = $value;
         }
       }
@@ -1745,13 +1746,20 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       reset ($expression_array);
       $expression_log = array();
       
-      foreach ($expression_array as $key=>$expression)
+      foreach ($expression_array as $key => $expression)
       {
         // define search log entry
         if (!empty ($mgmt_config['search_log']) && $expression != "" && is_string ($expression) && strpos ("_".$expression, "%taxonomy%/") < 1 && strpos ("_".$expression, "%keyword%/") < 1)
         {
           $expression_log[] = $mgmt_config['today']."|".$user."|".$expression;
         }
+        
+        // extract type from text ID
+        if (strpos ($key, ":") > 0)
+        {
+          list ($type, $key) = explode (":", $key);
+        }
+        else $type = "";
         
         // search for speciifc keyword
         if (strpos ("_".$expression, "%keyword%/") > 0)
@@ -1779,15 +1787,19 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           else
           {
             $sql_table['textnodes'] .= ' INNER JOIN textnodes AS tn1 ON obj.id=tn1.id';
-            $sql_expr_advanced[$i_kc] .= 'tn'.$i_kc.'.type="textk" AND tn'.$i_kc.'.textcontent=""';
+            $sql_expr_advanced[$i] .= 'tn'.$i_kc.'.type="textk" AND tn'.$i_kc.'.textcontent=""';
           }
         }
         // search for expression (using taxonomy if enabled or full text index)
         else
         {
-          // look up expression in taxonomy (in all languages)
-          $taxonomy_ids = gettaxonomy_childs (@$site, "", $expression, 1, true);
-          
+          // if no exact search for the expression is requested, use taxonomy
+          if (empty ($mgmt_config['search_exact']))
+          {
+            // look up expression in taxonomy (in all languages)
+            $taxonomy_ids = gettaxonomy_childs (@$site, "", $expression, 1, true);
+          }
+            
           // search in taxonomy table
           if (!empty ($taxonomy_ids) && is_array ($taxonomy_ids) && sizeof ($taxonomy_ids) > 0)
           {
@@ -1822,12 +1834,13 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           }
           // search in textnodes table
           else
-          {  
+          {
             // advanced text-ID based search in textnodes
-            if ($expression != "" && $key != "" && $key != "0")
-            {            
+            if ((!empty ($mgmt_config['search_exact']) || $expression != "") && $key != "" && $key != "0")
+            {         
               // get synonyms
-              $synonym_array = getsynonym ($expression, @$lang);
+              if (empty ($mgmt_config['search_exact'])) $synonym_array = getsynonym ($expression, @$lang);
+              else $synonym_array = array ($expression);
     
               $r = 0;
               $sql_expr_advanced[$i] = "";
@@ -1837,14 +1850,14 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                 // add textnodes table
                 if ($i_tn == 1)
                 {
-                  $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tn1 ON obj.id=tn1.id';
+                  $sql_table['textnodes'] .= ' INNER JOIN textnodes AS tn1 ON obj.id=tn1.id';
                 }
                 elseif ($i_tn > 1)
                 {
                   $j = $i_tn - 1;
-                  $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tn'.$i_tn.' ON tn'.$j.'.id=tn'.$i_tn.'.id';
+                  $sql_table['textnodes'] .= ' INNER JOIN textnodes AS tn'.$i_tn.' ON tn'.$j.'.id=tn'.$i_tn.'.id';
                 }
-              
+
                 foreach ($synonym_array as $expression)
                 {
                   $expression = str_replace ("%", '\%', $expression);
@@ -1857,8 +1870,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   // use OR for synonyms
                   if ($r > 0) $sql_expr_advanced[$i] .= ' OR ';
         
-                  // look for exact expression
-                  if (!empty ($mgmt_config['search_exact']))
+                  // look for exact expression except for keyword
+                  if (!empty ($mgmt_config['search_exact']) && $type != "textk")
                   {
                     $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND tn'.$i_tn.'.textcontent="'.$expression.'")';
                   }
@@ -1868,29 +1881,30 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                     if ($expression != $expression_esc) $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (tn'.$i_tn.'.textcontent LIKE _utf8"%'.$expression.'%" OR tn'.$i_tn.'.textcontent LIKE _utf8"%'.$expression_esc.'%"))';
                     else $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND tn'.$i_tn.'.textcontent LIKE _utf8"%'.$expression.'%")';
                   }
-                  
+
                   // add brackets since OR is used
                   if ($sql_expr_advanced[$i] != "") $sql_expr_advanced[$i] = "(".$sql_expr_advanced[$i].")";
-                  
+ 
                   $r++;
                 }
-      
+
                 $i_tn++;
               }
             }
             // general search in all textnodes (only one search expression possible -> break out of loop)
-            elseif ($expression != "")
+            elseif (!empty ($mgmt_config['search_exact']) || $expression != "")
             {
               // get synonyms
-              $synonym_array = getsynonym ($expression, @$lang);
+              if (empty ($mgmt_config['search_exact'])) $synonym_array = getsynonym ($expression, @$lang);
+              else $synonym_array = array ($expression);
               
               $r = 0;
               $sql_where_textnodes = "";
-              
+
               if (is_array ($synonym_array) && sizeof ($synonym_array) > 0)
               { 
                 // add textnodes table
-                $sql_table['textnodes'] .= 'LEFT JOIN textnodes AS tn1 ON obj.id=tn1.id '.$sql_table['textnodes'];
+                $sql_table['textnodes'] .= 'INNER JOIN textnodes AS tn1 ON obj.id=tn1.id '.$sql_table['textnodes'];
                   
                 foreach ($synonym_array as $expression)
                 {
@@ -1918,7 +1932,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   
                   $r++;
                 }
-                
+
                 // add brackets since OR is used
                 if ($sql_where_textnodes != "") $sql_where_textnodes = "(".$sql_where_textnodes.")";
               }
@@ -1927,6 +1941,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
             }
           }
         }
+        
+        $i++;
       }
       
       // save search expression in search expression log
@@ -2654,6 +2670,12 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array="")
     $site = $db->escape_string ($site);
     $get_text_id = $db->escape_string ($get_text_id);
     
+    // extract type from text ID
+    if (strpos ($get_text_id, ":") > 0)
+    {
+      list ($type, $get_text_id) = explode (":", $get_text_id);
+    }
+    
     // query database
     $sql = 'SELECT DISTINCT tn1.textcontent, tn1.type FROM textnodes AS tn1';
     
@@ -2663,13 +2685,23 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array="")
 
       foreach ($text_id_array as $text_id => $value)
       {
+        // extract type from text ID
+        if (strpos ($text_id, ":") > 0)
+        {
+          list ($type, $text_id) = explode (":", $text_id);
+        }
+      
         $j = $i - 1;
-        $sql .= ' LEFT JOIN textnodes AS tn'.$i.' ON tn'.$j.'.id=tn'.$i.'.id';
+        
+        $sql .= ' INNER JOIN textnodes AS tn'.$i.' ON tn'.$j.'.id=tn'.$i.'.id';
   
         $text_id = $db->escape_string ($text_id);
         $value = $db->escape_string ($value);
         
-        $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND tn'.$i.'.textcontent="'.$value.'"';
+        // search for exact expression except for keyword
+        if ($type != "textk") $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND tn'.$i.'.textcontent="'.$value.'"';
+        else $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND tn'.$i.'.textcontent LIKE _utf8"%'.$value.'%"';
+        
         $i++;
       }
     }

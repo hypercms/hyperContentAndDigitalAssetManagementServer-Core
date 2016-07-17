@@ -2806,15 +2806,25 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       
           if ($xres != "")
           {
+            // get type and text ID
+            $text_id = $mapping['hcms:quality'];
+            
+            if (strpos ($mapping['hcms:quality'], ":") > 0) list ($type, $text_id) = explode (":", $text_id);
+            else $type = "textl";
+            
+            if (!empty ($type)) $type_array[$text_id] = $type;
+          
             if ($xres >= 300) $quality = "Print";
             else $quality = "Web";
       
-            $text_array['Quality'] = $quality;
-            $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$quality."]]>", "<text_id>", $mapping['hcms:quality']);
+            // textnodes for search index in database
+            $text_array[$text_id] = $quality;
+            
+            $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$quality."]]>", "<text_id>", $text_id);
       
             if ($containerdata_new == false)
             {
-              $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $mapping['hcms:quality']);
+              $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
               $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$quality."]]>", "<text_id>", $mapping['hcms:quality']);
               $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $mapping['hcms:quality']);
             }
