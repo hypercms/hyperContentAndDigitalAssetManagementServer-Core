@@ -558,4 +558,54 @@ function update_database_v6113 ()
 
   return true;
 }
+
+// ------------------------------------------ update_database_v6115 ----------------------------------------------
+// function: update_database_v6115()
+// input: %
+// output: updated database, false on error
+
+// description: 
+// Update of database to version 6.1.15. Clean and HTML decode all content.
+
+function update_database_v6115 ()
+{
+  global $mgmt_config;
+
+  // connect to MySQL
+  $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+  
+  // select all content
+  $sql = 'SELECT id, text_id, textcontent FROM textnodes WHERE textcontent!=""';
+  $errcode = "50071";
+  $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'select');
+  
+  if ($result)
+  {
+    while ($row = $db->getResultRow ('select'))
+    {
+      $cleaned = cleancontent ($row['textcontent'], "UTF-8");
+      
+      $cleaned = $db->escape_string ($cleaned);
+      
+      // only update if content has changed and is not empty
+      if (trim ($cleaned) != "" && $row['textcontent'] != $cleaned)
+      {
+        $sql = 'UPDATE textnodes SET textcontent="'.$cleaned.'" WHERE id="'.$row['id'].'" AND text_id="'.$row['text_id'].'"';
+        $errcode = "50072";
+        $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'update');
+        
+        // information
+        $errcode = "00101";
+        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|information|$errcode|cleaned content of container ".$row['id']." with text ID '".$row['text_id']."': ".$cleaned;   
+      }
+    }
+  }
+  
+  // save log
+  savelog ($db->getError ());
+  savelog (@$error);
+  $db->close();
+
+  return true;
+}
 ?>

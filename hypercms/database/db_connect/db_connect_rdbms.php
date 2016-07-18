@@ -577,7 +577,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
             $row = $db->getResultRow ($i);
             
             // only save content in database if content has been changed
-            if ($row['textcontent'] != cleancontent ($text, "UTF-8") && $row['object_id']."|".$row['textcontent'] != cleancontent ($text, "UTF-8"))
+            if ($row['textcontent'] != cleancontent ($text, convert_dbcharset ($mgmt_config['dbcharset'])) && $row['object_id']."|".$row['textcontent'] != cleancontent ($text, convert_dbcharset ($mgmt_config['dbcharset'])))
             {
               // content has been changed
               $update = true;
@@ -617,10 +617,10 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
               }
               else $object_id = 0;
               
-              // clean text
+              // clean text (will also HTML decode)
               if ($text != "")
               {
-                $text = cleancontent ($text, "UTF-8");
+                $text = cleancontent ($text, convert_dbcharset ($mgmt_config['dbcharset']));
                 $text = $db->escape_string($text);
               }
               
@@ -1860,11 +1860,15 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 
                 foreach ($synonym_array as $expression)
                 {
+                  $expression = html_decode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
+                  $expression_esc = html_encode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
+                  
+                  // transform wild card characters for search
                   $expression = str_replace ("%", '\%', $expression);
                   $expression = str_replace ("_", '\_', $expression);          
                   $expression = str_replace ("*", "%", $expression);
                   $expression = str_replace ("?", "_", $expression);
-                  $expression_esc = htmlentities ($expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
+                  
                   $expression = $db->escape_string ($expression);
                   
                   // use OR for synonyms
@@ -1873,7 +1877,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   // look for exact expression except for keyword
                   if (!empty ($mgmt_config['search_exact']) && $type != "textk")
                   {
-                    $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND tn'.$i_tn.'.textcontent="'.$expression.'")';
+                    $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND LOWER(tn'.$i_tn.'.textcontent)=LOWER("'.$expression.'"))';
                   }
                   // look for expression in content
                   else
@@ -1908,11 +1912,15 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   
                 foreach ($synonym_array as $expression)
                 {
+                  $expression = html_decode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
+                  $expression_esc = html_encode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
+                
+                  // transform wild card characters for search
                   $expression = str_replace ("%", '\%', $expression);
                   $expression = str_replace ("_", '\_', $expression);        
                   $expression = str_replace ("*", "%", $expression);
                   $expression = str_replace ("?", "_", $expression);
-                  $expression_esc = htmlentities ($expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
+
                   $expression = $db->escape_string ($expression);
                   
                   // use OR for synonyms
@@ -2241,13 +2249,15 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
     {
       $expression = $search_expression;
       
+      $expression = html_decode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
+      $expression_esc = html_encode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
+
+      // transform wild card characters for search
       $expression = str_replace ("%", '\%', $expression);
-      $expression = str_replace ("_", '\_', $expression);
-      
+      $expression = str_replace ("_", '\_', $expression);      
       $expression = str_replace ("*", "%", $expression);
       $expression = str_replace ("?", "_", $expression);
-      //if (substr_count ($expression, "%") == 0) $expression = "%".$expression."%";
-      $expression_esc = htmlentities ($expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
+
       $expression = $db->escape_string ($expression);
 
       if ($expression != $expression_esc) $sql_where['expression'] = '(tn1.textcontent LIKE _utf8"%'.$expression.'%" COLLATE utf8_bin OR tn1.textcontent LIKE _utf8"%'.$expression_esc.'%" COLLATE utf8_bin)';
@@ -2270,10 +2280,12 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
       // transform search expression
       $search_expression = str_replace ("*", "", $search_expression);
       $search_expression = str_replace ("?", "", $search_expression);
-      $search_expression_esc = htmlentities ($search_expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
+      
+      $search_expression_esc = html_encode ($search_expression, convert_dbcharset ($mgmt_config['dbcharset']));
       $search_expression = $db->escape_string ($search_expression);
       
-      $replace_expression_esc = htmlentities ($replace_expression, ENT_QUOTES, convert_dbcharset ($mgmt_config['dbcharset']));
+      // transform replace expression
+      $replace_expression_esc = html_encode ($replace_expression, convert_dbcharset ($mgmt_config['dbcharset']));
       $replace_expression = $db->escape_string ($replace_expression);
         
       $num_rows = $db->getNumRows ("select");
@@ -2694,13 +2706,24 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array="")
         $j = $i - 1;
         
         $sql .= ' INNER JOIN textnodes AS tn'.$i.' ON tn'.$j.'.id=tn'.$i.'.id';
-  
+        
+        $value = html_decode ($value, convert_dbcharset ($mgmt_config['dbcharset']));
+        $value_esc = html_encode ($value, convert_dbcharset ($mgmt_config['dbcharset']));
+
         $text_id = $db->escape_string ($text_id);
         $value = $db->escape_string ($value);
-        
+
         // search for exact expression except for keyword
-        if ($type != "textk") $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND tn'.$i.'.textcontent="'.$value.'"';
-        else $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND tn'.$i.'.textcontent LIKE _utf8"%'.$value.'%"';
+        if ($type != "textk")
+        {
+          if ($value !=  $value_esc) $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND (LOWER(tn'.$i.'.textcontent)=LOWER("'.$value.'") OR LOWER(tn'.$i.'.textcontent)=LOWER("'.$value_esc.'"))';
+          else $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND LOWER(tn'.$i.'.textcontent)=LOWER("'.$value.'")';
+        }
+        else
+        {
+          if ($value !=  $value_esc) $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND (tn'.$i.'.textcontent LIKE "%'.$value.'%" OR tn'.$i.'.textcontent LIKE "%'.$value_esc.'%")';
+          else $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND tn'.$i.'.textcontent LIKE "%'.$value.'%"';
+        }
         
         $i++;
       }
@@ -2735,7 +2758,7 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array="")
       
     if (is_array ($result) && sizeof ($result) > 0)
     {
-      $result = array_unique ($result);
+      $result = array_iunique ($result);
       return $result;
     }
     else return false;

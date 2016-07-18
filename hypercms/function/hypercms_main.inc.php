@@ -65,6 +65,7 @@ function cleancontent ($text, $charset="UTF-8")
   
       // replace characters
       $text = str_replace (array(".....", "....", "...", ".."), ".", $text);
+      $text = str_replace (array(",,,,,", ",,,,", ",,,", ",,"), ",", $text);
       $text = str_replace (array("_____", "____", "___", "__"), "_", $text);
       $text = str_replace (array("&quot;", "&#xA;", "&#10;", "\\", "\"", "'", "(", ")", "{", "}", "[", "]", ";", "_", "\t", "\r\n", "\r", "\n"), " ", $text);
       $text = preg_replace ('/\s+/', " ", $text);
@@ -841,7 +842,24 @@ function copyrecursive ($src, $dst)
   }
   
   return $result;
-} 
+}
+
+// -------------------------------- array_iunique --------------------------------
+// function: array_iunique()
+// input: array
+// output: unique array / false
+
+// description:
+// This function is the case-insensitive form of PHPs array_unique function
+
+function array_iunique ($array)
+{
+  if (is_array ($array) && sizeof ($array) > 0)
+  {
+    return array_intersect_key ($array, array_unique (array_map ("StrToLower",$array)));
+  }
+  else return false;
+}
 
 // ========================================== FILES AND LINKS =======================================
 

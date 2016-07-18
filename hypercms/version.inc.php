@@ -1720,7 +1720,14 @@ Release 07/2016
 - Added hyperCMS tag name as type to the metadata hierarchy definition
 - Support for keywords in function gethierarchy_sublevel in get API, rdbms_searchcontent, and rdbms_gethierarchy_sublevel in DB Connect
 - Bug fix: Function rdbms_searchcontent did not loook for empty content when exact match was requested
+- Bug fix: Function rdbms_searchcontent did not increase the counter for the conditions
 - Bug fix: Function gettemplateversions did return sort result and not result array
+- Implementation of new function array_iunique in main API
+- Implementation of function array_iunique in function rdbms_gethierarchy_sublevel
+- Implementation of lower case comparison for exact matches in function rdbms_searchcontent and rdbms_gethierarchy_sublevel
+- Implementation of html_decode and html_encode for secure string comparison of textcontent in function rdbms_searchcontent and rdbms_gethierarchy_sublevel
+- Improvements in function cleancontent
+- Implementation of new function update_database_v6115 in update API
 */
 
 // current version
