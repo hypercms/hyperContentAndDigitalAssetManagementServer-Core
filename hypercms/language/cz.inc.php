@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['cz'] = "Vyberte hierarchii";
 $hcms_lang['text-id']['cz'] = "Text-ID";
 $hcms_lang['label']['cz'] = "Štítek";
 $hcms_lang['level']['cz'] = "Úroveň";
+$hcms_lang['save-search']['cz'] = "Uložit hledání";
+$hcms_lang['saved-searches']['cz'] = "Uložených hledání";
 ?>

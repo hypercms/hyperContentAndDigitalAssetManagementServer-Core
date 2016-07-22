@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['bn'] = "বাছাই গঠনতন্ত্
 $hcms_lang['text-id']['bn'] = "টেক্সট-ঈদ";
 $hcms_lang['label']['bn'] = "মালা";
 $hcms_lang['level']['bn'] = "লেভেল";
+$hcms_lang['save-search']['bn'] = "কিন্তু তল্লাশি";
+$hcms_lang['saved-searches']['bn'] = "তাকেও অন্বেষণ";
 ?>

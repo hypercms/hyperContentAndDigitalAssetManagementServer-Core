@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['so'] = "Xuduudohooda soocda ";
 $hcms_lang['text-id']['so'] = "Qoraalkaan-CIID";
 $hcms_lang['label']['so'] = "Dusheeda";
 $hcms_lang['level']['so'] = "Heerka";
+$hcms_lang['save-search']['so'] = "Raadinta badbaadiyo.";
+$hcms_lang['saved-searches']['so'] = "Innagase badbaadiyey";
 ?>

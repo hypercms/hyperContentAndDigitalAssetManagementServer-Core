@@ -1391,4 +1391,6 @@ $hcms_lang['select-hierarchy']['fr'] = "Sélectionnez Hiérarchie";
 $hcms_lang['text-id']['fr'] = "Texte-ID";
 $hcms_lang['label']['fr'] = "Étiquette";
 $hcms_lang['level']['fr'] = "Niveau";
+$hcms_lang['save-search']['fr'] = "Enregistrer la recherche";
+$hcms_lang['saved-searches']['fr'] = "Recherches enregistrées";
 ?>

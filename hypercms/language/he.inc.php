@@ -1391,4 +1391,6 @@ $hcms_lang['select-hierarchy']['he'] = "בחר היררכיה";
 $hcms_lang['text-id']['he'] = "טקסט-ID";
 $hcms_lang['label']['he'] = "תווית";
 $hcms_lang['level']['he'] = "רמה";
+$hcms_lang['save-search']['he'] = "שמור חיפוש";
+$hcms_lang['saved-searches']['he'] = "חיפושים שמורים";
 ?>

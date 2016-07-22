@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['ar'] = "حدد التسلسل الهرمى";
 $hcms_lang['text-id']['ar'] = "Text-ID";
 $hcms_lang['label']['ar'] = "العلامة";
 $hcms_lang['level']['ar'] = "مستوى";
+$hcms_lang['save-search']['ar'] = "حفظ البحث";
+$hcms_lang['saved-searches']['ar'] = "المحفوظة";
 ?>

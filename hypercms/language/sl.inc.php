@@ -1389,4 +1389,6 @@ $hcms_lang['select-hierarchy']['sl'] = "Izberite hierarhija";
 $hcms_lang['text-id']['sl'] = "Besedilo-ID";
 $hcms_lang['label']['sl'] = "Nalepka";
 $hcms_lang['level']['sl'] = "Raven";
+$hcms_lang['save-search']['sl'] = "Shrani iskanje";
+$hcms_lang['saved-searches']['sl'] = "Shranjena iskanja";
 ?>

@@ -2032,8 +2032,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         
         // define default option for support of versions before 5.3.4
         // note: audio codec could be "mp3" or in newer ffmpeg versions "libmp3lame"!
-        $mgmt_mediaoptions_video = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
-        $mgmt_mediaoptions_audio = "-f mp3 -c:a libmp3lame -b:a 64k -ar 22500";
+        if (empty ($mgmt_mediaoptions['thumbnail-video'])) $mgmt_mediaoptions_video = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
+        else $mgmt_mediaoptions_video = $mgmt_mediaoptions['thumbnail-video'];
+        
+        if (empty ($mgmt_mediaoptions['thumbnail-audio'])) $mgmt_mediaoptions_audio = "-f mp3 -c:a libmp3lame -b:a 64k";
+        else $mgmt_mediaoptions_audio = $mgmt_mediaoptions['thumbnail-audio'];
         
         // reset type to input value
         $type = $type_memory;
@@ -2048,11 +2051,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
           if (is_audio ($file_ext))
           {
             // set default options string if no valid one is provided
-            if (empty ($mgmt_mediaoptions['thumbnail-audio']) || strpos ("_".$mgmt_mediaoptions['thumbnail-audio'], "-f ") == 0)
+            if (empty ($mgmt_mediaoptions['thumbnail-audio']) || strpos ("_".$mgmt_mediaoptions['thumbnail-audio'], "-f ") < 1)
             {
               $mgmt_mediaoptions['thumbnail-audio'] = $mgmt_mediaoptions_audio;
             }
-           
+
             // get format from options string
             $format_set = getoption ($mgmt_mediaoptions['thumbnail-audio'], "-f");
             
@@ -2064,7 +2067,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
           else
           {
             // set default options string if no valid one is provided
-            if (empty ($mgmt_mediaoptions['thumbnail-video']) || strpos ("_".$mgmt_mediaoptions['thumbnail-video'], "-f ") == 0)
+            if (empty ($mgmt_mediaoptions['thumbnail-video']) || strpos ("_".$mgmt_mediaoptions['thumbnail-video'], "-f ") < 1)
             {
               $mgmt_mediaoptions['thumbnail-video'] = $mgmt_mediaoptions_video;
             }
@@ -2449,6 +2452,16 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 {
                   unlink ($location_temp.$file_orig);
                 }
+                
+                // on error for original thumbnail files only in order to save correct file name in config file
+                if ($type == "origthumb" && ($errorCode || !is_file ($location_temp.$tmpfile)))
+                {
+                  // use original file name if rendering failed
+                  $newfile = $file;
+                  
+                  $errcode = "20277";
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|ffmpeg failed to create original thumbnail file, using orginal file name: ".$file;
+                } 
   
                 // watermarking (using video filters)
                 // set watermark options if defined in publication settings and not already defined
@@ -4403,6 +4416,43 @@ function inch2px ($inch, $dpi=72)
   if ($inch > 0 && $dpi > 0)
   {
     return round (($inch * $dpi), 0);
+  }
+  else return false;
+}
+
+// ---------------------- mediasize2frame -----------------------------
+// function: mediasize2frame()
+// input: media width, media height, frame width (optional), frame height (optional), keep maximum media size based on original dimensions of media [true,false] (optional)
+// output: width and height as array / false
+
+// description:
+// Calculates the width and height of a media to fit into a given frame size.
+
+function mediasize2frame ($mediawidth, $mediaheight, $framewidth="", $frameheight="", $keepmaxsize=true)
+{
+  // new image size cant exceed the original image size
+  if ($mediawidth > 0 && $mediaheight > 0)
+  {
+    $mediaratio = $mediawidth / $mediaheight;
+    if ($framewidth > 0 && $frameheight > 0) $frameratio = $framewidth / $frameheight;
+
+    if ((!empty ($frameratio) && $mediaratio >= $frameratio) || (empty ($frameratio) && $framewidth > 0))
+    {
+      if ($keepmaxsize && $mediawidth < $framewidth) $mediawidth = $mediawidth;
+      elseif ($mediawidth >= $framewidth) $mediawidth = $framewidth;
+      
+      $mediaheight = round (($mediawidth / $mediaratio), 0); 
+    }
+    elseif ((!empty ($frameratio) && $mediaratio < $frameratio) || (empty ($frameratio) && $frameheight > 0))
+    {
+      if ($keepmaxsize && $mediaheight < $frameheight) $mediaheight = $mediaheight;
+      elseif ($mediaheight >= $frameheight) $mediaheight = $frameheight;
+      
+      $mediawidth = round (($mediaheight * $mediaratio), 0);
+    }
+
+    if ($mediawidth > 0 && $mediaheight > 0) return array ('width'=>$mediawidth, 'height'=>$mediaheight);
+    else return false;
   }
   else return false;
 }

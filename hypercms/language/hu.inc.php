@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['hu'] = "Válassza ki a hierarchiában";
 $hcms_lang['text-id']['hu'] = "A szöveg-ID";
 $hcms_lang['label']['hu'] = "Címke";
 $hcms_lang['level']['hu'] = "Szint";
+$hcms_lang['save-search']['hu'] = "A keresés mentése";
+$hcms_lang['saved-searches']['hu'] = "A mentett keresések";
 ?>

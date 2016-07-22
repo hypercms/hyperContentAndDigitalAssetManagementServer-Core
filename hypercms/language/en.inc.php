@@ -1092,7 +1092,7 @@ $hcms_lang['text']['en'] = "Text";
 $hcms_lang['found-media-files']['en'] = "Found media files";
 $hcms_lang['no-results-available']['en'] = "No results available";
 $hcms_lang['clear-all-events']['en'] = "Clear all events";
-$hcms_lang['export-list-comma-delimited']['en'] = "Export list (comma delimited)";
+$hcms_lang['export-list-comma-delimited']['en'] = "CSV Export";
 $hcms_lang['are-you-sure-you-want-to-remove-all-events']['en'] = "Are you sure you want to remove all events?";
 $hcms_lang['the-media-category-exists-already']['en'] = "The media category exists already";
 $hcms_lang['please-try-another-category-name']['en'] = "Please try another category name";
@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['en'] = "Select hierarchy";
 $hcms_lang['text-id']['en'] = "Text-ID";
 $hcms_lang['label']['en'] = "Label";
 $hcms_lang['level']['en'] = "Level";
+$hcms_lang['save-search']['en'] = "Save search";
+$hcms_lang['saved-searches']['en'] = "Saved searches";
 ?>

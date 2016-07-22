@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['uk'] = "Виберіть ієрархію";
 $hcms_lang['text-id']['uk'] = "Текст-ID";
 $hcms_lang['label']['uk'] = "Наклейка";
 $hcms_lang['level']['uk'] = "Рівень";
+$hcms_lang['save-search']['uk'] = "Зберегти результати пошуку .";
+$hcms_lang['saved-searches']['uk'] = "Додано пошук";
 ?>

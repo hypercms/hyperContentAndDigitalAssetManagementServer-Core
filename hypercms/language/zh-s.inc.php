@@ -1391,4 +1391,6 @@ $hcms_lang['select-hierarchy']['zh-s'] = "请选择层次结构";
 $hcms_lang['text-id']['zh-s'] = "文本标识";
 $hcms_lang['label']['zh-s'] = "标签";
 $hcms_lang['level']['zh-s'] = "一级";
+$hcms_lang['save-search']['zh-s'] = "保存的搜索";
+$hcms_lang['saved-searches']['zh-s'] = "保存的搜索";
 ?>

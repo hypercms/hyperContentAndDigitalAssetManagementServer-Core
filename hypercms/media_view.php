@@ -160,7 +160,6 @@ if ($mediatype == "image")
     $mediaheight = round ($media_size[1] * $scaling);
 ?>
   <script type="text/javascript">
-  <!--
   function updatesize ()
   {
     var inputfield;
@@ -181,7 +180,6 @@ if ($mediatype == "image")
   }
   
   setTimeout (updatesize, 500);
-  -->
   </script>
 <?php
   }

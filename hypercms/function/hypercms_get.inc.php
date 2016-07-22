@@ -619,12 +619,13 @@ function gethierarchy_defintion ($site, $selectname="")
         {
           $name = $hierarchy_array[0];
           $result[$name] = array();
-          $label = array();
-          
+
           if (empty ($selectname) || $selectname == $name)
           {
             foreach ($hierarchy_array as $hierarchy)
             {
+              $label = array();
+              
               if (strpos ($hierarchy, "->") > 0)
               {
                 list ($level, $text_id, $labels) = explode ("->", $hierarchy);
@@ -1193,6 +1194,14 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
   
 	if ((valid_locationname ($location) && valid_objectname ($object)) || $container != "")
   {
+    // deconvert location
+    if (@substr_count ($location, "%page%") > 0 || @substr_count ($location, "%comp%") > 0)
+    {
+      $site = getpublication ($location);
+      $cat = getcategory ($site, $location);
+      $location = deconvertpath ($location, $cat);
+    }
+  
   	// check if object is folder or page/component
     if ($container == "")
     {
@@ -1351,6 +1360,102 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
 		}
     else return false;
 	}
+  else return false;
+}
+
+// ---------------------- getmetadata_multiobjects -----------------------------
+// function: getmetadata_multiobjects()
+// input: converted path of multiple objects as array, user name
+// output: assoziatve array with all text content and meta data / false
+
+function getmetadata_multiobjects ($multiobject_array, $user)
+{
+  global $mgmt_config;
+  
+  // exclude attributes from result (always exclude 'id')
+  $exclude_attributes = array ("id", "object_id", "hash");
+
+  if (is_array ($multiobject_array) && sizeof ($multiobject_array) > 0 && $user != "")
+  {
+    $result = array();
+    $text_ids = array();
+    $intermediate = array();
+    
+    // query for each object
+    foreach ($multiobject_array as $multiobject)
+    {
+      // only accept converted locations
+      if ($multiobject != "" && (substr_count ($multiobject, "%page%") > 0 || substr_count ($multiobject, "%comp%") > 0))
+      {
+        $site = getpublication ($multiobject);
+        $location = getlocation ($multiobject);
+        $object = getobject ($multiobject);
+        $cat = getcategory ($site, $location);
+        
+        // check access permission uf user
+        $ownergroup = accesspermission ($site, $location, $cat);
+        $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
+        if ($ownergroup != false && $setlocalpermission['root'] == 1 && valid_locationname ($location) && valid_objectname ($object))
+        {
+          $objectdata = rdbms_externalquery ('SELECT * FROM object INNER JOIN container ON object.id=container.id LEFT JOIN media ON media.id=object.id WHERE object.objectpath="'.$multiobject.'"');
+
+          if (is_array ($objectdata) && sizeof ($objectdata) > 0)
+          {
+            $id = $objectdata[0]['id'];
+            
+            // add container ID again
+            $result[$multiobject]['Container-ID'] = $id;
+            
+            // exclude attributes
+            foreach ($objectdata[0] as $key => $value)
+            {
+              if (!in_array ($key, $exclude_attributes))
+              {
+                $result[$multiobject][ucfirst($key)] = $value;
+              }
+            }
+            
+            $textnodes = rdbms_externalquery ('SELECT text_id, textcontent FROM textnodes WHERE id='.intval($id).' AND type!="file" AND type!="media" AND type!="page" AND type!="comp"');
+            
+            // text content
+            if (is_array ($textnodes) && sizeof ($textnodes) > 0)
+            {
+              foreach ($textnodes as $textnode)
+              {
+                if (is_array ($textnode))
+                {
+                  $intermediate[$multiobject][$textnode['text_id']] = $textnode['textcontent'];
+                  
+                  // collect text IDs
+                  if (!in_array ($textnode['text_id'], $text_ids)) $text_ids[] = $textnode['text_id'];
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (is_array ($result) && sizeof ($result) > 0)
+    {
+      // create new table with all text IDs for proper export
+      if (is_array ($intermediate) && sizeof ($intermediate) > 0)
+      {
+        foreach ($intermediate as $key => $textarray)
+        {
+          foreach ($text_ids as $text_id)
+          {
+            if (isset ($textarray[$text_id])) $result[$key]['Content:'.$text_id] = $textarray[$text_id];
+            else $result[$key]['Content:'.$text_id] = "";
+          }
+        }
+      }
+      
+      return $result;
+    }
+    else return false;
+  }
   else return false;
 }
 
@@ -2251,7 +2356,7 @@ function getlocaltemplates ($site, $cat="")
 
 // ----------------------------------------- gettemplates ---------------------------------------------
 // function: gettemplates()
-// input: publication name, object category [page,comp,meta] (optional)
+// input: publication name, object category [all,page,comp,meta] (optional)
 // output: template file name list as array / false on error
 // requires: config.inc.php to be loaded before
 
@@ -2259,11 +2364,11 @@ function getlocaltemplates ($site, $cat="")
 // This function returns a list of all templates for pages or components.
 // Based on the inheritance settings of the publication the template will be loaded with highest priority from the own publication and if not available from a parent publication.
 
-function gettemplates ($site, $cat="")
+function gettemplates ($site, $cat="all")
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
-  if (valid_publicationname ($site) && ($cat == "" || $cat == "page" || $cat == "comp" || $cat == "meta"))
+  if (valid_publicationname ($site) && ($cat == "all" || $cat == "page" || $cat == "comp" || $cat == "meta"))
   {
     $site_array = array();
     
@@ -2302,7 +2407,7 @@ function gettemplates ($site, $cat="")
             {
               $template_array[] = $entry;
             }
-            else $template_array[] = $entry;          
+            elseif ($cat == "all") $template_array[] = $entry;   
           }
         }
 
@@ -3277,7 +3382,7 @@ function getcontentlocation ($container_id, $type="abs_path_content")
 // output: location of the multimedia file / false on error
 
 // description:
-// Gets the media repsitory location from $mgtm_config array.
+// Gets the media repsitory location from $mgmt_config array.
 // The function supports up to 10 media repositories.
 // Any other rules for splitting the media files on multiple devices can be implemented as well by the function getmedialocation_rule.
 

@@ -125,7 +125,7 @@ if (!empty ($mgmt_config['abs_path_data']))
 
   // get text IDs from templates
   $attributes_all = array();
-  $templates = gettemplates ($site, "");
+  $templates = gettemplates ($site, "all");
   
   if (is_array ($templates) && sizeof ($templates) > 0)
   {

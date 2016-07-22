@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['nl'] = "Selecteer hiërarchie";
 $hcms_lang['text-id']['nl'] = "Tekst-ID";
 $hcms_lang['label']['nl'] = "Label";
 $hcms_lang['level']['nl'] = "Niveau";
+$hcms_lang['save-search']['nl'] = "Zoekopdracht opslaan";
+$hcms_lang['saved-searches']['nl'] = "Opgeslagen zoekopdrachten";
 ?>

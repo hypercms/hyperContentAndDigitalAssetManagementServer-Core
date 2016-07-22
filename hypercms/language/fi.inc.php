@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['fi'] = "Valitse hierarkia";
 $hcms_lang['text-id']['fi'] = "Text-tunnus";
 $hcms_lang['label']['fi'] = "Tarra";
 $hcms_lang['level']['fi'] = "Taso";
+$hcms_lang['save-search']['fi'] = "Tallenna haku";
+$hcms_lang['saved-searches']['fi'] = "Tallennettujen hakujen";
 ?>

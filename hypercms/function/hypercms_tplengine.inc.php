@@ -3981,7 +3981,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         {
                           $taglink = " <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['mediaobject[".$id."]'],'','scrollbars=yes,resizable=yes,width=800,height=600', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.gif\" align=\"absmiddle\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".$hcms_lang['edit'][$lang]."\" />
                           <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['".$hypertagname_file[$id]."[".$id."]']); deleteEntry(document.forms['hcms_formview'].elements['mediaobject[".$id."]']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.gif\" align=\"absmiddle\" alt=\"".$hcms_lang['delete'][$lang]."\" title=\"".$hcms_lang['delete'][$lang]."\" />
-                          <img onClick=\"setSaveType('form_so', '".$mgmt_config['url_path_cms']."frameset_edit_media.php?view=".url_encode($buildview)."&savetype=form_so&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&contentfile=".url_encode($contentfile)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".urlencode($label[$id])."&tagname=media&mediacat=comp&mediafile=".url_encode($mediafilebot[$id][$tagid])."&mediaobject_curr=".url_encode($mediaobjectbot[$id])."&mediaobject=' + getValue('".$hypertagname_file[$id]."[".$id."]','') + '&mediaalttext=' + getValue('".$hypertagname_text[$id]."[".$id."]','*Null*') + '&mediaalign=' + getSelectedOption('".$hypertagname_align[$id]."[".$id."]','*Null*') + '&mediawidth=' + getValue('".$hypertagname_width[$id]."[".$id."]','*Null*') + '&mediaheight=' + getValue('".$hypertagname_height[$id]."[".$id."]','*Null*') + '&scaling=".url_encode($scalingfactor)."&mediatype=".url_encode($mediatype[$id])."&contenttype=".url_encode($contenttype)."', 'post');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" />\n";
+                          <img onClick=\"setSaveType('form_so', '".$mgmt_config['url_path_cms']."frameset_edit_media.php?view=".url_encode($buildview)."&savetype=form_so&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&contentfile=".url_encode($contentfile)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".urlencode($label[$id])."&tagname=media&mediacat=comp&mediafile=".url_encode($mediafilebot[$id][$tagid])."&mediaobject_curr=".url_encode($mediaobjectbot[$id])."&mediaobject=".url_encode("%comp%")."' + getValue('".$hypertagname_file[$id]."[".$id."]','') + '&mediaalttext=' + getValue('".$hypertagname_text[$id]."[".$id."]','*Null*') + '&mediaalign=' + getSelectedOption('".$hypertagname_align[$id]."[".$id."]','*Null*') + '&mediawidth=' + getValue('".$hypertagname_width[$id]."[".$id."]','*Null*') + '&mediaheight=' + getValue('".$hypertagname_height[$id]."[".$id."]','*Null*') + '&scaling=".url_encode($scalingfactor)."&mediatype=".url_encode($mediatype[$id])."&contenttype=".url_encode($contenttype)."', 'post');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.gif\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" />\n";
                         }
                         else $taglink = "";
                         
@@ -4008,7 +4008,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           
                           $formitem[$key] .= "
                           <tr>
-                            <td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering")."</td>
+                            <td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering", "hcms_mediaplayer_".$id)."</td>
                           </tr>
                           <tr>
                             <td width=\"150\">".getescapedtext ($hcms_lang['multimedia-file'][$lang], $charset, $lang).":</td>
@@ -4105,7 +4105,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                        
                           $formitem[$key] .= "
                           <tr>
-                            <td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering")."</td>
+                            <td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering", "hcms_mediaplayer_".$id)."</td>
                           </tr>
                           <tr>
                             <td width=\"150\">".getescapedtext ($hcms_lang['multimedia-file'][$lang], $charset, $lang).":</td>
@@ -6704,14 +6704,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <!-- Annotations -->
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.css\">
   <script language=\"JavaScript\" type=\"text/javascript\">
-  <!--
   ".$bodytag_controlreload."";
   
   if ($buildview != "formlock") $viewstore .= "
   ".$bodytag_popup."
-
+  
   // ----- Validation -----
-  function validateForm() 
+  function validateForm () 
   {
     var i,p,q,nm,test,num,min,max,errors='',args=validateForm.arguments;
     
@@ -6774,7 +6773,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     else return true;
   } 
   
-  function checkMediaType(mediafile, medianame, mediatype)
+  function checkMediaType (mediafile, medianame, mediatype)
   {    
     if (mediafile != '' && mediatype != '')
     {
@@ -6803,7 +6802,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   }  
   
   // ----- Get, move and delete values -----
-  function getValue(selectname, defaultvalue)
+  function getValue (selectname, defaultvalue)
   {
     if (document.forms['hcms_formview'].elements[selectname] && document.forms['hcms_formview'].elements[selectname].value)
     {
@@ -6812,7 +6811,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     else return defaultvalue;
   }
   
-  function getSelectedOption(selectname, defaultvalue)
+  function getSelectedOption (selectname, defaultvalue)
   {
     if (document.forms['hcms_formview'].elements[selectname] && document.forms['hcms_formview'].elements[selectname].options)
     {
@@ -6822,7 +6821,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     else return defaultvalue;
   }  
     
-  function moveSelected(select, down)
+  function moveSelected (select, down)
   {
     if (select.selectedIndex != -1) {
       if (down)
@@ -6852,7 +6851,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     }
   }
   
-  function moveBoxEntry(fbox, tbox)
+  function moveBoxEntry (fbox, tbox)
   {
     var arrFbox = new Array();
     var arrTbox = new Array();
@@ -6906,12 +6905,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     }
   }
   
-  function deleteEntry(select)
+  function deleteEntry (select)
   {
     select.value = '';
   }  
   
-  function deleteSelected(select)
+  function deleteSelected (select)
   {
     if (select.length > 0)
     {
@@ -6922,7 +6921,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     }
   }
   
-  function replace(string,text,by)
+  function replace (string,text,by)
   {
     // Replaces text with by in string
     var strLength = string.length, txtLength = text.length;
@@ -6941,7 +6940,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   }
   
   // ----- Open window -----
-  function openBrWindowLink(select, winName, features, type)
+  function openBrWindowLink (select, winName, features, type)
   {
     var select_temp = eval(\"document.forms['hcms_formview'].elements['temp_\" + select.name + \"']\");
 
@@ -6998,7 +6997,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     else alert(hcms_entity_decode('".getescapedtext ($hcms_lang['no-link-selected'][$lang], $charset, $lang)."'));
   }  
   
-  function openBrWindowComp(select, winName, features, type)
+  function openBrWindowComp (select, winName, features, type)
   {
     theURL = select.value;
     
@@ -7045,12 +7044,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   } 
   
   // ----- Prepare form fields for submit -----
-  function submitText(selectname, targetname)
+  function submitText (selectname, targetname)
   {
     document.forms['hcms_formview'].elements[targetname].value = document.forms['hcms_formview'].elements[selectname].value;
   }
   
-  function submitLink(selectname, targetname)
+  function submitLink (selectname, targetname)
   { 
     var select = document.forms['hcms_formview'].elements[selectname];
     var target = document.forms['hcms_formview'].elements[targetname];
@@ -7109,7 +7108,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     return true;
   }
   
-  function submitMultiComp(selectname, targetname)
+  function submitMultiComp (selectname, targetname)
   {
     var component = '';
     var select = document.forms['hcms_formview'].elements[selectname];
@@ -7131,7 +7130,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     return true;
   }
   
-  function submitLanguage(selectname, targetname)
+  function submitLanguage (selectname, targetname)
   {
     var content = '' ;
     var select = document.forms['hcms_formview'].elements[selectname];
@@ -7189,14 +7188,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   }
   
   // user defined onclose handler (used in pop-up mode - when auto_close is true)
-  function cal_on_close(cal)
+  function cal_on_close (cal)
   {
   	cal.hide();
   	cal_obj = null;
   }
   
   // user defined onautoclose handler
-  function cal_on_autoclose(cal)
+  function cal_on_autoclose (cal)
   {
   	cal_obj = null;
   }
@@ -7207,7 +7206,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     element.disabled = value;
   }
   
-  function isNewComment()
+  function isNewComment ()
   {
     var comments = document.getElementsByClassName('is_comment');
     
@@ -7231,7 +7230,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   }
   
   // ----- Save only -----
-  function saveContent()
+  function saveContent ()
   {
     if (document.forms['hcms_formview'])
     {
@@ -7243,7 +7242,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   }
   
   // ----- Set save type and save -----
-  function setSaveType(type, url, methode)
+  function setSaveType (type, url, methode)
   {
     if (typeof (methode) === 'undefined') methode = 'post';
     var checkcontent = true;
@@ -7389,6 +7388,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   if ($add_onload != "") $viewstore .= "
   $(document).ready(function() {".
     $add_onload."
+    
+    // ----- Protect images -----
+    $('#annotation').bind('contextmenu', function(e){
+        return false;
+    });
+    $('img').bind('contextmenu', function(e){
+        return false;
+    }); 
   });
   
   // global object for VTT records
@@ -7396,7 +7403,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   ";
   
   $viewstore .= "
-  //-->
   </script>";
   
   $viewstore .= "</head>
@@ -7490,7 +7496,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             <b>".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."</b>
           </div>
           <div class=\"hcmsFormRowContent\">
-            ".showmedia ($site."/".$mediafile, convertchars ($name_orig, $hcms_lang_codepage[$lang], $charset), $mediaview)."
+            ".showmedia ($site."/".$mediafile, convertchars ($name_orig, $hcms_lang_codepage[$lang], $charset), $mediaview, "hcms_mediaplayer_asset")."
           </div>";
         }
       
@@ -7843,7 +7849,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
   function cal_on_autoclose (cal)
   {
     cal_obj = null;
-  } 
+  }
   </script>
 </head>
 <body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" ".($template != "" ? "onload=\"parent.hcms_showPage('contentLayer');\"" : "").">

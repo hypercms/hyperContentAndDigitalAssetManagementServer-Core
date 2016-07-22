@@ -41,7 +41,7 @@ if ($lang == "") $lang = "en";
 // ------------------------------ permission section --------------------------------
 
 // check user session if user is logged in
-if ($user != "") checkusersession ($user);
+if ($user != "") checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 

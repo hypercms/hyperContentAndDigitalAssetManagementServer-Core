@@ -30,6 +30,27 @@ $token = getrequest ("token");
 $convert_type = getrequest ("convert_type");
 $convert_cfg = getrequest ("convert_cfg");
 
+// initalize object linking
+if ($location == "" && is_array ($hcms_linking)) 
+{
+  $site = valid_publicationname ($hcms_linking['publication']);
+  $cat = $hcms_linking['cat'];
+  $location = $location_ACCESS = valid_locationname ($hcms_linking['location']);
+  if ($hcms_linking['object'] != "") $page = valid_objectname ($hcms_linking['object']);
+  else $page = "";
+}
+// location has been provided
+else
+{
+  // correct location for access permission
+  if ($folder != "") $location_ACCESS = $location.$folder."/";
+  else $location_ACCESS = $location;
+  
+  // get publication and category
+  $site = getpublication ($location_ACCESS);
+  $cat = getcategory ($site, $location_ACCESS); 
+}
+
 // for mobile we access folders only via navigator
 if ($is_mobile && substr_count ($location, "/") > 2)
 {
@@ -40,30 +61,6 @@ if ($is_mobile && substr_count ($location, "/") > 2)
     $folder = getobject ($location);
     $location = getlocation ($location);
   }
-}
-
-// correct location for access permission
-if ($folder != "")
-{
-  $location_ACCESS = $location.$folder."/";
-}
-else
-{
-  $location_ACCESS = $location;
-}
-
-// get publication and category
-$site = getpublication ($location_ACCESS);
-$cat = getcategory ($site, $location_ACCESS); 
-
-// initalize object linking
-if ($location == "" && is_array ($hcms_linking)) 
-{
-  $site = valid_publicationname ($hcms_linking['publication']);
-  $cat = $hcms_linking['cat'];
-  $location = valid_locationname ($hcms_linking['location']);
-  if ($hcms_linking['object'] != "") $page = valid_objectname ($hcms_linking['object']);
-  else $page = "";
 }
 
 // publication management config
@@ -248,6 +245,28 @@ if (checktoken ($token, $user))
       $show = getescapedtext ($hcms_lang['the-file-'][$lang].$pagenew.str_replace ("%filesize%", $mgmt_config['maxzipsize'], $hcms_lang['zip-could-not-be-created-max'][$lang]));
     }
   }
+  // export selected objects as CSV
+  elseif ($action == "export" && $setlocalpermission['root'] == 1)
+  {
+    if ($multiobject != "")
+    {
+      $multiobject_array = link_db_getobject ($multiobject);
+    }
+    elseif ($folder != "" && is_dir ($location.$folder))
+    {
+      $multiobject_array[0] = $location.$folder;
+    }
+    elseif ($page != "" && $page != ".folder" && is_file ($location.$page))
+    {
+      $multiobject_array[0] = $location.$page;
+    }
+  
+    // get all text content/metadata as array
+    $assoc_array = getmetadata_multiobjects ($multiobject_array, $user);
+
+    // CSV export
+    create_csv ($assoc_array, "export.csv");
+  }
 }
 
 // get file info
@@ -328,7 +347,7 @@ function submitToWindow (url, action, windowname, features, width, height)
 
 function submitToSelf (action)
 {
-  if (eval (parent.frames['mainFrame'].document.forms['contextmenu_object']))
+  if (parent.frames['mainFrame'].document.forms['contextmenu_object'])
   {
     var form = parent.frames['mainFrame'].document.forms['contextmenu_object'];
     
@@ -556,11 +575,13 @@ function switchsidebar ()
       if (view)
       {
         parent.frames['sidebarFrame'].hcms_resizeFrameWidth('mainLayer', 75, 'sidebarLayer', 0, '%');
+        parent.frames['mainFrame'].resizecols();
         sidebar = true;
       }
       else
       {
         parent.frames['sidebarFrame'].hcms_resizeFrameWidth('mainLayer', 100, 'sidebarLayer', 0, '%');
+        parent.frames['mainFrame'].resizecols();
         sidebar = false;
       }
         
@@ -615,6 +636,15 @@ function escapevalue (value)
     return encodeURIComponent (value);
   }
   else return "";
+}
+
+function openliveview (location, object)
+{
+  if (location != "" && object != "" && parent.frames['mainFrame'].document.getElementById('liveview'))
+  {
+    parent.frames['mainFrame'].openliveview(location, object);
+  }
+  else return false;
 }
 
 <?php if ($is_mobile && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
@@ -760,7 +790,7 @@ else
     if (!$is_mobile)
     {
         echo "
-      <img src=\"".getthemelocation()."img/button_sidebar.gif\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"switchsidebar ();\" title=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" />\n";
+      <img src=\"".getthemelocation()."img/button_sidebar.gif\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"switchsidebar();\" title=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" />\n";
     }
     ?>
     
@@ -800,15 +830,12 @@ else
                                                       "'zipLayer','','show'".
                                                       ");\" name=\"pic_zip_create\" src=\"".getthemelocation()."img/button_zip.gif\" alt=\"".getescapedtext ($hcms_lang['compress-files'][$lang])."\" title=\"".getescapedtext ($hcms_lang['compress-files'][$lang])."\" />\n";
     }
-    else
-    {
-      echo "<img src=\"".getthemelocation()."img/button_zip.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
-    }
-    
+    else echo "<img src=\"".getthemelocation()."img/button_zip.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+
     // UNZIP Button
     if ( 
          $mgmt_uncompress['.zip'] != "" && $from_page == "" && 
-         $multiobject_count <= 1 &&
+         $multiobject_count < 0 &&
          $filetype == "compressed" &&
          ($usedby == "" || $usedby == $user) && 
          $page != "" && 
@@ -819,10 +846,7 @@ else
            "onClick=\"if (locklayer == false) hcms_openWindow('popup_action.php?action=unzip&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&token=".$token_new."', '', 'location=no,scrollbars=no,resizable=no,titlebar=no', 400, 180);\" ".
            "name=\"pic_unzip\" src=\"".getthemelocation()."img/button_unzip.gif\" alt=\"".getescapedtext ($hcms_lang['extract-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['extract-file'][$lang])."\" />\n";
     }
-    else
-    {
-      echo "<img src=\"".getthemelocation()."img/button_unzip.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
-    }
+    else echo "<img src=\"".getthemelocation()."img/button_unzip.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     ?>    
   </div>
   <div class="hcmsToolbarBlock">
@@ -833,25 +857,23 @@ else
       if ($page != ".folder") echo "<img onClick=\"hcms_openWindow('page_preview.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."', 'preview', 'location=no,scrollbars=yes,resizable=yes,titlebar=no', 800, 600);\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" src=\"".getthemelocation()."img/button_file_preview.gif\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" />\n";
       elseif ($page == ".folder") echo "<img onClick=\"hcms_openWindow('page_preview.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/&page=.folder', 'preview', 'location=no,scrollbars=yes,resizable=yes,titlebar=no', 800, 600);\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" src=\"".getthemelocation()."img/button_file_preview.gif\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" />\n";
     }
-    else
-    {echo "<img src=\"".getthemelocation()."img/button_file_preview.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
+    else echo "<img src=\"".getthemelocation()."img/button_file_preview.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
 
-    // define path variables
-    if (empty ($media))
-    {
-      if ($cat == "page" && $site != "") $url_location = str_ireplace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$page;
-      elseif ($cat == "comp") $url_location = str_ireplace ($mgmt_config['abs_path_comp'], $publ_config['url_publ_comp'], $location).$page;
-    }
-    else $url_location = createviewlink ($site, $media, $pagename);
-    
     // LiveView Button
-    if (!empty ($url_location) && $multiobject_count <= 1 && 
+    if ($multiobject_count <= 1 && 
         $file_info['published'] == true && $page != ".folder" && $page != "" && 
-        (($setlocalpermission['root'] == 1 && (($cat != "comp" && $media == "") || ($media != "" && $setlocalpermission['download'] == 1))))
+        $setlocalpermission['root'] == 1
     )
-    {echo "<img onClick=\"hcms_openWindow('".$url_location."', 'preview', 'location=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,titlebar=no', 800, 600);\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_liveview.gif\" alt=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" />\n";}
-    else
-    {echo "<img src=\"".getthemelocation()."img/button_file_liveview.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
+    {
+      if (empty ($media) && $cat == "page" && valid_publicationname ($site))
+      {
+        $url_location = str_ireplace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$page;
+        echo "<img onClick=\"hcms_openWindow('".$url_location."', 'preview', 'location=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,titlebar=no', 800, 600);\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_liveview.gif\" alt=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" />\n";
+      }
+      elseif (!empty ($media)) echo "<img onClick=\"openliveview('".url_encode($location_esc)."', '".url_encode($page)."');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_liveview.gif\" alt=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" />\n";
+      else echo "<img src=\"".getthemelocation()."img/button_file_liveview.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+    }
+    else echo "<img src=\"".getthemelocation()."img/button_file_liveview.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     
     // Download/Convert Button (also for folders) 
     // get media file extension
@@ -1009,19 +1031,22 @@ else
     }
 
     // Send to Chat Button
-    if ($container_id > 0 && $is_mobile && $page != "" && $setlocalpermission['root'] == 1 && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true)
+    if ($is_mobile && !$is_iphone)
     {
-      if ($page != ".folder") $chatcontent = "hcms_openWindow(\\'frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\\', \\'\\', \\'location=no,status=yes,scrollbars=no,resizable=yes,titlebar=no\\', 800, 600);";
-      elseif ($page == ".folder") $chatcontent = "hcms_openWindow(\\'frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/&page=".url_encode($page)."\\', \\'\\', \\'location=no,status=yes,scrollbars=no,resizable=yes,titlebar=no\\', 800, 600);";
-      
-      echo "<img onClick=\"sendtochat('".$chatcontent."');\" ".
-      "class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_chat\" ".
-      "src=\"".getthemelocation()."img/button_chat.gif\" ".
-      "alt=\"".getescapedtext ($hcms_lang['send-to-chat'][$lang])."\" title=\"".getescapedtext ($hcms_lang['send-to-chat'][$lang])."\" />\n";
-    }
-    elseif ($is_mobile)
-    {
-      echo "<img src=\"".getthemelocation()."img/button_chat.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      if ($container_id > 0 && $is_mobile && !$is_iphone && $page != "" && $setlocalpermission['root'] == 1 && !empty ($mgmt_config['chat']))
+      {
+        if ($page != ".folder") $chatcontent = "hcms_openWindow(\\'frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\\', \\'\\', \\'location=no,status=yes,scrollbars=no,resizable=yes,titlebar=no\\', 800, 600);";
+        elseif ($page == ".folder") $chatcontent = "hcms_openWindow(\\'frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/&page=".url_encode($page)."\\', \\'\\', \\'location=no,status=yes,scrollbars=no,resizable=yes,titlebar=no\\', 800, 600);";
+        
+        echo "<img onClick=\"sendtochat('".$chatcontent."');\" ".
+        "class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_chat\" ".
+        "src=\"".getthemelocation()."img/button_chat.gif\" ".
+        "alt=\"".getescapedtext ($hcms_lang['send-to-chat'][$lang])."\" title=\"".getescapedtext ($hcms_lang['send-to-chat'][$lang])."\" />\n";
+      }
+      else
+      {
+        echo "<img src=\"".getthemelocation()."img/button_chat.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      }
     }
     ?>
   </div>
@@ -1226,6 +1251,10 @@ else
     // if link references to an object and not a folder, disable search
     if ((!is_array ($hcms_linking) || @$hcms_linking['type'] != "Object") && $location != "" && $mgmt_config['db_connect_rdbms'] != "") echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"if (locklayer == false) parent.mainFrame.location='search_form.php?location=".url_encode($location_esc)."';\" name=\"pic_obj_search\" src=\"".getthemelocation()."img/button_search.gif\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />\n";
     else echo "<img src=\"".getthemelocation()."img/button_search.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+    
+    // CSV export
+    if (($usedby == "" || $usedby == $user) && ($page != "" || $multiobject_count > 0) && $mgmt_config['db_connect_rdbms'] != "") echo "<img onClick=\"submitToSelf('export')\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"media_export\" src=\"".getthemelocation()."img/button_export_page.gif\" alt=\"".getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang])."\" title=\"".getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang])."\" />";
+    else echo "<img src=\"".getthemelocation()."img/button_export_page.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     ?>    
   </div>
   <?php } ?>

@@ -39,7 +39,7 @@ $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
 
 // check session of user
-checkusersession ($user);
+checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 

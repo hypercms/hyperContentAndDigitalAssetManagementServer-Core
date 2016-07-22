@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['es'] = "Seleccione la jerarquía";
 $hcms_lang['text-id']['es'] = "Texto-ID";
 $hcms_lang['label']['es'] = "Etiqueta";
 $hcms_lang['level']['es'] = "Nivel";
+$hcms_lang['save-search']['es'] = "Guardar búsqueda";
+$hcms_lang['saved-searches']['es'] = "Búsquedas guardadas.";
 ?>

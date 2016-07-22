@@ -28,6 +28,7 @@ $replace_expression = getrequest ("replace_expression");
 $search_cat = getrequest ("search_cat", "objectname");
 $search_format = getrequest ("search_format", "array");
 $search_filesize = getrequest ("search_filesize", "numeric");
+$search_filesize_operator = getrequest ("search_filesize_operator");
 $date_from = getrequest ("date_from");
 $date_to = getrequest ("date_to");
 $template = getrequest ("template", "objectname");
@@ -36,11 +37,19 @@ $container_id = getrequest ("container_id");
 $geo_border_sw = getrequest ("geo_border_sw");
 $geo_border_ne = getrequest ("geo_border_ne");
 $maxhits = getrequest ("maxhits", "numeric");
+$search_save = getrequest ("search_save");
+$search_execute = getrequest ("search_execute");
 
 // extract publication and template name
 if (substr_count ($template, "/") == 1) list ($site, $template) = explode ("/", $template);
 
-// just for image search
+// for file size search
+if ($search_filesize != "" && $search_filesize_operator != "")
+{
+  $search_filesize = $search_filesize_operator.$search_filesize;
+}
+
+// only for image search
 $search_imagesize = getrequest ("search_imagesize");
 
 if ($search_imagesize == "exact")
@@ -65,6 +74,44 @@ $cat = getcategory ($site, $search_dir);
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+
+// save search parameters
+if (!empty ($search_save))
+{
+  $search_record = $mgmt_config['today']."|".$action."|".$site."|".$search_dir."|".$date_from."|".$date_to."|".$template."|".json_encode($search_textnode)."|".$search_expression."|".$search_cat."|".json_encode($search_format)."|".$search_filesize."|".$search_imagewidth."|".$search_imageheight."|".json_encode($search_imagecolor)."|".$search_imagetype."|".$geo_border_sw."|".$geo_border_ne."|".$object_id."|".$container_id;
+
+  savelog (array($search_record), $user.".search");
+}
+// execute a saved search again (date is used for search name/ID)
+elseif (!empty ($search_execute))
+{
+  if (is_file ($mgmt_config['abs_path_data']."log/".$user.".search.log"))
+  {
+    $searchlog_array = file ($mgmt_config['abs_path_data']."log/".$user.".search.log");
+  
+    if ($searchlog_array != false && sizeof ($searchlog_array) > 0)
+    {
+      foreach ($searchlog_array as $searchlog)
+      {
+        if (strpos ($searchlog, "|") > 0)
+        {
+          list ($date, $rest) = explode ("|", trim ($searchlog));
+          
+          if ($date == $search_execute)
+          {
+            list ($date, $action, $site, $search_dir, $date_from, $date_to, $template, $search_textnode, $search_expression, $search_cat, $search_format, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $object_id, $container_id) = explode ("|", trim ($searchlog));
+            
+            // JSON decode
+            $search_textnode = json_decode ($search_textnode, true);
+            $search_format = json_decode ($search_format, true);
+            $search_imagecolor = json_decode ($search_imagecolor, true);
+          }
+        }
+      }
+    }
+  }
+}
+
 
 // ------------------------------ permission section --------------------------------
 
@@ -211,16 +258,18 @@ elseif ($action == "base_search" || $search_dir != "")
 }
 
 // create view of items
-$table_cells = "5"; //How many images/folders in each row do you want? // Looks best with 3  
+// how many images/folders in each row
+if ($is_mobile) $table_cells = 3;
+else $table_cells = 5;
 
-// Makes the tables look nice
+// define cell width of table
 if ($table_cells == "1") $cell_width = "100%";
 elseif ($table_cells == "2") $cell_width = "50%";  
 elseif ($table_cells == "3") $cell_width = "33%";    
 elseif ($table_cells == "4") $cell_width = "25%";      
 elseif ($table_cells == "5") $cell_width = "20%";
 elseif ($table_cells == "6") $cell_width = "16%";
-else $cell_width="10%";  
+else $cell_width = "10%";  
 
 $galleryview = Null;
 $listview = Null;
@@ -720,6 +769,21 @@ function toggleview (viewoption)
   return true;
 }
 
+function openliveview (location, object)
+{
+  var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
+  var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
+  
+  document.getElementById('liveview').src = 'explorer_liveview.php?location=' + location + '&page=' + object + '&width=' + width + '&height=' + height;
+  hcms_showInfo('liveviewLayer',0);
+}
+
+function closeliveview ()
+{
+  document.getElementById('liveview').src = '';
+  hcms_hideInfo('liveviewLayer');
+}
+
 // start chat
 var chat =  new Chat();
 
@@ -757,8 +821,18 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 
 <body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" style="overflow:hidden;">
 
+<!-- live view --> 
+<div id="liveviewLayer" class="hcmsWorkplaceObjectlist" style="display:none; position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; z-index:8;">
+  <div style="position:fixed; right:5px; top:5px; z-index:9;">
+    <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="closeliveview();" />
+  </div>
+  <iframe id="liveview" src="" scrolling="auto" frameBorder="0" <?php if (!$is_iphone) echo 'style="width:100%; height:100%; border:0; margin:0; padding:0;"'; ?>></iframe>
+</div>
+
+<!-- contextual help --> 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang], $lang, "position:fixed; top:30px; right:30px;", "hcms_infoboxKeys"); ?>
 
+<!-- context menu --> 
 <div id="contextLayer" style="position:absolute; width:150px; height:260px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_object" action="" method="post" target="_blank">
     <input type="hidden" name="contextmenustatus" value="" />

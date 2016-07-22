@@ -1499,7 +1499,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 // function: rdbms_searchcontent()
 // input: location (optional), exlude locations/folders (optional), object-type (optional), filter for start modified date (optional), filter for end modified date (optional), 
 //        filter for template name (optional), search expression as array (optional), search expression for object/file name (optional), 
-//        filter for files size in KB (optional), image width in pixel (optional), image height in pixel (optional), primary image color (optional), image-type (optional), 
+//        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel (optional), image height in pixel (optional), primary image color as array (optional), image-type (optional), 
 //        SW geo-border as float value (optional), NE geo-border as float value (optional), maximum search results/hits to return (optional), count search result entries [true,false] (optional), log search expression [true/false] (optional), taxonomy level to include  as integer (optional)
 // output: result array with object paths of all found objects / false
 
@@ -1973,7 +1973,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     }
 
     // query object type
-    if ($filesize > 0 || is_array ($object_type) && sizeof ($object_type) > 0)
+    if (!empty ($filesize) || (is_array ($object_type) && sizeof ($object_type) > 0))
     {
       // add media table
       $sql_table['media'] = "";
@@ -2023,17 +2023,76 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       }
       
       // join media table
-      if (!empty ($sql_where['format']) || $filesize > 0) $sql_table['media'] = 'LEFT JOIN media AS med on obj.id=med.id';
+      if (!empty ($sql_where['format']) || !empty ($filesize)) $sql_table['media'] = 'LEFT JOIN media AS med on obj.id=med.id';
     }
     
     $sql_where['media'] = "";
     
     // query file size
-    if (!empty ($filesize) && $filesize > 0)
+    if (!empty ($filesize))
     {
-      if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
+      // set default operator
+      $filesize_operator = ">=";
       
-      $sql_where['media'] .= 'med.filesize>='.intval($filesize);
+      // filesize includes operator
+      if ($filesize < 1)
+      {
+        // >=
+        if (strpos ("_".$filesize, "&gt;=") > 0)
+        {
+          $filesize_operator = substr ($filesize, 0, 5);
+          $filesize = substr ($filesize, 5);
+        }
+        // >=
+        elseif (strpos ("_".$filesize, ">=") > 0)
+        {
+          $filesize_operator = substr ($filesize, 0, 2);
+          $filesize = substr ($filesize, 2);
+        }
+        // <=
+        elseif (strpos ("_".$filesize, "&lt;=") > 0)
+        {
+          $filesize_operator = substr ($filesize, 0, 5);
+          $filesize = substr ($filesize, 5);
+        }
+        // <=
+        elseif (strpos ("_".$filesize, "<=") > 0)
+        {
+          $filesize_operator = substr ($filesize, 0, 2);
+          $filesize = substr ($filesize, 2);
+        }
+        // >
+        elseif (strpos ("_".$filesize, "&gt;") > 0)
+        {
+          $filesize_operator = substr ($filesize, 0, 4);
+          $filesize = substr ($filesize, 4);
+        }
+        // >
+        elseif (strpos ("_".$filesize, ">") > 0)
+        {
+          $filesize_operator = substr ($filesize, 0, 1);
+          $filesize = substr ($filesize, 1);
+        }
+        // <
+        elseif (strpos ("_".$filesize, "&lt;") > 0)
+        {
+          $filesize_operator = substr ($filesize, 0, 4);
+          $filesize = substr ($filesize, 4);
+        }
+        // <
+        elseif (strpos ("_".$filesize, "<") > 0)
+        {
+          $filesize_operator = substr ($filesize, 0, 1);
+          $filesize = substr ($filesize, 1);
+        }
+      }
+    
+      if ($filesize > 0)
+      {
+        if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
+      
+        $sql_where['media'] .= 'med.filesize'.$filesize_operator.intval($filesize);
+      }
     }
     
     // query image and video
@@ -2234,7 +2293,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
       }
       
       // join media table
-      if (!empty ($sql_where['format']) || $filesize > 0) $sql_table['media'] = 'LEFT JOIN media AS med ON obj.id=med.id';
+      if (!empty ($sql_where['format']) || !empty ($filesize)) $sql_table['media'] = 'LEFT JOIN media AS med ON obj.id=med.id';
     }  
     
     // folder path
@@ -2638,7 +2697,7 @@ function rdbms_getemptykeywords ($sites="")
     $sql .= ' (object.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR object.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
   }
   
-  $sql .= ' AND textnodes.type="textk" AND textnodes.textcontent="" GROUP BY object.id';
+  $sql .= ' AND textnodes.type="textk" AND textnodes.textcontent=""';
   
   $errcode = "50542";
   $done = $db->query($sql, $errcode, $mgmt_config['today']);
@@ -2666,7 +2725,7 @@ function rdbms_getemptykeywords ($sites="")
 // output: array with hashcode as key and path as value / false
 
 // description:
-// Queries all objects of a user.
+// Queries all values for a hierarachy level.
 
 function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array="")
 {
@@ -2702,6 +2761,7 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array="")
         {
           list ($type, $text_id) = explode (":", $text_id);
         }
+        else $type = "textu";
       
         $j = $i - 1;
         

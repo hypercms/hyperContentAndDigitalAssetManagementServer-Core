@@ -40,7 +40,6 @@ $mediawidth = url_encode (getrequest ("mediawidth", "url"));
 $mediaheight = url_encode (getrequest ("mediaheight", "url"));
 $scaling = url_encode(getrequest ("scaling", "numeric"));
 
-
 // check session of user
 checkusersession ($user, false);
 ?>

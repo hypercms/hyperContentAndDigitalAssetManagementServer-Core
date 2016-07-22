@@ -1728,8 +1728,38 @@ Release 07/2016
 - Implementation of html_decode and html_encode for secure string comparison of textcontent in function rdbms_searchcontent and rdbms_gethierarchy_sublevel
 - Improvements in function cleancontent
 - Implementation of new function update_database_v6115 in update API
+- Bug fix: Function rdbms_getemptykeywords of DB Connect did use GROUP BY statement which results into wrong count of object with empty keywords
+- Updates in explorer CSS of black theme
+
+Version 6.1.16
+Release 07/2016
+- Implementation of file size support in all search forms
+- Implementation of file size comparison in function rdbms_searchcontent
+- Implementation of save for search parameters
+- Corrections in German language file
+- Updates in all language files
+- Improvements and changes in Navigator search form
+- Excluded CSFR protection from service mediawrapper and mediadownload
+- Bug fix: Function gettemplates did provide empyt templates if second input paramter has not been provided
+- Implementation of image download protecttion for annotation images and normal images in template engine
+- Bug fix: Location has not been correctly provided for function accesspermission in control_objectlist_menu
+- Implementation of CS export for all object lists
+- Improvements in function create_csv in main API
+- Improvemenets for objects list on mobile devices
+- Exclude 'send to chat' button on iPad and iPhone
+- Bug fix: Function gethierarchy_defintion did not initialize labels array
+- Implementation of new view-type 'media_only' in function showmedia in UI API
+- Implementation of new live view for media assets
+- Bug fix: Display of sidebar did not affect the width of the object list columns
+- Implementation of media rendering improvements in function showmedia in media API
+- Bug fix: Function showmedia regenerated image views due to incorrect file name used for comparison with temporary file
+- Changed function showmedia to set HTML tag ID for all media containers
+- Removed audio sampling frequency from default audio rendering settings due to issues witrh MP3 files
+- Bug fix: Default audio and video rendering settings of main configuration have not been applied in function createmedia
+- Bug fix: Template engine did not add %comp% as root for media files in form view causing the currently selected image not to be displayed in media_view
+- Bug fix: Function showshortext did not apply character set for a single line break
 */
 
 // current version
-$version = "Version 6.1.15";
+$version = "Version 6.1.16";
 ?>

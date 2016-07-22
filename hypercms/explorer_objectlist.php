@@ -163,7 +163,9 @@ if (
 }
 
 // create view of items
-$table_cells = 5; //How many images/folders in each row do you want?
+// how many images/folders in each row
+if ($is_mobile) $table_cells = 3;
+else $table_cells = 5;
 
 // define cell width of table
 if ($table_cells == 1) $cell_width = "100%";
@@ -632,7 +634,6 @@ else $objects_counted = 0;
 <script type="text/javascript" language="JavaScript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript" language="JavaScript" src="javascript/chat.js"></script>
 <script language="JavaScript">
-<!--
 // context menu
 var contextenable = 1;
 
@@ -684,6 +685,21 @@ function toggleview (viewoption)
 
   return true;
 }
+
+function openliveview (location, object)
+{
+  var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
+  var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
+  
+  document.getElementById('liveview').src = 'explorer_liveview.php?location=' + location + '&page=' + object + '&width=' + width + '&height=' + height;
+  hcms_showInfo('liveviewLayer',0);
+}
+
+function closeliveview ()
+{
+  document.getElementById('liveview').src = '';
+  hcms_hideInfo('liveviewLayer');
+}
   
 // start chat
 var chat =  new Chat();
@@ -699,7 +715,7 @@ function sendtochat (text)
   }
 }
 
-function resizecols()
+function resizecols ()
 {
   // get width of table header columns
   var c1 = $('#c1').width();
@@ -713,14 +729,23 @@ function resizecols()
   $('.hcmsCol3').width(c3);
   $('.hcmsCol4').width(c4);
 }
-//-->
 </script>
 </head>
 
 <body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist">
 
+<!-- live view --> 
+<div id="liveviewLayer" class="hcmsWorkplaceObjectlist" style="display:none; position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; z-index:8;">
+  <div style="position:fixed; right:5px; top:5px; z-index:9;">
+    <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="closeliveview();" />
+  </div>
+  <iframe id="liveview" src="" scrolling="auto" frameBorder="0" <?php if (!$is_iphone) echo 'style="width:100%; height:100%; border:0; margin:0; padding:0;"'; ?>></iframe>
+</div>
+
+<!-- contextual help --> 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang], $lang, "position:fixed; top:30px; right:30px;", "hcms_infoboxKeys"); ?>
 
+<!-- context menu --> 
 <div id="contextLayer" style="position:absolute; width:150px; height:300px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_object" action="" method="post" target="_blank">
     <input type="hidden" name="contextmenustatus" value="" />
@@ -746,7 +771,7 @@ function resizecols()
     
     <table width="150" cellspacing="0" cellpadding="3" class="hcmsContextMenu">
       <tr>
-        <td>  
+        <td>
           <a href=# id="href_preview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('preview');"><img src="<?php echo getthemelocation(); ?>img/button_file_preview.gif" id="img_preview" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></a><br />  
           <?php if ($setlocalpermission['root'] == 1 && ($setlocalpermission['create'] == 1 || $setlocalpermission['upload'] == 1)) { ?>
           <a href=# id="href_cmsview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" id="img_cmsview" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
@@ -817,7 +842,7 @@ function resizecols()
 </div>
 
 <!-- Detail View -->
-<div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; margin:0; padding:0; width:100%; z-index:1; visibility:visible;">
+<div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:30px; margin:0; padding:0; width:100%; z-index:1; visibility:visible;">
   <table id="objectlist_head" cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:360px; white-space:nowrap;">
@@ -840,7 +865,7 @@ function resizecols()
     </tr>
   </table>
 
-  <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:30px; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
+  <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:30px; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
     <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" style="border:0; width:100%; table-layout:fixed;">
     <?php 
     echo $listview;

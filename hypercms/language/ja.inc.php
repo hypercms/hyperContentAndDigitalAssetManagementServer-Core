@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['ja'] = "ヒエラルキを選択した";
 $hcms_lang['text-id']['ja'] = "テキスト ID";
 $hcms_lang['label']['ja'] = "ラベル";
 $hcms_lang['level']['ja'] = "レベル";
+$hcms_lang['save-search']['ja'] = "検索を保存します";
+$hcms_lang['saved-searches']['ja'] = "保存された検索";
 ?>

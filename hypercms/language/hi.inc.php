@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['hi'] = "हाइराकीऩ चुनें
 $hcms_lang['text-id']['hi'] = "पाठ-ID";
 $hcms_lang['label']['hi'] = "लेबल";
 $hcms_lang['level']['hi'] = "स्तर पर";
+$hcms_lang['save-search']['hi'] = "खोजें सहेजें";
+$hcms_lang['saved-searches']['hi'] = "सहेजे गए खोज";
 ?>

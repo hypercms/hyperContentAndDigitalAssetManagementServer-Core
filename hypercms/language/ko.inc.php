@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['ko'] = "계층 선택";
 $hcms_lang['text-id']['ko'] = "텍스트-ID";
 $hcms_lang['label']['ko'] = "레이블";
 $hcms_lang['level']['ko'] = "레벨";
+$hcms_lang['save-search']['ko'] = "검색 저장";
+$hcms_lang['saved-searches']['ko'] = "저장된 검색";
 ?>

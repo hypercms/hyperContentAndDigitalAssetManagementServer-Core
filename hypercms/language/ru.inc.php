@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['ru'] = "Выберите Иерархия";
 $hcms_lang['text-id']['ru'] = "Текст-ID";
 $hcms_lang['label']['ru'] = "Обозначение";
 $hcms_lang['level']['ru'] = "Уровень";
+$hcms_lang['save-search']['ru'] = "Сохранить поиск";
+$hcms_lang['saved-searches']['ru'] = "Сохраненные поиски";
 ?>

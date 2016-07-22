@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['ur'] = "فرشتوں کا انتخاب کریں"
 $hcms_lang['text-id']['ur'] = "متن کے عید";
 $hcms_lang['label']['ur'] = "لیبل";
 $hcms_lang['level']['ur'] = "سطح";
+$hcms_lang['save-search']['ur'] = "تلاش محفوظ کریں";
+$hcms_lang['saved-searches']['ur'] = "ٹووں بچایا";
 ?>

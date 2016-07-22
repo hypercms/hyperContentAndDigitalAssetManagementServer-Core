@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['ro'] = "Selectaţi ierarhie";
 $hcms_lang['text-id']['ro'] = "Text-ID";
 $hcms_lang['label']['ro'] = "Eticheta";
 $hcms_lang['level']['ro'] = "Nivel";
+$hcms_lang['save-search']['ro'] = "Salvare căutare";
+$hcms_lang['saved-searches']['ro'] = "Căutări salvate";
 ?>

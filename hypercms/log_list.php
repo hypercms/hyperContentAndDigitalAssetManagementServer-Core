@@ -120,7 +120,7 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
   // load log file
   $event_array = file ($mgmt_config['abs_path_data']."log/".$logfile);
 
-  if ($event_array != false && sizeof ($event_array) >= 1)
+  if ($event_array != false && sizeof ($event_array) > 0)
   {
     foreach ($event_array as $event)
     {

@@ -222,7 +222,7 @@ if ($hcms_ext['video'] != "" && $hcms_ext['audio'] != "")
   $mediaheight = 0;
 
   // generate player code
-  $playercode = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_download", "cut", $mediawidth, $mediaheight, "");
+  $playercode = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_download", "hcms_mediaplayer_edit", $mediawidth, $mediaheight, "");
 }
 else
 {
@@ -535,7 +535,7 @@ function getplayertime ()
   // if we use projekktor we need to check for the state beforehand
   if (strtolower ($mgmt_config['videoplayer']) == "projekktor") { 
   ?>
-  var player = projekktor('hcms_mediaplayer_cut_video');
+  var player = projekktor('hcms_mediaplayer_edit');
   
   if (player.getState('PLAYING') || player.getState('PAUSED'))
   {
@@ -550,7 +550,7 @@ function getplayertime ()
   // VIDEO JS
   } else {
   ?>
-  var player = videojs("hcms_mediaplayer_cut");  
+  var player = videojs("hcms_mediaplayer_edit");  
   var playerseconds = player.currentTime();
   <?php 
   }

@@ -75,7 +75,6 @@ else $template = "";
 <!-- Google Maps -->
 <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php echo $mgmt_config['googlemaps_appkey']; ?>"></script>
 <script language="JavaScript">
-<!--
 function checkForm(select)
 {
   if (select.elements['search_expression'].value == "")
@@ -356,7 +355,6 @@ function cal_on_autoclose (cal)
 {
   cal_obj = null;
 } 
-//-->
 </script>
 
 </head>
@@ -434,7 +432,7 @@ function cal_on_autoclose (cal)
             </tr>
             <?php if ($cat == "comp") { ?>
             <tr id="row_searchformat" align="left" valign="top">
-              <td><?php echo getescapedtext ($hcms_lang['search-for-file-type'][$lang]); ?>:</td>
+              <td><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?>:</td>
               <td id="filetype_general">
                 <label><input type="checkbox" name="search_format[]" value="comp" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label><br />
                 <label><input type="checkbox" name="search_format[]" value="image" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label><br />
@@ -442,7 +440,14 @@ function cal_on_autoclose (cal)
                 <label><input type="checkbox" name="search_format[]" value="video" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label><br />
                 <label><input type="checkbox" name="search_format[]" value="audio" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label><br />
               </td>
-            </tr>          
+            </tr>
+            <tr id="row_searchfilesize" align="left" valign="top">
+              <td><?php echo getescapedtext ($hcms_lang['file-size'][$lang]); ?>:</td>
+              <td id="filetype_general">
+                <select name="search_filesize_operator"><option>&gt;=</option><option>&gt;</option><option>&lt;=</option><option>&lt;</option></select>
+                <input type="number" name="search_filesize" style="width:70px;" maxlength="10" min="1" max="9999999999" /> KB
+              </td>
+            </tr>   
             <?php } ?>
             <tr align="left" valign="top">
               <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?>:</td>
@@ -598,7 +603,7 @@ function cal_on_autoclose (cal)
             </tr>
             <?php if ($cat == "comp") { ?>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-for-file-type'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?>:</td>
               <td id="filetype_advanced">
                 <label><input type="checkbox" name="search_format[]" value="comp" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label><br />
                 <label><input type="checkbox" name="search_format[]" value="image" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label><br />
@@ -607,6 +612,13 @@ function cal_on_autoclose (cal)
                 <label><input type="checkbox" name="search_format[]" value="audio" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label><br />
               </td>
             </tr>
+            <tr align="left" valign="top">
+              <td><?php echo getescapedtext ($hcms_lang['file-size'][$lang]); ?>:</td>
+              <td id="filetype_general">
+                <select name="search_filesize_operator"><option>&gt;=</option><option>&gt;</option><option>&lt;=</option><option>&lt;</option></select>
+                <input type="number" name="search_filesize" style="width:70px;" maxlength="10" min="1" max="9999999999" /> KB
+              </td>
+            </tr> 
             <?php } ?>  
             <tr align="left" valign="middle"> 
               <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?>:</td>
@@ -689,7 +701,7 @@ function cal_on_autoclose (cal)
             </tr>
             <?php if ($cat == "comp") { ?>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-for-file-type'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?>:</td>
               <td id ="filetype_replace">
                 <label><input type="checkbox" name="search_format[]" value="comp" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label><br />
                 <label><input type="checkbox" name="search_format[]" value="image" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label><br />
@@ -786,6 +798,13 @@ function cal_on_autoclose (cal)
                 </div>
               </td>
             </tr>
+            <tr id="row_searchfilesize" align="left" valign="top">
+              <td><?php echo getescapedtext ($hcms_lang['file-size'][$lang]); ?>:</td>
+              <td id="filetype_general">
+                <select name="search_filesize_operator"><option>&gt;=</option><option>&gt;</option><option>&lt;=</option><option>&lt;</option></select>
+                <input type="number" name="search_filesize" style="width:70px;" maxlength="10" min="1" max="9999999999" /> KB
+              </td>
+            </tr> 
             <tr id="row_imagecolor" align="left" valign="top">
               <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['image-color'][$lang]); ?>:</td>
               <td>

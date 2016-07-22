@@ -7365,6 +7365,9 @@ function deleteuser ($site, $login, $user="sys")
         
         // remove checked out list file of user
         deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".dat", 0);
+        
+        // remove saved searches of user
+        deletefile ($mgmt_config['abs_path_data']."/log/", $login.".search.log", 0);
       }
       elseif (valid_publicationname ($site))
       {
@@ -16107,6 +16110,7 @@ function rewrite_homepage ($site, $rewrite_type="forward")
 
 function create_csv ($assoc_array, $filename="export.csv", $filepath="php://output", $delimiter=";", $enclosure='"', $charset="utf-8")
 {
+  // http header for file download
   if (!is_dir ($filepath))
   {
     ob_clean();
@@ -16118,30 +16122,34 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
     header('Content-Disposition: attachment;filename='.$filename);
   }
   
-  if (isset ($assoc_array['0']))
+  if (is_array ($assoc_array) && sizeof ($assoc_array) > 0)
   {
     $fp = fopen ($filepath, 'w');
     
     if ($fp)
     {
-      fputcsv ($fp, array_keys ($assoc_array['0']), $delimiter, $enclosure);
-      
+      // use first record for header titles
+      fputcsv ($fp, array_keys (reset ($assoc_array)), $delimiter, $enclosure);
+
       foreach ($assoc_array as $values)
       {
+        // write CSV record based on array holding all values
         fputcsv ($fp, $values, $delimiter, $enclosure);
       }
       
       fclose ($fp);
     }
     else return false;
+    
+    if (!is_dir ($filepath))
+    {
+      ob_flush ();
+      exit;
+    }
+    
+    return true;
   }
-  
-  if (!is_dir ($filepath))
-  {
-    ob_flush ();
-  }
-  
-  return true;
+  else return false;
 }
 
 // ---------------------------------------------- sendmessage ----------------------------------------------

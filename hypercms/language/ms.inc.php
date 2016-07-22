@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['ms'] = "Pilih hierarki";
 $hcms_lang['text-id']['ms'] = "Teks- ID";
 $hcms_lang['label']['ms'] = "Label";
 $hcms_lang['level']['ms'] = "Tahap";
+$hcms_lang['save-search']['ms'] = "Simpan carian";
+$hcms_lang['saved-searches']['ms'] = "Menyelamatkan carian";
 ?>

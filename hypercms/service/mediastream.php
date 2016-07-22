@@ -27,7 +27,7 @@ if ($wm != "")
 {
   // decrypt wrapper media string
   $media = hcms_decrypt ($wm);
-
+  
   // get publication
   if (substr_count ($media, "/") == 1) list ($site, $mediafile) = explode ("/", $media);
   
@@ -40,7 +40,7 @@ if ($wm != "")
       header ('HTTP/1.0 403 Forbidden', true, 403);
       exit;
     }
-    
+
     // media location
     if (is_file (getmedialocation ($site, $media, "abs_path_media").$media) || is_cloudobject (getmedialocation ($site, getobject($media), "abs_path_media").$site."/".getobject ($media)))
     {
@@ -52,7 +52,7 @@ if ($wm != "")
       $media = getobject ($media);
     }
     else $media_root = "";
-  
+
     // if media is given
     if (valid_locationname ($media_root) && valid_objectname ($media))
     {

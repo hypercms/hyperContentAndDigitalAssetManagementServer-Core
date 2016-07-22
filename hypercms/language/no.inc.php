@@ -1390,4 +1390,6 @@ $hcms_lang['select-hierarchy']['no'] = "Velg hierarki.";
 $hcms_lang['text-id']['no'] = "Tekst-ID";
 $hcms_lang['label']['no'] = "Etikett";
 $hcms_lang['level']['no'] = "Nivå";
+$hcms_lang['save-search']['no'] = "Lagre søk";
+$hcms_lang['saved-searches']['no'] = "Lagrede søk";
 ?>

@@ -1391,4 +1391,6 @@ $hcms_lang['select-hierarchy']['bg'] = "Изберете йерархия";
 $hcms_lang['text-id']['bg'] = "Текст-ID";
 $hcms_lang['label']['bg'] = "Етикет";
 $hcms_lang['level']['bg'] = "Ниво";
+$hcms_lang['save-search']['bg'] = "Запаметяване на търсене";
+$hcms_lang['saved-searches']['bg'] = "Запомня обиски";
 ?>
