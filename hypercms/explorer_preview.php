@@ -91,7 +91,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   {
     $mediaview = "preview_no_rendering";
     $mediafile = $site."/".$object_info['media'];
-    $mediaview = showmedia ($mediafile, $name, $mediaview, "", 260);
+    $mediaview = showmedia ($mediafile, $name, $mediaview, "", 290);
   }
   // page or component preview (no multimedia file)
   else

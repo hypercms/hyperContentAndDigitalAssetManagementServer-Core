@@ -1005,8 +1005,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $height = $thumb_size[1];
               $mediafile = $thumbfile;
             }
-            // generate a new image file if the new image size is greater than 150% of the width or height of the thumbnail
-            elseif (!empty ($mediaratio) && ($width > 0 && $thumb_size[0] * 1.5 < $width) && ($height > 0 && $thumb_size[1] * 1.5 < $height) && is_supported ($mgmt_imagepreview, $file_info['orig_ext']))
+            // generate a new image file if the new image size is greater than 180% of the width or height of the thumbnail
+            elseif (!empty ($mediaratio) && ($width > 0 && $thumb_size[0] * 1.8 < $width) && ($height > 0 && $thumb_size[1] * 1.8 < $height) && is_supported ($mgmt_imagepreview, $file_info['orig_ext']))
             {
               // define parameters for view-images
               $viewfolder = $mgmt_config['abs_path_temp'];
@@ -1223,8 +1223,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $mediaheight = $config['height'];
           $mediaratio = $config['width'] / $config['height'];
         }
+        
         // use default values
-        else
+        if ($mediawidth < 300 || $mediaheight < 60)
         {
           $mediawidth = 320;
           $mediaheight = 320;
@@ -1345,11 +1346,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $mediawidth = $config['width'];
           $mediaheight = $config['height'];
         }
+
         // use default values
-        else
+        if ($mediawidth < 300 || $mediaheight < 60)
         {
           $mediawidth = 320;
           $mediaheight = 240;
+          $mediaratio = $mediawidth / $mediaheight;
         }
 
         // set width and height of media file as file-parameter

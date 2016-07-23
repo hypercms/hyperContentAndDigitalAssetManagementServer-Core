@@ -1173,7 +1173,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       $mgmt_imageoptions['.jpg.jpeg']['original'] = "-f jpg";
       
     if (!array_key_exists ('thumbnail', $mgmt_imageoptions['.jpg.jpeg'])) 
-      $mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 180x180 -f jpg";
+      $mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 220x220 -f jpg";
       
     // Default gif options
     if (!array_key_exists ('.gif', $mgmt_imageoptions))

@@ -254,11 +254,11 @@ if (checktoken ($token, $user))
     }
     elseif ($folder != "" && is_dir ($location.$folder))
     {
-      $multiobject_array[0] = $location.$folder;
+      $multiobject_array[0] = $location_esc.$folder;
     }
     elseif ($page != "" && $page != ".folder" && is_file ($location.$page))
     {
-      $multiobject_array[0] = $location.$page;
+      $multiobject_array[0] = $location_esc.$page;
     }
   
     // get all text content/metadata as array

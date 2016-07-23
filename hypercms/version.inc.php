@@ -1758,8 +1758,18 @@ Release 07/2016
 - Bug fix: Default audio and video rendering settings of main configuration have not been applied in function createmedia
 - Bug fix: Template engine did not add %comp% as root for media files in form view causing the currently selected image not to be displayed in media_view
 - Bug fix: Function showshortext did not apply character set for a single line break
+
+Version 6.1.17
+Release 07/2016
+- Resized media viewer size in sidebar (plus 30 pixel in width)
+- Implementation of miniumum size for media (video and audio) player in function showmedia
+- Implementation of fixed sidebar width instead of percent
+- Changed the default thumbnail size frame to be 220 x 220 pixel (previous 180 x 180 pixel)
+- Correct size of audio player in explorer_liveview automatically if below size limits
+- Bug fix: Function create_csv did not verify the input array
+- Bug fix: control_objectlist_menu did not provide escaped path to function getmetadata_multiobjects
 */
 
 // current version
-$version = "Version 6.1.16";
+$version = "Version 6.1.17";
 ?>

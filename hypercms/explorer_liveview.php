@@ -110,6 +110,15 @@ if (!empty ($mediaview)) echo $mediaview;
 var mediawidth = document.getElementById('mediacontainer').offsetWidth;
 var mediaheight = document.getElementById('mediacontainer').offsetHeight;
 
+<?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) { ?>
+// correct size of adio player
+if (mediawidth < 300 || mediaheight < 60)
+{
+  mediawidth = 320;
+  mediaheight = 320;
+}
+<?php } ?>
+
 // screen width and height
 var screenwidth = <?php echo $screenwidth; ?>;
 var screenheight = <?php echo $screenheight; ?>;

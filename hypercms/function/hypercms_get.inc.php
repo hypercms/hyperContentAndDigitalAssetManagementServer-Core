@@ -1380,7 +1380,7 @@ function getmetadata_multiobjects ($multiobject_array, $user)
     $result = array();
     $text_ids = array();
     $intermediate = array();
-    
+
     // query for each object
     foreach ($multiobject_array as $multiobject)
     {

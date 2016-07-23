@@ -16110,20 +16110,20 @@ function rewrite_homepage ($site, $rewrite_type="forward")
 
 function create_csv ($assoc_array, $filename="export.csv", $filepath="php://output", $delimiter=";", $enclosure='"', $charset="utf-8")
 {
-  // http header for file download
-  if (!is_dir ($filepath))
-  {
-    ob_clean();
-    header('Pragma: public');
-    header('Expires: 0');
-    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-    header('Cache-Control: private', false);
-    header('Content-Type: text/csv; charset='.$charset);
-    header('Content-Disposition: attachment;filename='.$filename);
-  }
-  
   if (is_array ($assoc_array) && sizeof ($assoc_array) > 0)
   {
+    // http header for file download
+    if (!is_dir ($filepath))
+    {
+      ob_clean();
+      header('Pragma: public');
+      header('Expires: 0');
+      header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+      header('Cache-Control: private', false);
+      header('Content-Type: text/csv; charset='.$charset);
+      header('Content-Disposition: attachment;filename='.$filename);
+    }
+
     $fp = fopen ($filepath, 'w');
     
     if ($fp)
