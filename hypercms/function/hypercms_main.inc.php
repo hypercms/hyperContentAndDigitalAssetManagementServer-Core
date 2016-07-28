@@ -7366,6 +7366,12 @@ function deleteuser ($site, $login, $user="sys")
         // remove checked out list file of user
         deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".dat", 0);
         
+        // remove favorites file of user
+        deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".fav", 0);
+
+        // remove objectlist defintion file of user
+        deletefile ($mgmt_config['abs_path_data']."checkout/", $login.".objectlistcols.json", 0);
+
         // remove saved searches of user
         deletefile ($mgmt_config['abs_path_data']."/log/", $login.".search.log", 0);
       }
@@ -9648,6 +9654,7 @@ function createobject ($site, $location, $page, $template, $user)
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentorigin>", $contentorigin, "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentobjects>", $contentorigin."|", "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentuser>", $user, "", "");
+            if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentcreated>", $mgmt_config['today'], "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
             if ($page_box_xml != false) $page_box_xml = setcontent ($page_box_xml, "<hyperCMS>", "<contentstatus>", "active", "", "");
          
@@ -15288,7 +15295,8 @@ function loadbalancer ($type)
 // input: error messages array, name of log file without extension (optional)
 // output: true / false on error
 
-// description: adds new entries to log file
+// description:
+// Adds new entries to log file.
 // An error entry must be formed like:
 // date[YYYY-MM-DD hh:mm]|name of scipt file|error type: "error", "warning" or "information"|unique error code in script file|error message
 
@@ -15298,7 +15306,7 @@ function savelog ($error, $logfile="event")
          
   if (is_array ($error) && sizeof ($error) > 0 && $logfile != "")
   {  
-    // file name of event log
+    // file name of log
     $logfile = $logfile.".log";
     
     // replace newlines with tab space
@@ -15322,13 +15330,42 @@ function savelog ($error, $logfile="event")
   else return false;
 }
 
+// --------------------------------------- savelog -------------------------------------------
+// function: savelog()
+// input: name of log file without extension (optional), return_type [string,array] (optional)
+// output: true / false on error
+
+// description: 
+// Loads a log file an returns the data as string or array for all log records.
+
+function loadlog ($logfile="event", $return_type="array")
+{
+  global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
+         
+  if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".log"))
+  {  
+    // file name of log
+    $logfile = $logfile.".log";
+
+    if (strtolower ($return_type) == "string")
+    {
+      return loadfile ($mgmt_config['abs_path_data']."log/", $logfile);
+    }
+    else
+    {
+      return file ($mgmt_config['abs_path_data']."log/".$logfile);
+    }
+  }  
+  else return false;
+}
+
 // --------------------------------------- deletelog -------------------------------------------
 // function: deletelog()
 // input: logname (optional)
 // output: result array
 
 // description:
-// Deletes the log file
+// Deletes a log file.
 
 function deletelog ($logname="")
 {
@@ -15337,7 +15374,7 @@ function deletelog ($logname="")
   // set default language
   if ($lang == "") $lang = "en";
   
-  // file name of event log
+  // file name of log
   if ($logname != "") $logfile = $logname.".log";
   else $logfile = "event.log";
   

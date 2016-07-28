@@ -2547,7 +2547,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     {                  
                       if (@filesize ($location_temp.$tmpfile2) > 10) 
                       {
-                        if (@is_file ($location_dest.$newfile)) @unlink ($location_dest.$newfile);
+                        if (is_file ($location_dest.$newfile)) @unlink ($location_dest.$newfile);
                         @rename ($location_temp.$tmpfile2, $location_dest.$newfile);
                       }
                       else 
@@ -2559,7 +2559,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // rename temp file to new file
                   else
                   {
-                    if (@is_file ($location_dest.$newfile)) @unlink ($location_dest.$newfile);
+                    if (is_file ($location_dest.$newfile)) @unlink ($location_dest.$newfile);
                     @rename ($location_temp.$tmpfile, $location_dest.$newfile);
                   }
                 }
@@ -2599,9 +2599,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if ($type == "origthumb" || $type == "original") $config_extension = ".config.orig";
                   else $config_extension = ".config.".$format_set;
                 }
-  
+
                 // capture screen from video to use as thumbnail image
-                if ($type == "origthumb" || $type == "original") createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
+                if (($type == "origthumb" || $type == "original") && is_video ($file_ext)) createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
      
                 // new video info (only if it is not a thumbnail file of the original file)
                 if ($type == "original") $videoinfo = getvideoinfo ($location_dest.$newfile);

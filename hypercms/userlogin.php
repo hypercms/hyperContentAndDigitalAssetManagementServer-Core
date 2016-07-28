@@ -321,6 +321,10 @@ if (checkuserip (getuserip ()) == true)
     setsession ('hcms_keyserver', $login_result['keyserver']);
     // register current timestamp in session
     setsession ('hcms_temp_sessiontime', time());
+    // register objectlist column defintions
+    setsession ('hcms_objectlistcols', $login_result['objectlistcols']);
+    // register template label defintions
+    setsession ('hcms_labels', $login_result['labels']);
     
     // set object linking information in session
     if (!empty ($login_result['hcms_linking']) && is_array ($login_result['hcms_linking']))

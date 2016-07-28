@@ -28,21 +28,21 @@ function link_db_restore ($site="")
     $loc = $mgmt_config['abs_path_data']."content/";
     
     // 1 st level (content container blocks)
-    $blockdir = opendir ($loc);
+    $blockdir = scandir ($loc);
     
     $i = 0;    
     $time_1 = time();
     $link_db_entry = null;
 
     // browse all containers in content repository
-    while ($block = readdir ($blockdir))
+    foreach ($blockdir as $block)
     {
       if (is_dir ($loc.$block) && $block != "." && $block != ".." && is_numeric ($block))
       {
         // 2nd level (specific content container folder)
-        $contdir = opendir ($loc.$block);
+        $contdir = scandir ($loc.$block);
         
-        while ($container_id = readdir ($contdir))
+        foreach ($contdir as $container_id)
         {
           if (is_dir ($loc.$block."/".$container_id))
           {
@@ -149,12 +149,8 @@ function link_db_restore ($site="")
             }
           }
         }
-        
-        closedir ($contdir);
       }
     }
-    
-    closedir ($blockdir);
     
     $time_2 = time();    
     $duration = $time_2 - $time_1;    

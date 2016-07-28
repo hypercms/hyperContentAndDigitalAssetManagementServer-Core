@@ -542,7 +542,7 @@ function hcms_setObjectcontext(site, cat, location, page, pagename, filetype, me
   {
     // hide and reset context menu
     hcms_hideContextmenu();
-  
+
     // set values 
     var contexttype;
     
@@ -552,6 +552,10 @@ function hcms_setObjectcontext(site, cat, location, page, pagename, filetype, me
     else contexttype = "none";
     
     var contextmenu_form = document.forms['contextmenu_object'];
+    
+    // enable/disable display of context menus
+    contextmenu_form.style.display = 'block';    
+    if (document.forms['contextmenu_column']) document.forms['contextmenu_column'].style.display = 'none';
 
     contextmenu_form.elements['contexttype'].value = contexttype;
     contextmenu_form.elements['xpos'].value = tempX;
@@ -566,6 +570,23 @@ function hcms_setObjectcontext(site, cat, location, page, pagename, filetype, me
     contextmenu_form.elements['folder'].value = folder;   
     if (eval (contextmenu_form.elements['folder_id'])) contextmenu_form.elements['folder_id'].value = folder_id;
     contextmenu_form.elements['token'].value = token;
+  }
+  
+  return true;
+}
+
+function hcms_setColumncontext()
+{
+  if (eval (document.forms['contextmenu_column']))
+  {
+    // hide and reset context menu
+    hcms_hideContextmenu();
+
+    var contextmenu_form = document.forms['contextmenu_column'];
+    
+    // enable/disable display of context menus
+    contextmenu_form.style.display = 'block';    
+    if (document.forms['contextmenu_object']) document.forms['contextmenu_object'].style.display = 'none';
   }
   
   return true;

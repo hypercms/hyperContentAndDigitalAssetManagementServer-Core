@@ -183,6 +183,9 @@ $mgmt_config['explorerview'] = "detail";
 // How many items (folders and objects) should be displayed in the explorer object list initally
 $mgmt_config['explorer_list_maxitems'] = 500;
 
+// Should metadata on mouse over be displayed in the explorer object list if the sidebar is not displayed
+$mgmt_config['explorer_list_metadata'] = false;
+
 // Define if sidebar for object preview should be displayed (true) by default or not (false)
 $mgmt_config['sidebar'] = true;
 
@@ -596,7 +599,7 @@ $mgmt_docconvert['.odp'] = array('.pdf', '.ppt');
 $mgmt_imagepreview['.ai.aai.act.art.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.txt.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
 
 // If an image file is uploaded hyperCMS will try to generate a thumbnail file for preview:
-$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 180x180 -f jpg";
+$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 220x220 -f jpg";
 
 // Define the supported target formats for image editing:
 $mgmt_imageoptions['.jpg.jpeg']['original'] = "-f jpg";
@@ -728,11 +731,11 @@ $mgmt_config['dropbox_appkey'] = "";
 // Google Maps integration
 $mgmt_config['googlemaps_appkey'] = "";
 
-// -------------------------------------- LDAP Connectivity -------------------------------------------
+// --------------------------------- Authentification Connectivity -------------------------------------
 
-// If you are using LDAP, you can specify the ldap_connect.php file where you can connect to an LDAP directory
-// to verify users and update user settings.
-// $ldap_connect = "";
+// If you are using LDAP, Active Directory, or any other user directory, you can specify the file name without extension to be used for the connector.
+// For instance specify the file name "ldap_connect" located in data/connect/ in order to connect to an LDAP directory and to verify users and also update user settings.
+// $mgmt_config['authconnect'] = "ldap_connect";
 
 // ----------------------------------- File System Permissions -----------------------------------------
 

@@ -16,16 +16,33 @@
 
 function setsession ($variable, $content="", $write=false)
 {
-  if ($variable != "" && !is_array ($variable) && session_id() != "")
+  if ($variable != "" && session_id() != "")
   {
-    // define variable name (prefix hcms_ is required)
-    if (strpos ("_".$variable, "hcms_") == 0) $variable = "hcms_".$variable;
-    // set value for session variable
-    $_SESSION[$variable] = $content;
-    
-    // write session data for load balancer
-    if ($write == true) return writesessiondata ();
-    else return true;    
+    if (is_string ($variable))
+    {
+      // define variable name (prefix hcms_ is required)
+      if (strpos ("_".$variable, "hcms_") == 0) $variable = "hcms_".$variable;
+      // set value for session variable
+      $_SESSION[$variable] = $content;
+      
+      // write session data for load balancer
+      if ($write == true) return writesessiondata ();
+      else return true;
+    }
+    elseif (is_array ($variable))
+    {
+      $result = true;
+      
+      foreach ($variable as $key => &$value)
+      {
+        $value = setsession ($value, $content[$key], $write);
+        if ($value == false) $result = false;
+      }
+      
+      if ($result == true) return $variable;
+      else return false;
+    }
+    else return false;
   }
   else return false;
 }

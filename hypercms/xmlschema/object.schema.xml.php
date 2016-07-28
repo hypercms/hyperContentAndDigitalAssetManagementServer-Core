@@ -6,6 +6,7 @@
 <contentorigin></contentorigin>
 <contentobjects></contentobjects>
 <contentuser></contentuser>
+<contentcreated></contentcreated>
 <contentdate></contentdate>
 <contentpublished></contentpublished>
 <contentstatus></contentstatus>

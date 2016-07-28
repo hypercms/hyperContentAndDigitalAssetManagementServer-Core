@@ -69,4 +69,8 @@ $hcms_themename = getsession ("hcms_themename");
 $hcms_themelocation = getsession ("hcms_themelocation");
 // filter options for object list
 $objectfilter = getsession ("hcms_objectfilter");
+// definition of objectlist columns
+$objectlistcols = getsession ("hcms_objectlistcols");
+// definition of labels from templates
+$labels = getsession ("hcms_labels");
 ?>

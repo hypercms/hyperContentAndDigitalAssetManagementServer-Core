@@ -233,7 +233,7 @@ class hcms_db
   // Returns the resultArray or NULL
   public function getResultRow ($num=1, $rowNumber=NULL)
   {
-    if ($this->_result[$num] == false)
+    if (empty ($this->_result[$num]) || $this->_result[$num] == false)
     {
        return NULL;
     }
@@ -388,8 +388,8 @@ function rdbms_createobject ($container_id, $object, $template, $container, $use
     }
     elseif (!empty ($container) && !empty ($user))
     {
-      $sql = 'INSERT INTO container (id, container, date, user) ';
-      $sql .= 'VALUES ('.$container_id.', "'.$container.'", "'.$date.'", "'.$user.'")';
+      $sql = 'INSERT INTO container (id, container, createdate, date, user) ';
+      $sql .= 'VALUES ('.$container_id.', "'.$container.'", "'.$date.'", "'.$date.'", "'.$user.'")';
     }
     elseif (!empty ($user))
     {
@@ -922,7 +922,7 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
 // output: true / false
 
 // description:
-// Saves all taxonomy keywords of a publication in database.
+// Saves all taxonomy keywords of a publication in the database.
 
 function rdbms_setpublicationtaxonomy ($site, $recreate=false)
 {
@@ -975,6 +975,13 @@ function rdbms_setpublicationtaxonomy ($site, $recreate=false)
 
 // ----------------------------------------------- set template -------------------------------------------------
 
+// function: rdbms_settemplate()
+// input: object path, template file name
+// output: true / false
+
+// description:
+// Saves the template for an object in the database.
+
 function rdbms_settemplate ($object, $template)
 {
   global $mgmt_config;
@@ -1007,6 +1014,13 @@ function rdbms_settemplate ($object, $template)
 } 
 
 // ----------------------------------------------- set media attributes -------------------------------------------------
+
+// function: rdbms_setmedia()
+// input: container ID, file size in KB (optional), file type (optional), width in pixel (optional), heigth in pixel (optional), red color (optional), green color (optional), blue color (optional), colorkey (optional), image type (optional), MD5 hash (optional)
+// output: true / false
+
+// description:
+// Saves media attributes in the database.
 
 function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="", $red="", $green="", $blue="", $colorkey="", $imagetype="", $md5_hash="")
 {
@@ -1078,9 +1092,16 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
     return true;
   }
   else return false;
-} 
+}
 
 // ------------------------------------------------ get media attributes -------------------------------------------------
+
+// function: rdbms_getmedia()
+// input: container ID, extended media object information [true,false] (optional)
+// output: result array with media object details / false on error
+
+// description:
+// Reads all media object details.
 
 function rdbms_getmedia ($container_id, $extended=false)
 {
@@ -1091,11 +1112,11 @@ function rdbms_getmedia ($container_id, $extended=false)
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     // clean input
-    $container_id = $db->escape_string ($container_id);  
+    $container_id = intval ($container_id);  
     
     // get media info
     if ($extended == true) $sql = 'SELECT med.*, cnt.createdate, cnt.date, cnt.latitude, cnt.longitude, cnt.user FROM media AS med, container AS cnt WHERE med.id=cnt.id AND med.id='.intval($container_id).'';   
-    else $sql = 'SELECT * FROM media WHERE id="'.intval($container_id).'"';   
+    else $sql = 'SELECT * FROM media WHERE id="'.$container_id.'"';   
 
     $errcode = "50067";
     $done = $db->query ($sql, $errcode, $mgmt_config['today']);

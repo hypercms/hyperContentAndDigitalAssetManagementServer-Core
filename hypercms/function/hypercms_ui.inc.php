@@ -1225,7 +1225,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
         
         // use default values
-        if ($mediawidth < 300 || $mediaheight < 60)
+        if (empty ($mediawidth) || $mediawidth < 300 || empty ($mediaheight) || $mediaheight < 60)
         {
           $mediawidth = 320;
           $mediaheight = 320;
@@ -1348,7 +1348,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
 
         // use default values
-        if ($mediawidth < 300 || $mediaheight < 60)
+        if (empty ($mediawidth) || $mediawidth < 300 || empty ($mediaheight) || $mediaheight < 60)
         {
           $mediawidth = 320;
           $mediaheight = 240;

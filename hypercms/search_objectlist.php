@@ -40,6 +40,8 @@ $maxhits = getrequest ("maxhits", "numeric");
 $search_save = getrequest ("search_save");
 $search_execute = getrequest ("search_execute");
 
+$cat = "";
+
 // extract publication and template name
 if (substr_count ($template, "/") == 1) list ($site, $template) = explode ("/", $template);
 
@@ -68,9 +70,77 @@ else $search_imagecolor = "";
 
 $search_imagetype = getrequest ("search_imagetype");
 
-// get publication and category
-if ($action != "user_files" && $action != "base_search") $site = getpublication ($search_dir);
-$cat = getcategory ($site, $search_dir);
+// try to get publication and category
+if ($site == "")
+{
+  if ($search_dir != "")
+  {
+    $site = getpublication ($search_dir);
+    $cat = getcategory ($site, $search_dir);
+  }
+  elseif (strpos ("_".$search_expression, "%taxonomy%/") > 0)
+  {
+    list ($domain, $site, $rest) = explode ("/", $search_expression);
+  }
+  elseif (strpos ("_".$search_expression, "%hierarchy%/") > 0)
+  {
+    list ($domain, $site, $rest) = explode ("/", $search_expression);
+  }
+}
+
+// define reduced array for labels and objectlistcols 
+if ($site != "" && $cat != "")
+{
+  // reduce labels
+  if (!empty ($labels[$site][$cat])) $labels_reduced = $labels[$site][$cat];
+  
+  // reduce objectlistcols
+  if (!empty ($objectlistcols[$site][$cat])) $objectlistcols_reduced = $objectlistcols[$site][$cat];
+}
+elseif ($site != "")
+{
+  // reduce labels
+  if (!empty ($labels[$site]['page']) && !empty ($labels[$site]['comp'])) $labels_reduced = array_merge ($labels[$site]['page'], $labels[$site]['comp']);
+  elseif (!empty ($labels[$site]['page'])) $labels_reduced = $labels[$site]['page'];
+  elseif (!empty ($labels[$site]['comp'])) $labels_reduced = $labels[$site]['comp'];
+  
+  // reduce objectlistcols
+  if (!empty ($objectlistcols[$site]['page']) && !empty ($objectlistcols[$site]['comp'])) $objectlistcols_reduced = array_merge ($objectlistcols[$site]['page'], $objectlistcols[$site]['comp']);
+  elseif (!empty ($objectlistcols[$site]['page'])) $objectlistcols_reduced = $objectlistcols[$site]['page'];
+  elseif (!empty ($objectlistcols[$site]['comp'])) $objectlistcols_reduced = $objectlistcols[$site]['comp'];
+}
+else
+{
+  // reduce labels
+  if (is_array ($labels) && sizeof ($labels) > 0)
+  {
+    foreach ($labels as $temp_array1)
+    {
+      foreach ($temp_array1 as $temp_array2)
+      {
+        foreach ($temp_array2 as $text_id => $label)
+        {
+          $labels_reduced[$text_id] = $label;
+        }
+      }
+    }
+  }
+  
+  // reduce objectlistcols
+  if (is_array ($objectlistcols) && sizeof ($objectlistcols) > 0)
+  {
+    foreach ($objectlistcols as $temp_array1)
+    {
+      foreach ($temp_array1 as $temp_array2)
+      {
+        foreach ($temp_array2 as $text_id => $active)
+        {
+          $objectlistcols_reduced[$text_id] = $active;
+        }
+      }
+    }
+  }
+}
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -303,15 +373,21 @@ if ($object_array != false && @sizeof ($object_array) > 0)
           // get folder name
           $folder = getobject ($objectpath);
           // get folder name
-          $item_info = getfileinfo ($item_site, $location.$folder."/.folder", $item_cat);
-          $folder_name = $item_info['name'];
+          $file_info = getfileinfo ($item_site, $location.$folder."/.folder", $item_cat);
+          $folder_name = $file_info['name'];
           
           // check access permission
           $ownergroup = accesspermission ($item_site, $location.$folder."/", $item_cat);
           $setlocalpermission = setlocalpermission ($item_site, $ownergroup, $item_cat);
           
           if ($ownergroup != false && $setlocalpermission['root'] == 1 && valid_locationname ($location) && valid_objectname ($folder) && is_dir ($location.$folder))
-          {                  
+          {
+            $metadata = "";
+            $file_size = "";
+            $file_created = "";
+            $file_modified = "";
+            $file_owner = "";
+              
             // read file
             $objectdata = loadfile ($location.$folder."/", ".folder");
             
@@ -330,10 +406,20 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                 else $usedby = "";          
               }
               
+              // get metadata of container
+              $container_info = getmetadata_container ($container_id, array_keys ($objectlistcols_reduced));
+              
+              if (is_array ($container_info))
+              {  
+                if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
+                if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+                if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
+              }
+              
               // link for copy & paste of download links
               if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
               {
-                $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"hash\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
+                $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"hash\" data-href=\"".createdownloadlink($item_site, $location.$folder."/", ".folder", $item_cat)."\">";
                 $dlink_end = "</a>";
               }
               else
@@ -343,8 +429,15 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               }
             }
             
+            // fallback for date modified
+            if (empty ($file_size))
+            {
+              // get file time
+              $file_modified = date ("Y-m-d H:i", @filemtime ($location.$folder));
+            }
+            
             // listview - view option for locked multimedia objects
-            if ($item_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
+            if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
             else $class_image = "class=\"hcmsIconList\"";            
             
             // refresh sidebar
@@ -356,28 +449,80 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             $openFolder = "onDblClick=\"parent.location='frameset_objectlist.php?site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc.$folder)."/&token=".$token."';\" ";
             // set context
             $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '.folder', '".$folder_name."', 'Folder', '', '".$folder."', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
-            
-            $style = "style=\"display:block;\" ";
-            
+
             // listview - view option for locked folders
             if ($usedby != "")
             {
-              $item_info['icon'] = "folderlock.gif";
-              $item_info['icon_large'] = "folderlock.png";
-            }             
+              $file_info['icon'] = "folderlock.gif";
+              $file_info['icon_large'] = "folderlock.png";
+            }
             
+            // metadata
+            $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".$file_modified." \r\n".$metadata;             
+
             $listview .= "
                          <tr id=g".$items_row." ".$selectclick." style=\"cursor:pointer\" align=\"left\">
-                           <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
+                           <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                              <input id=\"objectpath\" type=hidden value=\"".$location_esc.$folder."\">
-                             <div ".$hcms_setObjectcontext." ".$style." ".$openFolder." title=\"".$folder_name."\">
-                               <img src=\"".getthemelocation()."img/".$item_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".$dlink_start.$folder_name.$dlink_end."&nbsp;
+                             <div ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" style=\"display:block; padding-left:5px; padding-right:5px;\">
+                               <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" /> ".$dlink_start.$folder_name.$dlink_end."
                              </div>
                             </td>";
-            if (!$is_mobile) $listview .= "
-                            <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:250px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." ".$style." title=\"".$item_location."\">&nbsp;".$item_location."</span></td>
-                            <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".@date ("Y-m-d H:i", @filemtime ($location.$folder))."</span></td>
-                            <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$item_site."</span></td>\n";
+
+            if (!$is_mobile)
+            {
+              $listview .= "
+                            <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; padding-left:5px; padding-right:5px;\">".$item_location."</div></td>";
+                   
+              if (is_array ($objectlistcols_reduced))
+              {
+                $i = 2;
+                
+                foreach ($objectlistcols_reduced as $key => $active)
+                {
+                  if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:115px;";
+                  else $style_td = "";
+                  
+                  $style_div = "";
+                  
+                  if ($active == 1)
+                  {
+                    if ($key == 'createdate')
+                    {
+                      $title = $file_created;
+                    }
+                    elseif ($key == 'modifieddate')
+                    {
+                      $title = $file_modified;
+                    }
+                    elseif ($key == 'filesize')
+                    {
+                      $title = "";
+                      $style_div = "text-align:right;";
+                    }
+                    elseif ($key == 'type')
+                    {
+                      $title = getescapedtext ($hcms_lang['folder'][$lang]);
+                    }
+                    elseif ($key == 'owner')
+                    {
+                      $title = $file_owner;
+                    }
+                    else
+                    {
+                      if (!empty ($container_info[$key])) $title = $container_info[$key];
+                      else $title = "";
+                    }
+                    
+                    $listview .= "
+                            <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; padding-left:5px; padding-right:5px; ".$style_div."\">".$title."</div></td>";
+                    
+                    $i++;
+                  }
+                }
+              }
+            }
+            
             $listview .= "
                          </tr>";
         
@@ -385,11 +530,12 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                             <td id=t".$items_row." style=\"width:".$cell_width."; height:180px; text-align:center; vertical-align:bottom;\">
                               <div ".$selectclick." ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer; display:block;\">".
                                 $dlink_start."
-                                  <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$item_info['icon_large']."\" style=\"border:0;\" /></div>
+                                  <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" style=\"border:0;\" /></div>
                                   ".showshorttext($folder_name, 18, true)."
                                 ".$dlink_end."
                               </div>
                             </td>";
+                            
             $items_row++;
           }
         }
@@ -417,27 +563,8 @@ if ($object_array != false && @sizeof ($object_array) > 0)
           // get object name
           $object = getobject ($objectpath);  
           $object = correctfile ($location, $object, $user); 
-          $item_info = getfileinfo ($item_site, $location.$object, $item_cat);
-          $object_name = $item_info['name'];
-          
-          // read file
-          $objectdata = loadfile ($location, $object);
-          
-          if ($objectdata != false)
-          {
-            // get name of content file and load content container
-            $contentfile = getfilename ($objectdata, "content");
-            $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
-                  
-            // read meta data of media file
-            if ($contentfile != false)
-            {
-              $result = getcontainername ($contentfile);
-              
-              if ($result['user'] != "") $usedby = $result['user'];
-              else $usedby = "";          
-            }
-          }            
+          $file_info = getfileinfo ($item_site, $location.$object, $item_cat);
+          $object_name = $file_info['name'];
 
           // check access permission
           $ownergroup = accesspermission ($item_site, $location, $item_cat);
@@ -446,86 +573,107 @@ if ($object_array != false && @sizeof ($object_array) > 0)
           if ($ownergroup != false && $setlocalpermission['root'] == 1 && valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object))
           {
             $metadata = "";
+            $file_size = "";
+            $file_created = "";
+            $file_modified = "";
+            $file_owner = "";
                     
             // page
-            if ($item_info['type'] == "Page") $item_type = getescapedtext ($hcms_lang['object-page'][$lang]);
+            if ($file_info['type'] == "Page") $file_type = getescapedtext ($hcms_lang['object-page'][$lang]);
             // component
-            elseif ($item_info['type'] == "Component") $item_type = getescapedtext ($hcms_lang['object-component'][$lang]);    
+            elseif ($file_info['type'] == "Component") $file_type = getescapedtext ($hcms_lang['object-component'][$lang]);    
             // multimedia object 
-            else $item_type = getescapedtext ($hcms_lang['file'][$lang])." (".$item_info['type'].")";
+            else $file_type = getescapedtext ($hcms_lang['file'][$lang])." (".$file_info['type'].")";
 
-            // get name of media file
-            $mediafile = getfilename ($objectdata, "media");
-
-            if ($mediafile != false)
+            // read file
+            $objectdata = loadfile ($location, $object);
+            
+            if ($objectdata != false)
             {
-              // location of file
-              $mediadir = getmedialocation ($item_site, $mediafile, "abs_path_media");
-              
-              // get file size and time
-              if ($mgmt_config['db_connect_rdbms'] != "")
+              // get name of content file and load content container
+              $contentfile = getfilename ($objectdata, "content");
+              $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
+                    
+              // get user of locked container
+              if ($contentfile != false)
               {
-                $media_info = rdbms_getmedia ($container_id, true);
-                $file_size = $media_info['filesize'];
-                $file_size = number_format ($file_size, 0, "", ".");
+                $result = getcontainername ($contentfile);
                 
-                $file_time = date ("Y-m-d H:i", strtotime ($media_info['date']));
+                if ($result['user'] != "") $usedby = $result['user'];
+                else $usedby = "";          
+              } 
+              
+              // get metadata of container
+              $container_info = getmetadata_container ($container_id, array_keys ($objectlistcols_reduced));
+    
+              if (is_array ($container_info))
+              { 
+                if (!empty ($container_info['filesize'])) $file_size = number_format ($container_info['filesize'], 0, "", ".");
+                if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
+                if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+                if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
               }
-              elseif (is_file ($mediadir.$site."/".$mediafile))
+
+              // get name of media file
+              $mediafile = getfilename ($objectdata, "media");
+  
+              if ($mediafile != false)
               {
-                $file_size = round (@filesize ($mediadir.$item_site."/".$mediafile) / 1024);
+                // location of file
+                $mediadir = getmedialocation ($item_site, $mediafile, "abs_path_media");
+                
+                // fallback for file size and date modified
+                if (empty ($file_size) && is_file ($mediadir.$item_site."/".$mediafile))
+                {
+                  $file_size = round (@filesize ($mediadir.$item_site."/".$mediafile) / 1024);
+                  if ($file_size == 0) $file_size = 1;
+                  $file_size = number_format ($file_size, 0, "", ".");
+                  
+                  $file_modified = date ("Y-m-d H:i", @filemtime ($mediadir.$item_site."/".$mediafile));               
+                }
+                
+                // media file info
+                $media_info = getfileinfo ($item_site, $mediafile, $item_cat);
+                
+                // get metadata for media file
+                if (!empty ($mgmt_config['explorer_list_metadata']) && !$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
+                
+                // link for copy & paste of download links
+                if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
+                {
+                  $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"hash\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
+                  $dlink_end = "</a>";
+                }
+                else
+                {
+                  $dlink_start = "";
+                  $dlink_end = "";
+                }
+              }    
+              // object without media file
+              else
+              {
+                // get file size
+                $file_size = round (@filesize ($location.$object) / 1024);
                 if ($file_size == 0) $file_size = 1;
                 $file_size = number_format ($file_size, 0, "", ".");
                 
-                $file_time = date ("Y-m-d H:i", @filemtime ($mediadir.$item_site."/".$mediafile));               
+                // get file time
+                $file_modified = date ("Y-m-d H:i", @filemtime ($location.$object));
+                
+                // link for copy & paste of download links
+                if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
+                {
+                  $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"hash\" data-href=\"".$mgmt_config['url_path_cms']."?wl=".$hash."\">";
+                  $dlink_end = "</a>";
+                }
+                else
+                {
+                  $dlink_start = "";
+                  $dlink_end = "";
+                }
               }
-              else
-              {
-                $file_size = "-";
-                $file_time = "-";
-              }
-              
-              // media file info
-              $media_info = getfileinfo ($item_site, $mediafile, $item_cat);
-              
-              // read meta data of media file
-              if (!$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
-              
-              // link for copy & paste of download links
-              if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
-              {
-                $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"hash\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
-                $dlink_end = "</a>";
-              }
-              else
-              {
-                $dlink_start = "";
-                $dlink_end = "";
-              }
-            }    
-            // object without media file
-            else
-            {
-              // get file size
-              $file_size = round (@filesize ($location.$object) / 1024);
-              if ($file_size == 0) $file_size = 1;
-              $file_size = number_format ($file_size, 0, "", ".");
-              
-              // get file time
-              $file_time = date ("Y-m-d H:i", @filemtime ($location.$object));
-              
-              // link for copy & paste of download links
-              if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
-              {
-                $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"hash\" data-href=\"".$mgmt_config['url_path_cms']."?wl=".$hash."\">";
-                $dlink_end = "</a>";
-              }
-              else
-              {
-                $dlink_start = "";
-                $dlink_end = "";
-              }
-            }               
+            }
         
             // open on double click
             $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\"";
@@ -535,38 +683,85 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             // onclick for marking objects
             $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
             // set context
-            $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '".$object."', '".$object_name."', '".$item_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
-            
-            $style = "style=\"display:block;\" ";
+            $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '".$object."', '".$object_name."', '".$file_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
             // metadata
-            $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".$file_time." \r\n".getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n".$metadata;
+            $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".$file_modified." \r\n".getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n".$metadata;
             
             // listview - view option for un/published objects
-            if ($item_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
+            if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
             else $class_image = "class=\"hcmsIconList\"";
             
             // listview - view option for locked objects
             if ($usedby != "")
             {
-              $item_info['icon'] = "filelock.gif";
-              $item_info['icon_large'] = "filelock.png";
+              $file_info['icon'] = "filelock.gif";
+              $file_info['icon_large'] = "filelock.png";
             }         
             
             $listview .= "
                          <tr id=\"g".$items_row."\" style=\"text-align:left; cursor:pointer;\" ".$selectclick.">
-                           <td id=\"h".$items_row."_0\"class=\"hcmsCol1\" style=\"width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
+                           <td id=\"h".$items_row."_0\"class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                              <input id=\"objectpath\" type=hidden value=\"".$location_esc.$object."\" />
-                             <div ".$hcms_setObjectcontext." ".$style." ".$openObject." title=\"".$metadata."\">
-                               <img src=\"".getthemelocation()."img/".$item_info['icon']."\" align=\"absmiddle\" ".$class_image." />&nbsp;".$dlink_start.$object_name.$dlink_end."&nbsp;
+                             <div ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"display:block; padding-left:5px; padding-right:5px;\">
+                               <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" ".$class_image." /> ".$dlink_start.$object_name.$dlink_end."
                              </div>
                            </td>";
-                           
-            if (!$is_mobile) $listview .= "
-                           <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:250px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." ".$style." title=\"".$item_location."\">&nbsp;&nbsp;".$item_location."</span></td>
-                           <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$file_time."</span></td>
-                           <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." ".$style.">&nbsp;&nbsp;".$item_site."</span></td>";
-                           
+            
+            if (!$is_mobile)
+            {
+              $listview .= "
+                           <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; padding-left:5px; padding-right:5px;\">".$item_location."</div></td>";
+
+              if (is_array ($objectlistcols_reduced))
+              {
+                $i = 2;
+                
+                foreach ($objectlistcols_reduced as $key => $active)
+                {
+                  if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:115px;";
+                  else $style_td = "";
+                
+                  if ($active == 1)
+                  {
+                    $style_div = "";
+                    
+                    if ($key == 'createdate')
+                    {
+                      $title = $file_created;
+                    }
+                    elseif ($key == 'modifieddate')
+                    {
+                      $title = $file_modified;
+                    }
+                    elseif ($key == 'filesize')
+                    {
+                      $title = $file_size;
+                      $style_div = "text-align:right;";
+                    }
+                    elseif ($key == 'type')
+                    {
+                      $title = $file_type;
+                    }
+                    elseif ($key == 'owner')
+                    {
+                      $title = $file_owner;
+                    }
+                    else
+                    {
+                      if (!empty ($container_info[$key])) $title = $container_info[$key];
+                      else $title = "";
+                    }
+                    
+                    $listview .= "
+                            <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; padding-left:5px; padding-right:5px; ".$style_div."\">".$title."</div></td>";
+                  
+                    $i++;
+                  }
+                }
+              }
+            }
+               
             $listview .= "
                          </tr>";  
 
@@ -606,7 +801,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                 }
                           
                 // galleryview - view option for locked multimedia objects
-                if ($item_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
+                if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
                 else $class_image = "class=\"hcmsImageItem\"";               
                 
                 // if thumbnail is smaller than defined thumbnail size
@@ -627,20 +822,20 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               else
               {
                 // galleryview - view option for locked multimedia objects
-                if ($item_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
+                if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
                 else $class_image = "";
                         
-                $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$item_info['icon_large']."\" style=\"border:0;\" ".$class_image." /></div>";
+                $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" style=\"border:0;\" ".$class_image." /></div>";
               }           
             }
             // display file icon for non multimedia objects 
             else
             {
               // galleryview - view option for locked multimedia objects
-              if ($item_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
+              if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
               else $class_image = "";
                       
-              $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$item_info['icon_large']."\" style=\"border:0;\" ".$class_image." /></div>";
+              $thumbnail = "<div id=\"w".$items_row."\" class=\"hcmsThumbnail".$ratio.$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" style=\"border:0;\" ".$class_image." /></div>";
             }
             
             // if linking is used display download buttons, display edit button for mobile edition
@@ -668,7 +863,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             if (!empty ($hcms_assetbrowser) && $mediafile != "" && $setlocalpermission['root'] == 1)
             {   
               $linking_buttons .= "
-              <button class=\"hcmsButtonDownload\" style=\"width:154px;\" onClick=\"parent.parent.returnMedia('".url_encode($location_esc.$object)."', '".$object_name."', '".$imgwidth."', '".$imgheight."', '".$file_time."', '".$file_size."');\">".getescapedtext ($hcms_lang['select'][$lang])."</button>";
+              <button class=\"hcmsButtonDownload\" style=\"width:154px;\" onClick=\"parent.parent.returnMedia('".url_encode($location_esc.$object)."', '".$object_name."', '".$imgwidth."', '".$imgheight."', '".$file_modified."', '".$file_size."');\">".getescapedtext ($hcms_lang['select'][$lang])."</button>";
             }
             
             if ($linking_buttons != "")
@@ -716,7 +911,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript" src="javascript/chat.js"></script>
 <script language="JavaScript">
-<!--
+
 // context menu
 var contextenable = 1;
 
@@ -798,28 +993,34 @@ function sendtochat (text)
   }
 }
 
-function resizecols()
+function resizecols ()
 {
-  // get width of table header columns
-  var c1 = $('#c1').width();
-  var c2 = $('#c2').width();
-  var c3 = $('#c3').width();
-  var c4 = $('#c4').width();
+  var colwidth;
 
-  // set width for table columns
-  $('.hcmsCol1').width(c1);
-  $('.hcmsCol2').width(c2);
-  $('.hcmsCol3').width(c3);
-  $('.hcmsCol4').width(c4);
+  for (i = 0; i < <?php if (is_array ($objectlistcols_reduced)) echo sizeof ($objectlistcols_reduced) + 1; else echo 1;  ?>; i++)
+  {
+    // get width of table header columns
+    if ($('#c'+i)) colwidth = $('#c'+i).width();
+
+    // set width for table columns
+    $('.hcmsCol'+i).width(colwidth);
+  }
 }
 
 // load control frame
 parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&from_page=search';
-//-->
 </script>
+<style>
+.hcmsCell
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
 </head>
 
-<body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" style="overflow:hidden;">
+<body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" onresize="resizecols();">
 
 <!-- live view --> 
 <div id="liveviewLayer" class="hcmsWorkplaceObjectlist" style="display:none; position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; z-index:8;">
@@ -892,31 +1093,73 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 </div>
 
 <!-- Detail View -->
-<div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:0px; margin:0; padding:0; width:100%; z-index:1; visibility:visible;">
+<div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:0; margin:0; padding:0; width:100%; z-index:1; visibility:visible;">
   <table id="objectlist_head" cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;">
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:280px; white-space:nowrap;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
-      </td>
-      <?php if (!$is_mobile) { ?>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:250px; white-space:nowrap;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>
-      </td>          
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['date-modified'][$lang]); ?>
-      </td>
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="white-space:nowrap;">
-        &nbsp; <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>
-      </td>
-      <td class="hcmsTableHeader" style="width:16px;">
-        &nbsp;
-      </td>
-       <?php } ?>
+      <td id="c0" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:278px; white-space:nowrap;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
+    <?php
+    if (!$is_mobile)
+    {
+    ?>
+      <td id="c1" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:248px; white-space:nowrap;">&nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;</td> 
+    <?php
+      if (is_array ($objectlistcols_reduced))
+      {
+        $i = 2;
+        
+        foreach ($objectlistcols_reduced as $key => $active)
+        {
+          if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:113px; white-space:nowrap;";
+          else $style_td = "white-space:nowrap;";
+          
+          $sortnumeric = "";
+          
+          if ($active == 1)
+          {
+            if ($key == 'createdate')
+            {
+              $title = getescapedtext ($hcms_lang['date-created'][$lang]);
+            }
+            elseif ($key == 'modifieddate')
+            {
+              $title = getescapedtext ($hcms_lang['date-modified'][$lang]);
+            }
+            elseif ($key == 'filesize')
+            {
+              $title = getescapedtext ($hcms_lang['size-in-kb'][$lang]);
+              $sortnumeric = ", true";
+            }
+            elseif ($key == 'type')
+            {
+              $title = getescapedtext ($hcms_lang['type'][$lang]);
+            }
+            elseif ($key == 'owner')
+            {
+              $title = getescapedtext ($hcms_lang['owner'][$lang]);
+            }
+            else
+            {
+              // use label
+              if (!empty ($labels_reduced[$key])) $title = $labels_reduced['text:'.$key];
+              // use text ID and cut off text-prefix
+              else $title = ucfirst (str_replace ("_", " ", substr ($key, 5)));
+            }
+            
+            echo "
+      <td id=\"c".$i."\" onClick=\"hcms_sortTable(".$i.$sortnumeric.");\" class=\"hcmsTableHeader\" style=\"".$style_td."\">&nbsp;".$title."&nbsp;</td>";
+
+            $i++;
+          }
+        }
+      }
+      ?>
+      <td class="hcmsTableHeader" style="width:16px;">&nbsp;</td>
+    <?php } ?>
     </tr>
   </table>
 
-  <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:0px; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
-    <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; table-layout:fixed;">
+  <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:0; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
+    <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" style="border:0; width:100%; table-layout:fixed;">
     <?php 
     echo $listview;
     ?>
@@ -926,7 +1169,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 </div>
 
 <!-- Gallery View -->
-<div id="galleryviewLayer" style="position:fixed; top:0px; left:0px; bottom:0px; width:100%; z-index:1; visibility:hidden; overflow-y:scroll;">
+<div id="galleryviewLayer" style="position:fixed; top:0; left:0; bottom:0; width:100%; z-index:1; visibility:hidden; overflow-y:scroll;">
 <?php
 if ($galleryview != "")
 {
@@ -952,10 +1195,8 @@ if ($galleryview != "")
 
 <!-- initalize -->
 <script language="JavaScript">
-<!--
 toggleview (explorerview);
 $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
-//-->
 </script>
 
 </body>

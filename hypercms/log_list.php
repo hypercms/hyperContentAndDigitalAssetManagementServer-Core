@@ -44,7 +44,6 @@ else $logfile = "event.log";
 <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript">
-<!--
 function submitToWindow (url, description, windowname, features, width, height)
 {
   if (features == undefined) features = 'scrollbars=yes,resizable=yes';
@@ -78,13 +77,12 @@ function resizecols()
   $('.hcmsCol4').width(c4);
   $('.hcmsCol5').width(c5);
 }
-//-->
 </script>
 </head>
 
-<body class="hcmsWorkplaceObjectlist" style="overflow:hidden;">
+<body class="hcmsWorkplaceObjectlist" style="overflow:hidden;" onresize="resizecols();">
 
-<div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:0px; width:100%; z-index:1; visibility:visible;">
+<div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:0; width:100%; z-index:1; visibility:visible;">
   <table id="objectlist_head" cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:105px; white-space:nowrap;">
@@ -110,7 +108,7 @@ function resizecols()
     </tr>
   </table>
 
-  <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:0px; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
+  <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
     <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" style="border:0; width:100%; table-layout:fixed;">
 <?php
 if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
@@ -118,7 +116,7 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
   $items_row = 0;
   
   // load log file
-  $event_array = file ($mgmt_config['abs_path_data']."log/".$logfile);
+  $event_array = loadlog ();
 
   if ($event_array != false && sizeof ($event_array) > 0)
   {
@@ -185,9 +183,7 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
 
 <!-- initalize -->
 <script language="JavaScript">
-<!--
 $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
-//-->
 </script>
 
 </body>

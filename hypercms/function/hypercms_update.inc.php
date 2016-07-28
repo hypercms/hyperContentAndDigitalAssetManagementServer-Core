@@ -581,7 +581,7 @@ function update_database_v6115 ()
   
   if ($result)
   {
-    while ($row = $db->getResultRow ('select'))
+    while ($row = $db->getResultRow('select'))
     {
       $cleaned = cleancontent ($row['textcontent'], "UTF-8");
       
@@ -607,5 +607,118 @@ function update_database_v6115 ()
   $db->close();
 
   return true;
+}
+
+// ------------------------------------------ update_container_v6118 ----------------------------------------------
+// function: update_container_v6118()
+// input: %
+// output: updated database, false on error
+
+// description: 
+// Update of containers to version 6.1.18 (add date created to containers).
+
+function update_container_v6118 ()
+{
+  global $mgmt_config;
+  
+  if (!empty ($mgmt_config['abs_path_data']) && strpos (loadlog ("update", "string"), "|6.1.18|") < 1)
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // content repository
+    $loc = $mgmt_config['abs_path_data']."content/";
+    
+    // 1 st level (content container blocks)
+    $blockdir = scandir ($loc);
+    
+    $i = 0;
+    
+    // browse all containers in the content repository
+    foreach ($blockdir as $block)
+    {
+      if (is_dir ($loc.$block) && $block != "." && $block != ".." && is_numeric ($block))
+      {
+        // 2nd level (specific content container folder)
+        $contdir = scandir ($loc.$block);
+        
+        foreach ($contdir as $container_id)
+        {
+          if (!empty ($updated)) break;
+          
+          if ($container_id > 0 && is_dir ($loc.$block."/".$container_id))
+          {
+            // select date created
+            $sql = 'SELECT createdate FROM container WHERE id='.intval($container_id);
+            $errcode = "50072";
+            $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'select');
+            
+            if ($result && $row = $db->getResultRow('select'))
+            {
+              $date_created = $row['createdate'];
+            }
+            else $date_created = "";
+
+            // if date created is available
+            if ($date_created != "")
+            { 
+              // 3rd level (content container XML files)
+              $filedir = scandir ($loc.$block."/".$container_id);
+              
+              foreach ($filedir as $file)
+              {
+                if (!empty ($updated)) break;
+                
+                // update all containers
+                if (is_file ($loc.$block."/".$container_id."/".$file) && strpos ($file, ".xml") > 0 && strpos ($file, ".bak") == 0)
+                { 
+                  $dirname = substr ($file, 0, strpos ($file, "."));
+      
+                  // load container
+                  $data = loadfile ($loc.$block."/".$container_id."/", $file);
+                  
+                  if ($data != false && substr_count ($data, "</contentuser>") > 0)
+                  {
+                    // container has not been updated
+                    if (substr_count ($data, "</contentcreated>") == 0)
+                    {
+                      $data = str_replace ("</contentuser>", "</contentuser>\n<contentcreated>".$date_created."</contentcreated>", $data);
+
+                      if ($data != "") $test = savefile ($loc.$block."/".$container_id."/", $file, $data);
+                      else $test = false;
+
+                      if (!$test)
+                      {
+                        // error
+                        $errcode = "10105";
+                        $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|$errcode|container '".$file."' could not be updated";  
+                      }
+                      
+                      $i++;
+                    }
+                    // container has been updated
+                    else
+                    {
+                      $updated = true;
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    // save log
+    savelog ($db->getError ());
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.18|updated to version 6.1.18"), "update");
+    savelog (@$error);
+    $db->close();
+
+    return true;
+  }
+  else return false;
 }
 ?>

@@ -754,31 +754,38 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
   
+  if ($mgmt_config['db_connect_rdbms'] != "")
+  {
+    include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
+  }
+
   // set default language
   if (empty ($lang)) $lang = "en";
   
   // result array containing the following fields:
   $result = array(
-      'hcms_linking'		=> array(),
-      'globalpermission'	=> array(),
-      'localpermission'	=> array(),
-      'pageaccess'		=> array(),
-      'siteaccess'		=> array(),
-      'compaccess'		=> array(),
-      'hiddenfolder'		=> array(),
-      'auth'				=> false,
-      'html'				=> '',
-      'rootpermission'	=> array(),
-      'lang'				=> '',
-      'user'				=> '',
-      'passwd'			=> '',
-      'userhash'			=> '',
-      'superadmin'			=> '',
-      'instance'			=> false,
-      'checksum'			=> '',
-      'message'			=> '',
-      'mobile'			=> '',
-      'chatstate'			=> ''
+      'hcms_linking' => array(),
+      'globalpermission' => array(),
+      'localpermission' => array(),
+      'pageaccess' => array(),
+      'siteaccess' => array(),
+      'compaccess' => array(),
+      'hiddenfolder' => array(),
+      'auth' => false,
+      'html' => '',
+      'rootpermission' => array(),
+      'lang' => '',
+      'user' => '',
+      'passwd' => '',
+      'userhash' => '',
+      'superadmin' => '',
+      'instance' => false,
+      'checksum' => '',
+      'message' => '',
+      'mobile' => '',
+      'chatstate' => '',
+      'objectlistcols' => array(),
+      'labels' => array()
       );
   
   $linking_auth = true;
@@ -789,11 +796,6 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
   $filepasswd = Null;
   $superadmin = Null;
   $memberofnode = Null;
-  
-  if ($mgmt_config['db_connect_rdbms'] != "")
-  {
-    include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
-  }
   
   // eventsystem
   if ($eventsystem['onlogon_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
@@ -840,12 +842,12 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
     $passwd_crypted = crypt ($passwd, substr ($passwd, 1, 2));
   }
 
-  // include LDAP connectivity
-  if (isset ($ldap_connect) && $ldap_connect != "" && @is_file ($mgmt_config['abs_path_data']."ldap_connect/".$ldap_connect.".php"))
+  // include authentification connectivity (LDAP, AD, or others)
+  if (!empty ($mgmt_config['authconnect']) && is_file ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php"))
   {
-    include ($mgmt_config['abs_path_data']."ldap_connect/".$ldap_connect.".php");
+    include ($mgmt_config['abs_path_data']."connect/".$mgmt_config['authconnect'].".inc.php");
      
-    $ldap_auth = ldap_connect ($sentuser, $sentpasswd);
+    $ldap_auth = authconnect ($sentuser, $sentpasswd);
   }
   
   if ($ldap_auth && $linking_auth)
@@ -896,6 +898,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       update_database_v601 ();
       update_database_v614 ();
       update_database_v6113 ();
+      update_container_v6118 ();
     
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
       $charset = getcharset ("", $userdata); 
@@ -1375,6 +1378,91 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
 
   // state of chat
   $result['chatstate'] = getchatstate (false);
+  
+  // read colum defintions of user
+  $columns = array();
+  
+  // read labels of templates
+  $labels = array();
+  
+  if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".objectlistcols.json"))
+  {
+    // load objectlist defintion file
+    $temp_json = loadfile ($mgmt_config['abs_path_data']."checkout/", $user.".objectlistcols.json");
+    
+    // JSON decode the string
+    if ($temp_json != "") $columns = json_decode ($temp_json, true);
+  }
+
+  if (is_array ($result['siteaccess']) && sizeof ($result['siteaccess']) > 0)
+  {
+    foreach ($result['siteaccess'] as $temp_site)
+    {
+      // set default values
+      if (!isset ($columns[$temp_site]))
+      {
+        $columns[$temp_site]['page'] = array('modifieddate'=>1, 'filesize'=>1, 'type'=>1);
+        $columns[$temp_site]['comp'] = array('modifieddate'=>1, 'filesize'=>1, 'type'=>1);
+        $update_columns = true;
+      }
+      
+      // read and set labels in templates for objectlist and metadata views
+      $labels[$temp_site] = array();
+      
+      // get all templates excluding tempate includes
+      $template_array = gettemplates ($temp_site, "all");
+      
+      if (is_array ($template_array) && sizeof ($template_array) > 0)
+      {
+        foreach ($template_array as $template)
+        {
+          // load template and define labels
+          if ($template != "")
+          {
+            if ($temp_site != "" && $template != "")
+            {
+              // get category
+              if (strpos ($template, ".page.tpl") > 0) $temp_cat = "page";
+              else $temp_cat = "comp";
+                    
+              $temp_template = loadtemplate ($temp_site, $template);
+              
+              if ($temp_template['content'] != "")
+              {
+                $hypertag_array = gethypertag ($temp_template['content'], "text", 0);
+                
+                if (is_array ($hypertag_array) && sizeof ($hypertag_array) > 0)
+                {
+                  foreach ($hypertag_array as $tag)
+                  {
+                    $temp_id = getattribute ($tag, "id");
+                    $temp_label = getattribute ($tag, "label");
+
+                    // define label name based on label of tag
+                    if ($temp_id != "" && trim ($temp_label) != "") $labels[$temp_site][$temp_cat][$temp_id] = $temp_label;
+                    // or use text ID
+                    elseif ($temp_id != "") $labels[$temp_site][$temp_cat][$temp_id] = ucfirst (str_replace ("_", " ", $temp_id));
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    // save objectlist defintion file with new default values
+    if (is_array ($columns) && !empty ($update_columns))
+    {
+      savefile ($mgmt_config['abs_path_data']."checkout/", $user.".objectlistcols.json", json_encode ($columns));
+    }
+  }
+  
+  // set columns definitions for result
+  $result['objectlistcols'] = $columns;
+  
+  // set labels definitions for result
+  $result['labels'] = $labels;
 
   // message
   if (!$result['message'])
@@ -2043,7 +2131,7 @@ function valid_objectname ($variable)
 {
   if ($variable != "")
   {
-    if (!is_array ($variable) && is_string ($variable))
+    if (is_string ($variable))
     {
       if ($variable == ".") return false;
       if ($variable == "..") return false;

@@ -145,7 +145,6 @@ else $objects_counted = 0;
 <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script language="JavaScript">
-<!--
 // context menu
 var contextenable = 1;
 
@@ -189,11 +188,10 @@ function resizecols()
   $('.hcmsCol5').width(c5);
   $('.hcmsCol6').width(c6);
 }
-//-->
 </script>
 </head>
 
-<body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" style="overflow:hidden;">
+<body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" onresize="resizecols();">
 
 <div id="contextLayer" style="position:absolute; width:150px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_queue" method="post" action="" target="">
@@ -229,7 +227,7 @@ function resizecols()
   </form>
 </div>
 
-<div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; margin:0px; padding:0px; width:100%; z-index:3; visibility:visible;">
+<div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:30px; margin:0; padding:0; width:100%; z-index:3; visibility:visible;">
   <table id="objectlist_head" cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
@@ -258,7 +256,7 @@ function resizecols()
     </tr>
   </table>
   
-  <div id="objectLayer" style="position:fixed; top:20px; left:0px; bottom:30px; margin:0px; padding:0px; width:100%; z-index:2; visibility:visible; overflow-y:scroll;">
+  <div id="objectLayer" style="position:fixed; top:20px; left:0; bottom:30px; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:scroll;">
     <table id="objectlist" name="objectlist" cellpadding="0" cellspacing="0" cols="6" style="border:0; width:100%; table-layout:fixed;">
     <?php 
     echo $listview;
@@ -292,9 +290,7 @@ else
 
 <!-- initalize -->
 <script language="JavaScript">
-<!--
 $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
-//-->
 </script>
 
 </body>

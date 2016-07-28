@@ -1368,9 +1368,13 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
 // input: converted path of multiple objects as array, user name
 // output: assoziatve array with all text content and meta data / false
 
+// description:
+// Extracts all metadata including media information for a provided list of objects.
+// This function is used for the CSV export in the objectlist views and also evaluates the access permissions of the user.
+
 function getmetadata_multiobjects ($multiobject_array, $user)
 {
-  global $mgmt_config;
+  global $mgmt_config, $siteaccess, $pageaccess, $compaccess, $hiddenfolder, $adminpermission, $localpermission;
   
   // exclude attributes from result (always exclude 'id')
   $exclude_attributes = array ("id", "object_id", "hash");
@@ -1454,6 +1458,165 @@ function getmetadata_multiobjects ($multiobject_array, $user)
       
       return $result;
     }
+    else return false;
+  }
+  else return false;
+}
+
+// ---------------------- getmetadata_container -----------------------------
+// function: getmetadata_container()
+// input: container ID, array of text IDs
+// output: assoziatve array with all text content and meta data / false
+
+// description:
+// Extracts container, media, and metadata information of a container.
+// This function is used for the presentation of metadata for objectlist views.
+
+function getmetadata_container ($container_id, $text_id_array)
+{
+  global $mgmt_config, $labels;
+
+  if ($container_id > 0 && is_array ($text_id_array) && sizeof ($text_id_array) > 0)
+  {
+    $result = array();
+
+    // use database
+    if ($mgmt_config['db_connect_rdbms'] != "")
+    {
+      // collect container and media info
+      $select = "";
+      
+      // date created
+      if (in_array ("createdate", $text_id_array))
+      {
+        if ($select != "") $select .= ', ';
+        $select .= 'container.createdate';
+      }
+      
+      // date modified
+      if (in_array ("modifieddate", $text_id_array))
+      {
+        if ($select != "") $select .= ', ';
+        $select .= 'container.date';
+      }
+      
+      // user/owner
+      if (in_array ("owner", $text_id_array))
+      {
+        if ($select != "") $select .= ', ';
+        $select .= 'container.user';
+      }
+      
+      // file size
+      if (in_array ("filesize", $text_id_array))
+      {
+        if ($select != "") $select .= ', ';
+        $select .= 'media.filesize';
+      }
+    
+      if ($select != "")
+      {
+        $objectdata = rdbms_externalquery ('SELECT '.$select.' FROM container LEFT JOIN media ON media.id=container.id WHERE container.id='.intval($container_id));
+ 
+        // reduce array
+        if (is_array ($objectdata) && sizeof ($objectdata) > 0) $result = $objectdata[0];
+      }
+      
+      // collect text content
+      $conditions = "";
+      
+      if (is_array ($text_id_array) && sizeof ($text_id_array) > 0)
+      {
+        foreach ($text_id_array as $text_id)
+        {
+          if (substr ($text_id, 0, 5) == "text:")
+          {
+            if ($conditions != "") $conditions .= ' OR ';
+            
+            $conditions .= 'text_id="'.substr ($text_id, 5).'"';
+          }
+        }
+        
+        if ($conditions != "") $conditions = ' AND ('.$conditions.')';
+      }
+        
+      if ($conditions != "")
+      {
+        $sql = 'SELECT text_id, textcontent FROM textnodes WHERE id='.intval($container_id);
+         
+        // query
+        $textnodes = rdbms_externalquery ($sql.$conditions);
+   
+        // text content
+        if (is_array ($textnodes) && sizeof ($textnodes) > 0)
+        {
+          foreach ($textnodes as $textnode)
+          {
+            if (is_array ($textnode))
+            {
+              $result['text:'.$textnode['text_id']] = $textnode['textcontent'];
+            }
+          }
+        }
+      }
+    }
+    // user content container
+    else
+    {
+      $contentdata = loadcontainer ($container_id, "work", "sys");
+      
+      if ($contentdata != "")
+      {
+        // date created
+        if (in_array ("createdate", $text_id_array))
+        {
+          $temp = getcontent ($contentdata, "<contentcreated>");
+        
+          if (!empty ($temp[0])) $result['createdate'] = $temp[0];
+          else $result['createdate'] = "";
+        }
+        
+        // date modified
+        if (in_array ("modifieddate", $text_id_array))
+        {
+          $temp = getcontent ($contentdata, "<contentdate>");
+          
+          if (!empty ($temp[0])) $result['date'] = $temp[0];
+          else $result['date'] = "";
+        }
+        
+        // user/owner
+        if (in_array ("owner", $text_id_array))
+        {
+          $temp = getcontent ($contentdata, "<contentuser>");
+          
+          if (!empty ($temp[0])) $result['user'] = $temp[0];
+          else $result['user'] = "";
+        }
+        
+        if (is_array ($text_id_array) && sizeof ($text_id_array) > 0)
+        {
+				  $textnode = getcontent ($contentdata, "<text>");
+          
+					foreach ($textnode as $buffer)
+          {
+            // get info from container
+						$text_id = getcontent ($buffer, "<text_id>");
+            
+            // only include requested text IDs
+            if (in_array ("text:".$text_id[0], $text_id_array))
+            {
+  						$text_content = getcontent ($buffer, "<textcontent>");
+  						$text_content[0] = cleancontent ($text_content[0]);
+              
+              $result['text:'.$text_id[0]] = $text_content[0];
+            }
+					}
+				}
+      }
+    }
+
+    if (is_array ($result) && sizeof ($result) > 0) return $result;
     else return false;
   }
   else return false;

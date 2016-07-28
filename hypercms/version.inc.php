@@ -1768,8 +1768,35 @@ Release 07/2016
 - Correct size of audio player in explorer_liveview automatically if below size limits
 - Bug fix: Function create_csv did not verify the input array
 - Bug fix: control_objectlist_menu did not provide escaped path to function getmetadata_multiobjects
+
+Version 6.1.18
+Release 07/2016
+- Implementation of objectlist columns configuration
+- Improvements in function createmedia for audio files
+- Excluded mp3 from video formats in include/format_ext
+- Implementation of new session variable for objectlist columns
+- Support for array as input in function setsession in set API
+- Integration of objectlist defintion support in function userlogin in security API
+- Implementaion of date created for content containers (XML)
+- Implementation of date created support in function createobject in main API
+- Implementation of new function update_container_v6118 in update API
+- Bug fix: Function rdbms_createobject in DB Connect did not save the create date if the geo location has not been provided
+- Improvements in task API
+- Changes of user directory connectors in function userlogin
+- Renamed directory data/ldap_connect to data/connect
+- Implementation of new main configuration setting $mgmt_config['authconnect']
+- Update of AD LDAP library in connector module
+- Updates of authentification scripts in data/connect
+- Updates in function link_db_restore in link API
+- Implementation of template labels in function userlogin in order to collect all labels from templates the user has access to
+- Implementation of new session variable for template labels
+- Implementation of new main configuration setting for the display of metadata in objectlists $mgmt_config['explorer_list_metadata']
+- Various improvements in explorer_objectlist and search_objectlist
+- Improvements in frameset_log, log_list, and queue_objectlist
+- Implementation of update log in update API
+- Implementation of function loadlog in main API
 */
 
 // current version
-$version = "Version 6.1.17";
+$version = "Version 6.1.18";
 ?>
