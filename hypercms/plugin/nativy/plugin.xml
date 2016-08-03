@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin>
+  <definition>
+    <name>Translation Service Plugin</name>
+    <author>hyperCMS</author>
+    <version>1.0</version>
+    <description>Manual translation service for 500 language pairs</description>
+  </definition>
+  <menus>
+    <main>
+      <point>
+        <name>Translation Service</name>
+        <icon>img/language.gif</icon>
+        <page>pages/page.php</page>
+      </point>
+    </main>
+  <menus>
+</plugin>

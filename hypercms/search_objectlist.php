@@ -1140,8 +1140,8 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
             else
             {
               // use label
-              if (!empty ($labels_reduced[$key])) $title = $labels_reduced['text:'.$key];
-              // use text ID and cut off text-prefix
+              if (!empty ($labels_reduced[$key])) $title = $labels_reduced[$key];
+              // use text ID
               else $title = ucfirst (str_replace ("_", " ", substr ($key, 5)));
             }
             

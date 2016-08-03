@@ -566,44 +566,47 @@ function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false,$site=
   
   $return = array();
   
-  foreach ($array as $key => $point)
+  if (is_array ($array) && sizeof ($array) > 0)
   {
-    // Name, Icon and either link or subpoints must be present
-    if ( is_array ($point) && array_key_exists ('name', $point) && array_key_exists ('icon', $point) && (array_key_exists ('page', $point) || array_key_exists ('subpoints', $point)))
+    foreach ($array as $key => $point)
     {
-      $icon = $point['icon'];
-      
-      if (array_key_exists('subpoints', $point) && is_array($point['subpoints']))
+      // Name, Icon and either link or subpoints must be present
+      if ( is_array ($point) && array_key_exists ('name', $point) && array_key_exists ('icon', $point) && (array_key_exists ('page', $point) || array_key_exists ('subpoints', $point)))
       {
-        $id = str_replace (array(" ", "/", '\\'), "_", $pluginKey.($groupKey !== false ? $groupKey : "").'_'.$key);
-        $curr = new hcms_menupoint ($point['name'], '#'.$id, $icon, $id);
-        $curr->setOnClick ('hcms_jstree_toggle_preventDefault("'.$id.'", event);');
-        $curr->setOnMouseOver ('hcms_resetContext();');
+        $icon = $point['icon'];
         
-        if ($groupKey !== false) $key = $groupKey.'_'.$key;
-        $sub = generatePluginTree ($point['subpoints'], $pluginKey, $folder, $key);
-        foreach ($sub as $subpoint) $curr->addSubPoint ($subpoint);
-        $return[] = $curr;
-      } 
-      else
-      {
-        $link = 'plugin_showpage.php?plugin='.urlencode($pluginKey).'&page='.urlencode($point['page']);
-        
-        if (array_key_exists ('control', $point) && !empty ($point['control']) && $point['control'])
+        if (array_key_exists('subpoints', $point) && is_array($point['subpoints']))
         {
-          $link .= '&control='.urlencode($point['control']);
-        }
-        
-        if ($site)
+          $id = str_replace (array(" ", "/", '\\'), "_", $pluginKey.($groupKey !== false ? $groupKey : "").'_'.$key);
+          $curr = new hcms_menupoint ($point['name'], '#'.$id, $icon, $id);
+          $curr->setOnClick ('hcms_jstree_toggle_preventDefault("'.$id.'", event);');
+          $curr->setOnMouseOver ('hcms_resetContext();');
+          
+          if ($groupKey !== false) $key = $groupKey.'_'.$key;
+          $sub = generatePluginTree ($point['subpoints'], $pluginKey, $folder, $key);
+          foreach ($sub as $subpoint) $curr->addSubPoint ($subpoint);
+          $return[] = $curr;
+        } 
+        else
         {
-          $link .= '&site='.urlencode($site);
+          $link = 'plugin_showpage.php?plugin='.urlencode($pluginKey).'&page='.urlencode($point['page']);
+          
+          if (array_key_exists ('control', $point) && !empty ($point['control']) && $point['control'])
+          {
+            $link .= '&control='.urlencode($point['control']);
+          }
+          
+          if ($site)
+          {
+            $link .= '&site='.urlencode($site);
+          }
+          
+          $curr = new hcms_menupoint($point['name'], $link, $icon);
+          $curr->setOnClick('changeSelection(this)');
+          $curr->setTarget('workplFrame');
+          $curr->setOnMouseOver('hcms_resetContext();');
+          $return[] = $curr;
         }
-        
-        $curr = new hcms_menupoint($point['name'], $link, $icon);
-        $curr->setOnClick('changeSelection(this)');
-        $curr->setTarget('workplFrame');
-        $curr->setOnMouseOver('hcms_resetContext();');
-        $return[] = $curr;
       }
     }
   }
@@ -939,7 +942,7 @@ else
           }
           
           // ------------------------------------------ personalization -------------------------------------------------
-          if (empty ($hcms_assetbrowser) && !$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'pers') && $mgmt_config[$site]['dam'] == false)
+          if (empty ($hcms_assetbrowser) && !$is_mobile && !isset ($hcms_linking['location']) && checkglobalpermission ($site, 'pers') && empty ($mgmt_config[$site]['dam']))
           {
             $point = new hcms_menupoint($hcms_lang['personalization'][$lang], '#pers_'.$site, 'pers_registration.gif', 'pers_'.$site);
             $point->setOnClick('hcms_jstree_toggle_preventDefault("pers_'.$site.'", event);');
@@ -999,7 +1002,7 @@ else
             $point->setOnMouseOver('hcms_resetContext();');
             $point->setOnClick('hcms_jstree_toggle_preventDefault("template_'.$site.'", event);');
               
-            if (checkglobalpermission ($site, 'tpl') && $mgmt_config[$site]['dam'] == false)
+            if (checkglobalpermission ($site, 'tpl') && empty ($mgmt_config[$site]['dam']))
             {
               $subpoint = new hcms_menupoint($hcms_lang['page-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=page", 'template_page.gif');
               $subpoint->setOnClick('changeSelection(this)');
@@ -1008,7 +1011,7 @@ else
               $point->addSubPoint($subpoint);
             }
             
-            if (checkglobalpermission ($site, 'tpl') && $mgmt_config[$site]['dam'] == false)
+            if (checkglobalpermission ($site, 'tpl') && empty ($mgmt_config[$site]['dam']))
             {
               $subpoint = new hcms_menupoint($hcms_lang['component-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=comp", 'template_comp.gif');
               $subpoint->setOnClick('changeSelection(this)');
@@ -1017,7 +1020,7 @@ else
               $point->addSubPoint($subpoint);
             }
             
-            if (checkglobalpermission ($site, 'tpl') && $mgmt_config[$site]['dam'] == false)
+            if (checkglobalpermission ($site, 'tpl') && empty ($mgmt_config[$site]['dam']))
             {
               $subpoint = new hcms_menupoint($hcms_lang['template-includes'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=inc", 'template_inc.gif');
               $subpoint->setOnClick('changeSelection(this)');
@@ -1035,7 +1038,7 @@ else
               $point->addSubPoint($subpoint);
             }
             
-            if (checkglobalpermission ($site, 'tplmedia') && $mgmt_config[$site]['dam'] == false)
+            if (checkglobalpermission ($site, 'tplmedia') && empty ($mgmt_config[$site]['dam']))
             {
               $subpoint = new hcms_menupoint($hcms_lang['template-media'][$lang], "frameset_media.php?site=".url_encode($site)."&mediacat=tpl", 'media.gif');
               $subpoint->setOnClick('changeSelection(this)');

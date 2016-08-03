@@ -1008,7 +1008,7 @@ function setcolumns ()
               if (!empty ($text_id)) 
               {                
                 echo "
-          <label><input onclick=\"setcolumns()\" type=\"checkbox\" name=\"column[text:".$text_id."]\" value=\"1\" ".(!empty ($objectlistcols[$site][$cat]['text:'.$text_id]) ? "checked=\"checked\"" : "")."/>&nbsp;".getescapedtext ($label)."</label><br />";
+          <label><input onclick=\"setcolumns()\" type=\"checkbox\" name=\"column[".$text_id."]\" value=\"1\" ".(!empty ($objectlistcols[$site][$cat][$text_id]) ? "checked=\"checked\"" : "")."/>&nbsp;".getescapedtext ($label)."</label><br />";
               }
             }
           }
@@ -1064,8 +1064,8 @@ function setcolumns ()
             else
             {
               // use label
-              if (!empty ($labels[$site][$cat][$key])) $title = $labels[$site][$cat]['text:'.$key];
-              // use text ID and cut off text-prefix
+              if (!empty ($labels[$site][$cat][$key])) $title = $labels[$site][$cat][$key];
+              // use text ID
               else $title = ucfirst (str_replace ("_", " ", substr ($key, 5)));
             }
             

@@ -1402,8 +1402,14 @@ function getmetadata_multiobjects ($multiobject_array, $user)
 
         if ($ownergroup != false && $setlocalpermission['root'] == 1 && valid_locationname ($location) && valid_objectname ($object))
         {
-          $objectdata = rdbms_externalquery ('SELECT * FROM object INNER JOIN container ON object.id=container.id LEFT JOIN media ON media.id=object.id WHERE object.objectpath="'.$multiobject.'"');
-
+          // get object info
+          $objectinfo = getobjectinfo ($site, $location, $object);
+          
+          // for pages and components
+          if ($objectinfo['media'] == "") $objectdata = rdbms_externalquery ('SELECT * FROM object INNER JOIN container ON object.id=container.id WHERE object.id='.intval($objectinfo['container_id']));
+          // for media assets
+          else $objectdata = rdbms_externalquery ('SELECT * FROM object INNER JOIN container ON object.id=container.id LEFT JOIN media ON object.id=media.id WHERE object.id='.intval($objectinfo['container_id']));
+          
           if (is_array ($objectdata) && sizeof ($objectdata) > 0)
           {
             $id = $objectdata[0]['id'];

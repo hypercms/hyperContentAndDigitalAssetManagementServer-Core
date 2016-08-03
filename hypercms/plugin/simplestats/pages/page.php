@@ -25,6 +25,12 @@ $content = getrequest_esc ("content");
 // only german and english is supported by plugin
 if ($lang != "en" && $lang != "de") $lang = "en";
 
+// defintions
+// add additonal storage in GB if an addtional external storage is used (e.g. multiple HDD or export of media files on other disk)
+// you can also set this value in the main configuration file, so you can easily update the plugin in future
+// the limitation of this plugin is that it only supports the harddrive storage where the webserver is operating.
+if (empty ($mgmt_config['additional_storage'])) $mgmt_config['additional_storage'] = 0;
+
 // ------------------------------ permission section --------------------------------
 
 // check session of user
@@ -51,11 +57,28 @@ checkusersession ($user, false);
   <table border="0" cellspacing="2" cellpadding="0">
  	  <tr align="left" valign="top">
       <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['total-disk-space'][$lang]); ?>: </td>
-      <td><?php if ($space = disk_total_space($mgmt_config['abs_path_cms'])) echo number_format (($space/1024/1024/1024), 2, ",", ".")." GB"; else echo "not available"; ?></td>
+      <td><?php
+      $space = disk_total_space ($mgmt_config['abs_path_cms']);
+      
+      if ($space > 0)
+      {
+        $space = $space/1024/1024/1024 + intval ($mgmt_config['additional_storage']);
+        echo number_format ($space, 2, ",", ".")." GB"; 
+      }
+      else echo "not available";
+      ?></td>
     </tr>
  	  <tr align="left" valign="top">
       <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['free-disk-space'][$lang]); ?>: </td>
-      <td><?php if ($space = disk_free_space($mgmt_config['abs_path_cms'])) echo number_format (($space/1024/1024/1024), 2, ",", ".")." GB"; else echo "not available"; ?></td>
+      <td><?php
+      $space = disk_free_space($mgmt_config['abs_path_cms']);
+      
+      if ($space)
+      {
+        echo number_format (($space/1024/1024/1024), 2, ",", ".")." GB";
+      }
+      else echo "not available";
+      ?></td>
     </tr>
   </table>
   </div>
@@ -92,7 +115,7 @@ checkusersession ($user, false);
           $ownergroup = accesspermission ($site, $location_esc, $cat);
           $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
           
-          if ($setlocalpermission['root']) $link = "<a href=\"#\" onClick=\"hcms_openBrWindowItem('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."','".$row['id']."','status=yes,scrollbars=no,resizable=yes','800','600');\">".$info['name']."</a>";
+          if ($setlocalpermission['root']) $link = "<a href=\"#\" onClick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."','".$row['id']."','status=yes,scrollbars=no,resizable=yes','800','600');\">".$info['name']."</a>";
           else $link = $info['name'];
              
           $show .= "<tr class=\"hcmsRowData1\"><td>".$link."</td><td align=\"right\">".$row['count']."</td><td align=\"right\">".number_format ($row['filesize'], 0, ",", ".")."</td></tr>\n";
@@ -141,7 +164,7 @@ checkusersession ($user, false);
           $ownergroup = accesspermission ($site, $location_esc, $cat);
           $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
           
-          if ($setlocalpermission['root']) $link = "<a href=\"#\" onClick=\"hcms_openBrWindowItem('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."','".$row['id']."','status=yes,scrollbars=no,resizable=yes','800','600');\">".$info['name']."</a>";
+          if ($setlocalpermission['root']) $link = "<a href=\"#\" onClick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."','".$row['id']."','status=yes,scrollbars=no,resizable=yes','800','600');\">".$info['name']."</a>";
           else $link = $info['name'];
           
           $show .= "<tr class=\"hcmsRowData1\"><td>".$link."</td><td align=\"right\">".$row['count']."</td><td align=\"right\">".number_format ($row['filesize'], 0, ",", ".")."</td></tr>\n";

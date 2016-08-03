@@ -817,7 +817,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
         else
         {
-          $style = "width=\"540\" height=\"740\"";
+          $width = 540;
+          $height = 740;
+          
+          $style .= "width=\"".$width."\" height=\"".$height."\"";
         }
 
         // get browser information/version
@@ -836,7 +839,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                (is_array ($mgmt_docconvert[$file_info['orig_ext']]) && in_array (".pdf", $mgmt_docconvert[$file_info['orig_ext']]))
              )
            )
-        {    			
+        {  			
           // if original file is a pdf
           if (substr_count (".pdf", $file_info['orig_ext']) == 1) 
           {

@@ -1439,9 +1439,9 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                     $temp_label = getattribute ($tag, "label");
 
                     // define label name based on label of tag
-                    if ($temp_id != "" && trim ($temp_label) != "") $labels[$temp_site][$temp_cat][$temp_id] = $temp_label;
+                    if ($temp_id != "" && trim ($temp_label) != "") $labels[$temp_site][$temp_cat]['text:'.$temp_id] = $temp_label;
                     // or use text ID
-                    elseif ($temp_id != "") $labels[$temp_site][$temp_cat][$temp_id] = ucfirst (str_replace ("_", " ", $temp_id));
+                    elseif ($temp_id != "") $labels[$temp_site][$temp_cat]['text:'.$temp_id] = ucfirst (str_replace ("_", " ", $temp_id));
                   }
                 }
               }

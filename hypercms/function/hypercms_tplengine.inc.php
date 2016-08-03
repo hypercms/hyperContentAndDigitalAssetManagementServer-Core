@@ -1146,6 +1146,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   $add_submitlanguage = ""; 
   $add_submitlink = ""; 
   $add_submitcomp = "";
+  $show_meta = false;
   
   // set default view values
   $valid_views = array ("formedit", "formmeta", "formlock", "cmsview", "inlineview", "publish", "preview", "template");
@@ -1898,7 +1899,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           $labelname = "";
           
           // get type of content
-          $infotype = getattribute (strtolower ($hypertag), "infotype");                
+          $infotype = getattribute (strtolower ($hypertag), "infotype");
+          if (strtolower ($infotype) == "meta") $show_meta = true;
           
           // get visibility on publish
           $onpublish = getattribute (strtolower ($hypertag), "onpublish");    
@@ -1941,9 +1943,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // set flag for found tag
             $editmeta[$hypertagname] = false;
 
-            // include CMS head edit buttons
-            $headstoremeta = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."page_view.php?view=formmeta&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."\"><img src=\"".getthemelocation()."img/edit_head.gif\" style=\"display:inline-block; width:45px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left; z-index:9999999;\" alt=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\"></a>";
-         
             // read content using db_connect
             if (isset ($db_connect) && $db_connect != "") 
             {
@@ -2437,7 +2436,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $constraint = getattribute ($hypertag, "constraint");
             
             // get type of content
-            $infotype = getattribute (strtolower ($hypertag), "infotype");   
+            $infotype = getattribute (strtolower ($hypertag), "infotype");  
+            if (strtolower ($infotype) == "meta") $show_meta = true; 
             
             // extract text value of checkbox
             $value = getattribute ($hypertag, "value");  
@@ -3771,7 +3771,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // get thumbnail view 
                 $thumbnail[$id][$tagid] = getattribute ($hypertag, "thumbnail");
                 // get infotype
-                if (!isset ($infotype[$id]) || $infotype[$id] != "meta") $infotype[$id] = getattribute ($hypertag, "infotype");
+                if (!isset ($infotype[$id]) || $infotype[$id] != "meta")
+                {
+                  $infotype[$id] = getattribute ($hypertag, "infotype");
+                  if (strtolower ($infotype[$id]) == "meta") $show_meta = true;
+                }
                 // get dpi for scaling
                 $mediadpi[$id] = getattribute ($hypertag, "dpi");
                 // get colorspace and ICC profile
@@ -4524,7 +4528,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // get onedit event
                 $onedit_href[$id][$tagid] = getattribute (strtolower ($hypertag), "onedit");
                 // get infotype
-                if (!isset ($infotype[$id]) || $infotype[$id] != "meta") $infotype[$id] = getattribute (strtolower ($hypertag), "infotype");
+                if (!isset ($infotype[$id]) || $infotype[$id] != "meta")
+                {
+                  $infotype[$id] = getattribute (strtolower ($hypertag), "infotype");
+                  if (strtolower ($infotype[$id]) == "meta") $show_meta = true;
+                }
               }                      
               elseif ($hypertagname == $searchtag."target")
               {
@@ -5058,7 +5066,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $onedit = getattribute (strtolower ($hypertag), "onedit");
             
             // get type of content
-            $infotype = getattribute (strtolower ($hypertag), "infotype");                 
+            $infotype = getattribute (strtolower ($hypertag), "infotype");
+            if (strtolower ($infotype) == "meta") $show_meta = true;                
             
             // get tag visibility on edit
             $icon = getattribute (strtolower ($hypertag), "icon");    
@@ -6354,9 +6363,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             else $headstoreform = "";
             
             // check if html tag exists in viewstore (if not it will be treated as a component)
-            if (($buildview == "cmsview" || $buildview == "inlineview") && !isset ($compcontenttype) && !isset ($contenttype)) 
+            if (($buildview == "cmsview" || $buildview == "inlineview") && !empty ($show_meta)) 
             {
-              $headstoremeta = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."page_view.php?view=formmeta&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&contenttype=".url_encode($contenttype)."\"><img src=\"".getthemelocation()."img/edit_head.gif\" style=\"display:inline-block; width:45px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" /></a>\n";
+              $headstoremeta = "<a hypercms_href=\"".$mgmt_config['url_path_cms']."page_view.php?view=formmeta&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&contenttype=".url_encode($contenttype)."\"><img src=\"".getthemelocation()."img/edit_head.gif\" style=\"display:inline-block; width:45px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" /></a>";
             }         
   
             // scriptcode
@@ -6381,7 +6390,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               }
               
               // drag button
-              if ($buildview != "preview" && ($headstoremeta != "" || $headstoreform != "" || $headstoreview != "" || $headstorelang != "")) $headstore = "<div id=\"meta_info\" style=\"position:fixed; padding:0; margin:0; z-index:99999; left:4px; top:4px; border:0; background:none; visibility:visible;\"><img src=\"".getthemelocation()."img/edit_drag.gif\" style=\"display:inline-block; width:18px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" id=\"meta_mover\"/>".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."<script type=\"text/javascript\">hcms_drag(document.getElementById('meta_mover'), document.getElementById('meta_info'));</script></div>";
+              if ($buildview != "preview" && ($headstoremeta != "" || $headstoreform != "" || $headstoreview != "" || $headstorelang != ""))
+              {
+                $headstore = "<div id=\"meta_info\" style=\"position:fixed; padding:0; margin:0; z-index:99999; left:4px; top:4px; border:0; background:none; visibility:visible;\"><img src=\"".getthemelocation()."img/edit_drag.gif\" style=\"display:inline-block; width:18px; height:18px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" id=\"meta_mover\"/>".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."<script type=\"text/javascript\">hcms_drag(document.getElementById('meta_mover'), document.getElementById('meta_info'));</script></div>";
+              }
             }
             // no body-tag available
             else
@@ -7854,7 +7866,6 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 </head>
 <body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" ".($template != "" ? "onload=\"parent.hcms_showPage('contentLayer');\"" : "").">
 ".($report != "" ? "<form action=\"".$mgmt_config['url_path_cms']."report/\" methode=\"post\">\n <input type=\"hidden\" name=\"reportname\" value=\"".$report."\" />" : "")."
-<table width=\"100%\" cellspacing=2 cellpadding=0>
     ";
 
     if (isset ($formitem) && is_array ($formitem))
@@ -7869,14 +7880,11 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
       }
     }  
     
-    if ($report != "") $viewstore .= "
-  <tr>
-    <td align=left valign=top colspan=2><button class=\"hcmsButtonGreen\">".getescapedtext ($hcms_lang['forward'][$lang])."</button></td>
-  </tr>
+    if ($report != "") $viewstore .= "<br />
+    <button class=\"hcmsButtonGreen\">".getescapedtext ($hcms_lang['forward'][$lang])."</button>
   ";
   
   $viewstore .= "
-</table>
 ".($report != "" ? "</form>" : "")."
 </body>
 </html>";

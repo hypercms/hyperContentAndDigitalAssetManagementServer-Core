@@ -1795,8 +1795,29 @@ Release 07/2016
 - Improvements in frameset_log, log_list, and queue_objectlist
 - Implementation of update log in update API
 - Implementation of function loadlog in main API
-*/
+
+Version 6.1.19
+Release 08/2016
+- Implementation of nativy Plugin for translation orders
+- Installed Plugin configuration/activation file in install/data/config
+- Improvements in Simple Stats Plugin
+- Improvements in OpenAPI, renamed content_save to content_settext
+- Implementation of new functions project_create, project_edit, project_delete, task_create_ task_edit, and task_delete in OpenAPI
+- Renamed function setproject to editroject in project API
+- Renamed function settask to edittask in project API
+- Bug fix: Function rdbms_deleteproject used wrong variable name for project ID
+- Improvements of input validation in Navigator
+- Improvements and changes in task managament
+- Improvements and changes in project management 
+- Improvements in function query in DB Connect regarding input validation
+- Bug fix: Report management used 'duration' instaed of 'actual' as field name for table task
+- Bug fix: Funtion buildsearchform did use HTML table instead of DIV
+- Bug fix: Template editor did not provide meta-inforamtion checkbox for page, component, and include template types
+- Bug fix: Template engine did not present metainfo button in WYSWIWYG views
+- Bug fix: CSV export of pages did not provide container ID nor content
+- Bug fix: Column headers of oibjectlist views displayed text ID instead of label
+- Improvements in function getmetadata_multiobjects
 
 // current version
-$version = "Version 6.1.18";
+$version = "Version 6.1.19";
 ?>

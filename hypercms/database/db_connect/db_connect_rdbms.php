@@ -96,7 +96,11 @@ class hcms_db
   {
     global $mgmt_config;
     
-    if ($this->_isMySqli ())
+    if (!is_string ($sql) && $sql == "")
+    {
+      $this->_typeError ();
+    }
+    elseif ($this->_isMySqli())
     {
       // log
       if ($mgmt_config['rdbms_log'])
@@ -129,7 +133,7 @@ class hcms_db
         return true;
       }
     }
-    elseif ($this->_isODBC ())
+    elseif ($this->_isODBC())
     {
       $result = odbc_exec ($this->_db, $sql);
       
@@ -4325,7 +4329,7 @@ function rdbms_setproject ($project_id, $subproject_id=0, $object_id="", $user="
     $sql .= implode (", ", $sql_update);
     $sql .= ' WHERE project_id='.intval($project_id);
     
-    $errcode = "50068";
+    $errcode = "50069";
     $db->query ($sql, $errcode, $mgmt_config['today'], 'update');
 
     // save log
@@ -4427,13 +4431,13 @@ function rdbms_deleteproject ($project_id="", $object_id="", $user="")
     elseif (!empty ($object_id)) $object_id = intval ($object_id);
     elseif (!empty ($user)) $user = $db->escape_string ($user);
         
-    if (!empty ($task_id)) $sql = 'DELETE FROM project WHERE project_id="'.$task_id.'"';
+    if (!empty ($project_id)) $sql = 'DELETE FROM project WHERE project_id="'.$project_id.'"';
     elseif (!empty ($object_id)) $sql = 'DELETE FROM project WHERE object_id="'.$object_id.'"';
     elseif (!empty ($to_user)) $sql = 'DELETE FROM project WHERE user="'.$user.'"';
      
-    $errcode = "50068";
+    $errcode = "50070";
     $db->query ($sql, $errcode, $mgmt_config['today']);
-    
+
     // save log
     savelog ($db->getError ());    
     $db->close();      
