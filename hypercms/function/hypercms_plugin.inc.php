@@ -42,7 +42,7 @@ function plugin_readmenu ($xml, $pluginFolder)
   
   $groups = getcontent ($xml, "<group>");
   
-  if (is_array ($groups) && !empty ($groups))
+  if (!empty ($groups) && is_array ($groups))
   {
     foreach ($groups as $group)
     {
@@ -84,7 +84,7 @@ function plugin_readmenu ($xml, $pluginFolder)
   
   $points = getcontent ($xml, "<point>");
   
-  if (is_array ($points) && !empty ($points))
+  if (!empty ($points) && is_array ($points))
   {
     // Run through all found points
     foreach ($points as $point) 
@@ -217,38 +217,47 @@ function plugin_parse ($oldData=array())
         {
           $menu = trim ($tmp[0]);
 
-          // -------------------------------------------------
           // reading the main menu for this plugin
           $tmp = getcontent ($menu, "<main>");
           
-          if (is_array ($tmp) && !empty ($tmp[0]))
+          if (!empty ($tmp[0]))
           {
             $mainmenu = plugin_readmenu (trim ($tmp[0]), $file);
           }
-            
-          // -------------------------------------------------
+          
           // reading the publication menu for this plugin
           $tmp = getcontent ($menu, "<publication>");
           
-          if (is_array ($tmp) && !empty ($tmp[0]))
+          if (!empty ($tmp[0]))
           {
             $publicationmenu = plugin_readmenu (trim ($tmp[0]), $file);
           }
+          
+          // reading the publication menu for this plugin
+          $tmp = getcontent ($menu, "<context>");
+          
+          if (!empty ($tmp[0]))
+          {
+            $contextmenu = plugin_readmenu (trim ($tmp[0]), $file);
+          }
         }
         
-        // Default plugin configuration when no old data is present
+        // default plugin configuration when no old data is present
         if (!array_key_exists ($file, $oldData)) $oldData[$file] = plugin_getdefaultconf ();
                 
         $return[$file]['name'] = $name;
         $return[$file]['author'] = $author;
         $return[$file]['version'] = $version;
         $return[$file]['description'] = $description;
-        // Active is always taken from old data
+        // active is always taken from old data
         $return[$file]['active'] = $oldData[$file]['active'];
         $return[$file]['folder'] = $mgmt_config['abs_path_plugin'].$file."/";
         $return[$file]['menu'] = array();
+        // navigation tree
         if (!empty ($mainmenu)) $return[$file]['menu']['main'] = $mainmenu;
         if (!empty ($publicationmenu)) $return[$file]['menu']['publication'] = $publicationmenu;
+        // context menu entry
+        if (!empty ($contextmenu)) $return[$file]['menu']['context'] = $contextmenu;
       }
     }
     

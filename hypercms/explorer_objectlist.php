@@ -48,6 +48,12 @@ if (is_array ($hcms_linking) && ($location == "" || deconvertpath ($location, "f
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
+// plugin config
+if (is_file ($mgmt_config['abs_path_data']."config/plugin.conf.php"))
+{
+  require ($mgmt_config['abs_path_data']."config/plugin.conf.php");
+}
+
 // ------------------------------ permission section --------------------------------
 
 // set local permissions
@@ -699,7 +705,7 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
           if (empty ($downloadformats) || (is_document ($mediafile) && !empty ($downloadformats['document']['original'])) || (is_image ($mediafile) && !empty ($downloadformats['image']['original'])))
           {            
             $linking_buttons .= "
-            <a href=\"".createviewlink ($site, $mediafile, $object_name)."\" target=\"_blank\"><button class=\"hcmsButtonDownload\" onClick=\"\">".getescapedtext ($hcms_lang['view'][$lang])."</button></a>
+            <button class=\"hcmsButtonDownload\" onClick=\"openliveview('".url_encode($location_esc)."', '".url_encode($object)."');\">".getescapedtext ($hcms_lang['view'][$lang])."</button>
             <a href=\"".createviewlink ($site, $mediafile, $object_name, false, "download")."\" target=\"_blank\"><button class=\"hcmsButtonDownload\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
           }
         }
@@ -982,7 +988,30 @@ function setcolumns ()
           <a href=# id="_href_publish" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_publish.gif" id="_img_publish" align="absmiddle" border=0 class="hcmsIconOff" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
           <a href=# id="_href_unpublish" disabled="disabled"><img src="<?php echo getthemelocation(); ?>img/button_file_unpublish.gif" id="_img_unpublish" align="absmiddle" border=0 class="hcmsIconOff" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />
           <hr />         
-          <?php } ?>  
+          <?php } ?>
+          <?php
+          // ----------------------------------------- plugins ----------------------------------------------
+          if ($setlocalpermission['root'] == 1 && empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && !empty ($mgmt_plugin))
+          { 
+            $plugin_items = "";
+            
+            foreach ($mgmt_plugin as $plugin_name => $data)
+            {
+              // Only active plugins which have the correct keys are used
+              if (is_array ($data) && !empty ($data['active']) && array_key_exists ('menu', $data) && is_array ($data['menu']) && array_key_exists ('context', $data['menu']) && is_array ($data['menu']['context']))
+              {
+                foreach ($data['menu']['context'] as $key => $point)
+                {
+                  $plugin_items .= "
+            <a href=# id=\"href_plugin_".$key."\" onClick=\"if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('".$mgmt_config['url_path_plugin'].$plugin_name."/".$point['page']."');\"><img src=\"".$point['icon']."\" name=\"img_plugin\" align=\"absmiddle\" style=\"border:0; width:16px; height:16px;\" class=\"hcmsIconOn\" />&nbsp;".getescapedtext ($point['name'])."</a><br />";
+                }
+              }
+            }
+            
+            if ($plugin_items != "") echo $plugin_items."
+          <hr />";
+          }
+          ?>
           <a href=# id="href_print" onClick="hcms_hideContextmenu(); window.print();"><img src="<?php echo getthemelocation(); ?>img/button_print.gif" id="img_print" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['print'][$lang]); ?></a><br />     
           <a href=# id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.gif" id="img_refresh" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
         </td>

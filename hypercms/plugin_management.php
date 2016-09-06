@@ -14,8 +14,9 @@ require ("config.inc.php");
 // hyperCMS API
 require ("function/hypercms_api.inc.php");
 
+
 // plugin file
-if (file_exists ($mgmt_config['abs_path_data']."config/plugin.conf.php"))
+if (is_file ($mgmt_config['abs_path_data']."config/plugin.conf.php"))
 {
   require ($mgmt_config['abs_path_data']."config/plugin.conf.php");
 }
@@ -28,7 +29,7 @@ $active = getrequest ("active");
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if (!checkrootpermission ('site'))  killsession ($user);
+if (!checkrootpermission ('site')) killsession ($user);
 
 // check session of user
 checkusersession ($user);
@@ -46,7 +47,7 @@ if ($action)
       plugin_saveconfig ($mgmt_plugin);
       
       // reload plugin config
-      if (file_exists ($mgmt_config['abs_path_data'].'config/plugin.conf.php'))
+      if (is_file($mgmt_config['abs_path_data'].'config/plugin.conf.php'))
       {
         require ($mgmt_config['abs_path_data'].'config/plugin.conf.php');
       }
@@ -63,7 +64,7 @@ if ($action)
       plugin_saveconfig ($mgmt_plugin);
       
       // reload plugin config
-      if (file_exists ($mgmt_config['abs_path_data'].'config/plugin.conf.php'))
+      if (is_file ($mgmt_config['abs_path_data'].'config/plugin.conf.php'))
       {
         require ($mgmt_config['abs_path_data'].'config/plugin.conf.php');
       }

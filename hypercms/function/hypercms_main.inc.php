@@ -11624,12 +11624,16 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           if ($action == "page_delete") 
           {          
             $objects = getcontent ($bufferdata, "<contentobjects>");
-            // remove object reference ion container (except last entry, since the object will be deleted completetly)
+            
+            // remove object reference in container (except last entry, since the object will be deleted completetly)
             if (!empty ($objects[0]) && substr_count ($objects[0], "|") > 0)
             {
               $objects_str = str_replace ($location_esc.$pagename."|", "", $objects[0]);
               $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $objects_str, "", "");
-            }
+              
+              // check for connected objects and reset allow_delete
+              if (substr_count ($objects_str, "|") > 0) $allow_delete = false; 
+            } 
           
             if ($allow_delete == true)
             {
@@ -12063,14 +12067,15 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
       // --------------------------------------- connected copy and paste object -----------------------------------
       elseif ($show == "" && $action == "page_paste" && $method == "linkcopy")
       {
+        // new object
+        $new_object = $location_esc.$pagename_sec;
+      
         // load link db
         $link_db = link_db_load ($site, $user);
         
         // add new object to link database
         if (is_array ($link_db) && sizeof ($link_db) >= 1)
         {
-          $new_object = $location_esc.$pagename_sec;
-          
           $link_db = link_db_update ($site, $link_db, "object", $contentfile_self, $cat, "", $new_object, "all"); 
               
           if ($link_db != false) $test = link_db_save ($site, $link_db, $user);  

@@ -116,10 +116,9 @@ elseif ($mediafile != "")
   echo showmedia ($mediafile, $file_info['name'], $view);
 }
 
-// meta data
+// metadata
 if (!empty ($contentdata))
 {
-  // meta data
   $metadata_array = getmetadata ("", "", $contentdata, "array", $site."/".$object_info['template']);
 
   if (is_array ($metadata_array))

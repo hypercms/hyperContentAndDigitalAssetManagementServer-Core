@@ -279,6 +279,8 @@ if (checkuserip (getuserip ()) == true)
     // register values for this session
     setsession ('hcms_user', $login_result['user']);
     setsession ('hcms_passwd', md5 ($login_result['passwd']));
+    setsession ('hcms_realname', $login_result['realname']);
+    setsession ('hcms_email', $login_result['email']);
     setsession ('hcms_siteaccess', $login_result['siteaccess']);
     setsession ('hcms_pageaccess', $login_result['pageaccess']);
     setsession ('hcms_compaccess', $login_result['compaccess']);

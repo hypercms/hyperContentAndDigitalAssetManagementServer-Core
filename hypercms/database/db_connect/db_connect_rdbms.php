@@ -964,7 +964,7 @@ function rdbms_setpublicationtaxonomy ($site, $recreate=false)
       while ($row = $db->getResultRow ('containers'))
       {
         // set taxonomy for container
-        settaxonomy ($site, $row1['id']);
+        if (!empty ($row1['id'])) settaxonomy ($site, $row1['id']);
       }
     }
     
@@ -1818,43 +1818,47 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         // search for expression (using taxonomy if enabled or full text index)
         else
         {
-          // if no exact search for the expression is requested, use taxonomy
-          if (empty ($mgmt_config['search_exact']))
+          // search in taxonomy
+          if (!empty ($mgmt_config[$site]['taxonomy']))
           {
-            // look up expression in taxonomy (in all languages)
-            $taxonomy_ids = gettaxonomy_childs (@$site, "", $expression, 1, true);
-          }
-            
-          // search in taxonomy table
-          if (!empty ($taxonomy_ids) && is_array ($taxonomy_ids) && sizeof ($taxonomy_ids) > 0)
-          {
-            // advanced text-ID based search in taxonomy
-            if ($expression != "" && $key != "" && $key != "0")
+            // if no exact search for the expression is requested, use taxonomy
+            if (empty ($mgmt_config['search_exact']))
             {
-              // add taxonomy table
-              if ($i_tx == 1)
-              {
-                $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
-              }
-              elseif ($i_tx > 1)
-              {
-                $j = $i_tx - 1;
-                $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx'.$i_tx.' ON tx'.$j.'.id=tx'.$i_tx.'.id';
-              }
-
-              $sql_expr_advanced[$i] .= '(tx'.$i_tx.'.text_id="'.$key.'" AND tx'.$i_tx.'.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).'))';
-              
-              $i_tx++;
+              // look up expression in taxonomy (in all languages)
+              $taxonomy_ids = gettaxonomy_childs (@$site, "", $expression, 1, true);
             }
-            // general search in taxonomy (only one search expression possible -> break out of loop)
-            elseif ($expression != "")
-            {
-              // add taxonomy table
-              $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
               
-              $sql_expr_advanced[$i] = 'tx1.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).')';
+            // search in taxonomy table
+            if (!empty ($taxonomy_ids) && is_array ($taxonomy_ids) && sizeof ($taxonomy_ids) > 0)
+            {
+              // advanced text-ID based search in taxonomy
+              if ($expression != "" && $key != "" && $key != "0")
+              {
+                // add taxonomy table
+                if ($i_tx == 1)
+                {
+                  $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
+                }
+                elseif ($i_tx > 1)
+                {
+                  $j = $i_tx - 1;
+                  $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx'.$i_tx.' ON tx'.$j.'.id=tx'.$i_tx.'.id';
+                }
   
-              break;
+                $sql_expr_advanced[$i] .= '(tx'.$i_tx.'.text_id="'.$key.'" AND tx'.$i_tx.'.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).'))';
+                
+                $i_tx++;
+              }
+              // general search in taxonomy (only one search expression possible -> break out of loop)
+              elseif ($expression != "")
+              {
+                // add taxonomy table
+                $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
+                
+                $sql_expr_advanced[$i] = 'tx1.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).')';
+    
+                break;
+              }
             }
           }
           // search in textnodes table

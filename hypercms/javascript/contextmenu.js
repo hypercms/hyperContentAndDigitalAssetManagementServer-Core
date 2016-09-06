@@ -255,7 +255,12 @@ function hcms_showContextmenu ()
         if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOn";
         if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOn";
         if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOn"; 
+        if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOn";
+        if (eval (document.getElementsByName("img_plugin")))
+        {
+          var plugin_items = document.getElementsByName("img_plugin");
+          for (var i=0; i<plugin_items.length; i++) plugin_items[i].className = "hcmsIconOn";
+        }
       }
       else if (multiobject == "" && contexttype == "media")
       {
@@ -270,7 +275,12 @@ function hcms_showContextmenu ()
         if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOn";
         if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOn";
         if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOn";  
+        if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOn";
+        if (eval (document.getElementsByName("img_plugin")))
+        {
+          var plugin_items = document.getElementsByName("img_plugin");
+          for (var i=0; i<plugin_items.length; i++) plugin_items[i].className = "hcmsIconOn";
+        }
       }
       else
       {  
@@ -286,6 +296,11 @@ function hcms_showContextmenu ()
         if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOff";
         if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOff";
         if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOff";
+        if (eval (document.getElementsByName("img_plugin")))
+        {
+          var plugin_items = document.getElementsByName("img_plugin");
+          for (var i=0; i<plugin_items.length; i++) plugin_items[i].className = "hcmsIconOff";
+        }
       }
     }
   }
@@ -468,6 +483,14 @@ function hcms_createContextmenuItem (action)
         document.forms['contextmenu_object'].attributes['action'].value = "popup_action.php";
         document.forms['contextmenu_object'].elements['action'].value = "page_unlock";
         hcms_submitWindow('contextmenu_object', 'status=no,scrollbars=no,resizable=no,width=400,height=120','400','120');
+        allow_tr_submit = false;
+      }
+      else if (action != "")
+      {
+        document.forms['contextmenu_object'].attributes['action'].value = action;
+        document.forms['contextmenu_object'].attributes['target'].value = "workplFrame";
+        document.forms['contextmenu_object'].elements['action'].value = "plugin";
+        document.forms['contextmenu_object'].submit();
         allow_tr_submit = false;
       }
     }  

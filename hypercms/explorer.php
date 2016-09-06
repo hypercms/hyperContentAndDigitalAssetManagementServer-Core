@@ -17,7 +17,7 @@ require ("function/hypercms_api.inc.php");
 require ("include/diskkey.inc.php");
 
 
-// plugin file
+// plugin config
 if (file_exists ($mgmt_config['abs_path_data']."config/plugin.conf.php"))
 {
   require ($mgmt_config['abs_path_data']."config/plugin.conf.php");
@@ -557,10 +557,10 @@ function generateHierarchyTree ($hierarchy_url, $runningNumber=1)
   else return false;
 } 
 
-// Generates a list of menupoints based on the points array from the plugins Array
+// generates a list of menupoints based on the points array from the plugins Array
 // array contains the array with the points or groups
 // folder tells us which folder the images reside in (typically thats the value from $mgmt_plugin[name]['folder']
-function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false,$site=false)
+function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false, $site=false)
 {
   global $mgmt_config;
   
@@ -571,11 +571,11 @@ function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false,$site=
     foreach ($array as $key => $point)
     {
       // Name, Icon and either link or subpoints must be present
-      if ( is_array ($point) && array_key_exists ('name', $point) && array_key_exists ('icon', $point) && (array_key_exists ('page', $point) || array_key_exists ('subpoints', $point)))
+      if (is_array ($point) && array_key_exists ('name', $point) && array_key_exists ('icon', $point) && (array_key_exists ('page', $point) || array_key_exists ('subpoints', $point)))
       {
         $icon = $point['icon'];
         
-        if (array_key_exists('subpoints', $point) && is_array($point['subpoints']))
+        if (array_key_exists ('subpoints', $point) && is_array ($point['subpoints']))
         {
           $id = str_replace (array(" ", "/", '\\'), "_", $pluginKey.($groupKey !== false ? $groupKey : "").'_'.$key);
           $curr = new hcms_menupoint ($point['name'], '#'.$id, $icon, $id);
@@ -589,16 +589,16 @@ function generatePluginTree ($array, $pluginKey, $folder, $groupKey=false,$site=
         } 
         else
         {
-          $link = 'plugin_showpage.php?plugin='.urlencode($pluginKey).'&page='.urlencode($point['page']);
+          $link = 'plugin_showpage.php?plugin='.url_encode($pluginKey).'&page='.url_encode($point['page']);
           
           if (array_key_exists ('control', $point) && !empty ($point['control']) && $point['control'])
           {
-            $link .= '&control='.urlencode($point['control']);
+            $link .= '&control='.url_encode($point['control']);
           }
           
           if ($site)
           {
-            $link .= '&site='.urlencode($site);
+            $link .= '&site='.url_encode($site);
           }
           
           $curr = new hcms_menupoint($point['name'], $link, $icon);
@@ -759,7 +759,7 @@ else
     foreach ($mgmt_plugin as $key => $data)
     {
       // Only active plugins which have the correct keys are used
-      if (is_array ($data) && array_key_exists ('active', $data) && $data['active'] == true && array_key_exists ('menu', $data) && is_array ($data['menu']) && array_key_exists ('main', $data['menu']) && is_array ($data['menu']['main']))
+      if (is_array ($data) && !empty ($data['active']) && array_key_exists ('menu', $data) && is_array ($data['menu']) && array_key_exists ('main', $data['menu']) && is_array ($data['menu']['main']))
       {
         $pluginmenu = generatePluginTree ($data['menu']['main'], $key, $data['folder']);
         foreach ($pluginmenu as $point) $maintree .= $point->generateHTML();

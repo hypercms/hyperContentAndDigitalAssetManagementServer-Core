@@ -321,7 +321,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 
           $template_files = getlocaltemplates ($site, $cat);
 
-          if (sizeof ($template_files) >= 1)
+          if (is_array ($template_files) && sizeof ($template_files) > 0)
           {
             foreach ($template_files as $value)
             {

@@ -1186,7 +1186,7 @@ function getlistelements ($list_sourcefile)
 // function: getmetadata()
 // input: location, object (both optional if container is given), container name/ID or container content (optional), 
 //        seperator of meta data fields [any string,array] (optional), publication name/template name to extract label names (optional)
-// output: string with all meta data from given object based on container / false
+// output: string with all metadata from given object based on container / false
 
 function getmetadata ($location, $object, $container="", $seperator="\n", $template="")
 {

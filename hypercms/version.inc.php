@@ -1329,7 +1329,7 @@ Release 03/2016
 - Changes in media and meta API functions for cloud storage support
 - Bug fix: mediadownload service did not verify and present file download for template media files
 - Implementation of synchronization service in daily job to synchronize media files with cloud storage
-- Update of al lnaguage files with new translations
+- Update of al language files with new translations
 - Implementation of new publication settings for local and cloud storage
 - Renamed publication settting 'storage' to 'storage_limit'. Implementation of various changes to support the changed name.
 - Implementation of new publication setting for 'storage_type' to support local, cloud and both storage types
@@ -1434,14 +1434,14 @@ Release 04/2016
 - Bug fix: Function downloadfile did not set correct http-header for content-disposition
 - Changed preview size of media in side bar
 - Moved stopwords and synonyms to data/include directory (which are not influenced by software updates)
-- Implementation of multilanguage taxaonomies (defintion in text files)
+- Implementation of multilanguage taxonomies (defintion in text files)
 - Implementation of taxonomy tree in explorer
 - Improvements in keyword plugin in order to clean keyword content
 - Improvements in function rdbms_setcontent in order to clean indexed content
 - Changes in function getkeywords in meta API to return array instead of keyword string
 - Implementation of new function splitkeywordsin meta API
 - Implementation of new function rdbms_gekeywords to select and count unique keywords by location and text ID
-- Implementation of new function createtaxanomy in meta API
+- Implementation of new function createtaxonomy in meta API
 - Bug fix: Upload of pages checkbox in site_edit_form has not been disabled for DAM only usage
 - Added constraint attribute to textk tag for templates (keyword tag)
 - Implementation of new function gettaxonomy_sublevel in get API
@@ -1818,6 +1818,25 @@ Release 08/2016
 - Bug fix: Column headers of oibjectlist views displayed text ID instead of label
 - Improvements in function getmetadata_multiobjects
 
+Version 6.1.20
+Release 09/2016
+- Improvements in task management
+- Bug fix: Function get_youtube_videourl in Youtube Connector did not correctly verify input variables
+- Modifications in function userlogin in security API to support realname and e-mail of user
+- Implementation of context menu items support for Plugins
+- Modifications in function plugin_parse for context menu support
+- Modifications in JS function hcms_createContextmenuItem and hcms_showContextmenu for Plugin support
+- Bug fix: Function tasknotification of task API did not load language file if required
+- Bug fix: Function rdbms_setpublicationtaxonomy in DB Connect did not verify the taxonomy ID before call of function settaxonomy
+- View-button in explorer_objectlist and search_objectlist opens the new live-view introduced in version 6.1.19
+- Modification of the search that did not restrict the search location if object linking (access link) has been used
+- Removed serach field in top bar if object linking is used (access link of an object)+
+- Bug fix: Function rdbms_searchcontent did not exclude taxonomy seacrh if taxonomy has been disabled for the publication
+- Bug fix: Function manipulateobject did not create reference in contentobjects node of content container for a connected copy of an object
+- Bug fix: Function manipulateobject delete multimedia file of a connected object if the link management database was not enabled
+- Improvements in search_objectlist
+*/
+
 // current version
-$version = "Version 6.1.19";
+$version = "Version 6.1.20";
 ?>

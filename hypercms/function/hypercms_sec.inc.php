@@ -949,6 +949,16 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         if (!empty ($userhash[0])) $result['userhash'] = $userhash[0];
         else $result['userhash'] = "";
         
+        // user real name
+        $userrealname = getcontent ($usernode[0], "<realname>");
+        if (!empty ($userrealname[0])) $result['realname'] = $userrealname[0];
+        else $result['realname'] = "";
+        
+        // user e-mail
+        $useremail = getcontent ($usernode[0], "<email>");
+        if (!empty ($useremail[0])) $result['email'] = $useremail[0];
+        else $result['email'] = "";
+        
         // super admin
         $useradmin = getcontent ($usernode[0], "<admin>");
         if (!empty ($useradmin[0])) $result['superadmin'] = $superadmin = $useradmin[0];

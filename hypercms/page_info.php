@@ -256,18 +256,18 @@ if ($pagestore != false)
     {
       echo "<tr><td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['access-statistics'][$lang]).": </td><td><img name=\"Button3\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_stats.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button3','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
-    
+
     // show youtube statistics button (requires youtube connector)
-    if ($cat == "comp" && is_dir ($mgmt_config['abs_path_cms']."connector/youtube") && !empty ($mgmt_config[$site]['youtube_token']))
+    if ($cat == "comp" && is_dir ($mgmt_config['abs_path_cms']."connector/youtube"))
     {
       // YouTube functions
-      require ("connector/youtube/functions.inc.php");
+      require_once ($mgmt_config['abs_path_cms']."connector/youtube/functions.inc.php");
 
       // get youtube video ID
       $temp = selectcontent ($contentdata, "<text>", "<text_id>", "Youtube-ID");
       if (!empty ($temp[0])) $temp = getcontent ($temp[0], "<textcontent>");
-    
-      if (!empty ($temp[0])) echo "<tr><td nowrap=\"nowrap\">Youtube Link: </td><td><img name=\"Button6\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"hcms_openWindow('".get_youtube_videourl ($site, $temp[0])."', '', 'scrollbars=yes,resizable=yes', 640, 640);\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button6','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
+
+      if (!empty ($temp[0])) echo "<tr><td nowrap=\"nowrap\">Youtube Link: </td><td><img name=\"Button6\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"hcms_openWindow('".get_youtube_videourl($site, $temp[0])."', '', 'scrollbars=yes,resizable=yes', 640, 640);\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button6','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
     
     // show meta information button

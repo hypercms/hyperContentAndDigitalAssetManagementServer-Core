@@ -113,7 +113,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
         <img src="<?php echo getthemelocation(); ?>img/button_chat.gif" align="absmiddle" class="hcmsButton hcmsButtonSizeSquare" onClick="hcms_openChat();" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
       </td>
       <?php } ?>
-      <?php if (!empty ($mgmt_config['db_connect_rdbms'])) { ?>
+      <?php if (!empty ($mgmt_config['db_connect_rdbms']) && empty ($hcms_linking['object'])) { ?>
       <td id="selectbox" width="240" align="right" valign="middle" nowrap="nowrap">
         <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
           <input type="hidden" name="action" value="base_search" />
