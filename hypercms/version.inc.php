@@ -1835,8 +1835,12 @@ Release 09/2016
 - Bug fix: Function manipulateobject did not create reference in contentobjects node of content container for a connected copy of an object
 - Bug fix: Function manipulateobject delete multimedia file of a connected object if the link management database was not enabled
 - Improvements in search_objectlist
+
+Version 6.1.21
+Release 09/2016
+- Bug fix: search_objectlist did not end a line of code properly
 */
 
 // current version
-$version = "Version 6.1.20";
+$version = "Version 6.1.21";
 ?>

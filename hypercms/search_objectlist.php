@@ -247,7 +247,7 @@ elseif ($action == "base_search" || $search_dir != "")
   if (is_array ($hcms_linking) && ($location == "" || deconvertpath ($location, "file") == deconvertpath ($hcms_linking['location'], "file"))) 
   {
     $site = $hcms_linking['publication'];
-    $cat = $hcms_linking['cat']
+    $cat = $hcms_linking['cat'];
     $search_dir = $hcms_linking['location'];
   }
 
