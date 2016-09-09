@@ -447,13 +447,13 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
 
     if ($done)
     {
-      if ($row = $db->getResultRow ('textnodes'))
+      while ($row = $db->getResultRow ('textnodes'))
       {
         $sql = 'INSERT INTO textnodes (id, text_id, textcontent, object_id, type, user) ';
         $sql .= 'VALUES ('.$container_id_dest.', "'.$row['text_id'].'", "'.$row['textcontent'].'", "'.$row['object_id'].'", "'.$row['type'].'", "'.$user.'")';
         
         $errcode = "50102";
-        $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+        $db->query ($sql, $errcode, $mgmt_config['today']);
       }
     }
     
@@ -471,7 +471,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
         $sql .= 'VALUES ('.$container_id_dest.', "'.$row['filesize'].'", "'.$row['filetype'].'", "'.$row['width'].'", "'.$row['height'].'", "'.$row['red'].'", "'.$row['green'].'", "'.$row['blue'].'", "'.$row['colorkey'].'", "'.$row['imagetype'].'", "'.$row['md5_hash'].'")';
         
         $errcode = "50104";
-        $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+        $db->query ($sql, $errcode, $mgmt_config['today']);
       }
     }
     
@@ -489,7 +489,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
         $sql .= 'VALUES ('.$container_id_dest.', "'.$row['keyword_id'].'")';
         
         $errcode = "50106";
-        $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+        $db->query ($sql, $errcode, $mgmt_config['today']);
       }
     }
     
@@ -507,7 +507,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
         $sql .= 'VALUES ('.$container_id_dest.', "'.$row['text_id'].'", "'.$row['taxonomy_id'].'", "'.$row['lang'].'")';
         
         $errcode = "50108";
-        $done = $db->query ($sql, $errcode, $mgmt_config['today']);
+        $db->query ($sql, $errcode, $mgmt_config['today']);
       }
     }
 
@@ -556,7 +556,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
       $errcode = "50003";
       $db->query ($sql, $errcode, $mgmt_config['today'], 1);
     }
-    
+
     // update text nodes
     if (is_array ($text_array) && sizeof ($text_array) > 0)
     {
@@ -580,22 +580,22 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
           {
             $row = $db->getResultRow ($i);
             
+            // define type
+            if (!empty ($type_array[$text_id]))
+            {
+              $type = $type_array[$text_id];
+              
+              // add text prefix if only text type letter has been provided
+              if ($type == "u" || $type == "f" || $type == "l" || $type == "c" || $type == "d" || $type == "k") $type = "text".$type;
+            }
+            else $type = "";
+            
             // only save content in database if content has been changed
-            if ($row['textcontent'] != cleancontent ($text, convert_dbcharset ($mgmt_config['dbcharset'])) && $row['object_id']."|".$row['textcontent'] != cleancontent ($text, convert_dbcharset ($mgmt_config['dbcharset'])))
+            if (empty ($row['text_id']) || ($row['textcontent'] != cleancontent ($text, convert_dbcharset ($mgmt_config['dbcharset'])) && $row['object_id']."|".$row['textcontent'] != cleancontent ($text, convert_dbcharset ($mgmt_config['dbcharset']))))
             {
               // content has been changed
               $update = true;
-              
-              // define type
-              if (!empty ($type_array[$text_id]))
-              {
-                $type = $type_array[$text_id];
-                
-                // add text prefix if only text type letter has been provided
-                if ($type == "u" || $type == "f" || $type == "l" || $type == "c" || $type == "d" || $type == "k") $type = "text".$type;
-              }
-              else $type = "";
-            
+
               // prepare text value for link and media items
               if ((strpos ("_".$text_id, "link:") > 0 || strpos ("_".$text_id, "media:") > 0 || strpos ("_".$text_id, "comp:") > 0) && strpos ("_".$text, "|") > 0)
               {
@@ -2831,6 +2831,7 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array="")
     {
       while ($row = $db->getResultRow ())
       {
+        // split keywords
         if ($row['type'] == "textk")
         {
           $result_add = splitkeywords ($row['textcontent']);

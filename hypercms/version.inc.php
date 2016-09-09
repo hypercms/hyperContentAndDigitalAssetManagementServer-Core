@@ -1839,6 +1839,8 @@ Release 09/2016
 Version 6.1.21
 Release 09/2016
 - Bug fix: search_objectlist did not end a line of code properly
+- Bug fix: Function rdbms_setcontent did not insert textnodes if the content was empty
+- Bug fix: Function rdbms_copycontent did not copy all content of a container from table textnodes
 */
 
 // current version
