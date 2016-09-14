@@ -1633,8 +1633,8 @@ else
   
   <?php if (!$is_mobile) { ?>
   <div style="position:fixed; z-index:1000; right:0; top:45%; margin:0; padding:0;">
-    <img onclick="parent.minNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
-    <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
+    <img onclick="parent.minNavFrame(); hcms_showHideLayers('menu','','hide','search','','hide');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
+    <img onclick="parent.maxNavFrame(); hcms_showHideLayers('menu','','show','search','','hide');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
   </div>
   <?php } ?>
   
@@ -1681,8 +1681,8 @@ else
     
     <!-- buttons -->
     <div style="position:fixed; top:4px; right:4px; z-index:200;">
-      <img onClick="hcms_showHideLayers('menu','','show','search','','hide');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_explorer.png" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
-      <img onClick="hcms_showHideLayers('menu','','hide','search','','show');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_search.png" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+      <img onClick="parent.maxNavFrame(); hcms_showHideLayers('menu','','show','search','','hide');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_explorer.png" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
+      <img onClick="parent.maxNavFrame(); hcms_showHideLayers('menu','','hide','search','','show');" class="hcmsButton" src="<?php echo getthemelocation(); ?>img/button_search.png" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
     </div>
 
     <!-- navigator -->

@@ -21,8 +21,6 @@ require ("function/hypercms_tplengine.inc.php");
 $location = getrequest_esc ("location", "locationname");
 $page = getrequest_esc ("page", "objectname");
 $container = getrequest ("container", "objectname");
-$buildview = getrequest ("buildview");
-$ctrlreload = getrequest_esc ("ctrlreload");
 
 // get publication and category
 $site = getpublication ($location);

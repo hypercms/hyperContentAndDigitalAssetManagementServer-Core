@@ -51,7 +51,7 @@ function minNavFrame ()
 {
   if (document.getElementById('navFrame'))
   {
-    var width = 42;
+    var width = 32;
     
     document.getElementById('navLayer').style.width = width + 'px';
     document.getElementById('workplLayer').style.left = width + 'px';

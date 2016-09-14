@@ -860,7 +860,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               if (empty ($downloadformats) || (is_document ($mediafile) && !empty ($downloadformats['document']['original'])) || (is_image ($mediafile) && !empty ($downloadformats['image']['original'])))
               {            
                 $linking_buttons .= "
-                <button class=\"hcmsButtonDownload\" onClick=\"openliveview('".url_encode($location_esc)."', '".url_encode($object)."');\">".getescapedtext ($hcms_lang['view'][$lang])."</button>
+                <button class=\"hcmsButtonDownload\" onClick=\"openobjectview('".url_encode($location_esc)."', '".url_encode($object)."', 'preview');\">".getescapedtext ($hcms_lang['view'][$lang])."</button>
                 <a href=\"".createviewlink ($item_site, $mediafile, $object_name, false, "download")."\" target=\"_blank\"><button class=\"hcmsButtonDownload\">".getescapedtext ($hcms_lang['download'][$lang])."</button></a>";
               }
             }
@@ -977,19 +977,13 @@ function toggleview (viewoption)
   return true;
 }
 
-function openliveview (location, object)
+function openobjectview (location, object, view)
 {
-  var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
-  var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
-  
-  document.getElementById('liveview').src = 'explorer_liveview.php?location=' + location + '&page=' + object + '&width=' + width + '&height=' + height;
-  hcms_showInfo('liveviewLayer',0);
-}
-
-function closeliveview ()
-{
-  document.getElementById('liveview').src = '';
-  hcms_hideInfo('liveviewLayer');
+  if (location != "" && object != "" && parent.document.getElementById('objectview'))
+  {
+    parent.openobjectview(location, object, view);
+  }
+  else return false;
 }
 
 // start chat
@@ -1036,11 +1030,11 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 <body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" onresize="resizecols();">
 
 <!-- live view --> 
-<div id="liveviewLayer" class="hcmsWorkplaceObjectlist" style="display:none; position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; z-index:8;">
+<div id="objectviewLayer" class="hcmsWorkplaceObjectlist" style="display:none; overflow:hidden; position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; z-index:8;">
   <div style="position:fixed; right:5px; top:5px; z-index:9;">
-    <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="closeliveview();" />
+    <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="closeobjectview();" />
   </div>
-  <iframe id="liveview" src="" scrolling="auto" frameBorder="0" <?php if (!$is_iphone) echo 'style="width:100%; height:100%; border:0; margin:0; padding:0;"'; ?>></iframe>
+  <iframe id="objectview" src="" scrolling="no" frameBorder="0" <?php if (!$is_iphone) echo 'style="width:100%; height:100%; border:0; margin:0; padding:0;"'; ?>></iframe>
 </div>
 
 <!-- contextual help --> 

@@ -87,7 +87,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   $name = convertchars ($file_info['name'], "UTF-8", $charset);
 
   // media preview
-  if (is_array ($object_info) && $object_info['media'] != "")
+  if (is_array ($object_info) && !empty ($object_info['media']))
   {
     $mediaview = "preview_no_rendering";
     $mediafile = $site."/".$object_info['media'];

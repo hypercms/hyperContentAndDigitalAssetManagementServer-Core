@@ -1841,8 +1841,21 @@ Release 09/2016
 - Bug fix: search_objectlist did not end a line of code properly
 - Bug fix: Function rdbms_setcontent did not insert textnodes if the content was empty
 - Bug fix: Function rdbms_copycontent did not copy all content of a container from table textnodes
+
+Version 6.1.22
+Release 09/2016
+- Implementation of mobile device screen emulator for preview and live-view of pages
+- Implementation of new main configuration setting for the defintion of mobile devices and their screen size
+- Implementation of a new preview and live-view of pages
+- Renamed JS function openlivew to openobjectview
+- Implementation of view paramater for JS function openobjectview
+- Removed JS function escapevalue from control_objectlist_menu and control_content_menu
+- Improvements of Navigator resizing
+- Modifications in JS library for contextmenu for new previews
+- Bug fix: control_objectlist_menu did onyl allow unzip of files in page structure 
+- Improvements in Nativy Plugin incl. a new Plugin configuration file and the implementation of the nativy API to support orders via context menu
 */
 
 // current version
-$version = "Version 6.1.21";
+$version = "Version 6.1.22";
 ?>

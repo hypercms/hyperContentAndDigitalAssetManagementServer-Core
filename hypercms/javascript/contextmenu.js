@@ -414,7 +414,7 @@ function hcms_createContextmenuItem (action)
       
       if (action == "preview")
       {
-        hcms_openWindow('page_preview.php?' + URLparaView,'preview','scrollbars=yes,resizable=yes','800','600');
+        openobjectview(location, page, 'preview');
       }
       else if (action == "cmsview" && multiobject.split("|").length > 2 && parent && parent.frames && parent.frames['controlFrame'] && parent.frames['controlFrame'].submitToWindow)
       {

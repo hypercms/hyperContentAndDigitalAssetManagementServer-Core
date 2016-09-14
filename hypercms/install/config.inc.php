@@ -225,6 +225,35 @@ $mgmt_config['check_duplicates'] = true;
 // Set value to 0 to disable autosave
 $mgmt_config['autosave'] = 0;
 
+// Define screen sizes for mobile browser emulation
+$mgmt_config['screensize'] = array();
+// Notebook/desktop screen sizes
+$mgmt_config['screensize']['desktop']['10&quot; Netbook'] = "1024 x 600";
+$mgmt_config['screensize']['desktop']['12&quot; Netbook'] = "1024 x 768";
+$mgmt_config['screensize']['desktop']['13&quot; Notebook'] = "1280 x 800";
+$mgmt_config['screensize']['desktop']['15&quot; Notebook'] = "1366 x 768";
+$mgmt_config['screensize']['desktop']['19&quot; Desktop'] = "1440 x 900";
+$mgmt_config['screensize']['desktop']['20&quot; Desktop'] = "1600 x 900";
+$mgmt_config['screensize']['desktop']['22&quot; Desktop'] = "1680 x 1050";
+// Tablet screen sizes
+$mgmt_config['screensize']['tablet']['Apple iPad (All)'] = "768 x 1024";
+$mgmt_config['screensize']['tablet']['Google Nexus 7'] = "603 x 966";
+$mgmt_config['screensize']['tablet']['Kindle Fire HD 7&quot;'] = "533 x 853";
+$mgmt_config['screensize']['tablet']['Kindle Fire'] = "600 x 800";
+$mgmt_config['screensize']['tablet']['Kindle Fire HD 8.9&quot;'] = "800 x 1280";
+$mgmt_config['screensize']['tablet']['Samsung Galaxy Tab'] = "600 x 1024";
+// Phone screen sizes
+$mgmt_config['screensize']['phone']['Apple iPhone 3/4'] = "320 x 480";
+$mgmt_config['screensize']['phone']['Apple iPhone 5'] = "320 x 568";
+$mgmt_config['screensize']['phone']['Apple iPhone 6'] = "375 x 667";
+$mgmt_config['screensize']['phone']['Apple iPhone 6 Plus'] = "414 x 736";
+$mgmt_config['screensize']['phone']['ASUS Galaxy 7'] = "320 x 533";
+$mgmt_config['screensize']['phone']['BlackBerry 8300'] = "320 x 240";
+$mgmt_config['screensize']['phone']['LG Optimus S'] = "320 x 480";
+$mgmt_config['screensize']['phone']['Samsung Galaxy S2'] = "320 x 533";
+$mgmt_config['screensize']['phone']['Samsung Galaxy S3/4'] = "320 x 640";
+$mgmt_config['screensize']['phone']['Samsung Galaxy S5'] = "360 x 640";
+
 // --------------------------------- Language settings ---------------------------------------
 
 // Language Settings

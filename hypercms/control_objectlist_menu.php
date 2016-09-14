@@ -629,20 +629,11 @@ function setfilter (filter)
   else return false;
 }
 
-function escapevalue (value)
+function openobjectview (location, object, view)
 {
-  if (value != "")
+  if (location != "" && object != "" && parent.document.getElementById('objectview'))
   {
-    return encodeURIComponent (value);
-  }
-  else return "";
-}
-
-function openliveview (location, object)
-{
-  if (location != "" && object != "" && parent.frames['mainFrame'].document.getElementById('liveview'))
-  {
-    parent.frames['mainFrame'].openliveview(location, object);
+    parent.openobjectview(location, object, view);
   }
   else return false;
 }
@@ -835,7 +826,7 @@ else
     // UNZIP Button
     if ( 
          $mgmt_uncompress['.zip'] != "" && $from_page == "" && 
-         $multiobject_count < 0 &&
+         $multiobject_count <= 1 &&
          $filetype == "compressed" &&
          ($usedby == "" || $usedby == $user) && 
          $page != "" && 
@@ -854,24 +845,19 @@ else
     // Preview Button
     if ($container_id > 0 && $multiobject_count <= 1 && $page != "" && $cat != "" && $setlocalpermission['root'] == 1)
     {
-      if ($page != ".folder") echo "<img onClick=\"hcms_openWindow('page_preview.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."', 'preview', 'location=no,scrollbars=yes,resizable=yes,titlebar=no', 800, 600);\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" src=\"".getthemelocation()."img/button_file_preview.gif\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" />\n";
-      elseif ($page == ".folder") echo "<img onClick=\"hcms_openWindow('page_preview.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/&page=.folder', 'preview', 'location=no,scrollbars=yes,resizable=yes,titlebar=no', 800, 600);\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" src=\"".getthemelocation()."img/button_file_preview.gif\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" />\n";
+      if ($page != ".folder") echo "<img onClick=\"openobjectview('".url_encode($location_esc)."', '".url_encode($page)."', 'preview');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" src=\"".getthemelocation()."img/button_file_preview.gif\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" />\n";
+      elseif ($page == ".folder") echo "<img onClick=\"openobjectview('".url_encode($location_esc.$folder)."/', '".url_encode($page)."', 'preview');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" src=\"".getthemelocation()."img/button_file_preview.gif\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" />\n";
     }
     else echo "<img src=\"".getthemelocation()."img/button_file_preview.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
 
-    // LiveView Button
+    // Live-View Button
     if ($multiobject_count <= 1 && 
-        $file_info['published'] == true && $page != ".folder" && $page != "" && 
-        $setlocalpermission['root'] == 1
+        $file_info['published'] == true && $page != ".folder" && $page != "" && valid_publicationname ($site) && 
+        $setlocalpermission['root'] == 1 && 
+        empty ($media) && $cat == "page"
     )
     {
-      if (empty ($media) && $cat == "page" && valid_publicationname ($site))
-      {
-        $url_location = str_ireplace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$page;
-        echo "<img onClick=\"hcms_openWindow('".$url_location."', 'preview', 'location=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,titlebar=no', 800, 600);\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_liveview.gif\" alt=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" />\n";
-      }
-      elseif (!empty ($media)) echo "<img onClick=\"openliveview('".url_encode($location_esc)."', '".url_encode($page)."');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_liveview.gif\" alt=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" />\n";
-      else echo "<img src=\"".getthemelocation()."img/button_file_liveview.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "<img onClick=\"openobjectview('".url_encode($location_esc)."', '".url_encode($page)."', 'liveview');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_liveview.gif\" alt=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" />\n";
     }
     else echo "<img src=\"".getthemelocation()."img/button_file_liveview.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     
