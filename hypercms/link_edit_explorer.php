@@ -74,17 +74,40 @@ $location_name = getlocationname ($site, $dir_esc, "page", "path");
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css">
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
+<!-- Jquery and Jquery UI Autocomplete -->
+<script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
 <script language="JavaScript">
-<!--
 function sendInput(text, value)
 {
   parent.frames['mainFrame2'].document.forms['link'].elements['link_name'].value = text;
   parent.frames['mainFrame2'].document.forms['link'].elements['linkhref'].value = value;
   parent.frames['mainFrame2'].refreshPreview();
 }
-//-->
+
+function submitForm ()
+{
+  if (document.forms['searchform_general'])
+  {
+    var form = document.forms['searchform_general'];  
+    if (form.elements['search_expression'].value != '') form.submit();
+  }
+}
+
+$(document).ready(function()
+{
+  <?php
+  $keywords = getsearchhistory ($user);
+  ?>
+  var available_expressions = [<?php if (is_array ($keywords)) echo implode (",\n", $keywords); ?>];
+
+  $("#search_expression").autocomplete({
+    source: available_expressions
+  });
+});
 </script>
 </head>
 
@@ -109,8 +132,8 @@ function sendInput(text, value)
     <form name="searchform_general" action="" method="post">
       <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
-      <input type="text" name="search_expression" value="<?php if ($search_expression != "") echo html_encode ($search_expression); else echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" onblur="if (this.value=='') this.value='<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>';" onfocus="if (this.value=='<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>') this.value='';" style="width:190px;" maxlength="60" />
-      <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['searchform_general'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="top" alt="OK" title="OK" />
+      <input type="text" name="search_expression" id="search_expression" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="<?php if ($search_expression != "") echo html_encode ($search_expression); ?>" style="width:190px;" maxlength="200" />
+      <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="top" alt="OK" title="OK" />
     </form>
   </td>
  </tr>

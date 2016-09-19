@@ -85,7 +85,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     if (valid_publicationname ($site)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
       
     $url_page = str_ireplace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$page;
-    $objectview = "<div id=\"objectcontainer\" style=\"width:".($screenwidth - 80)."px; height:".($screenheight - 80)."px; border:1px #000000 solid;\"><iframe scrolling=\"auto\" src=\"".$url_page."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>";
+    $objectview = "<div id=\"objectcontainer\" style=\"width:".($screenwidth - 80)."px; height:".($screenheight - 80)."px; border:1px #000000 solid;\"><iframe id=\"objectiframe\" scrolling=\"auto\" src=\"".$url_page."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>";
   }
   // page or component preview (no multimedia file)
   else
@@ -181,6 +181,25 @@ function closeselectors ()
     selector[i].style.visibility = 'hidden';
   }
 }
+
+function openBrWindowLink (winName, features, type)
+{
+  if (document.getElementById('objectiframe'))
+  {
+    var theURL = document.getElementById('objectiframe').src;
+
+    if (theURL != "")
+    {
+      popup = window.open(theURL,winName,features);
+      popup.moveTo(screen.width/2-800/2, screen.height/2-600/2);
+      popup.focus();
+    
+      return true;
+    }
+    return false;
+  }
+  else alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-link-selected'][$lang], $charset, $lang); ?>'));
+}
 </script>
 </head>
 
@@ -214,6 +233,9 @@ if (empty ($mediafile) && !empty ($mgmt_config['screensize']) && is_array ($mgmt
   <div onClick=\"closeselectors(); rotate();\" class=\"hcmsButton hcmsButtonSizeSquare\"><img src=\"".getthemelocation()."img/icon_rotate.png\" style=\"padding:2px; width:18px; height:18px;\" id=\"pic_rotate\" name=\"pic_rotate\" alt=\"".getescapedtext($hcms_lang['rotate'][$lang])."\" title=\"".getescapedtext($hcms_lang['rotate'][$lang])."\" /></div>";
 }
 ?>
+<?php if ($cat == "page") { ?>
+  <div onClick="openBrWindowLink('preview','scrollbars=yes,resizable=yes,width=800,height=600', 'preview')" class="hcmsButton hcmsButtonSizeSquare"><img name="ButtonView" src="<?php echo getthemelocation(); ?>img/icon_newwindow.png" style="padding:2px; width:18px; height:18px;" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" /></div>
+<?php } ?>
 </div>
 
 <div id="container">

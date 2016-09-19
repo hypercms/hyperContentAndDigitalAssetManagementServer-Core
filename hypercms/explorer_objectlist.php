@@ -1004,6 +1004,7 @@ function openobjectview (location, object, view)
       </tr>    
     </table>
   </form>
+  
   <!-- context menu for colum attributes -->
   <form name="contextmenu_column" action="" method="post" style="display:none;">
     <input type="hidden" name="token" value="<?php echo $token; ?>" />

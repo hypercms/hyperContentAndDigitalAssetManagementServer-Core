@@ -124,7 +124,6 @@ if ($label == "") $label = $id;
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script language="JavaScript">
-<!--
 function replace (string,text,by)
 {
   // Replaces text with by in string
@@ -154,7 +153,7 @@ function correctnames ()
 
 function geturl (type)
 {
-  if (eval (document.forms['link'].elements['link_name']) && eval (document.forms['link'].elements['linkhref']) && document.forms['link'].elements['link_name'].value != "")
+  if (document.forms['link'].elements['link_name'] && document.forms['link'].elements['linkhref'] && document.forms['link'].elements['link_name'].value != "")
   {
     var theURL = '';
     
@@ -164,7 +163,7 @@ function geturl (type)
       {
         return theURL = document.forms['link'].elements['link_name'].value;
       }
-      else if (document.link.elements['linkhref'].value.indexOf('%page%') != 1)
+      else if (document.link.elements['linkhref'].value.indexOf('%page%') != -1)
       {
         return theURL = replace (document.forms['link'].elements['linkhref'].value, '<?php echo "%page%/".$site."/"; ?>', '<?php echo $mgmt_config[$site]['url_path_page']; ?>');
       }
@@ -296,13 +295,13 @@ function deleteEntry(select)
 function refreshPreview ()
 {
   var theURL = geturl ('preview');
+
   if (theURL != "") document.getElementById("preview").src = theURL;
 }
-//-->
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 marginwidth=0 marginheight=0>
+<body class="hcmsWorkplaceGeneric" onload="refreshPreview();">
 
 <!-- top bar -->
 <?php
@@ -384,14 +383,8 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   ?>
   </table>
   
-  <iframe id="preview" src="" style="width:98%; height:500px; border:1px solid #000000; margin:5px;"></iframe>
+  <iframe id="preview" src="" style="width:98%; height:500px; border:1px solid #000000; margin:5px;" sandbox=""></iframe>
 </form>
-
-<script language="JavaScript">
-<!--
-refreshPreview ();
-//-->
-</script>
 
 </body>
 </html>

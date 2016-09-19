@@ -1936,18 +1936,6 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
   {
     // load file extension defintions
     require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
-
-    // convert location
-    $dir = deconvertpath ($dir, "file");
-    $location = deconvertpath ($location_esc, "file");
-    
-    // local access permissions
-    $ownergroup = accesspermission ($site, $dir, "comp");
-    $setlocalpermission = setlocalpermission ($site, $ownergroup, "comp");
- 
-    // load publication inheritance setting
-    $inherit_db = inherit_db_read ();
-    $parent_array = inherit_db_getparent ($inherit_db, $site);
     
     // get location in component structure from session
     if (!valid_locationname ($dir) && isset ($temp_complocation[$site])) 
@@ -2020,6 +2008,18 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
 
     // convert path
     $dir_esc = convertpath ($site, $dir, "comp");
+
+    // convert location
+    $dir = deconvertpath ($dir, "file");
+    $location = deconvertpath ($location_esc, "file");
+    
+    // local access permissions
+    $ownergroup = accesspermission ($site, $dir, "comp");
+    $setlocalpermission = setlocalpermission ($site, $ownergroup, "comp");
+ 
+    // load publication inheritance setting
+    $inherit_db = inherit_db_read ();
+    $parent_array = inherit_db_getparent ($inherit_db, $site);
     
     // set location in component structure in session
     if (valid_locationname ($dir))
@@ -2039,8 +2039,10 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     else $format_ext = "";
     
     // javascript code
-    $result = "<script language=\"JavaScript\">
-<!--
+    $result = "<!-- Jquery and Jquery UI Autocomplete -->
+<script src=\"javascript/jquery/jquery-1.10.2.min.js\" type=\"text/javascript\"></script>
+<script src=\"javascript/jquery-ui/jquery-ui-1.10.2.min.js\" type=\"text/javascript\"></script>
+<script language=\"JavaScript\">
 function sendCompOption(newtext, newvalue)
 {
   parent.mainFrame2.insertOption(newtext, newvalue);
@@ -2072,7 +2074,24 @@ function showOptions()
     }
   }
 }
-//-->
+
+function submitForm ()
+{
+  if (document.forms['searchform_general'])
+  {
+    var form = document.forms['searchform_general'];
+    if (form.elements['search_expression'].value != '') form.submit();
+  }
+}
+
+$(document).ready(function()
+{
+  var available_expressions = [".(is_array (getsearchhistory ($user)) ? implode (",\n", getsearchhistory ($user)) : "")."];
+
+  $(\"#search_expression\").autocomplete({
+    source: available_expressions
+  });
+});
 </script>";
     
     // current location
@@ -2081,7 +2100,7 @@ function showOptions()
     $result .= "
     <span class=\"hcmsHeadline\" style=\"padding:3px 0px 3px 0px; display:block;\">".getescapedtext ($hcms_lang['select-object'][$lang], $hcms_charset, $lang)."</span>
     <span class=\"hcmsHeadlineTiny\" style=\"padding:3px 0px 3px 0px; display:block;\">".$location_name."</span>\n";
-    
+
     // file upload    
     if ($compcat == "media" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1 && $search_expression == "")
     {
@@ -2096,6 +2115,7 @@ function showOptions()
       </div>
       <div style=\"clear:both;\"></div>\n";
     }
+    // create new component
     elseif (($compcat == "single" || $compcat == "multi") && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1 && $search_expression == "")
     {
       $result .= "
@@ -2121,12 +2141,10 @@ function showOptions()
         <input type=\"hidden\" name=\"lang\" value=\"".$lang."\" />
         <input type=\"hidden\" name=\"callback\" value=\"".$callback."\" />
         
-        <input type=\"text\" name=\"search_expression\" value=\"";
-        if ($search_expression != "") $result .= html_encode ($search_expression);
-        else $result .= getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang);
-        $result .= "\" onblur=\"if (this.value=='') this.value='".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."';\" onclick=\"showOptions();\" onfocus=\"if (this.value=='".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."') this.value='';\" style=\"width:190px;\" maxlength=\"60\" />
-        <img name=\"SearchButton\" src=\"".getthemelocation()."img/button_OK.gif\" onClick=\"if (document.forms['searchform_general'].elements['search_expression'].value=='".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."') document.forms['searchform_general'].elements['search_expression'].value=''; document.forms['searchform_general'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('SearchButton','','".getthemelocation()."img/button_OK_over.gif',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" align=\"top\" alt=\"OK\" title=\"OK\" />";
-    
+        <input type=\"text\" name=\"search_expression\" id=\"search_expression\" placeholder=\"".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."\" 
+        value=\"".($search_expression != "" ? html_encode ($search_expression) : "")."\" style=\"width:190px;\" maxlength=\"200\" onclick=\"showOptions();\" />
+        <img name=\"SearchButton\" src=\"".getthemelocation()."img/button_OK.gif\" onClick=\"submitForm();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('SearchButton','','".getthemelocation()."img/button_OK_over.gif',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" align=\"top\" alt=\"OK\" title=\"OK\" />";
+
       // search options
       if (($compcat == "media" && $mediatype == "") || $mgmt_config[$site]['dam']) $result .= "
         <div id=\"searchOptions\" class=\"hcmsInfoBox\" style=\"width:210px; margin:2px 0px 8px 0px; display:none;\">

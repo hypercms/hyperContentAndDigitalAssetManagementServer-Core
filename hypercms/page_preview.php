@@ -77,12 +77,11 @@ if ($templatefile != false || $contentfile != false)
     echo "<title>hyperCMS</title>\n";
     echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
-    echo "<script src=\"javascript/click.js\" type=\"text/javascript\" />\n";
-    echo "</script>\n";
+    echo "<script src=\"javascript/click.js\" type=\"text/javascript\"></script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
     echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
-    echo getescapedtext ($hcms_lang['the-associated-template-holds-no-informations'][$lang])." -> '".$templatefile."'\n";
+    echo "&nbsp;".getescapedtext ($hcms_lang['the-associated-template-holds-no-informations'][$lang])." -> '".$templatefile."'\n";
     echo "</body>\n</html>";
     exit;
   }
@@ -95,12 +94,11 @@ if ($templatefile != false || $contentfile != false)
     echo "<title>hyperCMS</title>\n";
     echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
     echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
-    echo "<script src=\"javascript/click.js\" type=\"text/javascript\" />\n";
-    echo "</script>\n";
+    echo "<script src=\"javascript/click.js\" type=\"text/javascript\"></script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
     echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
-    echo getescapedtext ($hcms_lang['the-content-container-holds-no-informations'][$lang])." -> '".$contentfile."'\n";
+    echo "&nbsp;".getescapedtext ($hcms_lang['the-content-container-holds-no-informations'][$lang])." -> '".$contentfile."'\n";
     echo "</body>\n</html>";
     exit;
   }  
@@ -113,10 +111,12 @@ if ($templatefile != false || $contentfile != false)
     echo "<head>\n";
     echo "<title>hyperCMS</title>\n";
     echo "<meta charset=\"".getcodepage ($lang)."\" />\n";
+    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
+    echo "<script src=\"javascript/click.js\" type=\"text/javascript\"></script>\n";
     echo "</head>\n";
     echo "<body class=\"hcmsWorkplaceGeneric\">\n";
     echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-page'][$lang])."</p>\n";
-    echo getescapedtext ($hcms_lang['an-error-occured-while-creating-the-view'][$lang])."\n";
+    echo "&nbsp;".getescapedtext ($hcms_lang['an-error-occured-while-creating-the-view'][$lang])."\n";
     echo "</body>\n</html>";
   }
   // output view
@@ -145,7 +145,7 @@ else
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
 
   echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['this-object-is-not-managed-by-hypercms'][$lang])."</p>\n";
-  echo getescapedtext ($hcms_lang['you-wont-be-able-to-change-the-content-of-this-item'][$lang])."\n";
+  echo "&nbsp;".getescapedtext ($hcms_lang['you-wont-be-able-to-change-the-content-of-this-item'][$lang])."\n";
 
   echo "</body>\n";
   echo "</html>\n";

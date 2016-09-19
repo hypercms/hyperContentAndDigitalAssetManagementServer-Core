@@ -51,7 +51,7 @@ function minNavFrame ()
 {
   if (document.getElementById('navFrame'))
   {
-    var width = 32;
+    var width = 30;
     
     document.getElementById('navLayer').style.width = width + 'px';
     document.getElementById('workplLayer').style.left = width + 'px';
@@ -69,6 +69,15 @@ function maxNavFrame ()
   }
 }
 
+function submitForm ()
+{
+  if (document.forms['searchform_general'])
+  {
+    var form = document.forms['searchform_general'];  
+    if (form.elements['search_expression'].value != '') form.submit();
+  }
+}
+
 $(document).ready(function()
 {
   <?php
@@ -80,7 +89,6 @@ $(document).ready(function()
     source: available_expressions
   });
 });
-
 
 <?php
 // assetbrowser
@@ -119,8 +127,8 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
           <input type="hidden" name="action" value="base_search" />
           <input type="hidden" name="search_dir" value="" />
           <input type="hidden" name="maxhits" value="300" />
-          <input type="text" name="search_expression" id="search_expression" style="width:200px;" maxlength="200" value="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" onfocus="if (this.value == '<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>') this.value=''" onblur="if(this.value == '') this.value='<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>'" />
-          <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onClick="if (document.forms['searchform_general'].elements['search_expression'].value=='<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>') document.forms['searchform_general'].elements['search_expression'].value=''; if (document.forms['searchform_general'].elements['search_expression'].value!='') document.forms['searchform_general'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" style="border:0; cursor:pointer;" align="absmiddle" title="OK" alt="OK" />
+          <input type="text" name="search_expression" id="search_expression" style="width:200px;" maxlength="200" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="" />
+          <img name="SearchButton" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onClick="submitForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
         </form>
       </td>
       <?php } ?>

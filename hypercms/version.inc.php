@@ -1854,8 +1854,18 @@ Release 09/2016
 - Modifications in JS library for contextmenu for new previews
 - Bug fix: control_objectlist_menu did onyl allow unzip of files in page structure 
 - Improvements in Nativy Plugin incl. a new Plugin configuration file and the implementation of the nativy API to support orders via context menu
+
+- Version 6.1.23
+Release 09/2016
+- Improvements and modifications in frameset_main, explorer, and link_edit_explorer
+- Improvements and modifications in function showcompexplorerr of UI API
+- Integration of search history autocomplete feature in link_edit_page and function showcompexplorerr of UI API
+- Bug fix: Function showcompexplorerr of UI API did verify access permissions before a default location has been set
+- Implementation of sandbox attribute for preview of pages in iframe of link_edit_page
+- Improvements in page_preview
+- Implementation of live view in new window for pages (in case the view in an iframe is not blocked)
 */
 
 // current version
-$version = "Version 6.1.22";
+$version = "Version 6.1.23";
 ?>
