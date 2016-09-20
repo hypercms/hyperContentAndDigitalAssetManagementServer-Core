@@ -1863,7 +1863,8 @@ Release 09/2016
 - Bug fix: Function showcompexplorerr of UI API did verify access permissions before a default location has been set
 - Implementation of sandbox attribute for preview of pages in iframe of link_edit_page
 - Improvements in page_preview
-- Implementation of live view in new window for pages (in case the view in an iframe is not blocked)
+- Implementation of live view in new window for pages (in case the view in an iframe is not blocked) in explorer_objectview
+- Bug fix: editoru and editorf referred to old jQuery library
 */
 
 // current version

@@ -135,7 +135,7 @@ $token = createtoken ($user);
   <title>hyperCMS</title>
   <meta charset="<?php echo $charset; ?>" />
   <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-  <script src="../javascript/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
+  <script src="../javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
   <script src="../javascript/main.js" type="text/javascript"></script>
   <script language="JavaScript">
   function validateForm() 

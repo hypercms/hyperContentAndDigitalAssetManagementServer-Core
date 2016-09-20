@@ -147,7 +147,7 @@ $token = createtoken ($user);
     <meta charset="<?php echo $charset; ?>" />
     <meta name="robots" content="noindex, nofollow" />
     <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-    <script src="../javascript/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script src="../javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="ckeditor/ckeditor.js"></script>
     <script type="text/javascript" src="../javascript/main.js" ></script>
     <script type="text/javascript">
@@ -232,35 +232,36 @@ $token = createtoken ($user);
       
       if (test == true)
       {
-        for(var i in CKEDITOR.instances)
+        for (var i in CKEDITOR.instances)
         {
           CKEDITOR.instances[i].updateElement();
         }
         
-        hcms_showHideLayers('messageLayer','','show');
+        hcms_showHideLayers ('messageLayer','','show');
         $("#savetype").val('auto');
         
         $.post(
           "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php", 
           $("#hcms_formview").serialize(), 
-          function(data)
+          function (data)
           {
-            if(data.message.length !== 0)
+            if (data.message.length !== 0)
             {
-              alert(hcms_entity_decode(data.message));
-            }				
-            setTimeout("hcms_showHideLayers('messageLayer','','hide')", 1500);
+              alert (hcms_entity_decode(data.message));
+            }
+            		
+            setTimeout ("hcms_showHideLayers('messageLayer','','hide')", 1500);
           }, 
           "json"
         );
       }
       
-      setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
+      setTimeout ('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
     }
     
-    setTimeout('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
-    <?php } ?>
+    setTimeout ('autosave()', <?php echo intval ($mgmt_config['autosave']) * 1000; ?>);
     </script>
+    <?php } ?>
     
   </body>
 </html>
