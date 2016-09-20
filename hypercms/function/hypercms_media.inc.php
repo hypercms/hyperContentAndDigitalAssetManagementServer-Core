@@ -1644,12 +1644,20 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // CASE: document-based formats, encapsulated post script and vector graphics
                   if ($file_ext == ".pdf" || $file_ext == ".eps" || $file_ext == ".svg")
                   {
-                    if ($type == "thumbnail" || $type == "annotation")
+                    if ($type == "thumbnail")
                     {
-                      if ($type == "annotation") $newfile = $file_name.".annotation.jpg";
-                      else $newfile = $file_name.".thumb.jpg";
+                      $newfile = $file_name.".thumb.jpg";
                       
                       $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                    }
+                    elseif ($type == "annotation" && is_dir ($mgmt_config['abs_path_cms']."workflow/"))
+                    {
+                      // correct file name if thumbnail file is used as source
+                      if (substr ($file_name, -6) == ".thumb") $newfile = substr ($file_name, 0, -6).".annotation";
+                      else $newfile = $file_name.".annotation";
+                      
+                      // render all pages from document as images for annotations
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."\" ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.jpg")."\"";
                     }
                     else 
                     {
@@ -1724,7 +1732,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       $imagecolorspace = "";
                     }
   
-                    if ($type == "thumbnail" || $type == "annotation")
+                    if ($type == "thumbnail" || ($type == "annotation" && is_dir ($mgmt_config['abs_path_cms']."workflow/")))
                     {
                       if ($type == "annotation") $newfile = $file_name.".annotation.jpg";
                       else $newfile = $file_name.".thumb.jpg";
@@ -3397,6 +3405,70 @@ function rgb2hex ($red, $green, $blue)
     $hex.= str_pad (dechex ($blue), 2, "0", STR_PAD_LEFT);
      
     return $hex;
+  }
+  else return false;
+}
+
+// ---------------------- getpdfinfo -----------------------------
+// function: getpdfinfo()
+// input: path to PDF file, box attribute [BleedBox,CropBox,MediaBox] (optional)
+// output: result array with width and height as keys / false on error
+
+// description:
+// Extracts width and height in pixel of a PDF file.
+
+function getpdfinfo ($filepath, $box="MediaBox")
+{
+  global $mgmt_config, $user;
+  
+  if (valid_locationname ($filepath))
+  {
+    // get publication, location and media object
+    $site = getpublication ($filepath);
+    $location = getlocation ($filepath);
+    $media = getobject ($filepath);
+  
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $media, $user);
+    
+    if ($temp['result'] && $temp['crypted'])
+    {
+      $location = $temp['templocation'];
+      $media = $temp['tempfile'];
+      
+      // set new file path
+      $filepath = $location.$media;
+    }
+    elseif ($temp['restored'])
+    {
+      $location = $temp['location'];
+      $media = $temp['file'];
+      
+      // set new file path
+      $filepath = $location.$media;
+    }
+
+    // verify local media file
+    if (!is_file ($filepath)) return false;
+    
+    // read dimensions from file stream
+    $stream = new SplFileObject ($filepath); 
+
+    $result = false;
+
+    while (!$stream->eof())
+    {
+      if (preg_match("/".$box."\[[0-9]{1,}.[0-9]{1,} [0-9]{1,}.[0-9]{1,} ([0-9]{1,}.[0-9]{1,}) ([0-9]{1,}.[0-9]{1,})\]/", $stream->fgets(), $matches))
+      {
+        $result["width"] = $matches[1];
+        $result["height"] = $matches[2]; 
+        break;
+      }
+    }
+
+    $stream = null;
+
+    return $result;
   }
   else return false;
 }

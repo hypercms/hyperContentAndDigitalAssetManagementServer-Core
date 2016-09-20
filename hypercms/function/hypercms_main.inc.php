@@ -3118,6 +3118,25 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
     if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_annotation, $user);
     // remote client
     remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_annotation, "");
+
+    // documents annotation files (test for 1st page)
+    $docfile_annotation = substr ($mediafile, 0, strrpos ($mediafile, ".")).".annotation";
+    
+    if (is_document ($mediafile) && (is_file ($medialocation.$site."/".$docfile_annotation."-0.jpg") || is_cloudobject ($medialocation.$site."/".$docfile_annotation."-0.jpg")))
+    { 
+      for ($p=0; $p<=10000; $p++)
+      {
+        $temp = $docfile_annotation."-".$p.".jpg";
+        // local media file
+        $delete_1 = deletefile ($medialocation.$site."/", $temp, 0);
+        // cloud storage
+        if (function_exists ("deletecloudobject")) $delete_2 = deletecloudobject ($site, $medialocation.$site."/", $temp, $user);
+        // remote client
+        remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $temp, "");
+        // break if no more page is available
+        if (empty ($delete_1) && empty ($delete_2)) break;
+      }
+    }
     
     // image file from RAW image
     if (is_rawimage ($mediafile))

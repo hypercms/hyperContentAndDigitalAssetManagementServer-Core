@@ -1865,8 +1865,15 @@ Release 09/2016
 - Improvements in page_preview
 - Implementation of live view in new window for pages (in case the view in an iframe is not blocked) in explorer_objectview
 - Bug fix: editoru and editorf referred to old jQuery library
+
+- Version 6.1.24
+Release 09/2016
+- Implementation of annotation feature for documents
+- Implementation of redndering of pages from documents in function createmedia in media API
+- Implementation of annotion tool for documents in function showmedia in UI API 
+- Implementation of new function getpdfinfo in media API
 */
 
 // current version
-$version = "Version 6.1.23";
+$version = "Version 6.1.24";
 ?>
