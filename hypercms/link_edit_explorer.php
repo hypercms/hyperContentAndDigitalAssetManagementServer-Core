@@ -113,12 +113,12 @@ $(document).ready(function()
 
 <body class="hcmsWorkplaceObjectlist">
 
-<div style="position:fixed; right:0; top:45%; margin:0; padding:0;">
+<div id="NavFrameButtons" style="position:fixed; right:0; top:45%; margin:0; padding:0;">
   <img onclick="parent.minNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
   <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
 </div>
 
-<div class="hcmsWorkplaceFrame">
+<div id="Navigator" class="hcmsWorkplaceFrame">
 <table width="98%" border="0" cellspacing="2" cellpadding="0">
   <tr>
     <td class="hcmsHeadline" style="padding:3px 0px 3px 0px;" align="left" colspan="2"><?php echo getescapedtext ($hcms_lang['select-object'][$lang]); ?><td>

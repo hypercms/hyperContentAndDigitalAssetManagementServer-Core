@@ -88,11 +88,12 @@ function goToURL()
 
 <body class="hcmsWorkplaceObjectlist">
 
-<div style="position:fixed; right:0; top:45%; margin:0; padding:0;">
+<div id="NavFrameButtons" style="position:fixed; right:0; top:45%; margin:0; padding:0;">
   <img onclick="parent.minNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
   <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
 </div>
 
+<div id="Navigator" class="hcmsWorkplaceFrame">
 <table border="0" cellspacing="0" cellpadding="2" width="100%">
   <tr align="left">
     <td class=hcmsHeadline>
@@ -259,5 +260,7 @@ if ($sender == "search")
     </td>
   </tr>
 </table>
+</div>
+
 </body>
 </html>

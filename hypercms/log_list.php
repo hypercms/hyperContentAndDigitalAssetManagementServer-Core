@@ -91,7 +91,6 @@ function resizecols()
       <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?>
       </td>
-      <?php if (!$is_mobile) { ?>
       <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['source'][$lang]); ?>
       </td>
@@ -103,8 +102,7 @@ function resizecols()
       </td>
       <td class="hcmsTableHeader" style="width:16px;">
         &nbsp;
-      </td>
-      <?php } ?>   
+      </td> 
     </tr>
   </table>
 
@@ -160,8 +158,7 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
       echo "
 <tr id=\"g".$items_row."\" align=\"left\" valign=\"top\">
   <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:105px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; <a href=# onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', '600', '200');\"><img src=\"".getthemelocation()."img/".$icon."\" style=\"width:16px; height:16px; border:0;\" align=\"absmiddle\">&nbsp; ".$type_name."</a></td>
-  <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; ".$date."</td>";
-  if (!$is_mobile) echo "
+  <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; ".$date."</td>
   <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; ".$source."</td>
   <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:55px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; ".$errorcode."</td>
   <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; <a href=# onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', 600, 200);\">".$description_short."</a></td>

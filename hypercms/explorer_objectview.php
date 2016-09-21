@@ -203,7 +203,7 @@ function openBrWindowLink (winName, features, type)
 </script>
 </head>
 
-<body class="hcmsWorkplaceExplorer" onload="centercontainer();">
+<body onload="centercontainer();">
 
 <div id="toolbar" style="position:fixed; top:5px; left:5px; text-align:left;">
 <?php

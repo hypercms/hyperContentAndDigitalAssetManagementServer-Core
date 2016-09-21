@@ -33,7 +33,7 @@ checkusersession ($user, false);
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<meta name="viewport" content="width=1024, initial-scale=1.0, user-scalable=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script type="text/javascript" language="JavaScript" src="javascript/main.js"></script>
 <script language="JavaScript">
@@ -57,7 +57,7 @@ function closeobjectview ()
 <body style="width:100%; height:100%; margin:0; padding:0;">
 
 <!-- preview/live-view --> 
-<div id="objectviewLayer" class="hcmsWorkplaceObjectlist" style="display:none; overflow:hidden; position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; z-index:8;">
+<div id="objectviewLayer" class="hcmsWorkplaceExplorer" style="display:none; overflow:hidden; position:fixed; margin:0; padding:0; left:0; top:0; right:0; bottom:0; z-index:8;">
   <div style="position:fixed; right:5px; top:5px; z-index:9;">
     <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="closeobjectview();" />
   </div>

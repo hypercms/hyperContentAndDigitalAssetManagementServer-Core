@@ -1019,27 +1019,48 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       
       if (number >= 0 && number < ".$page_count.")
       {
-        autoSave(true);
+        if (!hcms_iOS()) autoSave(true);
         $('#pagenumber').val(number);
         $('#medianame').val(pages_name[number]);
-        $('#annotation').annotate('push', pages_link[number]);
+        
+        if (!hcms_iOS())
+        {
+          $('#annotation').annotate('push', pages_link[number]);
+        }
+        else
+        {
+          $('#annotationImage').attr('src', pages_link[number]);
+        }
       }
     }
   
 		$(document).ready(function(){
-      // set annotaion image file name
+      // set annotation image file name
       $('#medianame').val('".$annotation_page."');
-      
-      // create annotation image
-			$('#annotation').annotate({
-				color: 'red',
-				bootstrap: false,
-				images: ['".createviewlink ($site, $annotation_page, $annotation_page)."']
-      });
-      
-      // set images for buttons
-      if (!hcms_iOS()) setAnnoationButtons();
-      else document.getElementById('annotationToolbar').disabled = true;
+
+      if (!hcms_iOS())
+      {
+        // create annotation image
+  			$('#annotation').annotate({
+  				color: 'red',
+  				bootstrap: false,
+  				images: ['".createviewlink ($site, $annotation_page, $annotation_page)."']
+        });
+        
+        // set images for buttons
+        setAnnoationButtons();
+      }
+      else
+      {
+        // disable toolbar
+        if (document.getElementById('annotationToolbar')) document.getElementById('annotationToolbar').disabled = true;
+        $('#annotation').prepend('<img id=\"annotationImage\" src=\"".createviewlink ($site, $annotation_page, $annotation_page)."\" />');
+        
+        // set width
+        var img = document.getElementById('annotationImage');
+        var width = img.clientWidth;
+        document.getElementById('annotation').style.width = width + 'px';
+      }
 		});
 	</script>
   ";
@@ -1298,10 +1319,17 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 				bootstrap: false,
 				images: ['".createviewlink ($site, $annotation_file, $annotation_file)."']
       });
-      
-      // set images for buttons
-      if (!hcms_iOS()) setAnnoationButtons();
-      else document.getElementById('annotationToolbar').disabled = true;
+
+      if (!hcms_iOS())
+      {
+        // set images for buttons
+        setAnnoationButtons();
+      }
+      else
+      {
+        // disable toolbar
+        if (document.getElementById('annotationToolbar')) document.getElementById('annotationToolbar').disabled = true;
+      }
 		});
 	</script>
   ";

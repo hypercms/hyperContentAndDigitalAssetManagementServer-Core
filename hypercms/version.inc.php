@@ -1872,6 +1872,14 @@ Release 09/2016
 - Implementation of redndering of pages from documents in function createmedia in media API
 - Implementation of annotion tool for documents in function showmedia in UI API 
 - Implementation of new function getpdfinfo in media API
+- Bug fix: Mobile Edition did call undefined minNavFrame and maxNavFrame JS function
+- Modifications in viewport of frameset_content
+- Various modifications in Mobile Edition in all administration features
+- Removed Im/Export from Mobile Edition
+- Modifications in live-view and preview for improved mobile Safari support
+- Modifications in CSS of Mobile Edition
+- Design improvements in minimize and maximize functions of all Navigators
+- Bug fix: Function rdbms_searchcontent did INNER JOIN instead of LEFT JOIN on table textnodes for a general search
 */
 
 // current version

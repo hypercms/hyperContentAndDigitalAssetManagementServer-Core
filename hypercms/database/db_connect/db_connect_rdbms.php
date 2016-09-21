@@ -1786,7 +1786,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         }
         else $type = "";
         
-        // search for speciifc keyword
+        // search for specific keyword
         if (strpos ("_".$expression, "%keyword%/") > 0)
         {
           $keyword_id = getobject ($expression);
@@ -1936,8 +1936,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 
               if (is_array ($synonym_array) && sizeof ($synonym_array) > 0)
               { 
-                // add textnodes table
-                $sql_table['textnodes'] .= 'INNER JOIN textnodes AS tn1 ON obj.id=tn1.id '.$sql_table['textnodes'];
+                // add textnodes table (LEFT JOIN is important!)
+                $sql_table['textnodes'] .= 'LEFT JOIN textnodes AS tn1 ON obj.id=tn1.id '.$sql_table['textnodes'];
                   
                 foreach ($synonym_array as $expression)
                 {

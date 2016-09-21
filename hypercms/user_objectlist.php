@@ -196,7 +196,7 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
       
       // onclick for marking objects
       $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlUserMenu();\" ";
-      $setContext = "style=\"display:block; height:16px;\" onMouseOver=\"hcms_setUsercontext('".$site."', '".$object_array['login'][$key]."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
+      $setContext = "style=\"display:block;\" onMouseOver=\"hcms_setUsercontext('".$site."', '".$object_array['login'][$key]."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
  
       $listview .= "
             <tr id=\"g".$items_row."\" ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
@@ -206,12 +206,10 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
                     <img src=\"".getthemelocation()."img/user.gif\" width=16 height=16 border=0 align=\"absmiddle\" />&nbsp; ".
                     $object_array['login'][$key]."&nbsp;
                 </div>
-              </td>";
-      if (!$is_mobile) $listview .= "
+              </td>
               <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$object_array['name'][$key]."</span></td>
               <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$object_array['email'][$key]."</span></td>
-              <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$object_array['date'][$key]."</span></td>";
-      if (!$is_mobile) $listview .= "
+              <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$setContext.">&nbsp;".$object_array['date'][$key]."</span></td>
             </tr>";
   
       $items_row++;  
@@ -320,7 +318,6 @@ var session_id = '<?php session_id(); ?>';
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>
       </td>
-      <?php if (!$is_mobile) { ?>
       <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
       </td>
@@ -333,7 +330,6 @@ var session_id = '<?php session_id(); ?>';
       <td class="hcmsTableHeader" style="width:16px;">
         &nbsp;
       </td>
-       <?php } ?>
     </tr>
   </table>
   

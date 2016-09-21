@@ -61,12 +61,12 @@ checkusersession ($user);
 
 <body class="hcmsWorkplaceObjectlist">
 
-<div style="position:fixed; right:0; top:45%; margin:0; padding:0;">
+<div id="NavFrameButtons" style="position:fixed; right:0; top:45%; margin:0; padding:0;">
   <img onclick="parent.minNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
   <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
 </div>
 
-<div class="hcmsWorkplaceFrame">
+<div id="Navigator" class="hcmsWorkplaceFrame">
 <?php echo showcompexplorer ($site, $dir, $location, $page, $compcat, $search_expression, $search_format, $mediatype, $lang, "", $scaling); ?>
 </div>
 

@@ -55,6 +55,8 @@ function minNavFrame ()
     
     document.getElementById('navLayer').style.width = width + 'px';
     document.getElementById('workplLayer').style.left = width + 'px';
+    window.frames['navFrame'].document.getElementById('NavFrameButtons').style.left = '0px';
+    window.frames['navFrame'].document.getElementById('NavFrameButtons').style.right = '';
   }
 }
 
@@ -62,10 +64,12 @@ function maxNavFrame ()
 {
   if (document.getElementById('navFrame'))
   {
-    var width = 260;
+    var width = 250;
     
     document.getElementById('navLayer').style.width = width + 'px';
     document.getElementById('workplLayer').style.left = width + 'px';
+    window.frames['navFrame'].document.getElementById('NavFrameButtons').style.left = '';
+    window.frames['navFrame'].document.getElementById('NavFrameButtons').style.right = '0px';
   }
 }
 

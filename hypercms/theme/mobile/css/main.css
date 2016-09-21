@@ -651,7 +651,7 @@ input, select, textarea
 a 
 {
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: bold;
   text-decoration: none;
   color: #000000;
@@ -687,7 +687,7 @@ html, body
 html, body, table, td, span
 {  
   font-family: Verdana, Arial, Helvetica, sans-serif; 
-  font-size: 16px; 
+  font-size: 15px; 
   font-weight: normal; 
   color: #000000; 
   text-decoration: none;
@@ -718,7 +718,7 @@ del
 hr
 {
   height: 1px;
-  border-width :0;
+  border-width: 0;
   color: #0ACA03;
   background-color: #8EA9EC;
 }

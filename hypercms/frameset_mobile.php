@@ -46,6 +46,16 @@ toggleview ($view);
 </head> 
 
 <script type='text/javascript'>
+function minNavFrame ()
+{
+  return true;
+}
+
+function maxNavFrame ()
+{
+  return true;
+}
+
 $(document).ready(function()
 {
   $("#workplFrame").height($(window).height() - $("#topbar").height());

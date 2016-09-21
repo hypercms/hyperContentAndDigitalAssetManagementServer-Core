@@ -111,16 +111,12 @@ if (is_array ($queue_array) && @sizeof ($queue_array) >= 1)
                       <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." align=\"absmiddle\" />&nbsp;
                       <span title=\"".$object_name."\">".$object_name."</span>&nbsp;
                   </div>
-                </td>";
-                
-        if (!$is_mobile) $listview .= "
+                </td>
                 <td id=\"h".$items_row."_1\" class=\"hcmsCol2\" style=\"width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$site."\">&nbsp;&nbsp;".$site."</span></td>
                 <td id=\"h".$items_row."_2\" class=\"hcmsCol3\" style=\"width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext." title=\"".$location_name."\">&nbsp;&nbsp;".$location_name."</span></td>
                 <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$date."</span></td>
                 <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"width:60px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$action."</span></td>
-                <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>";
-                
-        $listview .= "
+                <td id=\"h".$items_row."_5\" class=\"hcmsCol6\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><span ".$hcms_setObjectcontext.">&nbsp;&nbsp;".$queueuser."</span></td>
               </tr>";
     
         $items_row++;  
@@ -233,7 +229,6 @@ function resizecols()
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
       </td>
-      <?php if (!$is_mobile) { ?>
       <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:100px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>
       </td>
@@ -252,7 +247,6 @@ function resizecols()
       <td class="hcmsTableHeader" style="width:16px;">
         &nbsp;
       </td>
-      <?php } ?>   
     </tr>
   </table>
   
