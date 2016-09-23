@@ -1880,6 +1880,7 @@ Release 09/2016
 - Modifications in CSS of Mobile Edition
 - Design improvements in minimize and maximize functions of all Navigators
 - Bug fix: Function rdbms_searchcontent did INNER JOIN instead of LEFT JOIN on table textnodes for a general search
+- Bug fix: Function rdbms_searchcontent did not verify the taxonomy IDs correctly 
 */
 
 // current version

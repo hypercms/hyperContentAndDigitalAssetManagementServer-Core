@@ -1785,7 +1785,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           list ($type, $key) = explode (":", $key);
         }
         else $type = "";
-        
+
         // search for specific keyword
         if (strpos ("_".$expression, "%keyword%/") > 0)
         {
@@ -1818,6 +1818,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         // search for expression (using taxonomy if enabled or full text index)
         else
         {
+          $taxonomy_ids = array();
+
           // search in taxonomy
           if (!empty ($mgmt_config[$site]['taxonomy']))
           {
@@ -1827,38 +1829,38 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
               // look up expression in taxonomy (in all languages)
               $taxonomy_ids = gettaxonomy_childs (@$site, "", $expression, 1, true);
             }
-              
-            // search in taxonomy table
-            if (!empty ($taxonomy_ids) && is_array ($taxonomy_ids) && sizeof ($taxonomy_ids) > 0)
+          }
+
+          // search in taxonomy table
+          if (!empty ($taxonomy_ids) && is_array ($taxonomy_ids) && sizeof ($taxonomy_ids) > 0)
+          {
+            // advanced text-ID based search in taxonomy
+            if ($expression != "" && $key != "" && $key != "0")
             {
-              // advanced text-ID based search in taxonomy
-              if ($expression != "" && $key != "" && $key != "0")
+              // add taxonomy table
+              if ($i_tx == 1)
               {
-                // add taxonomy table
-                if ($i_tx == 1)
-                {
-                  $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
-                }
-                elseif ($i_tx > 1)
-                {
-                  $j = $i_tx - 1;
-                  $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx'.$i_tx.' ON tx'.$j.'.id=tx'.$i_tx.'.id';
-                }
-  
-                $sql_expr_advanced[$i] .= '(tx'.$i_tx.'.text_id="'.$key.'" AND tx'.$i_tx.'.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).'))';
-                
-                $i_tx++;
-              }
-              // general search in taxonomy (only one search expression possible -> break out of loop)
-              elseif ($expression != "")
-              {
-                // add taxonomy table
                 $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
-                
-                $sql_expr_advanced[$i] = 'tx1.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).')';
-    
-                break;
               }
+              elseif ($i_tx > 1)
+              {
+                $j = $i_tx - 1;
+                $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx'.$i_tx.' ON tx'.$j.'.id=tx'.$i_tx.'.id';
+              }
+
+              $sql_expr_advanced[$i] .= '(tx'.$i_tx.'.text_id="'.$key.'" AND tx'.$i_tx.'.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).'))';
+                
+              $i_tx++;
+            }
+            // general search in taxonomy (only one search expression possible -> break out of loop)
+            elseif ($expression != "")
+            {
+              // add taxonomy table
+              $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
+              
+              $sql_expr_advanced[$i] = 'tx1.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).')';
+  
+              break;
             }
           }
           // search in textnodes table
@@ -1873,7 +1875,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     
               $r = 0;
               $sql_expr_advanced[$i] = "";
-              
+
               if (is_array ($synonym_array) && sizeof ($synonym_array) > 0)
               {
                 // add textnodes table
@@ -1930,7 +1932,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
               // get synonyms
               if (empty ($mgmt_config['search_exact'])) $synonym_array = getsynonym ($expression, @$lang);
               else $synonym_array = array ($expression);
-              
+
               $r = 0;
               $sql_where_textnodes = "";
 

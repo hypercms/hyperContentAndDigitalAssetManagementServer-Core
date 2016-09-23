@@ -51,12 +51,13 @@ function minNavFrame ()
 {
   if (document.getElementById('navFrame'))
   {
-    var width = 30;
+    var width = 26;
     
     document.getElementById('navLayer').style.width = width + 'px';
     document.getElementById('workplLayer').style.left = width + 'px';
-    window.frames['navFrame'].document.getElementById('NavFrameButtons').style.left = '0px';
-    window.frames['navFrame'].document.getElementById('NavFrameButtons').style.right = '';
+    window.frames['navFrame2'].document.getElementById('Navigator').style.display = 'none';
+    window.frames['navFrame2'].document.getElementById('NavFrameButtons').style.left = '0px';
+    window.frames['navFrame2'].document.getElementById('NavFrameButtons').style.right = '';
   }
 }
 
@@ -64,12 +65,13 @@ function maxNavFrame ()
 {
   if (document.getElementById('navFrame'))
   {
-    var width = 250;
+    var width = 260;
     
     document.getElementById('navLayer').style.width = width + 'px';
     document.getElementById('workplLayer').style.left = width + 'px';
-    window.frames['navFrame'].document.getElementById('NavFrameButtons').style.left = '';
-    window.frames['navFrame'].document.getElementById('NavFrameButtons').style.right = '0px';
+    window.frames['navFrame2'].document.getElementById('Navigator').style.display = 'block';
+    window.frames['navFrame2'].document.getElementById('NavFrameButtons').style.left = '';
+    window.frames['navFrame2'].document.getElementById('NavFrameButtons').style.right = '0px';
   }
 }
 
