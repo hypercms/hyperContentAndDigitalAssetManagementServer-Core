@@ -12042,6 +12042,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
   
         if ($test == true)
         {
+          // remove source object file
           $test = deletefile ($location_source, $page, 0);
           
           // notification
@@ -12050,7 +12051,11 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           // remote client
           if ($test == true)
           {
-            remoteclient ("delete", "abs_path_".$cat, $site, $location_source, "", $page, "");  
+            remoteclient ("delete", "abs_path_".$cat, $site, $location_source, "", $page, "");
+            
+            // log info
+            $errcode = "00204";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|object has been moved from ".$location_source.$page." to ".$location.$page; 
                 
             // thumbnail (for support of versions before 5.0)
             $object_thumb = substr ($page, 0, strrpos ($page, ".")).".thumb".substr ($page, strrpos ($page, "."));  
@@ -12066,7 +12071,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         else
         {
           $errcode = "10204";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|deletefile failed for ".$location_source.$page;           
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|copy failed for ".$location_source.$page." to ".$location;           
         }          
   
         if ($test != false)
@@ -14782,8 +14787,14 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
              
             if (valid_locationname ($location) && $folder != "" && is_dir ($location.$folder))
             {
-              $test['result'] = deletefile ($location, $folder, 1); 
-
+              $test['result'] = deletefile ($location, $folder, 1);
+              
+              if ($test['result'] == true)
+              {
+                $errcode = "00713";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|root folder ".$location.$folder." has been removed after cut & paste action"; 
+              }
+                
               $test_renamegroup = renamegroupfolder ($site, $cat, $rootpathdelete_array[$temp_id], $rootpathnew_array[$temp_id], $user);
               
               if ($test_renamegroup == false)

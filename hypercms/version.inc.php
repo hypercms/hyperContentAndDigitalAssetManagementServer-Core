@@ -1880,9 +1880,14 @@ Release 09/2016
 - Modifications in CSS of Mobile Edition
 - Design improvements in minimize and maximize functions of all Navigators
 - Bug fix: Function rdbms_searchcontent did INNER JOIN instead of LEFT JOIN on table textnodes for a general search
-- Bug fix: Function rdbms_searchcontent did not verify the taxonomy IDs correctly 
+- Bug fix: Function rdbms_searchcontent did not verify the taxonomy IDs correctly
+
+- Version 6.1.25
+Release 10/2016
+- Improvements in function manipulateobject in main API for cut & paste action
+- New standard event log entry for successfully moved objects
 */
 
 // current version
-$version = "Version 6.1.24";
+$version = "Version 6.1.25";
 ?>
