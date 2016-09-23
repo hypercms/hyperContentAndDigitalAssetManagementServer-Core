@@ -1855,7 +1855,7 @@ Release 09/2016
 - Bug fix: control_objectlist_menu did onyl allow unzip of files in page structure 
 - Improvements in Nativy Plugin incl. a new Plugin configuration file and the implementation of the nativy API to support orders via context menu
 
-- Version 6.1.23
+Version 6.1.23
 Release 09/2016
 - Improvements and modifications in frameset_main, explorer, and link_edit_explorer
 - Improvements and modifications in function showcompexplorerr of UI API
@@ -1866,7 +1866,7 @@ Release 09/2016
 - Implementation of live view in new window for pages (in case the view in an iframe is not blocked) in explorer_objectview
 - Bug fix: editoru and editorf referred to old jQuery library
 
-- Version 6.1.24
+Version 6.1.24
 Release 09/2016
 - Implementation of annotation feature for documents
 - Implementation of redndering of pages from documents in function createmedia in media API
@@ -1882,10 +1882,11 @@ Release 09/2016
 - Bug fix: Function rdbms_searchcontent did INNER JOIN instead of LEFT JOIN on table textnodes for a general search
 - Bug fix: Function rdbms_searchcontent did not verify the taxonomy IDs correctly
 
-- Version 6.1.25
-Release 10/2016
+Version 6.1.25
+Release 09/2016
 - Improvements in function manipulateobject in main API for cut & paste action
 - New standard event log entry for successfully moved objects
+- Bug fix: Function showcompexplorer did not load publication inheritance setting before defining the root location
 */
 
 // current version

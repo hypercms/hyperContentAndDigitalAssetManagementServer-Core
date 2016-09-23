@@ -2128,6 +2128,10 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
       }  
     }
     
+    // load publication inheritance setting
+    $inherit_db = inherit_db_read ();
+    $parent_array = inherit_db_getparent ($inherit_db, $site);
+    
     // if not configured as DAM, define root location if no dir was provided
     if (!$mgmt_config[$site]['dam'] && $dir == "")
     {
@@ -2194,10 +2198,6 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     // local access permissions
     $ownergroup = accesspermission ($site, $dir, "comp");
     $setlocalpermission = setlocalpermission ($site, $ownergroup, "comp");
- 
-    // load publication inheritance setting
-    $inherit_db = inherit_db_read ();
-    $parent_array = inherit_db_getparent ($inherit_db, $site);
     
     // set location in component structure in session
     if (valid_locationname ($dir))
