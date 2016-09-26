@@ -1887,6 +1887,7 @@ Release 09/2016
 - Improvements in function manipulateobject in main API for cut & paste action
 - New standard event log entry for successfully moved objects
 - Bug fix: Function showcompexplorer did not load publication inheritance setting before defining the root location
+- Bug fix: explorer_objectview used unassigned variable
 */
 
 // current version

@@ -198,7 +198,7 @@ function openBrWindowLink (winName, features, type)
     }
     return false;
   }
-  else alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-link-selected'][$lang], $charset, $lang); ?>'));
+  else alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-link-selected'][$lang]); ?>'));
 }
 </script>
 </head>
