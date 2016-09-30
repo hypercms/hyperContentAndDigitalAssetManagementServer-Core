@@ -3872,7 +3872,8 @@ function getfavorites ($user, $output="path")
               if ($object_id != "")
               {
                 $object_path = rdbms_getobject ($object_id);
-                if (!empty ($object_path)) $object_path_array[] = $object_path;
+                $object_hash = rdbms_getobject_hash ($object_id);
+                if (!empty ($object_path)) $object_path_array[$object_hash] = $object_path;
               }
             }
             
