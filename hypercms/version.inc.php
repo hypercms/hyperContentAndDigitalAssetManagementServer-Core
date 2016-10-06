@@ -1893,6 +1893,7 @@ Version 6.1.26
 Release 10/2016
 - Modification of function getfavorites to support object hash as key in result array
 - Bug fix: Direct download did not work for favorites due to missing object hash
+- Modification of viewport for frameset_content to fit smaller screens on mobile devices (zoom factor 0.64)
 */
 
 // current version
