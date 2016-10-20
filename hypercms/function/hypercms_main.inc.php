@@ -5713,7 +5713,7 @@ function editpublication ($site_name, $setting, $user="sys")
 ";
 
   // publication management config
-  if (valid_publicationname ($site_name)) require ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
+  if (valid_publicationname ($site_name) && is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php")) require ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
   
   if (!empty ($mgmt_config[$site_name]['hierarchy'])) $site_mgmt_config .= "
 // Metadata/Content Hierarchy
@@ -6876,7 +6876,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['your-submitted-passwords-are-not-equal'][$lang]."</span><br />\n".$hcms_lang['please-go-back-and-try-it-again-'][$lang]."\n";
   }    
   // check for strong password (if enabled)
-  elseif ($mgmt_config['strongpassword'] == true && strlen (checkpassword ($password)) > 1)
+  elseif (!empty ($mgmt_config['strongpassword']) && strlen (checkpassword ($password)) > 1)
   {
     $add_onload = "";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['password-insufficient'][$lang]."</span><br />\n".checkpassword ($password)."\n";
@@ -7109,7 +7109,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           $show = "<span class=hcmsHeadline>".$hcms_lang['your-submitted-passwords-are-not-equal'][$lang]."</span><br />".$hcms_lang['please-try-it-again'][$lang]."\n";
         }
         // check for strong password (if enabled)
-        elseif ($mgmt_config['strongpassword'] == true && strlen (checkpassword ($password)) > 1)
+        elseif (!empty ($mgmt_config['strongpassword']) && strlen (checkpassword ($password)) > 1)
         {
           //unlock file
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");

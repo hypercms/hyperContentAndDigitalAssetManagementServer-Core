@@ -28,6 +28,9 @@ if (dirname($_SERVER['REQUEST_URI']) != "")
 
 $base_path = dirname(dirname(getcwd()));
 
+// correct for Windows
+$base_path = str_replace ("\\", "/", $base_path);
+
 // url and asolute path to hyperCMS on your webserver (e.g. /home/domain/hyperCMS/)
 $mgmt_config['url_path_cms'] = $mgmt_config['url_protocol'].$base_url."/".$hypercms_dir."/";
 $mgmt_config['url_path_cms_sub'] = $base_url."/".$hypercms_dir."/";

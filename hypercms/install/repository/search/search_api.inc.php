@@ -12,7 +12,7 @@ function loadindex ()
 {
   global $config;
   
-  if (file_exists ($config['indexfile']))
+  if (is_file ($config['indexfile']))
   {
     $data = file ($config['indexfile']);
     return $data = file ($config['indexfile']);
@@ -166,7 +166,7 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
     if ($lang == "" || !is_string ($lang)) $lang = "en";
     else $lang = htmlspecialchars (strtolower ($lang), ENT_QUOTES | ENT_HTML401, $charset);
     
-    if (!empty ($config['search_log'])) @file_put_contents ($config['search_log'], date("Y-m-d H:i", time()).";".$query."\n", FILE_APPEND);
+    if (!empty ($config['search_log'])) writehistory ($query);
 
     if (is_array ($data))
     {
@@ -705,5 +705,77 @@ function collectcontent ($container_content, $text_id="", $component_id="")
     return $content;
   }
   else return "";
+}
+
+// ----------------------------------------- writehistory ------------------------------------------
+// input: search expression
+// output: true / false on error
+
+function writehistory ($expression)
+{
+  global $config;
+         
+  if ($expression != "")
+  {
+    // replace newlines with tab space
+    $expression= str_replace ("\n\r", "\t", $expression);
+    $expression= str_replace ("\r\n", "\t", $expression);
+    $expression= str_replace ("\r", "\t", $expression);
+    $expression= str_replace ("\n", "\t", $expression);
+
+    // client IP
+    if (!isset($_SERVER['HTTP_X_FORWARDED_FOR'])) $client_ip = $_SERVER['REMOTE_ADDR'];
+    else $client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+
+    // record
+    $record = date ("Y-m-d H:i", time())."|".$client_ip."|".$expression."\n";
+  
+    if (is_file ($config['search_log']))
+    { 
+      return file_put_contents ($config['search_log'], $record, FILE_APPEND | LOCK_EX);
+    }
+    else
+    {
+      return file_put_contents ($config['search_log'], $record, LOCK_EX);
+    }
+  }  
+  else return false;
+}
+
+// ----------------------------------------- readhistory ------------------------------------------
+// input: %
+// output: array holding all expressions of the search history / false on error
+
+function readhistory ()
+{
+  global $config;
+
+  if (is_file ($config['search_log']))
+  {
+    // load search log
+    $data = file ($config['search_log']);
+  
+    if (is_array ($data) && sizeof ($data) > 0)
+    {
+      $keywords = array();
+      
+      foreach ($data as $record)
+      {
+        if (substr_count ($record, "|") > 0)
+        {
+          list ($date, $ip, $keyword_add) = explode ("|", $record);
+    
+          $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
+        }
+      }
+      
+      // only unique expressions
+      $keywords = array_unique ($keywords);
+      
+      return $keywords;
+    }
+    else return false;
+  }
+  else return false;
 }
 ?>

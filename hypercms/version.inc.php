@@ -1571,7 +1571,7 @@ Release 06/2016
 
 Version 6.1.10
 Release 06/2016
-- Implementation of the verificaton of new files before the recreation of a ZIP file by function zipfiles
+- Implementation of the verification of new files before the recreation of a ZIP file by function zipfiles
 - Removed ZIP file verification from service mediadownload (removed 24 hour caching of ZIP files for download links)
 - Implementation of mobile version support for access links
 - Removed frameset_main_linking (replaced by frameset_main)
@@ -1585,7 +1585,7 @@ Release 06/2016
 - Added theme-color meta-tag for mobile browsers
 - Implementation of component path verification in explorer (Navigator)
 - Bug fix: Function editpublication used single and double quotes for empty storage-type configuration
-- Implmenetation of an Assetbrowser in the connector module (for third-party CMS integration)
+- Implementation of an Assetbrowser in the connector module (for third-party CMS integration)
 - Minor improvements in userlogin
 - Bug fix: Added iPhone and iPad support in Mobile Edition to enable scrolling of an asset when adding metadata during upload
 - Bug fix: Annotations for images are disabled for iPhone or iPad due to issues with the annotate-JS-comand
@@ -1893,9 +1893,18 @@ Version 6.1.26
 Release 10/2016
 - Modification of function getfavorites to support object hash as key in result array
 - Bug fix: Direct download did not work for favorites due to missing object hash
-- Modification of viewport for frameset_content to fit smaller screens on mobile devices (zoom factor 0.64)
+- Modification of viewport for frameset_content to fit smaller screens on mobile devices (initial zoom factor 0.64)
+
+Version 6.1.27
+Release 10/2016
+- Bug fix: The translation service Plugin did not provide the domain if the autologon service has not been enabled
+- Implementation of minimum file size check of created ZIP files in function zipfiles in media API
+- Implementation of new search history for external search engine of repository
+- Undefined variable in function createuser and edituser in main API
+- Improvements in install script for MS Windows
+- Bug fix: Function editpublication did not verify if the config file exists before loading it
 */
 
 // current version
-$version = "Version 6.1.26";
+$version = "Version 6.1.27";
 ?>

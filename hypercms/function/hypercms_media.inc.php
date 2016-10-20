@@ -4261,8 +4261,8 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
       }
     }  
     
-    // check if ZIP file exists and there are no new files that need to be included
-    if (is_file ($destination.$zipfilename.".zip"))
+    // check if ZIP file exists and there are no new files that need to be included, and the ZIP file size > 1024 bytes
+    if (is_file ($destination.$zipfilename.".zip") && filesize ($destination.$zipfilename.".zip") > 1024)
     {
       // get ZIP file time
       $zipfiletime = filemtime ($destination.$zipfilename.".zip");
