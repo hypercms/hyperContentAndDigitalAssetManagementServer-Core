@@ -736,7 +736,7 @@ function writehistory ($expression)
     }
     else
     {
-      return file_put_contents ($config['search_log'], $record, LOCK_EX);
+      return file_put_contents ($config['search_log'], $record);
     }
   }  
   else return false;

@@ -1909,6 +1909,7 @@ Release 10/2016
 - Bug fix: Function etserverload did not exclude function sys_getloadavg on Windows OS
 - Implementation of new workouround for calculating the number of CPU and system load om Windows OS in function getserverload in get API
 - Changes in class HyperMailer to support future PHP versions
+- Bug fix: Function writehistory of external search engine in repository performed a file lock on a non existing log file
 */
 
 // current version
