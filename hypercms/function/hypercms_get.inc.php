@@ -16,25 +16,56 @@
 
 function getserverload ()
 {
-  // for Windows
-  if (stristr (PHP_OS, 'win') && class_exists ('COM'))
+  $cpu_num = 2;
+  $load_total = 0;
+    
+  // for Windows  
+  if (stristr (PHP_OS, 'win'))
   {
-    $wmi = new COM ("Winmgmts://");
-    $server = $wmi->execquery ("SELECT LoadPercentage FROM Win32_Processor");
-   
-    $cpu_num = 0;
-    $load_total = 0;
-   
-    foreach ($server as $cpu)
+    if (class_exists ('COM'))
     {
-      $cpu_num++;
-      $load_total += $cpu->loadpercentage;
+      $wmi = new COM ("Winmgmts://");
+      $server = $wmi->execquery ("SELECT LoadPercentage FROM Win32_Processor");
+     
+      foreach ($server as $cpu)
+      {
+        $cpu_num++;
+        $load_total += $cpu->loadpercentage;
+      }
+      
+      $load = round ($load_total / $cpu_num);
     }
-   
-    $load = round ($load_total / $cpu_num);
+    else
+    {
+      $process = @popen ('wmic cpu get NumberOfCores', 'rb');
+      
+      if (false !== $process)
+      {
+        fgets ($process);
+        $cpu_num = intval (fgets ($process));
+        pclose ($process);
+      }
+     
+      $cmd = "wmic cpu get loadpercentage /all";
+      @exec ($cmd, $output);
+
+      if ($output)
+      {
+        foreach ($output as $line)
+        {
+          if ($line && preg_match ("/^[0-9]+\$/", $line))
+          {
+            $load_total = $line;
+            break;
+          }
+        }
+      }
+      
+      $load = round ($load_total / $cpu_num);
+    }
   }
   // for UNIX
-  else
+  elseif (function_exists ('sys_getloadavg'))
   {
     $sys_load = sys_getloadavg ();
     $load = $sys_load[0];

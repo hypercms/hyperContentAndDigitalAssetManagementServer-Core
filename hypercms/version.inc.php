@@ -1902,9 +1902,15 @@ Release 10/2016
 - Implementation of new search history for external search engine of repository
 - Undefined variable in function createuser and edituser in main API
 - Improvements in install script for MS Windows
-- Bug fix: Function editpublication did not verify if the config file exists before loading it
+- Bug fix: Function editpublication in main API did not verify if the config file exists before loading it
+
+Version 6.1.28
+Release 10/2016
+- Bug fix: Function etserverload did not exclude function sys_getloadavg on Windows OS
+- Implementation of new workouround for calculating the number of CPU and system load om Windows OS in function getserverload in get API
+- Changes in class HyperMailer to support future PHP versions
 */
 
 // current version
-$version = "Version 6.1.27";
+$version = "Version 6.1.28";
 ?>
