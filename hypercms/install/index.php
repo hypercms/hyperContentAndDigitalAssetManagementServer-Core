@@ -7,9 +7,6 @@
  * You should have received a copy of the License along with hyperCMS.
  */
 
-// Directory name of hyperCMS application
-$hypercms_dir = "hypercms";
-
 
 $mgmt_config = array();
 $publ_config = array();
@@ -27,6 +24,9 @@ if (dirname($_SERVER['REQUEST_URI']) != "")
 }
 
 $base_path = dirname(dirname(getcwd()));
+
+// Directory name of hyperCMS application
+$hypercms_dir = basename(dirname(getcwd()));
 
 // correct for Windows
 $base_path = str_replace ("\\", "/", $base_path);
@@ -61,6 +61,9 @@ $mgmt_config['db_connect_rdbms'] = "db_connect_rdbms.php";
 $mgmt_config['dbconnect'] = "mysql";
 $mgmt_config['dbcharset'] = "utf8";
 $mgmt_config['rdbms_log'] = true;
+
+// define crypt level
+$mgmt_config['crypt_level'] = "strong";
 
 // set user and language
 $user = "sys";

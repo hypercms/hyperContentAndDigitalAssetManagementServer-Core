@@ -3972,7 +3972,7 @@ function getboxes ($user)
 
 function getusersonline ()
 {
-  global $mgmt_config;
+  global $mgmt_config, $siteaccess;
   
   $session_dir = $mgmt_config['abs_path_data']."session/";
   
@@ -4002,6 +4002,25 @@ function getusersonline ()
     if (sizeof ($result) > 0)
     {
       $result = array_unique ($result);
+      $result_filtered = array();
+      
+      // filter users based on their publication access
+      if (!empty ($siteaccess) && is_array ($siteaccess))
+      {
+        $users = getuserinformation ();
+        
+        foreach ($result as $logon)
+        {
+          foreach ($siteaccess as $site)
+          {
+            if (!empty ($users[$site][$logon])) $result_filtered[] = $logon;
+          }
+        }
+        
+        // reset result
+        $result = array_unique ($result_filtered);
+      }
+      
       return $result;
     }
     else return false;

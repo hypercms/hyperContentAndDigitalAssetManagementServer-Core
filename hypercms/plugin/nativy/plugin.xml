@@ -14,5 +14,12 @@
         <page>pages/page.php</page>
       </point>
     </main>
+    <context>
+      <point>
+        <name>Send to translation</name>
+        <icon>img/language.gif</icon>
+        <page>pages/page.php</page>
+      </point>
+    </context>
   <menus>
 </plugin>

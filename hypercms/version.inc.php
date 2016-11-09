@@ -1910,8 +1910,15 @@ Release 10/2016
 - Implementation of new workouround for calculating the number of CPU and system load om Windows OS in function getserverload in get API
 - Changes in class HyperMailer to support future PHP versions
 - Bug fix: Function writehistory of external search engine in repository performed a file lock on a non existing log file
+
+Version 6.1.29
+Release 11/2016
+- Implementation of publication access of a user in function getusersonline (present list of users based on their publication access)
+- Improvements in install script to support other directory names of the hyperCMS root
+- Definition of crypt_level in install script
+- Implementation of company/billing data form for translation service Plugin
 */
 
 // current version
-$version = "Version 6.1.28";
+$version = "Version 6.1.29";
 ?>
