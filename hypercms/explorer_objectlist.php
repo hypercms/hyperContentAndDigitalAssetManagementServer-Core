@@ -988,7 +988,7 @@ function openobjectview (location, object, view)
               {
                 foreach ($data['menu']['context'] as $key => $point)
                 {
-                  $plugin_items .= "
+                  if (!empty ($point['page']) && !empty ($point['name'])) $plugin_items .= "
             <a href=# id=\"href_plugin_".$key."\" onClick=\"if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('".$mgmt_config['url_path_plugin'].$plugin_name."/".$point['page']."');\"><img src=\"".$point['icon']."\" name=\"img_plugin\" align=\"absmiddle\" style=\"border:0; width:16px; height:16px;\" class=\"hcmsIconOn\" />&nbsp;".getescapedtext ($point['name'])."</a><br />";
                 }
               }

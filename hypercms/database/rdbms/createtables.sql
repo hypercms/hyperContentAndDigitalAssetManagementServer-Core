@@ -126,7 +126,7 @@ CREATE TABLE `textnodes` (
   KEY `textnodes_text_id` (`text_id`),
   KEY `textnodes_object_id` (`object_id`),
   KEY `textnodes_id_type` (`id`,`type`),
-  FULLTEXT KEY `textnodes_content` (`text_content`)
+  FULLTEXT KEY `textnodes_content` (`textcontent`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `queue`;

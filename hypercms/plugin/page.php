@@ -39,20 +39,28 @@ checkusersession ($user, false);
 $show = "";
 
 // partner API keys
-$partner_api_key = 'o&Tab-{z8de49nEN3P+CyaAfxr*6{}x%QJ1%hhnE5BE|T8RI#OW4UBcVIB9Volxa';
-// test: $partner_api_key = '/RN!0Q}B%ObI$V7tbI>R7+SFux8b-wZY^0My{Vc]6K2Xf{!vQ8k%4vKrxiB9+}Lh';
-$partner_private_key = 'L@GeRFbR:ox[y)A%pQ2LXx!+dXdPbD[Dy/{nBOMDt{H^2VQ8xxWY7D=s&A3v{kD$';
-// test: $partner_private_key = 'aiGspvBQ$dk5L3huua?PW5}#Jq+8Spk@}FVUveshcXO0^^Mx1t&cwW1A05*r*r55';
+//$partner_api_key = 'o&Tab-{z8de49nEN3P+CyaAfxr*6{}x%QJ1%hhnE5BE|T8RI#OW4UBcVIB9Volxa';
+// test:
+$partner_api_key = '/RN!0Q}B%ObI$V7tbI>R7+SFux8b-wZY^0My{Vc]6K2Xf{!vQ8k%4vKrxiB9+}Lh';
+//$partner_private_key = 'L@GeRFbR:ox[y)A%pQ2LXx!+dXdPbD[Dy/{nBOMDt{H^2VQ8xxWY7D=s&A3v{kD$';
+// test: 
+$partner_private_key = 'aiGspvBQ$dk5L3huua?PW5}#Jq+8Spk@}FVUveshcXO0^^Mx1t&cwW1A05*r*r55';
 $partner_timestamp = gmdate ('U');
 $partner_hmac = hash_hmac ('sha1', $partner_timestamp, $partner_private_key);
-$domain = 'https://www.nativy.com/';
-// test: $domain = 'http://www.nativytest.com/';
+//$domain = 'https://www.nativy.com/';
+// test: 
+$domain = 'http://www.nativytest.com/';
 
+// verivy publication
+if (!valid_publicationname ($site))
+{
+  $site = $siteaccess[0];
+}
 
 // =============== save general billing information for each publication ===============
 if (checktoken ($token, $user))
 {
-  if (!is_file ($mgmt_config['abs_path_data']."checkout/".$user.".nativy.inc.php") && $company != "" && $street != "" && $password != "")
+  if (!is_file ($mgmt_config['abs_path_data']."checkout/".$site.".nativy.inc.php") && $company != "" && $street != "" && $password != "")
   {
     $data = "<?php
 // Please provide your organizations data for the nativy account
@@ -70,15 +78,15 @@ if (checktoken ($token, $user))
 ?>";
 
     // save config
-    savefile ($mgmt_config['abs_path_data']."checkout/", $user.".nativy.inc.php", $data); 
+    savefile ($mgmt_config['abs_path_data']."checkout/", $site.".nativy.inc.php", $data); 
   }
 }
 
 // =============== authorize user ===============
-if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".nativy.inc.php"))
+if (is_file ($mgmt_config['abs_path_data']."checkout/".$site.".nativy.inc.php"))
 {
   // load config
-  require ($mgmt_config['abs_path_data']."checkout/".$user.".nativy.inc.php");
+  require ($mgmt_config['abs_path_data']."checkout/".$site.".nativy.inc.php");
   
   // set default languages
   $language_from = $nativy_config['language_from'];
@@ -431,7 +439,7 @@ if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".nativy.inc.php"))
 }
 
 // =============== define company/billing information if undefined ===============
-if (!is_file ($mgmt_config['abs_path_data']."checkout/".$user.".nativy.inc.php"))
+if (!is_file ($mgmt_config['abs_path_data']."checkout/".$site.".nativy.inc.php"))
 {
 ?>
 <!DOCTYPE html>

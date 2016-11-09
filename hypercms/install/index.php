@@ -414,14 +414,14 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
     require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
       
     // create folders
-    if (!is_file (deconvertpath ("%comp%/".$site."/Multimedia/.folder")))
+    if (!is_dir (deconvertpath ("%comp%/".$site."/Multimedia")))
     {
       $result = createfolder ($site, "%comp%/".$site."/", "Multimedia", $user);
          
       if (isset ($result['result']) && !$result['result']) $show .= "<li>Multimedia folder could not be created:<br/>".$result['message']."</li>\n";
     }
     
-    if (!is_file (deconvertpath ("%page%/".$site."/AboutUs/.folder")))
+    if (!is_dir (deconvertpath ("%page%/".$site."/AboutUs")))
     {
       $result = createfolder ($site, "%page%/".$site."/", "AboutUs", $user);
          
@@ -435,7 +435,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
       else $show .= "<li>About us folder could not be created:<br/>".$result['message']."</li>\n";
     }
     
-    if (!is_file (deconvertpath ("%page%/".$site."/Products/.folder")))
+    if (!is_dir (deconvertpath ("%page%/".$site."/Products")))
     {
       $result = createfolder ($site, "%page%/".$site."/", "Products", $user);
       
@@ -449,7 +449,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
       else $show .= "<li>Products folder could not be created:<br/>".$result['message']."</li>\n";
     }
     
-    if (!is_file (deconvertpath ("%page%/".$site."/Contact/.folder")))
+    if (!is_dir (deconvertpath ("%page%/".$site."/Contact")))
     {
       $result = createfolder ($site, "%page%/".$site."/", "Contact", $user);
       
@@ -674,7 +674,7 @@ $(document).ready(function(){
 </script>
 
 <!-- top bar -->
-<?php echo showtopbar ("Installation of hyperCMS ".$version, "en"); ?>
+<?php echo showtopbar ("Installation of the hyper Content & Digital Asset Management Server ".$version, "en"); ?>
 
 <!-- content area -->
 <div id="content" style="width:480px; margin:0 auto 10px auto;">

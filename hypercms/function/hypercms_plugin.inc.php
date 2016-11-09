@@ -212,6 +212,7 @@ function plugin_parse ($oldData=array())
         
         $mainmenu = array();
         $publicationmenu = array();
+        $contextmenu = array();
         
         if (is_array ($tmp) && !empty ($tmp[0]))
         {
@@ -287,7 +288,8 @@ function plugin_generatedefinition ($arrayName, $array)
     foreach ($array as $key => $value) 
     {
       if (is_string ($key)) $key = "'".$key."'";
-      // We ignore each key that is not a string, number or boolean
+      
+      // ignore each key that is not a string, number or boolean
       elseif (!is_numeric ($key) && !is_bool ($key)) continue; 
          
       if (is_array ($value))
@@ -298,7 +300,6 @@ function plugin_generatedefinition ($arrayName, $array)
       {
         if (is_string ($value)) $value = "'".$value."'";
         elseif (is_bool ($value)) $value = ($value ? 'true' : 'false');
-        // We ignore each value that is not a string, number or boolean
         elseif (!is_numeric ($value)) continue;
          
         $return .= '$'.$arrayName.'['.$key.'] = '.$value.";\n";

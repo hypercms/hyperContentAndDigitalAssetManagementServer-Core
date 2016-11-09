@@ -3,7 +3,7 @@
 <name>SearchResult</name>
 <user>admin</user>
 <category>page</category>
-<extension>xhtml</extension>
+<extension>php</extension>
 <application>php</application>
 <content><![CDATA[[hyperCMS:textc id='NavigationHide' label='Hide in Navigation' value='yes' infotype='meta' onPublish='hidden']
 [hyperCMS:textu id='NavigationSortOrder' label='Navigation Sort Order' constraint='inRange0:1000' infotype='meta' onPublish='hidden' height='25']

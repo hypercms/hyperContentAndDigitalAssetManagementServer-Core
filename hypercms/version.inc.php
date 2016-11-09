@@ -1917,6 +1917,12 @@ Release 11/2016
 - Improvements in install script to support other directory names of the hyperCMS root
 - Definition of crypt_level in install script
 - Implementation of company/billing data form for translation service Plugin
+- Bug fix: Function plugin_parse of plugin API did not reset context array
+- Improvements regarding plugin items in context menus
+- Activation of the context menu of the translation service plugin on installation
+- Bug fix: File extensions defined in the example page templates did not match PHP
+- Various improvements in the installation script
+- Bug fix: SQL statements for the database table 'textnodes' used a wrong attribute name for the full text index
 */
 
 // current version

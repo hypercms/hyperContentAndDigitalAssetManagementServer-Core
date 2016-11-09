@@ -3,7 +3,7 @@
 <name>ContactUs</name>
 <user>admin</user>
 <category>page</category>
-<extension>xhtml</extension>
+<extension>php</extension>
 <application>php</application>
 <content><![CDATA[<?php if ("%view%" == "publish") session_start(); ?>
 [hyperCMS:textc id='NavigationHide' label='Hide in Navigation' value='yes' infotype='meta' onPublish='hidden']
