@@ -967,12 +967,14 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
       foreach ($mgmt_mediapreview as $mediapreview_ext => $mediapreview)
       {        
         // check file extension
-        if ($fileinfo['ext'] != "" && substr_count ($mediapreview_ext.".", $fileinfo['ext'].".") > 0)
+        if ($fileinfo['ext'] != "" && substr_count ($mediapreview_ext.".", $fileinfo['ext'].".") > 0 && !empty ($mgmt_mediapreview[$mediapreview_ext]))
         {
           $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" -ss ".shellcmd_encode ($frame)." -f image2 -vframes 1 \"".shellcmd_encode ($location_dest.$newfile)."\"";
 
           // execute 
           exec ($cmd, $error_array, $errorCode);
+          
+          $executed = true;
         }
       }
     }
@@ -980,25 +982,30 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
     // delete temp file
     if ($temp_source['result'] && $temp_source['created']) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
 
-    if (!is_file ($location_dest.$newfile) || $errorCode) 
+    // if thumbnail creation has been executed
+    if (!empty ($executed))
     {
-      $errcode = "20241";
+      if (!is_file ($location_dest.$newfile) || $errorCode) 
+      {
+        $errcode = "20241";
+        
+        $error = array($mgmt_config['today'].'|hypercms_media.inc.php|error|'.$errcode.'|exec of ffmpeg (code:'.$errorCode.') (command:'.$cmd.') failed in createthumbnail_video for file '.$file.' and frame '.$frame);
+        // save log
+        savelog (@$error);
+        return false;
+      } 
+      else
+      {
+        // save in cloud storage
+        if (function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
+        
+        // remote client
+        remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
       
-      $error = array($mgmt_config['today'].'|hypercms_media.inc.php|error|'.$errcode.'|exec of ffmpeg (code:'.$errorCode.') (command:'.$cmd.') failed in createthumbnail_video for file '.$file.' and frame '.$frame);
-      // save log
-      savelog (@$error);
-      return false;
-    } 
-    else
-    {
-      // save in cloud storage
-      if (function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
-      
-      // remote client
-      remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-    
-      return $newfile;
+        return $newfile;
+      }
     }
+    else return false;
   }
   else return false;
 }
@@ -2108,7 +2115,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         foreach ($mgmt_mediapreview as $mediapreview_ext => $mediapreview)
         {        
           // check file extension
-          if ($file_ext != "" && substr_count (strtolower ($mediapreview_ext).".", $file_ext.".") > 0)
+          if ($file_ext != "" && substr_count (strtolower ($mediapreview_ext).".", $file_ext.".") > 0 && !empty ($mediapreview))
           {
             reset ($mgmt_mediaoptions);  
 
@@ -2326,7 +2333,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
 
                 // split media file if requested
-                if (!empty ($mgmt_mediaoptions['segments']))
+                if (!empty ($mgmt_mediaoptions['segments']) && !empty ($mgmt_mediapreview[$mediapreview_ext]))
                 {
                   // decode JSON string to array
                   $segments = json_decode ($mgmt_mediaoptions['segments'], true);
@@ -2508,7 +2515,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   $tmpfile2 = $file_name.".tmp2.".$format_set;
                   
                   // apply watermark as video filter
-                  if (!empty ($vfilter_wm))
+                  if (!empty ($vfilter_wm) && !empty ($mgmt_mediapreview[$mediapreview_ext]))
                   {
                     // render video with watermark
                     $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_temp.$tmpfile)."\" -vf \"".$vfilter_wm."\" \"".shellcmd_encode ($location_temp.$tmpfile2)."\"";

@@ -232,6 +232,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
     $result = edituser ("*Null*", "admin", "", $password, $confirm_password, "1", $realname, $language, "standard", $email, "", "", "", $user);
     if ($result['result'] == false) $show .= "<li>".$result['message']."</li>\n";
   }
+  else $show .= "<li>Please provide all information for the Administrator Account</li>\n";
 
   // create configs
   if ($show == "" && $os_cms != "" && $mgmt_config['url_path_cms'] != "" && $mgmt_config['abs_path_cms'] != "")
@@ -287,6 +288,7 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['
         if ($result_config == false) $show .= "<li>Create of config file failed. Please check write permissions of config/config.inc.php.</li>\n";
       }
     }
+    else $show .= "<li>The path to your installation directory could not be determinded!</li>\n";
     
     // set path for search engine
     if ($show == "")
@@ -674,12 +676,18 @@ $(document).ready(function(){
 </script>
 
 <!-- top bar -->
-<?php echo showtopbar ("Installation of the hyper Content & Digital Asset Management Server ".$version, "en"); ?>
+<?php echo showtopbar ("<img src=\"".$mgmt_config['url_path_cms']."theme/standard/img/logo_top.png\" align=\"absmiddle\" /> Installation of ".$version, "en"); ?>
 
 <!-- content area -->
 <div id="content" style="width:480px; margin:0 auto 10px auto;">
 
 <div id="error" style="padding:4px; border:1px solid red; background:#ffdcd5;">There were errors on the form!</div>
+
+<div style="margin:20px 0px 20px 0px;">
+Welcome to the one-step hyper Content &amp; Digital Asset Management Server installation. 
+You may want to read the <a href="<?php echo $mgmt_config['url_path_cms']; ?>help/installationguide_en.pdf" target="_blank">installation guide</a> or watch the <a href="https://youtu.be/qR_wZBSw9Ao" target="_blank">installation tutorial</a> at your leisure.<br/>
+Otherwise just provide the information below and install the most powerful Content and Digital Asset Management System.
+</div>
 
 <?php echo showmessage ($show, 480, 300, "en", "position:fixed; top:40px; margin-left:auto; margin-right:auto;"); ?>  
 
@@ -965,8 +973,11 @@ $(document).ready(function(){
       <strong>cms/job/minutely.php</strong> ... needs to be executed every minute</td>
     </tr>
     <tr>
+      <td colspan="2" nowrap="nowrap">&nbsp;</td>
+    </tr>
+    <tr>
       <td colspan="2" nowrap="nowrap">
-        <input type="submit" class="button hcmsButtonGreen" style="width:100%; height:40px;" value="Start installation" />
+        <input type="submit" class="button hcmsButtonGreen" style="width:100%; height:40px;" value="Install now" />
       </td>
     </tr>
   </table>

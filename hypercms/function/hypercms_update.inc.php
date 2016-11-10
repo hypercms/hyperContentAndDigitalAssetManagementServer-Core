@@ -621,7 +621,9 @@ function update_container_v6118 ()
 {
   global $mgmt_config;
   
-  if (!empty ($mgmt_config['abs_path_data']) && strpos (loadlog ("update", "string"), "|6.1.18|") < 1)
+  $logdata = loadlog ("update", "string");
+  
+  if (!empty ($mgmt_config['abs_path_data']) && !empty ($logdata) && strpos ($logdata, "|6.1.18|") < 1)
   { 
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);

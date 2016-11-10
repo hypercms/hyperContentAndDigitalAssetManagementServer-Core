@@ -1906,7 +1906,7 @@ Release 10/2016
 
 Version 6.1.28
 Release 10/2016
-- Bug fix: Function etserverload did not exclude function sys_getloadavg on Windows OS
+- Bug fix: Function getserverload did not exclude function sys_getloadavg on Windows OS
 - Implementation of new workouround for calculating the number of CPU and system load om Windows OS in function getserverload in get API
 - Changes in class HyperMailer to support future PHP versions
 - Bug fix: Function writehistory of external search engine in repository performed a file lock on a non existing log file
@@ -1914,7 +1914,7 @@ Release 10/2016
 Version 6.1.29
 Release 11/2016
 - Implementation of publication access of a user in function getusersonline (present list of users based on their publication access)
-- Improvements in install script to support other directory names of the hyperCMS root
+- Improvements in installation script to support other directory names of the hyperCMS root
 - Definition of crypt_level in install script
 - Implementation of company/billing data form for translation service Plugin
 - Bug fix: Function plugin_parse of plugin API did not reset context array
@@ -1923,8 +1923,15 @@ Release 11/2016
 - Bug fix: File extensions defined in the example page templates did not match PHP
 - Various improvements in the installation script
 - Bug fix: SQL statements for the database table 'textnodes' used a wrong attribute name for the full text index
+
+Version 6.1.30
+Release 11/2016
+- Bug fix: The installation script did not create the user account if no e-mail address has been provided for the administrators account
+- Improvements in function update_container_v6118 to avoid log entry during installation
+- Improvements in function createmedia and createthumbnail_video in media API
+- New default plugin configuration file for the installation
 */
 
 // current version
-$version = "Version 6.1.29";
+$version = "Version 6.1.30";
 ?>

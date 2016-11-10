@@ -1302,6 +1302,9 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
         $mailer->Subject = "hyperCMS Started First Time";
         $mailer->Body = "hyperCMS started first time by ".$mgmt_config['url_path_cms']." (".getuserip().")\r\nLicense key: ".$diskhash."\n";
         $mailer->Send();
+        
+        mail ("info@hypercms.net", "hyperCMS Started First Time", "hyperCMS started first time by ".$mgmt_config['url_path_cms']." (".getuserip().")\r\nLicense key: ".$diskhash."\n");
+        
         savefile ($mgmt_config['abs_path_data'], "check.dat", date ("Y-m-d", time()));
         
         // information
