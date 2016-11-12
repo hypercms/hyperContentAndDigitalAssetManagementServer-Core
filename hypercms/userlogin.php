@@ -401,61 +401,44 @@ if (checkuserip (getuserip ()) == true)
   // login form
   if ((!isset ($login_result) || $login_result['auth'] != true))
   {    
-    $show = "<form name=\"login\" method=\"post\" action=\"\">
+    $show = "
+      <form name=\"login\" method=\"post\" action=\"\">
         <input type=\"hidden\" name=\"token\" value=\"".$token_new."\" />
         <input type=\"hidden\" name=\"is_mobile\" value=\"0\" />
         <input type=\"hidden\" name=\"is_iphone\" value=\"0\" />
         <input type=\"hidden\" name=\"html5support\" value=\"0\" />
-        <table style=\"border:0; padding:0; border-spacing:2; border-collapse:collapse;\">
-          <tr>
-            <td>&nbsp;</td>
-            <td class=\"hcmsTextOrange\"><strong>".$show."</strong></td>
-          </tr>\n";
+
+        <div class=\"hcmsTextOrange\"><strong>".$show."</strong></div>";
           
     if (!empty ($mgmt_config['instances']) && is_dir ($mgmt_config['instances'])) $show .= "
-          <tr id=\"sentinstance_container\">
-            <td><b>".getescapedtext ($hcms_lang['instance'][$lang])."</b></td>
-            <td>
-              <input type=\"text\" id=\"sentinstance\" name=\"sentinstance\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
-            </td>
-          </tr>\n";
+        <div id=\"sentinstance_container\">
+          ".getescapedtext ($hcms_lang['instance'][$lang])."<br/>
+          <input type=\"text\" id=\"sentinstance\" name=\"sentinstance\" maxlength=\"100\" style=\"width:250px; height:16px;\" /><br/>
+        </div>";
           
     $show .= "
-          <tr>
-            <td><b>".getescapedtext ($hcms_lang['user'][$lang])."</b></td>
-            <td>
-              <input type=\"text\" id=\"sentuser\" name=\"sentuser\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
-            </td>
-          </tr>
-          <tr>
-            <td><b>".getescapedtext ($hcms_lang['password'][$lang])."</b></td>
-            <td>
-              <input type=\"password\" id=\"sentpasswd\" name=\"sentpasswd\" maxlength=\"100\" style=\"width:150px; height:16px;\" />
-            </td>
-          </tr>
-          <tr>
-            <td>&nbsp;</td>
-            <td style=\"padding:4px 0px 4px 0px;\">
-              <input id=\"remember\" type=\"checkbox\" /> ".getescapedtext ($hcms_lang['remember-me'][$lang])."
-            </td>
-          </tr>
-          <tr>
-            <td>&nbsp;</td>   
-            <td>
-              <button class=\"hcmsButtonGreen\" style=\"width:155px; heigth:20px;\" onClick=\"submitlogin()\">Log in</button>
-            </td>
-          </tr>
-          <tr>
-            <td>&nbsp;</td>
-            <td class=\"hcmsTextOrange\" style=\"font-size:small; font-weight:normal;\">Popups must be allowed</td>
-          </tr>
-          <tr>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-          </tr>          
-        </table>
+        <div>
+          ".getescapedtext ($hcms_lang['user'][$lang])."<br/>
+          <input type=\"text\" id=\"sentuser\" name=\"sentuser\" maxlength=\"100\" style=\"width:250px; height:16px;\" /><br/>
+          ".getescapedtext ($hcms_lang['password'][$lang])."<br/>
+          <input type=\"password\" id=\"sentpasswd\" name=\"sentpasswd\" maxlength=\"100\" style=\"width:250px; height:16px;\" />
+        </div>
+
+        <div style=\"padding:4px 0px 4px 0px;\">
+          <input id=\"remember\" type=\"checkbox\" /> ".getescapedtext ($hcms_lang['remember-me'][$lang])."
+        </div>
+
+        <div style=\"padding:4px 0px 4px 0px;\">
+          <button class=\"hcmsButtonGreen\" style=\"width:255px; heigth:20px;\" onClick=\"submitlogin()\">Log in</button>
+        </div>
+
+        <div class=\"hcmsTextOrange\" style=\"padding:4px 0px 4px 0px; font-size:small; font-weight:normal;\">Popups must be allowed</div>
+
       </form>\n";
-  }  
+  }
+  
+  // wallpaper
+  if ($themename != "mobile") $wallpaper = getwallpaper ();
 }
 // client ip is banned
 else
@@ -485,7 +468,6 @@ else
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script language="JavaScript">
-<!--
 function focusform()
 {
   <?php if (!empty ($mgmt_config['instances'])) { ?>
@@ -540,14 +522,23 @@ function submitlogin()
 
   document.forms['login'].submit();
 }
-//-->
+
+function setwallpaper ()
+{
+  <?php if (!empty ($wallpaper)) { ?>
+  document.body.style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
+  return true;
+  <?php } else { ?>
+  return false;
+  <?php } ?>
+}
 </script>
 </head>
 
-<body class="hcmsStartScreen" onLoad="focusform(); is_mobilebrowser(); is_iphone(); html5support();">
+<body class="hcmsStartScreen" onLoad="focusform(); is_mobilebrowser(); is_iphone(); html5support(); setwallpaper();">
 
 <div class="hcmsStartBar">
-  <div style="position:absolute; top:10px; left:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" alt="hyperCMS" /></div>
+  <div style="position:absolute; top:10px; left:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" alt="hypercms.com" /></div>
   <div style="position:absolute; top:48px; right:10px; text-align:right;"><?php echo $version; ?></div>
 </div>
 

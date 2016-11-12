@@ -11,11 +11,12 @@
 .hcmsStartScreen
 {
   background-image: url('../img/backgrd_start.png');
+  background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  background-position: center; 
+  background-position: center center; 
   background-color: #B2CDFA;
-  font-size: medium;
+  font-size: 14px;
   text-align: center;
   padding: 0;
   margin: 0;

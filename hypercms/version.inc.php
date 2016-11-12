@@ -1930,8 +1930,14 @@ Release 11/2016
 - Improvements in function update_container_v6118 to avoid log entry during installation
 - Improvements in function createmedia and createthumbnail_video in media API
 - New default plugin configuration file for the installation
+
+Version 6.1.31
+Release 11/2016
+- Modifications in main CSS of all themes
+- Redesign of logon screen with support for wallpaper service
+- Implementation of new function getwallpaper in get API
 */
 
 // current version
-$version = "Version 6.1.30";
+$version = "Version 6.1.31";
 ?>

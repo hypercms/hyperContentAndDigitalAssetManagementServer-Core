@@ -1732,6 +1732,42 @@ function getcontainer ($containerid, $type)
   
   return loadcontainer ($containerid, $type, "");
 }
+
+// ------------------------------------------ getwallpaper --------------------------------------------
+// function: getwallpaper()
+// input: %
+// output: URL of wallpaper image / false
+// requires: config.inc.php
+
+// description:
+// Provides a wallpaper image used for the logon screen.
+
+function getwallpaper ()
+{
+  global $mgmt_config;
+  
+  // get wallpaper name
+  $wallpaper_name = file_get_contents ("http://cms.hypercms.com/wallpaper/?action=name");
+  
+  if (!empty ($wallpaper_name))
+  {
+    // if file does not exist in temp view directory
+    if (!is_file ($mgmt_config['abs_path_temp']."view/".$wallpaper_name))
+    {
+      // get wallpaper file
+      $wallpaper_file = file_get_contents ("http://cms.hypercms.com/wallpaper/?action=get");
+      
+      if (!empty ($wallpaper_file))
+      {
+        if (savefile ($mgmt_config['abs_path_temp']."view/", $wallpaper_name, $wallpaper_file)) return $mgmt_config['url_path_temp']."view/".$wallpaper_name;
+        else return false;
+      }
+      else return false;
+    }
+    else return $mgmt_config['url_path_temp']."view/".$wallpaper_name;
+  }
+  else return false;
+}
  
 // ======================================== GET INFORMATION ===========================================
 
