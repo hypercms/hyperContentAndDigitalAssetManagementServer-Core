@@ -124,7 +124,6 @@ $token_new = createtoken ($user);
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script language="JavaScript">
-<!--
 function selectAll ()
 {
   var assigned = "|";
@@ -216,7 +215,7 @@ function checkForm ()
     }
   }
   
-  if (userform.elements['email'].value != "" && (userform.elements['email'].value.indexOf('@') == -1 || userform.elements['email'].value.indexOf('.') == -1))
+  if (userform.elements['email'].value == "" || (userform.elements['email'].value != "" && (userform.elements['email'].value.indexOf('@') == -1 || userform.elements['email'].value.indexOf('.') == -1)))
   {
     alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-valid-e-mail-adress'][$lang]); ?>"));
     userform.elements['email'].focus();
@@ -282,7 +281,6 @@ function move(fbox, tbox)
     tbox[c] = no;
   }
 }
-//-->
 </script>
 </head>
 
