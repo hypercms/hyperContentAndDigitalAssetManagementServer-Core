@@ -413,15 +413,15 @@ if (checkuserip (getuserip ()) == true)
     if (!empty ($mgmt_config['instances']) && is_dir ($mgmt_config['instances'])) $show .= "
         <div id=\"sentinstance_container\">
           ".getescapedtext ($hcms_lang['instance'][$lang])."<br/>
-          <input type=\"text\" id=\"sentinstance\" name=\"sentinstance\" maxlength=\"100\" style=\"width:250px; height:16px;\" /><br/>
+          <input type=\"text\" id=\"sentinstance\" name=\"sentinstance\" maxlength=\"100\" style=\"width:250px;\" /><br/>
         </div>";
           
     $show .= "
         <div>
           ".getescapedtext ($hcms_lang['user'][$lang])."<br/>
-          <input type=\"text\" id=\"sentuser\" name=\"sentuser\" maxlength=\"100\" style=\"width:250px; height:16px;\" /><br/>
+          <input type=\"text\" id=\"sentuser\" name=\"sentuser\" maxlength=\"100\" style=\"width:250px;\" /><br/>
           ".getescapedtext ($hcms_lang['password'][$lang])."<br/>
-          <input type=\"password\" id=\"sentpasswd\" name=\"sentpasswd\" maxlength=\"100\" style=\"width:250px; height:16px;\" />
+          <input type=\"password\" id=\"sentpasswd\" name=\"sentpasswd\" maxlength=\"100\" style=\"width:250px;\" />
         </div>
 
         <div style=\"padding:4px 0px 4px 0px;\">

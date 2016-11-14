@@ -1937,6 +1937,7 @@ Release 11/2016
 - Redesign of logon screen with support for wallpaper service
 - Implementation of new function getwallpaper in get API
 - The e-mail address of a user has been changed to a mandatory field in user_edit
+- Improvements in mobile CSS for mobile clients
 */
 
 // current version
