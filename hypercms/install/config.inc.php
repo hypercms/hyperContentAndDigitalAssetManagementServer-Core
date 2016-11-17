@@ -696,14 +696,14 @@ $mgmt_mediametadata['.flv'] = "%yamdi%";
 $mgmt_mediametadata['.3fr.3g2.3gp2.3gp.3gpp.acr.afm.acfm.amfm.ai.ait.aiff.aif.aifc.ape.arw.asf.avi.bmp.dib.btf.tiff.tif.chm.cos.cr2.crw.ciff.cs1.dcm.dc3.dic.dicm.dcp.dcr.dfont.divx.djvu.djv.dng.doc.dot.docx.docm.dotx.dotm.dylib.dv.dvb.eip.eps.epsf.ps.erf.exe.dll.exif.exr.f4a.f4b.f4p.f4v.fff.fff.fla.flac.flv.fpf.fpx.gif.gz.gzip.hdp.wdp.hdr.html.htm.xhtml.icc.icm.idml.iiq.ind.indd.indt.inx.itc.j2c.jpc.jp2.jpf.j2k.jpm.jpx.jpg.jpeg.k25.kdc.key.kth.la.lnk.m2ts.mts.m2t.ts.m4a.m4b.m4p.m4v.mef.mie.miff.mif.mka.mkv.mks.modd.mos.mov.qt.mp3.mp4.mpc.mpeg.mpg.m2v.mpo.mqv.mrw.mxf.nef.nmbtemplate.nrw.numbers.odb.odc.odf.odg,.odi.odp.ods.odt.ofr.ogg.ogv.orf.otf.pac.pages.pcd.pdf.pef.pfa.pfb.pfm.pgf.pict.pct.pjpeg.plist.pmp.png.jng.mng.ppm.pbm.pgm.ppt.pps.pot.potx.potm.ppsx.ppsm.pptx.pptm.psd.psb.psp.pspimage.qtif.qti.qif.ra.raf.ram.rpm.rar.raw.raw.riff.rif.rm.rv.rmvb.rsrc.rtf.rw2.rwl.rwz.so.sr2.srf.srw.svg.swf.thm.thmx.tiff.tif.ttf.ttc.vob.vrd.vsd.wav.webm.webp.wma.wmv.wv.x3f.xcf.xls.xlt.xlsx.xlsm.xlsb.xltx.xltm.xmp.zip'] = "%exiftool%";
 
 // Define max. file size in MB for thumbnail/video generation for certain file extensions
-$mgmt_maxsizepreview['.pdf'] = 10;
-$mgmt_maxsizepreview['.psd'] = 10;
-$mgmt_maxsizepreview['.doc'] = 4;
-$mgmt_maxsizepreview['.docx'] = 4;
-$mgmt_maxsizepreview['.ppt'] = 4;
-$mgmt_maxsizepreview['.pptx'] = 4;
-$mgmt_maxsizepreview['.xls'] = 4;
-$mgmt_maxsizepreview['.xlsx'] = 4;
+$mgmt_maxsizepreview['.pdf'] = 500;
+$mgmt_maxsizepreview['.psd'] = 500;
+$mgmt_maxsizepreview['.doc'] = 100;
+$mgmt_maxsizepreview['.docx'] = 100;
+$mgmt_maxsizepreview['.ppt'] = 100;
+$mgmt_maxsizepreview['.pptx'] = 100;
+$mgmt_maxsizepreview['.xls'] = 100;
+$mgmt_maxsizepreview['.xlsx'] = 100;
 
 // Try to regenerate previews of multimedia files in explorer list if the thumbnail file doesn't exist.
 // This seeting can be used to avoid recurring kernel problems with GhostScript if ImageMagick fails to create a thumbnail of a PDF file.

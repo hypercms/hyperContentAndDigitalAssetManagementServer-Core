@@ -1938,8 +1938,12 @@ Release 11/2016
 - Implementation of new function getwallpaper in get API
 - The e-mail address of a user has been changed to a mandatory field in user_edit
 - Improvements in mobile CSS for mobile clients
+
+Version 6.1.32
+Release 11/2016
+- Modification of max. file size for creating previews in main config file
 */
 
 // current version
-$version = "Version 6.1.31";
+$version = "Version 6.1.32";
 ?>
