@@ -615,31 +615,29 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="../theme/standard/css/main.css">
 <script src="../javascript/main.js" type="text/javascript"></script>
 <style type="text/css">
-<!--
 #error { color:red; display:none; }
 .needsfilled { color:red; }
--->
 </style>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
 
 <script type="text/javascript" src="http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 $(document).ready(function(){
-	// Place ID's of all required fields here.
+	// place ID's of all required fields here.
 	required = ["password", "confirm_password", "email", "db_host", "db_username", "db_password", "db_name", "smtp_host", "smtp_username", "smtp_password", "smtp_port", "smtp_sender"];
 
-	// If using an ID other than #email or #error then replace it here
+	// if using an ID other than #email or #error then replace it here
 	email = $("#email");
 	errornotice = $("#error");
 
-	// The text to show up within a field when it is incorrect
+	// the text to show up within a field when it is incorrect
 	emptyerror = "Please fill out this field";
 	emailerror = "Please enter a valid e-mail";
 
 	$("#installform").submit(function(){	
-		//Validate required fields
+		// validate required fields
 		for (i=0;i<required.length;i++) {
 			var input = $('#'+required[i]);
 			if ((input.val() == "") || (input.val() == emptyerror)) {
@@ -665,7 +663,7 @@ $(document).ready(function(){
 		}
 	});
 	
-	// Clears any fields in the form when the user clicks on them
+	// clear any fields in the form when the user clicks on them
 	$(":input").focus(function(){		
 	   if ($(this).hasClass("needsfilled") ) {
 			$(this).val("");

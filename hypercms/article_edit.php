@@ -89,12 +89,11 @@ if ($label == "") $label = $artid;
 <script src="javascript/click.js" type="text/javascript"></script>
 
 <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
-<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
-<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
-<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
-<script language="Javascript" type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
-<script language="JavaScript" type="text/javascript">
-<!--
+<script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
+<script type="text/javascript">
 var cal_obj = null;
 var cal_format = '%Y-%m-%d %H:%i';
 var cal_field = null;
@@ -190,7 +189,6 @@ function submitform ()
     return true;
   }
 }
-//-->
 </script>
 </head>
 
@@ -223,7 +221,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     <tr>
       <td><?php echo getescapedtext ($hcms_lang['title-will-not-be-shown'][$lang], $charset, $lang); ?>:</td>
       <td>
-        <input type="text" name="arttitle[<?php echo $artid; ?>]" value="<?php echo $arttitle; ?>" size="40">
+        <input type="text" name="arttitle[<?php echo $artid; ?>]" value="<?php echo $arttitle; ?>" size="40" />
       </td>
     </tr>
     <tr>

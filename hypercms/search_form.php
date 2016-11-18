@@ -62,19 +62,19 @@ else $template = "";
 <script src="javascript/main.js" type="text/javascript"></script>
 <!-- Rich calendar -->
 <link  rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
-<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
-<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
-<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
-<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_fr.js"></script>
-<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_pt.js"></script>
-<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_ru.js"></script>
-<script language="Javascript" type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rc_lang_fr.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rc_lang_pt.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rc_lang_ru.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
 <!-- Jquery and Jquery UI Autocomplete -->
 <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
 <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
 <!-- Google Maps -->
 <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php echo $mgmt_config['googlemaps_appkey']; ?>"></script>
-<script language="JavaScript">
+<script>
 function checkForm(select)
 {
   if (select.elements['search_expression'].value == "")

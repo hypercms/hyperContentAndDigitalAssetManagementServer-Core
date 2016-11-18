@@ -35,8 +35,8 @@ checkusersession ($user, false);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script type="text/javascript" language="JavaScript" src="javascript/main.js"></script>
-<script language="JavaScript">
+<script type="text/javascript" src="javascript/main.js"></script>
+<script>
 function openobjectview (location, object, view)
 {
   var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)

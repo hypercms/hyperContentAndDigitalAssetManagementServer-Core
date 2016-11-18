@@ -218,7 +218,7 @@ else $videosize = "";
 if ($hcms_ext['video'] != "" && $hcms_ext['audio'] != "")
 {
   // set default width for video preview
-  $mediawidth = 480;
+  $mediawidth = 576;
   $mediaheight = 0;
 
   // generate player code

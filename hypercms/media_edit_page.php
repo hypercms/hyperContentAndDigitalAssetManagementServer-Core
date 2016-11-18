@@ -132,7 +132,7 @@ if ($label == "") $label = $id;
 <meta charset="<?php echo $charset; ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
-<script language="JavaScript">
+<script>
 <!--
 function correctnames ()
 {

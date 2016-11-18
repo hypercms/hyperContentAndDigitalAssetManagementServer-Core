@@ -35,8 +35,7 @@ $description = str_replace ("\t", "<br />", $description);
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;" />
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script language="JavaScript">
-<!--
+<script type="text/javascript">
 function popupfocus ()
 {
   self.focus();
@@ -44,7 +43,6 @@ function popupfocus ()
 }
 
 popupfocus ();
-//-->
 </script>
 </head>
 

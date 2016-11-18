@@ -169,7 +169,7 @@ elseif ($preview == "yes")
 <meta charset="<?php echo $mgmt_config[$site]['default_codepage']; ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
-<script language="JavaScript">
+<script>
 <!--
 function openHelp ()
 {

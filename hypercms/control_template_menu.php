@@ -92,7 +92,7 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 <!--
 function warning_delete()
 {

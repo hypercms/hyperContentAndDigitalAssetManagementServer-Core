@@ -179,7 +179,7 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
 </form>
 
 <!-- initalize -->
-<script language="JavaScript">
+<script>
 $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
 </script>
 

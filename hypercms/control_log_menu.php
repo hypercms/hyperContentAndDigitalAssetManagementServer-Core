@@ -53,8 +53,7 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
-<script language="JavaScript" type="text/javascript">
-<!--
+<script type="text/javascript">
 function warning_delete()
 {
   check = confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-all-events'][$lang]); ?>"));
@@ -64,7 +63,6 @@ function warning_delete()
     document.location='<?php echo "control_log_menu.php?action=clear&site=".url_encode($site)."&token=".$token_new; ?>';
   }
 }
-// -->
 </script>
 </head>
 

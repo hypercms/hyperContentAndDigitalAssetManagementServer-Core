@@ -251,6 +251,8 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       // get file content from MS Powerpoint before 2007 (ppt) in UTF-8
       elseif ($file_ext == ".ppt" || $file_ext == ".pps")
       {
+        $file_content = "";
+        
         // This approach uses detection of the string "chr(0f).Hex_value.chr(0x00).chr(0x00).chr(0x00)" to find text strings, 
         // which are then terminated by another NUL chr(0x00). [1] Get text between delimiters [2] 
         $filehandle = fopen ($location.$file, "r");
@@ -1663,6 +1665,23 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       if (substr ($file_name, -6) == ".thumb") $newfile = substr ($file_name, 0, -6).".annotation";
                       else $newfile = $file_name.".annotation";
                       
+                      // remove old annotation image files
+                      if ((is_file ($location_dest.$newfile."-0.jpg") || is_cloudobject ($location_dest.$newfile."-0.jpg")))
+                      { 
+                        for ($p=0; $p<=10000; $p++)
+                        {
+                          $temp = $newfile."-".$p.".jpg";
+                          // local media file
+                          $delete_1 = deletefile ($location_dest, $temp, 0);
+                          // cloud storage
+                          if (function_exists ("deletecloudobject")) $delete_2 = deletecloudobject ($site, $location_dest, $temp, $user);
+                          // remote client
+                          remoteclient ("delete", "abs_path_media", $site, $location_dest, "", $temp, "");
+                          // break if no more page is available
+                          if (empty ($delete_1) && empty ($delete_2)) break;
+                        }
+                      }
+                      
                       // render all pages from document as images for annotations
                       $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."\" ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.jpg")."\"";
                     }
@@ -1678,7 +1697,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
                     
                     @exec ($cmd, $buffer, $errorCode);
-  
+
                     // on error
                     if ($errorCode)
                     {
@@ -2047,7 +2066,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         
         // define default option for support of versions before 5.3.4
         // note: audio codec could be "mp3" or in newer ffmpeg versions "libmp3lame"!
-        if (empty ($mgmt_mediaoptions['thumbnail-video'])) $mgmt_mediaoptions_video = "-b:v 768k -s:v 480x320 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
+        if (empty ($mgmt_mediaoptions['thumbnail-video'])) $mgmt_mediaoptions_video = "-b:v 768k -s:v 576x432 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
         else $mgmt_mediaoptions_video = $mgmt_mediaoptions['thumbnail-video'];
         
         if (empty ($mgmt_mediaoptions['thumbnail-audio'])) $mgmt_mediaoptions_audio = "-f mp3 -c:a libmp3lame -b:a 64k";
@@ -3801,7 +3820,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
   {
     $converted = false;
-    
+
     set_time_limit (60);
     
     // add slash if not present at the end of the location string
@@ -3841,15 +3860,15 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
         $location_source = $temp_source['location'];
         $file = $temp_source['file'];
       }
-      
+
       // verify local media file
       if (!is_file ($location_source.$file)) return false;
       
       // get file size of media file in kB
       $filesize_orig = round (@filesize ($location_source.$file) / 1024, 0);
-      
+
       // check max file size in MB for certain file extensions and skip rendering
-      if (is_array ($mgmt_maxsizepreview))
+      if (!empty ($mgmt_maxsizepreview) && is_array ($mgmt_maxsizepreview))
       {
         reset ($mgmt_maxsizepreview);   
         
@@ -3862,7 +3881,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
           }
         }
       }
-      
+
       // get file name without extension
       $file_name = strrev (substr (strstr (strrev ($file), "."), 1));
     
@@ -3874,7 +3893,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
       // -i, --import ... Set specific import filters options (related to the used OpenOffice filter). eg. for some input filters one can specify: -i utf8
       
       reset ($mgmt_docpreview);
-      
+
       // supported extensions for document rendering
       foreach ($mgmt_docpreview as $docpreview_ext => $docpreview)
       { 
@@ -3885,7 +3904,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
           
           // extensions for certain document rendering options
           foreach ($mgmt_docoptions as $docoptions_ext => $docoptions)
-          { 
+          {
             // get media rendering options based on given destination format
             if (substr_count (strtolower ($docoptions_ext).".", ".".$format.".") > 0)
             {
@@ -3901,7 +3920,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
               if (is_file ($location_dest.$newfile))
               {
                 // delete existing destination file if it is older than the source file
-                if (@filemtime ($location_dest.$newfile) < filemtime ($location_source.$file)) 
+                if (filemtime ($location_dest.$newfile) < filemtime ($location_source.$file)) 
                 {
                   unlink ($location_dest.$newfile);
                 }

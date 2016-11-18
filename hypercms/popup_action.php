@@ -398,7 +398,7 @@ else
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
-<script language="JavaScript">
+<script>
 <!--
 function popupfocus ()
 {
@@ -473,7 +473,7 @@ echo showtopbar ("<img src=\"".getthemelocation()."img/info.gif\" align=\"absmid
   </table>
 </div>
 
-<script language="JavaScript">
+<script>
 <!--
 <?php
 echo $add_onload;

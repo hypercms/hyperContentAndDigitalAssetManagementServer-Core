@@ -127,11 +127,11 @@ elseif ($action == "delete" && checktoken ($token, $user) && is_array ($notify_i
 <script src="javascript/main.js" type="text/javascript"></script>
 
 <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css">
-<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
-<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
-<script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
-<script language="Javascript" type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
+<script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
+<script type="text/javascript">
 <!--
 function submitform ()
 {

@@ -40,7 +40,7 @@ checkusersession ($user, false);
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
 <script src="javascript/click.js" type="text/javascript"></script>
-<script language="JavaScript">
+<script>
 function sendOption(folder_name, folder_location)
 {
   parent.mainFrame2.insertOption(folder_name, folder_location);

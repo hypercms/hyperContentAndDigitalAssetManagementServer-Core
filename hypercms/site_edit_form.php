@@ -63,7 +63,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $action 
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 function switchDAM ()
 {
   if (document.getElementById('dam').checked == true)

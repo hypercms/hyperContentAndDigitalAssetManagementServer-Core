@@ -56,7 +56,7 @@ function tpl_tagbegin ($application)
   elseif ($application == "jsp") return "<%";
   elseif ($application == "asp") return "<%";
   elseif ($application == "aspx") return "<script runat=server>";
-  elseif ($application == "htm") return "<script language=\"JavaScript\">";
+  elseif ($application == "htm") return "<script type=\"text/javascript\">";
   else return "";
 }
 
@@ -82,7 +82,7 @@ function tpl_pagetracking ($application, $code)
   elseif ($application == "jsp") return "<%\n".$code."\n%>";
   elseif ($application == "asp") return "<%\n".$code."\n%>";
   elseif ($application == "aspx") return "<script runat=server>\n".$code."\n</script>";
-  elseif ($application == "htm") return "<script language=\"JavaScript\">\n".$code."\n</script>";
+  elseif ($application == "htm") return "<script type=\"text/javascript\">\n".$code."\n</script>";
   else return "";
 }
 
@@ -6370,11 +6370,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   
             // scriptcode
             $scriptcode = "<script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
-    <script language=\"JavaScript\">
-    <!--
+    <script type=\"text/javascript\">
     ".$bodytag_controlreload."
     ".$bodytag_popup."
-    -->
     </script>\n";
               
             // get body-tag
@@ -6450,8 +6448,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         
             // javascript code
             if ($buildview != "preview") $scriptcode .= "<script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
-    <script language=\"JavaScript\">
-    <!--  
+    <script type=\"text/javascript\"> 
     function hcms_openWindowComp (winName, features, theURL)
     { 
       if (theURL != '')
@@ -6560,7 +6557,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       
       return true;
     }
-    //-->
     </script>\n";
           }
           
@@ -6702,20 +6698,20 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <script type=\"text/javascript\">CKEDITOR.disableAutoInline = true;</script>
   <!-- Calendar -->
   <link  rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.css\" />
-  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>
-  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
-  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_de.js\"></script>
-  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_fr.js\"></script>
-  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_pt.js\"></script>
-  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_ru.js\"></script>
-  <script language=\"Javascript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/domready.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_de.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_fr.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_pt.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_ru.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/domready.js\"></script>
   <!-- Tagging -->
-  <script language=\"Javascript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/tag-it/tag-it.min.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/tag-it/tag-it.min.js\"></script>
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/tag-it/jquery.tagit.css\" />
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/tag-it/tagit.ui-zendesk.css\" />
   <!-- Annotations -->
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.css\">
-  <script language=\"JavaScript\" type=\"text/javascript\">
+  <script type=\"text/javascript\">
   ".$bodytag_controlreload."";
   
   if ($buildview != "formlock") $viewstore .= "
@@ -7508,7 +7504,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             <b>".getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang)."</b>
           </div>
           <div class=\"hcmsFormRowContent\">
-            ".showmedia ($site."/".$mediafile, convertchars ($name_orig, $hcms_lang_codepage[$lang], $charset), $mediaview, "hcms_mediaplayer_asset")."
+            ".showmedia ($site."/".$mediafile, convertchars ($name_orig, $hcms_lang_codepage[$lang], $charset), $mediaview, "hcms_mediaplayer_asset", 576)."
           </div>";
         }
       
@@ -7814,16 +7810,16 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
   <meta charset=\"".getcodepage ($lang)."\">
   <meta name=\"robots\" content=\"noindex, nofollow\" />
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css\" />
-  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/main.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/main.js\"></script>
   <link  rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.css\" />
-  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>
-  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
-  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_de.js\"></script>
-  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_fr.js\"></script>
-  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_pt.js\"></script>
-  <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_ru.js\"></script>
-  <script language=\"Javascript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/domready.js\"></script>
-  <script language=\"JavaScript\">
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_de.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_fr.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_pt.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_ru.js\"></script>
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/domready.js\"></script>
+  <script type=\"text/javascript\">
   var cal_obj = null;
   var cal_format = null;
   var cal_field = null;

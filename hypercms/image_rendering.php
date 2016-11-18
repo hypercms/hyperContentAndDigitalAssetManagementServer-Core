@@ -270,7 +270,7 @@ $token_new = createtoken ($user);
 }
 </style>
 
-<script language="Javascript">
+<script>
 <!--
 var jcrop;
 var crop_active = false;

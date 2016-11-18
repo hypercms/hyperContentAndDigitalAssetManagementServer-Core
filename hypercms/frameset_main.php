@@ -41,7 +41,7 @@ checkusersession ($user, false);
 $servertime = new servertime;
 $servertime->InstallClockHead();
 ?>
-<script language="JavaScript">
+<script>
 function openInfo()
 {
   hcms_openWindow('top_info.php', 'help', 'resizable=no,scrollbars=no', '640', '400');

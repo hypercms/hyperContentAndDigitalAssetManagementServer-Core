@@ -1065,11 +1065,11 @@ $token_new = createtoken ($user);
     <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
         
     <link rel="STYLESHEET" type="text/css" href="javascript/rich_calendar/rich_calendar.css">
-    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
-    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
-    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
-    <script language="Javascript" src="javascript/rich_calendar/domready.js"></script>
-    <script language="JavaScript" type="text/javascript">
+    <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+    <script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
+    <script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
+    <script src="javascript/rich_calendar/domready.js"></script>
+    <script type="text/javascript">
     <!--
     var cal_obj = null; 
     var cal_format = '%Y-%m-%d';

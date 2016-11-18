@@ -918,12 +918,12 @@ if ($object_array != false && @sizeof ($object_array) > 0)
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
-<script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
-<script src="javascript/contextmenu.js" language="JavaScript" type="text/javascript"></script>
+<script src="javascript/main.js" type="text/javascript"></script>
+<script src="javascript/contextmenu.js" type="text/javascript"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript" src="javascript/chat.js"></script>
-<script language="JavaScript">
+<script>
 
 // context menu
 var contextenable = 1;
@@ -1224,7 +1224,7 @@ if ($galleryview != "")
 </div>
 
 <!-- initalize -->
-<script language="JavaScript">
+<script>
 toggleview (explorerview);
 $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
 </script>

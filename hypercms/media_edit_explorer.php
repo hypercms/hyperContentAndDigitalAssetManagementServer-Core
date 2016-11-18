@@ -68,7 +68,7 @@ if (trim ($mediacat_data) != "")
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
-<script language="JavaScript">
+<script>
 <!--
 function sendInput(file)
 {

@@ -476,10 +476,8 @@ elseif ($savetype == "editor_so")
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css">
-<script language="JavaScript">
-<!--
+<script type="text/javascript">
 <?php echo $add_onload; ?>
-//-->
 </script>
 <script src="../javascript/main.js" type="text/javascript"></script>
 <script src="../javascript/click.js" type="text/javascript"></script>

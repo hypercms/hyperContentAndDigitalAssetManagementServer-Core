@@ -467,7 +467,7 @@ else
 
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
-<script language="JavaScript">
+<script>
 function focusform()
 {
   <?php if (!empty ($mgmt_config['instances'])) { ?>

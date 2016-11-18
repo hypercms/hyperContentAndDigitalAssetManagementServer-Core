@@ -39,7 +39,7 @@ class servertime
   # This function is to be used in the <head> section of the page.
   function InstallClockHead ()
   {
-    echo "\n<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\n";
+    echo "\n<script type=\"text/javascript\">\n<!--\n";
     
     # Here is where the server time comes into the script:
     # date() is a php function which runs on the server, giving exactly

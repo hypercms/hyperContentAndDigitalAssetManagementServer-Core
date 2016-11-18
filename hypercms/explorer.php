@@ -1198,13 +1198,13 @@ else
     <script type="text/javascript" src="javascript/contextmenu.js"></script>
     <!-- Rich calendar -->
     <link  rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
-    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
-    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
-    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
-    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_fr.js"></script>
-    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_pt.js"></script>
-    <script language="JavaScript" type="text/javascript" src="javascript/rich_calendar/rc_lang_ru.js"></script>
-    <script language="Javascript" type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
+    <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
+    <script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
+    <script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
+    <script type="text/javascript" src="javascript/rich_calendar/rc_lang_fr.js"></script>
+    <script type="text/javascript" src="javascript/rich_calendar/rc_lang_pt.js"></script>
+    <script type="text/javascript" src="javascript/rich_calendar/rc_lang_ru.js"></script>
+    <script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
     <!-- Google Maps -->
     <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php echo $mgmt_config['googlemaps_appkey']; ?>"></script>
 

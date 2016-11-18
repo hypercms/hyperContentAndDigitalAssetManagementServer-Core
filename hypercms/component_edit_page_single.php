@@ -84,8 +84,7 @@ if ($label == "") $label = $id;
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
-<script language="JavaScript">
-<!--
+<script type="text/javascript">
 function correctnames ()
 {
   if (eval (document.forms['component'].elements['component'])) document.forms['component'].elements['component'].name = "<?php echo $art; ?>component[<?php echo $id; ?>]";
@@ -153,7 +152,6 @@ function submitSingleComp(select)
   document.forms['component'].submit();
   return true;
 }
-//-->
 </script>
 </head>
 

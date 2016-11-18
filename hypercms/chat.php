@@ -49,7 +49,7 @@ checkusersession ($user, false);
   border-bottom: 1px solid #ccc;
 }
 </style>
-<script src="javascript/main.js" language="JavaScript" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/main.js" ></script>
 <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="javascript/chat.js"></script>
 <script type="text/javascript">

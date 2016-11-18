@@ -566,7 +566,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
   // $mgmt_imageoptions is used for image rendering (in case the format requires the rename of the object file extension)	 
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docconvert, $hcms_charset, $hcms_lang_codepage, $hcms_lang, $lang,
          $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions, $is_mobile;
-  
+
   // Path to PDF.JS and Google Docs
   $pdfjs_path = $mgmt_config['url_path_cms']."javascript/pdfpreview/web/viewer.html?file=";
   $gdocs_path = "https://docs.google.com/viewer?url=";
@@ -841,7 +841,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                (is_array ($mgmt_docconvert[$file_info['orig_ext']]) && in_array (".pdf", $mgmt_docconvert[$file_info['orig_ext']]))
              )
            )
-        {  			
+        {
           // if original file is a pdf
           if (substr_count (".pdf", $file_info['orig_ext']) == 1) 
           {
@@ -853,20 +853,34 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             $mediafile_thumb = $medianame_thumb = $file_info['filename'].".thumb.pdf";
             
+            // prepare media file
+            $temp = preparemediafile ($site, $thumb_root, $mediafile_thumb, $user);
+            
+            if ($temp['result'] && $temp['crypted'])
+            {
+              $thumb_root = $temp['templocation'];
+              $mediafile_thumb = $temp['tempfile'];
+            }
+            elseif ($temp['restored'])
+            {
+              $thumb_root = $temp['location'];
+              $mediafile_thumb = $temp['file'];
+            }
+
             // document thumb file exists in media repository
-            if (is_file ($thumb_root.$mediafile_thumb) || is_cloudobject ($thumb_root.$mediafile_thumb)) 
+            if ((is_file ($thumb_root.$mediafile_thumb) || is_cloudobject ($thumb_root.$mediafile_thumb)) && (filemtime ($thumb_root.$mediafile_thumb) >= filemtime ($thumb_root.$mediafile_orig))) 
             {
               $thumb_pdf_exists = true;
             }
             // sometimes libre office (UNOCONV) takes long time to convert to PDF and function createdocument is not able to rename the file from .pdf to .thumb.pdf  
-            elseif (is_file ($thumb_root.$file_info['filename'].".pdf") || is_cloudobject ($thumb_root.$file_info['filename'].".pdf"))
+            elseif ((is_file ($thumb_root.$file_info['filename'].".pdf") || is_cloudobject ($thumb_root.$file_info['filename'].".pdf")) && (filemtime ($thumb_root.$file_info['filename'].".pdf") >= filemtime ($thumb_root.$mediafile_orig)))
             {
               rename ($thumb_root.$file_info['filename'].".pdf", $thumb_root.$file_info['filename'].".thumb.pdf");
               if (function_exists ("renamecloudobject")) renamecloudobject ($site, $thumb_root, $file_info['filename'].".pdf", $file_info['filename'].".thumb.pdf", $user);
               $thumb_pdf_exists = true;
             }
             else $thumb_pdf_exists = false;
-            
+
             // thumb pdf exsists
             if ($thumb_pdf_exists != false)
             {
@@ -877,20 +891,52 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             // thumb pdf does not exsist
             elseif ($thumb_pdf_exists == false)
             {
+              // try to remove outdated pdf thumbnail file
+              if (is_file ($thumb_root.$mediafile_thumb))
+              {
+                deletefile ($thumb_root, $mediafile_thumb, 0);
+                
+                // remove old annotation image files
+                $annotation_filename = $file_info['filename'].".annotation";
+                
+                if ((is_file ($thumb_root.$annotation_filename."-0.jpg") || is_cloudobject ($thumb_root.$annotation_filename."-0.jpg")))
+                { 
+                  for ($p=0; $p<=10000; $p++)
+                  {
+                    $temp = $annotation_filename."-".$p.".jpg";
+                    // local media file
+                    $delete_1 = deletefile ($thumb_root, $temp, 0);
+                    // cloud storage
+                    if (function_exists ("deletecloudobject")) $delete_2 = deletecloudobject ($site, $thumb_root, $temp, $user);
+                    // remote client
+                    remoteclient ("delete", "abs_path_media", $site, $thumb_root, "", $temp, "");
+                    // break if no more page is available
+                    if (empty ($delete_1) && empty ($delete_2)) break;
+                  }
+                }
+              }
+
               // using original file and wrapper to start conversion in the background
               $doc_link = createviewlink ($site, $mediafile, $medianame_thumb)."&type=pdf&ts=".time();
 
               // show standard file icon
-              if (!empty ($file_info['icon_large'])) $mediaview_doc = "<div style=\"width:".$width."px; text-align:center;\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /></div>\n";
+              if (!empty ($file_info['icon_large'])) $mediaview_doc .= "<div style=\"width:".$width."px; text-align:center;\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /><br/><img src=\"".getthemelocation()."img/loading.gif\" /></div>\n";
               
               // use AJAX service to start conversion of media file to pdf format for preview
-              $mediaview_doc = "<script type=\"text/javascript\">hcms_ajaxService('".$doc_link."')</script>\n";
+              $mediaview_doc .= "
+            <script type=\"text/javascript\">
+              hcms_ajaxService('".$doc_link."');
+              
+              setTimeout(function() {
+                location.reload();
+              }, 5000);
+            </script>\n ";
             }
             // using Google Docs if UNOCONV was not able to convert into pdf and no standard file-icon exists
             else
             {
               $doc_link = createviewlink ($site, $mediafile_orig, $medianame, true);
-              $mediaview_doc = "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." id=\"".$id."\" style=\"border:none;\"></iframe><br />\n";
+              $mediaview_doc .= "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." id=\"".$id."\" style=\"border:none;\"></iframe><br />\n";
             }
           }
         }
@@ -898,23 +944,26 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           // no compatible browser - using Google Docs
           $doc_link = createviewlink ($site, $mediafile_orig, $medianame, true);
-          $mediaview_doc = "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." id=\"".$id."\" style=\"border:none;\"></iframe><br />\n";
+          $mediaview_doc .= "<iframe src=\"".$gdocs_path.urlencode($doc_link)."&embedded=true\" ".$style." id=\"".$id."\" style=\"border:none;\"></iframe><br />\n";
         }
-        
+
         // document annotations
         if (!empty ($mgmt_config['annotation']) && is_dir ($mgmt_config['abs_path_cms']."workflow/") && $viewtype == "preview" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
         {
           // check for document annotation image (1st page)
           $annotation_page = $file_info['filename'].".annotation-0.jpg";
           $mediafile_thumb = $file_info['filename'].".thumb.pdf";
-          
+
           // if original file is a pdf
           if (substr_count (".pdf", $file_info['orig_ext']) == 1) $mediafile_pdf = $mediafile_orig;
           // document thumb file is a pdf
           elseif (is_file ($thumb_root.$mediafile_thumb) || is_cloudobject ($thumb_root.$mediafile_thumb)) $mediafile_pdf = $mediafile_thumb;
-            
-          // create pages if the first page does not exist
-          if (!is_file ($thumb_root.$annotation_page) && !is_cloudobject ($thumb_root.$annotation_page))
+
+          // create pages if the first page does not exist or is older than the original media file
+          if (
+               (!is_file ($thumb_root.$annotation_page) && !is_cloudobject ($thumb_root.$annotation_page)) || 
+               (is_file ($thumb_root.$annotation_page) && filemtime ($thumb_root.$annotation_page) < filemtime ($thumb_root.$mediafile_pdf))
+             )
           {
             // get PDF width and height
             $pdf_info = getpdfinfo ($thumb_root.$mediafile_pdf);
@@ -926,7 +975,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $pdf_info['width'] = 623;
               $pdf_info['height'] = 806;
             }
-          
+
             // create pages as images from document
             $mgmt_imageoptions['.jpg.jpeg']['annotation'] = "-s ".round($pdf_info['width'],0)."x".round($pdf_info['height'],0)." -f jpg";
             createmedia ($site, $thumb_root, $thumb_root, $mediafile_pdf, 'jpg', 'annotation');
@@ -1643,7 +1692,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               </div>
             </div>
 
-            <script language=\"JavaScript\" type=\"text/javascript\">
+            <script type=\"text/javascript\">
             // define delete button for VTT record
             var vtt_buttons = '<img src=\"".getthemelocation()."img/button_delete.gif\" onclick=\"hcms_removeVTTrecord(this)\" class=\"hcmsButton hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $hcms_charset, $lang)."\" />';
             var vtt_confirm = '".getescapedtext ($hcms_lang['copy-tracks-from-previously-selected-language'][$lang], $hcms_charset, $lang)."';
@@ -2220,7 +2269,7 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     $result = "<!-- Jquery and Jquery UI Autocomplete -->
 <script src=\"javascript/jquery/jquery-1.10.2.min.js\" type=\"text/javascript\"></script>
 <script src=\"javascript/jquery-ui/jquery-ui-1.10.2.min.js\" type=\"text/javascript\"></script>
-<script language=\"JavaScript\">
+<script type=\"text/javascript\">
 function sendCompOption(newtext, newvalue)
 {
   parent.mainFrame2.insertOption(newtext, newvalue);
@@ -2763,10 +2812,10 @@ function showinlinedatepicker_head ()
     return " 
 
     <link rel=\"stylesheet\" hypercms_href=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.css\">
-    <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>
-    <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
-    <script language=\"JavaScript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_de.js\"></script>
-    <script language=\"Javascript\" type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/domready.js\"></script>
+    <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rich_calendar.js\"></script>
+    <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_en.js\"></script>
+    <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/rc_lang_de.js\"></script>
+    <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/rich_calendar/domready.js\"></script>
     ";
   }
   else return false;

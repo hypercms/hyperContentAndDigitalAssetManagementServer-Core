@@ -61,7 +61,7 @@ $token_new = createtoken ($user);
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
-<script language="JavaScript">
+<script>
 <!--
 function replace (string, text, by) 
 {

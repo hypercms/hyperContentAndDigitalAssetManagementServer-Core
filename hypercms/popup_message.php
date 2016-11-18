@@ -171,7 +171,7 @@ $token_new = createtoken ($user);
 </table>
 <?php } ?>
 
-<script language="JavaScript">
+<script>
 <!--
 <?php echo $add_javascript; ?>
 //-->

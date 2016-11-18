@@ -767,12 +767,12 @@ else $objects_counted = 0;
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
-<script type="text/javascript" language="JavaScript" src="javascript/main.js"></script>
-<script type="text/javascript" language="JavaScript" src="javascript/contextmenu.js"></script>
-<script type="text/javascript" language="JavaScript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" language="JavaScript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
-<script type="text/javascript" language="JavaScript" src="javascript/chat.js"></script>
-<script language="JavaScript">
+<script type="text/javascript" src="javascript/main.js"></script>
+<script type="text/javascript" src="javascript/contextmenu.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
+<script type="text/javascript" src="javascript/chat.js"></script>
+<script>
 
 // context menu
 var contextenable = 1;
@@ -1157,7 +1157,7 @@ else
 ?>
 
 <!-- initalize -->
-<script language="JavaScript">
+<script>
 toggleview (explorerview);
 $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
 </script>

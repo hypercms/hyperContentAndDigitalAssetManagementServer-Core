@@ -80,7 +80,7 @@ $location_name = getlocationname ($site, $dir_esc, "page", "path");
 <!-- Jquery and Jquery UI Autocomplete -->
 <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
 <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
-<script language="JavaScript">
+<script>
 function sendInput(text, value)
 {
   parent.frames['mainFrame2'].document.forms['link'].elements['link_name'].value = text;

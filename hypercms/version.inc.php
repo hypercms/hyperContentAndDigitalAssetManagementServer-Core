@@ -1942,6 +1942,12 @@ Release 11/2016
 Version 6.1.32
 Release 11/2016
 - Modification of max. file size for creating previews in main config file
+- Modification of function showmedia in UI API in order to recreate annotation images if the file has been changed
+- Modification of function createmedia in media API in order to remove annotation images before recreation
+- Bug fix: Undeclared variable in function indexcontent of media API
+- Removed language attribute from all script tags
+- Removed comment brackets from all script tags
+- Modified standard screen size of 576 x 432 pixel for preview videos
 */
 
 // current version
