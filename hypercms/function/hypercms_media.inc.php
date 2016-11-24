@@ -2750,7 +2750,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 // output: new file name / false on error
 
 // description:
-// Converts and creates a new image/video/audio or document from original. this is a wrapper function for createmedia and createdocument
+// Converts and creates a new image/video/audio or document from original. This is a wrapper function for createmedia and createdocument.
 
 function convertmedia ($site, $location_source, $location_dest, $mediafile, $format, $media_config="", $force_no_encrypt=false)
 {
@@ -2803,7 +2803,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
 // output: new file name / false on error
 
 // description:
-// Converts and creates a new image from original. the new image keeps will be resized and cropped to fit width and height.
+// Converts and creates a new image from original. The new image keeps will be resized and cropped to fit width and height.
 // This is a wrapper function for createmedia.
 
 function convertimage ($site, $file_source, $location_dest, $format="jpg", $colorspace="RGB", $iccprofile="", $width="", $height="", $slug=0, $units="px", $dpi=72, $quality="")
@@ -3829,7 +3829,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
          
     // for inital conversion request the temp directory will be defined as destination directory by default of the service mediadownload or mediawrapper
     // the converted files however should be placed in the media repository to avoid the recreation of the file over and over again
-    if (trim ($location_dest) == trim ($mgmt_config['abs_path_temp']) && strpos ($file, "_hcm") > 0)
+    if (trim ($location_source) == getmedialocation ($site, $file, "abs_path_media").$site."/" && trim ($location_dest) == trim ($mgmt_config['abs_path_temp']) && strpos ($file, "_hcm") > 0)
     {
       $location_dest = getmedialocation ($site, $file, "abs_path_media").$site."/";
     }
@@ -3932,63 +3932,63 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
               if (is_file ($location_source.$newfile))
               {
                 // if existing thumbnail file is newer than the source file
-                if (filemtime ($location_source.$newfile) >= filemtime ($location_source.$file)) 
+                if (filemtime ($location_source.$newfile) >= filemtime ($location_source.$file) && $location_source != $location_dest) 
                 {
                   // copy to destination directory
-                  $result_rename = copy ($location_source.$newfile, $location_dest.$newfile);
-                  
-                  if ($result_rename == true)
-                  {
-                    $converted = true;
-                  }
+                  $converted = copy ($location_source.$newfile, $location_dest.$newfile);
                 }
+                // or we return the filename
+                else $converted = true;
               }
               
-              $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".shellcmd_encode ($location_source.$file)."\"";
-                         
-              @exec ($cmd." 2>&1", $error_array, $errorCode);
-
-              // error if conersion failed
-              if ($errorCode || !is_file ($location_source.$file_name.".".$docformat))
+              if (empty ($converted))
               {
-                $errcode = "20236";
-                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of unoconv (code:$errorCode) to '$format' failed in createdocument for file: ".$location_source.$file." with message: ".implode("<br />", $error_array);
-                
-                // save log
-                savelog (@$error);          
-              } 
-              else
-              {  
-                // rename/move converted file to destination
-                $result_rename = @rename ($location_source.$file_name.".".$docformat, $location_dest.$newfile);
-
-                if ($result_rename == false)
+                $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".shellcmd_encode ($location_source.$file)."\"";
+                           
+                @exec ($cmd." 2>&1", $error_array, $errorCode);
+  
+                // error if conersion failed
+                if ($errorCode || !is_file ($location_source.$file_name.".".$docformat))
                 {
-                  $errcode = "20337";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|rename failed in createdocument for file: ".$location_source.$file_name.".".$docformat;
+                  $errcode = "20236";
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of unoconv (code:$errorCode) to '$format' failed in createdocument for file: ".$location_source.$file." with message: ".implode("<br />", $error_array);
                   
                   // save log
-                  savelog (@$error);            
-                }
-                else 
-                {
-                  $converted = true;
-                  
-                  // copy metadata from original file using EXIFTOOL
-                  $result_copy = copymetadata ($location_source.$file, $location_dest.$newfile);
-
-                  // remote client
-                  remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
-
-                  // encrypt and save data
-                  if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && $force_no_encrypt == false && !empty ($result_rename) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
+                  savelog (@$error);          
+                } 
+                else
+                {  
+                  // rename/move converted file to destination
+                  $result_rename = @rename ($location_source.$file_name.".".$docformat, $location_dest.$newfile);
+  
+                  if ($result_rename == false)
                   {
-                    $data = encryptfile ($location_dest, $newfile);
-                    if (!empty ($data)) savefile ($location_dest, $newfile, $data);
+                    $errcode = "20337";
+                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|rename failed in createdocument for file: ".$location_source.$file_name.".".$docformat;
+                    
+                    // save log
+                    savelog (@$error);            
                   }
-
-                  // save in cloud storage
-                  if (is_file ($location_dest.$newfile) && function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
+                  else 
+                  {
+                    $converted = true;
+                    
+                    // copy metadata from original file using EXIFTOOL
+                    $result_copy = copymetadata ($location_source.$file, $location_dest.$newfile);
+  
+                    // remote client
+                    remoteclient ("save", "abs_path_media", $site, $location_dest, "", $newfile, "");
+  
+                    // encrypt and save data
+                    if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && $force_no_encrypt == false && !empty ($result_rename) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
+                    {
+                      $data = encryptfile ($location_dest, $newfile);
+                      if (!empty ($data)) savefile ($location_dest, $newfile, $data);
+                    }
+  
+                    // save in cloud storage
+                    if (is_file ($location_dest.$newfile) && function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
+                  }
                 }
               }
             }

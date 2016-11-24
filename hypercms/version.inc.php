@@ -1948,8 +1948,15 @@ Release 11/2016
 - Removed language attribute from all script tags
 - Removed comment brackets from all script tags
 - Modified standard screen size of 576 x 432 pixel for preview videos
+
+Version 6.1.33
+Release 11/2016
+- Removed trim of template content in function edittemplate in main API
+- Bug fix: control_objectlist_menu and control_content_menu did not reset media options if the original asset has been requested
+- Bug fix: Service mediadownload and mediawrapper did not verify the converted file
+- Improvements in function createdocument in media API
 */
 
 // current version
-$version = "Version 6.1.32";
+$version = "Version 6.1.33";
 ?>

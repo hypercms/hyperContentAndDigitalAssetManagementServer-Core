@@ -506,7 +506,7 @@ function checkForm_zip()
 
 function docConvert (type)
 {
-  if (type != "" && eval (parent.frames['mainFrame'].document.forms['contextmenu_object']))
+  if (parent.frames['mainFrame'].document.forms['contextmenu_object'])
   {
     var form = parent.frames['mainFrame'].document.forms['contextmenu_object'];
     
@@ -514,26 +514,21 @@ function docConvert (type)
     form.elements['convert_type'].value = type;
     
     submitToSelf ('download');
-    
-    return true;
   }
   else return false; 
 }
 
 function imgConvert (type, config)
 {
-  if (type != "" && config != "" && eval (parent.frames['mainFrame'].document.forms['contextmenu_object']))
+  if (parent.frames['mainFrame'].document.forms['contextmenu_object'])
   {
     var form = parent.frames['mainFrame'].document.forms['contextmenu_object'];
     
     form.attributes['action'].value = '<?php echo $_SERVER['PHP_SELF']; ?>';
     form.elements['convert_type'].value = type;
     form.elements['convert_cfg'].value = config;
-    
-    
+
     submitToSelf ('download');
-    
-    return true;
   }
   else return false; 
 }
@@ -915,7 +910,8 @@ else
       // original file
       if (empty ($downloadformats) || (!is_document ($media_info['ext']) && !is_image ($media_info['ext'])) || (is_document ($media_info['ext']) && !empty ($downloadformats['document']['original'])) || (is_image ($media_info['ext']) && !empty ($downloadformats['image']['original'])))
       {
-        echo "        <div class=\"hcmsSelectorItem\" onclick=\"submitToSelf('download');\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" style=\"border:0; margin:0; padding:1px;\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['original'][$lang])."&nbsp;</div>\n";
+        // function imgConvert must be used in order to reset the rendering options
+        echo "        <div class=\"hcmsSelectorItem\" onclick=\"imgConvert ('','');\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" style=\"border:0; margin:0; padding:1px;\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['original'][$lang])."&nbsp;</div>\n";
       }
       
       // document download options
@@ -1411,7 +1407,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 if ($action == "download" && !$is_iphone)
 {
   $downloadlink = createmultidownloadlink ($site, $multiobject, $media, $location.$folder, $pagename, $user, $convert_type, $convert_cfg);
-  
+
   if ($downloadlink != "")
   {
 ?>

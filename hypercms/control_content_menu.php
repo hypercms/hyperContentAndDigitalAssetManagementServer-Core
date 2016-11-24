@@ -327,22 +327,20 @@ function checkForm_page_create()
 
 function docConvert (type)
 {
-  if (type != "")
+  if (document.forms['download'])
   {
     var form = document.forms['download'];
       
     form.elements['convert_type'].value = type;
     
     submitToSelf ('download');
-    
-    return true;
   }
   else return false; 
 }
 
 function imgConvert (type, config)
 {
-  if (type != "")
+  if (document.forms['download'])
   {
     var form = document.forms['download'];
       
@@ -350,8 +348,6 @@ function imgConvert (type, config)
     form.elements['convert_cfg'].value = config;
     
     submitToSelf ('download');
-    
-    return true;
   }
   else return false; 
 }
@@ -523,8 +519,9 @@ else
       // original file
       if (empty ($downloadformats) || (!is_document ($media_info['ext']) && !is_image ($media_info['ext'])) || (is_document ($media_info['ext']) && !empty ($downloadformats['document']['original'])) || (is_image ($media_info['ext']) && !empty ($downloadformats['image']['original'])))
       {
+        // function imgConvert must be used in order to reset the rendering options
         echo "
-        <div class=\"hcmsSelectorItem\" onclick=\"submitToSelf('download');\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" style=\"border:0; margin:0; padding:1px;\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['original'][$lang])."&nbsp;</div>\n";
+        <div class=\"hcmsSelectorItem\" onclick=\"imgConvert ('','');\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" style=\"border:0; margin:0; padding:1px;\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['original'][$lang])."&nbsp;</div>\n";
       }
 
       // document download options
@@ -874,12 +871,11 @@ if ($page != "")
 if ($action == "download" && !$is_iphone)
 {
   $downloadlink = createmultidownloadlink ($site, "", $media, $location, $pagename, $user, $convert_type, $convert_cfg);
-  
+
   if ($downloadlink != "")
   {
 ?>
 <script type="text/javascript">
-<!--
 function downloadFile()
 {
   hcms_showHideLayers('downloadLayer','','hide');
@@ -887,7 +883,6 @@ function downloadFile()
 }
 
 setTimeout('downloadFile()', 1000);
--->
 </script>  
 <?php
   }

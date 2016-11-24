@@ -6683,7 +6683,7 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
     $result_charset = getcharset ($site, $contentfield_save); 
     
     // add CDATA section 
-    $contentfield_save = "<![CDATA[".trim ($contentfield_save)."]]>";   
+    $contentfield_save = "<![CDATA[".$contentfield_save."]]>";   
 
     // load template and insert values
     $result_load = loadtemplate ($site, $template);

@@ -275,14 +275,18 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
       $media_target = $mgmt_config['abs_path_temp'];
 
       // convert file
-      $result_conv = convertmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config, true);
+      $media_new = convertmedia ($site, $media_root.$site."/", $media_target, getobject ($media), $type, $media_config, true);
 
       // if new file has been converted successfully, set new media root path and new media file name
-      if ($result_conv != "")
-      { 
-        $media_new = $media = $result_conv;
-        $media_info_new = getfileinfo ($site, getobject ($media), "comp");
-        $media_root = $media_target;
+      if ($media_new != "")
+      {
+        $media = $media_new;
+        $media_info_new = getfileinfo ($site, getobject ($media_new), "comp");
+        
+        // recheck media location (due to changed location by function convertdocument)
+        if (is_file ($media_target.$media_new)) $media_root = $media_target;
+        elseif (is_file ($media_root.$site."/".$media_new)) $media_root = $media_root.$site."/";
+        else $media = "";
       }
       else $media = "";
     }  
