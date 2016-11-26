@@ -348,6 +348,16 @@ if ($usedby == "" || $usedby == $user)
             }
           }
           
+          // touch thumbnail file of documents to update the timestamp /avoid recreation of annotation images)
+          if (is_document ($object_mediafile))
+          {
+            // get file name without extensions
+            $object_thumbfile = strrev (substr (strstr (strrev ($object_mediafile), "."), 1)).".thump.pdf";
+            
+            // update timestamp
+            if (is_file ($object_thumbfile))touch ($object_thumbfile);
+          }
+            
           // save media stats and move temp file on success
           if (!empty ($result_iptc) || !empty ($result_xmp) || !empty ($result_id3))
           {
@@ -366,11 +376,6 @@ if ($usedby == "" || $usedby == $user)
 
             // save to cloud storage
             if (function_exists ("savecloudobject")) savecloudobject ($site, $mediafile_location, $mediafile_name, $user);
-          }
-          // alternatively touch the file to change the modified date
-          else
-          {
-            touch ($object_mediafile);
           }
           
           // set modified date in DB

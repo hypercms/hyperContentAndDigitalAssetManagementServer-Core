@@ -9,6 +9,9 @@ Added methode flatten so save the image
 
 /*global document jQuery Image window:true*/
 
+/*save the status of new annotations that have been made*/
+var annotatestatus = false;
+
 (function ($) {
    "use strict";
 
@@ -67,7 +70,7 @@ Added methode flatten so save the image
       }
 
       if (self.options.bootstrap){
-        self.$tool = "<div id=\"\" class=\"hcmsToolbar\">"
+        self.$tool = "<div id=\"annotationToolbar\" class=\"hcmsToolbar\">"
           + "<div class=\"" + classPosition1 + "\" data-toggle=\"buttons\" style=\"margin-right:4px;\">";
 
         if (self.options.unselectTool){
@@ -119,7 +122,7 @@ Added methode flatten so save the image
           self.$tool += "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"null\">NO TOOL SELECTED";
         }
 
-        self.$tool += "<div class=\"hcmsToolbarBlock\">"
+        self.$tool += "<div id=\"annotationToolbar\" class=\"hcmsToolbarBlock\">"
           + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"rectangle\" checked><img id=\"annotationRectangle\" src=\"\" style=\"float:left;\" /></label></div>"
           + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"circle\"><img id=\"annotationCircle\" src=\"\" style=\"float:left;\" /></label></div>"
           + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"text\"><img id=\"annotationText\" src=\"\" style=\"float:left;\" /></label></div>"
@@ -255,8 +258,7 @@ Added methode flatten so save the image
         path = newImage;
       }
 
-      if (id === "" || typeof id === "undefined"
-        || self.selectBackgroundImage(id)){
+      if (id === "" || typeof id === "undefined" || self.selectBackgroundImage(id)){
         id = self.generateId(10);
         while (self.selectBackgroundImage(id)){
           id = self.generateId(10);
@@ -623,6 +625,7 @@ Added methode flatten so save the image
     annotatestop: function(){
       var self = this;
       self.clicked = false;
+      annotatestatus = true;
       if( self.toy !== null && self.tox !== null ) {
         if (self.options.type === "rectangle" ) {
           self.storedElement.push({type: "rectangle",

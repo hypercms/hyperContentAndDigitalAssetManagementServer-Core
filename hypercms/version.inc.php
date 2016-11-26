@@ -1955,6 +1955,8 @@ Release 11/2016
 - Bug fix: control_objectlist_menu and control_content_menu did not reset media options if the original asset has been requested
 - Bug fix: Service mediadownload and mediawrapper did not verify the converted file
 - Improvements in function createdocument in media API
+- Implementation of annotation status to skip save of annotations if no remarks have been done on documents
+- Bug fix: Removed touch of media files in service savecontent in order to avoid recreation of annotation images for documents
 */
 
 // current version

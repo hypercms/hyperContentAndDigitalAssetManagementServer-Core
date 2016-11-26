@@ -867,7 +867,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $mediafile_thumb = $temp['file'];
             }
 
-            // document thumb file exists in media repository
+            // document thumb file exists in media repository            
             if ((is_file ($thumb_root.$mediafile_thumb) || is_cloudobject ($thumb_root.$mediafile_thumb)) && (filemtime ($thumb_root.$mediafile_thumb) >= filemtime ($thumb_root.$mediafile_orig))) 
             {
               $thumb_pdf_exists = true;
@@ -921,7 +921,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
               // show standard file icon
               if (!empty ($file_info['icon_large'])) $mediaview_doc .= "<div style=\"width:".$width."px; text-align:center;\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" ".$id." alt=\"".$medianame."\" title=\"".$medianame."\" /><br/><img src=\"".getthemelocation()."img/loading.gif\" /></div>\n";
-              
+
               // use AJAX service to start conversion of media file to pdf format for preview
               $mediaview_doc .= "
             <script type=\"text/javascript\">
@@ -1068,13 +1068,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       
       if (number >= 0 && number < ".$page_count.")
       {
-        if (!hcms_iOS()) autoSave(true);
+        if (!hcms_iOS() && annotatestatus == true) autoSave(true);
         $('#pagenumber').val(number);
         $('#medianame').val(pages_name[number]);
         
         if (!hcms_iOS())
         {
           $('#annotation').annotate('push', pages_link[number]);
+          annotatestatus = false;
         }
         else
         {
