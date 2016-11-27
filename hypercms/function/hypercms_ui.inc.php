@@ -787,7 +787,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "</table>\n";
       }
       // ---------------------------------------- if document --------------------------------------
-      elseif ($file_info['orig_ext'] != "" && substr_count ($doc_ext.".", $file_info['orig_ext'].".") > 0 && $mgmt_config['docviewer'] == true)
+      elseif ($file_info['orig_ext'] != "" && substr_count ($doc_ext.".", $file_info['orig_ext'].".") > 0 && !empty ($mgmt_config['docviewer']))
       {
         $mediaview_doc = "";
       
@@ -888,8 +888,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $doc_link = cleandomain (createviewlink ($site, $mediafile_thumb, $medianame_thumb, true));
               $mediaview_doc = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." id=\"".$id."\" style=\"border:none;\"></iframe><br />\n";
             }
-            // thumb pdf does not exsist
-            elseif ($thumb_pdf_exists == false)
+            // thumb pdf does not exsist but can be created
+            elseif ($thumb_pdf_exists == false && is_supported ($mgmt_docpreview, $file_info['orig_ext']))
             {
               // try to remove outdated pdf thumbnail file
               if (is_file ($thumb_root.$mediafile_thumb))

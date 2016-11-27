@@ -10001,7 +10001,6 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
 
     // define variables
     $updir = $location; //absolute path to where files are uploaded, no trailing slash
-    $size = $mgmt_config['maxfilesize'] * 1024 * 1024; // size limit in bytes
     
     // check if global_files contains an URL or FTP-link as source and download file temporarily
     $is_remote_file = false;
@@ -10125,10 +10124,10 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
     if ($eventsystem['onfileupload_pre'] == 1) onfileupload_pre ($site, $cat, $location, $global_files['Filedata']['name'], $user);
   
     // error during file upload
-    if ($global_files['Filedata']['error'] != UPLOAD_ERR_OK)
+    if (!empty ($global_files['Filedata']['error']) && $global_files['Filedata']['error'] != UPLOAD_ERR_OK)
     {
       $errcode = 20504;
-      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$global_files['Filedata']['name']."' could not be saved or only partialy-saved";
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$global_files['Filedata']['name']."' could not be saved or only partialy-saved (Please check upload_max_filesize in your php.ini)";
         
       // write log
       savelog (@$error);
@@ -10187,9 +10186,12 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
     }
   
     // error if file is to big
-    if ($mgmt_config['maxfilesize'] > 0)
+    if (!empty ($mgmt_config['maxfilesize']) && $mgmt_config['maxfilesize'] > 0)
     {
-      if (filesize ($global_files['Filedata']['tmp_name']) > $size)
+      // convert size limit from MB to bytes
+      $maxfilesize = $mgmt_config['maxfilesize'] * 1024 * 1024;
+          
+      if (filesize ($global_files['Filedata']['tmp_name']) > $maxfilesize)
       {
         $errcode = 20508;
         $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$global_files['Filedata']['name']."' is too big (max. ".$mgmt_config['maxfilesize'].")";

@@ -222,11 +222,6 @@ function link_db_load ($site, $user)
           $link_db[$container]['container'] = $container;
           $link_db[$container]['object'] = $objects;
           $link_db[$container]['link'] = $links;
-        }
-        else 
-        {
-          $errcode = "10702";
-          $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|$errcode|link_db_record is corrupt (null), link_db_load failed for site: ".$site;           
         }        
       }
     }

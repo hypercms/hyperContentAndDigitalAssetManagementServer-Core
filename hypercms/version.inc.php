@@ -1957,8 +1957,15 @@ Release 11/2016
 - Improvements in function createdocument in media API
 - Implementation of annotation status to skip save of annotations if no remarks have been done on documents
 - Bug fix: Removed touch of media files in service savecontent in order to avoid recreation of annotation images for documents
+
+Version 6.1.34
+Release 11/2016
+- Removed error log event in function link_db_load in link API due to an error log entry if the link index is empty
+- Improvements in function uploadfile in main API
+- Implementation of verification of executable in function createdocument in media API
+- Bug fix: Function createmedia did try to recreate PDF preview file from documents without verifying that an executable for the conversion exists
 */
 
 // current version
-$version = "Version 6.1.33";
+$version = "Version 6.1.34";
 ?>

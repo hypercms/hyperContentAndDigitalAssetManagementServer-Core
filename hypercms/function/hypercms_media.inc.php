@@ -3941,7 +3941,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                 else $converted = true;
               }
               
-              if (empty ($converted))
+              if (empty ($converted) && !empty ($mgmt_docpreview[$docpreview_ext]))
               {
                 $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".shellcmd_encode ($location_source.$file)."\"";
                            
@@ -3950,7 +3950,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                 // error if conersion failed
                 if ($errorCode || !is_file ($location_source.$file_name.".".$docformat))
                 {
-                  $errcode = "20236";
+                  $errcode = "20276";
                   $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of unoconv (code:$errorCode) to '$format' failed in createdocument for file: ".$location_source.$file." with message: ".implode("<br />", $error_array);
                   
                   // save log
@@ -3963,7 +3963,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
   
                   if ($result_rename == false)
                   {
-                    $errcode = "20337";
+                    $errcode = "20377";
                     $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|rename failed in createdocument for file: ".$location_source.$file_name.".".$docformat;
                     
                     // save log
