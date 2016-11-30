@@ -1964,8 +1964,12 @@ Release 11/2016
 - Improvements in function uploadfile in main API
 - Implementation of verification of executable in function createdocument in media API
 - Bug fix: Function createmedia did try to recreate PDF preview file from documents without verifying that an executable for the conversion exists
+
+Version 6.1.35
+Release 12/2016
+- Modifications in function rdbms_searchcontent in order to support the combination of a general search and detailed search
 */
 
 // current version
-$version = "Version 6.1.34";
+$version = "Version 6.1.35";
 ?>

@@ -1918,7 +1918,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   }
 
                   // add brackets since OR is used
-                  if ($sql_expr_advanced[$i] != "") $sql_expr_advanced[$i] = "(".$sql_expr_advanced[$i].")";
+                  if (!empty ($sql_expr_advanced[$i])) $sql_expr_advanced[$i] = "(".$sql_expr_advanced[$i].")";
  
                   $r++;
                 }
@@ -1926,7 +1926,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                 $i_tn++;
               }
             }
-            // general search in all textnodes (only one search expression possible -> break out of loop)
+            // general search in all textnodes
             elseif (!empty ($mgmt_config['search_exact']) || $expression != "")
             {
               // get synonyms
@@ -1939,7 +1939,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
               if (is_array ($synonym_array) && sizeof ($synonym_array) > 0)
               { 
                 // add textnodes table (LEFT JOIN is important!)
-                $sql_table['textnodes'] .= 'LEFT JOIN textnodes AS tn1 ON obj.id=tn1.id '.$sql_table['textnodes'];
+                $sql_table['textnodes'] .= 'LEFT JOIN textnodes AS tng ON obj.id=tng.id '.$sql_table['textnodes'];
                   
                 foreach ($synonym_array as $expression)
                 {
@@ -1960,23 +1960,24 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   // look for exact expression
                   if (!empty ($mgmt_config['search_exact']))
                   {
-                    $sql_where_textnodes .= 'tn1.textcontent="'.$expression.'"';
+                    $sql_where_textnodes .= 'tng.textcontent="'.$expression.'"';
                   }
                   // look for expression in content
                   else
                   {
-                    if ($expression != $expression_esc) $sql_where_textnodes .= '(tn1.textcontent LIKE _utf8"%'.$expression.'%" OR tn1.textcontent LIKE _utf8"%'.$expression_esc.'%")';
-                    else $sql_where_textnodes .= 'tn1.textcontent LIKE _utf8"%'.$expression.'%"';
+                    if ($expression != $expression_esc) $sql_where_textnodes .= '(tng.textcontent LIKE _utf8"%'.$expression.'%" OR tng.textcontent LIKE _utf8"%'.$expression_esc.'%")';
+                    else $sql_where_textnodes .= 'tng.textcontent LIKE _utf8"%'.$expression.'%"';
                   }
                   
                   $r++;
                 }
 
                 // add brackets since OR is used
-                if ($sql_where_textnodes != "") $sql_where_textnodes = "(".$sql_where_textnodes.")";
+                if (!empty ($sql_where_textnodes)) $sql_where_textnodes = "(".$sql_where_textnodes.")";
               }
-  
-              break;
+              
+              // only one search expression possible -> break out of loop (disabled in version 6.1.35 to support the combination of a general search and detailed search)
+              // break;
             }
           }
         }
@@ -1990,7 +1991,11 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       // combine all text_id based search conditions using the operator (default is AND)
       if (isset ($sql_expr_advanced) && is_array ($sql_expr_advanced) && sizeof ($sql_expr_advanced) > 0)
       {
-        $sql_where_textnodes = "(".implode (" ".$operator." ", $sql_expr_advanced).")";
+        // add where clause for general search term
+        if (!empty ($sql_where_textnodes)) $add = $sql_where_textnodes." ".$operator." ";
+        else $add = "";
+        
+        $sql_where_textnodes = "(".$add.implode (" ".$operator." ", $sql_expr_advanced).")";
       }
 
       // add search in object names and create final SQL where statement for search in content and object names
