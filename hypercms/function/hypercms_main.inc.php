@@ -88,7 +88,7 @@ function cleancontent ($text, $charset="UTF-8")
 
 // function: convertchars ()
 // input: expression as string or array, input character set (optional), output character set (optional)
-// output: converted expression / false on error
+// output: converted expression / original expression on error
 
 function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
 {
@@ -96,6 +96,8 @@ function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
   
   if ($expression != "" && $charset_from != "" && $charset_to != "")
   {
+    $expression_orig = $expression;
+  
     if ($charset_from == $charset_to)
     {
       return $expression;
@@ -117,7 +119,7 @@ function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
       }
       
       if ($expression != "") return $expression;
-      else return false;      
+      else return $expression_orig;      
     }
   }
   else return false;

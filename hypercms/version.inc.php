@@ -78,7 +78,7 @@ Release 03/2004 - 01/2007
 - New features in publishing of objects. Connected objects in the same publication will be published automatically, if one object will be published or unpublished. Also pages without dynamic component linking will be automatically republished after a used component will be published. 
 - Extended support for editing XML-objects with EasyEdit
 - Switch from WYSIWYG to form view for editing content
-- Seperated APIs for filesystem (virtual server) and Tamino (server)
+- Separated APIs for filesystem (virtual server) and Tamino (server)
 - Cut, copy and paste of objects between several publications (server version only)
 - New feature "Journey through Time" that allows a visit of the website in the past
 - Changes in the Database Connectivity when writing data to external data sources 
@@ -259,7 +259,7 @@ Release 04/2013
 
 Version 5.5.13
 Release 05/2013
-- Seperation of API (hypercms_api.inc.php) and UI elements (hypercms_UI.inc.php)
+- Separation of API (hypercms_api.inc.php) and UI elements (hypercms_UI.inc.php)
 - Bug fix in rdbms_searchcontent (db_connect). The SQL syntax used an inner join to the search in textnodes and object names. the search in textnodes and object names uses OR operator.
 - Send mail-links including lifetime / period of validity: Time token can be used in access-, download- And wrapper-links.
 - Bug fix: Container in content version and buildview was missing
@@ -424,7 +424,7 @@ Release 07/2014
 - Bug fix: Limit was not set in rdbms_searchcontent
 - Bug fix: Template engine issue with language session variable
 - Improvements in compare content versions, multimedia content from files will be compared as well as meta data (taken from content container)
-- Seperation of template includes (new expression) from page and component templates in the GUI
+- Separation of template includes (new expression) from page and component templates in the GUI
 - Bug fix: Search_objectlist.php used wrong input parameter for function rdbms_searchcontent
 - Bug fix: object name was missing in event log when removing objects 
 - Bug fix: The template of folders (should be meta) was set to the wrong category
@@ -1623,8 +1623,8 @@ Release 07/2016
 - Implementation of new template variable %object_id% in template engine
 - Implementation of date and time and publication access of user to each chat entry
 - Implementation of new presentation logic of chat in order to show only messages based on the users publication access
-- Bug fix: Function link_db_restore of Link API did not have access to user
-- Bug fix: Function link_db_restore was notz able to access working content container due to wrong verification
+- Bug fix: Function link_db_restore of link API did not have access to user
+- Bug fix: Function link_db_restore was not able to access working content container due to wrong verification
 - Implementation of new function valid_tagname in XML API
 - Implementation of sys-user support in function loadcontainer
 - Implementation of tag name verification in all write functions of XML API
@@ -1682,7 +1682,7 @@ Release 07/2016
 - Implementation of new input parameter for specific container IDs in function reindexcontent in media API
 - Removed general html encoding of content from files based on UTF-8 in function indexcontent
 - Support of container ID as input for function getmetadata
-- Bug finx: Function indexcontent did not veriy max. string lenght of 100 for keywords from XMP
+- Bug fix: Function indexcontent did not veriy max. string lenght of 100 for keywords from XMP
 - Improvements in function splitkeywords (leave tags in keyword-string and verify tags in each single keyword)
 - Bug fix: Removed cleaning of special characters in function splitkeywords due to issues
 - Implementation of new function getlistelements for support of file attribute in keyword and text-list tags
@@ -1700,10 +1700,10 @@ Release 07/2016
 - Implementation of objects with no keywords in keyword list
 - Bug fix: control_objectlist_menu did not extract the publication from the root folder
 - Allow spaces in tag keywords
-- Added read-only attribut for keyword tag
+- Added read-only attribute for keyword tag
 - Support of geometry for video watermarks in function createmedia in media API
 - Implementation of new function gethierarchy_defintion in get API
-- Implementation of support for delete of taxonomy cand hierarchy configuration files in function deletepubliucation in main API
+- Implementation of support for delete of taxonomy and hierarchy configuration files in function deletepublication in main API
 - Implementation of new function gethierarchy_sublevel in get API
 - Implementation of new function rdbms_gethierarchy_sublevel in DB Connect
 - Implementation of main configuration $mgmt_config['search_exact'] and $mgmt_config['search_log']in function rdbms_searchcontent in DB Connect for search of exact expression
@@ -1714,12 +1714,12 @@ Release 07/2016
 
 Version 6.1.15
 Release 07/2016
-- Bug fix: Function setmetadata did not seperate type and text ID for hcms:quality metadata mapping
+- Bug fix: Function setmetadata did not separate type and text ID for hcms:quality metadata mapping
 - Bug fix: Metadata hierarchies in explorer used same tree ID
 - Bug fix: Function rdbms_searchcontent did use taxonomy and was not looking for exact textcontent match if hierarchies were used
 - Added hyperCMS tag name as type to the metadata hierarchy definition
 - Support for keywords in function gethierarchy_sublevel in get API, rdbms_searchcontent, and rdbms_gethierarchy_sublevel in DB Connect
-- Bug fix: Function rdbms_searchcontent did not loook for empty content when exact match was requested
+- Bug fix: Function rdbms_searchcontent did not look for empty content when exact match was requested
 - Bug fix: Function rdbms_searchcontent did not increase the counter for the conditions
 - Bug fix: Function gettemplateversions did return sort result and not result array
 - Implementation of new function array_iunique in main API
@@ -1740,12 +1740,12 @@ Release 07/2016
 - Updates in all language files
 - Improvements and changes in Navigator search form
 - Excluded CSFR protection from service mediawrapper and mediadownload
-- Bug fix: Function gettemplates did provide empyt templates if second input paramter has not been provided
+- Bug fix: Function gettemplates did provide empty templates if second input parameter has not been provided
 - Implementation of image download protecttion for annotation images and normal images in template engine
 - Bug fix: Location has not been correctly provided for function accesspermission in control_objectlist_menu
 - Implementation of CS export for all object lists
 - Improvements in function create_csv in main API
-- Improvemenets for objects list on mobile devices
+- Improvements for objects list on mobile devices
 - Exclude 'send to chat' button on iPad and iPhone
 - Bug fix: Function gethierarchy_defintion did not initialize labels array
 - Implementation of new view-type 'media_only' in function showmedia in UI API
@@ -1807,15 +1807,15 @@ Release 08/2016
 - Renamed function settask to edittask in project API
 - Bug fix: Function rdbms_deleteproject used wrong variable name for project ID
 - Improvements of input validation in Navigator
-- Improvements and changes in task managament
+- Improvements and changes in task management
 - Improvements and changes in project management 
 - Improvements in function query in DB Connect regarding input validation
-- Bug fix: Report management used 'duration' instaed of 'actual' as field name for table task
+- Bug fix: Report management used 'duration' instead of 'actual' as field name for table task
 - Bug fix: Funtion buildsearchform did use HTML table instead of DIV
-- Bug fix: Template editor did not provide meta-inforamtion checkbox for page, component, and include template types
+- Bug fix: Template editor did not provide meta-information checkbox for page, component, and include template types
 - Bug fix: Template engine did not present metainfo button in WYSWIWYG views
 - Bug fix: CSV export of pages did not provide container ID nor content
-- Bug fix: Column headers of oibjectlist views displayed text ID instead of label
+- Bug fix: Column headers of objectlist views displayed text ID instead of label
 - Improvements in function getmetadata_multiobjects
 
 Version 6.1.20
@@ -1968,6 +1968,13 @@ Release 11/2016
 Version 6.1.35
 Release 12/2016
 - Modifications in function rdbms_searchcontent in order to support the combination of a general search and detailed search
+- Implementation of new JS function hcms_convertGet2Post in main.js
+- Implementation of content extraction from container in media_edit_page in order to avoid issues with the length restriction of GET requests
+- Change of order of GET paramaters in template engine and frameset_edit_media
+- Implementation of content extraction from container in link_edit_page in order to avoid issues with the length restriction of GET requests
+- Change of order of GET paramaters in template engine and frameset_edit_link
+- Modification of return value of function convertchars in main API in order to return original value instead of false on error
+- Removed character set conversion of link text and alttext in media_edit_page and link_edit_page
 */
 
 // current version

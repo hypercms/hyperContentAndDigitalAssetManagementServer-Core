@@ -67,6 +67,34 @@ $location_esc = convertpath ($site, $location, $cat);
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
 
+// read content from content container if DB Connect is not used
+if (empty ($db_connect))
+{
+  // load container
+  $contentdata = loadcontainer ($contentfile, "work", "sys");
+
+  if (!empty ($contentdata))
+  {
+    // get the whole media object information of the content container
+    if (!empty ($id))
+    {
+      $linknode = selectcontent ($contentdata, "<link>", "<link_id>", $id);
+
+      if (!empty ($linknode[0]))
+      {
+        $temp_array = getcontent ($linknode[0], "<linkhref>");
+        if (!empty ($temp_array[0])) $linkhref_curr = $temp_array[0];
+        
+        $temp_array = getcontent ($linknode[0], "<linktarget>");
+        if (!empty ($temp_array[0])) $linktarget = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
+        
+        $temp_array = getcontent ($linknode[0], "<linktext>");
+        if (!empty ($temp_array[0])) $linktext = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
+      }  
+    }
+  }
+}
+
 // remove &amp; from specific variables
 $variables = array ('linkhref', 'linktext', 'linkhref_curr');
 
@@ -376,7 +404,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     echo "<tr>\n";
     echo "  <td>".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang).":</td>\n";
     echo "  <td>\n";
-    echo "    <input type=\"text\" name=\"linktext\" value=\"".convertchars ($linktext, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:220px;\" />\n";
+    echo "    <input type=\"text\" name=\"linktext\" value=\"".$linktext."\" style=\"width:220px;\" />\n";
     echo "  </td>\n";
     echo "</tr>\n";
   }

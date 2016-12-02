@@ -66,6 +66,43 @@ checkusersession ($user);
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
 
+// read content from content container if DB Connect is not used
+if (empty ($db_connect))
+{
+  // load container
+  $contentdata = loadcontainer ($contentfile, "work", "sys");
+
+  if (!empty ($contentdata))
+  {
+    // get the whole media object information of the content container
+    if (!empty ($id))
+    {
+      $medianode = selectcontent ($contentdata, "<media>", "<media_id>", $id);
+
+      if (!empty ($medianode[0]))
+      {
+        $temp_array = getcontent ($medianode[0], "<mediafile>");
+        if (!empty ($temp_array[0])) $mediafile = $temp_array[0];
+        
+        $temp_array = getcontent ($medianode[0], "<mediaobject>");
+        if (!empty ($temp_array[0])) $mediaobject_curr = $temp_array[0];
+        
+        $temp_array = getcontent ($medianode[0], "<mediaalttext>");
+        if (!empty ($temp_array[0])) $mediaalttext = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
+        
+        $temp_array = getcontent ($medianode[0], "<mediaalign>");
+        if (!empty ($temp_array[0])) $mediaalign = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
+        
+        $temp_array = getcontent ($medianode[0], "<mediawidth>");
+        if (!empty ($temp_array[0])) $mediawidth = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
+        
+        $temp_array = getcontent ($medianode[0], "<mediaheight>");
+        if (!empty ($temp_array[0])) $mediaheight = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
+      }  
+    }
+  }
+}
+
 // remove &amp; from specific variables
 $variables = array ('mediaalttext');
 
@@ -132,8 +169,7 @@ if ($label == "") $label = $id;
 <meta charset="<?php echo $charset; ?>">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
-<script>
-<!--
+<script type="text/javascript">
 function correctnames ()
 {
   if (eval (document.forms['media'].elements['mediafile'])) document.forms['media'].elements['mediafile'].name = "<?php echo $art; ?>mediafile[<?php echo $id; ?>]";
@@ -304,7 +340,6 @@ function openBrWindowMedia(winName, features, type)
   }
   else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-file-selected'][$lang], $charset, $lang); ?>'));  
 }
-//-->
 </script>
 </head>
 
@@ -363,7 +398,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     echo "<tr>\n";
     echo "  <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alternative-text'][$lang], $charset, $lang).": </td>\n";
     echo "  <td>\n";
-    echo "    <input type=\"text\" name=\"mediaalttext\" value=\"".convertchars ($mediaalttext, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:300px;\" />\n";
+    echo "    <input type=\"text\" name=\"mediaalttext\" value=\"".$mediaalttext."\" style=\"width:300px;\" />\n";
     echo "  </td>\n";
     echo "</tr>\n";
   }

@@ -10,6 +10,27 @@ function hcms_getURLparameter (name)
   return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
 }
 
+// ------------------------ convert get to post request ----------------------------
+
+function hcms_convertGet2Post (link)
+{
+  var parts = link.split('?');
+  var action = parts[0];
+  var params = parts[1].split('&');
+  var form = $(document.createElement('form')).attr('action', action).attr('method','post');
+  $('body').append(form);
+  
+  for (var i in params)
+  {
+    var tmp= params[i].split('=');
+    var key = tmp[0], value = tmp[1];
+    $(document.createElement('input')).attr('type', 'hidden').attr('name', key).attr('value', value).appendTo(form);
+  }
+  
+  $(form).submit();
+  return false;
+}
+
 // ---------------------- standard AJAX request --------------------------
 
 function hcms_ajaxService (url)
@@ -578,13 +599,13 @@ function hcms_showHideLayers ()
   }
 }
 
-function hcms_jumpMenu (targ,selObj,restore)
+function hcms_jumpMenu (targ, selObj, restore)
 {
   eval(targ+".location='"+selObj.options[selObj.selectedIndex].value+"'");
   if (restore) selObj.selectedIndex=0;
 }
 
-function hcms_jumpMenuGo (selName,targ,restore)
+function hcms_jumpMenuGo (selName, targ, restore)
 {
   var selObj = hcms_findObj(selName); 
   if (selObj) hcms_jumpMenu(targ,selObj,restore);
