@@ -1975,8 +1975,13 @@ Release 12/2016
 - Change of order of GET paramaters in template engine and frameset_edit_link
 - Modification of return value of function convertchars in main API in order to return original value instead of false on error
 - Removed character set conversion of link text and alttext in media_edit_page and link_edit_page
+
+Version 6.1.36
+Release 12/2016
+- Added log information in function publishobject and unpublishobject for success events
+- Display only a limit of 1000 log entries from event log, starting with the last log entry
 */
 
 // current version
-$version = "Version 6.1.35";
+$version = "Version 6.1.36";
 ?>

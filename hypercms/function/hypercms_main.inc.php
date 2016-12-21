@@ -13276,8 +13276,9 @@ function publishobject ($site, $location, $page, $user)
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
     
-    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
-      $location = deconvertpath ($location, "file");
+    // convert location
+    $location = deconvertpath ($location, "file");
+    $location_esc = convertpath ($site, $location, $cat); 
       
     // check location (only components of given publication are allowed)
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
@@ -13733,6 +13734,11 @@ function publishobject ($site, $location, $page, $user)
           {
             $errcode = "10880";
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|working container $container.wrk could not be saved";                
+          }
+          else
+          {
+            $errcode = "00880";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|user '".$user."' published the object ".$location_esc.$page;   
           }            
           
           // save published xml content container file     
@@ -13981,7 +13987,7 @@ function unpublishobject ($site, $location, $page, $user)
     
     $cat = getcategory ($site, $location);    
     $location = deconvertpath ($location, "file");
-    $location_esc = convertpath ($site, $location, "");
+    $location_esc = convertpath ($site, $location, $cat);
     
     // check location (only components of given publication are allowed)
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
@@ -14106,6 +14112,10 @@ function unpublishobject ($site, $location, $page, $user)
                       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|publishlinkedobject failed for ".convertpath ($site, $location, $cat).$page; 
                     }                
                   }
+                  
+                  // log entry
+                  $errcode = "00198";
+                  $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|user '".$user."' unpublished the object ".$location_esc.$page;
                 }
                 else
                 {

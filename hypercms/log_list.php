@@ -118,6 +118,9 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
 
   if ($event_array != false && sizeof ($event_array) > 0)
   {
+    // reverse array
+    $event_array = array_reverse ($event_array);
+   
     foreach ($event_array as $event)
     {
       list ($date, $source, $type, $errorcode, $description) = explode ("|", trim ($event));
@@ -165,7 +168,10 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
   ";
   echo "</tr>"; 
 
-      $items_row++;      
+      $items_row++;
+      
+      // break if row count is greater than 1000
+      if ($items_row > 1000) break;    
     }
   }
 }
