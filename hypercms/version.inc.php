@@ -1980,6 +1980,7 @@ Version 6.1.36
 Release 12/2016
 - Added log information in function publishobject and unpublishobject for success events
 - Display only a limit of 1000 log entries from event log, starting with the last log entry
+- Improvements in log_export
 */
 
 // current version

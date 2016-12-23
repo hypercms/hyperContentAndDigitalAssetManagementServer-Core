@@ -41,7 +41,7 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
     $data = str_replace ("\t", " ", $data);
     $data = str_replace ("|", ";", $data);
     
-    $data = "date/time;source;code;description\n".$data;
+    $data = "date/time;source;type;code;description\n".$data;
     
     // define type
     header ("Content-type: application/octet-stream");
