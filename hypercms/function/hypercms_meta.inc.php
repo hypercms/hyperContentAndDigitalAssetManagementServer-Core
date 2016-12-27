@@ -2114,9 +2114,9 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
   if ((!is_array ($mapping) || sizeof ($mapping) == 0) && !empty ($mgmt_config['abs_path_data']))
   {
     // try to load mapping configuration file of publication
-    if (valid_publicationname ($site) && @is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
+    if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
     {
-      @include ($mgmt_config['abs_path_data']."config/".$site.".media.map.php");
+      include ($mgmt_config['abs_path_data']."config/".$site.".media.map.php");
     }
     // define mapping if undefined
     else
@@ -2301,7 +2301,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       {
         $containerdata = loadcontainer ($container, "work", $user);
       }
-      
+
       // get destination character set
       $charset_array = getcharset ($site, $containerdata);
 
@@ -2331,7 +2331,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         }
         
         // ------------------- ID3 -------------------
-
+   
         // get ID3 data from file
         $id3_data = id3_getdata ($medialocation.$mediafile);
 
@@ -2399,14 +2399,14 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                   $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$id3str."]]>", "<text_id>", $text_id);
                   $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
                 }
-          
+
                 if ($containerdata_new != false) $containerdata = $containerdata_new;
                 else return false;
               }
             }
           }
         }
-        
+
         // ------------------- EXIF -------------------
 
         // set encoding for EXIF to UTF-8
@@ -2470,7 +2470,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
                 
                 // textnodes search index in database
                 $text_array[$text_id] = $exif_info[$key];
-                                                
+                        
                 $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$exif_info[$key]."]]>", "<text_id>", $text_id);
           
                 if ($containerdata_new == false)
@@ -2486,7 +2486,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             }
           }
         }
-        
+
         // ------------------- XMP-based -------------------
         
         // inject meta data based on mapping
@@ -2759,7 +2759,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             }
           }     
         }
-        
+
         // ------------------- define and set image quality -------------------
         if ($mapping['hcms:quality'] != "")
         {      

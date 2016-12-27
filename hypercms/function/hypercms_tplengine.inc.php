@@ -3822,6 +3822,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // convert image to PNG in the requested colorspace or ICC profile
                 $mediafilebot_new = convertimage ($site, $imgdir.$mediafilebot[$id][$tagid], $viewdir, "png", $mediacolorspace[$id][$tagid], $mediaiccprofile[$id][$tagid]);
                 // check converted image
+savelog (array("$imgdir, $mediafilebot_new"), "aaa");
                 if ($mediafilebot_new != false) $mediafilebot[$id][$tagid] = $mediafilebot_new;
               }
             }
@@ -4250,7 +4251,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     // define offset
                     $repl_offset = $repl_start + strlen ($imgtag);                    
                     $viewstore_offset = substr ($viewstore_offset, $repl_offset);
-                  } // end while loop
+                  }
                 } 
               
                 // define Null media if mediafilebot is empty and set URL to content media repository 
@@ -4320,8 +4321,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   // use original file
                   else $file_media = $mediafilebot[$id][$tagid];
                   
+                  // if media file is already an URL
+                  if (!empty ($mediafilebot[$id][$tagid]) && strpos ($mediafilebot[$id][$tagid], "://") > 0)
+                  {
+                    $url_media = "";
+                    $url_tplmedia = "";
+                  }
                   // if pathytpe == wrapper (wrapper link)
-                  if (!empty ($mediapathtype[$id][$tagid]) && $mediapathtype[$id][$tagid] == "wrapper" && getmediacontainerid ($file_media))
+                  elseif (!empty ($mediapathtype[$id][$tagid]) && $mediapathtype[$id][$tagid] == "wrapper" && getmediacontainerid ($file_media))
                   {
                     $url_media = "";
                     $file_media = createwrapperlink ("", "", "", "", "", getmediacontainerid ($file_media));

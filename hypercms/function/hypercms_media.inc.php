@@ -21,7 +21,7 @@
 
 function indexcontent ($site, $location, $file, $container="", $container_content="", $user)
 {
-  global $mgmt_config, $mgmt_parser, $mgmt_uncompress, $hcms_ext, $hcms_lang, $lang;
+  global $mgmt_config, $mgmt_parser, $mgmt_imagepreview, $mgmt_uncompress, $hcms_ext, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($user))
   {
@@ -388,8 +388,8 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
             $temp_name = uniqid ("index");
             $temp_dir = $mgmt_config['abs_path_temp'];
         
-            // convert image to TIFF since Tesseract can only scan TIFF images
-            if (($file_ext != ".tif" || $file_ext != ".tiff") && !empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
+            // convert image to TIFF since Tesseract has best results with TIFF images
+            if (($file_ext != ".tif" && $file_ext != ".tiff" && $file_ext != ".png") && !empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
             {
               // find image converter
               foreach ($mgmt_imagepreview as $ext_image=>$converter)
@@ -426,7 +426,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
             // extract text from image using OCR
             if (is_file ($location_source.$file_source))
             {
-              // create temp text file from TIFF image
+              // create temp text file from TIFF image (file extension for text file will be added by Tesseract)
               $cmd = $parser." \"".shellcmd_encode ($location_source.$file_source)."\" \"".shellcmd_encode ($temp_dir.$temp_name)."\"";
               
               @exec ($cmd);
@@ -460,7 +460,8 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       if ($file_ext != "" && substr_count (strtolower ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video']).".", $file_ext.".") > 0)
       {
         // function setmetadata provides metadata in the content container without saving the container
-        $container_content = setmetadata ($site, "", "", $file, "", $container_content, $user, false);
+        $container_content_temp = setmetadata ($site, "", "", $file, "", $container_content, $user, false);        
+        if (!empty ($container_content_temp)) $container_content = $container_content_temp;
       } 
 
       // delete temp file
@@ -490,7 +491,8 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         // set character set / encoding of content container of not set already
         if ($charset_container == "" || $charset_container != $charset_dest)
         {
-          $container_content = setxmlparameter ($container_content, "encoding", $charset_dest);
+          $container_content_temp = setxmlparameter ($container_content, "encoding", $charset_dest);
+          if (!empty ($container_content_temp)) $container_content = $container_content_temp;
         }
         
         // set array to save content as UTF-8 in database before converting it

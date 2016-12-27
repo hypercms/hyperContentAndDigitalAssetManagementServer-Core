@@ -1972,7 +1972,7 @@ Release 12/2016
 - Implementation of content extraction from container in media_edit_page in order to avoid issues with the length restriction of GET requests
 - Change of order of GET paramaters in template engine and frameset_edit_media
 - Implementation of content extraction from container in link_edit_page in order to avoid issues with the length restriction of GET requests
-- Change of order of GET paramaters in template engine and frameset_edit_link
+- Change of order of GET parameters in template engine and frameset_edit_link
 - Modification of return value of function convertchars in main API in order to return original value instead of false on error
 - Removed character set conversion of link text and alttext in media_edit_page and link_edit_page
 
@@ -1981,6 +1981,9 @@ Release 12/2016
 - Added log information in function publishobject and unpublishobject for success events
 - Display only a limit of 1000 log entries from event log, starting with the last log entry
 - Improvements in log_export
+- Improvements in funtion indexcontent to avoid empty content containers after an error
+- Bug fix: Funtion indexcontent did not set $mgmt_imagepreview as global and therefore did not convert images for OCR
+- Improvements in template engine to support manual inserted links to media files
 */
 
 // current version
