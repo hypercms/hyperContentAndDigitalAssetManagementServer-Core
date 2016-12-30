@@ -1995,12 +1995,17 @@ Release 01/2017
 - Modifications of file download layer in control_objectlist_menu and control_content_menu
 - Implementation of new function rdbms_searchrecipient in DB Connect
 - Implementation of recpient search feature in explorer und search_objectlist
-- Implementation of Valiant360, a player for 360 degree panorama videos and photos in the JS libraries (does not support mobile browsers)
-- Implementation of eleVR web player in the JS libraries, the player  lets you watch 360 flat and stereo video on your Oculus Rift or Android device with VR headset (Cardboard, Durovis Dive, etc.) from a web browser. It is written with js, html5, and webGL (Using keyboard rotation controls, the player works on standard Firefox and Chrome on Windows, Mac, and Linux. It also runs on Safari (if webgl is enabled))
 - Bug fix: Global variable $mgmt_docpreview has been missing un function showmedia of UI API
 - Bug fix: page_info_recipients used wrong result array keys for sender (ftom_user) and recipient (to_user)
+
+Version 6.1.38
+Release 01/2017
+- Modifications in search_objectlist in order to display columns of list view correctly when minimum columns are used (usage of CSS min-widh for the location column)
+- Modifications in function restoremediafile since cross partition move/rename of files is not supported by PHP (rename is replaced by copy and delete)
+- Implementation of Valiant360, a player for 360 degree panorama videos and photos in the JS libraries (does not support mobile browsers)
+- Implementation of eleVR web player in the JS libraries, the player lets you watch 360 flat and stereo video on your Oculus Rift or Android device with VR headset (Cardboard, Durovis Dive, etc.) from a web browser. It is written with js, html5, and webGL (Using keyboard rotation controls, the player works on standard Firefox and Chrome on Windows, Mac, and Linux. It also runs on Safari (if webgl is enabled))
 */
 
 // current version
-$version = "Version 6.1.37";
+$version = "Version 6.1.38";
 ?>

@@ -428,7 +428,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               }
               
               // get metadata of container
-              $container_info = getmetadata_container ($container_id, array_keys ($objectlistcols_reduced));
+              $container_info = getmetadata_container ($container_id, @array_keys ($objectlistcols_reduced));
               
               if (is_array ($container_info))
               {  
@@ -493,7 +493,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             if (!$is_mobile)
             {
               $listview .= "
-                            <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; padding-left:5px; padding-right:5px;\">".$item_location."</div></td>";
+                            <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"min-width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; padding-left:5px; padding-right:5px;\">".$item_location."</div></td>";
                    
               if (is_array ($objectlistcols_reduced))
               {
@@ -625,7 +625,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               } 
               
               // get metadata of container
-              $container_info = getmetadata_container ($container_id, array_keys ($objectlistcols_reduced));
+              $container_info = getmetadata_container ($container_id, @array_keys ($objectlistcols_reduced));
     
               if (is_array ($container_info))
               { 
@@ -732,7 +732,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             if (!$is_mobile)
             {
               $listview .= "
-                           <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; padding-left:5px; padding-right:5px;\">".$item_location."</div></td>";
+                           <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"min-width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; padding-left:5px; padding-right:5px;\">".$item_location."</div></td>";
 
               if (is_array ($objectlistcols_reduced))
               {
@@ -1139,7 +1139,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
     if (!$is_mobile)
     {
     ?>
-      <td id="c1" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:248px; white-space:nowrap;">&nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;</td> 
+      <td id="c1" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="min-width:248px; white-space:nowrap;">&nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;</td> 
     <?php
       if (is_array ($objectlistcols_reduced))
       {

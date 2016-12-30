@@ -3006,9 +3006,10 @@ function restoremediafile ($site, $mediafile)
     // move media file back to repository
     if ($mediaroot != $medialocation && is_file ($mediaroot.$mediafile))
     {
-      $rename = rename ($medialocation.$mediafile, $mediaroot.$mediafile);
+      // use copy since cross partition move/rename of files is not supported by PHP!
+      $copy = copy ($medialocation.$mediafile, $mediaroot.$mediafile);
 
-      if (!$rename)
+      if (!$copy)
       {
         $errcode = 10602;
         $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|could not restore exported media file '.$mediafile.' to repository';
@@ -3019,6 +3020,10 @@ function restoremediafile ($site, $mediafile)
       {
         // remove symbolic link
         if (is_link ($mediaroot.$mediafile)) deletefile ($mediaroot, $mediafile, 0);
+        
+        // remove external media file outside repository
+        // cross partition move/rename of files is not supported by PHP!
+        if (is_file ($medialocation.$mediafile)) deletefile ($medialocation, $mediafile, 0);
     
         avoidfilecollision();
         
