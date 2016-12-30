@@ -1984,8 +1984,23 @@ Release 12/2016
 - Improvements in funtion indexcontent to avoid empty content containers after an error
 - Bug fix: Funtion indexcontent did not set $mgmt_imagepreview as global and therefore did not convert images for OCR
 - Improvements in template engine to support manual inserted links to media files
+
+Version 6.1.37
+Release 01/2017
+- Modfifications in function createmultidownloadlink in order to create reusable files names for the ZIP files, so the same ZIP files can be reused for download
+- Removed ZIP compression in function zipfiles in media API in order to speed up the download/compress process of large file collections
+- Modifications in function getvideoinfo of get API in order to support the extraction of the video codec
+- Modifications in function savemediaplayer_config and readmediaplayer_confign in media API in order to support audio and video codecs (new version 2.4 of video config file)
+- New text added to all language files
+- Modifications of file download layer in control_objectlist_menu and control_content_menu
+- Implementation of new function rdbms_searchrecipient in DB Connect
+- Implementation of recpient search feature in explorer und search_objectlist
+- Implementation of Valiant360, a player for 360 degree panorama videos and photos in the JS libraries (does not support mobile browsers)
+- Implementation of eleVR web player in the JS libraries, the player  lets you watch 360 flat and stereo video on your Oculus Rift or Android device with VR headset (Cardboard, Durovis Dive, etc.) from a web browser. It is written with js, html5, and webGL (Using keyboard rotation controls, the player works on standard Firefox and Chrome on Windows, Mac, and Linux. It also runs on Safari (if webgl is enabled))
+- Bug fix: Global variable $mgmt_docpreview has been missing un function showmedia of UI API
+- Bug fix: page_info_recipients used wrong result array keys for sender (ftom_user) and recipient (to_user)
 */
 
 // current version
-$version = "Version 6.1.36";
+$version = "Version 6.1.37";
 ?>

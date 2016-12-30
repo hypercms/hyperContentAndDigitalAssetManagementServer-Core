@@ -134,11 +134,11 @@ if ($result_array != false && sizeof ($result_array) > 0)
 
       if (is_array ($object_info))
       {
-        $result_stats = rdbms_getmediastat ($result['date'], "", "download", $object_info['container_id'], "", $result['user'], "object");
+        $result_stats = rdbms_getmediastat ($result['date'], "", "download", $object_info['container_id'], "", $result['to_user'], "object");
       }
       else
       {
-        $result_stats = rdbms_getmediastat ($result['date'], "", "download", "", $location_esc.$page, $result['user'], "object");
+        $result_stats = rdbms_getmediastat ($result['date'], "", "download", "", $location_esc.$page, $result['to_user'], "object");
       }
 
       if (is_array ($result_stats))
@@ -156,8 +156,8 @@ if ($result_array != false && sizeof ($result_array) > 0)
      
       echo "<tr class=\"".$rowcolor."\">
         <td nowrap=\"nowrap\">".$result['date']."</td>
-        <td>".$result['sender']."</td>
-        <td>".$result['user']."</td>
+        <td>".$result['from_user']."</td>
+        <td>".$result['to_user']."</td>
         <td>".$result['email']."</td>
         <td>".$result['download_date']."</td>
         <td align=\"middle\" valign=\"middle\"><input type=\"checkbox\" name=\"delete_id[]\" value=\"".$result['recipient_id']."\" /></td>

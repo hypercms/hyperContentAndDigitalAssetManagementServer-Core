@@ -1392,4 +1392,6 @@ $hcms_lang['label']['hu'] = "Címke";
 $hcms_lang['level']['hu'] = "Szint";
 $hcms_lang['save-search']['hu'] = "A keresés mentése";
 $hcms_lang['saved-searches']['hu'] = "A mentett keresések";
+$hcms_lang['video-codec']['hu'] = "Video codec";
+$hcms_lang['audio-codec']['hu'] = "Audio codec";
 ?>

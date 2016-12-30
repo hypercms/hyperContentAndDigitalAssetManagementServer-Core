@@ -1392,4 +1392,6 @@ $hcms_lang['label']['th'] = "ป้ายกำกับ";
 $hcms_lang['level']['th'] = "ระดับ";
 $hcms_lang['save-search']['th'] = "บันทึกการค้นหา";
 $hcms_lang['saved-searches']['th'] = "การค้นหาที่บันทึกไว้";
+$hcms_lang['video-codec']['th'] = "ตัวแปลงสัญญาณวิดีโอ";
+$hcms_lang['audio-codec']['th'] = "ตัวแปลงสัญญาณเสียง";
 ?>

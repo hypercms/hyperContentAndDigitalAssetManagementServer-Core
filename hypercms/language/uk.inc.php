@@ -1392,4 +1392,6 @@ $hcms_lang['label']['uk'] = "Наклейка";
 $hcms_lang['level']['uk'] = "Рівень";
 $hcms_lang['save-search']['uk'] = "Зберегти результати пошуку .";
 $hcms_lang['saved-searches']['uk'] = "Додано пошук";
+$hcms_lang['video-codec']['uk'] = "відеокодек";
+$hcms_lang['audio-codec']['uk'] = "аудіокодек";
 ?>

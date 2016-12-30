@@ -1392,4 +1392,6 @@ $hcms_lang['label']['hi'] = "लेबल";
 $hcms_lang['level']['hi'] = "स्तर पर";
 $hcms_lang['save-search']['hi'] = "खोजें सहेजें";
 $hcms_lang['saved-searches']['hi'] = "सहेजे गए खोज";
+$hcms_lang['video-codec']['hi'] = "वीडियो कोडेक";
+$hcms_lang['audio-codec']['hi'] = "ऑडियो कोडेक";
 ?>

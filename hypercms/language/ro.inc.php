@@ -1392,4 +1392,6 @@ $hcms_lang['label']['ro'] = "Eticheta";
 $hcms_lang['level']['ro'] = "Nivel";
 $hcms_lang['save-search']['ro'] = "Salvare căutare";
 $hcms_lang['saved-searches']['ro'] = "Căutări salvate";
+$hcms_lang['video-codec']['ro'] = "Codec video";
+$hcms_lang['audio-codec']['ro'] = "Codec audio";
 ?>

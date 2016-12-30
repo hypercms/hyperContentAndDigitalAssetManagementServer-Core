@@ -1392,4 +1392,6 @@ $hcms_lang['label']['fi'] = "Tarra";
 $hcms_lang['level']['fi'] = "Taso";
 $hcms_lang['save-search']['fi'] = "Tallenna haku";
 $hcms_lang['saved-searches']['fi'] = "Tallennettujen hakujen";
+$hcms_lang['video-codec']['fi'] = "Video codec";
+$hcms_lang['audio-codec']['fi'] = "Audio codec";
 ?>

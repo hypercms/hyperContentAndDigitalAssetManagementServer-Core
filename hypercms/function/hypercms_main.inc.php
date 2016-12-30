@@ -1665,22 +1665,30 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
   if (valid_publicationname ($site) && valid_objectname ($user) && (valid_locationname ($location) || valid_locationname ($multiobject) || valid_objectname ($media)))
   {
     // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";      
+    if (substr ($location, -1) != "/") $location = $location."/"; 
+    
+    // deconvert path
+    $location = deconvertpath ($location, "file");     
     
     // download zip-file for multiobjects
     if ($multiobject != "" && substr_count ($multiobject, "|") > 1)
     {
+      // split multiobject into array
+      $multiobject_array = link_db_getobject ($multiobject);
+      
+      // create hash that represents all objects
+      sort ($multiobject_array);
+      $hash = md5 (implode ("", $multiobject_array));
+      
       // unique name for zip-file to download
-      $zip_filename = uniqid ("tmp");
+      if (!empty ($hash)) $zip_filename = "tmp".$hash;
+      else $zip_filename = uniqid ("tmp");
   
       // temp directory holding the zip-file
       $mediadir = $mgmt_config['abs_path_temp'];
   
       // generate temp dir
       if (!is_dir ($mediadir)) mkdir ($mediadir, $mgmt_config['fspermission'], true);
-  
-      // split multiobject into array
-      if ($multiobject != "") $multiobject_array = link_db_getobject ($multiobject);
      
       // zip files
       $result_zip = zipfiles ($site, $multiobject_array, $mediadir, $zip_filename, $user);
@@ -1706,8 +1714,13 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
     // download zip-file for single folder
     elseif (is_dir ($location))
     {
+      // get object id
+      $objectpath = convertpath ($site, $location, "");
+      $object_id = rdbms_getobject_id ($objectpath);
+    
       // unique name for zip-file to download
-      $zip_filename = uniqid ("tmp");
+      if (!empty ($object_id)) $zip_filename = "tmp".$object_id;
+      else $zip_filename = uniqid ("tmp");
   
       // temp directory holding the zip-file
       $mediadir = $mgmt_config['abs_path_temp'];

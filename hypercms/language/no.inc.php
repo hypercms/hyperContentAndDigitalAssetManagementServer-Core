@@ -1392,4 +1392,6 @@ $hcms_lang['label']['no'] = "Etikett";
 $hcms_lang['level']['no'] = "Nivå";
 $hcms_lang['save-search']['no'] = "Lagre søk";
 $hcms_lang['saved-searches']['no'] = "Lagrede søk";
+$hcms_lang['video-codec']['no'] = "Video codec";
+$hcms_lang['audio-codec']['no'] = "Audio codec";
 ?>

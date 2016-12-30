@@ -2652,11 +2652,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // save config
                 if ($type == "origthumb" || $type == "original")
                 {
-                  savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $videoinfo['width'], $videoinfo['height'], $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels']);
+                  savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $videoinfo['width'], $videoinfo['height'], $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels'], $videoinfo['videocodec'], $videoinfo['audiocodec']);
                 }
                 else
                 {
-                  savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $mediawidth, $mediaheight, $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels']);
+                  savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $mediawidth, $mediaheight, $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels'], $videoinfo['videocodec'], $videoinfo['audiocodec']);
                 }
                 
                 // get video information to save in DB
@@ -3627,6 +3627,16 @@ function readmediaplayer_config ($location, $configfile)
         {
           list ($name, $config['audiochannels']) = explode ("audiochannels=", $value);
         }
+        // video codec name
+        elseif (strpos ("_".$value, "videocodec=") > 0)
+        {
+          list ($name, $config['videocodec']) = explode ("videocodec=", $value);
+        }
+        // audio codec name
+        elseif (strpos ("_".$value, "audiocodec=") > 0)
+        {
+          list ($name, $config['audiocodec']) = explode ("audiocodec=", $value);
+        }
         // video sources (V2.1+: video-file;mime-type)
         elseif (strpos ($value, ";") > 0)
         {
@@ -3710,7 +3720,7 @@ function readmediaplayer_config ($location, $configfile)
       // get video info
       $videoinfo = getvideoinfo ($videofile);
         
-      savemediaplayer_config ($location, $configfile, $media_array, $config['width'], $config['height'], $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels']); 
+      savemediaplayer_config ($location, $configfile, $media_array, $config['width'], $config['height'], $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels'], $videoinfo['videocodec'], $videoinfo['audiocodec']); 
     }
 
     // return video config
@@ -3722,10 +3732,10 @@ function readmediaplayer_config ($location, $configfile)
 // ------------------------- savemediaplayer_config -----------------------------
 // function: savemediaplayer_config()
 // input: path to media config file, media config file name, media file name array or string, width in px (optional), height in px (optional), file size in kB (optional), 
-//        duration in hh:mmm:ss (optional), video bitrate in kb/s (optional), audio bitrate in kb/s (optional), audio frequenzy in Hz (optional), audio channels [mono, stereo] (optional)
+//        duration in hh:mmm:ss (optional), video bitrate in kb/s (optional), audio bitrate in kb/s (optional), audio frequenzy in Hz (optional), audio channels [mono, stereo] (optional), video codec name (optional), audio codec name (optional)
 // output: true / false on error
 
-function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320, $height=240, $filesize="", $duration="", $videobitrate="", $audiobitrate="", $audiofrequenzy="", $audiochannels="")
+function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320, $height=240, $filesize="", $duration="", $videobitrate="", $audiobitrate="", $audiofrequenzy="", $audiochannels="", $video_codec="", $audio_codec="")
 {
   global $mgmt_config, $user;
 
@@ -3743,7 +3753,7 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
   	elseif ($height == $width) $imagetype = "square";
             
     $config = array();
-    $config[0] = "V2.3";
+    $config[0] = "V2.4";
     $config[1] = "width=".$width;
     $config[2] = "height=".$height;
     if ($width > 0 && $height > 0) $config[3] = "dimension=".$width."x".$height." px";
@@ -3757,11 +3767,13 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
     $config[9] = "audiobitrate=".$audiobitrate;
     $config[10] = "audiofrequenzy=".$audiofrequenzy;
     $config[11] = "audiochannels=".$audiochannels;
+    $config[12] = "videocodec=".$video_codec;
+    $config[13] = "audiocodec=".$audio_codec;
     
     // array
     if (is_array ($mediafiles)) 
     {
-      $i = 12;
+      $i = 14;
       
       foreach ($mediafiles as $media)
       {
@@ -4421,11 +4433,11 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
     // Windows
     if ($mgmt_config['os_cms'] == "WIN")
     { 
-      $cmd = "cd \"".shellcmd_encode ($location)."\" & ".$mgmt_compress['.zip']." -r \"".shellcmd_encode ($destination.$zipfilename).".zip\" ".shellcmd_encode ($filesToZip);  
+      $cmd = "cd \"".shellcmd_encode ($location)."\" & ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($destination.$zipfilename).".zip\" ".shellcmd_encode ($filesToZip);  
       $cmd = str_replace ("/", "\\", $cmd);
     }
     // UNIX
-    else $cmd = "cd \"".shellcmd_encode ($tempFolder)."\" ; ".$mgmt_compress['.zip']." -r \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";
+    else $cmd = "cd \"".shellcmd_encode ($tempFolder)."\" ; ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";
     
     // compress files to ZIP format
     @exec ($cmd, $error_array);

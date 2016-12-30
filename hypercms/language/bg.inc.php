@@ -1393,4 +1393,6 @@ $hcms_lang['label']['bg'] = "Етикет";
 $hcms_lang['level']['bg'] = "Ниво";
 $hcms_lang['save-search']['bg'] = "Запаметяване на търсене";
 $hcms_lang['saved-searches']['bg'] = "Запомня обиски";
+$hcms_lang['video-codec']['bg'] = "Video codec";
+$hcms_lang['audio-codec']['bg'] = "Audio codec";
 ?>

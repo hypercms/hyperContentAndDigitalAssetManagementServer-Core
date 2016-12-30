@@ -1392,4 +1392,6 @@ $hcms_lang['label']['da'] = "Etiket";
 $hcms_lang['level']['da'] = "Niveau";
 $hcms_lang['save-search']['da'] = "Gem søgning";
 $hcms_lang['saved-searches']['da'] = "Gemte søgninger";
+$hcms_lang['video-codec']['da'] = "Video codec";
+$hcms_lang['audio-codec']['da'] = "Audio codec";
 ?>

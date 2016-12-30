@@ -1392,4 +1392,6 @@ $hcms_lang['label']['tr'] = "Etiket";
 $hcms_lang['level']['tr'] = "Seviyesi";
 $hcms_lang['save-search']['tr'] = "Kayıt arama";
 $hcms_lang['saved-searches']['tr'] = "Kaydedilen aramalar";
+$hcms_lang['video-codec']['tr'] = "Video Kodek";
+$hcms_lang['audio-codec']['tr'] = "Ses Kodek";
 ?>

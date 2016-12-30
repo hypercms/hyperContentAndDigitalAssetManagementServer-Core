@@ -1391,4 +1391,6 @@ $hcms_lang['label']['sl'] = "Nalepka";
 $hcms_lang['level']['sl'] = "Raven";
 $hcms_lang['save-search']['sl'] = "Shrani iskanje";
 $hcms_lang['saved-searches']['sl'] = "Shranjena iskanja";
+$hcms_lang['video-codec']['sl'] = "Video codec";
+$hcms_lang['audio-codec']['sl'] = "Audio codec";
 ?>

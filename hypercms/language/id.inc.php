@@ -1393,4 +1393,6 @@ $hcms_lang['label']['id'] = "Label";
 $hcms_lang['level']['id'] = "Tingkat";
 $hcms_lang['save-search']['id'] = "Simpan Pencarian";
 $hcms_lang['saved-searches']['id'] = "Pencarian Tersimpan";
+$hcms_lang['video-codec']['id'] = "Video codec";
+$hcms_lang['audio-codec']['id'] = "Audio codec";
 ?>

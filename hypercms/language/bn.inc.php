@@ -1392,4 +1392,6 @@ $hcms_lang['label']['bn'] = "মালা";
 $hcms_lang['level']['bn'] = "লেভেল";
 $hcms_lang['save-search']['bn'] = "কিন্তু তল্লাশি";
 $hcms_lang['saved-searches']['bn'] = "তাকেও অন্বেষণ";
+$hcms_lang['video-codec']['bn'] = "ভিডিও কোডেক";
+$hcms_lang['audio-codec']['bn'] = "অডিও কোডেক";
 ?>

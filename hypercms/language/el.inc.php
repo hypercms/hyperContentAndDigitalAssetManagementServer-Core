@@ -1393,4 +1393,6 @@ $hcms_lang['label']['el'] = "Ετικέτα";
 $hcms_lang['level']['el'] = "Επίπεδο";
 $hcms_lang['save-search']['el'] = "Αποθήκευση αναζήτησης";
 $hcms_lang['saved-searches']['el'] = "Αποθηκευμένες αναζητήσεις";
+$hcms_lang['video-codec']['el'] = "κωδικοποιητή βίντεο";
+$hcms_lang['audio-codec']['el'] = "κωδικοποιητή ήχου";
 ?>

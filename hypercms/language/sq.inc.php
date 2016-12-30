@@ -1392,4 +1392,6 @@ $hcms_lang['label']['sq'] = "Cilësoj";
 $hcms_lang['level']['sq'] = "Të lartë";
 $hcms_lang['save-search']['sq'] = "Kurseni marketing";
 $hcms_lang['saved-searches']['sq'] = "Kërkimet e shpëtoi";
+$hcms_lang['video-codec']['sq'] = "Video codec";
+$hcms_lang['audio-codec']['sq'] = "Audio codec";
 ?>

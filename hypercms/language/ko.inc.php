@@ -1392,4 +1392,6 @@ $hcms_lang['label']['ko'] = "레이블";
 $hcms_lang['level']['ko'] = "레벨";
 $hcms_lang['save-search']['ko'] = "검색 저장";
 $hcms_lang['saved-searches']['ko'] = "저장된 검색";
+$hcms_lang['video-codec']['ko'] = "비디오 코덱c";
+$hcms_lang['audio-codec']['ko'] = "오디오 코덱";
 ?>

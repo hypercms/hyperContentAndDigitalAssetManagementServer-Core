@@ -2571,6 +2571,78 @@ function rdbms_searchuser ($site, $user, $maxhits=1000)
     else return false;
   }
   else return false;
+}
+
+// ----------------------------------------------- search recipient ------------------------------------------------- 
+
+// function: rdbms_searchrecipient()
+// input: publication name, sender user name, recpient user name or e-mail address, from date, to date, max. hits (optional)
+// output: objectpath array with hashcode as key and path as value / false
+
+// description:
+// Queries all objects of a sender, recipient or by date.
+
+function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $date_to, $maxhits=1000)
+{
+  global $mgmt_config;
+
+  if ($site != "" || $from_user != "" || $to_user_email != "" || $date_from != "" || $date_to != "")
+  {
+    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+    
+    if ($site != "" && $site != "*Null*") $site = $db->escape_string ($site);
+    if ($from_user != "")
+    {
+      // cut off additional information in brackets after the user name
+      if (strpos ($from_user, "(") > 0) $from_user = substr ($from_user, 0, strpos ($from_user, "("));
+      $from_user = $db->escape_string ($from_user);
+    }
+    if ($to_user_email != "")
+    {
+      // cut off additional information in brackets after the user name
+      if (strpos ($to_user_email, "(") > 0) $to_user_email = substr ($to_user_email, 0, strpos ($to_user_email, "("));
+      $to_user_email = $db->escape_string ($to_user_email);
+    }
+    if ($date_from != "") $date_from = $db->escape_string ($date_from);
+    if ($date_to != "") $date_to = $db->escape_string ($date_to);
+    $maxhits = intval ($maxhits);
+    
+    $sql = 'SELECT obj.objectpath, obj.hash FROM object AS obj INNER JOIN recipient AS rec ON obj.object_id=rec.object_id WHERE obj.objectpath!=""';
+    if ($site != "" && $site != "*Null*") $sql .= ' AND (obj.objectpath LIKE _utf8"*page*/'.$site.'/%" COLLATE utf8_bin OR obj.objectpath LIKE _utf8"*comp*/'.$site.'/%" COLLATE utf8_bin)';
+    if ($from_user != "") $sql .= ' AND rec.from_user LIKE "%'.$from_user.'%"';
+    if ($to_user_email != "") $sql .= ' AND (rec.to_user LIKE "%'.$to_user_email.'%" OR rec.email LIKE "%'.$to_user_email.'%")';
+    if ($date_from != "") $sql .= ' AND DATE(rec.date)>="'.$date_from.'"';
+    if ($date_to != "") $sql .= ' AND DATE(rec.date)<="'.$date_to.'"';
+    
+    $sql .= ' ORDER BY rec.date DESC';
+    if ($maxhits > 0) $sql .= ' LIMIT 0,'.intval($maxhits);
+
+    $errcode = "50026";
+    $done = $db->query($sql, $errcode, $mgmt_config['today']);
+    
+    if ($done)
+    {
+      $objectpath = array();
+      
+      while ($row = $db->getResultRow ())
+      {
+        if ($row['objectpath'] != "")
+        {
+          $hash = $row['hash'];
+          $objectpath[$hash] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+        }   
+      }
+    }
+    else $objectpath = Null;
+
+    // save log
+    savelog ($db->getError ());    
+    $db->close();
+      
+    if (is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
+    else return false;
+  }
+  else return false;
 } 
 
 // ----------------------------------------------- get content -------------------------------------------------
@@ -3938,7 +4010,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       $dailystat[$i]['date'] = $row['date'];
       $dailystat[$i]['activity'] = $row['activity'];
       $dailystat[$i]['count'] = $row['count'];
-      $dailystat[$i]['filesize'] = $row['filesize'];
+      $dailystat[$i]['filesize'] = @$row['filesize'];
       $dailystat[$i]['user'] = $row['user'];
       $i++;
     }

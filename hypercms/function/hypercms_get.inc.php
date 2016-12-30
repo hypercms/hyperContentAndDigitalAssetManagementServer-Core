@@ -3338,6 +3338,7 @@ function getvideoinfo ($mediafile)
     $duration_no_ms = "";  
     $video_bitrate = "";
     $imagetype = "";
+    $video_codec = "";
     $audio_codec = "";
     $audio_bitrate = "";
     $audio_frequenzy = "";
@@ -3439,7 +3440,7 @@ function getvideoinfo ($mediafile)
     				$video_bitrate = $matches[1];
     			}
 
-          // audio information (bitrate and frequenzy)
+          // audio and video information (codec, bitrate and frequenzy)
           reset ($metadata);
           
           foreach ($metadata as $line)
@@ -3451,6 +3452,33 @@ function getvideoinfo ($mediafile)
               
               // audio (audio bitrate might be missing in flac files)
               @list ($audio_codec, $audio_frequenzy, $audio_channels, $audio_sample, $audio_bitrate) = explode (", ", $line);
+              
+              // clean codec name
+              if (strpos ($audio_codec, "(") > 0) $audio_codec = strtoupper (trim (substr ($audio_codec, 0, strpos ($audio_codec, "("))));
+
+              break;
+            }
+          }
+          
+          reset ($metadata);
+          
+          foreach ($metadata as $line)
+          {
+            if (strpos ("_".$line, "Video: ") > 0)
+            {
+              // Video: wmv2 (WMV2 / 0x32564D57), yuv420p, 320x240, 409 kb/s, 25 tbr, 1k tbn, 1k tbc
+              
+              // tbn = the time base in AVStream that has come from the container
+              // tbc = the time base in AVCodecContext for the codec used for a particular stream
+              // tbr = tbr is guessed from the video stream and is the value users want to see when they look for the video frame rate
+
+              $line = substr ($line, strpos ($line, "Video: ") + 7);
+              
+              // video
+              @list ($video_codec, $colorspace) = explode (", ", $line);
+              
+              // clean codec name
+              if (strpos ($video_codec, "(") > 0) $video_codec = strtoupper (trim (substr ($video_codec, 0, strpos ($video_codec, "("))));
 
               break;
             }
@@ -3477,7 +3505,8 @@ function getvideoinfo ($mediafile)
     $result['duration_no_ms'] = $duration_no_ms;
     $result['videobitrate'] = $video_bitrate;
     $result['imagetype'] = $imagetype;
-    $result['audio_codec'] = $audio_codec;
+    $result['videocodec'] = $video_codec;
+    $result['audiocodec'] = $audio_codec;
     $result['audiobitrate'] = $audio_bitrate;
     $result['audiofrequenzy'] = $audio_frequenzy;
     $result['audiochannels'] = $audio_channels;

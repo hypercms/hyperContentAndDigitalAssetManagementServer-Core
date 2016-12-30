@@ -514,6 +514,7 @@ function docConvert (type)
     form.elements['convert_type'].value = type;
     
     submitToSelf ('download');
+    hcms_showHideLayers('downloadLayer','','show');
   }
   else return false; 
 }
@@ -529,6 +530,7 @@ function imgConvert (type, config)
     form.elements['convert_cfg'].value = config;
 
     submitToSelf ('download');
+    hcms_showHideLayers('downloadLayer','','show');
   }
   else return false; 
 }
@@ -966,7 +968,7 @@ else
     // folder/file download without options
     elseif ($perm_rendering && $lock_rendering && ($media != "" || $page == ".folder" || $multiobject_count > 1) && $page != "")
     {
-      echo "<div class=\"hcmsButton hcmsButtonSizeWide\" onClick=\"submitToSelf('download');\">".
+      echo "<div class=\"hcmsButton hcmsButtonSizeWide\" onClick=\"submitToSelf('download'); hcms_showHideLayers('downloadLayer','','show');\">".
       "<img class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_download.gif\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" /><img src=\"".getthemelocation()."img/pointer_select.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" /></div>\n";
     }
     else
@@ -1418,7 +1420,7 @@ function downloadFile()
   location.replace('<?php echo $downloadlink; ?>');
 }
 
-setTimeout('downloadFile()', 1000);
+setTimeout('downloadFile()', 500);
 </script>  
 <?php
   }

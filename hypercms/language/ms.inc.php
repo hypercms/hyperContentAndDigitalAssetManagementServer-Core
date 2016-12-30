@@ -1392,4 +1392,6 @@ $hcms_lang['label']['ms'] = "Label";
 $hcms_lang['level']['ms'] = "Tahap";
 $hcms_lang['save-search']['ms'] = "Simpan carian";
 $hcms_lang['saved-searches']['ms'] = "Menyelamatkan carian";
+$hcms_lang['video-codec']['ms'] = "Video codec";
+$hcms_lang['audio-codec']['ms'] = "Audio codec";
 ?>

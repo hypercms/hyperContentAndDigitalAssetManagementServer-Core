@@ -1394,4 +1394,6 @@ $hcms_lang['label']['de'] = "Label";
 $hcms_lang['level']['de'] = "Ebene";
 $hcms_lang['save-search']['de'] = "Suche speichern";
 $hcms_lang['saved-searches']['de'] = "Gespeicherte Suchläufe";
+$hcms_lang['video-codec']['de'] = "Video Codec";
+$hcms_lang['audio-codec']['de'] = "Audio Codec";
 ?>

@@ -1393,4 +1393,6 @@ $hcms_lang['label']['he'] = "תווית";
 $hcms_lang['level']['he'] = "רמה";
 $hcms_lang['save-search']['he'] = "שמור חיפוש";
 $hcms_lang['saved-searches']['he'] = "חיפושים שמורים";
+$hcms_lang['video-codec']['he'] = "Codec וידאו";
+$hcms_lang['audio-codec']['he'] = "Codec אודיו";
 ?>

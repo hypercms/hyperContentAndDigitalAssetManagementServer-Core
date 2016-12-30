@@ -1392,4 +1392,6 @@ $hcms_lang['label']['cz'] = "Štítek";
 $hcms_lang['level']['cz'] = "Úroveň";
 $hcms_lang['save-search']['cz'] = "Uložit hledání";
 $hcms_lang['saved-searches']['cz'] = "Uložených hledání";
+$hcms_lang['video-codec']['cz'] = "Video codec";
+$hcms_lang['audio-codec']['cz'] = "Audio codec";
 ?>

@@ -1393,4 +1393,6 @@ $hcms_lang['label']['zh-s'] = "标签";
 $hcms_lang['level']['zh-s'] = "一级";
 $hcms_lang['save-search']['zh-s'] = "保存的搜索";
 $hcms_lang['saved-searches']['zh-s'] = "保存的搜索";
+$hcms_lang['video-codec']['zh-s'] = "视频编解码器";
+$hcms_lang['audio-codec']['zh-s'] = "音频编解码器";
 ?>

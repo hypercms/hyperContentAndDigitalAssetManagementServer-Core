@@ -1392,4 +1392,6 @@ $hcms_lang['label']['sr'] = "Etiketa";
 $hcms_lang['level']['sr'] = "Nivo";
 $hcms_lang['save-search']['sr'] = "1950 Pretraga";
 $hcms_lang['saved-searches']['sr'] = "Spasila pretraživanje";
+$hcms_lang['video-codec']['sr'] = "Video kodek";
+$hcms_lang['audio-codec']['sr'] = "Audio kodek";
 ?>

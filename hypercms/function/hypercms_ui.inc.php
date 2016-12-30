@@ -564,7 +564,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
 function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $height="", $class="hcmsImageItem")
 {
   // $mgmt_imageoptions is used for image rendering (in case the format requires the rename of the object file extension)	 
-  global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docconvert, $hcms_charset, $hcms_lang_codepage, $hcms_lang, $lang,
+  global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docpreview, $mgmt_docconvert, $hcms_charset, $hcms_lang_codepage, $hcms_lang, $lang,
          $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions, $is_mobile;
 
   // Path to PDF.JS and Google Docs
@@ -1872,6 +1872,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $dimensions = array();
         $durations = array();
         $bitrates = array();
+        $video_codecs = array();
+        $audio_codecs = array();
         $audio_bitrates = array();
         $audio_frequenzies = array();
         $audio_channels = array();
@@ -1911,20 +1913,15 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if (is_array ($videoinfo))
         {
           // save duration of original media file in hidden field so it can be accessed for video editing
-          $mediaview .= "<input type=\"hidden\" id=\"mediaplayer_duration\" name=\"mediaplayer_duration\" value=\"".$videoinfo['duration']."\" />";
-        
-          $filesizes['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].'&nbsp;&nbsp;&nbsp;</td>';
-  
-          $dimensions['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].'&nbsp;&nbsp;&nbsp;</td>';
-  
-          $durations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration_no_ms'].'&nbsp;&nbsp;&nbsp;</td>';
-  
-          $bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['videobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-  
-          $audio_bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-  
-          $audio_frequenzies['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';
-  
+          $mediaview .= "<input type=\"hidden\" id=\"mediaplayer_duration\" name=\"mediaplayer_duration\" value=\"".$videoinfo['duration']."\" />";        
+          $filesizes['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].'&nbsp;&nbsp;&nbsp;</td>';  
+          $dimensions['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].'&nbsp;&nbsp;&nbsp;</td>';  
+          $durations['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration_no_ms'].'&nbsp;&nbsp;&nbsp;</td>';          
+          $video_codecs['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['videocodec'].'&nbsp;&nbsp;&nbsp;</td>';
+          $audio_codecs['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiocodec'].'&nbsp;&nbsp;&nbsp;</td>';  
+          $bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['videobitrate'].'&nbsp;&nbsp;&nbsp;</td>';  
+          $audio_bitrates['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';  
+          $audio_frequenzies['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';  
           $audio_channels['original'] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
           
           $download_link = "top.location.href='".createviewlink ($site, $mediafile_orig, $medianame, false, "download")."'; return false;";
@@ -2010,18 +2007,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   // define video file name          
                   $video_filename = substr ($medianame, 0, strrpos ($medianame, ".")).".".$media_extension;
                   
-                  $filesizes[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].'&nbsp;&nbsp;&nbsp;</td>';
-      
-                  $dimensions[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].'&nbsp;&nbsp;&nbsp;</td>';
-      
-                  $durations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration_no_ms'].'&nbsp;&nbsp;&nbsp;</td>';
-      
-                  $bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['videobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-      
-                  $audio_bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-      
-                  $audio_frequenzies[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';
-      
+                  $filesizes[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].'&nbsp;&nbsp;&nbsp;</td>';      
+                  $dimensions[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].'&nbsp;&nbsp;&nbsp;</td>';      
+                  $durations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration_no_ms'].'&nbsp;&nbsp;&nbsp;</td>';      
+                  $video_codecs[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['videocodec'].'&nbsp;&nbsp;&nbsp;</td>';
+                  $audio_codecs[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiocodec'].'&nbsp;&nbsp;&nbsp;</td>';
+                  $bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['videobitrate'].'&nbsp;&nbsp;&nbsp;</td>';      
+                  $audio_bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';      
+                  $audio_frequenzies[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';      
                   $audio_channels[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
       
                   $download_link = "top.location.href='".createviewlink ($site, $video_thumbfile, $video_filename, false, "download")."'; return false;";
@@ -2052,6 +2045,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         if ($is_video && is_array ($dimensions)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['width-x-height'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $dimensions).'</tr>';			    
         // Durations
         if (is_array ($durations)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['duration-hhmmss'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $durations).'</tr>';		
+        // Video codec
+        if ($is_video && !empty ($video_codecs) && is_array ($video_codecs)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['video-codec'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $video_codecs).'</tr>';
+        // Audio codec
+        if (!empty ($audio_codecs) && is_array ($audio_codecs)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['audio-codec'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $audio_codecs).'</tr>';
         // Bitrate
         if ($is_video && is_array ($bitrates)) $mediaview .= '<tr><td style="text-align:left; white-space:nowrap;">'.getescapedtext ($hcms_lang['video-bitrate'][$lang], $hcms_charset, $lang).'&nbsp;</td>'.implode ("", $bitrates).'</tr>';
         // Audio bitrate

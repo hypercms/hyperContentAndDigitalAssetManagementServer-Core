@@ -31,6 +31,8 @@ $search_filesize = getrequest ("search_filesize", "numeric");
 $search_filesize_operator = getrequest ("search_filesize_operator");
 $date_from = getrequest ("date_from");
 $date_to = getrequest ("date_to");
+$from_user = getrequest ("from_user");
+$to_user = getrequest ("to_user");
 $template = getrequest ("template", "objectname");
 $object_id = getrequest ("object_id");
 $container_id = getrequest ("container_id");
@@ -199,6 +201,7 @@ if (
      ($action != "favorites") && 
      ($action != "checkedout") && 
      ($action != "user_files" && $object_id == "" && $container_id == "") && 
+     ($action != "recipient") && 
      (!valid_publicationname ($site) || !valid_locationname ($search_dir))
    ) killsession ($user);
 
@@ -229,6 +232,11 @@ elseif ($action == "favorites" && $user != "")
 elseif ($action == "checkedout" && $user != "")
 {
   $object_array = getlockedobjects ($user);
+}
+// search for sender, recipient or date sent
+elseif ($action == "recipient")
+{
+  $object_array = rdbms_searchrecipient ($site, $from_user, $to_user, $date_from, $date_to);
 }
 // search for object ID or link ID
 elseif ($object_id != "")

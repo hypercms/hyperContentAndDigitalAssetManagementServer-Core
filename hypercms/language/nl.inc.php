@@ -1392,4 +1392,6 @@ $hcms_lang['label']['nl'] = "Label";
 $hcms_lang['level']['nl'] = "Niveau";
 $hcms_lang['save-search']['nl'] = "Zoekopdracht opslaan";
 $hcms_lang['saved-searches']['nl'] = "Opgeslagen zoekopdrachten";
+$hcms_lang['video-codec']['nl'] = "Video codec";
+$hcms_lang['audio-codec']['nl'] = "Audio codec";
 ?>

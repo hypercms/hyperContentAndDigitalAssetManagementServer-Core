@@ -1392,4 +1392,6 @@ $hcms_lang['label']['ar'] = "العلامة";
 $hcms_lang['level']['ar'] = "مستوى";
 $hcms_lang['save-search']['ar'] = "حفظ البحث";
 $hcms_lang['saved-searches']['ar'] = "المحفوظة";
+$hcms_lang['video-codec']['ar'] = "ترميز الفيديو";
+$hcms_lang['audio-codec']['ar'] = "ترميز الصوت";
 ?>

@@ -1392,4 +1392,6 @@ $hcms_lang['label']['so'] = "Dusheeda";
 $hcms_lang['level']['so'] = "Heerka";
 $hcms_lang['save-search']['so'] = "Raadinta badbaadiyo.";
 $hcms_lang['saved-searches']['so'] = "Innagase badbaadiyey";
+$hcms_lang['video-codec']['so'] = "Video codec";
+$hcms_lang['audio-codec']['so'] = "Audio codec";
 ?>

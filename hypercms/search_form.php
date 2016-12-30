@@ -156,9 +156,9 @@ $(document).ready(function()
 {
   // search history
   <?php
-  $keywords = getsearchhistory($user);
+  $keywords = getsearchhistory ($user);
   ?>
-  var available_expressions = [<?php echo implode (",\n", $keywords); ?>];
+  var available_expressions = [<?php if (is_array ($keywords)) echo implode (",\n", $keywords); ?>];
 
   $("#search_expression").autocomplete({
     source: available_expressions
