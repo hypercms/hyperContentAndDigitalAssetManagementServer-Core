@@ -623,7 +623,7 @@ function update_container_v6118 ()
   
   $logdata = loadlog ("update", "string");
   
-  if (!empty ($mgmt_config['abs_path_data']) && !empty ($logdata) && strpos ($logdata, "|6.1.18|") < 1)
+  if (!empty ($mgmt_config['abs_path_data']) && (empty ($logdata) || strpos ($logdata, "|6.1.18|") < 1))
   { 
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -716,6 +716,51 @@ function update_container_v6118 ()
     // save log
     savelog ($db->getError ());
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.18|updated to version 6.1.18"), "update");
+    savelog (@$error);
+    $db->close();
+
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ update_database_v6139 ----------------------------------------------
+// function: update_database_v6139()
+// input: %
+// output: updated database, false on error
+
+// description: 
+// Update of index on table recipients to version 6.1.39 (add new indexes).
+
+function update_database_v6139 ()
+{
+  global $mgmt_config;
+  
+  $logdata = loadlog ("update", "string");
+  
+  if (empty ($logdata) || strpos ($logdata, "|6.1.39|") < 1)
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+    
+    // create new index
+    $sql = 'CREATE INDEX date ON recipient(object_id, date);';
+    $errcode = "50073";
+    $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'create');
+    
+    // create new index
+    $sql = 'CREATE INDEX from_user ON recipient(object_id, from_user);';
+    $errcode = "50073";
+    $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'create');
+    
+    // create new index
+    $sql = 'CREATE INDEX to_user ON recipient(object_id, to_user(200));';
+    $errcode = "50073";
+    $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'create');
+    
+    // save log
+    savelog ($db->getError ());
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.39|updated to version 6.1.39"), "update");
     savelog (@$error);
     $db->close();
 

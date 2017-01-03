@@ -1987,7 +1987,7 @@ Release 12/2016
 
 Version 6.1.37
 Release 01/2017
-- Modfifications in function createmultidownloadlink in order to create reusable files names for the ZIP files, so the same ZIP files can be reused for download
+- Modifications in function createmultidownloadlink in order to create reusable files names for the ZIP files, so the same ZIP files can be reused for download
 - Removed ZIP compression in function zipfiles in media API in order to speed up the download/compress process of large file collections
 - Modifications in function getvideoinfo of get API in order to support the extraction of the video codec
 - Modifications in function savemediaplayer_config and readmediaplayer_confign in media API in order to support audio and video codecs (new version 2.4 of video config file)
@@ -1996,16 +1996,26 @@ Release 01/2017
 - Implementation of new function rdbms_searchrecipient in DB Connect
 - Implementation of recpient search feature in explorer und search_objectlist
 - Bug fix: Global variable $mgmt_docpreview has been missing un function showmedia of UI API
-- Bug fix: page_info_recipients used wrong result array keys for sender (ftom_user) and recipient (to_user)
+- Bug fix: page_info_recipients used wrong result array keys for sender (from_user) and recipient (to_user)
 
 Version 6.1.38
 Release 01/2017
 - Modifications in search_objectlist in order to display columns of list view correctly when minimum columns are used (usage of CSS min-widh for the location column)
 - Modifications in function restoremediafile since cross partition move/rename of files is not supported by PHP (rename is replaced by copy and delete)
+- Modifications in function getvideoinfo in get API to present video and audio codec names in uppercase letters
 - Implementation of Valiant360, a player for 360 degree panorama videos and photos in the JS libraries (does not support mobile browsers)
-- Implementation of eleVR web player in the JS libraries, the player lets you watch 360 flat and stereo video on your Oculus Rift or Android device with VR headset (Cardboard, Durovis Dive, etc.) from a web browser. It is written with js, html5, and webGL (Using keyboard rotation controls, the player works on standard Firefox and Chrome on Windows, Mac, and Linux. It also runs on Safari (if webgl is enabled))
+- Implementation of eleVR web player in the JS libraries, the player lets you watch 360 flat and stereo video on your Oculus Rift or Android device with VR headset (Cardboard, Durovis Dive, etc.) from a web browser. It is written with js, html5, and webGL (Using keyboard rotation controls, the player works on standard Firefox and Chrome on Windows, Mac, and Linux. It also runs on Safari if webgl is enabled)
+
+Version 6.1.39
+Release 01/2017
+- Bug fix: Function rdbms_searchrecipient in DB Connect did not trim the user names for the query
+- Implementation of new function update_recipient_v6139 in Update API in order to create new indexes on table recipient
+- Modifications of createtables.sql in order to add the news indexes on table recipient for the installation routine
+- Modifications in function userlogin in Security API in order to execute the new update on the database
+- Modification of default max. search results to 300 in function rdbms_searchcontent, rdbms_searchuser, and rdbms_searchrecipientn in DB Connect
+- Modification of default max. event entries in log viewer to 500 records in log_list
 */
 
 // current version
-$version = "Version 6.1.38";
+$version = "Version 6.1.39";
 ?>

@@ -170,8 +170,8 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
 
       $items_row++;
       
-      // break if row count is greater than 1000
-      if ($items_row > 1000) break;    
+      // break if row count is greater than 500
+      if ($items_row > 500) break;    
     }
   }
 }

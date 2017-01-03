@@ -1531,7 +1531,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 // description:
 // Searches one or more expressions in the content.
 
-function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", $date_from="", $date_to="", $template="", $expression_array="", $expression_filename="", $filesize="", $imagewidth="", $imageheight="", $imagecolor="", $imagetype="", $geo_border_sw="", $geo_border_ne="", $maxhits=1000, $count=false, $search_log=true, $taxonomy_level=2)
+function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", $date_from="", $date_to="", $template="", $expression_array="", $expression_filename="", $filesize="", $imagewidth="", $imageheight="", $imagecolor="", $imagetype="", $geo_border_sw="", $geo_border_ne="", $maxhits=300, $count=false, $search_log=true, $taxonomy_level=2)
 {
   // user will be provided as global for search expression logging
   global $mgmt_config, $lang, $user;
@@ -2528,7 +2528,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
 // description:
 // Queries all objects of a user.
 
-function rdbms_searchuser ($site, $user, $maxhits=1000)
+function rdbms_searchuser ($site, $user, $maxhits=300)
 {
   global $mgmt_config;
 
@@ -2582,7 +2582,7 @@ function rdbms_searchuser ($site, $user, $maxhits=1000)
 // description:
 // Queries all objects of a sender, recipient or by date.
 
-function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $date_to, $maxhits=1000)
+function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $date_to, $maxhits=300)
 {
   global $mgmt_config;
 
@@ -2594,13 +2594,13 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
     if ($from_user != "")
     {
       // cut off additional information in brackets after the user name
-      if (strpos ($from_user, "(") > 0) $from_user = substr ($from_user, 0, strpos ($from_user, "("));
+      if (strpos ($from_user, "(") > 0) $from_user = trim (substr ($from_user, 0, strpos ($from_user, "(")));
       $from_user = $db->escape_string ($from_user);
     }
     if ($to_user_email != "")
     {
       // cut off additional information in brackets after the user name
-      if (strpos ($to_user_email, "(") > 0) $to_user_email = substr ($to_user_email, 0, strpos ($to_user_email, "("));
+      if (strpos ($to_user_email, "(") > 0) $to_user_email = trim (substr ($to_user_email, 0, strpos ($to_user_email, "(")));
       $to_user_email = $db->escape_string ($to_user_email);
     }
     if ($date_from != "") $date_from = $db->escape_string ($date_from);

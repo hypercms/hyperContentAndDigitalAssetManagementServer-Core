@@ -890,15 +890,14 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
      
     if ($userdata != false)
     {
-      // update tasks
+      // updates
       update_tasks_v584 ();
-      
-      // update database
       update_database_v586 ();
       update_database_v601 ();
       update_database_v614 ();
       update_database_v6113 ();
       update_container_v6118 ();
+      update_database_v6139 ();
     
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
       $charset = getcharset ("", $userdata); 

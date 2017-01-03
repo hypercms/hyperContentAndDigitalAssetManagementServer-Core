@@ -3454,7 +3454,8 @@ function getvideoinfo ($mediafile)
               @list ($audio_codec, $audio_frequenzy, $audio_channels, $audio_sample, $audio_bitrate) = explode (", ", $line);
               
               // clean codec name
-              if (strpos ($audio_codec, "(") > 0) $audio_codec = strtoupper (trim (substr ($audio_codec, 0, strpos ($audio_codec, "("))));
+              if (strpos ($audio_codec, "(") > 0) $audio_codec = substr ($audio_codec, 0, strpos ($audio_codec, "("));
+              $audio_codec = strtoupper (trim ($audio_codec));
 
               break;
             }
@@ -3478,7 +3479,8 @@ function getvideoinfo ($mediafile)
               @list ($video_codec, $colorspace) = explode (", ", $line);
               
               // clean codec name
-              if (strpos ($video_codec, "(") > 0) $video_codec = strtoupper (trim (substr ($video_codec, 0, strpos ($video_codec, "("))));
+              if (strpos ($video_codec, "(") > 0) $video_codec = substr ($video_codec, 0, strpos ($video_codec, "("));
+              $video_codec = strtoupper (trim ($video_codec));
 
               break;
             }

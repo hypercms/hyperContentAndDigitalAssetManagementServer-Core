@@ -49,7 +49,10 @@ CREATE TABLE `recipient` (
   `to_user` varchar(600) NOT NULL default '',
   `email` char(80) NOT NULL default '',
   PRIMARY KEY  (`recipient_id`),
-  KEY `recipient` (`object_id`)
+  KEY `recipient` (`object_id`),
+  KEY `date` (object_id,`date`),
+  KEY `from_user` (object_id,from_user),
+  KEY `to_user` (object_id,to_user(200))
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `project`;
