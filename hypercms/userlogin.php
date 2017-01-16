@@ -539,7 +539,7 @@ function setwallpaper ()
 
 <div class="hcmsStartBar">
   <div style="position:absolute; top:10px; left:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" alt="hypercms.com" /></div>
-  <div style="position:absolute; top:48px; right:10px; text-align:right;"><?php echo $version; ?></div>
+  <div style="position:absolute; top:48px; right:10px; text-align:right;"><?php echo $mgmt_config['version']; ?></div>
 </div>
 
 <div class="hcmsLogonScreen">

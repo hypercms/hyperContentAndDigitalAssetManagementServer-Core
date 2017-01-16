@@ -44,7 +44,7 @@ popupfocus ();
 <body class="hcmsWorkplaceGeneric" leftmargin=0 topmargin=0 marginwidth=0 marginheight=0>
 
 <div style="width:100%; padding:5px; background-color:#FFFFFF;">
-  <img src="<?php echo getthemelocation(); ?>img/logo.png" alt="hyperCMS" />&nbsp;&nbsp;&nbsp;<?php echo $version; ?>
+  <img src="<?php echo getthemelocation(); ?>img/logo.png" alt="hyperCMS" />&nbsp;&nbsp;&nbsp;<?php echo $mgmt_config['version']; ?>
 </div>
 
 <div style="width:100%; padding:5px;">

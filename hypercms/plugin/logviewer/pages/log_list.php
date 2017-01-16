@@ -41,7 +41,6 @@ else $logfile = "";
 <script type="text/javascript" src="../../../javascript/jquery/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="../../../javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script type="text/javascript">
-<!--
 function submitToWindow (url, description, windowname, features, width, height)
 {
   if (features == undefined) features = 'scrollbars=yes,resizable=yes';
@@ -75,7 +74,6 @@ function resizecols()
   $('.hcmsCol4').width(c4);
   $('.hcmsCol5').width(c5);
 }
-//-->
 </script>
 </head>
 
@@ -119,6 +117,9 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
 
   if ($event_array != false && sizeof ($event_array) >= 1)
   {
+    // reverse array
+    $event_array = array_reverse ($event_array);
+  
     foreach ($event_array as $event)
     {
       list ($date, $source, $type, $errorcode, $description) = explode ("|", trim ($event));
@@ -167,7 +168,10 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
   ";
   echo "</tr>"; 
 
-      $items_row++;      
+      $items_row++;
+      
+      // break if row count is greater than 500
+      if ($items_row > 500) break;
     }
   }
 }

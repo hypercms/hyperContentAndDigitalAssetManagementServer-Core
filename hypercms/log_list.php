@@ -166,12 +166,12 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
   <td id=\"h".$items_row."_3\" class=\"hcmsCol4\" style=\"width:55px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; ".$errorcode."</td>
   <td id=\"h".$items_row."_4\" class=\"hcmsCol5\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">&nbsp; <a href=# onClick=\"submitToWindow ('popup_log.php', '".$description."', 'info', 'scrollbars=yes,resizable=yes', 600, 200);\">".$description_short."</a></td>
   ";
-  echo "</tr>"; 
+  echo "</tr>";
 
       $items_row++;
       
       // break if row count is greater than 500
-      if ($items_row > 500) break;    
+      if ($items_row > 500) break;
     }
   }
 }

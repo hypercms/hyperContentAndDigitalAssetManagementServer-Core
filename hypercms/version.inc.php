@@ -712,7 +712,7 @@ Release 03/2015
 - Improvements in video editor layout
 - Implementation of force_reload paramter for function showvideoplayer to force reloading the video sources
 - New configuration parameter for default video and audio previev files (type = origthumb)
-- Modifications of function createmedia to support new configuration paramaters
+- Modifications of function createmedia to support new configuration parameters
 - Implementation of new function deletemediafiles (deletes all derivates of a media ressource)
 
 Version 5.7.6
@@ -1044,7 +1044,7 @@ Release 12/2015
 - Added new text for prefix and suffix attribute to all language files
 - Fixed head edit buttons position for WYSIWYG view modes of template engine
 - Implementation of user information in content comparison
-- Implementation on new versions of content on save (new configuration paramater $mgmt_config['contentversions_all'])
+- Implementation on new versions of content on save (new configuration parameter $mgmt_config['contentversions_all'])
 - Bug fix: Function createversion used working container file extension when creating a new version
 - Bug fix: Original media with and height file parameters have not been correctly set by function showmedia
 - Bug fix: Reduced minimal thumbnail size from 400 to 10 bytes for thumbnail image file size check due to thumbnails that can be smaller than 400 bytes
@@ -1189,7 +1189,7 @@ Release 01/2016
 - Replaced all single dates fields in all search forms with date picker
 - Improved search result sorting in function rdbms_searchcontent by sorting only the object names and not the object path
 - Bug fix: Table sorting JS funtion hcms_sortTable die not clean html tags proberly if a line break was used in a tag. JS function hcms_stripHTML removes all line breaks before stripping the tags from the string.
-- New input paramater for CSS-display in function buildsearchform in template engine
+- New input parameter for CSS-display in function buildsearchform in template engine
 - Bug fix: Function createuser did still check for file system based task list of user
 
 Version 6.0.2
@@ -1206,7 +1206,7 @@ Release 01/2016
 - Implementation of new help bubble info for workplace controls
 - Added various video file extensions to include/format_ext
 - Removed maximum number of results from search form
-- Improvements in main.js regarding the evaluation of the input paramaters of Js functions
+- Improvements in main.js regarding the evaluation of the input parameters of JS functions
 - Excluded geo location search for mobile edition
 - Bug fix: hcms_showInfo an dhcms_hideInfo on the buttons caused form elements to be disabled in explorer when switching from search to navigator and back again
 - Changed to JS function hcms_showHideLayers in template_help
@@ -1250,7 +1250,7 @@ Release 01/2016
 Version 6.0.4
 Release 02/2016
 - Minor improvements in function indexcontent
-- Bug fix: WebDAV function createObject did not proberly pass the paramaters to function uploadfile, causing a check of duplicates when cut and paste was used via WebdAV
+- Bug fix: WebDAV function createObject did not proberly pass the parameters to function uploadfile, causing a check of duplicates when cut and paste was used via WebdAV
 - Bug fix: JS function setSaveType of template engine did not forward to target URL when selecting media
 - Modifications in navigator CSS
 - Bug fix: Function transformlink of template engine did transform links used in JS functions of template engine
@@ -1284,7 +1284,7 @@ Release 02/2016
 - Bug fix: Report CSV export button targeted wrong file name
 - Implementation of table column resizing in all objectlist views
 - Bug fix: File version_template used wrong reference to external JS file
-- Bug fix: File template_edit used single quote for width paramater in function hcms_openWindow call
+- Bug fix: File template_edit used single quote for width parameter in function hcms_openWindow call
 - Bug fix: Logviewer plugin used wrong parameter for function showinfobox call
 - Implementation of table column resizing for log viewer
 - Implementation of table column resizing for logviewer plugin
@@ -1671,7 +1671,7 @@ Release 07/2016
 - Implementation of content type support in function save_content of openAPI
 - Added type to element textfield in openAPI WSDL (service_orig.wsdl)
 - Implementation of new type parameter in media mapping (mapping-value=type:text-ID)
-- Implementation of new input paramater for character set in function splitkeywords
+- Implementation of new input parameter for character set in function splitkeywords
 - Implementation of new filters for special characters in function splitkeywords
 
 Version 6.1.14
@@ -1848,11 +1848,11 @@ Release 09/2016
 - Implementation of new main configuration setting for the defintion of mobile devices and their screen size
 - Implementation of a new preview and live-view of pages
 - Renamed JS function openlivew to openobjectview
-- Implementation of view paramater for JS function openobjectview
+- Implementation of view parameter for JS function openobjectview
 - Removed JS function escapevalue from control_objectlist_menu and control_content_menu
 - Improvements of Navigator resizing
 - Modifications in JS library for contextmenu for new previews
-- Bug fix: control_objectlist_menu did onyl allow unzip of files in page structure 
+- Bug fix: control_objectlist_menu did only allow unzip of files in page structure 
 - Improvements in Nativy Plugin incl. a new Plugin configuration file and the implementation of the nativy API to support orders via context menu
 
 Version 6.1.23
@@ -1907,7 +1907,7 @@ Release 10/2016
 Version 6.1.28
 Release 10/2016
 - Bug fix: Function getserverload did not exclude function sys_getloadavg on Windows OS
-- Implementation of new workouround for calculating the number of CPU and system load om Windows OS in function getserverload in get API
+- Implementation of new workouround for calculating the number of CPU and system load on Windows OS in function getserverload in get API
 - Changes in class HyperMailer to support future PHP versions
 - Bug fix: Function writehistory of external search engine in repository performed a file lock on a non existing log file
 
@@ -1970,7 +1970,7 @@ Release 12/2016
 - Modifications in function rdbms_searchcontent in order to support the combination of a general search and detailed search
 - Implementation of new JS function hcms_convertGet2Post in main.js
 - Implementation of content extraction from container in media_edit_page in order to avoid issues with the length restriction of GET requests
-- Change of order of GET paramaters in template engine and frameset_edit_media
+- Change of order of GET parameters in template engine and frameset_edit_media
 - Implementation of content extraction from container in link_edit_page in order to avoid issues with the length restriction of GET requests
 - Change of order of GET parameters in template engine and frameset_edit_link
 - Modification of return value of function convertchars in main API in order to return original value instead of false on error
@@ -2014,8 +2014,15 @@ Release 01/2017
 - Modifications in function userlogin in Security API in order to execute the new update on the database
 - Modification of default max. search results to 300 in function rdbms_searchcontent, rdbms_searchuser, and rdbms_searchrecipientn in DB Connect
 - Modification of default max. event entries in log viewer to 500 records in log_list
+
+Version 6.1.40
+Release 01/2017
+- Modifications in explorer in order to support search of user name and e-mail address of a sender or recipient
+- Modification of default max. event entries in log viewer to 500 records in logviewer plugin
+- Renamed software version variable $version to $mgmt_config['version'] in all files
+- Bug fix: Modification in template engine to support upper and lower case characters for the the replacmenet of application tags in order to avoid errors during publishing
 */
 
 // current version
-$version = "Version 6.1.39";
+$mgmt_config['version'] = "Version 6.1.40";
 ?>

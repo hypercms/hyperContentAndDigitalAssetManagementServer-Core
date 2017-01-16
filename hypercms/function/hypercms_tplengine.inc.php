@@ -19,7 +19,7 @@
 // inclusions of files (depending on OS)
 function tpl_compinclude ($application, $file, $os_cms)
 {
-  $application = strtolower ($application);
+  $application = strtolower (trim ($application));
   
   if ($application == "php") 
   {
@@ -6206,8 +6206,8 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
           {
             // execute hyperCMS scripts for preprocessing
             // transform 
-            $viewstore = str_replace (tpl_tagbegin ($application), "[hyperCMS:skip", $viewstore);
-            $viewstore = str_replace (tpl_tagend ($application), "skip]", $viewstore);
+            $viewstore = str_ireplace (tpl_tagbegin ($application), "[hyperCMS:skip", $viewstore);
+            $viewstore = str_ireplace (tpl_tagend ($application), "skip]", $viewstore);
             $viewstore = str_ireplace ("[hyperCMS:scriptbegin", "<?php", $viewstore);
             $viewstore = str_ireplace ("scriptend]", "?>", $viewstore);
             
