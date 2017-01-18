@@ -1495,6 +1495,9 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
 // input: publication (optional), location (optional), object (optional), category [page,comp] (optional), object ID (optional), container-ID (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
+// description:
+// In order to track and include external user IDs in the daily statistics you need to manually add the 'user' parameter to the link in the form of: &user=[user-ID]
+
 function createwrapperlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="")
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
@@ -1572,6 +1575,9 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
 // function: createdownloadlink()
 // input: publication name (optional), location (optional), object (optional), category [page,comp] (optional), object ID (optional), container-ID (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
+
+// description:
+// In order to track and include external user IDs in the daily statistics you need to manually add the 'user' parameter to the link in the form of: &user=[user-ID]
 
 function createdownloadlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="")
 {

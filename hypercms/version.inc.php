@@ -2021,8 +2021,12 @@ Release 01/2017
 - Modification of default max. event entries in log viewer to 500 records in logviewer plugin
 - Renamed software version variable $version to $mgmt_config['version'] in all files
 - Bug fix: Modification in template engine to support upper and lower case characters for the the replacmenet of application tags in order to avoid errors during publishing
+
+Version 6.1.41
+Release 01/2017
+- Implementation of support for individual/external user ID in wrapper and download links in order to write the user ID of the request into the daily statistics
 */
 
 // current version
-$mgmt_config['version'] = "Version 6.1.40";
+$mgmt_config['version'] = "Version 6.1.41";
 ?>

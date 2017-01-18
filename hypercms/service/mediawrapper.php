@@ -35,8 +35,12 @@ $wl = getrequest ("wl", "url");
 $type = getrequest_esc ("type");
 $media_config = getrequest_esc ("mediacfg");
 
+// external user ID provided by request (Wrapper link)
+if (empty ($user)) $extuser = getrequest ("user");
+
 // default language
 if ($lang == "") $lang = "en";
+
 
 // ------------------------------ permission section --------------------------------
 
@@ -264,6 +268,9 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
         }
       }
 
+      // reset user if a user ID has been provided by the request
+      if (!empty ($extuser)) $user = $extuser;
+            
       // stream file content
       downloadfile ($media_root.$media, $name, "wrapper", $user);
     }
@@ -280,6 +287,9 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
 // page or component
 elseif ($objectpath_esc != "" && is_file ($location.$object))
 {
+  // reset user if a user ID has been provided by the request
+  if (!empty ($extuser)) $user = $extuser;
+
   downloadobject ($location, $object, $container, $lang, $user);
 }
 // no content available

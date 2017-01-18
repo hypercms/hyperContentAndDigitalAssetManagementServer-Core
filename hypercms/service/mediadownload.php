@@ -35,6 +35,9 @@ $dm = getrequest ("dm", "url");
 $type = getrequest_esc ("type");
 $media_config = getrequest_esc ("mediacfg");
 
+// external user ID provided by request (Download link)
+if (empty ($user)) $extuser = getrequest ("user");
+
 // default language
 if ($lang == "") $lang = "en";
 
@@ -310,6 +313,9 @@ if (valid_objectname ($media) && ((hcms_crypt ($media) == $token && ($user != ""
         $name = $name_info['filename'].$media_info_new['ext'];
       }
 
+      // reset user if a user ID has been provided by the request
+      if (!empty ($extuser)) $user = $extuser;
+  
       // stream file content
       downloadfile ($media_root.$media, $name, "download", $user);
     }

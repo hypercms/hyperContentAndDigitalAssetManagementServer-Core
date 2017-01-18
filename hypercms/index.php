@@ -67,11 +67,13 @@ if ($hcms_user_token != "")
 // media conversion
 $type = getrequest ("type"); // format = file extension
 $mediacfg = getrequest ("mediacfg"); // media config to be used (see config.inc.php)
+$extuser = getrequest ("user"); // external user ID provided by request
 
 $add = "";
 
 if ($type != "") $add .= "&type=".url_encode($type);
 if ($mediacfg != "") $add .= "&mediacfg=".url_encode($mediacfg);
+if ($extuser != "") $add .= "&user=".url_encode($extuser);
 
 //   new hash parameter for wrapper-link
 $wl = getrequest ("wl", "url");
