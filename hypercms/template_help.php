@@ -379,7 +379,32 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['editwrite-permission-for-certain-user-groups-optional'][$lang]); ?></td>
       <td class="hcmsRowData1">groups='...'</td>
-    </tr>  
+    </tr>
+    
+    <!-- geo location --> 
+    <tr align="left" valign="top"> 
+      <td colspan="2" class="hcmsRowHead1"><b> <?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?></td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?></td>
+      <td class="hcmsRowData1">[hyperCMS:geolocation infotype='meta']</td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['display-name-optional'][$lang]); ?></td>
+      <td class="hcmsRowData1">label='...'</td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['content-cannot-be-edited-optional'][$lang]); ?></td>
+      <td class="hcmsRowData1">onEdit='hidden'</td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"><?php echo getescapedtext ($hcms_lang['hide-content-optional'][$lang]); ?></td>
+      <td class="hcmsRowData1">onPublish='hidden'</td>
+    </tr>
+    <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['editwrite-permission-for-certain-user-groups-optional'][$lang]); ?></td>
+      <td class="hcmsRowData1">groups='...'</td>
+    </tr>
     
     <!-- language session setting --> 
     <tr align="left" valign="top"> 

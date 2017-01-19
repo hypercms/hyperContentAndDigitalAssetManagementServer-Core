@@ -142,6 +142,8 @@ $componentm = getrequest ("componentm", "array");
 $artcomponentm = getrequest ("artcomponentm", "array");
 $condition = getrequest ("condition", "array");
 
+$geolocation = getrequest ("geolocation");
+
 // base64 encoded JPEG annotation image
 $medianame = getrequest ("medianame");
 $mediadata = getrequest ("mediadata");
@@ -410,6 +412,15 @@ if ($usedby == "" || $usedby == $user)
       if (isset ($pagetracking)) $headcontent['pagetracking'] = $pagetracking;
   
       if ($contentdatanew != false && isset ($headcontent) && is_array ($headcontent)) $contentdatanew = sethead ($site, $contentdatanew, $contentfile, $headcontent, $user);
+      
+      // geo location
+      if ($geolocation != "")
+      {
+        list ($latitude, $longitude) = explode (",", $geolocation);
+
+        $sql = "UPDATE container SET latitude=".floatval($latitude).", longitude=".floatval($longitude)." WHERE id=".intval($container_id);                
+        $result = rdbms_externalquery ($sql);
+      }
     }
 
     // ----------------------------------- write data into content container --------------------------------------

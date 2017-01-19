@@ -405,6 +405,18 @@ function customertracking()
   document.forms['template_edit'].contentfield.value = code + document.forms['template_edit'].elements['contentfield'].value;
 }
 
+function geolocation()
+{
+  if (eval (document.forms['template_edit'].onpublish) && document.forms['template_edit'].elements['onpublish'].checked) var onpublish = " onPublish='hidden'";  
+  else var onpublish = ""; 
+  
+  if (eval (document.forms['template_edit'].onedit) && document.forms['template_edit'].elements['onedit'].checked) var onedit = " onEdit='hidden'";  
+  else var onedit = "";
+  
+  code = "[hyperCMS:geolocation infotype='meta'"+onpublish+onedit+"]";
+  insertAtCaret (code, '');
+}
+
 function db_connect()
 {
   var filename = prompt(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-enter-the-file-name-of-the-database-connectivity-eg'][$lang], $charset, $lang); ?>"), "");
@@ -648,8 +660,10 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
 
             if ($cat == "page" || $cat == "comp" || $cat == "meta" || $cat == "inc")
             {
+              echo "<img onClick=\"geolocation();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_marker.gif\" alt=\"".getescapedtext ($hcms_lang['geo-location'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['geo-location'][$lang], $charset, $lang)."\" />\n";
               if ($cat != "meta") echo "<img onClick=\"openLanguageInfo();\" class=\"hcmsButton hcmsButtonSizeSquare\" border=0 src=\"".getthemelocation()."img/button_languagetag.gif\" alt=\"".getescapedtext ($hcms_lang['language'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['language'][$lang], $charset, $lang)."\" />\n";
               echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
+              
               echo "<img onClick=\"openConstraints ();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_texttag.gif\" alt=\"".getescapedtext ($hcms_lang['unformatted-text'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['unformatted-text'][$lang], $charset, $lang)."\" />\n";
               echo "<img onClick=\"format_tag('textf');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_ftexttag.gif\" alt=\"".getescapedtext ($hcms_lang['formatted-text'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['formatted-text'][$lang], $charset, $lang)."\" />\n";
               echo "<img onClick=\"format_tag_attr('textl')\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_ltexttag.gif\" alt=\"".getescapedtext ($hcms_lang['text-options'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['text-options'][$lang], $charset, $lang)."\" />\n";

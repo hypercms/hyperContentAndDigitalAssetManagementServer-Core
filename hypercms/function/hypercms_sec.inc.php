@@ -1844,7 +1844,7 @@ function checkdiskkey ($users="", $site="")
     $data['cpu'] = $serverload['cpu'];
     
     // version
-    $data['version'] = $version;
+    $data['version'] = $mgmt_config['version'];
     
     // client ip
     $data['userip'] = getuserip();

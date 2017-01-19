@@ -4659,7 +4659,7 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
                      isset ($hypertag_href[$id][$tagid]) && $onedit_href[$id][$tagid] != "hidden" && 
                      (
                        (
-                        ($buildview == "cmsview" || $buildview == 'inlineview')
+                        ($buildview == "cmsview" || $buildview == "inlineview")
                         && $infotype[$id] != "meta"
                        ) || 
                        $buildview == "formedit" || 
@@ -5945,6 +5945,107 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
         }
       }
       
+      // =================================================== geo location ===================================================
+
+      // create view for link content
+      $searchtag = "geolocation";
+      $hypertagname = "";
+      $infotype = "";
+      $label = "";
+      $onpublish = "";
+      $onedit = "";
+      
+      // get all hyperCMS tags
+      $hypertag_array = gethypertag ($viewstore, $searchtag, 0);
+    
+      if ($hypertag_array != false) 
+      {
+        $tagid = 0;
+
+        reset ($hypertag_array);
+             
+        // only the first hyperCMS tag found in template is valid
+        foreach ($hypertag_array as $key => $hypertag)
+        {
+          // get tag name
+          $hypertagname = gethypertagname ($hypertag);
+          
+          // get tag visibility on publish
+          $onpublish = getattribute (strtolower ($hypertag), "onpublish");     
+          
+          // get tag visibility on edit
+          $onedit = getattribute (strtolower ($hypertag), "onedit");
+          
+          // get type of content
+          $infotype = getattribute (strtolower ($hypertag), "infotype");  
+          if (strtolower ($infotype) == "meta") $show_meta = true;
+
+          // get label
+          $label = getattribute ($hypertag, "label");
+                      
+          if ($label == "") $label = getescapedtext ($hcms_lang['geo-location'][$lang], $charset, $lang);
+          
+          // get readonly attribute
+          $readonly = getattribute ($hypertag, "readonly");
+          
+          if ($buildview != "formlock")
+          {
+            if ($readonly != false) $disabled = " disabled=\"disabled\"";
+            else $disabled = "";
+          }
+          
+          // get group access
+          $groupaccess = getattribute ($hypertag, "groups");
+          $groupaccess = checkgroupaccess ($groupaccess, $ownergroup);
+
+          // get content
+          if ($buildview != "template" && $groupaccess == true && $onedit != "hidden")
+          {
+            $temp = rdbms_getmedia ($container_id, true);
+            
+            if (!empty ($temp['latitude']) && !empty ($temp['longitude'])) $contentbot = $temp['latitude'].", ".$temp['longitude'];
+            else $contentbot = "";
+  
+            $taglink = "";
+            
+            if ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
+            {
+              // init map and place marker on map
+              if ($contentbot != "") $add_onload .= "
+    initMap('".$contentbot."');";
+              else $add_onload .= "
+    initMap();";
+            
+              // form map element
+              $formitem[$key] = "
+                <div class=\"hcmsFormRowLabel\">
+                  <b>".$label."</b>
+                </div>
+                <div class=\"hcmsFormRowContent\">
+                  <div id=\"map\" style=\"width:420px; height:260px; margin:0; border:1px solid grey;\"></div>        
+                  <input type=\"text\" id=\"".$hypertagname."\" name=\"".$hypertagname."\" style=\"width:416px;\" value=\"".$contentbot."\" ".$disabled." />
+                </div>";
+            }
+          }
+          elseif ($buildview == "template" && $onedit != "hidden")
+          {
+            $taglink = "
+            <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
+              <tr>
+                <td>
+                  <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".getescapedtext ($hcms_lang['geo-location'][$lang], $charset, $lang)."</b></font>
+                </td>
+              </tr>
+            </table>";
+          }
+          else $taglink = "";
+          
+          // publish content
+          if ($buildview == "publish" && $onpublish != "hidden") $viewstore = str_replace ($hypertag, $contentbot, $viewstore);
+          else $viewstore = str_replace ($hypertag, $taglink, $viewstore);
+        }
+      }
+      
       // WYSIWYG Views
       if ($buildview != "formedit" && $buildview != "formmeta" && $buildview != "formlock")
       {  
@@ -6718,6 +6819,9 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/tag-it/tagit.ui-zendesk.css\" />
   <!-- Annotations -->
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.css\">
+  <!-- Google Maps -->
+  <script src=\"https://maps.googleapis.com/maps/api/js?v=3&key=".$mgmt_config['googlemaps_appkey']."\"></script>
+  
   <script type=\"text/javascript\">
   ".$bodytag_controlreload."";
   
@@ -7363,6 +7467,90 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
     ".$autosave_timer."
     
     return false;
+  }
+  
+  // ----- Geo tagging with Google maps -----
+  var map;
+  var markersArray = [];
+
+  function initMap (location)
+  {
+    location = typeof location !== 'undefined' ? location : '';
+    
+    // use provided geolocation
+    if (location != '')
+    {
+      var position = location.split(',');
+      
+      if (position[0] != '' && position[1] != '')
+      {
+        var lat = parseFloat(position[0]);
+        var lng = parseFloat(position[1]);
+      }
+    }
+    else
+    {
+      var lat = 0;
+      var lng = 0;
+    }
+  
+    // set center of map
+    var latlng = new google.maps.LatLng(lat, lng);
+    
+    var myOptions = {
+      zoom: 1,
+      center: latlng,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    
+    // create map
+    map = new google.maps.Map(document.getElementById('map'), myOptions);
+    
+    // set marker if location has been provided
+    if (location != '')
+    {
+      placeMarker (latlng);
+    }
+
+    // add a click event handler to the map object
+    google.maps.event.addListener(map, 'click', function(event)
+    {
+      // place a marker
+      placeMarker(event.latLng);
+
+      // display the lat/lng in geo location field
+      document.getElementById('geolocation').value = event.latLng.lat() + ', '+ event.latLng.lng();
+    });
+  }
+  
+  function placeMarker (location)
+  {
+    // first remove all markers if there are any
+    deleteMarkers();
+
+    var marker = new google.maps.Marker({
+      position: location, 
+      map: map
+    });
+
+    // add marker in markers array
+    markersArray.push(marker);
+
+    map.setCenter(location);
+  }
+
+  // Deletes all markers in the array by removing references to them
+  function deleteMarkers ()
+  {
+    if (markersArray)
+    {
+      for (i in markersArray)
+      {
+        markersArray[i].setMap(null);
+      }
+      
+      markersArray.length = 0;
+    }
   }
   
   ".$autosave_timer."

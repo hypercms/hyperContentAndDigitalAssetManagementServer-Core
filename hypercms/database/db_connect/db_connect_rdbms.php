@@ -96,7 +96,7 @@ class hcms_db
   {
     global $mgmt_config;
     
-    if (!is_string ($sql) && $sql == "")
+    if (!is_string ($sql) || $sql == "")
     {
       $this->_typeError ();
     }
@@ -237,7 +237,7 @@ class hcms_db
   // Returns the resultArray or NULL
   public function getResultRow ($num=1, $rowNumber=NULL)
   {
-    if (empty ($this->_result[$num]) || $this->_result[$num] == false)
+    if (empty ($this->_result[$num]) || !is_object ($this->_result[$num]))
     {
        return NULL;
     }
