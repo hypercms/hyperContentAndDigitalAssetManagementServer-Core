@@ -674,7 +674,7 @@ $(document).ready(function(){
 </script>
 
 <!-- top bar -->
-<?php echo showtopbar ("<img src=\"".$mgmt_config['url_path_cms']."theme/standard/img/logo_top.png\" align=\"absmiddle\" /> Installation of ".$version, "en"); ?>
+<?php echo showtopbar ("<img src=\"".$mgmt_config['url_path_cms']."theme/standard/img/logo_top.png\" align=\"absmiddle\" /> Installation of ".$mgmt_config['version'], "en"); ?>
 
 <!-- content area -->
 <div id="content" style="width:480px; margin:0 auto 10px auto;">

@@ -2022,8 +2022,9 @@ Release 01/2017
 - Renamed software version variable $version to $mgmt_config['version'] in all files
 - Bug fix: Modification in template engine to support upper and lower case characters for the the replacmenet of application tags in order to avoid errors during publishing
 
-Version 6.1.41
-Release 01/2017
+
+Version 6.2.0
+Release 02/2017
 - Implementation of support for individual/external user ID in wrapper and download links in order to write the user ID of the request into the daily statistics
 - Implementation of get tagging hyperCMS tag in order to enable the display and manual defintion of an objects geo location
 - Modifications in template editor in order to support new geolocation tag
@@ -2031,8 +2032,10 @@ Release 01/2017
 - Modifications in sacecontent service to support the geolocation
 - Improvements in methode getResultRow in DB Connect
 - Improvements in function rdbms_externalquery in DB Connect
+- Improvements in function checkpassword in Security API
+- Corrected window size when creating new users in function creatuser in main API
 */
 
 // current version
-$mgmt_config['version'] = "Version 6.1.41";
+$mgmt_config['version'] = "Version 6.2.0";
 ?>

@@ -1898,7 +1898,7 @@ function checkpassword ($password)
     // must contain at least one symbol (optional but not used) 
     // if (!preg_match ("#\W+#", $password)) $error .= $hcms_lang['password-must-include-at-least-one-symbol'][$lang];    
 
-    if ($error)
+    if (!empty ($error) && is_array ($error))
     {
       return $hcms_lang['password-validation-failure'][$lang].": ".implode (", ", $error);
     }
