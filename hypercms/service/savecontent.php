@@ -144,6 +144,8 @@ $condition = getrequest ("condition", "array");
 
 $geolocation = getrequest ("geolocation");
 
+$faces = getrequest ("faces");
+
 // base64 encoded JPEG annotation image
 $medianame = getrequest ("medianame");
 $mediadata = getrequest ("mediadata");
@@ -243,6 +245,12 @@ if ($usedby == "" || $usedby == $user)
       
       // set atricle
       if ($contentdatanew != false && is_array ($artstatus)) $contentdatanew = setarticle ($site, $contentdatanew, $contentfile, $arttitle, $artstatus, $artdatefrom, $artdateto, $user, $user);
+    
+      // face detection data
+      if (isset ($faces))
+      {
+        $textu['Faces-JSON'] = $faces;
+      }
     
       // text content
       if (isset ($textf) && is_array ($textf) && $contentdatanew != false) $contentdatanew = settext ($site, $contentdatanew, $contentfile, $textf, "f", "no", $user, $user, $charset);

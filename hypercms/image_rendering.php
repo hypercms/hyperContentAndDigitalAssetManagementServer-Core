@@ -1150,7 +1150,7 @@ echo showmessage ($show, 600, 80, $lang, "position:fixed; left:50px; top:150px;"
 
 <!-- top bar -->
 <?php
-echo showtopmenubar ($hcms_lang['edit-image'][$lang], array($hcms_lang['options'][$lang] => 'onclick="toggle_options(this, \'#renderOptions\');"'), $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
+echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$lang] => 'onclick="toggle_options(this, \'#renderOptions\');"'), $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page));
 ?>
 
 <!-- rendering settings -->

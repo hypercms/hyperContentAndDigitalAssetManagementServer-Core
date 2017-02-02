@@ -1651,6 +1651,10 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       unlink ($location_source.$file);
                     }
                   }
+                  
+                  // set background properties for JPEG (thumbnail images, annotation images, preview images) 
+                  if ($imageformat == "jpg") $background = "-background white -alpha remove";
+                  else $background = "";
 
                   // CASE: document-based formats, encapsulated post script and vector graphics
                   if ($file_ext == ".pdf" || $file_ext == ".eps" || $file_ext == ".svg")
@@ -1659,7 +1663,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     {
                       $newfile = $file_name.".thumb.jpg";
                       
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     elseif ($type == "annotation" && is_dir ($mgmt_config['abs_path_cms']."workflow/"))
                     {
@@ -1685,7 +1689,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       }
                       
                       // render all pages from document as images for annotations
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."\" ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.jpg")."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."\" ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.jpg")."\"";
                     }
                     else 
                     {
@@ -1771,7 +1775,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         $imageresize = "-resize ".round ($imagewidth_orig, 0)."x".round ($imageheight_orig, 0);
                       }
                        
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." -background white -alpha remove ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     else
                     {
@@ -1780,11 +1784,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                           
                       if ($crop_mode)
                       {
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" -crop ".$imagewidth."x".$imageheight."+".$offsetX."+".$offsetY." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                       }
                       else
                       {
-                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                        $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" -size ".$imagewidth."x".$imageheight." ".$imageresize." ".$imagerotate." ".$imageBrightnessContrast." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagecolorspace." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                       }
                     }
   

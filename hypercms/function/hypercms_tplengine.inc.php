@@ -1124,7 +1124,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
          $eventsystem,
          $db_connect,
          $mgmt_config, 
-         $siteaccess, $adminpermission, $setlocalpermission, $token, 
+         $siteaccess, $adminpermission, $setlocalpermission, $token, $is_mobile, 
          $mgmt_lang_shortcut_default, $hcms_charset, $hcms_lang_name, $hcms_lang_shortcut, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang;
   
   // define default values for the result array
@@ -2652,7 +2652,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   // all other cases
                   else
                   {
-                    // get content between tags
+                    // get content
                     $bufferarray = selectcontent ($contentdata, "<text>", "<text_id>", $id);
                     $bufferarray = getcontent ($bufferarray[0], "<textcontent>");
                     $contentbot = $bufferarray[0];
@@ -3822,7 +3822,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // convert image to PNG in the requested colorspace or ICC profile
                 $mediafilebot_new = convertimage ($site, $imgdir.$mediafilebot[$id][$tagid], $viewdir, "png", $mediacolorspace[$id][$tagid], $mediaiccprofile[$id][$tagid]);
                 // check converted image
-savelog (array("$imgdir, $mediafilebot_new"), "aaa");
                 if ($mediafilebot_new != false) $mediafilebot[$id][$tagid] = $mediafilebot_new;
               }
             }
@@ -5199,7 +5198,7 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
                 // read content from content container
                 if ($db_connect_data == false)
                 {    
-                  // get content between tags
+                  // get content
                   $contentarray = selectcontent ($contentdata, "<component>", "<component_id>", $id);
                   $condarray = getcontent ($contentarray[0], "<componentcond>");
                   $condbot = trim ($condarray[0]);
@@ -6046,6 +6045,25 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
         }
       }
       
+      // =================================================== face detection ===================================================
+      
+      $faces_json = "''";
+      
+      if (!empty ($mgmt_config['facedetection']))
+      {
+        // get content
+        $bufferarray = selectcontent ($contentdata, "<text>", "<text_id>", "Faces-JSON");
+        
+        if (!empty ($bufferarray[0]))
+        {
+          $bufferarray = getcontent ($bufferarray[0], "<textcontent>");
+          $faces_json = $bufferarray[0];
+          
+          // set empty string instead of JSON string
+          if (trim ($faces_json) == "") $faces_json = "''";
+        }
+      }
+      
       // WYSIWYG Views
       if ($buildview != "formedit" && $buildview != "formmeta" && $buildview != "formlock")
       {  
@@ -6799,7 +6817,7 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css\" />
   <script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
   <!-- JQuery -->
-  <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-1.10.2.min.js\" type=\"text/javascript\"></script>
+  <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery/jquery-3.1.1.min.js\" type=\"text/javascript\"></script>
   <script src=\"".$mgmt_config['url_path_cms']."javascript/jquery-ui/jquery-ui-1.10.2.min.js\" type=\"text/javascript\"></script>
   <!-- Editor -->
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."editor/ckeditor/ckeditor.js\"></script>
@@ -6821,6 +6839,9 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.css\">
   <!-- Google Maps -->
   <script src=\"https://maps.googleapis.com/maps/api/js?v=3&key=".$mgmt_config['googlemaps_appkey']."\"></script>
+  <!-- Face detetction -->
+  <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/facedetection/jquery.facedetection.min.js\"></script> 
+
   
   <script type=\"text/javascript\">
   ".$bodytag_controlreload."";
@@ -7377,6 +7398,7 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
       ".$add_submitlink."
       ".$add_submitcomp."
       hcms_stringifyVTTrecords();
+      collectFaces();
 
       // save content using form POST methode
       if (methode == 'post' || isNewComment()) saveContent();
@@ -7430,6 +7452,7 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
         ".$add_submitlink."
         ".$add_submitcomp."
         hcms_stringifyVTTrecords();
+        collectFaces();
         
         // write content to textareas
         for (var i in CKEDITOR.instances)
@@ -7475,7 +7498,7 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
 
   function initMap (location)
   {
-    location = typeof location !== 'undefined' ? location : '';
+    if (typeof (location) === 'undefined') location = '';
     
     // use provided geolocation
     if (location != '')
@@ -7553,6 +7576,484 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
     }
   }
   
+  // ----- Face detection -----
+  // stored faces definition
+  var faces_json = ".$faces_json.";
+  
+  // sort by name
+  if (faces_json != '')
+  {
+    faces_json.sort(function(a, b){
+      return a.name - b.name;
+    });
+  }
+      
+  // memory for all face IDs
+  var videoface_id = [];
+  var imageface_id = [];
+  
+  // click event memory to prevent other events from firing
+  var clickevent = '';
+      
+  function detectFaceOnImage ()
+  {
+    $('.hcmsFace').remove();
+
+    // detect faces automatically
+    if (faces_json == '' && $('#hcms_mediaplayer_asset').length > 0)
+    {
+      $('#hcms_mediaplayer_asset').faceDetection({
+        complete: function (faces) {                        
+          for (var i = 0; i < faces.length; i++)
+          {
+            $('<div>', {
+              'id': 'hcmsFace' + i,
+              'class': 'hcmsFace',
+              'onclick': 'switchFaceName(\"hcmsFaceName' + i + '\")',
+              'css': {
+                'position': 'absolute',
+                'left':     faces[i].x + 'px',
+                'top':      faces[i].y + 'px',
+                'width':    faces[i].width + 'px',
+                'height':   faces[i].height + 'px'
+              }
+            })
+            .insertAfter(this);
+            
+            imageface_id.push(i);
+            var offset = (116 - faces[i].width) / 2;
+            
+            $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (faces[i].x - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><input type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + i));
+          }
+        },
+        error:function (code, message) {
+          alert('Error: ' + message);
+        }
+      });
+    }
+    // use existing face defintions
+    else
+    {
+      var faces = faces_json;
+
+      for (var i = 0; i < faces.length; i++)
+      {
+        $('<div>', {
+          'id': 'hcmsFace' + i,
+          'class': 'hcmsFace',
+          'onclick': 'switchFaceName(\"hcmsFaceName' + i + '\")',
+          'css': {
+            'position': 'absolute',
+            'left':     faces[i].x + 'px',
+            'top':      faces[i].y + 'px',
+            'width':    faces[i].width + 'px',
+            'height':   faces[i].height + 'px'
+          }
+        })
+        .insertAfter('#hcms_mediaplayer_asset');
+        
+        imageface_id.push(i);
+        var offset = (116 - faces[i].width) / 2;
+        
+        $(\"<div id='hcmsFaceName\" + i + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (faces[i].x - offset) + \"px;'><input type='hidden' id='facedetails\" + i + \"' value='\\\"x\\\":\" + faces[i].x + \", \\\"y\\\":\" + faces[i].y + \", \\\"width\\\":\" + faces[i].width + \", \\\"height\\\":\" + faces[i].height + \"' /><input type='text' id='facename\" + i + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='\" + faces[i].name + \"' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + i));
+      }
+    }
+  }
+  
+  function initFaceOnVideo ()
+  {
+    if (faces_json != '')
+    {
+      var faces = faces_json;
+      
+      // get video width
+      if ($('#hcms_mediaplayer_asset_html5_api').length > 0)
+      {
+        var videowidth = $('#hcms_mediaplayer_asset_html5_api').innerWidth();
+        var videotag_id = '#hcms_mediaplayer_asset_html5_api';
+      }
+      else if ($('#hcms_mediaplayer_asset_flash_api').length > 0)
+      {
+        var videowidth = $('#hcms_mediaplayer_asset_flash_api').innerWidth();
+        var videotag_id = '#hcms_mediaplayer_asset_flash_api';
+      }
+      
+      if (videotag_id != '')
+      {
+        // display face name selector
+        var html = '<div id=\"hcmsFaceSelector\" style=\"width:' + videowidth + 'px; max-height:100px; margin-bottom:4px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\"><div style=\"float:left; padding:2px;\">".getescapedtext ($hcms_lang['search'][$lang], $charset, $lang).": </div>';
+  
+        for (var i = 0; i < faces.length; i++)
+        {
+          if (faces[i].time != '')
+          {
+            html += '<div class=\"hcmsButton\" onclick=\"jumpToFaceOnVideo(' + faces[i].time + ');\">' + faces[i].name;
+            if (i+1 < faces.length) html += ', ';
+            html += '</div>';
+          }
+        }
+        
+        html += '</div>';
+  
+        $(html).insertBefore('#videoplayer_container');
+        
+        // existing face defintions
+        for (var i = 0; i < faces.length; i++)
+        {
+          if (faces[i].time != '')
+          {
+            var time_id = faces[i].time.toString().replace ('.', '_');
+            var id = i + '_' + time_id;
+            
+            $('<div>', {
+              'id': 'hcmsFace' + id,
+              'class': 'hcmsFace',
+              'onclick': 'switchFaceName(\"hcmsFaceName' + id + '\")',
+              'css': {
+                'visibility': 'hidden', 
+                'position': 'absolute',
+                'left': faces[i].x + 'px',
+                'top': faces[i].y + 'px',
+                'width': faces[i].width + 'px',
+                'height': faces[i].height + 'px'
+              }
+            })
+            .insertAfter(videotag_id);
+            
+            videoface_id.push(id);
+            var offset = (116 - faces[i].width) / 2;
+  
+            $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (faces[i].x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + faces[i].time + \", \\\"x\\\":\" + faces[i].x + \", \\\"y\\\":\" + faces[i].y + \", \\\"width\\\":\" + faces[i].width + \", \\\"height\\\":\" + faces[i].height + \"' /><input type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='\" + faces[i].name + \"' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + id));
+          }
+        }
+      }
+    }
+  }
+  
+  function detectFaceOnVideo ()
+  {
+    // find video ID
+    if ($('#hcms_mediaplayer_asset_html5_api').length > 0) var video = $('#hcms_mediaplayer_asset_html5_api');
+    else if ($('#hcms_mediaplayer_asset_flash_api').length > 0) var video = $('#hcms_mediaplayer_asset_flash_api');
+    else var video = false;
+
+    // detect faces automatically
+    if (video)
+    {
+      if (video[0].paused)
+      {
+        video[0].play();
+        $('.hcmsFace').hide();
+        $('.hcmsFaceName').hide();
+        return;
+      }
+      else
+      {
+        video[0].pause();
+      }
+      
+      var time = setPlayerTime('');
+      var time_id = time.toString().replace ('.', '_');
+  
+      video.faceDetection({
+        interval: 1,
+        complete: function (faces) {
+          for (var i = 0; i < faces.length; i++)
+          {
+            var id = i + '_' + time_id;
+            
+            $('<div>', {
+              'id': 'hcmsFace' + id,
+              'class': 'hcmsFace',
+              'onclick': 'switchFaceName(\"hcmsFaceName' + id + '\")',
+              'css': {
+                'position': 'absolute',
+                'left': faces[i].x + 'px',
+                'top': faces[i].y + 'px',
+                'width': faces[i].width  + 'px',
+                'height': faces[i].height + 'px'
+              }
+            })
+            .insertAfter(this);
+            
+            videoface_id.push(id);
+            var offset = (116 - Math.round (faces[i].width)) / 2;
+
+            $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (Math.round (faces[i].x) - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><input type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + id));
+          }
+        },
+        error:function (code, message) {
+          alert('Error: ' + message);
+        }
+      });
+    }
+  }
+  
+  function jumpToFaceOnVideo (time)
+  {
+    var faces = faces_json;
+    
+    // hide all faces
+    $('.hcmsFace').css('visibility', 'hidden');
+    $('.hcmsFaceName').css('visibility', 'hidden');
+    
+    // find video ID
+    if ($('#hcms_mediaplayer_asset_html5_api').length > 0) var video = $('#hcms_mediaplayer_asset_html5_api');
+    else if ($('#hcms_mediaplayer_asset_flash_api').length > 0) var video = $('#hcms_mediaplayer_asset_flash_api');
+    else var video = false;
+    
+    video[0].play();
+    
+    for (var i = 0; i < faces.length; i++)
+    {
+      if (faces[i].time == time)
+      {
+        var time_id = time.toString().replace ('.', '_');
+        var id = i + '_' + time_id;
+
+        // set video time
+        setTimeout(function() { video[0].currentTime = time; }, 300);
+        
+        // pause video
+        video[0].pause();
+        
+        // show faces
+        hcms_switchSelector('hcmsFace' + id);
+      }
+    }
+  }
+  
+  function createFaceOnImage (event, tag_id)
+  {
+    var width = 70;
+    var height = 70;
+    
+    if (imageface_id.length > 0) var id = imageface_id[imageface_id.length - 1] + 1;
+    else var id = 0;
+
+    if (tag_id != '' && clickevent == '')
+    {
+      // get image width and height
+      var image = document.getElementById('hcms_mediaplayer_asset');
+      var imagewidth = image.clientWidth;
+      var imageheight = image.clientHeight;
+    
+      // get mouse position
+      var pos_x = event.offsetX?(event.offsetX):event.pageX-document.getElementById(tag_id).offsetLeft;
+      var pos_y = event.offsetY?(event.offsetY):event.pageY-document.getElementById(tag_id).offsetTop;
+
+      // verify limits for click on annotion toolbar buttons
+      if (pos_x > 24 && pos_y > 24)
+      {
+        // verify borders
+        if (pos_x < (width / 2)) pos_x = width / 2;
+        if (pos_y < (height / 2)) pos_y = height / 2;
+        if (pos_x > (imagewidth - (width / 2))) pos_x = imagewidth - (width / 2);
+        if (pos_y > (imageheight - (height / 2))) pos_y = imageheight - (height / 2);
+        
+        // correct x/y coordinates for rectangle
+        pos_x = pos_x - (width / 2);
+        pos_y = pos_y - (height / 2);
+  
+        if (pos_x >= 0 && pos_x <= (imagewidth - width) && pos_y >= 0 && pos_y <= (imageheight - height))
+        {
+          $('<div>', {
+            'id': 'hcmsFace' + id,
+            'class': 'hcmsFace',
+            'onclick': 'switchFaceName(\"hcmsFaceName' + id + '\")',
+            'css': {
+              'position': 'absolute',
+              'left': pos_x + 'px',
+              'top': pos_y + 'px',
+              'width': width + 'px',
+              'height': height + 'px'
+            }
+          })
+          .insertAfter('#hcms_mediaplayer_asset');
+          
+          imageface_id.push(id);
+          var offset = (116 - width) / 2;
+      
+          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(width) + \", \\\"height\\\":\" + Math.round(height) + \"' /><input type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + id));
+        }
+      }
+    }
+  }
+  
+  function createFaceOnVideo (event)
+  {
+    var width = 70;
+    var height = 70;
+
+    // get video width, height and tag ID
+    if ($('#hcms_mediaplayer_asset_html5_api').length > 0)
+    {
+      var videowidth = $('#hcms_mediaplayer_asset_html5_api').innerWidth();
+      var videoheight = $('#hcms_mediaplayer_asset_html5_api').innerHeight();
+      var videotag_id = '#hcms_mediaplayer_asset_html5_api';
+    }
+    else if ($('#hcms_mediaplayer_asset_flash_api').length > 0)
+    {
+      var videowidth = $('#hcms_mediaplayer_asset_flash_api').innerWidth();
+      var videoheight = $('#hcms_mediaplayer_asset_html5_api').innerHeight();
+      var videotag_id = '#hcms_mediaplayer_asset_flash_api';
+    }
+
+    // get video time
+    var time = setPlayerTime('');
+
+    if (videotag_id != '' && clickevent == '' && time > 0)
+    {
+      // pause video
+      $(videotag_id)[0].pause();
+
+      // get mouse position
+      var pos_x = event.offsetX?(event.offsetX):event.pageX-document.getElementById(videotag_id).offsetLeft;
+      var pos_y = event.offsetY?(event.offsetY):event.pageY-document.getElementById(videotag_id).offsetTop;
+
+      // verify limits for click on annotion toolbar buttons
+      if (pos_x > 24 && pos_y > 24)
+      {
+        // verify borders
+        if (pos_x < (width / 2)) pos_x = width / 2;
+        if (pos_y < (height / 2)) pos_y = height / 2;
+        if (pos_x > (videowidth - (width / 2))) pos_x = videowidth - (width / 2);
+        if (pos_y > (videoheight - (height / 2))) pos_y = videoheight - (height / 2);
+        
+        // correct x/y coordinates for rectangle
+        pos_x = pos_x - (width / 2);
+        pos_y = pos_y - (height / 2);
+
+        if (pos_x >= 0 && pos_x <= (videowidth - width) && pos_y >= 0 && pos_y <= (videoheight - height))
+        {
+          // get video time
+          var time_id = time.toString().replace ('.', '_');
+          var id = Math.floor(Math.random() * 90000); + '_' + time_id;
+      
+          $('<div>', {
+            'id': 'hcmsFace' + id,
+            'class': 'hcmsFace',
+            'onclick': 'switchFaceName(\"hcmsFaceName' + id + '\")',
+            'css': {
+              'position': 'absolute',
+              'left': pos_x + 'px',
+              'top': pos_y + 'px',
+              'width': width + 'px',
+              'height': height + 'px'
+            }
+          })
+          .insertAfter(videotag_id);
+          
+          videoface_id.push(id);
+          var offset = (116 - width) / 2;
+      
+          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(width) + \", \\\"height\\\":\" + Math.round(height) + \"' /><input type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + id));
+        }
+      }
+    }
+  }
+  
+  function switchFaceName (id)
+  {
+    // uses visibilty
+    var selector = document.getElementById(id);
+    
+    // get video tag id
+    if ($('#hcms_mediaplayer_asset_html5_api').length > 0) var videotag_id = '#hcms_mediaplayer_asset_html5_api';
+    else if ($('#hcms_mediaplayer_asset_flash_api').length > 0) var videotag_id = '#hcms_mediaplayer_asset_flash_api';
+    else var videotag_id = '';
+    
+    // pause video
+    if (videotag_id != '') $(videotag_id)[0].pause();
+
+    // keeps the rest of the handlers from being executed
+    clickevent = 'switchFaceName';
+    
+    if (selector)
+    { 
+      if (selector.style.visibility == 'hidden') selector.style.visibility = 'visible';
+      else selector.style.visibility = 'hidden';
+    }
+    
+    setTimeout(function() { clickevent = ''; }, 500);
+  }
+  
+  function clickFaceName ()
+  {
+    // get video tag id
+    if ($('#hcms_mediaplayer_asset_html5_api').length > 0) var videotag_id = '#hcms_mediaplayer_asset_html5_api';
+    else if ($('#hcms_mediaplayer_asset_flash_api').length > 0) var videotag_id = '#hcms_mediaplayer_asset_flash_api';
+    else var videotag_id = '';
+    
+    // pause video
+    if (videotag_id != '') $(videotag_id)[0].pause();
+    
+    // keeps the rest of the handlers from being executed
+    clickevent = 'clickFaceName';
+    
+    setTimeout(function() { clickevent = ''; }, 500);
+  }
+  
+  function collectFaces ()
+  {
+    var elements = document.getElementsByClassName('hcmsFaceName');
+
+    if (elements.length > 0)
+    {
+      // videos
+      if ($('#hcms_mediaplayer_asset_html5_api').length > 0 || $('#hcms_mediaplayer_asset_flash_api').length > 0)
+      {
+        if ($('#hcms_mediaplayer_asset_html5_api').length > 0) var video = $('#hcms_mediaplayer_asset_html5_api');
+        else if ($('#hcms_mediaplayer_asset_flash_api').length > 0) var video = $('#hcms_mediaplayer_asset_flash_api');
+
+        var videowidth = video.innerWidth();
+        var videoheight = video.innerHeight();
+        var faces = [];
+
+        for (var i = 0; i < videoface_id.length; i++)
+        {
+          if ($('#facedetails' + videoface_id[i]).length > 0 && $('#facename' + videoface_id[i]).val() != '')
+          {
+            var facedetails = $('#facedetails' + videoface_id[i]).val();
+            var facename = $('#facename' + videoface_id[i]).val();
+            faces[i] = '{\"videowidth\":' + videowidth + ', \"videoheight\":' + videoheight + ', ' + facedetails + ', \"name\":\"' + facename + '\"}';
+          }
+        }
+      }
+      // images
+      else if ($('#hcms_mediaplayer_asset').length > 0)
+      {
+        var image = document.getElementById('hcms_mediaplayer_asset');
+        var imagewidth = image.clientWidth;
+        var imageheight = image.clientHeight;
+        var faces = [];
+        
+        for (var i = 0; i < imageface_id.length; i++)
+        {
+          if ($('#facedetails' + imageface_id[i]).length > 0 && $('#facename' + imageface_id[i]).val() != '')
+          {
+            var facedetails = $('#facedetails' + imageface_id[i]).val();
+            var facename = $('#facename' + imageface_id[i]).val();
+            faces[i] = '{\"imagewidth\":' + imagewidth + ', \"imageheight\":' + imageheight + ', ' + facedetails + ', \"name\":\"' + facename + '\"}';
+          }
+        }
+      }
+    
+      // save faces in hidden field
+      if (faces.length > 0)
+      {
+        var json = '[' + faces.join(', ') + ']';
+        $('#faces').val(json);
+      }
+    }
+    // remove faces defintion
+    else
+    {
+      var json = '';
+      $('#faces').val(json);
+    }
+  }
+  
   ".$autosave_timer."
   ";
   
@@ -7587,8 +8088,17 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
   // json encode array
   if (is_array ($vtt_array) && sizeof ($vtt_array) > 0) $vtt_records = json_encode ($vtt_array);
   
+  // face detection for images (no mobile support)
+  if (!empty ($mediafile) && !empty ($mgmt_config['facedetection']) && !$is_mobile)
+  {
+    if (is_image ($mediafile)) $add_onload .= "
+    detectFaceOnImage();";
+    elseif (is_video ($mediafile)) $add_onload .= "
+    initFaceOnVideo();";
+  }
+  
   // onload event / document ready
-  if ($add_onload != "") $viewstore .= "
+  $viewstore .= "
   $(document).ready(function() {".
     $add_onload."
     
@@ -7598,7 +8108,7 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
     });
     $('img').bind('contextmenu', function(e){
         return false;
-    }); 
+    });
   });
   
   // global object for VTT records
@@ -7612,7 +8122,7 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
 
 <body class=\"hcmsWorkplaceGeneric\">
   
-  <div id=\"messageLayer\" class=\"hcmsMessage\" style=\"position:fixed; width:250px; height:40px; z-index:6; left:50%; top:50%; margin-left:-125px; margin-top:-20px; text-align:center; visibility:hidden;\">
+  <div id=\"messageLayer\" class=\"hcmsMessage\" style=\"position:fixed; width:250px; height:40px; z-index:99999; left:50%; top:50%; margin-left:-125px; margin-top:-20px; text-align:center; visibility:hidden;\">
     ".getescapedtext ($hcms_lang['save'][$lang], $charset, $lang)."<br />
     <img src=\"".getthemelocation()."img/loading.gif\" />
   </div>";
@@ -7633,6 +8143,7 @@ savelog (array("$imgdir, $mediafilebot_new"), "aaa");
     <input type=\"hidden\" name=\"token\" value=\"".$token."\" />
     <input type=\"hidden\" name=\"medianame\" id=\"medianame\" value=\"\" />
     <input type=\"hidden\" name=\"mediadata\" id=\"mediadata\" value=\"\" />
+    <input type=\"hidden\" name=\"faces\" id=\"faces\" value=\"\" />
     ";
     
     $viewstore .= "

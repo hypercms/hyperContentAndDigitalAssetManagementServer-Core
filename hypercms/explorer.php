@@ -1361,8 +1361,7 @@ else
         if (evt.which === 16) shiftPressed = false;
       });
     
-      var mouseDownPos, gribBoundingBox = null,
-          mouseIsDown = 0;
+      var mouseDownPos, gribBoundingBox = null, mouseIsDown = 0;
       var themap = map;
     
       google.maps.event.addListener(themap, 'mousemove', function (e)
@@ -1421,7 +1420,7 @@ else
             document.forms['searchform_advanced'].elements['geo_border_ne'].value = borderNE;
             
             // remove the rectangle
-            gribBoundingBox.setMap(null); 
+            gribBoundingBox.setMap(null);
           }
           
           gribBoundingBox = null;
@@ -1637,16 +1636,19 @@ else
         {
           foreach ($siteaccess as $site_name)
           {
-            foreach ($user_array[$site_name] as $login => $value)
-            {           
-              $text = $login;
-              
-              if (trim ($value['realname']) != "" && trim ($value['email']) != "") $text .= " (".trim ($value['realname']).", ".trim ($value['email']).")";
-              elseif (trim ($value['realname']) != "") $text .= " (".trim ($value['realname']).")";
-              elseif (trim ($value['email']) != "") $text .= " (".trim ($value['email']).")";
-              
-              $text = "'".str_replace ("'", "\\'", trim ($text))."'";                
-              $user_option[$login] = $text;
+            if (!empty ($site_name) && is_array ($user_array[$site_name]))
+            {
+              foreach ($user_array[$site_name] as $login => $value)
+              {           
+                $text = $login;
+                
+                if (trim ($value['realname']) != "" && trim ($value['email']) != "") $text .= " (".trim ($value['realname']).", ".trim ($value['email']).")";
+                elseif (trim ($value['realname']) != "") $text .= " (".trim ($value['realname']).")";
+                elseif (trim ($value['email']) != "") $text .= " (".trim ($value['email']).")";
+                
+                $text = "'".str_replace ("'", "\\'", trim ($text))."'";                
+                $user_option[$login] = $text;
+              }
             }
           }
           

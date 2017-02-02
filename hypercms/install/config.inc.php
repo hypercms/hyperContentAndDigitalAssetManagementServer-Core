@@ -196,7 +196,10 @@ $mgmt_config['chat'] = true;
 $mgmt_config['chat-support'] = "";
 
 // Define if annotations for images and documents should be enabled (true) or disabled (false)
-$mgmt_config['annotation'] = true;
+$mgmt_config['annotation'] = false;
+
+// Define if face detection for images and videos should be enabled (true) or disabled (false)
+$mgmt_config['facedetection'] = true;
 
 // Define standard mail link type ("access" = access-link; "download" = download-link)
 $mgmt_config['maillink'] = "download";
@@ -553,6 +556,8 @@ $mgmt_parser['.doc'] = "%antiword%";
 // Define OCR
 // Define file types that should be indexed by OCR using Tesseract and ImageMagick (can be any kind of image that is supported by ImageMagick).
 // The path to the executable is usually /usr/bin/tesseract
+// Use -l land-id to set the language that should be used for the OCR, by default it is English.
+// You need to install the Tesseract language pack in order to use the language.
 $mgmt_parser['.png.tif.tiff'] = "%tesseract%";
 
 // Define Uncompression (Extension: gz)

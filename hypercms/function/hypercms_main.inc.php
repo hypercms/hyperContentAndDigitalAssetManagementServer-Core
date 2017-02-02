@@ -3647,7 +3647,7 @@ function loadcontainer ($container, $type="work", $user)
     else $container_id = correctcontainername ($container);
     
     // if container id
-    if ($container_id != "" && is_numeric ($container_id))
+    if (!empty ($container_id) && is_numeric ($container_id))
     { 
       if (strpos ($container, ".xml.wrk") > 0)
       {
@@ -10544,6 +10544,17 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
 
             // index content of readable documents
             indexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
+            
+            // remove face detection data
+            $contentdata = loadcontainer ($contentfile, "work", $user);
+            $faces = selectcontent ($contentdata, "<text>", "<text_id>", "Faces-JSON");
+
+            if (!empty ($faces) && is_array ($faces))
+            {
+              $textu['Faces-JSON'] = "";
+              $contentdata = settext ($site, $contentdata, $contentfile, $textu, "u", "no", $user, $user);
+              if (!empty ($contentdata)) savecontainer ($contentfile, "work", $contentdata, $user);
+            }
           }
 
           // rename objects file extension, if file extension has changed

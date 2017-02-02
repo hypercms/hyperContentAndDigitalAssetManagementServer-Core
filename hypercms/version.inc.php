@@ -2022,7 +2022,6 @@ Release 01/2017
 - Renamed software version variable $version to $mgmt_config['version'] in all files
 - Bug fix: Modification in template engine to support upper and lower case characters for the the replacmenet of application tags in order to avoid errors during publishing
 
-
 Version 6.2.0
 Release 02/2017
 - Implementation of support for individual/external user ID in wrapper and download links in order to write the user ID of the request into the daily statistics
@@ -2033,9 +2032,26 @@ Release 02/2017
 - Improvements in methode getResultRow in DB Connect
 - Improvements in function rdbms_externalquery in DB Connect
 - Improvements in function checkpassword in Security API
-- Corrected window size when creating new users in function creatuser in main API
+- Corrected window size when creating new users in function creatuser in Main API
+- Modifications in function creatmedia for improved JPEG backround support in Media API
+
+Version 6.2.1
+Release 02/2017
+- Implementation of automtatic and manual face detection for images and videos on client side (no mobile device support!)
+- Implementation of new configuration parameter $mgmt_config['facedetection'] in main configuration file
+- Implementation of new CSS class 'hcmsFace'
+- Implementation of face detection data in service savecontent
+- Modifications in function uploadfile in Main API in order to support face detection data removal after a file update
+- Renamed JS function setVTTtime to setPlayerTime
+- Update of all language files
+- Upgrad of template engine to JQuery version 3.1.1 in order to support MS Edge for video face detection support
+- Improvements in explorer, hypercms_project, folder_explorer, and DB Connect
+- Modification of function showmedia in UI API in order to set width and height of annotation canvas
+- Update of annotions JS library
+- Implementation of download function for annotations in UI API
+- Implementation of annotation tools looking (select no tool)
 */
 
 // current version
-$mgmt_config['version'] = "Version 6.2.0";
+$mgmt_config['version'] = "Version 6.2.1";
 ?>

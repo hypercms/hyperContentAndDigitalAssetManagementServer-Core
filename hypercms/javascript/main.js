@@ -572,7 +572,6 @@ function hcms_drag (elem, moveelem)
       document.hcms_move.diffy = 0;
       document.hcms_move.elem = 'undefined';
     }
-    
   }
 }
 
@@ -637,7 +636,7 @@ function hcms_showInfo (id, sec)
       var function_hide = "hcms_hideInfo('" + id + "')";
       setTimeout (function_hide, sec);
     }
-    
+
     return true;
   }
   else return false;
@@ -662,7 +661,7 @@ function hcms_hideInfo (id)
         nodes[i].disabled = true;
       }
     }
-    
+
     return true;
   }
   else return false;
@@ -705,7 +704,7 @@ function hcms_switchInfo (id)
         }
       }
     }
-    
+
     return true;
   }
   else return false;
@@ -720,7 +719,7 @@ function hcms_switchSelector (id)
   {
     if (selector.style.visibility == 'hidden') selector.style.visibility = 'visible';
     else selector.style.visibility = 'hidden';
-    
+
     return true;
   }
   else return false;

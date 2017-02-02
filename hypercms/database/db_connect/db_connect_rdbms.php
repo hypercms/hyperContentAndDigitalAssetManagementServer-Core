@@ -1821,7 +1821,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           $taxonomy_ids = array();
 
           // search in taxonomy
-          if (!empty ($mgmt_config[$site]['taxonomy']))
+          if (!empty ($site) && !empty ($mgmt_config[$site]['taxonomy']))
           {
             // if no exact search for the expression is requested, use taxonomy
             if (empty ($mgmt_config['search_exact']))

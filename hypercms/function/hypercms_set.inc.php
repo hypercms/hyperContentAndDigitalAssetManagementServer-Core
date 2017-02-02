@@ -513,7 +513,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
         {
           // set the new content
           $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid);
-          
+
           if ($contentdatanew == false)
           {
             $contentdatanew = addcontent ($contentdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $elemid);

@@ -85,7 +85,7 @@ function sendOption(folder_name, folder_location)
     }
       
     // generate virtual root directories
-    if (substr_count ($dir, $initialdir) == 0)
+    if (!empty ($dir) && substr_count ($dir, $initialdir) == 0)
     {
       echo "<tr><td align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($initialdir_esc)."\"><img src=\"".getthemelocation()."img/folder_".$cat.".gif\" border=0 align=\"absmiddle\">&nbsp; ".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=\"javascript:sendOption('/".$site."/', '%".$cat."%/".$site."/')\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" style=\"border:0; width:16px; height:16px;\" align=\"absmiddle\" alt=\"OK\"></a></td></tr>\n";
     }
