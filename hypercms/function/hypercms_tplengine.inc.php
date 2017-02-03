@@ -7634,7 +7634,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // use existing face defintions
     else
     {
-      var faces = faces_json;
+      if (typeof faces_json === 'string') var faces = JSON.parse (faces_json);
+      else var faces = faces_json;
 
       for (var i = 0; i < faces.length; i++)
       {
@@ -7660,11 +7661,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     }
   }
   
-  function initFaceOnVideo ()
+  function initFaceOnVideo (type)
   {
+    if (typeof (type) === 'undefined') type = '';
+    
     if (faces_json != '')
     {
-      var faces = faces_json;
+      if (typeof faces_json === 'string') var faces = JSON.parse (faces_json);
+      else var faces = faces_json;
       
       // get video width
       if ($('#hcms_mediaplayer_asset_html5_api').length > 0)
@@ -7678,14 +7682,17 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         var videotag_id = '#hcms_mediaplayer_asset_flash_api';
       }
       
-      if (videotag_id != '')
+      // remove existing
+      if ($('#hcmsFaceSelector').length > 0) $('#hcmsFaceSelector').remove();
+      
+      if (videotag_id != '' && faces.length > 0)
       {
         // display face name selector
         var html = '<div id=\"hcmsFaceSelector\" style=\"width:' + videowidth + 'px; max-height:100px; margin-bottom:4px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\"><div style=\"float:left; padding:2px;\">".getescapedtext ($hcms_lang['search'][$lang], $charset, $lang).": </div>';
   
         for (var i = 0; i < faces.length; i++)
         {
-          if (faces[i].time != '')
+          if (faces[i].time != '' && faces[i].name != '' && faces[i].name !== undefined)
           {
             html += '<div class=\"hcmsButton\" onclick=\"jumpToFaceOnVideo(' + faces[i].time + ');\">' + faces[i].name;
             if (i+1 < faces.length) html += ', ';
@@ -7697,33 +7704,36 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   
         $(html).insertBefore('#videoplayer_container');
         
-        // existing face defintions
-        for (var i = 0; i < faces.length; i++)
+        if (type == 'all')
         {
-          if (faces[i].time != '')
+          // existing face defintions
+          for (var i = 0; i < faces.length; i++)
           {
-            var time_id = faces[i].time.toString().replace ('.', '_');
-            var id = i + '_' + time_id;
-            
-            $('<div>', {
-              'id': 'hcmsFace' + id,
-              'class': 'hcmsFace',
-              'onclick': 'switchFaceName(\"hcmsFaceName' + id + '\")',
-              'css': {
-                'visibility': 'hidden', 
-                'position': 'absolute',
-                'left': faces[i].x + 'px',
-                'top': faces[i].y + 'px',
-                'width': faces[i].width + 'px',
-                'height': faces[i].height + 'px'
-              }
-            })
-            .insertAfter(videotag_id);
-            
-            videoface_id.push(id);
-            var offset = (116 - faces[i].width) / 2;
-  
-            $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (faces[i].x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + faces[i].time + \", \\\"x\\\":\" + faces[i].x + \", \\\"y\\\":\" + faces[i].y + \", \\\"width\\\":\" + faces[i].width + \", \\\"height\\\":\" + faces[i].height + \"' /><input type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='\" + faces[i].name + \"' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + id));
+            if (faces[i].time != '')
+            {
+              var time_id = faces[i].time.toString().replace ('.', '_');
+              var id = i + '_' + time_id;
+              
+              $('<div>', {
+                'id': 'hcmsFace' + id,
+                'class': 'hcmsFace',
+                'onclick': 'switchFaceName(\"hcmsFaceName' + id + '\")',
+                'css': {
+                  'visibility': 'hidden', 
+                  'position': 'absolute',
+                  'left': faces[i].x + 'px',
+                  'top': faces[i].y + 'px',
+                  'width': faces[i].width + 'px',
+                  'height': faces[i].height + 'px'
+                }
+              })
+              .insertAfter(videotag_id);
+              
+              videoface_id.push(id);
+              var offset = (116 - faces[i].width) / 2;
+    
+              $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (faces[i].x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + faces[i].time + \", \\\"x\\\":\" + faces[i].x + \", \\\"y\\\":\" + faces[i].y + \", \\\"width\\\":\" + faces[i].width + \", \\\"height\\\":\" + faces[i].height + \"' /><input type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='\" + faces[i].name + \"' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + id));
+            }
           }
         }
       }
@@ -7743,8 +7753,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (video[0].paused)
       {
         video[0].play();
-        $('.hcmsFace').hide();
-        $('.hcmsFaceName').hide();
+        $('.hcmsFace').css('visibility', 'hidden');
+        $('.hcmsFaceName').css('visibility', 'hidden');
         return;
       }
       else
@@ -7779,7 +7789,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             videoface_id.push(id);
             var offset = (116 - Math.round (faces[i].width)) / 2;
 
-            $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (Math.round (faces[i].x) - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><input type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + id));
+            $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (Math.round (faces[i].x) - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round (faces[i].x) + \", \\\"y\\\":\" + Math.round (faces[i].y) + \", \\\"width\\\":\" + Math.round (faces[i].width) + \", \\\"height\\\":\" + Math.round (faces[i].height) + \"' /><input type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + id));
           }
         },
         error:function (code, message) {
@@ -7791,7 +7801,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   
   function jumpToFaceOnVideo (time)
   {
-    var faces = faces_json;
+    if (typeof faces_json === 'string') var faces = JSON.parse (faces_json);
+    else var faces = faces_json;
     
     // hide all faces
     $('.hcmsFace').css('visibility', 'hidden');
@@ -7804,21 +7815,32 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     
     video[0].play();
     
-    for (var i = 0; i < faces.length; i++)
+    for (var i = 0; i < videoface_id.length; i++)
     {
-      if (faces[i].time == time)
+      if (videoface_id[i] != '' && videoface_id[i].indexOf('_') > 0)
       {
-        var time_id = time.toString().replace ('.', '_');
-        var id = i + '_' + time_id;
+        var videotime_id = time.toString().replace ('.', '_');
+        var start = videoface_id[i].indexOf('_') + 1;
+        var facetime_id = videoface_id[i].substring(start); 
+        
+        if (videotime_id == facetime_id)
+        {
+          if (video[0].paused)
+          {
+            // video is already paused
+          }
+          else
+          {
+            // set video time
+            setTimeout(function() { video[0].currentTime = time; }, 300);
+            
+            // pause video
+            video[0].pause();
+          }
 
-        // set video time
-        setTimeout(function() { video[0].currentTime = time; }, 300);
-        
-        // pause video
-        video[0].pause();
-        
-        // show faces
-        hcms_switchSelector('hcmsFace' + id);
+          // show face
+          $('#hcmsFace' + videoface_id[i]).css ('visibility', 'visible');
+        }
       }
     }
   }
@@ -7928,7 +7950,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         {
           // get video time
           var time_id = time.toString().replace ('.', '_');
-          var id = Math.floor(Math.random() * 90000); + '_' + time_id;
+          var id = Math.floor(Math.random() * 90000) + '_' + time_id;
       
           $('<div>', {
             'id': 'hcmsFace' + id,
@@ -7947,12 +7969,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           videoface_id.push(id);
           var offset = (116 - width) / 2;
       
-          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(width) + \", \\\"height\\\":\" + Math.round(height) + \"' /><input type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + id));
+          $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (pos_y + height + 6) +\"px; left:\" + (pos_x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + time + \", \\\"x\\\":\" + Math.round(pos_x) + \", \\\"y\\\":\" + Math.round(pos_y) + \", \\\"width\\\":\" + Math.round(width) + \", \\\"height\\\":\" + Math.round(height) + \"' /><input type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + id));
         }
       }
     }
   }
-  
+
   function switchFaceName (id)
   {
     // uses visibilty
@@ -8042,15 +8064,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // save faces in hidden field
       if (faces.length > 0)
       {
-        var json = '[' + faces.join(', ') + ']';
-        $('#faces').val(json);
+        faces_json = '[' + faces.join(', ') + ']';
+        $('#faces').val(faces_json);
       }
     }
     // remove faces defintion
     else
     {
-      var json = '';
-      $('#faces').val(json);
+      faces_json = '';
+      $('#faces').val(faces_json);
     }
   }
   
@@ -8094,7 +8116,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     if (is_image ($mediafile)) $add_onload .= "
     detectFaceOnImage();";
     elseif (is_video ($mediafile)) $add_onload .= "
-    initFaceOnVideo();";
+    initFaceOnVideo('all');";
   }
   
   // onload event / document ready
