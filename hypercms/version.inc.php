@@ -2050,6 +2050,8 @@ Release 02/2017
 - Update of annotions JS library
 - Implementation of download function for annotations in UI API
 - Implementation of annotation tools looking (select no tool)
+- Renamed JS function hcms_sortObject to hcms_sortObjectKey in main.js
+- Implementation of new JS function hcms_sortObjectValue in main.js
 */
 
 // current version

@@ -704,7 +704,7 @@ function setsegements ()
     document.getElementById('mediaplayer_segmentbar').innerHTML = '';
     
     // sort segments by plsit time
-    segments = hcms_sortObject (segments);
+    segments = hcms_sortObjectKey (segments);
     
     // write segments as JSON string to hidden field
     var json_string = JSON.stringify (segments);

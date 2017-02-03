@@ -7579,15 +7579,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   // ----- Face detection -----
   // stored faces definition
   var faces_json = ".$faces_json.";
-  
-  // sort by name
-  if (faces_json != '')
-  {
-    faces_json.sort(function(a, b){
-      return a.name - b.name;
-    });
-  }
-      
+    
   // memory for all face IDs
   var videoface_id = [];
   var imageface_id = [];
@@ -7670,6 +7662,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (typeof faces_json === 'string') var faces = JSON.parse (faces_json);
       else var faces = faces_json;
       
+      // sort by name  
+      faces = sortObjectValue (faces, 'name', true);
+      
       // get video width
       if ($('#hcms_mediaplayer_asset_html5_api').length > 0)
       {
@@ -7732,7 +7727,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               videoface_id.push(id);
               var offset = (116 - faces[i].width) / 2;
     
-              $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (faces[i].x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + faces[i].time + \", \\\"x\\\":\" + faces[i].x + \", \\\"y\\\":\" + faces[i].y + \", \\\"width\\\":\" + faces[i].width + \", \\\"height\\\":\" + faces[i].height + \"' /><input type='text' id='facename\" + id + \"' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='\" + faces[i].name + \"' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + id));
+              $(\"<div id='hcmsFaceName\" + id + \"' onclick='clickFaceName();' class='hcmsInfoBox hcmsFaceName' style='visibility:hidden; position:absolute; top:\" + (faces[i].y + faces[i].height + 6) +\"px; left:\" + (faces[i].x - offset) + \"px;'><input type='hidden' id='facedetails\" + id + \"' value='\\\"time\\\":\" + faces[i].time + \", \\\"x\\\":\" + faces[i].x + \", \\\"y\\\":\" + faces[i].y + \", \\\"width\\\":\" + faces[i].width + \", \\\"height\\\":\" + faces[i].height + \"' /><input type='text' id='facename\" + id + \"' onblur='collectFaces(); initFaceOnVideo();' placeholder='".getescapedtext ($hcms_lang['name'][$lang], $charset, $lang)."' value='\" + faces[i].name + \"' style='width:100px;' /></div>\").insertAfter($('#hcmsFace' + id));
             }
           }
         }

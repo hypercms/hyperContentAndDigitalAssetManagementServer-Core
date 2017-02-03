@@ -892,10 +892,11 @@ function hcms_sortTable (_c, _isNumber)
 
 // ------------------------------ sort object --------------------------------
 
-function hcms_sortObject (object)
+function hcms_sortObjectKey (object)
 {
-  if (typeof object === 'object')
+  if (typeof object === 'object' || typeof object === 'string')
   {
+    if (typeof object === 'string') var object = JSON.parse (object);
     var sorted = {},
     key, a = [];
   
@@ -917,6 +918,27 @@ function hcms_sortObject (object)
     return sorted;
   }
   else return false;
+}
+
+function sortObjectValue (object, prop, asc)
+{
+  if ((typeof object === 'object' || typeof object === 'string') && prop != '')
+  {
+    if (typeof object === 'string') var object = JSON.parse (object);
+
+    object = object.sort(function(a, b) {
+      if (asc)
+      {
+        return (a[prop] > b[prop]) ? 1 : ((a[prop] < b[prop]) ? -1 : 0);
+      }
+      else
+      {
+        return (b[prop] > a[prop]) ? 1 : ((b[prop] < a[prop]) ? -1 : 0);
+      }
+    });
+  }
+  
+  return object;
 }
 
 // ------------------------------ Video Text Track (VTT) --------------------------------
