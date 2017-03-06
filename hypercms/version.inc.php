@@ -1932,7 +1932,7 @@ Release 11/2016
 - New default plugin configuration file for the installation
 
 Version 6.1.31
-Release 11/2016
+Release 12/2016
 - Modifications in main CSS of all themes
 - Redesign of logon screen with support for wallpaper service
 - Implementation of new function getwallpaper in get API
@@ -1940,7 +1940,7 @@ Release 11/2016
 - Improvements in mobile CSS for mobile clients
 
 Version 6.1.32
-Release 11/2016
+Release 12/2016
 - Modification of max. file size for creating previews in main config file
 - Modification of function showmedia in UI API in order to recreate annotation images if the file has been changed
 - Modification of function createmedia in media API in order to remove annotation images before recreation
@@ -1950,7 +1950,7 @@ Release 11/2016
 - Modified standard screen size of 576 x 432 pixel for preview videos
 
 Version 6.1.33
-Release 11/2016
+Release 12/2016
 - Removed trim of template content in function edittemplate in main API
 - Bug fix: control_objectlist_menu and control_content_menu did not reset media options if the original asset has been requested
 - Bug fix: Service mediadownload and mediawrapper did not verify the converted file
@@ -1959,14 +1959,14 @@ Release 11/2016
 - Bug fix: Removed touch of media files in service savecontent in order to avoid recreation of annotation images for documents
 
 Version 6.1.34
-Release 11/2016
+Release 12/2016
 - Removed error log event in function link_db_load in link API due to an error log entry if the link index is empty
 - Improvements in function uploadfile in main API
 - Implementation of verification of executable in function createdocument in media API
 - Bug fix: Function createmedia did try to recreate PDF preview file from documents without verifying that an executable for the conversion exists
 
 Version 6.1.35
-Release 12/2016
+Release 01/2017
 - Modifications in function rdbms_searchcontent in order to support the combination of a general search and detailed search
 - Implementation of new JS function hcms_convertGet2Post in main.js
 - Implementation of content extraction from container in media_edit_page in order to avoid issues with the length restriction of GET requests
@@ -1977,7 +1977,7 @@ Release 12/2016
 - Removed character set conversion of link text and alttext in media_edit_page and link_edit_page
 
 Version 6.1.36
-Release 12/2016
+Release 01/2017
 - Added log information in function publishobject and unpublishobject for success events
 - Display only a limit of 1000 log entries from event log, starting with the last log entry
 - Improvements in log_export
@@ -2000,7 +2000,7 @@ Release 01/2017
 
 Version 6.1.38
 Release 01/2017
-- Modifications in search_objectlist in order to display columns of list view correctly when minimum columns are used (usage of CSS min-widh for the location column)
+- Modifications in search_objectlist in order to display columns of list view correctly when minimum columns are used (usage of CSS min-width for the location column)
 - Modifications in function restoremediafile since cross partition move/rename of files is not supported by PHP (rename is replaced by copy and delete)
 - Modifications in function getvideoinfo in get API to present video and audio codec names in uppercase letters
 - Implementation of Valiant360, a player for 360 degree panorama videos and photos in the JS libraries (does not support mobile browsers)
@@ -2012,15 +2012,15 @@ Release 01/2017
 - Implementation of new function update_recipient_v6139 in Update API in order to create new indexes on table recipient
 - Modifications of createtables.sql in order to add the news indexes on table recipient for the installation routine
 - Modifications in function userlogin in Security API in order to execute the new update on the database
-- Modification of default max. search results to 300 in function rdbms_searchcontent, rdbms_searchuser, and rdbms_searchrecipientn in DB Connect
+- Modification of default max. search results to 300 in function rdbms_searchcontent, rdbms_searchuser, and rdbms_searchrecipient in DB Connect
 - Modification of default max. event entries in log viewer to 500 records in log_list
 
 Version 6.1.40
-Release 01/2017
+Release 02/2017
 - Modifications in explorer in order to support search of user name and e-mail address of a sender or recipient
 - Modification of default max. event entries in log viewer to 500 records in logviewer plugin
 - Renamed software version variable $version to $mgmt_config['version'] in all files
-- Bug fix: Modification in template engine to support upper and lower case characters for the the replacmenet of application tags in order to avoid errors during publishing
+- Bug fix: Modification in template engine to support upper and lower case characters for the the replacement of application tags in order to avoid errors during publishing
 
 Version 6.2.0
 Release 02/2017
@@ -2036,7 +2036,7 @@ Release 02/2017
 - Modifications in function creatmedia for improved JPEG backround support in Media API
 
 Version 6.2.1
-Release 02/2017
+Release 03/2017
 - Implementation of automtatic and manual face detection for images and videos on client side (no mobile device support!)
 - Implementation of new configuration parameter $mgmt_config['facedetection'] in main configuration file
 - Implementation of new CSS class 'hcmsFace'
@@ -2044,7 +2044,7 @@ Release 02/2017
 - Modifications in function uploadfile in Main API in order to support face detection data removal after a file update
 - Renamed JS function setVTTtime to setPlayerTime
 - Update of all language files
-- Upgrad of template engine to JQuery version 3.1.1 in order to support MS Edge for video face detection support
+- Upgrade of template engine to JQuery version 3.1.1 in order to support MS Edge for video face detection support
 - Improvements in explorer, hypercms_project, folder_explorer, and DB Connect
 - Modification of function showmedia in UI API in order to set width and height of annotation canvas
 - Update of annotions JS library
@@ -2052,8 +2052,12 @@ Release 02/2017
 - Implementation of annotation tools looking (select no tool)
 - Renamed JS function hcms_sortObject to hcms_sortObjectKey in main.js
 - Implementation of new JS function hcms_sortObjectValue in main.js
+
+Version 6.2.2
+Release 03/2017
+- Support of face detection for images and videos for mobile devices (function showmedia and buildview)
 */
 
 // current version
-$mgmt_config['version'] = "Version 6.2.1";
+$mgmt_config['version'] = "Version 6.2.2";
 ?>

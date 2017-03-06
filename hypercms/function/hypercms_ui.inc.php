@@ -1677,7 +1677,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $mediaview .= "
                 <input type=\"hidden\" id=\"VTT\" name=\"\" value=\"\" />
                 <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"hcms_openVTTeditor('vtt_container');\">".getescapedtext ($hcms_lang['video-text-track'][$lang], $hcms_charset, $lang)."</button>&nbsp;";
-            if (!empty ($mgmt_config['facedetection']) && !$is_mobile) $mediaview .= "
+            if (!empty ($mgmt_config['facedetection'])) $mediaview .= "
                 <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"detectFaceOnVideo();\">".getescapedtext ($hcms_lang['detect-faces'][$lang], $hcms_charset, $lang)."</button>&nbsp;";
             $mediaview .= "
                 <button type=\"button\" class=\"hcmsButtonGreen\" onclick=\"if (typeof setSaveType == 'function') setSaveType('mediarendering_so', '', 'post');\">".getescapedtext ($hcms_lang['edit'][$lang], $hcms_charset, $lang)."</button>&nbsp;

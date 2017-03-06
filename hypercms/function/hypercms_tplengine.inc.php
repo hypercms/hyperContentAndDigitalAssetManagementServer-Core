@@ -8106,7 +8106,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   if (is_array ($vtt_array) && sizeof ($vtt_array) > 0) $vtt_records = json_encode ($vtt_array);
   
   // face detection for images (no mobile support)
-  if (!empty ($mediafile) && !empty ($mgmt_config['facedetection']) && !$is_mobile)
+  if (!empty ($mediafile) && !empty ($mgmt_config['facedetection']))
   {
     if (is_image ($mediafile)) $add_onload .= "
     detectFaceOnImage();";
