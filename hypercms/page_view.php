@@ -138,7 +138,7 @@ if (@substr_count ($follow, "://") > 0 || @substr_count (strtolower ($follow), "
   }
   else $add_code = "<a href=\"".$follow."\" target=\"_blank\">".$follow."</a>";
   
-  echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
+  echo "<!DOCTYPE html>\n";
   echo "<html>\n";
   echo "<head>\n";
   echo "<title>hyperCMS</title>\n";

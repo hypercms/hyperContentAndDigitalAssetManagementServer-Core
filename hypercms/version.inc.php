@@ -2007,7 +2007,7 @@ Release 01/2017
 - Implementation of eleVR web player in the JS libraries, the player lets you watch 360 flat and stereo video on your Oculus Rift or Android device with VR headset (Cardboard, Durovis Dive, etc.) from a web browser. It is written with js, html5, and webGL (Using keyboard rotation controls, the player works on standard Firefox and Chrome on Windows, Mac, and Linux. It also runs on Safari if webgl is enabled)
 
 Version 6.1.39
-Release 01/2017
+Release 02/2017
 - Bug fix: Function rdbms_searchrecipient in DB Connect did not trim the user names for the query
 - Implementation of new function update_recipient_v6139 in Update API in order to create new indexes on table recipient
 - Modifications of createtables.sql in order to add the news indexes on table recipient for the installation routine
@@ -2056,6 +2056,13 @@ Release 03/2017
 Version 6.2.2
 Release 03/2017
 - Support of face detection for images and videos for mobile devices (function showmedia and buildview)
+- Modification of window size for action 'checkin' and 'favorites_delete' in JS function hcms_createContextmenuItem in contextmenu.js
+- Conversion of all window sizes from string to integer in contextmenu.js
+- Removed hardcoded width and height window attributes from all JS functions in contextmenu.js 
+- Bug fix: Google API icons reference was set to HTTP instead of HTTPS in search_form
+- Bug fix: Corrected HTML-tag in page_view, popup_save_dropbox and image_rendering to support HTML5
+- Bug fix: Function lockobject in main API used non existing function objectname instead of function getobject for folders
+- Bug fix: Function unlockobject in main API used non existing function objectname instead of function getobject for folders
 */
 
 // current version

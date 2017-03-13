@@ -294,11 +294,11 @@ $(document).ready(function()
           {
             if (gribBoundingBox.getBounds().contains(markers[key].marker.getPosition())) 
             {
-              markers[key].marker.setIcon("http://maps.google.com/mapfiles/ms/icons/blue.png")
+              markers[key].marker.setIcon("https://maps.google.com/mapfiles/ms/icons/blue.png")
             }
             else
             {
-              markers[key].marker.setIcon("http://maps.google.com/mapfiles/ms/icons/red.png")
+              markers[key].marker.setIcon("https://maps.google.com/mapfiles/ms/icons/red.png")
             }
           }
         }

@@ -13011,7 +13011,7 @@ function pasteobject ($site, $location, $user)
 // output: array
 
 // description:
-// This function locks a page, component or asset
+// This function locks an object for a specific user
 
 function lockobject ($site, $location, $page, $user)
 {      
@@ -13050,7 +13050,7 @@ function lockobject ($site, $location, $page, $user)
       $page = ".folder";
       $fileinfo = getfileinfo ($site, $location.$page, $cat);
       $filetype = $fileinfo['type'];   
-      $pagename = specialchr_decode (objectname ($location)); 
+      $pagename = specialchr_decode (getobject ($location)); 
     }
     else
     {
@@ -13146,7 +13146,7 @@ function lockobject ($site, $location, $page, $user)
 // output: array
 
 // description:
-// This function unlocks a page or component
+// This function unlocks an object of a specific user
 
 function unlockobject ($site, $location, $page, $user)
 {      
@@ -13185,7 +13185,7 @@ function unlockobject ($site, $location, $page, $user)
       $page = ".folder";
       $fileinfo = getfileinfo ($site, $location.$page, $cat);
       $filetype = $fileinfo['type'];   
-      $pagename = specialchr_decode (objectname ($location)); 
+      $pagename = specialchr_decode (getobject ($location)); 
     }
     else
     {
