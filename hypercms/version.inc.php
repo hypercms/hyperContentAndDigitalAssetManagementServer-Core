@@ -2063,8 +2063,25 @@ Release 03/2017
 - Bug fix: Corrected HTML-tag in page_view, popup_save_dropbox and image_rendering to support HTML5
 - Bug fix: Function lockobject in main API used non existing function objectname instead of function getobject for folders
 - Bug fix: Function unlockobject in main API used non existing function objectname instead of function getobject for folders
+
+Version 6.2.3
+Release 04/2017
+- Bug fix: The action name has not been initalized in explorer leading to a wrong search action
+- Implementation of new JS functions for the activation of the different search tabs and features in explorer
+- Removed second action attribute in search form for recipient search in explorer
+- Implementation of save serach deactivation after each saved search
+- Modification of open search tabs after initalization of explorer
+- New configuration of search tab button actions in explorer
+- Implementation of open and close action for plus/minus buttuns of search tabs in explorer
+- Implementation of lock feature for submit of search if all search tabs in explorer are closed
+- Improvements in DB Connect
+- Improvements in userlogin
+- Implementation of a processing message for each file upload in popup_upload_html
+- Modification of CSS for file upload bar
+- Modification of viewport scale in popup_upload_html
+- Bug fix: ImageMagick failed to convert PSD files since it requires the layer [0] after the source file name 
 */
 
 // current version
-$mgmt_config['version'] = "Version 6.2.2";
+$mgmt_config['version'] = "Version 6.2.3";
 ?>

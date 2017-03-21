@@ -1431,6 +1431,172 @@ else
         });
       });
     }
+    
+    function activateFulltextSearch ()
+    {
+      if (document.getElementById('fulltextLayer').style.display == 'none')
+      {
+        document.forms['searchform_advanced'].elements['action'].value = 'base_search';
+        hcms_showInfo('fulltextLayer',0);
+        hcms_hideInfo('advancedLayer');
+        hcms_hideInfo('keywordsLayer');
+        hcms_hideInfo('imageLayer');
+        hcms_hideInfo('filetypeLayer');
+        hcms_hideInfo('mapLayer');
+        hcms_hideInfo('dateLayer');
+        hcms_hideInfo('idLayer');
+        hcms_hideInfo('recipientLayer');
+      }
+      else
+      {
+        hcms_hideInfo('fulltextLayer');
+      }
+    }
+    
+    function activateAdvancedSearch ()
+    {
+      if (document.getElementById('advancedLayer').style.display == 'none')
+      {
+        document.forms['searchform_advanced'].elements['action'].value = 'base_search';
+        hcms_hideInfo('fulltextLayer');
+        hcms_showInfo('advancedLayer',0);
+        hcms_hideInfo('keywordsLayer');
+        hcms_hideInfo('imageLayer');
+        hcms_hideInfo('filetypeLayer');
+        hcms_hideInfo('mapLayer');
+        hcms_hideInfo('dateLayer');
+        hcms_hideInfo('idLayer');
+        hcms_hideInfo('recipientLayer');
+      }
+      else
+      {
+        hcms_hideInfo('advancedLayer');
+      }
+    }
+    
+    function activateKeywordSearch ()
+    {
+      if (document.getElementById('keywordsLayer').style.display == 'none')
+      {
+        document.forms['searchform_advanced'].elements['action'].value = 'base_search';
+        hcms_hideInfo('fulltextLayer');
+        hcms_hideInfo('advancedLayer');
+        hcms_hideInfo('imageLayer');
+        hcms_hideInfo('filetypeLayer');
+        hcms_showInfo('keywordsLayer',0);
+        hcms_hideInfo('mapLayer');
+        hcms_hideInfo('dateLayer');
+        hcms_hideInfo('idLayer');
+        hcms_hideInfo('recipientLayer');
+      }
+      else
+      {
+        hcms_hideInfo('keywordsLayer');
+      }
+    }
+    
+    function activateImageSearch ()
+    {
+      if (document.getElementById('imageLayer').style.display == 'none')
+      {
+        document.forms['searchform_advanced'].elements['action'].value = 'base_search';
+        hcms_hideInfo('fulltextLayer');
+        hcms_hideInfo('advancedLayer');
+        hcms_hideInfo('keywordsLayer');
+        hcms_showInfo('imageLayer',0);
+        hcms_hideInfo('filetypeLayer');
+        hcms_hideInfo('mapLayer');
+        hcms_hideInfo('dateLayer');
+        hcms_hideInfo('idLayer');
+        hcms_hideInfo('recipientLayer');
+      }
+      else
+      {
+        hcms_hideInfo('imageLayer');
+      }
+    }
+    
+    function activateFiletypeSearch ()
+    {
+      if (document.getElementById('filetypeLayer').style.display == 'none')
+      {
+        document.forms['searchform_advanced'].elements['action'].value = 'base_search';
+        hcms_hideInfo('imageLayer');
+        hcms_showInfo('filetypeLayer',0);
+        hcms_hideInfo('dateLayer');
+        hcms_hideInfo('idLayer');
+        hcms_hideInfo('recipientLayer');
+      }
+      else
+      {
+        hcms_hideInfo('filetypeLayer');
+      }
+    }
+    
+    function activateGeolocationSearch ()
+    {
+      document.forms['searchform_advanced'].elements['action'].value = 'base_search';
+      hcms_switchInfo('mapLayer');
+      initMap();
+      hcms_hideInfo('dateLayer');
+      hcms_hideInfo('idLayer');
+      hcms_hideInfo('recipientLayer');
+    }
+    
+    function activateLastmodifiedSearch ()
+    {
+      document.forms['searchform_advanced'].elements['action'].value = 'base_search';
+      hcms_switchInfo('dateLayer');
+      hcms_hideInfo('idLayer');
+      hcms_hideInfo('recipientLayer');
+    }
+    
+    function activateIdSearch ()
+    {
+      if (document.getElementById('idLayer').style.display == 'none')
+      {
+        document.forms['searchform_advanced'].elements['action'].value = 'base_search';
+        hcms_hideInfo('fulltextLayer',0);
+        hcms_hideInfo('advancedLayer');
+        hcms_hideInfo('keywordsLayer');
+        hcms_hideInfo('imageLayer');
+        hcms_hideInfo('filetypeLayer');
+        hcms_hideInfo('mapLayer');
+        hcms_hideInfo('dateLayer');
+        hcms_showInfo('idLayer',0);
+        hcms_hideInfo('recipientLayer');
+      }
+      else
+      {
+        hcms_hideInfo('idLayer');
+      }
+    }
+    
+    function activateRecipientSearch ()
+    {
+      if (document.getElementById('recipientLayer').style.display == 'none')
+      {
+        document.forms['searchform_advanced'].elements['action'].value = 'recipient';
+        hcms_hideInfo('fulltextLayer',0);
+        hcms_hideInfo('advancedLayer');
+        hcms_hideInfo('keywordsLayer');
+        hcms_hideInfo('imageLayer');
+        hcms_hideInfo('filetypeLayer');
+        hcms_hideInfo('dateLayer');
+        hcms_hideInfo('mapLayer');
+        hcms_hideInfo('idLayer');
+        hcms_showInfo('recipientLayer',0);
+      }
+      else
+      {
+        hcms_hideInfo('recipientLayer');
+      }
+    }
+    
+    function activateSaveSearch ()
+    {
+      hcms_switchInfo('saveLayer');
+    }
 
     function startSearch (type)
     {
@@ -1439,8 +1605,21 @@ else
       
       // search form
       var form = document.forms['searchform_advanced'];
+      
+      // verify that at least one search tab is open
+      var opened = false;
+      
+      if (document.getElementById('fulltextLayer').style.display != 'none') opened = true;
+      else if (document.getElementById('advancedLayer').style.display != 'none') opened = true;
+      else if (document.getElementById('keywordsLayer').style.display != 'none') opened = true;
+      else if (document.getElementById('imageLayer').style.display != 'none') opened = true;
+      else if (document.getElementById('filetypeLayer').style.display != 'none') opened = true;
+      else if (document.getElementById('mapLayer').style.display != 'none') opened = true;
+      else if (document.getElementById('dateLayer').style.display != 'none') opened = true;
+      else if (document.getElementById('idLayer').style.display != 'none') opened = true;
+      else if (document.getElementById('recipientLayer').style.display != 'none') opened = true;
     
-      if (form)
+      if (form && opened)
       {
         if (!iframe)
         {
@@ -1544,6 +1723,9 @@ else
             }
           }
           
+          // uncheck save search
+          document.forms['searchform_advanced'].elements['search_save'].checked = false;
+          
           return true;
         }
         // wait 2000 ms
@@ -1609,11 +1791,7 @@ else
     $(document).ready(function ()
     {
       // initialize form
-      hcms_showInfo('fulltextLayer',0);
-      hcms_hideInfo('advancedLayer');
-      hcms_hideInfo('imageLayer');
-      hcms_showInfo('filetypeLayer',0);
-      hcms_hideInfo('mapLayer');
+      activateFulltextSearch();
     
       // search history
       <?php
@@ -1744,9 +1922,9 @@ else
 
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></b>
-          <img onClick="hcms_showInfo('fulltextLayer',0); hcms_hideInfo('advancedLayer'); hcms_hideInfo('keywordsLayer'); hcms_hideInfo('idLayer'); hcms_hideInfo('recipientLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+          <img onClick="activateFulltextSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
         </div>
-        <div id="fulltextLayer"> 
+        <div id="fulltextLayer" style="display:none;"> 
           <label for="search_expression"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?></label><br />
           <input type="text" id="search_expression" name="search_expression" style="width:220px;" maxlength="200" /><br />
           <label for="publication"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></label><br />
@@ -1770,7 +1948,7 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['advanced-search'][$lang]); ?></b>
-          <img onClick="hcms_hideInfo('fulltextLayer'); hcms_showInfo('advancedLayer',0); hcms_hideInfo('keywordsLayer'); hcms_hideInfo('imageLayer'); hcms_showInfo('filetypeLayer',0); hcms_hideInfo('idLayer'); hcms_hideInfo('recipientLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+          <img onClick="activateAdvancedSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
         </div>
         <div id="advancedLayer" style="display:none;">
           <label for="template"><?php echo getescapedtext ($hcms_lang['based-on-template'][$lang]); ?></label><br />
@@ -1842,7 +2020,7 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['keywords'][$lang]); ?></b>
-          <img onClick="hcms_hideInfo('fulltextLayer',0); hcms_hideInfo('advancedLayer'); hcms_hideInfo('imageLayer'); hcms_showInfo('keywordsLayer',0); hcms_hideInfo('idLayer'); hcms_hideInfo('recipientLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+          <img onClick="activateKeywordSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
         </div>
         <div id="keywordsLayer" style="display:none;">
           <label for="publication"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></label><br />
@@ -1907,7 +2085,7 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['image-search'][$lang]); ?></b>
-          <img onClick="hcms_showInfo('fulltextLayer',0); hcms_hideInfo('advancedLayer'); hcms_hideInfo('keywordsLayer'); hcms_showInfo('imageLayer',0); hcms_hideInfo('filetypeLayer'); hcms_hideInfo('idLayer'); hcms_hideInfo('recipientLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+          <img onClick="activateImageSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
         </div>
         <div id="imageLayer" style="display:none;">
              
@@ -1956,9 +2134,9 @@ else
           
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['file-type'][$lang]."/".$hcms_lang['file-size'][$lang]); ?></b>
-          <img onClick="hcms_hideInfo('imageLayer'); hcms_showInfo('filetypeLayer',0); hcms_hideInfo('idLayer'); hcms_hideInfo('recipientLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+          <img onClick="activateFiletypeSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
         </div>
-        <div id="filetypeLayer" style="display:inline;">
+        <div id="filetypeLayer" style="display:none;">
           <input type="checkbox" id="search_format_page" name="search_format[]" value="page" checked="checked" />&nbsp;<label for="search_format_page"><?php echo getescapedtext ($hcms_lang['page'][$lang]); ?></label><br />
           <input type="checkbox" id="search_format_comp" name="search_format[]" value="comp" checked="checked" />&nbsp;<label for="search_format_comp"><?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label><br />
           <input type="checkbox" id="search_format_image" name="search_format[]" value="image" checked="checked" />&nbsp;<label for="search_format_image"><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label><br />
@@ -1975,7 +2153,7 @@ else
         <?php if (!$is_mobile) { ?>
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?></b>
-          <img onClick="hcms_switchInfo('mapLayer'); initMap(); hcms_hideInfo('idLayer'); hcms_hideInfo('recipientLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+          <img onClick="activateGeolocationSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
         </div>
         <div id="mapLayer" style="display:none;">
           <div style="position:relative; left:190px; top:15px; width:22px; height:22px; z-index:1000;"><img src="<?php echo getthemelocation(); ?>img/info.gif" title="<?php echo getescapedtext ($hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag'][$lang]); ?>" /></div>
@@ -1990,9 +2168,9 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?></b>
-          <img onClick="hcms_switchInfo('dateLayer'); hcms_hideInfo('idLayer'); hcms_hideInfo('recipientLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+          <img onClick="activateLastmodifiedSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
         </div>
-        <div id="dateLayer" style="display:inline;">
+        <div id="dateLayer" style="display:none;">
           <table border="0" cellspacing="0" cellpadding="2">     
             <tr>
               <td> 
@@ -2016,7 +2194,7 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></b>
-          <img onClick="hcms_hideInfo('fulltextLayer',0); hcms_hideInfo('advancedLayer'); hcms_hideInfo('keywordsLayer'); hcms_hideInfo('imageLayer'); hcms_hideInfo('filetypeLayer'); hcms_hideInfo('mapLayer'); hcms_hideInfo('dateLayer'); hcms_showInfo('idLayer',0); hcms_hideInfo('recipientLayer');" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+          <img onClick="activateIdSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
         </div>
         <div id="idLayer" style="display:none;">
           <label nowrap="object_id"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></label><br />
@@ -2028,10 +2206,9 @@ else
         
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?></b>
-          <img onClick="hcms_hideInfo('fulltextLayer',0); hcms_hideInfo('advancedLayer'); hcms_hideInfo('keywordsLayer'); hcms_hideInfo('imageLayer'); hcms_hideInfo('filetypeLayer'); hcms_hideInfo('dateLayer');hcms_hideInfo('mapLayer'); hcms_hideInfo('idLayer'); hcms_showInfo('recipientLayer',0);" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+          <img onClick="activateRecipientSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
         </div>
         <div id="recipientLayer" style="display:none;">
-          <input type="hidden" name="action" value="recipient" />
           <label for="from_user"><?php echo getescapedtext ($hcms_lang['sender'][$lang]); ?></label><br />
           <input type="text" id="from_user" name="from_user" style="width:220px;" maxlength="200" /><br />
           <label for="to_user"><?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?></label><br />
@@ -2059,7 +2236,7 @@ else
 
         <div style="display:block; margin-bottom:3px;">
           <b><?php echo getescapedtext ($hcms_lang['save-search'][$lang]); ?></b>
-          <img onClick="hcms_switchInfo('saveLayer'); " align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
+          <img onClick="activateSaveSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus_small.png" alt="+/-" title="+/-" />
         </div>
         <div id="saveLayer" style="display:none;">
           <?php

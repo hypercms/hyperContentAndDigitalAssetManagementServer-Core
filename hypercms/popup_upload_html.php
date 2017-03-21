@@ -90,7 +90,7 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#464646" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
+<meta name="viewport" content="width=device-width, initial-scale=0.6, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css">
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/jquery-fileupload.css" type="text/css">
 
@@ -106,6 +106,7 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 <!-- JQuery File Upload -->
 <script src="javascript/jquery/plugins/jquery.fileupload.js" type="text/javascript"></script>
 <script src="javascript/jquery/plugins/jquery.iframe-transport.js" type="text/javascript"></script>
+
 <!-- Dropbox dropin.js -->
 <script type="text/javascript" src="https://www.dropbox.com/static/api/1/dropins.js" id="dropboxjs" data-app-key="<?php if (!empty ($mgmt_config['dropbox_appkey'])) echo $mgmt_config['dropbox_appkey']; ?>"></script>
 
@@ -328,7 +329,7 @@ $(document).ready(function ()
     var buttons = buildButtons( data );
     
     // Build message field
-    msg = $('<div></div>');
+    msg = $('<div style="font-size:11px;"></div>');
     msg.html(hcms_entity_decode(text))
        .addClass('inline file_message');
        
@@ -381,7 +382,7 @@ $(document).ready(function ()
     limitConcurrentUpload: 3,
     url: 'service/uploadfile.php',
     cache: false,
-    // Our script only works when singleFileUploads are true
+    // Script only works when singleFileUploads is true
     singleFileUploads: true,
     add: function (e, data) {
       
@@ -420,9 +421,13 @@ $(document).ready(function ()
       selectcount++;
     }
   })
+  
+  // upload file
   .bind('fileuploadsend', function(e, data) {        
     buildFileUpload(data);
   })
+  
+  // file upload is finished
   .bind('fileuploaddone', function(e, data) {
     
     var file = "";
@@ -471,21 +476,33 @@ $(document).ready(function ()
       selectcount--;
     }, hcms_waitTillRemove);
   })
+  
+  // file upload failed
   .bind('fileuploadfail', function(e, data) {
     
     // Put out message if possible
     if(data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.UNSENT)
     {
-      buildFileMessage( data, ajax.responseText, false);
+      buildFileMessage(data, ajax.responseText, false);
     }       
   })
-  .bind('fileuploadprogress', function( e, data) {
+  
+  // progress bar
+  .bind('fileuploadprogress', function(e, data) {
     var elem = data.context.find('.progress .meter');
     
     var progress = parseInt(data.loaded / data.total * 100, 10);
     
-    elem.css('width', progress+'%')
-        .html('&nbsp;');        
+    // message
+    if (progress == 100)
+    {
+      var text = '<div style="margin-bottom:-2px; padding:0; width:160px; font-size:11px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['the-file-is-being-processed'][$lang]); ?></div>';
+    }    else
+    {
+      var text = '&nbsp;';
+    }
+    
+    elem.css('width', progress+'%').html(text);
   });
   
   //-------------------------- DROPBOX --------------------------

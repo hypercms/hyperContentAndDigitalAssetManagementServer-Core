@@ -1,5 +1,5 @@
 #selectedFiles {
-  width: 570px;
+  width: 590px;
 }
 
 #btnSelectFile {  
@@ -58,7 +58,7 @@
 }
 
 .progress {
-  width: 140px;
+  width: 160px;
   background-color: #FFF;
   
   border-color: #000;

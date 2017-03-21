@@ -1827,7 +1827,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
             if (empty ($mgmt_config['search_exact']))
             {
               // look up expression in taxonomy (in all languages)
-              $taxonomy_ids = gettaxonomy_childs (@$site, "", $expression, 1, true);
+              $taxonomy_ids = gettaxonomy_childs ($site, "", $expression, 1, true);
             }
           }
 

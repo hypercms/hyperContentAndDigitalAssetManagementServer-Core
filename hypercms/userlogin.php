@@ -32,7 +32,7 @@ $sentpasswd = getrequest ("sentpasswd");
 $is_mobile = getrequest ("is_mobile");
 $is_iphone = getrequest ("is_iphone");
 $html5support = getrequest ("html5support");
-$lang = getrequest ("lang");
+$lang = getrequest ("lang", "objectname", $mgmt_lang_shortcut_default);
 $token = getrequest ("token");
 // input parameters (assetbrowser)
 $sentinstance = getrequest ("instance", "publicationname");
@@ -188,9 +188,6 @@ elseif ($user != "" && $hcms_user != "")
 {
   killsession ($user);
 }
-
-// set default language
-if (!isset ($lang) || $lang == false || $lang == "") $lang = $mgmt_lang_shortcut_default;
 
 // set filter
 $filter_array = splitstring ($filter);
