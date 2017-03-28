@@ -2079,9 +2079,25 @@ Release 04/2017
 - Implementation of a processing message for each file upload in popup_upload_html
 - Modification of CSS for file upload bar
 - Modification of viewport scale in popup_upload_html
-- Bug fix: ImageMagick failed to convert PSD files since it requires the layer [0] after the source file name 
+- Bug fix: ImageMagick failed to convert PSD files since it requires the layer [0] after the source file name
+
+Version 6.2.4
+Release 04/2017
+- Bug fix: Function createmediaobject did not verify if file name is a temporary file by calling function is_tempfile
+- Bug fix: Function createfolder did not verify if folder name is a temporary file by calling function is_tempfile
+- Bug fix: Function getwallpaper did not provide the selected wallpaper name to the wallpaper service
+- Bug fix: Removed media attribute from JS function hcms_sharelinkPinterest due to missing support from Pinterest
+- Bug fix: Somali language file included double quote in text string
+- Bug fix: Albanian language file missed a double quote to close text string
+- Modification of viewport in frameset_content
+- Support for audio files in social media sharing
+- Implementation of new JS function hcms_extractDomain in main.js
+- Implementation of new input parameter for media file in function showsharelinks in UI API in order to activate and deactivate share buttons
+- Modificaton of get request parameters names in JS function hcms_sharelinkFacebook in main.js
+- Modification in template engine to support new parameter of function showsharelinks
+- Implementation of new JS function hcms_clearSelection in contextmenu.js in order to remove highlighted text after selecting multiple objects
 */
 
 // current version
-$mgmt_config['version'] = "Version 6.2.3";
+$mgmt_config['version'] = "Version 6.2.4";
 ?>

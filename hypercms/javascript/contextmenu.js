@@ -5,6 +5,19 @@ var scrollX = 0;
 var scrollY = 0;
 var allow_tr_submit = true;
 
+// clear selected
+function hcms_clearSelection()
+{
+  if (window.getSelection)
+  {
+    window.getSelection().removeAllRanges();
+  }
+  else if (document.selection)
+  {
+    document.selection.empty();
+  }
+}
+
 // sidebar
 function hcms_loadSidebar()
 {
@@ -680,8 +693,10 @@ function hcms_replace (string, text, by)
   return newstr;
 }
 
-function hcms_endsWith(str, suffix) {
-    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+// if string ends with suffix
+function hcms_endsWith (str, suffix)
+{
+  return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
 // select multiple objects
@@ -852,6 +867,7 @@ function hcms_selectObject (row_id, event)
   }
 }
 
+// update control object list menu
 function hcms_updateControlObjectListMenu()
 {
   document.forms['contextmenu_object'].attributes['action'].value = 'control_objectlist_menu.php';
@@ -868,6 +884,7 @@ function hcms_updateControlObjectListMenu()
   }
 }
 
+// update control user menu
 function hcms_updateControlUserMenu()
 {	
   document.forms['contextmenu_user'].attributes['action'].value = 'control_user_menu.php';
@@ -884,6 +901,7 @@ function hcms_updateControlUserMenu()
   }
 }
 
+// update control queue menu
 function hcms_updateControlQueueMenu()
 {
   document.forms['contextmenu_queue'].attributes['action'].value = 'control_queue_menu.php';
@@ -956,6 +974,7 @@ function hcms_unselectAll()
  } 
 } 
 
+// contextmenu
 function hcms_Contextmenu(e) 
 {
   if (!e) var e = window.event;
@@ -965,6 +984,7 @@ function hcms_Contextmenu(e)
   else return false;
 }
 
+// right mouse click
 function hcms_rightClick(e) 
 {
   if (!e) var e = window.event;
@@ -986,11 +1006,14 @@ function hcms_rightClick(e)
   return true;
 }
 
+// left mouse clicks
 function hcms_leftClick(e) 
 {
   if (!e) var e = window.event;
   var multiobject;
   var objectcount=0;
+  
+  hcms_clearSelection();
 
   if (eval (document.forms['contextmenu_object']))
   {
@@ -1035,6 +1058,7 @@ function hcms_leftClick(e)
   return true;
 } 
 
+// verify if key is pressed
 function hcms_keyPressed(key, e)
 {
  var ctrlPressed=0;
@@ -1071,6 +1095,7 @@ function hcms_keyPressed(key, e)
  return true;
 }
 
+// activate the download links
 function hcms_activateLinks(e) 
 {
   if (!e) var e = window.event;

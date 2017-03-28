@@ -791,7 +791,7 @@ function xmp_getdata ($file)
     }
     
     // load file
-    $content = file_get_contents ($file);
+    $content = @file_get_contents ($file);
     
     // delete temp file
     if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);

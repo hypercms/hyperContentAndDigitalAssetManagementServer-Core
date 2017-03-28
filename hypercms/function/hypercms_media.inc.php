@@ -793,7 +793,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
     // verify local media file
     if (!is_file ($location_source.$file)) return false;
     
-    $filedata = file_get_contents ($location_source.$file);
+    $filedata = @file_get_contents ($location_source.$file);
 
     if ($filedata != "")
     {

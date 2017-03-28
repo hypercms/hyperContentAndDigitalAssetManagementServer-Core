@@ -1390,5 +1390,5 @@ $hcms_lang['save-search']['sq'] = "Kurseni marketing";
 $hcms_lang['saved-searches']['sq'] = "Kërkimet e shpëtoi";
 $hcms_lang['video-codec']['sq'] = "Video codec";
 $hcms_lang['audio-codec']['sq'] = "Audio codec";
-$hcms_lang['detect-faces']['sq'] = "Zbuluar fytyrat;
+$hcms_lang['detect-faces']['sq'] = "Zbuluar fytyrat";
 ?>

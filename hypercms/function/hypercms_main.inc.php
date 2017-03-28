@@ -1592,7 +1592,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     {
       $location = deconvertpath ($location, "file"); 
       
-      if (@is_dir ($location.$object))
+      if (is_dir ($location.$object))
       {
         $location = $location.$object."/";
         $object = ".folder";
@@ -3443,7 +3443,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     // read file without headers, no streaming supported (used by WebDAV)
     if ($force == "noheader")
     {
-      $filedata = file_get_contents ($location.$media);
+      $filedata = @file_get_contents ($location.$media);
     }
     // stream file and provide headers
     else
@@ -3519,7 +3519,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
         
         if (strpos ($range, ',') !== false)
         {
-          header ('HTTP/1.1 416 Requested Range Not Satisfiable');
+          header ("HTTP/1.1 416 Requested Range Not Satisfiable");
           header ("Content-Range: bytes ".$start."-".$end."/".$size);
           exit;
         }
@@ -3540,7 +3540,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
         
         if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size)
         {
-          header ('HTTP/1.1 416 Requested Range Not Satisfiable');
+          header ("HTTP/1.1 416 Requested Range Not Satisfiable");
           header ("Content-Range: bytes ".$start."-".$end."/".$size);
           exit;
         }
@@ -3549,7 +3549,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
         $end = $c_end;
         $length = $end - $start + 1;
         fseek ($stream, $start);
-        header ('HTTP/1.1 206 Partial Content');
+        header ("HTTP/1.1 206 Partial Content");
         header ("Content-Length: ".$length);
         header ("Content-Range: bytes ".$start."-".$end."/".$size);
       }
@@ -6352,7 +6352,7 @@ function deletepublication ($site_name, $user="sys")
 
 // ----------------------------------------- createpersonalization ---------------------------------------------
 // function: createpersonalization()
-// input: site, personalization profile or tracking name, category [profile,tracking]
+// input: publication name, personalization profile or tracking name, category [profile,tracking]
 // output: result array
 // requires: config.inc.php to be loaded before
 
@@ -6425,7 +6425,7 @@ function createpersonalization ($site, $pers_name, $cat)
 
 // ----------------------------------------- deletepersonalization ---------------------------------------------
 // function: deletepersonalization()
-// input: site, personalization profile or tracking name, category [profile,tracking]
+// input: publication name, personalization profile or tracking name, category [profile,tracking]
 // output: result array
 // requires: config.inc.php to be loaded before
 
@@ -6516,7 +6516,7 @@ function deletepersonalization ($site, $pers_name, $cat)
 
 // ----------------------------------------- createtemplate ---------------------------------------------
 // function: createtemplate()
-// input: site, template name, category [page,comp,meta,inc]
+// input: publication name, template name, category [page,comp,meta,inc]
 // output: result array
 // requires: config.inc.php to be loaded before
 
@@ -6673,7 +6673,7 @@ function loadtemplate ($site, $template)
 
 // ----------------------------------------- edittemplate ---------------------------------------------
 // function: edittemplate()
-// input: site, template file name, category [page,comp,meta,inc], template content (optional), template extension (optional), temlate application (optional)
+// input: publication name, template file name, category [page,comp,meta,inc], template content (optional), template extension (optional), temlate application (optional)
 // output: result array
 // requires: config.inc.php to be loaded before
 
@@ -6764,7 +6764,7 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
 
 // ----------------------------------------- deletetemplate ---------------------------------------------
 // function: deletetemplate()
-// input: site, template file name, category [page,comp,meta,inc]
+// input: publication name, template file name, category [page,comp,meta,inc]
 // output: result array
 // requires: config.inc.php to be loaded before
 
@@ -8006,7 +8006,7 @@ function deletegroup ($site, $group_name, $user)
 
 // ---------------------------------------- renamegroupfolder --------------------------------------------
 // function: renamegroupfolder()
-// input: site, cat[page,comp], old location, new location, user
+// input: publication name, cat[page,comp], old location, new location, user
 // output: true / false on error
 
 // description:
@@ -8050,7 +8050,7 @@ function renamegroupfolder ($site, $cat, $folder_curr, $folder_new, $user)
 
 // ---------------------------------------- deletegroupfolder --------------------------------------------
 // function: deletegroupfolder()
-// input: site, cat[page,comp], path to the folder, user
+// input: publication name, cat[page,comp], path to the folder, user
 // output: true / false on error
 
 // description:
@@ -8098,7 +8098,7 @@ function deletegroupfolder ($site, $cat, $folderpath, $user)
 
 // ---------------------------------------- renameworkflowfolder --------------------------------------------
 // function: renameworkflowfolder()
-// input: site, cat[page,comp], old location, new location, user
+// input: publication name, cat[page,comp], old location, new location, user
 // output: true / false on error
 
 // description:
@@ -8139,7 +8139,7 @@ function renameworkflowfolder ($site, $cat, $folder_curr, $folder_new, $user)
 
 // ---------------------------------------- deleteworkflowfolder --------------------------------------------
 // function: deleteworkflowfolder()
-// input: site, cat[page,comp], location of folder, user
+// input: publication name, cat[page,comp], location of folder, user
 // output: true / false on error
 
 // description:
@@ -8708,11 +8708,11 @@ function deletefrommediacat ($site, $mediafile)
 
 // ---------------------------------------- createfolder --------------------------------------------
 // function: createfolder()
-// input: site, location, folder, user
-// output: array
+// input: publication name, location, folder name, user name
+// output: result array
 
 // description:
-// This function creates a new folder
+// This function creates a new folder. The folder name must not match the temp file patterns defined in include/tempfilepatterns.inc.php
 
 function createfolder ($site, $location, $foldernew, $user)
 {
@@ -8730,7 +8730,7 @@ function createfolder ($site, $location, $foldernew, $user)
   // set default language
   if ($lang == "") $lang = "en";
   
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($foldernew) && accessgeneral ($site, $location, "") && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($foldernew) && accessgeneral ($site, $location, "") && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user) && !is_tempfile ($foldernew))
   {
     // publication management config
     if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -8854,7 +8854,7 @@ function createfolder ($site, $location, $foldernew, $user)
 
 // ---------------------------------------- createfolders --------------------------------------------
 // function: createfolders()
-// input: site, location, folder, user
+// input: publication name, location, folder, user
 // output: array
 
 // description:
@@ -8896,7 +8896,7 @@ function createfolders ($site, $location, $foldernew, $user)
 
 // ---------------------------------------- collectfolders --------------------------------------------
 // function: collectfolders ()
-// input: site, location, folder name
+// input: publication name, location, folder name
 // output: result array / false
 
 // description:
@@ -8941,7 +8941,7 @@ function collectfolders ($site, $location, $folder)
 
 // ---------------------------------------- copyfolders --------------------------------------------
 // function: copyfolders ()
-// input: site, location (source), new location (destination), folder
+// input: publication name, location (source), new location (destination), folder
 // output: result array equal to createfolder
 
 // description:
@@ -9044,7 +9044,7 @@ function copyfolders ($site, $location, $locationnew, $folder, $user)
 
 // ---------------------------------------- deletefolder --------------------------------------------
 // function: deletefolder()
-// input: site, location, folder
+// input: publication name, location, folder
 // output: array
 
 // description:
@@ -9175,7 +9175,7 @@ function deletefolder ($site, $location, $folder, $user)
 
 // ---------------------------------------- renamefolder --------------------------------------------
 // function: renamefolder()
-// input: site, location, folder, new folder name, user
+// input: publication name, location, folder, new folder name, user
 // output: array
 
 // description:
@@ -9480,7 +9480,7 @@ function correctcontainername ($container_id)
 
 // ---------------------------------------- createobject --------------------------------------------
 // function: createobject()
-// input: site, location, object, template
+// input: publication name, location, object, template
 // output: result array
 
 // description:
@@ -10065,7 +10065,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
     elseif (substr ($global_files['Filedata']['tmp_name'], 0, 4) == "http")
     {
       // get remote file
-      $filedata = file_get_contents ($global_files['Filedata']['tmp_name']);
+      $filedata = @file_get_contents ($global_files['Filedata']['tmp_name']);
       
       if ($filedata && file_put_contents ($temp_file, $filedata) && is_file ($temp_file))
       {
@@ -10641,17 +10641,17 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
 
 // ---------------------------------------- createmediaobject --------------------------------------------
 // function: createmediaobject()
-// input: site, destination location, file name, path to source multimedia file (uploaded file in temp directory), user, resize original image (100%) by percentage (optional)
-// output: Array
+// input: publication name, destination location, file name, path to source multimedia file (uploaded file in temp directory), user name, resize original image (100%) by percentage (optional)
+// output: result array
 
 // description:
-// This function creates an asset (multimedia object) by reading a given source file
+// This function creates an asset (multimedia object) by reading a given source file. The file name must not match the temp file patterns defined in include/tempfilepatterns.inc.php
 
 function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0)
 {
   global $mgmt_config, $mgmt_imageoptions, $eventsystem, $hcms_lang, $lang;     
   
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && accessgeneral ($site, $location, "comp") && $path_source_file != "")
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && accessgeneral ($site, $location, "comp") && $path_source_file != "" && !is_tempfile ($file))
   {
     if (!valid_objectname ($user)) $user = "sys";
     
@@ -10808,11 +10808,12 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 
 // ---------------------------------------- createmediaobjects --------------------------------------------
 // function: createmediaobjects()
-// input: site, source location, destination location, user
+// input: publication name, source location, destination location, user
 // output: result array with all objects created  / false
 
 // description:
-// This function creates media objects by reading all media files from a given source location (used after unzipfile)
+// This function creates media objects by reading all media files from a given source location (used after unzipfile). 
+// The file namey must not match the temp file patterns defined in include/tempfilepatterns.inc.php
 
 function createmediaobjects ($site, $location_source, $location_destination, $user)
 {
@@ -11021,7 +11022,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
 
 // ---------------------------------------- manipulateobject --------------------------------------------
 // function: manipulateobject()
-// input: site, location, object name, new object name (exkl. extension except for action "file_rename"), user, 
+// input: publication name, location, object name, new object name (exkl. extension except for action "file_rename"), user, 
 //        action [page_delete, page_rename, file_rename, page_paste, page_unpublish]
 // output: array
 
@@ -12542,7 +12543,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
 
 // ---------------------------------------- deleteobject --------------------------------------------
 // function: deleteobject()
-// input: site, location, object
+// input: publication name, location, object
 // output: array
 
 // description:
@@ -12581,7 +12582,7 @@ function deleteobject ($site, $location, $page, $user)
 
 // ---------------------------------------- renameobject --------------------------------------------
 // function: renameobject()
-// input: site, location, object, new object name exkl. file extension, user
+// input: publication name, location, object, new object name exkl. file extension, user
 // output: array
 
 // description:
@@ -13007,7 +13008,7 @@ function pasteobject ($site, $location, $user)
 
 // ---------------------------------------- lockobject --------------------------------------------
 // function: lockobject()
-// input: site, location, object, user
+// input: publication name, location, object, user
 // output: array
 
 // description:
@@ -13142,7 +13143,7 @@ function lockobject ($site, $location, $page, $user)
 
 // ---------------------------------------- unlockobject --------------------------------------------
 // function: unlockobject()
-// input: site, location, object, user
+// input: publication name, location, object, user
 // output: array
 
 // description:
@@ -13271,7 +13272,7 @@ if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
 
 // ---------------------------------------- publishobject --------------------------------------------
 // function: publishobject()
-// input: site, location, object (full name incl. extension)
+// input: publication name, location, object (full name incl. extension)
 // output: array
 
 // description:
@@ -13916,7 +13917,7 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
 
 // ------------------------------------- publishlinkedobject -----------------------------------------
 // function: publishlinkedobject()
-// input: site, location, object, user name
+// input: publication name, location, object, user name
 // output: array
 
 // description:
@@ -14002,7 +14003,7 @@ function publishlinkedobject ($site, $location, $page, $user)
 
 // ---------------------------------------- unpublishobject --------------------------------------------
 // function: unpublishobject()
-// input: site, location, object
+// input: publication name, location, object
 // output: array
 
 // description:

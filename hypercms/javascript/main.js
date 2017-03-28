@@ -10,6 +10,30 @@ function hcms_getURLparameter (name)
   return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
 }
 
+function hcms_extractDomain (url)
+{
+  if (url != '')
+  {
+    var domain;
+    
+    // find and remove protocol
+    if (url.indexOf("://") > -1)
+    {
+      domain = url.split('/')[2];
+    }
+    else
+    {
+      domain = url.split('/')[0];
+    }
+
+    // find and remove port number
+    domain = domain.split(':')[0];
+
+    return domain;
+  }
+  else return false;
+}
+
 // ------------------------ convert get to post request ----------------------------
 
 function hcms_convertGet2Post (link)
@@ -94,7 +118,7 @@ function hcms_sharelinkFacebook (url)
 {
   if (url != "")
   {
-    var sharelink = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url);
+    var sharelink = "https://www.facebook.com/sharer/sharer.php?p[url]=" + encodeURIComponent(url);
     hcms_openWindow (sharelink, "", "", 800, 800);
   }
   else return false;
@@ -130,11 +154,11 @@ function hcms_sharelinkLinkedin (url, title, summary, source)
   else return false;
 }
 
-function hcms_sharelinkPinterest (image_url, title, description)
+function hcms_sharelinkPinterest (image_url, description)
 {
   if (image_url != "" && title != "")
   {
-    var sharelink = "https://pinterest.com/pin/create/button/?url=" + encodeURIComponent(image_url) + "&media=" + encodeURIComponent(title) + "&description=" + encodeURIComponent(description);
+    var sharelink = "https://pinterest.com/pin/create/button/?url=" + encodeURIComponent(hcms_extractDomain (image_url)) + "&media=" + encodeURIComponent(image_url) + "&description=" + encodeURIComponent(description);
     hcms_openWindow (sharelink, "", "", 800, 800);
   }
   else return false;

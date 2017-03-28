@@ -188,7 +188,7 @@ function link_db_restore ($site="")
 
 // ----------------------------------------- link_db_load ---------------------------------------------
 // function: link_db_load()
-// input: site, user
+// input: publication name, user name
 // output: link database [2 dim. array] or true / false on error
 // requires: hypercms_api.inc.php, config.inc.php
 
@@ -308,7 +308,7 @@ function link_db_read ($site)
 
 // ---------------------------------------- link_db_close --------------------------------------------
 // function: link_db_close()
-// input: site, user 
+// input: publication name, user name
 // output: true/false
 // requires: hypercms_api.inc.php
 

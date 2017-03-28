@@ -1705,7 +1705,7 @@ function createsession ()
     if (is_file ($session_file) && filemtime ($session_file) > $session_time)
     {
       // load session information
-      $data = file_get_contents ($session_file);
+      $data = @file_get_contents ($session_file);
 
       // decode session data and register variables in session
       if ($data != "") session_decode ($data);

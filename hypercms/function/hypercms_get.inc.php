@@ -1747,7 +1747,7 @@ function getwallpaper ()
   global $mgmt_config;
   
   // get wallpaper name
-  $wallpaper_name = file_get_contents ("http://cms.hypercms.com/wallpaper/?action=name");
+  $wallpaper_name = @file_get_contents ("http://cms.hypercms.com/wallpaper/?action=name");
   
   if (!empty ($wallpaper_name))
   {
@@ -1755,7 +1755,7 @@ function getwallpaper ()
     if (!is_file ($mgmt_config['abs_path_temp']."view/".$wallpaper_name))
     {
       // get wallpaper file
-      $wallpaper_file = file_get_contents ("http://cms.hypercms.com/wallpaper/?action=get");
+      $wallpaper_file = @file_get_contents ("http://cms.hypercms.com/wallpaper/?action=get&name=".urlencode($wallpaper_name));
       
       if (!empty ($wallpaper_file))
       {

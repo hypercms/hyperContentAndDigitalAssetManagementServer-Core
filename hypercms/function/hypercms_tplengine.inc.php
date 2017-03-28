@@ -8205,10 +8205,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     <div style=\"width:100%; height:32px;\">&nbsp;</div>\n";
     
       // include share links for image and video files
-      if (is_dir ($mgmt_config['abs_path_cms']."connector/") && !empty ($mgmt_config[$site]['sharesociallink']) && $mediafile != "" && (is_image ($mediafile) || is_video ($mediafile)) && $buildview != "formlock")
+      if (is_dir ($mgmt_config['abs_path_cms']."connector/") && !empty ($mgmt_config[$site]['sharesociallink']) && $mediafile != "" && (is_image ($mediafile) || is_video ($mediafile) || is_audio ($mediafile)) && $buildview != "formlock")
       {
-        $sharelink = createwrapperlink ($site, $location, $page, "comp");        
-        $viewstore .= showsharelinks ($sharelink, $lang, "position:fixed; top:40px; right:12px;");
+        $sharelink = createwrapperlink ($site, $location, $page, "comp");
+        $viewstore .= showsharelinks ($sharelink, $mediafile, $lang, "position:fixed; top:40px; right:12px;");
       }
 
       // table for form
