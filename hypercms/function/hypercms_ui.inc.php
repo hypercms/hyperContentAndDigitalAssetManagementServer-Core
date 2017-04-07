@@ -2575,7 +2575,8 @@ $(document).ready(function()
         
         foreach ($comp_entry_dir as $dirname)
         {
-          if ($dirname != "")
+          // verify that folder has not been marked as deleted
+          if ($dirname != "" && createdownloadlink ($site, getlocation($dirname), getobject($dirname), "comp"))
           {
             // folder info
             $folder_info = getfileinfo ($site, $dirname, "comp");
@@ -2602,7 +2603,8 @@ $(document).ready(function()
 
         foreach ($comp_entry_file as $object)
         {
-          if ($object != "")
+          // verify that object has not been marked as deleted
+          if ($object != "" && createdownloadlink ($site, getlocation($object), getobject($object), "comp"))
           {
             // object info
             $comp_info = getfileinfo ($site, $object, "comp");    

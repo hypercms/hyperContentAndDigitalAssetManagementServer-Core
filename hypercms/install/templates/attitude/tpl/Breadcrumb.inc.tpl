@@ -35,11 +35,11 @@ if(sizeof($dir_array) > 6) {
     if (empty($path)) return false;
     $elements = array();
     $files = array();
-    $handler = opendir ($path);
+    $scandir = scandir ($path);
 
-    if ($handler != false)
+    if ($scandir)
     {
-      while ($file = readdir ($handler))
+      foreach ($scandir as $file)
       {
         if (pathinfo($file, PATHINFO_EXTENSION) == "php" && pathinfo($file, PATHINFO_EXTENSION) != "off") $files[] = $file;
       }

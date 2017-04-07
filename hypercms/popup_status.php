@@ -27,6 +27,7 @@ $maxcount = getrequest_esc ("maxcount", "numeric");
 $published_only = getrequest ("published_only");
 $tempfile = getrequest_esc ("tempfile", "locationname");
 $token = getrequest ("token");
+$from_page = getrequest ("from_page");
 
 // set current location (for action = paste the folder is not part of the location to paste)
 if ($folder != "" && $action != "paste")
@@ -52,7 +53,7 @@ $location_esc = convertpath ($site, $location, $cat);
 $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
-if ($ownergroup == false || $setlocalpermission['root'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location)) killsession ($user);
+if ($action != "emptybin" && ($ownergroup == false || $setlocalpermission['root'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location))) killsession ($user);
 
 // check session of user
 checkusersession ($user, false);
@@ -65,18 +66,27 @@ $count = 0;
 // check authorization of requested action
 $authorized = false;
 
-if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
+if (($setlocalpermission['root'] == 1 || $action == "emptybin") && checktoken ($token, $user))
 {
-  if ($action == "delete" && $setlocalpermission['folderdelete'] == 1 && $setlocalpermission['delete'] == 1) $authorized = true;
-  elseif ($action == "paste" && $setlocalpermission['folderrename'] == 1 && $setlocalpermission['rename'] == 1) $authorized = true;
-  elseif (($action == "publish" || $action == "unpublish") && $setlocalpermission['publish'] == 1) $authorized = true;
-  
-  // check if folder or object exists
-  if ($force == "start" && $action != "paste")
+  // recycle bin should be emptied
+  if ($action == "emptybin")
   {
-    if ($location != "" && $page != "" && !is_file ($location.correctfile ($location, $page, $user))) $authorized = false;
-    elseif ($location != "" && $folder != "" && !is_dir ($location)) $authorized = false;
-    elseif ($location != "" && $page == "" && $folder == "") $authorized = false;
+    $authorized = true;
+  }
+  // other actions
+  else
+  {
+    if (($action == "delete" || $action == "deletemark" || $action == "restore") && $setlocalpermission['folderdelete'] == 1 && $setlocalpermission['delete'] == 1) $authorized = true;
+    elseif ($action == "paste" && $setlocalpermission['folderrename'] == 1 && $setlocalpermission['rename'] == 1) $authorized = true;
+    elseif (($action == "publish" || $action == "unpublish") && $setlocalpermission['publish'] == 1) $authorized = true;
+    
+    // check if folder or object exists
+    if ($force == "start" && $action != "paste")
+    {
+      if ($location != "" && $page != "" && !is_file ($location.correctfile ($location, $page, $user))) $authorized = false;
+      elseif ($location != "" && $folder != "" && !is_dir ($location)) $authorized = false;
+      elseif ($location != "" && $page == "" && $folder == "") $authorized = false;
+    }
   }
 }
 
@@ -85,7 +95,9 @@ if ($authorized == true || $force == "stop")
 {
   // start/continue process
   if ($force == "start" || $force == "continue")
-  { 
+  {
+    $multiobject_array = array();
+    
     // define multiobject array as input
     if ($force == "start")
     {
@@ -108,10 +120,11 @@ if ($authorized == true || $force == "stop")
 
     // process objects:
     // method is used for action = paste -> methods: cut, copy, linkcopy
-    // $source_root and $source_folder are passed as global variables to the functions and are needed
-    // if action = paste.
-    $result = manipulateallobjects ($action, $multiobject_array, "$method", $force, $published_only, $user, $tempfile);
+    // $source_root and $source_folder are passed as global variables to the functions and are needed if action = paste.
+    if ($from_page != "recyclebin" && $action == "delete" && !empty ($mgmt_config['recyclebin'])) $action = "deletemark"; 
 
+    $result = manipulateallobjects ($action, $multiobject_array, "$method", $force, $published_only, $user, $tempfile);
+    
     // if manipulation was successful
     if ($result['result'] != false) 
     {
@@ -135,11 +148,11 @@ if ($authorized == true || $force == "stop")
       // define next process
       if ($working == true)
       {
-        $add_javascript = "document.location='".$mgmt_config['url_path_cms']."popup_status.php?force=continue&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&token=".url_encode($token)."';\n";
+        $add_javascript = "document.location='".$mgmt_config['url_path_cms']."popup_status.php?force=continue&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".url_encode($token)."';\n";
       }
       elseif ($working == false)
       {
-        $add_javascript = "document.location='".$mgmt_config['url_path_cms']."popup_status.php?force=finish&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&token=".url_encode($token)."';\n"; 
+        $add_javascript = "document.location='".$mgmt_config['url_path_cms']."popup_status.php?force=finish&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".url_encode($token)."';\n"; 
       }    
     }
     // if an error occured
@@ -173,13 +186,24 @@ if ($authorized == true || $force == "stop")
       $add_javascript = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['mainFrame'].location.reload();  
     self.close();\n";
     }  
-    elseif ($action == "delete")
+    elseif ($action == "delete" || $action == "deletemark" || $action == "deleteunmark" || $action == "restore" || $action == "emptybin")
     {
-      // not suitable for EasyEdit
-      $add_javascript = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
+      // for recycle bin
+      if ($from_page == "recyclebin")
+      {
+        // not suitable for EasyEdit
+        $add_javascript = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?virtual=1&action=recyclebin';
     opener.parent.frames['mainFrame'].location.reload();  
     self.close();\n";
-    }  
+      }
+      else
+      {
+        // not suitable for EasyEdit
+        $add_javascript = "if (eval (opener.parent.frames['mainFrame'])) opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
+    opener.parent.frames['mainFrame'].location.reload();  
+    self.close();\n";
+      }
+    }
     elseif ($action == "publish" || $action == "unpublish")
     {
       // not suitable for EasyEdit
@@ -281,6 +305,7 @@ setTimeout('closepopup()', 1000);
     <input type="hidden" name="location" value="<?php echo $location_orig; ?>" />
     <input type="hidden" name="folder" value="<?php echo $folder; ?>" />
     <input type="hidden" name="page" value="<?php echo $page; ?>" />
+    <input type="hidden" name="from_page" value="<?php echo $from_page; ?>" />
     <input type="hidden" name="count" value="<?php echo $count; ?>" />
     <input type="hidden" name="maxcount" value="<?php echo $maxcount; ?>" />
     <input type="hidden" name="tempfile" value="<?php echo $tempfile; ?>" />

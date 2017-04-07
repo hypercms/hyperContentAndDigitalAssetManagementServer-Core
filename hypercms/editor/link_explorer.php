@@ -198,7 +198,8 @@ function submitLink (url)
       
         foreach ($entry_dir as $dirname)
         {
-          if ($dirname != "")
+          // verify that folder has not been marked as deleted
+          if ($dirname != "" && createdownloadlink ($site, getlocation($dirname), getobject($dirname), "page"))
           {    
             // folder info
             $folder_info = getfileinfo ($site, $dirname, "page");
@@ -221,7 +222,8 @@ function submitLink (url)
       
         foreach ($entry_file as $file)
         {
-          if ($file != "")
+          // verify that page has not been marked as deleted
+          if ($file != "" && createdownloadlink ($site, getlocation($file), getobject($file), "page"))
           {
             // object info
             $file_info = getfileinfo ($site, $file, "page");      

@@ -1294,7 +1294,6 @@ $hcms_lang['edit-object']['id'] = "Edit objek";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['id'] = "Anda yakin ingin menghapus item dari antrian?";
 $hcms_lang['configuration']['id'] = "Konfigurasi";
 $hcms_lang['inheritance']['id'] = "Warisan";
-$hcms_lang['the-object-was-removed']['id'] = "Objek ini telah disingkirkan";
 $hcms_lang['the-object-could-not-be-removed']['id'] = "Objek tidak dapat dihapus";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['id'] = "Objek tidak ada atau anda tidak memiliki izin";
 $hcms_lang['add-to-favorites']['id'] = "Tambahkan ke favorit";
@@ -1392,4 +1391,7 @@ $hcms_lang['saved-searches']['id'] = "Pencarian Tersimpan";
 $hcms_lang['video-codec']['id'] = "Video codec";
 $hcms_lang['audio-codec']['id'] = "Audio codec";
 $hcms_lang['detect-faces']['id'] = "Mendeteksi wajah";
+$hcms_lang['recycle-bin']['id'] = "Sampah";
+$hcms_lang['restore']['id'] = "Mengembalikan";
+$hcms_lang['empty-recycle-bin']['id'] = "Sampah kosong";
 ?>

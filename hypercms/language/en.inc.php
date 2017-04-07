@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['en'] = "Edit object";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['en'] = "Are you sure you want to delete the items from the queue?";
 $hcms_lang['configuration']['en'] = "Configuration";
 $hcms_lang['inheritance']['en'] = "Inheritance";
-$hcms_lang['the-object-was-removed']['en'] = "The object was removed";
 $hcms_lang['the-object-could-not-be-removed']['en'] = "The object could not be removed";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['en'] = "The object does not exist or you do not have permissions";
 $hcms_lang['add-to-favorites']['en'] = "Add to favorites";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['en'] = "Saved searches";
 $hcms_lang['video-codec']['en'] = "Video codec";
 $hcms_lang['audio-codec']['en'] = "Audio codec";
 $hcms_lang['detect-faces']['en'] = "Detect faces";
+$hcms_lang['recycle-bin']['en'] = "Recycle bin";
+$hcms_lang['restore']['en'] = "Restore";
+$hcms_lang['empty-recycle-bin']['en'] = "Empty recycle bin";
 ?>

@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['sr'] = "Predmet uređivanja";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['sr'] = "Jeste li sigurni da želite obrisati u stvari od Rumunke stoje?";
 $hcms_lang['configuration']['sr'] = "Konfiguracija";
 $hcms_lang['inheritance']['sr'] = "Nasleđivanje.";
-$hcms_lang['the-object-was-removed']['sr'] = "Predmet je uklonjen sa dužnosti";
 $hcms_lang['the-object-could-not-be-removed']['sr'] = "Predmet nije mogao da bude uklonjen";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['sr'] = "U stvari ne postoje ili ne dozvole";
 $hcms_lang['add-to-favorites']['sr'] = "Dodati u favorite";
@@ -1390,5 +1389,8 @@ $hcms_lang['save-search']['sr'] = "Pretraga";
 $hcms_lang['saved-searches']['sr'] = "Spasila pretraživanje";
 $hcms_lang['video-codec']['sr'] = "Video kodek";
 $hcms_lang['audio-codec']['sr'] = "Audio kodek";
-$hcms_lang['detect-faces']['sr'] = "Detect lica";
+$hcms_lang['detect-faces']['sr'] = "Otkriti lica";
+$hcms_lang['recycle-bin']['sr'] = "Otpatke";
+$hcms_lang['restore']['sr'] = "Povratiti";
+$hcms_lang['empty-recycle-bin']['sr'] = "Prazna otpatke";
 ?>

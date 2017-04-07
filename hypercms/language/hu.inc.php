@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['hu'] = "Objektum szerkesztése";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['hu'] = "Biztos, hogy törölni szeretné a tételeket a sorból?";
 $hcms_lang['configuration']['hu'] = "Konfiguráció";
 $hcms_lang['inheritance']['hu'] = "Öröklés";
-$hcms_lang['the-object-was-removed']['hu'] = "A cél el lett távolítva";
 $hcms_lang['the-object-could-not-be-removed']['hu'] = "Az objektum nem távolítható el";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['hu'] = "Az objektum nem létezik, vagy Önnek nincs jogosultsága";
 $hcms_lang['add-to-favorites']['hu'] = "Hozzáadás a kedvencekhez";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['hu'] = "A mentett keresések";
 $hcms_lang['video-codec']['hu'] = "Video codec";
 $hcms_lang['audio-codec']['hu'] = "Audio codec";
 $hcms_lang['detect-faces']['hu'] = "Felismeri az arcokat";
+$hcms_lang['recycle-bin']['hu'] = "Papírkosár";
+$hcms_lang['restore']['hu'] = "Visszaállítás";
+$hcms_lang['empty-recycle-bin']['hu'] = "Lomtár ürítése";
 ?>

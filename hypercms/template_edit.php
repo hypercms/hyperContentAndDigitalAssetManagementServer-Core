@@ -643,7 +643,7 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
         <div class="hcmsToolbar" style="width:816px;">
           <div class="hcmsToolbarBlock">
             <img onClick="savetemplate('');" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" name="save" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
-            <?php if ($cat != "meta") { ?><img onClick="savetemplate('preview');" class="hcmsButton hcmsButtonSizeSquare" name="savepreview" src="<?php echo getthemelocation(); ?>img/button_preview.gif" alt="<?php echo getescapedtext ($hcms_lang['save-and-preview'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-preview'][$lang], $charset, $lang); ?>" /><?php } ?>
+            <?php if ($cat != "meta") { ?><img onClick="savetemplate('preview');" class="hcmsButton hcmsButtonSizeSquare" name="savepreview" src="<?php echo getthemelocation(); ?>img/button_file_preview.gif" alt="<?php echo getescapedtext ($hcms_lang['save-and-preview'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-preview'][$lang], $charset, $lang); ?>" /><?php } ?>
             <?php
             if ($cat == "page")
             {

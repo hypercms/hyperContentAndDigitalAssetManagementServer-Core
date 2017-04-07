@@ -3175,7 +3175,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
 // input: converted path to file or directory
 // output: result array with file size in kB and file count / false on error
 
-// Attention!
+// description:
 // This function won't give you a proper result of the file size of multimedia components, if there is no Database installed.
 
 function getfilesize ($file)
@@ -3521,86 +3521,90 @@ function getvideoinfo ($mediafile)
 // --------------------------------------- getbrowserinfo -----------------------------------------------
 // function: getbrowserinfo ()
 // input: %
-// output: client browser + version as array
+// output: client browser and version as array / false on error
 
 function getbrowserinfo () 
 {
-  $u_agent = $_SERVER['HTTP_USER_AGENT'];
-  $bname = 'unknown';
-  $ub = "";
-  $version = "";
- 
-  // get the browser name
-  // works only for IE < 11
-  if (preg_match ('/MSIE/i', $u_agent) && !preg_match ('/Opera/i', $u_agent))
+  if (!empty ($_SERVER['HTTP_USER_AGENT']))
   {
-    $bname = 'msie';
-    $ub = "MSIE";
-  }
-  elseif (preg_match ('/Firefox/i', $u_agent))
-  {
-    $bname = 'firefox';
-    $ub = "Firefox";
-  }
-  elseif (preg_match ('/Chrome/i', $u_agent))
-  {
-    $bname = 'chrome';
-    $ub = "Chrome";
-  }
-  elseif (preg_match ('/Safari/i', $u_agent))
-  {
-      $bname = 'safari';
-      $ub = "Safari";
-  }
-  elseif (preg_match ('/Opera/i', $u_agent))
-  {
-    $bname = 'opera';
-    $ub = "Opera";
-  }
-  elseif (preg_match ('/Netscape/i', $u_agent))
-  {
-    $bname = 'Netscape';
-    $ub = "Netscape";
-  }
- 
-  // get the version number
-  $known = array ('Version', $ub, 'other');
-  
-  $pattern = '#(?<browser>'.join('|', $known).')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
-  
-  if (!preg_match_all ($pattern, $u_agent, $matches))
-  {
-    // we have no matching number just continue
-  }
- 
-  // see how many we have
-  $i = count ($matches['browser']);
-  
-  if ($i != 1)
-  {
-    // we will have two since we are not using 'other' argument yet
-    // see if version is before or after the name
-    if (strripos ($u_agent, "Version") < strripos ($u_agent, $ub))
+    $u_agent = $_SERVER['HTTP_USER_AGENT'];
+    $bname = 'unknown';
+    $ub = "";
+    $version = "";
+   
+    // get the browser name
+    // works only for IE < 11
+    if (preg_match ('/MSIE/i', $u_agent) && !preg_match ('/Opera/i', $u_agent))
     {
-      $version = $matches['version'][0];
+      $bname = 'msie';
+      $ub = "MSIE";
+    }
+    elseif (preg_match ('/Firefox/i', $u_agent))
+    {
+      $bname = 'firefox';
+      $ub = "Firefox";
+    }
+    elseif (preg_match ('/Chrome/i', $u_agent))
+    {
+      $bname = 'chrome';
+      $ub = "Chrome";
+    }
+    elseif (preg_match ('/Safari/i', $u_agent))
+    {
+        $bname = 'safari';
+        $ub = "Safari";
+    }
+    elseif (preg_match ('/Opera/i', $u_agent))
+    {
+      $bname = 'opera';
+      $ub = "Opera";
+    }
+    elseif (preg_match ('/Netscape/i', $u_agent))
+    {
+      $bname = 'Netscape';
+      $ub = "Netscape";
+    }
+   
+    // get the version number
+    $known = array ('Version', $ub, 'other');
+    
+    $pattern = '#(?<browser>'.join('|', $known).')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
+    
+    if (!preg_match_all ($pattern, $u_agent, $matches))
+    {
+      // we have no matching number just continue
+    }
+   
+    // see how many we have
+    $i = count ($matches['browser']);
+    
+    if ($i != 1)
+    {
+      // we will have two since we are not using 'other' argument yet
+      // see if version is before or after the name
+      if (strripos ($u_agent, "Version") < strripos ($u_agent, $ub))
+      {
+        $version = $matches['version'][0];
+      }
+      else
+      {
+        $version = $matches['version'][1];
+      }
     }
     else
     {
-      $version = $matches['version'][1];
+      $version = $matches['version'][0];
     }
+    
+    if (substr_count ($version, ".") > 0) $version = intval (substr ($version, 0, strpos ($version, ".")));
+   
+    // check if we have a number
+    if ($version == null || $version == "") $version = "?";
+    
+    // result  
+    return array ($bname => $version);
   }
-  else
-  {
-    $version = $matches['version'][0];
-  }
-  
-  if (substr_count ($version, ".") > 0) $version = intval (substr ($version, 0, strpos ($version, ".")));
- 
-  // check if we have a number
-  if ($version == null || $version == "") $version = "?";
-  
-  // result  
-  return array ($bname => $version);
+  else return false;
 }
 
 // ---------------------- getcontentlocation -----------------------------

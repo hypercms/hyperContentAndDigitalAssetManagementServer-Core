@@ -69,10 +69,11 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
   $location_esc = convertpath ($site, $folder, "comp");
   $item_site = getpublication ($location_esc);
   $files = array();
-  $dir_handle = opendir ($folder);
   $i = 0;
   
-  while ($file = readdir ($dir_handle))
+  $scandir = scandir ($folder);
+  
+  foreach ($scandir as $file)
   {
     // check if file exists
     if ($file != "." && $file != ".." && $file != ".folder" && is_file ($folder.$file))
@@ -133,7 +134,7 @@ function collectMedia ($site, $container_id, $mediaTagId, $abs_comp, $allowedFil
         }
 
         // sort result via usort and helperfunction
-        usort($files, "sortByName");
+        usort ($files, "sortByName");
       }
     }
   }

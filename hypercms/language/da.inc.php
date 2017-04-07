@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['da'] = "Rediger objekt";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['da'] = "Er du sikker på du vil slette poster fra køen?";
 $hcms_lang['configuration']['da'] = "Konfiguration";
 $hcms_lang['inheritance']['da'] = "Nedarv";
-$hcms_lang['the-object-was-removed']['da'] = "Objektet blev fjernet";
 $hcms_lang['the-object-could-not-be-removed']['da'] = "Objektet kan ikke fjernes";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['da'] = "Objektet findes ikke, eller du har ikke tilladelse";
 $hcms_lang['add-to-favorites']['da'] = "Føj til favoritter";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['da'] = "Gemte søgninger";
 $hcms_lang['video-codec']['da'] = "Video codec";
 $hcms_lang['audio-codec']['da'] = "Audio codec";
 $hcms_lang['detect-faces']['da'] = "Detect ansigter";
+$hcms_lang['recycle-bin']['da'] = "Papir bin";
+$hcms_lang['restore']['da'] = "Gendan";
+$hcms_lang['empty-recycle-bin']['da'] = "Tøm papirkurv";
 ?>

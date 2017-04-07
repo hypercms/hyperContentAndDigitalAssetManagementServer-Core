@@ -2065,7 +2065,7 @@ Release 03/2017
 - Bug fix: Function unlockobject in main API used non existing function objectname instead of function getobject for folders
 
 Version 6.2.3
-Release 04/2017
+Release 03/2017
 - Bug fix: The action name has not been initalized in explorer leading to a wrong search action
 - Implementation of new JS functions for the activation of the different search tabs and features in explorer
 - Removed second action attribute in search form for recipient search in explorer
@@ -2096,8 +2096,48 @@ Release 04/2017
 - Modificaton of get request parameters names in JS function hcms_sharelinkFacebook in main.js
 - Modification in template engine to support new parameter of function showsharelinks
 - Implementation of new JS function hcms_clearSelection in contextmenu.js in order to remove highlighted text after selecting multiple objects
+
+Version 6.2.5
+Release 04/2017
+- Implementation of recycle bin for objects as new system feature
+- Implementation of new database attribute 'deleted_user' in table object in order to store the user name after moving objects to the recycle bin
+- Modification of createtables.sql in order to support new table attribute 
+- Implementation of new function update_database_v625 in update API and function userlogin in Security API
+- Modification of function rdbms_getobject_hash in DB Connect to verify deleted status of an object
+- Modification of function rdbms_searchcontent and rdbms_replacecontent to include deleted status of an object in the query
+- Modification of function rdbms_getobject, rdbms_getobjects, rdbms_getobject_id, and rdbms_getobject_hash in order to support objects which are marked as deleted
+- Modification of function createaccesslink, createwrapperlink, and createdownloadlink in order to support objects which are marked as deleted
+- Modification of explorer, explorer_objectlist, search_objectlist, link_edit_explorer, function showcompexplorer, and rich text editor in order to support objects which are marked as deleted
+- Modification of function manipulateallobjects to support new actions "deletemark" and "deleteunmark" in order to mark and unmark objects as deleted
+- Modification of function processobjects to support new actions "deletemark" and "deleteunmark" in order to mark and unmark objects as deleted
+- Implementation of new function deletemarkobject and deleteunmarkobject in main API in order to mark and unmark objects as deleted
+- Modificatiion of globals in various function of main API
+- Modification of function cutobject, copyobject, and copyconnectedobject to support saving clipboard entries in session or only as return value
+- Removed global variable temp_clipboard from all functions in hyperCMS API
+- Implementation of new restore action into JS function hcms_createContextmenuItem in contextmenu.js
+- Implementation of new service in daily jobs to empty the objects in the recycle bin after the defined timespan
+- Modification and improvements in job 'minutely'
+- New icon for the recycle bin for all themes
+- Implementation of new text entries in all language files in order to support the new recycle bin features
+- Implementation of new function rdbms_getdeletedobjects in DB Connect
+- Implementation of new function rdbms_setdeletedobjects in DB Connect
+- Implementation of new main configuration variables for recycle bin support
+- Improvements in DB Connect
+- Suppress errors for function file_get_contents in the hyperCMS API
+- Removed unused icons from themes
+- Modification of function getbrowserinfo to return false if server inforamtion is not available
+- Implementation of objects of all users in the recycle bin for users with superuser permission
+- Modification of daily job to support processes that take longer for calculation the total storage space used
+- Implementation of logging  in daily job for used storage space calculation
+- Bug fix: Function uploadfile used undefined variable
+- Bug fix: Function manipulateallobjects in main API did not save error log entries
+- Bug fix: Function manipulateallobjects in main API did paste folders correctly when using the same paste action multiple times
+- Bug fix: Function processobjects in main API did not process folder objects
+- Bug fix: Function rdbms_searchcontent in DB Connect did not initalize array element for sarch queries
+- Bug fix: Function rdbms_searchcontent in DB Connect did not filter array elements for array 'sql_expr_advanced'
+- Bug fix: Paste of text in the search form has not been working since the JS function hcms_clearSelection has been used in the Navigator for left click events
 */
 
 // current version
-$mgmt_config['version'] = "Version 6.2.4";
+$mgmt_config['version'] = "Version 6.2.5";
 ?>

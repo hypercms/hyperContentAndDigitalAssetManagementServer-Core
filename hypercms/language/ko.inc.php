@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['ko'] = "오브젝트 편집";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['ko'] = "여러분은 항목을 대기열에서 삭제하시겠습니까?";
 $hcms_lang['configuration']['ko'] = "구성";
 $hcms_lang['inheritance']['ko'] = "상속";
-$hcms_lang['the-object-was-removed']['ko'] = "오브젝트 제거되었";
 $hcms_lang['the-object-could-not-be-removed']['ko'] = "객체가 제거되지 않았";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ko'] = "오브젝트가 존재하지 않거나 권한이 없";
 $hcms_lang['add-to-favorites']['ko'] = "즐겨찾기에 추가";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['ko'] = "저장된 검색";
 $hcms_lang['video-codec']['ko'] = "비디오 코덱c";
 $hcms_lang['audio-codec']['ko'] = "오디오 코덱";
 $hcms_lang['detect-faces']['ko'] = "얼굴을 감지";
+$hcms_lang['recycle-bin']['ko'] = "종이 빈";
+$hcms_lang['restore']['ko'] = "복원";
+$hcms_lang['empty-recycle-bin']['ko'] = "빈 재활용 통";
 ?>

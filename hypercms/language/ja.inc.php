@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['ja'] = "オブジェクトの編集";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['ja'] = "では、キューからアイテムを削除しますか?";
 $hcms_lang['configuration']['ja'] = "構成";
 $hcms_lang['inheritance']['ja'] = "継承";
-$hcms_lang['the-object-was-removed']['ja'] = "は、オブジェクトが削除された";
 $hcms_lang['the-object-could-not-be-removed']['ja'] = "オブジェクトを削除できませんでした";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ja'] = "オブジェクトが存在しないか'アクセス権がない";
 $hcms_lang['add-to-favorites']['ja'] = "お気に入りに追加";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['ja'] = "保存された検索";
 $hcms_lang['video-codec']['ja'] = "ビデオコーデック";
 $hcms_lang['audio-codec']['ja'] = "オーディオコーデック";
 $hcms_lang['detect-faces']['ja'] = "顔を検出";
+$hcms_lang['recycle-bin']['ja'] = "ごみ箱";
+$hcms_lang['restore']['ja'] = "リストア";
+$hcms_lang['empty-recycle-bin']['ja'] = "ごみ箱を空にする";
 ?>

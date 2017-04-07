@@ -228,6 +228,12 @@ $mgmt_config['check_duplicates'] = true;
 // Set value to 0 to disable autosave
 $mgmt_config['autosave'] = 0;
 
+// Enable (true) or disable (false) recycle bin
+$mgmt_config['recyclebin'] = false;
+
+// Delete objects from recycle bin permanently after certain amount of days or 0 for never
+$mgmt_config['recycledays'] = 5;
+
 // Define screen sizes for mobile browser emulation
 $mgmt_config['screensize'] = array();
 // Notebook/desktop screen sizes
@@ -733,6 +739,10 @@ $mgmt_config['dbcharset'] = "utf8";
 // RDBMS Log
 // Log queries and their executing time in logs/sql.log
 $mgmt_config['rdbms_log'] = false;
+
+// Operator for text based search queries
+// Only AND or OR are allowed as possible values or leave empty for default setting
+$mgmt_config['search_operator'] = "";
 
 // --------------------------------- SMTP Mail System Configuration -----------------------------------
 

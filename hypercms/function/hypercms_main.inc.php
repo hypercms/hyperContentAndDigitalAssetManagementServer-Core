@@ -504,6 +504,7 @@ function is_tempfile ($path)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
   
+  // load patterns
   @require ($mgmt_config['abs_path_cms']."include/tempfilepatterns.inc.php");
 
   if ($path != "" && is_array ($tempfile_patterns))
@@ -1384,8 +1385,13 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
       $object_id = rdbms_getobject_id ($objectpath);
     }
 
-    // create link
-    if ($object_id != "")
+    // object has been marked as deleted
+    if ($object_id == "hcms:deleted") 
+    {
+      return false;
+    }
+    // object access link
+    elseif ($object_id != "")
     {
       // crypt object id
       // deprecated since version 5.5.8:
@@ -1472,9 +1478,14 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
       $object_hash = rdbms_getobject_hash ("", $container_id);
     }
 
-    if ($object_hash != false)
-    {  
-      // object access link
+    // object has been marked as deleted
+    if ($object_id == "hcms:deleted") 
+    {
+      return false;
+    }
+    // object access link
+    elseif ($object_hash != false)
+    {
       return $mgmt_config['url_path_cms']."?oal=".$object_hash;
     }
     else
@@ -1547,16 +1558,20 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
     {
       $object_hash = rdbms_getobject_hash ("", $container_id);
     }
-
-    if ($object_hash != false)
-    {  
-      // object link
+    
+    // object has been marked as deleted
+    if ($object_hash == "hcms:deleted") 
+    {
+      return false;
+    }
+    // object wrapper link
+    elseif ($object_hash != false)
+    {
       // deprecated since version 5.5.8: return $mgmt_config['url_path_cms']."explorer_download.php?hcms_objref=".$object_id."&hcms_objcode=".hcms_crypt ($object_id, 3, 12);
       // deprecated since version 5.6.1: 
       // if ($mgmt_config['secure_links'] == true) return $mgmt_config['url_path_cms']."?hcms_id_token=".hcms_encrypt ($object_id.":".$timetoken);
       // else return $mgmt_config['url_path_cms']."?hcms_objid=".$object_id."&hcms_token=_".hcms_encrypt ($object_id.":".$timetoken);
       return $mgmt_config['url_path_cms']."?wl=".$object_hash;
-      
     }
     else
     {
@@ -1629,7 +1644,13 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
       $object_hash = rdbms_getobject_hash ("", $container_id);
     }
     
-    if ($object_hash != false)
+    // object has been marked as deleted
+    if ($object_hash == "hcms:deleted") 
+    {
+      return false;
+    }
+    // object download link
+    elseif ($object_hash != false)
     {
       // object link
       // deprecated since version 5.5.8
@@ -2863,6 +2884,9 @@ function unlockfile ($user, $abs_path, $filename)
 // function: deletefile()
 // input: path to file, file or directory name, delete all files in directory recursively including symbolic links [true,false] 
 // output: true/false
+
+// description:
+// Deletes a file or directory. If parameter recursive is et to true all items of a directory will be removed as well.
 
 function deletefile ($abs_path, $filename, $recursive=false)
 {
@@ -6481,7 +6505,7 @@ function deletepersonalization ($site, $pers_name, $cat)
       if ($test == true)
       {
         $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['the-object-was-removed'][$lang]."</span>\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['the-object-was-deleted'][$lang]."</span>\n";
         
         // success
         $result_ok = true;
@@ -8716,7 +8740,7 @@ function deletefrommediacat ($site, $mediafile)
 
 function createfolder ($site, $location, $foldernew, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
   
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
@@ -8854,7 +8878,7 @@ function createfolder ($site, $location, $foldernew, $user)
 
 // ---------------------------------------- createfolders --------------------------------------------
 // function: createfolders()
-// input: publication name, location, folder, user
+// input: publication name, location, folder name, user name
 // output: array
 
 // description:
@@ -8862,7 +8886,7 @@ function createfolder ($site, $location, $foldernew, $user)
 
 function createfolders ($site, $location, $foldernew, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
@@ -8941,7 +8965,7 @@ function collectfolders ($site, $location, $folder)
 
 // ---------------------------------------- copyfolders --------------------------------------------
 // function: copyfolders ()
-// input: publication name, location (source), new location (destination), folder
+// input: publication name, location (source), new location (destination), folder name, user name
 // output: result array equal to createfolder
 
 // description:
@@ -8949,7 +8973,7 @@ function collectfolders ($site, $location, $folder)
 
 function copyfolders ($site, $location, $locationnew, $folder, $user)
 {   
-  global $mgmt_config, $cat, $hcms_lang, $lang;
+  global $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && valid_locationname ($location) && $locationnew != "" && $folder != "")
   {  
@@ -9044,15 +9068,15 @@ function copyfolders ($site, $location, $locationnew, $folder, $user)
 
 // ---------------------------------------- deletefolder --------------------------------------------
 // function: deletefolder()
-// input: publication name, location, folder
+// input: publication name, location, folder name, user name
 // output: array
 
 // description:
-// This function removes a folder
+// This function removes an folder. The folder must be empty in order to be removed from the system.
 
 function deletefolder ($site, $location, $folder, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
          
   $add_onload = "";
   $show = "";
@@ -9175,7 +9199,7 @@ function deletefolder ($site, $location, $folder, $user)
 
 // ---------------------------------------- renamefolder --------------------------------------------
 // function: renamefolder()
-// input: publication name, location, folder, new folder name, user
+// input: publication name, location, folder name, new folder name, user name
 // output: array
 
 // description:
@@ -9183,7 +9207,7 @@ function deletefolder ($site, $location, $folder, $user)
 
 function renamefolder ($site, $location, $folder, $foldernew, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
   
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
@@ -9488,7 +9512,7 @@ function correctcontainername ($container_id)
 
 function createobject ($site, $location, $page, $template, $user)
 {
-  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
@@ -10337,12 +10361,12 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
         // if original image should not be resized
         if ($imageresize != "percentage") $imagepercentage = 0;
         
-        $result = createmediaobject ($site, $location, $global_files['Filedata']['name'], $global_files['Filedata']['tmp_name'], $user, $imagepercentage);
+        $result_createobject = createmediaobject ($site, $location, $global_files['Filedata']['name'], $global_files['Filedata']['tmp_name'], $user, $imagepercentage);
 
         // on success, add location
-        if ($result['result'] == true)
+        if ($result_createobject['result'] == true)
         {
-          $result['object'] = $location_esc.$result['object'];
+          $result_createobject['object'] = $location_esc.$result_createobject['object'];
         }
         // on error
         else
@@ -10649,7 +10673,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
 
 function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0)
 {
-  global $mgmt_config, $mgmt_imageoptions, $eventsystem, $hcms_lang, $lang;     
+  global $mgmt_config, $mgmt_imageoptions, $eventsystem, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;     
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && accessgeneral ($site, $location, "comp") && $path_source_file != "" && !is_tempfile ($file))
   {
@@ -10817,7 +10841,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 
 function createmediaobjects ($site, $location_source, $location_destination, $user)
 {
-  global $mgmt_config, $mgmt_imageoptions, $eventsystem, $hcms_lang, $lang;
+  global $mgmt_config, $mgmt_imageoptions, $eventsystem, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_destination))
   {
@@ -11023,19 +11047,18 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
 // ---------------------------------------- manipulateobject --------------------------------------------
 // function: manipulateobject()
 // input: publication name, location, object name, new object name (exkl. extension except for action "file_rename"), user, 
-//        action [page_delete, page_rename, file_rename, page_paste, page_unpublish]
+//        action [page_delete, page_rename, file_rename, page_paste, page_unpublish], clipboard items as array (optional)
 // output: array
 
 // description:
 // This function removes, unpublishs, renames and pastes objects and is used by other functions which works as a shell for this function
 
-function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
+function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $clipboard_array=array())
 {
   global $wf_token, $eventsystem,
          $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext,
-         $pageaccess, $compaccess, $hiddenfolder,     
-         $cat, $temp_clipboard, 
-         $hcms_lang, $lang;
+         $pageaccess, $compaccess, $hiddenfolder, $hcms_linking,    
+         $cat, $hcms_lang, $lang;
          
   // default values for action = paste before loading the clipboard
   $error_switch = "";
@@ -11049,7 +11072,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
   
   // set default language as "en" if not set
   if (empty ($lang)) $lang = "en";
- 
+
   if (valid_publicationname ($site) && valid_locationname ($location) && accessgeneral ($site, $location, $cat) && valid_objectname ($user) && $action != "")
   {
     // load file extensions
@@ -11121,78 +11144,84 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
     }
     elseif ($action == "page_paste")
     {
-      if (isset ($_SESSION['hcms_temp_clipboard']) || isset ($temp_clipboard))
+      $clipboard = "";
+      
+      // if clipboard entries are available by input parameter or session
+      if (is_array ($clipboard_array) && sizeof ($clipboard_array) > 0 || (!empty ($_SESSION['hcms_temp_clipboard']) && is_array ($_SESSION['hcms_temp_clipboard']) && sizeof ($_SESSION['hcms_temp_clipboard']) > 0))
       {
-        // the clipboard has the following structure:
-        // method|site|cat|location|object|object name|filetype  
-        if (!empty ($_SESSION['hcms_temp_clipboard'])) $clipboard = $_SESSION['hcms_temp_clipboard'];
-        elseif ($temp_clipboard != "") $clipboard = $temp_clipboard;
-        else $clipboard = "";
+        // get clipboard entries from session
+        if (sizeof ($clipboard_array) < 1) $clipboard_array = $_SESSION['hcms_temp_clipboard'];
 
-        if ($clipboard != "")
+        // paste all clipboard items 
+        if (sizeof ($clipboard_array) > 0)
         {
-          list ($method, $site_source, $cat_source, $location_source_esc, $page, $pagename, $filetype) = explode ("|", chop ($clipboard));
-  
-          if (!is_array ($mgmt_config[$site_source])) require ($mgmt_config['abs_path_data']."config/".$site_source.".conf.php");
-          
-          $location_source = deconvertpath ($location_source_esc, "file");
-          
-          // correct object file name
-          $page = correctfile ($location_source, $page, $user);
-          
-          // redefine location and object if page is a directory 
-          if ($page != "" && $page != ".folder" && is_dir ($location_source.$page) && is_file ($location_source.$page."/.folder"))
+          foreach ($clipboard_array as $clipboard)
           {
-            $page = ".folder";
-            $location_source = $location_source.$page."/";
-            $location_source_esc = $location_source_esc.$page."/";
-          }          
-          
-          // check if object may be pasted in the current publication
-          if ($site == $site_source || ($mgmt_config[$site]['inherit_obj'] == true && $parent_array != false && in_array ($site_source, $parent_array)))
-          { 
-            // if the category of the object (page or component) is different for cut/copy and paste
-            if ($cat_source != $cat) 
+            // a clipboard array item has the following structure:
+            // method|site|cat|location|object|object name|filetype
+            list ($method, $site_source, $cat_source, $location_source_esc, $page, $pagename, $filetype) = explode ("|", chop ($clipboard));
+    
+            if (!is_array ($mgmt_config[$site_source])) require ($mgmt_config['abs_path_data']."config/".$site_source.".conf.php");
+            
+            $location_source = deconvertpath ($location_source_esc, "file");
+            
+            // correct object file name
+            $page = correctfile ($location_source, $page, $user);
+            
+            // redefine location and object if page is a directory 
+            if ($page != "" && $page != ".folder" && is_dir ($location_source.$page) && is_file ($location_source.$page."/.folder"))
             {
-               $add_onload = "";
-               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['it-is-not-possible-to-paste-the-objects-here'][$lang]."</span><br />\n";
-            }
-            // if the cutted object will be pasted in the source location
-            elseif ($page == ".folder" && $method == "cut" && substr_count ($location_esc, $location_source_esc) > 0)
+              $page = ".folder";
+              $location_source = $location_source.$page."/";
+              $location_source_esc = $location_source_esc.$page."/";
+            }          
+            
+            // check if object may be pasted in the current publication
+            if ($site == $site_source || ($mgmt_config[$site]['inherit_obj'] == true && $parent_array != false && in_array ($site_source, $parent_array)))
+            { 
+              // if the category of the object (page or component) is different for cut/copy and paste
+              if ($cat_source != $cat) 
+              {
+                 $add_onload = "";
+                 $show = "<span class=\"hcmsHeadline\">".$hcms_lang['it-is-not-possible-to-paste-the-objects-here'][$lang]."</span><br />\n";
+              }
+              // if the cutted object will be pasted in the source location
+              elseif ($page == ".folder" && $method == "cut" && substr_count ($location_esc, $location_source_esc) > 0)
+              {
+                $add_onload = "";
+                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['it-is-not-possible-to-cut-and-paste-objects-in-the-same-destination'][$lang]."</span><br />\n";         
+              }
+            }  
+            else
             {
               $add_onload = "";
-              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['it-is-not-possible-to-cut-and-paste-objects-in-the-same-destination'][$lang]."</span><br />\n";         
-            }
-          }  
-          else
-          {
-            $add_onload = "";
-            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-permissions-to-paste-objects-from-the-other-publication-in-this-publication'][$lang]."</span><br />\n";
-          }           
-          
-          // get file info
-          $fileinfo = getfileinfo ($site, $page, $cat);    
-          $pagename = $fileinfo['file'];
-          $pagename_orig = $fileinfo['name'];
-          $filetype = $fileinfo['type'];   
-          $fileext = $fileinfo['ext'];                 
-          
-          // load object file
-          $pagedata = loadfile ($location_source, $page);  
-         
-          if ($pagedata != false) 
-          {
-            // get media and template file name
-            $mediafile_self = getfilename ($pagedata, "media");
-            $contentfile_self = getfilename ($pagedata, "content");
-            $templatefile_self = getfilename ($pagedata, "template");
-          }
-          else 
-          {
-            $test = false;
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-permissions-to-paste-objects-from-the-other-publication-in-this-publication'][$lang]."</span><br />\n";
+            }           
             
-            $errcode = "10209";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|loadfile failed for ".$location_source.$page;                  
+            // get file info
+            $fileinfo = getfileinfo ($site, $page, $cat);    
+            $pagename = $fileinfo['file'];
+            $pagename_orig = $fileinfo['name'];
+            $filetype = $fileinfo['type'];   
+            $fileext = $fileinfo['ext'];                 
+            
+            // load object file
+            $pagedata = loadfile ($location_source, $page);  
+           
+            if ($pagedata != false) 
+            {
+              // get media and template file name
+              $mediafile_self = getfilename ($pagedata, "media");
+              $contentfile_self = getfilename ($pagedata, "content");
+              $templatefile_self = getfilename ($pagedata, "template");
+            }
+            else 
+            {
+              $test = false;
+              
+              $errcode = "10209";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|loadfile failed for ".$location_source.$page;                  
+            }
           }
         }
         else
@@ -11651,7 +11680,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-doesnt-exist-or-you-do-not-have-write-permissions'][$lang]."</span><br />\n";
       }
     } 
-    
+
     // ============================== make changes on page or component  ===================================
     if ($show == "")
     {
@@ -11744,7 +11773,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
           }
         }              
       }
-  
+
       // ---------------------------------------- delete object -------------------------------------
       if ($show == "" && $action == "page_delete")
       {
@@ -11752,7 +11781,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
         {       
           // delete page file
           $test = deletefile ($location, $page, 0); 
-  
+
           if ($test != false)
           {
             // relational DB connectivity
@@ -12541,17 +12570,155 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action)
   return $result;
 }
 
-// ---------------------------------------- deleteobject --------------------------------------------
-// function: deleteobject()
-// input: publication name, location, object
-// output: array
+// ---------------------------------------- deletemarkobject --------------------------------------------
+// function: deletemarkobject()
+// input: publication name, location, object, user name
+// output: result array
 
 // description:
-// This function removes page or component and calls the function manipulateobject
+// This function marks a page, asset, or component as deleted.
+
+function deletemarkobject ($site, $location, $page, $user)
+{      
+  global $wf_token, $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+
+  $show = "";
+  $add_onload = "";
+  $result = array();
+  $result['result'] = false;
+  
+  // set default language
+  if ($lang == "") $lang = "en";
+  
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
+  {
+    // publication management config
+    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+    
+    // convert path
+    $location_esc = convertpath ($site, $location, $cat);
+    
+    // eventsystem
+    if ($eventsystem['ondeleteobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      ondeleteobject_pre ($site, $cat, $location, $page, $user);
+
+    // mark as deleted
+    $marked = rdbms_setdeletedobjects (array($location_esc.$page), $user, "set");
+
+    if (!empty ($marked))
+    {
+      // unpublish object
+      unpublishobject ($site, $location, $page, $user);
+    
+      $result['result'] = true;
+      $add_onload = "if (opener.parent.frames['mainFrame']) {opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; opener.parent.frames['mainFrame'].location.reload();} else if (opener.parent.frames['objFrame']) {opener.parent.frames['controlFrame'].location='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&wf_token=".url_encode($wf_token)."'; opener.parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php';}";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-deleted'][$lang]."</span><br />\n";
+      
+      // log delete
+      $errcode = "00311";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|object ".$location_esc.$page." has been moved to the recycle bin by user '".$user."' (".getuserip().")";
+    }
+    
+    // notification
+    notifyusers ($site, $location, $page, "ondelete", $user);
+
+    // eventsystem
+    if ($eventsystem['ondeleteobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $result['result'] == true) 
+      ondeleteobject_post ($site, $cat, $location, $page, $user);
+  }
+  
+  // save log
+  savelog (@$error); 
+  
+  $result['add_onload'] = $add_onload;
+  $result['message'] = $show;
+  $result['publication'] = $site;
+  $result['location'] = $location;
+  $result['location_esc'] = $location_esc;
+  $result['object'] = $page;
+      
+  return $result;
+}
+
+// ---------------------------------------- deleteunmarkobject --------------------------------------------
+// function: deleteunmarkobject()
+// input: publication name, location, object, user name
+// output: result array
+
+// description:
+// This function unmarks a page, asset, or component as deleted.
+
+function deleteunmarkobject ($site, $location, $page, $user)
+{      
+  global $wf_token, $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+
+  $show = "";
+  $add_onload = "";
+  $result = array();
+  $result['result'] = false;
+  
+  // set default language
+  if ($lang == "") $lang = "en";
+  
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
+  {  
+    // publication management config
+    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+    
+    // convert path
+    $location_esc = convertpath ($site, $location, $cat);
+    
+    // unmark as deleted
+    $marked = rdbms_setdeletedobjects (array($location_esc.$page), $user, "unset");
+    
+    if (!empty ($marked))
+    {
+      $result['result'] = true;
+      $add_onload = "if (opener.parent.frames['mainFrame']) {opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; opener.parent.frames['mainFrame'].location.reload();} else if (opener.parent.frames['objFrame']) {opener.parent.frames['controlFrame'].location='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&wf_token=".url_encode($wf_token)."'; opener.parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php';}";
+      $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-created'][$lang]."</span><br />\n";
+      
+      // log delete
+      $errcode = "00312";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|object ".$location_esc.$page." has been restored from the recycle bin by user '".$user."' (".getuserip().")";
+    }
+  }
+
+  // save log
+  savelog (@$error); 
+  
+  $result['add_onload'] = $add_onload;
+  $result['message'] = $show;
+  $result['publication'] = $site;
+  $result['location'] = $location;
+  $result['location_esc'] = $location_esc;
+  $result['object'] = $page;
+      
+  return $result;
+}
+
+// ---------------------------------------- deleteobject --------------------------------------------
+// function: deleteobject()
+// input: publication name, location, object, user name
+// output: result array
+
+// description:
+// This function removes a page, asset, or component by calling the function manipulateobject.
 
 function deleteobject ($site, $location, $page, $user)
 {      
-  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
@@ -12568,7 +12735,7 @@ function deleteobject ($site, $location, $page, $user)
     $result = manipulateobject ($site, $location, $page, "", $user, "page_delete");
     
     // notification
-    notifyusers ($site, $location, $page, "ondelete", $user);  
+    notifyusers ($site, $location, $page, "ondelete", $user);
 
     // eventsystem
     if ($eventsystem['ondeleteobject_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $result['result'] == true) 
@@ -12590,7 +12757,7 @@ function deleteobject ($site, $location, $page, $user)
 
 function renameobject ($site, $location, $page, $pagenew, $user)
 {      
-  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
   
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
@@ -12633,7 +12800,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
 
 function renamefile ($site, $location, $page, $pagenew, $user)
 {      
-  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
@@ -12663,34 +12830,32 @@ function renamefile ($site, $location, $page, $pagenew, $user)
 
 // ---------------------------------------- cutobject --------------------------------------------
 // function: cutobject()
-// input: publication name[string], location[string], object[string], user[string], add to clipboard to save more entries (optional)
+// input: publication name[string], location[string], object[string], user[string], 
+//        add to existing clipboard entries [true,false] (optional), save clipboard in session [true,false] (optional)
 // output: array
 
 // description:
 // This function cuts a page or component
 
-function cutobject ($site, $location, $page, $user, $clipboard_add=false)
+function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipboard_session=true)
 {      
-  global $eventsystem, $mgmt_config, $cat, $temp_clipboard, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
          
   $add_onload = "";
   $show = "";
   $filetype = ""; 
-  $clipboard = "";
+  $clipboard = array();
   
   // set default language
   if ($lang == "") $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
-  { 
+  {
     // get clipboard entries
-    if ($clipboard_add == true)
+    if ($clipboard_add == true && !empty ($_SESSION['hcms_temp_clipboard']))
     {
-      if (isset ($_SESSION['hcms_temp_clipboard'])) $clipboard = $_SESSION['hcms_temp_clipboard'];
-      elseif (isset ($temp_clipboard)) $clipboard = $temp_clipboard;
-      else $clipboard = "";
+      $clipboard = $_SESSION['hcms_temp_clipboard'];
     }
-    else $clipboard = "";
     
     // publication management config
     if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
@@ -12720,14 +12885,14 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false)
       $filetype = $fileinfo['type'];
         
       // define clipboard entry
-      $clipboard = $clipboard."cut|$site|$cat|$location_esc|$page|$pagename|$filetype\n";
+      $clipboard[] = "cut|$site|$cat|$location_esc|$page|$pagename|$filetype";
     }
     
     // save clipboard
-    if (isset ($clipboard) && $clipboard != "")
+    if (is_array ($clipboard) && sizeof ($clipboard) > 0)
     {    
       // add entries to clipboard
-      $_SESSION['hcms_temp_clipboard'] = $clipboard;
+      if ($clipboard_session == true) $_SESSION['hcms_temp_clipboard'] = $clipboard;
 
       $add_onload = "";
       $show = "<span class=hcmsHeadline>".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
@@ -12762,20 +12927,21 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false)
 
 // ---------------------------------------- copyobject --------------------------------------------
 // function: copyobject()
-// input: publication name[string], location[string], object[string], user[string], add to clipboard to save more entries (optional)
+// input: publication name[string], location[string], object[string], user[string], 
+//        add to existing clipboard entries [true,false] (optional), save clipboard in session [true,false] (optional)
 // output: array
 
 // description:
 // This function copies a page or component
 
-function copyobject ($site, $location, $page, $user, $clipboard_add=false)
+function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clipboard_session=true)
 {      
-  global $eventsystem, $mgmt_config, $cat, $temp_clipboard, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
  
   $add_onload = "";
   $show = "";
   $filetype = "";
-  $clipboard = "";
+  $clipboard = array();
   
   // set default language
   if ($lang == "") $lang = "en";
@@ -12783,13 +12949,10 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     // get clipboard entries
-    if ($clipboard_add == true)
+    if ($clipboard_add == true && !empty ($_SESSION['hcms_temp_clipboard']))
     {
-      if (isset ($_SESSION['hcms_temp_clipboard'])) $clipboard = $_SESSION['hcms_temp_clipboard'];
-      elseif (isset ($temp_clipboard)) $clipboard = $temp_clipboard;
-      else $clipboard = "";
+      $clipboard = $_SESSION['hcms_temp_clipboard'];
     }
-    else $clipboard = "";
     
     // publication management config
     if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -12822,14 +12985,14 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false)
         $filetype = $fileinfo['type'];
           
         // define new clipboard entry
-        $clipboard = $clipboard."copy|$site|$cat|$location_esc|$page|$pagename|$filetype\n";
+        $clipboard[] = "copy|$site|$cat|$location_esc|$page|$pagename|$filetype";
       }
   
       // save clipboard
-      if (isset ($clipboard) && $clipboard != "")
+      if (is_array ($clipboard) && sizeof ($clipboard) > 0)
       {    
         // add entries to clipboard
-        $_SESSION['hcms_temp_clipboard'] = $clipboard;
+        if ($clipboard_session == true) $_SESSION['hcms_temp_clipboard'] = $clipboard;
 
         $add_onload = "";
         $show = "<span class=hcmsHeadline>".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
@@ -12866,20 +13029,21 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false)
 
 // ---------------------------------------- copyconnectedobject --------------------------------------------
 // function: copyconnectedobject()
-// input: publication name[string], location[string], object[string], user[string], add to clipboard to save more entries (optional)
+// input: publication name[string], location[string], object[string], user[string], 
+//        add to existing clipboard entries [true,false] (optional), save clipboard in session [true,false] (optional)
 // output: array
 
 // description:
 // This function makes a connected copy of a page or component
 
-function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=false)
+function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=false, $clipboard_session=true)
 {      
-  global $eventsystem, $mgmt_config, $cat, $temp_clipboard, $hcms_lang, $lang;  
+  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;  
 
   $add_onload = "";
   $show = "";
   $filetype = "";
-  $clipboard = "";
+  $clipboard = array();
   
   // set default language
   if ($lang == "") $lang = "en";
@@ -12887,13 +13051,10 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     // get clipboard entries
-    if ($clipboard_add == true)
+    if ($clipboard_add == true && !empty ($_SESSION['hcms_temp_clipboard']))
     {
-      if (isset ($_SESSION['hcms_temp_clipboard'])) $clipboard = $_SESSION['hcms_temp_clipboard'];
-      elseif (isset ($temp_clipboard)) $clipboard = $temp_clipboard;
-      else $clipboard = "";
+      $clipboard = $_SESSION['hcms_temp_clipboard'];
     }
-    else $clipboard = "";
     
     // publication management config
     if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");    
@@ -12926,14 +13087,14 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
         $filetype = $fileinfo['type'];
           
         // define clipboard entry  
-        $clipboard = $clipboard."linkcopy|$site|$cat|$location_esc|$page|$pagename|$filetype\n";
+        $clipboard[] = "linkcopy|$site|$cat|$location_esc|$page|$pagename|$filetype";
       }
   
       // save clipboard
-      if (isset ($clipboard) && $clipboard != "")
+      if (is_array ($clipboard) && sizeof ($clipboard) > 0)
       {    
         // add entries to clipboard
-        $_SESSION['hcms_temp_clipboard'] = $clipboard;
+        if ($clipboard_session == true) $_SESSION['hcms_temp_clipboard'] = $clipboard;
 
         $add_onload = "";
         $show = "<span class=hcmsHeadline>".$hcms_lang['objects-are-copied-to-clipboard'][$lang]."</span><br />";
@@ -12970,15 +13131,15 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
 
 // ---------------------------------------- pasteobject --------------------------------------------
 // function: pasteobject()
-// input: publication name[string], location[string], user[string]
+// input: publication name[string], location[string], user[string], clipboard entries as array (optional)
 // output: array
 
 // description:
-// This function pastes a page or component and calls the function manipulateobject
+// This function pastes an object by calling and calls the function manipulateobject
 
-function pasteobject ($site, $location, $user)
+function pasteobject ($site, $location, $user, $clipboard_array=array())
 {      
-  global $eventsystem, $mgmt_config, $cat, $temp_clipboard, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($user))
   {  
@@ -12991,7 +13152,7 @@ function pasteobject ($site, $location, $user)
     // check location (only components of given publication are allowed)
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
     {
-      $result = manipulateobject ($site, $location, "", "", $user, "page_paste");
+      $result = manipulateobject ($site, $location, "", "", $user, "page_paste", $clipboard_array);
     }
     else
     {
@@ -13016,7 +13177,7 @@ function pasteobject ($site, $location, $user)
 
 function lockobject ($site, $location, $page, $user)
 {      
-  global $eventsystem, $mgmt_config, $cat, $temp_clipboard, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
          
   $add_onload = "";
   $show = "";
@@ -13151,7 +13312,7 @@ function lockobject ($site, $location, $page, $user)
 
 function unlockobject ($site, $location, $page, $user)
 {      
-  global $eventsystem, $mgmt_config, $cat, $temp_clipboard, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $hcms_lang, $lang;
          
   $add_onload = "";
   $show = "";
@@ -13280,7 +13441,7 @@ if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
 
 function publishobject ($site, $location, $page, $user)
 {      
-  global $eventsystem, $mgmt_config, $cat, $ctrlreload, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $ctrlreload, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
          
   $buffer_site = "";
   $buffer_location = "";
@@ -13826,95 +13987,6 @@ function publishobject ($site, $location, $page, $user)
   return $result;
 }
 
-// ------------------------------------------- processobjects -------------------------------------------
-// function: processobjects()
-// input: action [publish, unpublish, delete], publication, location, object, only published objects [pub, all], user name
-// output: true/false on error
-
-// description:
-// Publish, unpublish or delete all objects recursively.
-// Should not be used in CMS GUI, only for queue processing, since it does not provide feedback about the process state!
-
-function processobjects ($action, $site, $location, $file, $published_only="0", $user)
-{
-  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
-
-  if ($action != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($user))
-  {
-    // publication management config
-    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
-    
-    $action = strtolower ($action);
-    $location = deconvertpath ($location, "file");
-    $location_esc = convertpath ($site, $location, "");
-    
-    // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
-    
-    // define object file name
-    if (!file_exists ($location.$file))
-    {
-      $file = correctfile ($location, $file, $user);
-    }        
- 
-    // if folder
-    if (($file == ".folder" && is_dir ($location)) || is_dir ($location.$file))
-    {  
-      if ($file == ".folder") $file = "";
-      else $file = $file."/";
-      
-      // check if directory is empty
-      $handle = @opendir ($location.$file);
-      
-      if ($handle != false)
-      {
-        while ($dirfile = @readdir ($handle))
-        {
-          if ($dirfile != ".folder" && $dirfile != "." && $dirfile != "..")
-          {
-            processobjects ($action, $site, $location.$file, $dirfile, $published_only, $user);
-          }
-        }
-        
-        @closedir ($handle);        
-        return true;
-      }
-      else return false;
-    }
-    // if object
-    elseif ($file != ".folder" && is_file ($location.$file))
-    {
-      $result = getfileinfo ($site, $file, "");
-
-      // process object
-      if ($result['published'] == true || $published_only == "0")
-      {
-        if ($action == "publish") $result = publishobject ($site, $location, $file, $user);
-        elseif ($action == "unpublish") $result = unpublishobject ($site, $location, $file, $user);
-        elseif ($action == "delete") $result = deleteobject ($site, $location, $file, $user);
-
-        // error
-        if ($result['result'] == false)
-        {
-          $errcode = "20421";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|un/publishobject failed for ".$location_esc.$file;
-          
-          // save log
-          savelog (@$error);          
-          
-          return false;
-        }
-        else return true;
-      }
-      // nothing to process
-      else return true;
-    }
-    // if location does not exist
-    else return false;
-  }  
-  else return false; 
-}
-
 // ------------------------------------- publishlinkedobject -----------------------------------------
 // function: publishlinkedobject()
 // input: publication name, location, object, user name
@@ -14011,7 +14083,7 @@ function publishlinkedobject ($site, $location, $page, $user)
 
 function unpublishobject ($site, $location, $page, $user)
 {      
-  global $eventsystem, $mgmt_config, $cat, $ctrlreload, $hcms_lang, $lang;   
+  global $eventsystem, $mgmt_config, $cat, $ctrlreload, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;   
 
   // set default language
   if ($lang == "") $lang = "en";
@@ -14209,6 +14281,107 @@ function unpublishobject ($site, $location, $page, $user)
   return $result;
 }    
 
+
+// ------------------------------------------- processqueueobjects -------------------------------------------
+// function: processobjects()
+// input: action [publish,unpublish,delete], publication name, location, object name, only published objects [pub,all], user name
+// output: true/false on error
+
+// description:
+// Publish, unpublish or delete all objects recursively. This function is used by the job 'minutely' to process all objects of the queue.
+// This function should not be used for the graphical user interface since it does not provide feedback about the process state!
+
+function processobjects ($action, $site, $location, $file, $published_only="0", $user)
+{
+  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+
+  if ($action != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($user))
+  {
+    // publication management config
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    
+    $action = strtolower ($action);
+    $location = deconvertpath ($location, "file");
+    $location_esc = convertpath ($site, $location, "");
+    
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+    
+    // define object file name
+    if (!file_exists ($location.$file))
+    {
+      $file = correctfile ($location, $file, $user);
+    }
+
+    // -------------------------- process objects -------------------------------
+    // if folder
+    if (is_dir ($location.$file))
+    {  
+      // process all objects in folder
+      $handle = @opendir ($location.$file);
+      
+      if ($handle != false)
+      {
+        while ($dirfile = @readdir ($handle))
+        {
+          if ($dirfile != "." && $dirfile != ".." && $dirfile != ".folder")
+          {
+            processobjects ($action, $site, $location.$file."/", $dirfile, $published_only, $user);
+          }
+        }
+        
+        // process .folder files always at last since action "delete" will trigger deletefolder that can only delete empty folders
+        if (is_file ($location.$file."/.folder"))
+        {
+          processobjects ($action, $site, $location.$file."/", ".folder", $published_only, $user);
+        }
+        
+        @closedir ($handle);
+    
+        return true;
+      }
+      else return false;
+    }
+    // if object
+    elseif (is_file ($location.$file))
+    {
+      $result = getfileinfo ($site, $file, "");
+
+      // process object
+      if ($result['published'] == true || $published_only == "0")
+      {
+        if ($action == "publish") $result = publishobject ($site, $location, $file, $user);
+        elseif ($action == "unpublish") $result = unpublishobject ($site, $location, $file, $user);
+        elseif ($action == "delete")
+        {
+          // delete object
+          if ($file != ".folder") $result = deleteobject ($site, $location, $file, $user);
+          // delete folder
+          else $result = deletefolder ($site, getlocation ($location), getobject ($location), $user);
+        }
+
+        // error
+        if ($result['result'] == false)
+        {
+          $errcode = "20421";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|processing ($action) failed for ".$location_esc.$file;
+          
+          // save log
+          savelog (@$error);          
+          
+          return false;
+        }
+        else return true;
+      }
+      // nothing to process
+      else return true;
+    }
+    // if location does not exist
+    else return false;
+  }  
+  else return false; 
+}
+
 // ------------------------------------------ collectobjects --------------------------------------------
 // function: collectobjects()
 // input: root ID, publication name, category [page,comp], location, collect only published objects [0,1] 
@@ -14228,7 +14401,7 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only="0")
     
     // deconvert path
     $location = deconvertpath ($location, "file");
-      
+
     // if folder
     if (is_dir ($location) && accesspermission ($site, $location, $cat) != false)
     {         
@@ -14270,7 +14443,7 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only="0")
     }
     // if location does not exist
     else return false;
- 
+
     // return list array
     return $list;
   }  
@@ -14279,19 +14452,18 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only="0")
   
 // ------------------------------------------ manipulateallobjects --------------------------------------------
 // function: manipulateallobjects()
-// input: action [publish, unpublish, delete, paste], objectpath (array),  
+// input: action [publish, unpublish, deletemark, deleteunmark/restore, emptypin, delete, paste], objectpath (array),  
 //        method (only for paste action) [copy, linkcopy, cut], force [start, stop, continue], 
-//        collect only published objects [0, 1], user name, temporary collection file name (optional)
+//        collect only published objects [0,1], user name, temporary collection file name (optional), max. number of items processed per second (optional)
 // output: true/false
 
 // description:
-// This function is used to perform actions on folders with several items. the function will be called by
-// popup_status.php. To work correctly the functions needs several variables to be passed. please take a
-// look at the $result array of this function.
+// This function is used to perform actions on multiple objects and is mainly used by popup_status.php.
+// This functions should only be used in connection with the GUI of the system.
 
-function manipulateallobjects ($action, $objectpath_array, $method, $force, $published_only, $user, $tempfile="")
+function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=0, $user, $tempfile="", $maxitems=5)
 {
-  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $cat, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_lang, $lang;
       
   // set default language
   if ($lang == "") $lang = "en";
@@ -14305,12 +14477,25 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
   $result['tempfile'] = "";
   $result['method'] = "";
   
+  // --------------------------empty recycle bin -------------------------------
+  if ($action == "emptybin")
+  {
+    // reset array of all objects based on recycle bin
+    $objectpath_array = rdbms_getdeletedobjects ($user);
+    
+    // reset action in order to delete objects in recycle bin
+    $action = "delete";
+  }
+
   // get object pathes from the session if is not set      
   if (!is_array ($objectpath_array) && (isset ($_SESSION['clipboard_multiobject']) && is_array ($_SESSION['clipboard_multiobject']))) $objectpath_array = $_SESSION['clipboard_multiobject'];
+  
   if ((!isset ($rootpathdelete_array) || !is_array ($rootpathdelete_array)) && (isset ($_SESSION['clipboard_rootpathdelete']) && is_array ($_SESSION['clipboard_rootpathdelete']))) $rootpathdelete_array = $_SESSION['clipboard_rootpathdelete'];
   else $rootpathdelete_array = Null;
+  
   if ((!isset ($rootpathold_array) || !is_array ($rootpathold_array)) && (isset ($_SESSION['clipboard_rootpathold']) && is_array ($_SESSION['clipboard_rootpathold']))) $rootpathold_array = $_SESSION['clipboard_rootpathold'];
   else $rootpathold_array = Null;
+  
   if ((!isset ($rootpathnew_array) || !is_array ($rootpathnew_array)) && (isset ($_SESSION['clipboard_rootpathnew']) && is_array ($_SESSION['clipboard_rootpathnew']))) $rootpathnew_array = $_SESSION['clipboard_rootpathnew'];
   else $rootpathnew_array = Null;
 
@@ -14320,10 +14505,58 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
     $test['result'] = false;
     $i = 0;
     
+    // -------------------------- mark or unmark objects as deleted -------------------------------
+    if ($action == "deletemark" || $action == "deleteunmark" || $action == "restore")
+    {
+      // restore and deleteunmark are exactly the same actions
+      if ($action == "deletemark") $set = "set";
+      elseif ($action == "deleteunmark" || $action == "restore") $set = "unset";
+      
+      // mark or unmark objects as deleted
+      $marked = rdbms_setdeletedobjects ($objectpath_array, $user, $set);
+      
+      // on success
+      if (!empty ($marked))
+      {
+        if ($action == "deletemark")
+        {
+          if (sizeof ($objectpath_array) > 0)
+          {
+            manipulateallobjects ("unpublish", $objectpath_array, "", "start", 0, $user, "", 1000000);
+          }
+          
+          // log
+          $errcode = "00315";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|objects have been moved to the recycle bin by user '".$user."' (".getuserip().")";
+        }
+        else
+        {
+          // log
+          $errcode = "00316";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|$errcode|objects have been restored from the recycle bin by user '".$user."' (".getuserip().")";
+        }
+        
+        // results
+        $result['result'] = true;
+        $result['maxcount'] = $result['count'] = sizeof ($objectpath_array);
+      }
+      else
+      {
+        // log
+        $errcode = "20315";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|failed to process objects of the recycle bin for user '".$user."' (".getuserip().")";
+      }
+
+      // save log
+      savelog (@$error);
+      
+      return $result;
+    }
+
     // set session
     $_SESSION['clipboard_multiobject'] = $objectpath_array;
 
-    // -------------------------- load or create collection  -------------------------------
+    // -------------------------- load or create collection -------------------------------
     // check if collection file exists and load collection
     if ($force != "start" && is_file ($mgmt_config['abs_path_temp'].$tempfile))
     { 
@@ -14363,15 +14596,13 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
             if (substr ($location, -1) != "/") $location = $location."/";          
           
             // read clipboard if action = paste
-            if ($action == "paste")
+            if ($action == "paste" && !empty ($_SESSION['hcms_temp_clipboard']) && is_array ($_SESSION['hcms_temp_clipboard']))
             {            
               // get clipboard from session
-              $clipboard = $_SESSION['hcms_temp_clipboard'];
-              $clipboard_array = explode ("\n", $clipboard);
               $collection = array ();
               $j = 0;
 
-              foreach ($clipboard_array as $clipboard_entry)
+              foreach ($_SESSION['hcms_temp_clipboard'] as $clipboard_entry)
               {
                 if ($clipboard_entry != "")
                 {
@@ -14435,7 +14666,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
                       $result['result'] = false;
                       $result['message'] = $hcms_lang['it-is-not-possible-to-paste-the-objects-here'][$lang];
                       return $result;
-                    } 
+                    }
                   }
                   // if sites are not equal
                   else
@@ -14445,14 +14676,14 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
                     return $result;
                   }
                 }
-              }   
+              }
             }
             // all other cases except paste
-            else
-            {          
+            elseif ($action != "paste")
+            {
               // collect all items
               $collection_add = collectobjects ($i, $site, $cat, $location.$object, $published_only);
-              
+
               if ($collection_add != false)
               {
                 $collection = array_merge ($collection, $collection_add);
@@ -14469,7 +14700,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
         }
       }
     }
- 
+
     // set rootpathes in the session
     if ($action == "delete")
     {
@@ -14496,10 +14727,14 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
     }    
 
     // ------------------------ process items in collection ---------------------------
-    
+
     if (is_array ($collection) && $count > 0)
     {
-      for ($i = 0; $i <= 4; $i++)
+      // verify collection size
+      if (sizeof ($collection) < $maxitems) $maxitems = sizeof ($collection);
+
+      // process items
+      for ($i = 0; $i <= ($maxitems-1); $i++)
       {
         if (isset ($collection[$i]) && $collection[$i] != "")
         {
@@ -14537,7 +14772,7 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
             elseif ($action == "delete")
             {
               $test = deleteobject ($site_source, $location_source, $object_source, $user);
-    
+
               if ($test['result'] != false) unset ($collection[$i]);
               else 
               {
@@ -14551,161 +14786,20 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
               // for action copy and paste
               if ($method == "copy") 
               {            
-                // reset clipboard
-                $result = copyobject ($site_source, $location_source, $object_source, $user);              
-
-                /*
-                // PRESERVE LINKED OBJECTS ON COPY IS NOT SUPPORTED SINCE Version 5.5.3
-                // action copy and paste requires a special handling due to connected objects
-                // if the connection of the copied objects should be preserved.                
-                $tempdata = loadfile ($location_source, $object_source);
-                                
-                if ($tempdata != false) 
-                {
-                  $container = getfilename ($tempdata, "content");
-                  
-                  if ($container != false)
-                  {
-                    $connectedobject_array = getconnectedobject ($container);              
-                     
-                    if ($connectedobject_array != false && sizeof ($connectedobject_array) > 1)
-                    {
-                      $copy_done = false;
-                           
-                      foreach ($connectedobject_array as $connectedobject)
-                      {                           
-                        // check if object is in the scope of the selection
-                        for ($j = 0; $j < sizeof ($collection); $j++)
-                        {
-                          if (substr_count ($collection[$j], $connectedobject['publication']."|".$connectedobject['location']."|".$connectedobject['object']) == 1)
-                          {
-                            // get site, location and object
-                            list ($temp_id, $temp_site, $temp_location_esc, $temp_object) = explode ("|", $collection[$j]); 
-                            
-                            // define destination location for paste action
-                            $location_dest_esc = str_replace ($rootpathold_array[$temp_id], $rootpathnew_array[$temp_id], $temp_location_esc);                            
-                            $location_dest = deconvertpath ($location_dest_esc, "file");
-                            $site_dest = getpublication ($location_dest_esc);
-
-                            // if copy has not been made
-                            if ($copy_done == false && $location_dest != "")
-                            {      
-                              $result = copyobject ($connectedobject['publication'], $connectedobject['location'], $connectedobject['object'], $user);
-           
-                              if ($result['result'] == true) 
-                              {                 
-                                $test = pasteobject ($site_dest, $location_dest, $user);   
-                              }
-                              else $test['result'] = false;
-                              
-                              if ($test['result'] == true)
-                              {
-                                $tempdata = loadfile ($location_dest, $object_source);
-                                
-                                if ($tempdata != false)
-                                {
-                                  $container = getfilename ($tempdata, "content");
-                                  $copy_done = true;
-                                }
-                                else $container = false;
-                              }
-                            }
-                            // if a copy is done
-                            else
-                            {
-                              if ($container != false)
-                              {
-                                $tempdata = loadfile ($connectedobject['location'], $connectedobject['object']);
-                                $tempdata = setfilename ($tempdata, "content", $container);
-      
-                                if ($tempdata != false)
-                                {
-                                  // load link db
-                                  $link_db = link_db_load ($site_dest, $user);
-                                  
-                                  // add new object and save
-                                  if (is_array ($link_db) && sizeof ($link_db) > 0)
-                                  {
-                                    $new_object = convertpath ($site_dest, $location_dest, $cat).$connectedobject['object'];
-                                    
-                                    $link_db = link_db_update ($site_dest, $link_db, "object", $container, $cat, "", $new_object, "all"); 
-                                        
-                                    if ($link_db != false) $test = link_db_save ($site_dest, $link_db, $user);  
-                                    else $test = false;      
-                                    
-                                    // load container from file system
-                                    $result = getcontainername ($container);
-                                    $container_wrk = $result['container'];
-                                    $bufferdata = loadcontainer ($container_wrk, "work", $user);  
-                                    
-                                    // get current objects
-                                    if ($bufferdata != false) $objects = getcontent ($bufferdata, "<contentobjects>");
-                            
-                                    // insert new object into content container
-                                    if ($bufferdata != false) $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $objects[0].$new_object."|", "", "");               
-                                        
-                                    if ($bufferdata != false) 
-                                    {         
-                                      // save working container 
-                                      $test = savecontainer ($container_wrk, "work", $bufferdata, $user);           
-                                    }
-                                    else $test = false;         
-                                    
-                                    if ($test == false)
-                                    {
-                                      $errcode = "10677";
-                                      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|savefile failed for ".getcontentlocation ($contentfile_id, 'abs_path_content').$container;           
-                                    }        
-                                  }
-                                  
-                                  // save object
-                                  $test['result'] = savefile ($location_dest, $connectedobject['object'], $tempdata);
-                                }
-                                else $test['result'] = false;
-                              }
-                            }
-                            
-                            if ($test['result'] != false)
-                            {
-                              $collection[$j] = null;
-                            }
-                            else
-                            {
-                              $errcode = "20111";
-                              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|pasteobject failed for $location_source$object_source";
-                              break;
-                            }  
-                          }
-                        }
-                      }
-                    }
-                    // no connected objects were found
-                    else
-                    {
-                      $result = copyobject ($site_source, $location_source, $object_source, $user);
-                    }
-                  }
-                  // object is not managed by hyperCMS
-                  else 
-                  {
-                    $result = copyobject ($site_source, $location_source, $object_source, $user);
-                  }
-                }
-                // object cannot be loaded
-                else $result['result'] = false;
-                */
+                // do not overwrite clipboard
+                $result = copyobject ($site_source, $location_source, $object_source, $user, false, false);
               }
               // for action cut and paste
               elseif ($method == "cut")
               {
-                // reset clipboard
-                $result = cutobject ($site_source, $location_source, $object_source, $user);
+                // do not overwrite clipboard
+                $result = cutobject ($site_source, $location_source, $object_source, $user, false, false);
               }     
               // for action connected copy and paste
               elseif ($method == "linkcopy")
               {
-                // reset clipboard
-                $result = copyconnectedobject ($site_source, $location_source, $object_source, $user);
+                // do not overwrite clipboard
+                $result = copyconnectedobject ($site_source, $location_source, $object_source, $user, false, false);
               }
               
               // paste object
@@ -14718,7 +14812,9 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
                 if (!isset ($copy_done) || (isset ($copy_done) && $copy_done != true))
                 {
                   $site_dest = getpublication ($rootpathnew_array[$root_id]);
-                  $test = pasteobject ($site_dest, $location_dest, $user);
+                  
+                  // paste object using the result clipboard entries as input without touching the session clipboard
+                  $test = pasteobject ($site_dest, $location_dest, $user, $result['clipboard']);
                 }
                 else $test['result'] = true;
               }
@@ -14893,6 +14989,9 @@ function manipulateallobjects ($action, $objectpath_array, $method, $force, $pub
     {
       $result['method'] = $method;         
     }
+    
+    // save log
+    savelog (@$error);
   }
   
   return $result;

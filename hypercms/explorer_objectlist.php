@@ -244,6 +244,10 @@ if (!$is_mobile && is_array ($folder_array) && @sizeof ($folder_array) > 0)
         
         if ($objectdata != false)
         {
+          // create and check download link
+          $downloadlink = createdownloadlink ($site, $location.$folder."/", ".folder", $cat);          
+          if (empty ($downloadlink)) continue;
+        
           // get name of content file and load content container
           $contentfile = getfilename ($objectdata, "content");
           $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
@@ -270,7 +274,7 @@ if (!$is_mobile && is_array ($folder_array) && @sizeof ($folder_array) > 0)
           // link for copy & paste of download links
           if ($mgmt_config[$site]['sendmail'] && $setlocalpermission['download'] == 1)
           {
-            $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"hash\" data-href=\"".createdownloadlink($site, $location.$folder."/", ".folder", $cat)."\">";
+            $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"hash\" data-href=\"".$downloadlink."\">";
             $dlink_end = "</a>";
           }
           else
@@ -446,6 +450,10 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
         // get name of media file
         if ($objectdata != false)
         {
+          // create and check download link
+          $downloadlink = createdownloadlink ($site, $location, $object, $cat);          
+          if (empty ($downloadlink)) continue;
+        
           // get name of content file and load content container
           $contentfile = getfilename ($objectdata, "content");
           $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
@@ -498,7 +506,7 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
             // link for copy & paste of download links
             if ($mgmt_config[$site]['sendmail'] && $setlocalpermission['download'] == 1)
             {
-              $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"hash\" data-href=\"".createdownloadlink($site, $location, $object, $cat)."\">";
+              $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"hash\" data-href=\"".$downloadlink."\">";
               $dlink_end = "</a>";
             }
             else

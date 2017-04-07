@@ -1292,7 +1292,6 @@ $hcms_lang['edit-object']['ar'] = "تحرير موضوع";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['ar'] = "هل تريد بالتأكيد حذف البنود من قائمة الانتظار؟";
 $hcms_lang['configuration']['ar'] = "التكوين";
 $hcms_lang['inheritance']['ar'] = "الميراث";
-$hcms_lang['the-object-was-removed']['ar'] = "وأوضح أن الهدف من ذلك هو إزالة";
 $hcms_lang['the-object-could-not-be-removed']['ar'] = "موضوع لا يمكن إزالتها";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ar'] = "موضوع غير موجود أو أنك لا تملك الأذونات";
 $hcms_lang['add-to-favorites']['ar'] = "إضافة إلى المفضلة";
@@ -1390,4 +1389,7 @@ $hcms_lang['saved-searches']['ar'] = "المحفوظة";
 $hcms_lang['video-codec']['ar'] = "ترميز الفيديو";
 $hcms_lang['audio-codec']['ar'] = "ترميز الصوت";
 $hcms_lang['detect-faces']['ar'] = "كشف وجوه";
+$hcms_lang['recycle-bin']['ar'] = "قمامة";
+$hcms_lang['restore']['ar'] = "استعادة";
+$hcms_lang['empty-recycle-bin']['ar'] = "فارغة المهملات";
 ?>

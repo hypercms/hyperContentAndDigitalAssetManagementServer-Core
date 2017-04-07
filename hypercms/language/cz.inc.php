@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['cz'] = "Upravit objekt";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['cz'] = "Opravdu chcete odstranit položky z fronty?";
 $hcms_lang['configuration']['cz'] = "Konfigurace";
 $hcms_lang['inheritance']['cz'] = "Dědičnost";
-$hcms_lang['the-object-was-removed']['cz'] = "Objekt byl odstraněn";
 $hcms_lang['the-object-could-not-be-removed']['cz'] = "Objekt nelze odebrat";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['cz'] = "Objekt neexistuje nebo nemáte oprávnění";
 $hcms_lang['add-to-favorites']['cz'] = "Přidat k oblíbeným položkám";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['cz'] = "Uložených hledání";
 $hcms_lang['video-codec']['cz'] = "Video codec";
 $hcms_lang['audio-codec']['cz'] = "Audio codec";
 $hcms_lang['detect-faces']['cz'] = "Detekci obličejů";
+$hcms_lang['recycle-bin']['cz'] = "Koš na papír";
+$hcms_lang['restore']['cz'] = "Obnovit";
+$hcms_lang['empty-recycle-bin']['cz'] = "Prázdný koš";
 ?>

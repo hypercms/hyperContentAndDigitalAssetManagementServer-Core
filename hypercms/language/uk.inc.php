@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['uk'] = "Редагування об'єкт";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['uk'] = "Ви впевнені, що хочете видалити пункти з черги?";
 $hcms_lang['configuration']['uk'] = "Налаштування";
 $hcms_lang['inheritance']['uk'] = "Спадок";
-$hcms_lang['the-object-was-removed']['uk'] = "Об'єкт був видалений";
 $hcms_lang['the-object-could-not-be-removed']['uk'] = "Об'єкт не може бути видалений";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['uk'] = "Об'єкт не існує або ви не має дозволів";
 $hcms_lang['add-to-favorites']['uk'] = "Додати у вибране";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['uk'] = "Додано пошук";
 $hcms_lang['video-codec']['uk'] = "відеокодек";
 $hcms_lang['audio-codec']['uk'] = "аудіокодек";
 $hcms_lang['detect-faces']['uk'] = "виявлення особи";
+$hcms_lang['recycle-bin']['uk'] = "коши";
+$hcms_lang['restore']['uk'] = "Відновлення";
+$hcms_lang['empty-recycle-bin']['uk'] = "порожня кошик";
 ?>

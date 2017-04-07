@@ -197,11 +197,12 @@ $ownergroup = accesspermission ($site, $search_dir, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
 if (
-     ($action != "base_search") && 
-     ($action != "favorites") && 
-     ($action != "checkedout") && 
+     $action != "base_search" && 
+     $action != "recyclebin" &&
+     $action != "favorites" && 
+     $action != "checkedout" && 
      ($action != "user_files" && $object_id == "" && $container_id == "") && 
-     ($action != "recipient") && 
+     $action != "recipient" && 
      (!valid_publicationname ($site) || !valid_locationname ($search_dir))
    ) killsession ($user);
 
@@ -218,8 +219,14 @@ $search_filename = "";
 // create secure token
 $token = createtoken ($user);
 
+// deleted objects of a user
+if ($action == "recyclebin" && $user != "")
+{
+  if (!empty ($adminpermission)) $object_array = rdbms_getdeletedobjects ();
+  else $object_array = rdbms_getdeletedobjects ($user);
+}
 // collect all objects of given user 
-if ($action == "user_files" && $login != "" && $site != "" && (($site == "*Null*" && checkrootpermission ('user')) || checkglobalpermission ($site, 'user')))
+elseif ($action == "user_files" && $login != "" && $site != "" && (($site == "*Null*" && checkrootpermission ('user')) || checkglobalpermission ($site, 'user')))
 {
   $object_array = rdbms_searchuser ($site, $login, 500); 
 }
@@ -238,12 +245,12 @@ elseif ($action == "recipient")
 {
   $object_array = rdbms_searchrecipient ($site, $from_user, $to_user, $date_from, $date_to);
 }
-// search for object ID or link ID
+// search for specific object ID or link ID
 elseif ($object_id != "")
 {
   $object_array[0] = rdbms_getobject ($object_id);
 }
-// search for container ID
+// search for specific container ID
 elseif ($container_id != "")
 {
   $object_array = rdbms_getobjects ($container_id, "");
@@ -414,6 +421,10 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             
             if ($objectdata != false)
             {
+              // create and check download link
+              $downloadlink = createdownloadlink ($item_site, $location.$folder."/", ".folder", $item_cat);          
+              if (empty ($downloadlink) && $action != "recyclebin") continue;
+              
               // get name of content file and load content container
               $contentfile = getfilename ($objectdata, "content");
               $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
@@ -440,7 +451,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               // link for copy & paste of download links
               if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
               {
-                $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"hash\" data-href=\"".createdownloadlink($item_site, $location.$folder."/", ".folder", $item_cat)."\">";
+                $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"hash\" data-href=\"".$downloadlink."\">";
                 $dlink_end = "</a>";
               }
               else
@@ -467,7 +478,8 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             // onclick for marking objects
             $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
             // open folder
-            $openFolder = "onDblClick=\"parent.location='frameset_objectlist.php?site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc.$folder)."/&token=".$token."';\" ";
+            if ($action != "recyclebin") $openFolder = "onDblClick=\"parent.location='frameset_objectlist.php?site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc.$folder)."/&token=".$token."';\" ";
+            else $openFolder = "";
             // set context
             $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '.folder', '".$folder_name."', 'Folder', '', '".$folder."', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
@@ -697,7 +709,8 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             }
         
             // open on double click
-            $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\"";
+            if ($action != "recyclebin") $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\"";
+            else $openObject = "";
             // refresh sidebar
             if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
             else $sidebarclick = "";
@@ -1067,7 +1080,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
     <input type="hidden" name="media" value="" />
     <input type="hidden" name="folder" value="" />
     <input type="hidden" name="multiobject" value="" />
-    <input type="hidden" name="from_page" value="search" />
+    <input type="hidden" name="from_page" value="<?php if ($action == "recyclebin") echo "recyclebin"; else echo "search"; ?>" />
     <input type="hidden" name="token" value="" />
     <input type="hidden" name="convert_type" value="" />
     <input type="hidden" name="convert_cfg" value="" />
@@ -1084,14 +1097,22 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
           <hr />
           <?php } ?>  
           <a href=# id="href_preview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('preview');"><img src="<?php echo getthemelocation(); ?>img/button_file_preview.gif" id="img_preview" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></a><br />  
+          <?php if ($action != "recyclebin") { ?>
           <a href=# id="href_cmsview" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cmsview');"><img src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" id="img_cmsview" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />
           <a href=# id="href_notify" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('notify');"><img src="<?php echo getthemelocation(); ?>img/button_notify.gif" id="img_notify" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo getescapedtext ($hcms_lang['notify-me'][$lang]); ?></a><br />
-          <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?> 
+          <?php } ?>
+          <?php if ($action != "recyclebin" && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
           <a href=# id="href_chat" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('chat');"><img src="<?php echo getthemelocation(); ?>img/button_chat.gif" id="img_chat" align="absmiddle" border=0 class="hcmsIconOn">&nbsp;<?php echo getescapedtext ($hcms_lang['send-to-chat'][$lang]); ?></a><br />
           <?php } ?>   
           <hr />
+          <?php if ($action == "recyclebin") { ?>
+          <a href=# id="href_emptybin" onClick="hcms_emptyRecycleBin ('<?php echo $token; ?>');"><img src="<?php echo getthemelocation(); ?>img/button_recycle_bin.gif" id="img_emptybin" align="absmiddle" border=0 />&nbsp;<?php echo getescapedtext ($hcms_lang['empty-recycle-bin'][$lang]); ?></a><br />
+          <hr />
+          <a href=# id="href_restore" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('restore');"><img src="<?php echo getthemelocation(); ?>img/button_import.gif" id="img_restore" align="absmiddle" border=0 />&nbsp;<?php echo getescapedtext ($hcms_lang['restore'][$lang]); ?></a><br />        
+          <?php } ?>  
           <a href=# id="href_delete" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.gif" id="img_delete" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />     
           <hr />
+          <?php if ($action != "recyclebin") { ?>
           <a href=# id="href_cut" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('cut');"><img src="<?php echo getthemelocation(); ?>img/button_file_cut.gif" id="img_cut" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['cut'][$lang]); ?></a><br />  
           <a href=# id="href_copy" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('copy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copy.gif" id="img_copy" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?></a><br />  
           <a href=# id="href_copylinked" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('linkcopy');"><img src="<?php echo getthemelocation(); ?>img/button_file_copylinked.gif" id="img_copylinked" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['connected-copy'][$lang]); ?></a><br />   
@@ -1099,9 +1120,10 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
           <a href=# id="href_publish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('publish');"><img src="<?php echo getthemelocation(); ?>img/button_file_publish.gif" id="img_publish" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['publish'][$lang]); ?></a><br />  
           <a href=# id="href_unpublish" onClick="if (checktype('object')==true || checktype('media')==true || checktype('folder')==true) hcms_createContextmenuItem ('unpublish');"><img src="<?php echo getthemelocation(); ?>img/button_file_unpublish.gif" id="img_unpublish" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['unpublish'][$lang]); ?></a><br />
           <hr />
+          <?php } ?> 
           <?php
           // ----------------------------------------- plugins ----------------------------------------------
-          if ($setlocalpermission['root'] == 1 && empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && !empty ($mgmt_plugin))
+          if ($action != "recyclebin" && $setlocalpermission['root'] == 1 && empty ($hcms_assetbrowser) && !isset ($hcms_linking['location']) && !empty ($mgmt_plugin))
           { 
             $plugin_items = "";
             

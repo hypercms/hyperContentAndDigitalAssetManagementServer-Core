@@ -294,34 +294,38 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
           
           foreach ($folder_array as $folder)
           {
-            $folderinfo = getfileinfo ($site, $location.$folder, $cat);
-            $foldername = $folderinfo['name'];
-            $icon = $folderinfo['icon'];
-            
-            // the folder to be used for the AJAX request
-            $ajaxfolder = $location_esc.$folder;
-            
-            $id = $cat.'_'.$site.'_';
-            
-            // generating the id from the running number so we don't have any ID problems
-            if (!empty ($runningNumber))
+            // verify that folder has not been marked as deleted
+            if ($folder != "" && createdownloadlink ($site, $location, $folder, $cat))
             {
-              $id .= $runningNumber.'_';
-              $rnrid = $runningNumber.'_';
+              $folderinfo = getfileinfo ($site, $location.$folder, $cat);
+              $foldername = $folderinfo['name'];
+              $icon = $folderinfo['icon'];
+              
+              // the folder to be used for the AJAX request
+              $ajaxfolder = $location_esc.$folder;
+              
+              $id = $cat.'_'.$site.'_';
+              
+              // generating the id from the running number so we don't have any ID problems
+              if (!empty ($runningNumber))
+              {
+                $id .= $runningNumber.'_';
+                $rnrid = $runningNumber.'_';
+              }
+              
+              $id .= $i;
+              $rnrid .= $i++;
+  
+              // generating the menupoint object with the needed configuration
+              $point = new hcms_menupoint($foldername, 'frameset_objectlist.php?site='.url_encode($site).'&cat='.url_encode($cat).'&location='.url_encode($location_esc.$folder.'/'), $icon, $id);
+              $point->setOnClick('hcms_jstree_open("'.$id.'");');
+              $point->setTarget('workplFrame');
+              $point->setNodeCSSClass('jstree-closed jstree-reload');
+              $point->setAjaxData($ajaxfolder, $rnrid);
+              $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "'.$cat.'", "'.$location_esc.'", ".folder", "'.$foldername.'", "Folder", "", "'.$folder.'", "'.$id.'", $("#context_token").text());');
+              $point->setOnMouseOut('hcms_resetContext();');
+              $result[] = $point;
             }
-            
-            $id .= $i;
-            $rnrid .= $i++;
-
-            // generating the menupoint object with the needed configuration
-            $point = new hcms_menupoint($foldername, 'frameset_objectlist.php?site='.url_encode($site).'&cat='.url_encode($cat).'&location='.url_encode($location_esc.$folder.'/'), $icon, $id);
-            $point->setOnClick('hcms_jstree_open("'.$id.'");');
-            $point->setTarget('workplFrame');
-            $point->setNodeCSSClass('jstree-closed jstree-reload');
-            $point->setAjaxData($ajaxfolder, $rnrid);
-            $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "'.$cat.'", "'.$location_esc.'", ".folder", "'.$foldername.'", "Folder", "", "'.$folder.'", "'.$id.'", $("#context_token").text());');
-            $point->setOnMouseOut('hcms_resetContext();');
-            $result[] = $point;
           }
         }
         
@@ -726,6 +730,15 @@ else
     if (checkrootpermission ('desktopcheckedout'))
     {
       $subpoint = new hcms_menupoint($hcms_lang['checked-out-items'][$lang], "frameset_objectlist.php?virtual=1&action=checkedout", 'file_locked.gif');
+      $subpoint->setOnClick('changeSelection(this)');
+      $subpoint->setTarget('workplFrame');
+      $subpoint->setOnMouseOver('hcms_resetContext();');
+      $point->addSubPoint($subpoint);
+    }
+    
+    if ($mgmt_config['db_connect_rdbms'] && !empty ($mgmt_config['recyclebin']))
+    {
+      $subpoint = new hcms_menupoint($hcms_lang['recycle-bin'][$lang], "frameset_objectlist.php?virtual=1&action=recyclebin", 'recycle_bin.gif');
       $subpoint->setOnClick('changeSelection(this)');
       $subpoint->setTarget('workplFrame');
       $subpoint->setOnMouseOver('hcms_resetContext();');

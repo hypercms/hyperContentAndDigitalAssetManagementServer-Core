@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['sq'] = "Edit objekt";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['sq'] = "A jeni i sigurt se për të fshirë të artikujve nga rreshtit?";
 $hcms_lang['configuration']['sq'] = "Konfigurimi";
 $hcms_lang['inheritance']['sq'] = "Trashëgimi";
-$hcms_lang['the-object-was-removed']['sq'] = "Objekti u hoq";
 $hcms_lang['the-object-could-not-be-removed']['sq'] = "Objekti nuk mund të hiqen";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['sq'] = "Objekti nuk ekziston ose ju nuk keni leje ndertimi";
 $hcms_lang['add-to-favorites']['sq'] = "Shtoni në të preferuarat";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['sq'] = "Kërkimet e shpëtoi";
 $hcms_lang['video-codec']['sq'] = "Video codec";
 $hcms_lang['audio-codec']['sq'] = "Audio codec";
 $hcms_lang['detect-faces']['sq'] = "Zbuluar fytyrat";
+$hcms_lang['recycle-bin']['sq'] = "Plehra";
+$hcms_lang['restore']['sq'] = "Kthej";
+$hcms_lang['empty-recycle-bin']['sq'] = "Zbrazet";
 ?>

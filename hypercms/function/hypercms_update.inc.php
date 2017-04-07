@@ -746,21 +746,60 @@ function update_database_v6139 ()
     // create new index
     $sql = 'CREATE INDEX date ON recipient(object_id, date);';
     $errcode = "50073";
-    $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'create');
+    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
     
     // create new index
     $sql = 'CREATE INDEX from_user ON recipient(object_id, from_user);';
     $errcode = "50073";
-    $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'create');
+    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
     
     // create new index
     $sql = 'CREATE INDEX to_user ON recipient(object_id, to_user(200));';
     $errcode = "50073";
-    $result = $db->query ($sql, $errcode, $mgmt_config['today'], 'create');
+    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
     
     // save log
     savelog ($db->getError ());
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.39|updated to version 6.1.39"), "update");
+    savelog (@$error);
+    $db->close();
+
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ update_database_v625 ----------------------------------------------
+// function: update_database_v625()
+// input: %
+// output: updated database, false on error
+
+// description: 
+// Adds attribute 'deleteuser' and 'deletedate' to table objects for support of version 6.2.5.
+
+function update_database_v625 ()
+{
+  global $mgmt_config;
+  
+  $logdata = loadlog ("update", "string");
+  
+  if (empty ($logdata) || strpos ($logdata, "|6.2.5|") < 1)
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+    
+    // alter table
+    $sql = "ALTER TABLE object ADD deleteuser CHAR(60) DEFAULT '' AFTER template;";
+    $errcode = "50073";
+    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+    
+    $sql = "ALTER TABLE object ADD deletedate DATE AFTER deleteuser;";
+    $errcode = "50074";
+    $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->getError ());
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.2.5|updated to version 6.2.5"), "update");
     savelog (@$error);
     $db->close();
 

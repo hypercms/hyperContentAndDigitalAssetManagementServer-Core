@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['ru'] = "Редактировать объект";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['ru'] = "Вы уверены, что хотите удалить элементы из очереди?";
 $hcms_lang['configuration']['ru'] = "Конфигурация";
 $hcms_lang['inheritance']['ru'] = "Наследование";
-$hcms_lang['the-object-was-removed']['ru'] = "Объект был снят";
 $hcms_lang['the-object-could-not-be-removed']['ru'] = "Объект не мог быть удален";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ru'] = "Объект не существует, или у вас нет разрешения";
 $hcms_lang['add-to-favorites']['ru'] = "Добавить в Избранное";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['ru'] = "Сохраненные поиски";
 $hcms_lang['video-codec']['ru'] = "видеокодек";
 $hcms_lang['audio-codec']['ru'] = "Аудио кодек";
 $hcms_lang['detect-faces']['ru'] = "Обнаружение лица";
+$hcms_lang['recycle-bin']['ru'] = "корзина";
+$hcms_lang['restore']['ru'] = "Восстановить";
+$hcms_lang['empty-recycle-bin']['ru'] = "Пустая мусорная корзина";
 ?>

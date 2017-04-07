@@ -1294,7 +1294,6 @@ $hcms_lang['edit-object']['fr'] = "Modifier l'objet";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['fr'] = "Êtes-vous sûr de vouloir supprimer les éléments de la file d'attente?";
 $hcms_lang['configuration']['fr'] = "Configuration";
 $hcms_lang['inheritance']['fr'] = "Héritage";
-$hcms_lang['the-object-was-removed']['fr'] = "L'objet a été supprimé";
 $hcms_lang['the-object-could-not-be-removed']['fr'] = "L'objet n'a pas pu être supprimé";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['fr'] = "L'objet n'existe pas ou vous n'avez pas les autorisations";
 $hcms_lang['add-to-favorites']['fr'] = "Ajouter aux favoris";
@@ -1392,4 +1391,7 @@ $hcms_lang['saved-searches']['fr'] = "Recherches enregistrées";
 $hcms_lang['video-codec']['fr'] = "Vidéo Codec";
 $hcms_lang['audio-codec']['fr'] = "Audio codec";
 $hcms_lang['detect-faces']['fr'] = "Détecter les visages";
+$hcms_lang['recycle-bin']['fr'] = "Corbeille";
+$hcms_lang['restore']['fr'] = "Restaurer";
+$hcms_lang['empty-recycle-bin']['fr'] = "Vider la Corbeille";
 ?>

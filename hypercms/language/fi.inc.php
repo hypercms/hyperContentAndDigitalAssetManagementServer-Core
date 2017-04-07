@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['fi'] = "Muokkaa objektin";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['fi'] = "Oletko varma, että haluat poistaa kohteet jonosta?";
 $hcms_lang['configuration']['fi'] = "Konfigurointi";
 $hcms_lang['inheritance']['fi'] = "Periytyminen";
-$hcms_lang['the-object-was-removed']['fi'] = "Laite on irrotettu";
 $hcms_lang['the-object-could-not-be-removed']['fi'] = "Kohdetta ei voitu poistaa";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['fi'] = "Kohde ei ole tai sinulla ei ole oikeuksia";
 $hcms_lang['add-to-favorites']['fi'] = "Lisää suosikkeihin";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['fi'] = "Tallennettujen hakujen";
 $hcms_lang['video-codec']['fi'] = "Video codec";
 $hcms_lang['audio-codec']['fi'] = "Audio codec";
 $hcms_lang['detect-faces']['fi'] = "Tunnistaa kasvot";
+$hcms_lang['recycle-bin']['fi'] = "Paperi bin";
+$hcms_lang['restore']['fi'] = "Palauttaa";
+$hcms_lang['empty-recycle-bin']['fi'] = "Tyhjä roskakori";
 ?>

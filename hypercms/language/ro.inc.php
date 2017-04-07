@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['ro'] = "Editare obiect";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['ro'] = "Sunteţi sigur că doriţi să ştergeţi elementele din coadă?";
 $hcms_lang['configuration']['ro'] = "Configurare";
 $hcms_lang['inheritance']['ro'] = "Mostenire";
-$hcms_lang['the-object-was-removed']['ro'] = "Obiectul a fost demontat";
 $hcms_lang['the-object-could-not-be-removed']['ro'] = "Obiectul nu a putut fi îndepărtat";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ro'] = "Obiectul nu există sau nu deţineţi permisiunile";
 $hcms_lang['add-to-favorites']['ro'] = "Adăugare la favorite";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['ro'] = "Căutări salvate";
 $hcms_lang['video-codec']['ro'] = "Codec video";
 $hcms_lang['audio-codec']['ro'] = "Codec audio";
 $hcms_lang['detect-faces']['ro'] = "Detecta fețele";
+$hcms_lang['recycle-bin']['ro'] = "Cos de gunoi";
+$hcms_lang['restore']['ro'] = "Restabili";
+$hcms_lang['empty-recycle-bin']['ro'] = "Goliți coșul de gunoi";
 ?>

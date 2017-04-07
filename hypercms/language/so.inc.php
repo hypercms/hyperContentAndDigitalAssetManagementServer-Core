@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['so'] = "Ficilladaas ku";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['so'] = "Ma hubtaa in aad rabto in aad tirtirto waxyaabaha ka safka?";
 $hcms_lang['configuration']['so'] = "Configuration";
 $hcms_lang['inheritance']['so'] = "Ku Dhaxal Waayey";
-$hcms_lang['the-object-was-removed']['so'] = "Waxa ayaa xilka laga";
 $hcms_lang['the-object-could-not-be-removed']['so'] = "Waxa aan laga";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['so'] = "Waxa aan jirin sida iyagoo jira ama aan lahayn permissions";
 $hcms_lang['add-to-favorites']['so'] = "Ku Dar Intaa ku gaboodfalay";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['so'] = "Innagase badbaadiyey";
 $hcms_lang['video-codec']['so'] = "Video codec";
 $hcms_lang['audio-codec']['so'] = "Audio codec";
 $hcms_lang['detect-faces']['so'] = "Ogaashaha wejigooda"
+$hcms_lang['recycle-bin']['so'] = "Bin recycle";
+$hcms_lang['restore']['so'] = "Soo Celinta";
+$hcms_lang['empty-recycle-bin']['so'] = "Bin recycle madhan";
 ?>

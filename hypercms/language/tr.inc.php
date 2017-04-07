@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['tr'] = "Edit nesnesi";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['tr'] = "Silmek istediğinizden emin misiniz öğeler kuyruğu mu?";
 $hcms_lang['configuration']['tr'] = "Yapılandırma";
 $hcms_lang['inheritance']['tr'] = "Kalıtım";
-$hcms_lang['the-object-was-removed']['tr'] = "Sökülen nesne";
 $hcms_lang['the-object-could-not-be-removed']['tr'] = "Bu nesne kaldırılamadı";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['tr'] = "Bu nesne yok veya izniniz yok";
 $hcms_lang['add-to-favorites']['tr'] = "Sık kullanılanlara ekle";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['tr'] = "Kaydedilen aramalar";
 $hcms_lang['video-codec']['tr'] = "Video Kodek";
 $hcms_lang['audio-codec']['tr'] = "Ses Kodek";
 $hcms_lang['detect-faces']['tr'] = "Yüzleri algıla";
+$hcms_lang['recycle-bin']['tr'] = "Geridönüşüm kutusu";
+$hcms_lang['restore']['tr'] = "Geri yükle";
+$hcms_lang['empty-recycle-bin']['tr'] = "Boş geri dönüşüm kutusu";
 ?>

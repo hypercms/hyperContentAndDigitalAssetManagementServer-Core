@@ -409,7 +409,7 @@ function accesspermission ($site, $location, $cat)
     if (substr ($location, -1) == "/") $location = substr ($location, 0 , -1);  
     
     // cut off file name 
-    if (@is_file ($location)) $location = getlocation ($location);
+    if (is_file ($location)) $location = getlocation ($location);
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";     
@@ -576,10 +576,10 @@ function setlocalpermission ($site, $group_array, $cat)
         if ($setlocalpermission['delete'] == 0 && @$localpermission[$site][$group]['pagedelete'] == 1) $setlocalpermission['delete'] = 1;
         if ($setlocalpermission['rename'] == 0 && @$localpermission[$site][$group]['pagerename'] == 1) $setlocalpermission['rename'] = 1;
         if ($setlocalpermission['publish'] == 0 && @$localpermission[$site][$group]['pagepublish'] == 1) $setlocalpermission['publish'] = 1;
-      }   
+      }  
     }
   }
-  
+
   return $setlocalpermission;
 }
 
@@ -898,6 +898,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       update_database_v6113 ();
       update_container_v6118 ();
       update_database_v6139 ();
+      update_database_v625 ();
     
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
       $charset = getcharset ("", $userdata); 

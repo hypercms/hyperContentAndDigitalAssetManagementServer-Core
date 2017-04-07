@@ -1294,7 +1294,6 @@ $hcms_lang['edit-object']['zh-s'] = "编辑对象";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['zh-s'] = "您确定要删除该项目从队列?";
 $hcms_lang['configuration']['zh-s'] = "配置";
 $hcms_lang['inheritance']['zh-s'] = "继承";
-$hcms_lang['the-object-was-removed']['zh-s'] = "对象已删除";
 $hcms_lang['the-object-could-not-be-removed']['zh-s'] = "该对象不能被删除";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['zh-s'] = "该对象不存在,或者您没有权限。";
 $hcms_lang['add-to-favorites']['zh-s'] = "添加到“收藏夹”";
@@ -1392,4 +1391,7 @@ $hcms_lang['saved-searches']['zh-s'] = "保存的搜索";
 $hcms_lang['video-codec']['zh-s'] = "视频编解码器";
 $hcms_lang['audio-codec']['zh-s'] = "音频编解码器";
 $hcms_lang['detect-faces']['zh-s'] = "检测面";
+$hcms_lang['recycle-bin']['zh-s'] = "回收站";
+$hcms_lang['restore']['zh-s'] = "恢复";
+$hcms_lang['empty-recycle-bin']['zh-s'] = "空的回收箱";
 ?>

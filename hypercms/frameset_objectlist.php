@@ -94,7 +94,7 @@ elseif ($action == "user_files")
   if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" scrolling=\"auto\" name=\"sidebarFrame\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>\n";
 }
 // favorites and checked out objects
-elseif ($action == "favorites" || $action == "checkedout")
+elseif ($action == "favorites" || $action == "checkedout" || $action == "recyclebin")
 {
   // control
   echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" scrolling=\"".$scrolling."\" src=\"control_objectlist_menu.php?virtual=1&from_page=checkedout\" frameBorder=\"0\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;\"></iframe></div>\n";

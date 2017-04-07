@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['sv'] = "Redigera objekt";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['sv'] = "Är du säker på att du vill ta bort objekt från kön?";
 $hcms_lang['configuration']['sv'] = "Konfiguration";
 $hcms_lang['inheritance']['sv'] = "Arv";
-$hcms_lang['the-object-was-removed']['sv'] = "Objektet har tagits bort";
 $hcms_lang['the-object-could-not-be-removed']['sv'] = "Objektet kan inte tas bort";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['sv'] = "Objektet finns inte eller så har du inte behörighet";
 $hcms_lang['add-to-favorites']['sv'] = "Lägg till i favoriter";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['sv'] = "Sparade sökningar";
 $hcms_lang['video-codec']['sv'] = "Video codec";
 $hcms_lang['audio-codec']['sv'] = "Audio codec";
 $hcms_lang['detect-faces']['sv'] = "Identifiera ansikten";
+$hcms_lang['recycle-bin']['sv'] = "Papperskorg";
+$hcms_lang['restore']['sv'] = "Återställa";
+$hcms_lang['empty-recycle-bin']['sv'] = "Töm papperskorg";
 ?>

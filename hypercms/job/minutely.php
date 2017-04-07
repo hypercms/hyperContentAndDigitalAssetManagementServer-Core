@@ -68,6 +68,13 @@ if (sizeof ($config_files) > 0)
             $published_only = $queue['published_only'];
             $user = $queue['user'];
     
+            // if folder object remove .folder
+            if ($file == ".folder")
+            {
+              $location = getlocation ($location);
+              $file = getobject ($location);
+            }
+            
             // process objects
             $result = processobjects ($action, $site, $location, $file, $published_only, $user);
     
@@ -75,11 +82,6 @@ if (sizeof ($config_files) > 0)
             if ($result == true)
             {
               rdbms_deletequeueentry ($queue_id);
-            }
-            else
-            {
-              $errcode = "50091";
-              $error[] = $mgmt_config['today']."|publish.php|error|$errcode|action ".$action." failed on ".$location.$file;  
             }
             
             // save log

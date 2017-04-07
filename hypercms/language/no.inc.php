@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['no'] = "Rediger objekt";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['no'] = "Er du sikker på at du vil slette elementer fra køen?";
 $hcms_lang['configuration']['no'] = "Konfigurasjon";
 $hcms_lang['inheritance']['no'] = "Arv";
-$hcms_lang['the-object-was-removed']['no'] = "Objektet ble fjernet";
 $hcms_lang['the-object-could-not-be-removed']['no'] = "Objektet kan ikke fjernes";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['no'] = "Objektet finnes ikke, eller du har ikke tillatelse";
 $hcms_lang['add-to-favorites']['no'] = "Legg til i favoritter";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['no'] = "Lagrede søk";
 $hcms_lang['video-codec']['no'] = "Video codec";
 $hcms_lang['audio-codec']['no'] = "Audio codec";
 $hcms_lang['detect-faces']['no'] = "Gjenkjenne ansikter";
+$hcms_lang['recycle-bin']['no'] = "Papierkurven";
+$hcms_lang['restore']['no'] = "Restaurere";
+$hcms_lang['empty-recycle-bin']['no'] = "Tøm papirkurven";
 ?>

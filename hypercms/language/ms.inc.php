@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['ms'] = "Edit Objek";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['ms'] = "Anda pasti ingin menghapuskan item dari baris gilir?";
 $hcms_lang['configuration']['ms'] = "Konfigurasi";
 $hcms_lang['inheritance']['ms'] = "Warisan";
-$hcms_lang['the-object-was-removed']['ms'] = "Objek dibuang";
 $hcms_lang['the-object-could-not-be-removed']['ms'] = "Objek tidak dapat dibuang";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ms'] = "Objek tidak wujud atau anda tidak mempunyai keizinan";
 $hcms_lang['add-to-favorites']['ms'] = "Tambah ke kegemaran";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['ms'] = "Menyelamatkan carian";
 $hcms_lang['video-codec']['ms'] = "Video codec";
 $hcms_lang['audio-codec']['ms'] = "Audio codec";
 $hcms_lang['detect-faces']['ms'] = "Mengesan muka";
+$hcms_lang['recycle-bin']['ms'] = "Tong kitar semula";
+$hcms_lang['restore']['ms'] = "Memulihkan";
+$hcms_lang['empty-recycle-bin']['ms'] = "Kitar semula kosong bin";
 ?>

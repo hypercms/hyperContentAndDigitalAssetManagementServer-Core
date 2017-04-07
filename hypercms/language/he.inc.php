@@ -1294,7 +1294,6 @@ $hcms_lang['edit-object']['he'] = "עריכת אובייקט";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['he'] = "האם אתה בטוח שברצונך למחוק את הפריטים מהתור?";
 $hcms_lang['configuration']['he'] = "תצורה";
 $hcms_lang['inheritance']['he'] = "ירושה";
-$hcms_lang['the-object-was-removed']['he'] = "האובייקט הוסר";
 $hcms_lang['the-object-could-not-be-removed']['he'] = "לא ניתן להסיר את אובייקט";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['he'] = "את האובייקט אינו קיים, או שאין לך הרשאות";
 $hcms_lang['add-to-favorites']['he'] = "הוסף למועדפים";
@@ -1392,4 +1391,7 @@ $hcms_lang['saved-searches']['he'] = "חיפושים שמורים";
 $hcms_lang['video-codec']['he'] = "Codec וידאו";
 $hcms_lang['audio-codec']['he'] = "Codec אודיו";
 $hcms_lang['detect-faces']['he'] = "זיהוי פרצופים";
+$hcms_lang['recycle-bin']['he'] = "סל נייר";
+$hcms_lang['restore']['he'] = "לשחזר";
+$hcms_lang['empty-recycle-bin']['he'] = "סל מחזור ריק";
 ?>

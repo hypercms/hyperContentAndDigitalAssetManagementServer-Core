@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['ur'] = "ادارتی محقر";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['ur'] = "کیا اپ کو یقین کرنا چاہتے ہیں تو اپ کو سامان چھیلنا queue سے?";
 $hcms_lang['configuration']['ur'] = "روپ";
 $hcms_lang['inheritance']['ur'] = "بپوتی";
-$hcms_lang['the-object-was-removed']['ur'] = "اس محقر نکال دیا";
 $hcms_lang['the-object-could-not-be-removed']['ur'] = "اس اعتراض کو خارج نہیں کیا جا سکتا";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['ur'] = "نائن الیون کے محقر یا اپ کے پاس permissions";
 $hcms_lang['add-to-favorites']['ur'] = "سامان فیورٹ";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['ur'] = "ٹووں بچایا";
 $hcms_lang['video-codec']['ur'] = "ویڈیو کوڈیک";
 $hcms_lang['audio-codec']['ur'] = "آڈیو کوڈیک";
 $hcms_lang['detect-faces']['ur'] = "چہروں کھوج لگائیں";
+$hcms_lang['recycle-bin']['ur'] = "ریسایکل بن";
+$hcms_lang['restore']['ur'] = "بحال";
+$hcms_lang['empty-recycle-bin']['ur'] = "خالی ریسایکل بن";
 ?>

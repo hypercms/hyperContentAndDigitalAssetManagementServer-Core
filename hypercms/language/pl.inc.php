@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['pl'] = "Edytowanie obiektów";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['pl'] = "Czy na pewno chcesz usunąć elementy z kolejki?";
 $hcms_lang['configuration']['pl'] = "Konfiguracja";
 $hcms_lang['inheritance']['pl'] = "Dziedzictwo";
-$hcms_lang['the-object-was-removed']['pl'] = "Obiekt został usunięty";
 $hcms_lang['the-object-could-not-be-removed']['pl'] = "Obiekt nie mógł być usunięty";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['pl'] = "Obiekt nie istnieje lub nie masz uprawnień";
 $hcms_lang['add-to-favorites']['pl'] = "Dodaj do ulubionych";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['pl'] = "Zapisanych wyników wyszukiwania";
 $hcms_lang['video-codec']['pl'] = "Video codec";
 $hcms_lang['audio-codec']['pl'] = "Audio codec";
 $hcms_lang['detect-faces']['pl'] = "Wykrywanie twarzy";
+$hcms_lang['recycle-bin']['pl'] = "Kosz";
+$hcms_lang['restore']['pl'] = "Przywracać";
+$hcms_lang['empty-recycle-bin']['pl'] = "Pusty kosz";
 ?>

@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['nl'] = "Objecten bewerken";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['nl'] = "Weet u zeker dat u de items uit de wachtrij verwijderen?";
 $hcms_lang['configuration']['nl'] = "Configuratie";
 $hcms_lang['inheritance']['nl'] = "Erfenis";
-$hcms_lang['the-object-was-removed']['nl'] = "Het object is verwijderd";
 $hcms_lang['the-object-could-not-be-removed']['nl'] = "Het object kan niet worden verwijderd";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['nl'] = "Het object bestaat niet of u hebt niet de toestemmingen";
 $hcms_lang['add-to-favorites']['nl'] = "Voeg toe aan uw favorieten";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['nl'] = "Opgeslagen zoekopdrachten";
 $hcms_lang['video-codec']['nl'] = "Video codec";
 $hcms_lang['audio-codec']['nl'] = "Audio codec";
 $hcms_lang['detect-faces']['nl'] = "Detecteert gezichten";
+$hcms_lang['recycle-bin']['nl'] = "Papierbak";
+$hcms_lang['restore']['nl'] = "Herstellen";
+$hcms_lang['empty-recycle-bin']['nl'] = "Lege papierbak";
 ?>

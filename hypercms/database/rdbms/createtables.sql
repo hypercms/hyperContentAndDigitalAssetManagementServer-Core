@@ -33,6 +33,8 @@ CREATE TABLE `object` (
   `id` int(11) NOT NULL default '0',
   `objectpath` varchar(21000) NOT NULL default '',
   `template` char(60) NOT NULL default '',
+  `deleteuser` char(60) DEFAULT '',
+  `deletedate` date DEFAULT NULL,
   PRIMARY KEY  (`object_id`),
   UNIQUE KEY `objecthash` (`hash`),
   KEY `object` (`id`,`template`),

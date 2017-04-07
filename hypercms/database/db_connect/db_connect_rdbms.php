@@ -997,10 +997,9 @@ function rdbms_settemplate ($object, $template)
       
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
+    $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
     $object = $db->escape_string ($object);
     $template = $db->escape_string ($template);
-            
-    $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
 
     // update object
     $sql = 'UPDATE object SET template="'.$template.'" WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin'; 
@@ -1142,6 +1141,13 @@ function rdbms_getmedia ($container_id, $extended=false)
 
 // ------------------------------------------------ get duplicate file -------------------------------------------------
 
+// function: rdbms_getduplicate_file()
+// input: publication name, MD5 hash of the file content
+// output: object path array / false
+
+// description:
+// Returns the objects with the same file content as array.
+
 function rdbms_getduplicate_file ($site, $md5_hash)
 {
   global $mgmt_config;
@@ -1182,6 +1188,13 @@ function rdbms_getduplicate_file ($site, $md5_hash)
 }
 
 // ----------------------------------------------- rename object -------------------------------------------------
+
+// function: rdbms_renameobject()
+// input: location path of object, location path of object with new object name
+// output: true / false
+
+// description:
+// Renames an object.
 
 function rdbms_renameobject ($object_old, $object_new)
 {
@@ -1254,7 +1267,14 @@ function rdbms_renameobject ($object_old, $object_new)
 
 // ----------------------------------------------- delete object ------------------------------------------------- 
 
-function rdbms_deleteobject ($object, $object_id="")
+// function: rdbms_deleteobject()
+// input: location path of object (optional) OR object ID (optional)
+// output: true / false
+
+// description:
+// Deletes an object.
+
+function rdbms_deleteobject ($object="", $object_id="")
 {
   global $mgmt_config;
 
@@ -1267,10 +1287,8 @@ function rdbms_deleteobject ($object, $object_id="")
     
     if ($object != "")
     {
-      $object = $db->escape_string ($object);
-    
-      // replace %
       $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+      $object = $db->escape_string ($object);
     }
     
     // query
@@ -1405,6 +1423,13 @@ function rdbms_deleteobject ($object, $object_id="")
 
 // ----------------------------------------------- delete content -------------------------------------------------
 
+// function: rdbms_deletecontent()
+// input: publication name, container ID, text ID
+// output: true / false
+
+// description:
+// Deletes the content of an object/container based on the text ID.
+
 function rdbms_deletecontent ($site, $container_id, $text_id)
 {
   global $mgmt_config;
@@ -1438,6 +1463,13 @@ function rdbms_deletecontent ($site, $container_id, $text_id)
 }
 
 // ------------------------------------------ delete keywords of a publication --------------------------------------------
+
+// function: rdbms_deletepublicationkeywords()
+// input: publication name
+// output: true / false
+
+// description:
+// Deletes all keywords of a publication.
 
 function rdbms_deletepublicationkeywords ($site)
 {
@@ -1476,6 +1508,13 @@ function rdbms_deletepublicationkeywords ($site)
 }
 
 // ------------------------------------------ delete taxonomy of a publication --------------------------------------------
+
+// function: rdbms_deletepublicationtaxonomy()
+// input: publication name, force delete if taxomoy of publication is disabled [true,false] (optional)
+// output: true / false
+
+// description:
+// Deletes the taxonomy definition of a publication.
 
 function rdbms_deletepublicationtaxonomy ($site, $force=false)
 {
@@ -1529,7 +1568,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 // output: result array with object paths of all found objects / false
 
 // description:
-// Searches one or more expressions in the content.
+// Searches one or more expressions in the content of objects which are not in the recycle bin.
 
 function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", $date_from="", $date_to="", $template="", $expression_array="", $expression_filename="", $filesize="", $imagewidth="", $imageheight="", $imagecolor="", $imagetype="", $geo_border_sw="", $geo_border_ne="", $maxhits=300, $count=false, $search_log=true, $taxonomy_level=2)
 {
@@ -1770,6 +1809,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       
       reset ($expression_array);
       $expression_log = array();
+      $sql_expr_advanced[$i] = "";
       
       foreach ($expression_array as $key => $expression)
       {
@@ -1988,6 +2028,9 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       // save search expression in search expression log
       if ($search_log) savelog ($expression_log, "search");
       
+      // remove empty array elements
+      $sql_expr_advanced = array_filter ($sql_expr_advanced);
+      
       // combine all text_id based search conditions using the operator (default is AND)
       if (isset ($sql_expr_advanced) && is_array ($sql_expr_advanced) && sizeof ($sql_expr_advanced) > 0)
       {
@@ -2181,14 +2224,15 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       }
     }
     
-    // remove empoty array elements
+    // remove empty array elements
     $sql_table = array_filter ($sql_table);
     $sql_where = array_filter ($sql_where);
 
     // build SQL statement
     $sql = 'SELECT DISTINCT obj.objectpath, obj.hash FROM object AS obj';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= ' '.implode (' ', $sql_table);
-    if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' WHERE '.implode (' AND ', $sql_where);
+    $sql .= ' WHERE deleteuser=""';
+    if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' AND '.implode (' AND ', $sql_where);
     // removed "order by" due to poor DB performance and moved to array sort
     // $sql .= ' ORDER BY SUBSTRING_INDEX(obj.objectpath,"/",-1)';
 
@@ -2214,12 +2258,12 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       }      
     }
 
-    //count searchresults
+    // count searchresults
     if (!empty ($count))
     {
       $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as cnt FROM object AS obj';
       if (is_array ($sql_table)) $sql .= ' '.implode (" ", $sql_table);
-      $sql .= ' WHERE ';
+      $sql .= ' WHERE deleteuser="" ';
     
       if (isset ($sql_table) && is_array ($sql_where)) 
       {
@@ -2259,7 +2303,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 // output: result array with object paths of all touched objects / false
 
 // description:
-// Replaces an expression by another in the content.
+// Replaces an expression by another in the content of object which are not in the recycle bin.
 
 function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $date_to="", $search_expression, $replace_expression, $user="sys")
 {
@@ -2361,7 +2405,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
     
     $sql = 'SELECT obj.objectpath, cnt.id, cnt.container, tn1.text_id, tn1.textcontent FROM object AS obj INNER JOIN container AS cnt ON cnt.id=obj.id INNER JOIN textnodes AS tn1 ON tn1.id=cnt.id';
     if (is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= ' '.implode (" ", $sql_table);
-    $sql .= ' WHERE obj.id=cnt.id AND cnt.id=tn1.id AND';    
+    $sql .= ' WHERE deleteuser="" AND obj.id=cnt.id AND cnt.id=tn1.id AND';    
     if (is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' '.implode (" AND ", $sql_where);
 
     $errcode = "50063";
@@ -2937,6 +2981,13 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array="")
 
 // ----------------------------------------------- get object_id ------------------------------------------------- 
 
+// function: rdbms_getobject_id()
+// input: location path of an object
+// output: object ID / false
+
+// description:
+// Returns the ID of an object.
+
 function rdbms_getobject_id ($object)
 {
   global $mgmt_config;
@@ -2965,7 +3016,7 @@ function rdbms_getobject_id ($object)
     { 
       $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
 
-      $sql = 'SELECT object_id FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
+      $sql = 'SELECT object_id, deleteuser FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
     }
     // object hash
     else
@@ -2973,12 +3024,13 @@ function rdbms_getobject_id ($object)
       $sql = 'SELECT object_id FROM object WHERE hash=_utf8"'.$object.'" COLLATE utf8_bin';
     }
     
-    $errcode = "50026";
+    $errcode = "50027";
     $done = $db->query ($sql, $errcode, $mgmt_config['today']);
     
     if ($done && $row = $db->getResultRow ())
     {
-      $object_id = $row['object_id'];
+      if ($row['deleteuser'] == "") $object_id = $row['object_id'];
+      else $object_id = "hcms:deleted";
     }
     
     // save log
@@ -3008,6 +3060,13 @@ function rdbms_getobject_id ($object)
 
 // ----------------------------------------------- get object_hash ------------------------------------------------- 
 
+// function: object_hash()
+// input: location path of an object (optional) OR container ID of an object (optional)
+// output: object hash / false
+
+// description:
+// Returns the hash of an object.
+
 function rdbms_getobject_hash ($object="", $container_id="")
 {
   global $mgmt_config;
@@ -3035,30 +3094,31 @@ function rdbms_getobject_hash ($object="", $container_id="")
         else $object = $object.".folder";
       }
       
-      $object = $db->escape_string ($object);          
       $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
-  
-      $sql = 'SELECT hash FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin LIMIT 1';
+      $object = $db->escape_string ($object);          
+
+      $sql = 'SELECT hash, deleteuser FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin LIMIT 1';
     }
     // if object id
     elseif (intval ($object) > 0)
     {
-      $sql = 'SELECT hash FROM object WHERE object_id="'.intval($object).'" LIMIT 1';
+      $sql = 'SELECT hash, deleteuser FROM object WHERE object_id="'.intval($object).'" LIMIT 1';
     }
     // if container id
     elseif (intval ($container_id) > 0)
     {
-      $sql = 'SELECT hash FROM object WHERE id="'.intval($container_id).'" LIMIT 1';
+      $sql = 'SELECT hash, deleteuser FROM object WHERE id="'.intval($container_id).'" LIMIT 1';
     }
 
     if (!empty ($sql))
     {
-      $errcode = "50026";
+      $errcode = "50029";
       $done = $db->query ($sql, $errcode, $mgmt_config['today']);
       
       if ($done && $row = $db->getResultRow ())
       {
-        $hash = $row['hash'];   
+        if ($row['deleteuser'] == "") $hash = $row['hash'];
+        else $hash = "hcms:deleted";
       }
 
       // save log
@@ -3090,6 +3150,13 @@ function rdbms_getobject_hash ($object="", $container_id="")
 
 // -------------------------------------------- get object by unique id or hash ----------------------------------------------- 
 
+// function: rdbms_getobject()
+// input: object identifier (objetc hash, object ID, access hash)
+// output: object path / false
+
+// description:
+// Returns the location path of an object.
+
 function rdbms_getobject ($object_identifier)
 {
   global $mgmt_config;
@@ -3109,10 +3176,10 @@ function rdbms_getobject ($object_identifier)
     // try table object if public download is allowed
     if ($mgmt_config['publicdownload'] == true)
     {
-      if (is_numeric ($object_identifier)) $sql = 'SELECT objectpath FROM object WHERE object_id='.intval($object_identifier);
-      else $sql = 'SELECT objectpath FROM object WHERE hash="'.$object_identifier.'"';
+      if (is_numeric ($object_identifier)) $sql = 'SELECT objectpath FROM object WHERE deleteuser="" AND object_id='.intval($object_identifier).' LIMIT 1';
+      else $sql = 'SELECT objectpath FROM object WHERE deleteuser="" AND hash="'.$object_identifier.'" LIMIT 1';
   
-      $errcode = "50027";
+      $errcode = "50030";
       $done = $db->query ($sql, $errcode, $mgmt_config['today']);
       
       if ($done && $row = $db->getResultRow ())
@@ -3124,9 +3191,9 @@ function rdbms_getobject ($object_identifier)
     // try table accesslink
     if ($objectpath == "" && !is_numeric ($object_identifier))
     {
-      $sql = 'SELECT obj.objectpath, al.deathtime, al.formats FROM accesslink AS al, object AS obj WHERE al.hash="'.$object_identifier.'" AND al.object_id=obj.object_id';
+      $sql = 'SELECT obj.objectpath, al.deathtime, al.formats FROM accesslink AS al, object AS obj WHERE obj.deleteuser="" AND al.hash="'.$object_identifier.'" AND al.object_id=obj.object_id LIMIT 1';
       
-      $errcode = "50028";
+      $errcode = "50031";
       $done = $db->query ($sql, $errcode, $mgmt_config['today'], "select2");
       
       if ($done)
@@ -3141,7 +3208,7 @@ function rdbms_getobject ($object_identifier)
           {
             $sql = 'DELETE FROM accesslink WHERE hash="'.$object_identifier.'"';
              
-            $errcode = "50029";
+            $errcode = "50039";
             $db->query ($sql, $errcode, $mgmt_config['today'], "delete");
           }
           elseif ($row['objectpath'] != "") $objectpath = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
@@ -3160,7 +3227,14 @@ function rdbms_getobject ($object_identifier)
   else return false;
 } 
 
-// ----------------------------------------------- get objects by container_id ------------------------------------------------- 
+// ------------------------------------------ get objects by container_id or temlpate name -------------------------------------------- 
+
+// function: rdbms_getobjects()
+// input: container ID, temlpate name (optional)
+// output: object path array / false
+
+// description:
+// Returns all queried objects as array with the object hash as array key.
 
 function rdbms_getobjects ($container_id, $template="")
 {
@@ -3176,10 +3250,10 @@ function rdbms_getobjects ($container_id, $template="")
     
     $container_id = intval ($container_id);
     
-    $sql = 'SELECT objectpath, hash FROM object WHERE id='.$container_id;
+    $sql = 'SELECT objectpath, hash FROM object WHERE deleteuser="" AND id='.$container_id;
     if ($template != "") $sql .= ' AND template="'.$template.'"';
     
-    $errcode = "50030";
+    $errcode = "50040";
     $done = $db->query ($sql, $errcode, $mgmt_config['today']);
     $objectpath = array();
     
@@ -3201,6 +3275,154 @@ function rdbms_getobjects ($container_id, $template="")
       
     if (sizeof ($objectpath) > 0) return $objectpath;
     else return false;
+  }
+  else return false;
+}
+
+// ----------------------------------------------- get deleted objects ------------------------------------------------- 
+
+// function: rdbms_getdeletedobjects()
+// input: user name (optional), older than date (optional), max. hits (optional)
+// output: objectpath array with hashcode as key and path as value / false
+
+// description:
+// Queries all marked as deleted objects of a user.
+
+function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500)
+{
+  global $mgmt_config;
+
+  $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+  
+  if ($user != "") $user = $db->escape_string ($user);
+  if ($date != "") $date = $db->escape_string ($date);
+  
+  $sql = 'SELECT objectpath, hash FROM object';
+  
+  if ($user != "") $sql .= ' WHERE deleteuser="'.$user.'"';
+  else $sql .= ' WHERE deleteuser!="" AND deleteuser NOT LIKE "[%]"';
+  
+  if ($date != "") $sql .= ' AND deletedate<"'.$date.'"';
+  
+  if ($maxhits > 0) $sql .= ' LIMIT 0,'.intval($maxhits);
+
+  $errcode = "50025";
+  $done = $db->query($sql, $errcode, $mgmt_config['today']);
+  
+  if ($done)
+  {
+    $objectpath = array();
+    
+    while ($row = $db->getResultRow ())
+    {
+      if ($row['objectpath'] != "")
+      {
+        $hash = $row['hash'];
+        $objectpath[$hash] = str_replace (array("*page*", "*comp*"), array("%page%", "%comp%"), $row['objectpath']);
+      }   
+    }
+  }
+  else $objectpath = Null;
+
+  // save log
+  savelog ($db->getError ());    
+  $db->close();
+    
+  if (is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
+  else return false;
+}
+
+// ----------------------------------------------- set deleted objects ------------------------------------------------- 
+
+// function: rdbms_setdeletedobjects()
+// input: objects array, user name, mark or unmark as deleted [set,unset] (optional)
+// output: true / false
+
+// description:
+// Marks objects as deleted for a specific user. Subitems will be marked as well but the user name is set in brackets [username]. 
+
+function rdbms_setdeletedobjects ($objects, $user, $mark="set")
+{
+  global $mgmt_config;
+
+  if (is_array ($objects) && sizeof ($objects) > 0 && $user != "")
+  {
+    $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+    
+    $user = $db->escape_string ($user);
+    
+    // get current date
+    $date = date ("Y-m-d", time());
+
+    foreach ($objects as $object)
+    {
+      if ($object != "")
+      {
+        // correct object name 
+        if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
+        
+        // get publication
+        $site = getpublication ($object);
+
+        // for folders
+        if (getobject ($object) == ".folder" || is_dir (deconvertpath ($object, "file")))
+        {
+          $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+
+          if (getobject ($object) != ".folder")
+          {
+            // add .folder to path
+            if (substr ($object, -1) != "/") $object= $object."/.folder";
+            else $object = $object.".folder";
+          }
+          
+          // clean input
+          $objectpath_folder = $db->escape_string ($object);
+
+          // for selected folder
+          if (strtolower($mark) == "set")
+          {
+            $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'" WHERE objectpath=_utf8"'.$objectpath_folder.'" COLLATE utf8_bin';
+  
+            $errcode = "50071";
+            $done = $db->query($sql, $errcode, $mgmt_config['today']);
+          }
+          
+          // remove .folder from path
+          $object = getlocation ($object);
+          
+          // clean input
+          $objectpath = $db->escape_string ($object);
+          
+          // for all subitems of the selected folder
+          if (strtolower($mark) == "set") $sql = 'UPDATE object SET deleteuser="['.$user.']", deletedate="'.$date.'" WHERE objectpath!=_utf8"'.$objectpath_folder.'" COLLATE utf8_bin AND objectpath LIKE BINARY "'.$objectpath.'%"';
+          elseif (strtolower($mark) == "unset") $sql = 'UPDATE object SET deleteuser="", deletedate="" WHERE objectpath LIKE BINARY "'.$objectpath.'%"';
+
+          $errcode = "50072";
+          $done = $db->query($sql, $errcode, $mgmt_config['today']);
+        }
+        // for non folders 
+        else
+        {
+          $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+          
+          // clean input
+          $object = $db->escape_string ($object);
+          
+          if (strtolower($mark) == "set") $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'" WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
+          elseif (strtolower($mark) == "unset") $sql = 'UPDATE object SET deleteuser="", deletedate="" WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
+
+          $errcode = "50073";
+          $done = $db->query($sql, $errcode, $mgmt_config['today']);
+        }
+      }   
+    }
+
+    // save log
+    savelog ($db->getError ());
+    $db->close();
+      
+    return true;
   }
   else return false;
 }
@@ -3327,7 +3549,7 @@ function rdbms_createrecipient ($object, $from_user, $to_user, $email)
     if (getobject ($object) == ".folder") $sql = 'SELECT object_id FROM object WHERE objectpath LIKE _utf8"'.substr (trim($object), 0, strlen (trim($object))-7).'%" COLLATE utf8_bin';
     else $sql = 'SELECT object_id FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
 
-    $errcode = "50029";
+    $errcode = "50049";
     $done = $db->query($sql, $errcode, $mgmt_config['today'], 'select');
     
     if ($done)
@@ -3339,7 +3561,7 @@ function rdbms_createrecipient ($object, $from_user, $to_user, $email)
         $sql = 'INSERT INTO recipient (object_id, date, from_user, to_user, email) ';    
         $sql .= 'VALUES ("'.intval ($object_id['object_id']).'", "'.$date.'", "'.$from_user.'", "'.$to_user.'", "'.$email.'")';
         
-        $errcode = "50030";
+        $errcode = "50050";
         $done = $db->query ($sql, $errcode, $mgmt_config['today'], $i++);
       }
     }
@@ -3367,13 +3589,13 @@ function rdbms_getrecipients ($object)
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
     // clean input
-    $object = $db->escape_string ($object);    
-    $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);    
+    $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object); 
+    $object = $db->escape_string ($object);   
     
     // get recipients
     $sql = 'SELECT rec.recipient_id, rec.object_id, rec.date, rec.from_user, rec.to_user, rec.email FROM recipient AS rec, object AS obj WHERE obj.object_id=rec.object_id AND obj.objectpath=_utf8"'.$object.'" COLLATE utf8_bin';   
 
-    $errcode = "50031";
+    $errcode = "50041";
     $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'select');
     
     if ($done)
@@ -3658,12 +3880,11 @@ function rdbms_getnotification ($event="", $object="", $user="")
       
       // get publication
       $site = getpublication ($object);
-      $fileinfo = getfileinfo ($site, $object, "");
       if (getobject ($object) == ".folder") $object = getlocation ($object);
 
       // clean input
-      $object = $db->escape_string ($object);
       $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+      $object = $db->escape_string ($object);
 
       // get connected objects
       $sql = 'SELECT DISTINCT object_id, id FROM object WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';

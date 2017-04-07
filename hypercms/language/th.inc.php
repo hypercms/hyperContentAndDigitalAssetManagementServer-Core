@@ -1293,7 +1293,6 @@ $hcms_lang['edit-object']['th'] = "แก้ไขออบเจกต์";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['th'] = "คุณแน่ใจหรือไม่ว่าคุณต้องการลบรายการออกจากคิว";
 $hcms_lang['configuration']['th'] = "การกำหนดค่า";
 $hcms_lang['inheritance']['th'] = "มรดก";
-$hcms_lang['the-object-was-removed']['th'] = "วัตถุที่ถูกลบออก";
 $hcms_lang['the-object-could-not-be-removed']['th'] = "วัตถุที่ไม่สามารถถูกลบออก";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['th'] = "วัตถุที่ไม่มีหรือคุณไม่มีสิทธิ์การเข้าใช้";
 $hcms_lang['add-to-favorites']['th'] = "เพิ่มลงในรายการที่ใช้ประจำ";
@@ -1391,4 +1390,7 @@ $hcms_lang['saved-searches']['th'] = "การค้นหาที่บัน
 $hcms_lang['video-codec']['th'] = "ตัวแปลงสัญญาณวิดีโอ";
 $hcms_lang['audio-codec']['th'] = "ตัวแปลงสัญญาณเสียง";
 $hcms_lang['detect-faces']['th'] = "ตรวจจับใบหน้า";
+$hcms_lang['recycle-bin']['th'] = "ถังกระดาษ";
+$hcms_lang['restore']['th'] = "คืนค่า";
+$hcms_lang['empty-recycle-bin']['th'] = "ถังรีไซเคิลว่างเปล่า";
 ?>

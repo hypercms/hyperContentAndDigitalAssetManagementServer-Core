@@ -23,6 +23,7 @@ $folder = getrequest ("folder", "objectname");
 $page = getrequest ("page", "objectname");
 $wf_token = getrequest ("wf_token");
 $token = getrequest ("token");
+$from_page = getrequest ("from_page");
 
 // get publication and category
 $site = getpublication ($location);
@@ -64,7 +65,7 @@ $authorized = false;
 
 if ($setlocalpermission['root'] == 1 && checktoken ($token, $user))
 {
-  if ($action == "delete" && (($page != "" && $setlocalpermission['delete'] == 1) || ($folder != "" && $setlocalpermission['folderdelete'] == 1))) $authorized = true;
+  if (($action == "delete" || $action == "deletemark" || $action == "restore") && (($page != "" && $setlocalpermission['delete'] == 1) || ($folder != "" && $setlocalpermission['folderdelete'] == 1))) $authorized = true;
   elseif (($action == "cut" || $action == "copy") && (($page != "" && $setlocalpermission['rename'] == 1) || ($folder != "" && $setlocalpermission['folderrename'] == 1))) $authorized = true;
   elseif ($action == "linkcopy" && (($page != "" && $setlocalpermission['rename'] == 1 && $setlocalpermission['create'] == 1) || ($folder != "" && $setlocalpermission['folderrename'] == 1 && $setlocalpermission['foldercreate'] == 1))) $authorized = true;
   elseif ($action == "page_favorites_delete" && $setlocalpermission['create'] == 1) $authorized = true;
@@ -78,7 +79,6 @@ if ($authorized == true)
 {
   // empty clipboard
   setsession ('hcms_temp_clipboard', "");
-  $temp_clipboard = "";
       
   // perform actions
   // priority for processing due to all variables (multiobject, folder, page) 
@@ -93,13 +93,17 @@ if ($authorized == true)
     // action for unzip is below
   }
   // delete
-  elseif ($action == "delete") 
+  elseif ($action == "delete" || $action == "deletemark" || $action == "deleteunmark" || $action == "restore") 
   {
+    // reset action
+    if ($from_page != "recyclebin" && $action == "delete" && !empty ($mgmt_config['recyclebin'])) $action = "deletemark";
+
     if ($multiobject != "")
     {
       $multiobject_array = link_db_getobject ($multiobject);
       $result['result'] = true;
       
+      // delete objects
       foreach ($multiobject_array as $objectpath)
       {
         if ($objectpath != "" && $result['result'] == true)
@@ -109,8 +113,13 @@ if ($authorized == true)
           $page = getobject ($objectpath);
           
           if ($page != "")
-          { 
-            $result = deleteobject ($site, $location, $page, $user);
+          {
+            // delete object
+            if ($action == "delete") $result = deleteobject ($site, $location, $page, $user);
+            // mark object as deleted
+            elseif ($action == "deletemark") $result = deletemarkobject ($site, $location, $page, $user);
+            // unmark object as deleted
+            elseif ($action == "restore" || $action == "deleteunmark") $result = deleteunmarkobject ($site, $location, $page, $user);
         
             $add_onload = $result['add_onload'];
             $show = $result['message'];
@@ -119,8 +128,13 @@ if ($authorized == true)
       }
     }
     elseif ($page != "")
-    { 
-      $result = deleteobject ($site, $location, $page, $user);
+    {
+      // delete object
+      if ($action == "delete") $result = deleteobject ($site, $location, $page, $user);
+      // mark object as deleted
+      elseif ($action == "deletemark") $result = deletemarkobject ($site, $location, $page, $user);
+      // unmark object as deleted
+      elseif ($action == "restore" || $action == "deleteunmark") $result = deleteunmarkobject ($site, $location, $page, $user);
   
       $add_onload = $result['add_onload'];
       $show = $result['message'];       

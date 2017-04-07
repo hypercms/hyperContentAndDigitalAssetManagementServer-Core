@@ -1294,7 +1294,6 @@ $hcms_lang['edit-object']['bg'] = "Редактиране обекта";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['bg'] = "Сигурни ли сте, че искате да изтриете на елементи от опашката?";
 $hcms_lang['configuration']['bg'] = "Конфигурация";
 $hcms_lang['inheritance']['bg'] = "Наследяване";
-$hcms_lang['the-object-was-removed']['bg'] = "На обекта е бил отстранен";
 $hcms_lang['the-object-could-not-be-removed']['bg'] = "На обекта не може да се демонтира";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['bg'] = "На обекта не съществува или не притежавате разрешения";
 $hcms_lang['add-to-favorites']['bg'] = "Добави към Предпочитани";
@@ -1392,4 +1391,7 @@ $hcms_lang['saved-searches']['bg'] = "Запомня обиски";
 $hcms_lang['video-codec']['bg'] = "Video codec";
 $hcms_lang['audio-codec']['bg'] = "Audio codec";
 $hcms_lang['detect-faces']['bg'] = "Откриване на лица";
+$hcms_lang['recycle-bin']['bg'] = "хартия бин";
+$hcms_lang['restore']['bg'] = "Възстановяване";
+$hcms_lang['empty-recycle-bin']['bg'] = "изпразване на кошчето";
 ?>

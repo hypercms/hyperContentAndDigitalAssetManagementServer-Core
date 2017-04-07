@@ -1292,7 +1292,6 @@ $hcms_lang['edit-object']['sl'] = "Urejanje predmet";
 $hcms_lang['are-you-sure-you-want-to-delete-the-items-from-the-queue']['sl'] = "Ali ste prepričani, da želite izbrisati elementov iz čakalne vrste?";
 $hcms_lang['configuration']['sl'] = "Konfiguracija";
 $hcms_lang['inheritance']['sl'] = "Dedovanje";
-$hcms_lang['the-object-was-removed']['sl'] = "Predmet je bil odstranjen";
 $hcms_lang['the-object-could-not-be-removed']['sl'] = "Predmet ni bilo mogoče odstraniti";
 $hcms_lang['the-object-does-not-exist-or-you-do-not-have-permissions']['sl'] = "Predmet ne obstaja ali nimate dovoljenja";
 $hcms_lang['add-to-favorites']['sl'] = "Dodaj med priljubljene";
@@ -1390,4 +1389,7 @@ $hcms_lang['saved-searches']['sl'] = "Shranjena iskanja";
 $hcms_lang['video-codec']['sl'] = "Video codec";
 $hcms_lang['audio-codec']['sl'] = "Audio codec";
 $hcms_lang['detect-faces']['sl'] = "Zaznavanje obrazov";
+$hcms_lang['recycle-bin']['sl'] = "Koš";
+$hcms_lang['restore']['sl'] = "Obnovitev";
+$hcms_lang['empty-recycle-bin']['sl'] = "Prazna koš";
 ?>
