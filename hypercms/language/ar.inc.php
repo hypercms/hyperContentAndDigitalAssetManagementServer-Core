@@ -1392,4 +1392,5 @@ $hcms_lang['detect-faces']['ar'] = "كشف وجوه";
 $hcms_lang['recycle-bin']['ar'] = "قمامة";
 $hcms_lang['restore']['ar'] = "استعادة";
 $hcms_lang['empty-recycle-bin']['ar'] = "فارغة المهملات";
+$hcms_lang['existing-objects-will-be-replaced']['ar'] = "سيتم استبدال الكائنات الموجودة!";
 ?>

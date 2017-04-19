@@ -9,3 +9,7 @@ See also comment in file:
 // to avoid overwritting of scaled values
 
 4. Copy hyperCMS skin from ckeditor/skins/hypercms to ckeditor/skins
+
+5. Correct UTF-8 in Notepad++ of these files (UTF-8 without BOM is not working):
+lang/de.js
+ckeditor.js

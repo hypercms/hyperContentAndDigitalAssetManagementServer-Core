@@ -296,7 +296,7 @@ function accessgeneral ($site, $location, $cat)
   if (valid_publicationname ($site) && valid_locationname ($location) && is_array ($mgmt_config))
   {
     // load config if not available
-    if ((!isset ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    if ((empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }     
@@ -386,7 +386,7 @@ function accesspermission ($site, $location, $cat)
   if (valid_publicationname ($site) && valid_locationname ($location) && is_array ($mgmt_config))
   {
     // load config if not available
-    if ((!isset ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    if ((empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     } 
@@ -2071,7 +2071,7 @@ function checkusersession ($user="sys", $CSRF_detection=true)
   {
     $session_array = @file ($mgmt_config['abs_path_data']."session/".$user.".dat");
 
-    if ($session_array != false && sizeof ($session_array) >= 1)
+    if ($session_array != false && sizeof ($session_array) > 0)
     {
       foreach ($session_array as $session)
       {
@@ -2103,7 +2103,7 @@ function checkusersession ($user="sys", $CSRF_detection=true)
 // requires config.inc.php
 
 // description:
-// Checks if the client IP is in the range of valid IPs
+// Verifies if the client IP is in the range of valid IPs and logs IP addresses with no access
 
 function allowuserip ($site)
 {
@@ -2120,14 +2120,25 @@ function allowuserip ($site)
 
     if ($client_ip && is_array ($allow_ip))
     {
-      if (in_array ($client_ip, $allow_ip)) return true;
-      else return false;
+      if (in_array ($client_ip, $allow_ip)) $result = true;
+      else $result = false;
     }
     elseif (!$client_ip)
     {
-      return false;
+      $result = false;
     }
-    else return true;
+    else $result = true;
+    
+    if ($result == false)
+    {
+      $errcode = "00401";
+      $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|client IP (".$client_ip.") tried to access an object outside of the allowed IP range of publication ".$site;     
+    }
+       
+    // save log
+    savelog (@$error);
+  
+    return $result;
   }
   else return true;
 }
@@ -2135,10 +2146,10 @@ function allowuserip ($site)
 // ------------------------- valid_objectname -----------------------------
 // function: valid_objectname()
 // input: variable (string or array)
-// output: variable / false on error
+// output: true / false
 
 // description:
-// Checks if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
+// Checks if an object name includes forbidden characters in order to prevent directory browsing
 
 function valid_objectname ($variable)
 {
@@ -2153,7 +2164,7 @@ function valid_objectname ($variable)
       if (substr_count ($variable, "../") > 0) return false;
       if (substr_count ($variable, "\\") > 0) return false;
       if (substr_count ($variable, "\"") > 0) return false;
-      return $variable;
+      return true;
     }
     elseif (is_array ($variable))
     {
@@ -2165,7 +2176,7 @@ function valid_objectname ($variable)
         if ($value == false) $result = false;
       }
       
-      if ($result == true) return $variable;
+      if ($result == true) return true;
       else return false;
     } 
   }
@@ -2175,10 +2186,10 @@ function valid_objectname ($variable)
 // ------------------------- valid_locationname -----------------------------
 // function: valid_locationname()
 // input: variable (string or array)
-// output: variable / false on error
+// output: true / false
 
 // description:
-// Checks if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
+// Checks if an location includes forbidden characters in order to prevent directory browsing
 
 function valid_locationname ($variable)
 {
@@ -2196,7 +2207,7 @@ function valid_locationname ($variable)
       if (strpos ("_".$variable, "./") == 1 || substr_count ($variable, "/./") > 0) return false;
       if (strpos ("_".$variable, ".\\") == 1 || substr_count ($variable, "\\.\\") > 0) return false;
       if (substr_count ($variable, "\\0") > 0) return false;
-      return $variable;
+      return true;
     }
     elseif (is_array ($variable))
     {
@@ -2208,7 +2219,7 @@ function valid_locationname ($variable)
         if ($value == false) $result = false;
       }
       
-      if ($result == true) return $variable;
+      if ($result == true) return true;
       else return false;
     }   
   }
@@ -2218,10 +2229,10 @@ function valid_locationname ($variable)
 // ------------------------- valid_publicationname -----------------------------
 // function: valid_publicationname()
 // input: variable (string or array)
-// output: variable / false on error
+// output: true / false
 
 // description:
-// Checks if an expression includes forbidden characters (true) or doesnt (false) to prevent directory browsing
+// Checks if a publication name includes forbidden characters in order to prevent directory browsing
 
 function valid_publicationname ($variable)
 {
@@ -2236,7 +2247,7 @@ function valid_publicationname ($variable)
       if (substr_count ($variable, "\\") > 0) return false;
       if (substr_count ($variable, ":") > 0) return false;
       if (substr_count ($variable, "\"") > 0) return false;    
-      return $variable;
+      return true;
     }
     elseif (is_array ($variable))
     {
@@ -2248,7 +2259,7 @@ function valid_publicationname ($variable)
         if ($value == false) $result = false;
       }
       
-      if ($result == true) return $variable;
+      if ($result == true) return true;
       else return false;
     }    
   }
@@ -2354,7 +2365,7 @@ function html_encode ($expression, $encoding="", $js_protection=false)
     }
     
     if (!empty ($result)) return $result;
-    else return false;      
+    else return $expression;      
   }
   else return false;
 }
@@ -2377,11 +2388,11 @@ function html_decode ($expression, $encoding="")
       {
         if (strtolower ($encoding) == "ascii") $encoding = "UTF-8";
          
-        $expression = html_entity_decode ($expression, ENT_QUOTES, $encoding);
+        $expression_esc = html_entity_decode ($expression, ENT_QUOTES, $encoding);
       }
       else
       {
-        $expression = htmlspecialchars_decode ($expression, ENT_QUOTES);
+        $expression_esc = htmlspecialchars_decode ($expression, ENT_QUOTES);
       } 
     }
     elseif (is_array ($expression))
@@ -2392,8 +2403,8 @@ function html_decode ($expression, $encoding="")
       }
     }
     
-    if (!empty ($expression)) return $expression;
-    else return false;      
+    if (!empty ($expression_esc)) return $expression_esc;
+    else return $expression;      
   }
   else return false;
 }

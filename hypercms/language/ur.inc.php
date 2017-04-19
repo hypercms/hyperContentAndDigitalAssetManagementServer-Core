@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['ur'] = "چہروں کھوج لگائیں";
 $hcms_lang['recycle-bin']['ur'] = "ریسایکل بن";
 $hcms_lang['restore']['ur'] = "بحال";
 $hcms_lang['empty-recycle-bin']['ur'] = "خالی ریسایکل بن";
+$hcms_lang['existing-objects-will-be-replaced']['ur'] = "موجودہ اشیاء کی جگہ لے لی جائے گی";
 ?>

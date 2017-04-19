@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['ms'] = "Mengesan muka";
 $hcms_lang['recycle-bin']['ms'] = "Tong kitar semula";
 $hcms_lang['restore']['ms'] = "Memulihkan";
 $hcms_lang['empty-recycle-bin']['ms'] = "Kitar semula kosong bin";
+$hcms_lang['existing-objects-will-be-replaced']['ms'] = "Objek yang sedia ada akan digantikan!";
 ?>

@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['tr'] = "Yüzleri algıla";
 $hcms_lang['recycle-bin']['tr'] = "Geridönüşüm kutusu";
 $hcms_lang['restore']['tr'] = "Geri yükle";
 $hcms_lang['empty-recycle-bin']['tr'] = "Boş geri dönüşüm kutusu";
+$hcms_lang['existing-objects-will-be-replaced']['tr'] = "Mevcut nesneler değiştirilecek!";
 ?>

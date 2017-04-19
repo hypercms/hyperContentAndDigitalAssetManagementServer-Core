@@ -1100,38 +1100,63 @@ function hcms_leftClick(e)
 // verify if key is pressed
 function hcms_keyPressed(key, e)
 {
- var ctrlPressed=0;
- var altPressed=0;
- var shiftPressed=0;
+  var ctrlPressed = 0;
+  var altPressed = 0;
+  var shiftPressed = 0;
 
- if (parseInt(navigator.appVersion)>3)
- {
-  var evt = navigator.appName=="Netscape" ? e:event;
+  if (parseInt(navigator.appVersion)>3)
+  {
+    var evt = navigator.appName=="Netscape" ? e:event;
 
-  if (navigator.appName=="Netscape" && parseInt(navigator.appVersion)==4)
-  {
-   // NETSCAPE 4 CODE
-   var mString =(e.modifiers+32).toString(2).substring(3,6);
-   shiftPressed=(mString.charAt(0)=="1");
-   ctrlPressed =(mString.charAt(1)=="1");
-   altPressed  =(mString.charAt(2)=="1");
+    if (navigator.appName=="Netscape" && parseInt(navigator.appVersion)==4)
+    {
+      // NETSCAPE 4 CODE
+      var mString =(e.modifiers+32).toString(2).substring(3,6);
+      shiftPressed=(mString.charAt(0)=="1");
+      ctrlPressed =(mString.charAt(1)=="1");
+      altPressed  =(mString.charAt(2)=="1");
+    }
+    else
+    {
+      // NEWER BROWSERS [CROSS-PLATFORM]
+      shiftPressed=evt.shiftKey;
+      altPressed  =evt.altKey;
+      ctrlPressed =evt.ctrlKey;
+    }
+    
+    if (key == 'ctrl' && ctrlPressed) return true;
+    else if (key == 'shift' && shiftPressed) return true;
+    else if (key == 'alt' && altPressed) return true;
+    else if (key == '' && (altPressed || shiftPressed || ctrlPressed)) return true;
+    else return false;
   }
-  else
-  {
-   // NEWER BROWSERS [CROSS-PLATFORM]
-   shiftPressed=evt.shiftKey;
-   altPressed  =evt.altKey;
-   ctrlPressed =evt.ctrlKey;
-  }
-  
-  if (key == 'ctrl' && ctrlPressed) return true;
-  else if (key == 'shift' && shiftPressed) return true;
-  else if (key == 'alt' && altPressed) return true;
-  else if (key == '' && (altPressed || shiftPressed || ctrlPressed)) return true;
-  else return false;
- }
  
- return true;
+  return true;
+}
+
+// get download or wrapper link from service
+function hcms_getlink (location, type)
+{
+  if (location != '')
+  {
+    var object_id;
+    var downloadlink = '';
+    var wrapperlink = '';
+  
+  	$.ajax({
+  		async: false,
+  		type: 'POST',
+  		url: 'service/getlink.php',
+  		data: {'location': location},
+  		dataType: 'json',
+  		success: function(data){ if(data.success) {downloadlink = data.downloadlink; wrapperlink = data.downloadlink;} }
+  	});
+    
+    if (type == 'download' && downloadlink != '') return downloadlink;
+    else if (type == 'wrapper' && wrapperlink != '') return wrapperlink;
+    else return false;
+  }
+  else return false;
 }
 
 // activate the download links
@@ -1144,21 +1169,48 @@ function hcms_activateLinks(e)
   {
     var links = document.getElementsByTagName('a');
     var hashlink = false;
+    var loadscreen = false;
 
     for (var i = 0; i < links.length; i++)
     {
       var thisLink = links[i];
       var href = thisLink.getAttribute('data-href');
+      var location = thisLink.getAttribute('data-location');
+      var linktype = thisLink.getAttribute('data-linktype');
 
-      if (thisLink.getAttribute('data-linktype') == 'hash')
+      if (linktype == 'download' || linktype == 'wrapper')
       {
         // activate link
         if (activatelinks == false)
         {
-          var href = thisLink.getAttribute('data-href');
-          var href_attr = document.createAttribute('href');
-          href_attr.nodeValue = href;
-          thisLink.setAttributeNode(href_attr);
+          // download link is available
+          if (href != '')
+          {
+            // create href attribute
+            var href_attr = document.createAttribute('href');
+            href_attr.nodeValue = href;
+            thisLink.setAttributeNode(href_attr);
+          }
+          // download link has not been requested
+          else
+          {
+            // load screen
+            if (loadscreen == false)
+            {
+              hcms_showInfo ('hcmsLoadScreen', 0);
+              loadscreen = true;
+            }
+            
+            var href = thisLink.getAttribute('data-location');
+            // request link
+            var href = hcms_getlink (location, linktype);
+            // set data-href attribute value
+            thisLink.setAttribute('data-href', href);
+            // create href attribute
+            var href_attr = document.createAttribute('href');
+            href_attr.nodeValue = href;
+            thisLink.setAttributeNode(href_attr);
+          }
         }
         // deactivate link
         else
@@ -1172,13 +1224,14 @@ function hcms_activateLinks(e)
       }
     }
 
-    // set activate state
     if (hashlink == true)
     {
+      // set activate state
       if (activatelinks == false)
       {
         document.getElementsByTagName('body')[0].className = 'hcmsWorkplaceObjectlistLinks';
         activatelinks = true;
+        hcms_hideInfo ('hcmsLoadScreen');
       }
       // set deactivate state
       else

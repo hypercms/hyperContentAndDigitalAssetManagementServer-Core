@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['fi'] = "Tunnistaa kasvot";
 $hcms_lang['recycle-bin']['fi'] = "Paperi bin";
 $hcms_lang['restore']['fi'] = "Palauttaa";
 $hcms_lang['empty-recycle-bin']['fi'] = "Tyhjä roskakori";
+$hcms_lang['existing-objects-will-be-replaced']['fi'] = "Objekteihin korvataan!";
 ?>

@@ -49,7 +49,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && is_file ($location.$page))
 {
   // ------------------------------ permission section --------------------------------
-  
+
   // check access permissions (DAM)
   if ($mgmt_config[$site]['dam'] == true)
   {

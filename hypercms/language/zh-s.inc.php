@@ -1394,4 +1394,5 @@ $hcms_lang['detect-faces']['zh-s'] = "检测面";
 $hcms_lang['recycle-bin']['zh-s'] = "回收站";
 $hcms_lang['restore']['zh-s'] = "恢复";
 $hcms_lang['empty-recycle-bin']['zh-s'] = "空的回收箱";
+$hcms_lang['existing-objects-will-be-replaced']['zh-s'] = "现有对象将被替换";
 ?>

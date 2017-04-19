@@ -1394,4 +1394,5 @@ $hcms_lang['detect-faces']['bg'] = "Откриване на лица";
 $hcms_lang['recycle-bin']['bg'] = "хартия бин";
 $hcms_lang['restore']['bg'] = "Възстановяване";
 $hcms_lang['empty-recycle-bin']['bg'] = "изпразване на кошчето";
+$hcms_lang['existing-objects-will-be-replaced']['bg'] = "Съществуващите обекти ще бъдат заменени!";
 ?>

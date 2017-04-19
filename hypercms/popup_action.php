@@ -412,8 +412,7 @@ else
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
-<script>
-<!--
+<script type="text/javascript">
 function popupfocus ()
 {
   self.focus();
@@ -421,7 +420,6 @@ function popupfocus ()
 }
 
 popupfocus ();
-//-->
 </script>
 </head>
 
@@ -432,11 +430,8 @@ popupfocus ();
 if ($action == "unzip" && $authorized == true)
 {
 ?>
-<div id="loadingLayer" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10;">
-  <div style="width:128px; margin-left:auto; margin-right:auto; margin-top:60px;">
-    <img src="<?php echo getthemelocation(); ?>img/loading.gif" />
-  </div>
-</div>
+<!-- load screen -->
+<div id="loadingLayer" class="hcmsLoadScreen" style="display:inline;"></div>
 <?php
   // load object file and get container and media file
   $objectdata = loadfile ($location, $page);
@@ -487,8 +482,7 @@ echo showtopbar ("<img src=\"".getthemelocation()."img/info.gif\" align=\"absmid
   </table>
 </div>
 
-<script>
-<!--
+<script type="text/javascript">
 <?php
 echo $add_onload;
 
@@ -503,7 +497,6 @@ function popupclose ()
 setTimeout('popupclose()', 1500);";
 }
 ?>
-//-->
 </script>
 
 </body>

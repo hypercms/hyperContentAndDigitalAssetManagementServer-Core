@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['pt'] = "Detectar rostos";
 $hcms_lang['recycle-bin']['pt'] = "Lixeira";
 $hcms_lang['restore']['pt'] = "Restaurar";
 $hcms_lang['empty-recycle-bin']['pt'] = "Esvaziar a lixeira";
+$hcms_lang['existing-objects-will-be-replaced']['pt'] = "Os objetos existentes serão substituídos!";
 ?>

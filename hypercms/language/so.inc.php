@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['so'] = "Ogaashaha wejigooda"
 $hcms_lang['recycle-bin']['so'] = "Bin recycle";
 $hcms_lang['restore']['so'] = "Soo Celinta";
 $hcms_lang['empty-recycle-bin']['so'] = "Bin recycle madhan";
+$hcms_lang['existing-objects-will-be-replaced']['so'] = "Waxyaabaha hadda jira waxaa lagu beddeli doonaa!";
 ?>

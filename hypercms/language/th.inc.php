@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['th'] = "ตรวจจับใบหน้า";
 $hcms_lang['recycle-bin']['th'] = "ถังกระดาษ";
 $hcms_lang['restore']['th'] = "คืนค่า";
 $hcms_lang['empty-recycle-bin']['th'] = "ถังรีไซเคิลว่างเปล่า";
+$hcms_lang['existing-objects-will-be-replaced']['th'] = "วัตถุที่มีอยู่จะถูกแทนที่!";
 ?>

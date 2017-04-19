@@ -84,6 +84,28 @@ function cleancontent ($text, $charset="UTF-8")
   else return false;
 }
 
+// ------------------------------------- remove_utf8_bom ------------------------------------------
+
+// function: remove_utf8_bom ()
+// input: text as string
+// output: cleaned text / false on error
+
+// description:
+// Remove UTF-8 BOM sequences
+
+function remove_utf8_bom ($text)
+{
+  if ($text != "")
+  {
+    $bom = pack ('H*','EFBBBF');
+    $text = preg_replace ("/^$bom/", '', $text);
+
+    if (!empty ($text)) return $text;
+    else return false;
+  }
+  else return false;
+}
+
 // ------------------------------------- convertchars ------------------------------------------
 
 // function: convertchars ()
@@ -170,14 +192,15 @@ function specialchr_encode ($expression, $remove="no")
     
     foreach ($expression_parts as $expression)
     {
-      if ($expression != "" && $expression != "%comp%" && $expression != "%page%" && $expression != "%media%" && $expression != "%tplmedia%" && $expression != "%media%" && $expression != "%object%")
+      // conditions before encoding
+      if ($expression != "" && specialchr ($expression, "~_-.") && $expression != "%comp%" && $expression != "%page%" && $expression != "%media%" && $expression != "%tplmedia%" && $expression != "%media%" && $expression != "%object%")
       {
         // encode to UTF-8 if name is not utf-8 coded
         if (!is_utf8 ($expression)) $expression = utf8_encode (trim ($expression));    
         // replace ~ since this is the identifier and replace invalid file name characters (symbols)
         $strip = array ("~", "%", "`", "!", "@", "#", "$", "^", "&", "*", "=", 
                         "\\", "|", ";", ":", "\"", "&quot;", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
-                        "Ã¢â‚¬â€", "Ã¢â‚¬â€œ", ",", "<", "&lt;", ">", "&gt;", "/", "?");
+                        "Ã¢â‚¬â€", "Ã¢â‚¬â€œ", ",", "<", "&lt;", ">", "&gt;", "?");
                          
         $expression = str_replace ($strip, "", strip_tags ($expression));  
         // replace multiple spaces
@@ -227,6 +250,51 @@ function specialchr_decode ($expression)
   else return false;
 }
 
+// ------------------------- object_exists -----------------------------
+// function: object_exists()
+// input: path to an object
+// output: true / false
+
+// description:
+// This function verifies if an object exists already.
+
+function object_exists ($path)
+{
+  global $user, $mgmt_config, $hcms_lang, $lang;
+  
+  if ($path != "")
+  {
+    // get file extension
+    $file_ext = strrchr ($path, ".");
+    
+    $location = getlocation ($path);
+    $file = getobject ($path);
+
+    // transform special characters 
+    if (substr ($location, 0, 7) == "%page%/" || substr ($location, 0, 7) == "%comp%/") $location = specialchr_encode ($location, "no");
+    $file = specialchr_encode ($file, "no");
+    
+    // absolute path
+    $location = deconvertpath ($location, "file");
+
+    // recycled object exists
+    if ($file_ext == ".recycle" && (is_file ($location.$file) || is_file ($location.substr ($file, -8)))) return true;
+    
+    // unpublished object exists
+    if ($file_ext == ".off" && (is_file ($location.$file) || is_file ($location.substr ($file, -4)))) return true;
+    
+    // object file exists
+    if (is_file ($location.$file) || is_file ($location.$file.".off") || is_file ($location.$file.".recycle")) return true;
+    
+    // folder exists
+    if (is_dir ($location.$file) || is_file ($location.$file."/.folder") || is_file ($location.$file."/.folder.recycle")) return true;
+
+    // does not exist
+    return false;
+  }
+  else return false;
+}
+        
 // ------------------------- is_utf8 -----------------------------
 // function: is_utf8()
 // input: expression  
@@ -355,14 +423,13 @@ function is_emptyfolder ($dir)
     
   if ($dir != "" && is_dir ($dir))
   {
-    $handle = opendir ($dir);
+    $scandir = scandir ($dir);
 
-    while (false !== ($entry = readdir ($handle)))
+    foreach ($scandir as $entry)
     {
       if ($entry != "." && $entry != ".." && $entry != ".folder" && substr ($entry, -4) != ".off") return false;
     }
     
-    closedir ($handle);
     return true;
   }
   else return false;
@@ -825,14 +892,17 @@ function is_iOS ()
 function copyrecursive ($src, $dst)
 {
   $result = true;
-  $dir = opendir ($src);
+  
+  // create directory
   if (!is_dir ($dst)) @mkdir ($dst);
   
-  if ($dir)
+  $scandir = scandir ($src);
+  
+  if ($scandir)
   {
-    while (false !== ($file = readdir ($dir)))
+    foreach ($scandir as $file)
     {
-      if (($file != '.') && ($file != '..'))
+      if ($file != '.' && $file != '..')
       {
         if (is_dir ($src.$file)) $result = copyrecursive ($src.$file."/", $dst.$file."/");
         else $result = copy ($src.$file, $dst.$file);
@@ -840,8 +910,6 @@ function copyrecursive ($src, $dst)
         if ($result == false) break;
       }
     }
-    
-    closedir ($dir);
   }
   
   return $result;
@@ -883,8 +951,12 @@ function correctfile ($abs_path, $filename, $user="")
     // deconvert path
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
+      $abs_path = specialchr_encode ($abs_path, "no");
       $abs_path = deconvertpath ($abs_path, "file");
     }
+    
+    // encode file name
+    $filename = specialchr_encode ($filename, "no");
     
     // if given file or directory exists
     if (file_exists ($abs_path.$filename))
@@ -1191,10 +1263,10 @@ function deconvertpath ($path, $type="file", $specialchr_transform=false)
       {
         $pos1 = @strpos ($path, $root_var) + strlen ($root_var);
         
-        if ($pos1 != false) $pos2 = @strpos ($path, "/", $pos1);
+        if ($pos1 !== false) $pos2 = @strpos ($path, "/", $pos1);
         else $pos2 = false;
         
-        if ($pos1 != false && $pos2 != false) $site = @substr ($path, $pos1, $pos2-$pos1);
+        if ($pos1 !== false && $pos2 !== false) $site = @substr ($path, $pos1, $pos2-$pos1);
         else $site = false;
         
         // load publication config if not available
@@ -1285,10 +1357,10 @@ function deconvertlink ($path, $type="url")
     {
       $pos1 = @strpos ($path, $root_var) + strlen ($root_var);
       
-      if ($pos1 != false) $pos2 = @strpos ($path, "/", $pos1);
+      if ($pos1 !== false) $pos2 = @strpos ($path, "/", $pos1);
       else $pos2 = false;
       
-      if ($pos1 != false && $pos2 != false) $site = @substr ($path, $pos1, $pos2-$pos1);
+      if ($pos1 !== false && $pos2 !== false) $site = @substr ($path, $pos1, $pos2-$pos1);
       else $site = false;
     }
 
@@ -1576,7 +1648,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
     else
     {
       $errcode = "40912";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createwrapperlink failed due to missing object id for: $objectpath";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createwrapperlink failed due to missing object id for: ".$location.$object.", ".$object_id.", ".$container_id;
       
       savelog (@$error);  
       
@@ -1663,7 +1735,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     else
     {
       $errcode = "40912";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createdownloadlink failed due to missing object id for: $objectpath";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createdownloadlink failed due to missing object id for: ".$location.$object.", ".$object_id.", ".$container_id;
       
       savelog (@$error);  
       
@@ -2222,11 +2294,11 @@ function deleteversions ($type, $report, $user="sys")
   elseif ($type != "" && is_dir ($type)) $versiondir = $type;
   else return false; 
   
-  $versionhandler = opendir ($versiondir);
+  $scandir = scandir ($versiondir);
   
-  if ($versionhandler != false)
+  if ($scandir)
   {    
-    while ($entry = readdir ($versionhandler))
+    foreach ($scandir as $entry)
     {
       // content container directory
       if ($entry != "." && $entry != ".." && is_dir ($versiondir.$entry))
@@ -2270,9 +2342,7 @@ function deleteversions ($type, $report, $user="sys")
         }
       }
     }
-    
-    closedir ($versionhandler);
-    
+
     if ($report_str != false && $report == "yes") return $report_str;
     elseif ($report_str != false) return true;
     else return false;
@@ -2547,7 +2617,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
         $filename = $filename_unlocked;
         $filename = correctfile ($abs_path, $filename, $user);  
           
-        if ($filename != false)
+        if ($filename !== false)
         {
           // if file is not locked by the user
           if (!is_file ($abs_path.$filename_unlocked.".@".$user))
@@ -2772,7 +2842,7 @@ function appendfile ($abs_path, $filename, $filedata)
         $filename = $filename_unlocked;
         $filename = correctfile ($abs_path, $filename, $user);
     
-        if ($filename != false)
+        if ($filename !== false)
         {   
           $filehandle = fopen ($abs_path.$filename, "a");
               
@@ -2911,9 +2981,9 @@ function deletefile ($abs_path, $filename, $recursive=false)
       // check if directory is empty      
       if (!empty ($recursive)) 
       {    
-        $dir = opendir ($abs_path.$filename);
+        $dirfiles = scandir ($abs_path.$filename);
         
-        while ($dirfile = readdir ($dir))
+        foreach ($dirfiles as $key => $dirfile)
         {
           if ($dirfile != "." && $dirfile != "..")
           {
@@ -2943,8 +3013,6 @@ function deletefile ($abs_path, $filename, $recursive=false)
             }    
           }
         }
-        
-        closedir ($dir);
       }
       
       // delete directory itself
@@ -3532,7 +3600,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       
       header ("Last-Modified: ".gmdate ('D, d M Y H:i:s', @filemtime ($filepath)) . ' GMT' );
       header ("Accept-Ranges: 0-".$end);
-      
+
       // partial file download
       if (isset ($_SERVER['HTTP_RANGE']))
       {
@@ -3599,7 +3667,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
         {
           $bytesToRead = $end - $i + 1;
         }
-        
+
         $data = fread ($stream, $bytesToRead);
         echo $data;
         flush ();
@@ -5763,7 +5831,10 @@ function editpublication ($site_name, $setting, $user="sys")
 ";
 
   // publication management config
-  if (valid_publicationname ($site_name) && is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php")) require ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
+  if (valid_publicationname ($site_name) && is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
+  {
+    require ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
+  }
   
   if (!empty ($mgmt_config[$site_name]['hierarchy'])) $site_mgmt_config .= "
 // Metadata/Content Hierarchy
@@ -6107,31 +6178,27 @@ function deletepublication ($site_name, $user="sys")
   // check if component folder is empty
   $comp_root = deconvertpath ("%comp%/".$site_name."/", "file");
 
-  $handle = @opendir ($comp_root);
+  $scandir = @scandir ($comp_root);
   
-  if ($handle != false)
+  if ($scandir)
   {
-    while ($file = @readdir ($handle))
+    foreach ($scandir as $file)
     {
       if ($file != "." && $file != ".." && $file != ".folder") $file_count++;
     }
-    
-    closedir ($handle);
   }
   
   // check if page folder is empty
   $page_root = deconvertpath ("%page%/".$site_name."/", "file");
 
-  $handle = @opendir ($page_root);
+  $scandir = @scandir ($page_root);
   
-  if ($handle != false)
+  if ($scandir)
   {
-    while ($file = @readdir ($handle))
+    foreach ($scandir as $file)
     {
       if ($file != "." && $file != ".." && $file != ".folder") $file_count++;
     }
-       
-    closedir ($handle);
   }
 
   if ($file_count > 0)
@@ -6229,19 +6296,17 @@ function deletepublication ($site_name, $user="sys")
       deletefile ($mgmt_config['abs_path_data']."workflow/", $site_name, 1);   
     
       $dir_temp = $mgmt_config['abs_path_data']."workflow_master/";
-      $files = @dir ($dir_temp);
+      $scandir = scandir ($dir_temp);
     
-      if (is_object ($files))
+      if ($scandir)
       {
-        while ($entry = $files->read())
+        foreach ($scandir as $entry)
         {
           if (is_file ($dir_temp.$entry) && preg_match ("/^".$site_name."./", $entry))
           {
             deletefile ($dir_temp, $entry, 0);
           }
         }
-    
-        $files->close();
       }  
       
       // customer files
@@ -6266,19 +6331,17 @@ function deletepublication ($site_name, $user="sys")
       
       // taxonomy configuration file
       $dir_temp = $mgmt_config['abs_path_data']."include/";
-      $files = @dir ($dir_temp);
+      $scandir = scandir ($dir_temp);
     
-      if (is_object ($files))
+      if ($scandir)
       {
-        while ($entry = $files->read())
+        foreach ($scandir as $entry)
         {
           if (is_file ($dir_temp.$entry) && strpos ("_".$entry, $site_name.".") > 0 && (strpos ($entry, ".taxonomy.dat") > 0 || strpos ($entry, ".taxonomy.inc.php") > 0))
           {
             deletefile ($dir_temp, $entry, 0);
           }
         }
-    
-        $files->close();
       }  
      
       // remove site_name value from inheritance database
@@ -6822,11 +6885,11 @@ function deletetemplate ($site, $template, $cat)
     
     if (is_file ($mgmt_config['abs_path_template'].$site."/".$template))
     {
-      $dir_template = dir ($mgmt_config['abs_path_template'].$site."/");
+      $scandir = scandir ($mgmt_config['abs_path_template'].$site."/");
       
-      if (is_object ($dir_template))
+      if ($scandir)
       {
-        while ($entry = $dir_template->read())
+        foreach ($scandir as $entry)
         {
           if ($entry == $template || substr_count ($entry, $template.".v_") == 1)
           {
@@ -6834,8 +6897,6 @@ function deletetemplate ($site, $template, $cat)
           }
         }
       }
-    
-      $dir_template->close();
       
       if ($test == true)
       {
@@ -8753,11 +8814,11 @@ function createfolder ($site, $location, $foldernew, $user)
   
   // set default language
   if ($lang == "") $lang = "en";
-  
+
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($foldernew) && accessgeneral ($site, $location, "") && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user) && !is_tempfile ($foldernew))
   {
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     
     // deconvertpath location
     $location = deconvertpath ($location, "file");
@@ -8894,7 +8955,7 @@ function createfolders ($site, $location, $foldernew, $user)
   {        
         
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
     
     // deconvertpath location
     $location = deconvertpath ($location, "file");
@@ -8936,11 +8997,11 @@ function collectfolders ($site, $location, $folder)
     $folder_array[] = $site."|".$location."|".$folder;
   
     // find and create subfolders
-    $dir = opendir ($location.$folder);
+    $scandir = scandir ($location.$folder);
     
-    if ($dir != false)
+    if ($scandir)
     {
-      while ($subfolder = readdir ($dir))
+      foreach ($scandir as $subfolder)
       {
         if ($subfolder != "" && $subfolder != "." && $subfolder != ".." && is_dir ($location.$folder."/".$subfolder))
         {          
@@ -8954,8 +9015,6 @@ function collectfolders ($site, $location, $folder)
           else $folder_array = array_merge ($folder_array, $folder_array_new);
         }
       }
-      
-      closedir ($dir);
     }
   }
   else $folder_array = false;
@@ -9088,7 +9147,7 @@ function deletefolder ($site, $location, $folder, $user)
   {  
     
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
     
     // deconvertpath location
     $location = deconvertpath ($location, "file");
@@ -9116,11 +9175,11 @@ function deletefolder ($site, $location, $folder, $user)
       
     // check folder for objects
     $is_empty = true;
-    $fh = opendir ($location.$folder);
+    $scandir = scandir ($location.$folder);
     
-    if ($fh)
+    if ($scandir)
     {
-      while ($file = readdir ($fh))
+      foreach ($scandir as $file)
       {
         if ($file != "." && $file != ".." && $file != ".folder")
         {
@@ -9128,8 +9187,6 @@ function deletefolder ($site, $location, $folder, $user)
           break;
         }
       }
-      
-      closedir ($fh);
     }
     
     // folder exists
@@ -9220,9 +9277,8 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && valid_objectname ($foldernew) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
-    
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
   
     $show = "";
     
@@ -9276,19 +9332,16 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
       if (strtolower ($cat) == "comp")
       {
         // load publication inheritance setting
-        if (is_file ($mgmt_config['abs_path_data']."config/inheritance.dat"))
+        $inherit_db = inherit_db_read ();
+
+        if (sizeof ($inherit_db) > 0)
         {
-          $inherit_db = inherit_db_read ();
+          $child_array = inherit_db_getchild ($inherit_db, $site);
 
-          if (sizeof ($inherit_db) >= 1)
+          if ($child_array != false)
           {
-            $child_array = inherit_db_getchild ($inherit_db, $site);
-
-            if ($child_array != false)
-            {
-              $site_array = array_merge ($site_array, $child_array);
-            }
-          }        
+            $site_array = array_merge ($site_array, $child_array);
+          }
         }
       }
       
@@ -9535,7 +9588,7 @@ function createobject ($site, $location, $page, $template, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && accessgeneral ($site, $location, "") && strlen ($page) <= $mgmt_config['max_digits_filename'] && valid_objectname ($template) && valid_objectname ($user))
   {
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";  
@@ -10009,7 +10062,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
   if (valid_publicationname ($site) && valid_locationname ($location) && $cat != "" && accessgeneral ($site, $location, $cat) && is_array ($global_files) && valid_objectname ($user))
   {
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
@@ -10674,13 +10727,13 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
 function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0)
 {
   global $mgmt_config, $mgmt_imageoptions, $eventsystem, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;     
-  
+
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && accessgeneral ($site, $location, "comp") && $path_source_file != "" && !is_tempfile ($file))
   {
     if (!valid_objectname ($user)) $user = "sys";
     
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
     
     // deconvert path
     if (substr_count ($path_source_file, "%page%") == 1 || substr_count ($path_source_file, "%comp%") == 1)
@@ -10801,7 +10854,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
         else
         {
           $errcode = "10501";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createmediaobject failed to move '".$path_source_file."' to  '".getmedialocation ($site, $mediafile, "abs_path_media").$site."/".$mediafile."', return value: $result_move"; 
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createmediaobject failed to move '".$path_source_file."' to  '".getmedialocation ($site, $mediafile, "abs_path_media").$site."/".$mediafile."', return value: ".$result_move; 
           
           $result['result'] = false;
         }
@@ -10832,8 +10885,8 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 
 // ---------------------------------------- createmediaobjects --------------------------------------------
 // function: createmediaobjects()
-// input: publication name, source location, destination location, user
-// output: result array with all objects created  / false
+// input: publication name, source location, destination location, user name
+// output: result array with all objects created / false
 
 // description:
 // This function creates media objects by reading all media files from a given source location (used after unzipfile). 
@@ -10843,14 +10896,14 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 {
   global $mgmt_config, $mgmt_imageoptions, $eventsystem, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
-  if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_destination))
+  if (valid_publicationname ($site) && $location_source != "" && valid_locationname ($location_destination))
   {
     $result = array();
     
     if (!valid_objectname ($user)) $user = "sys";
     
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
     
     // deconvert path
     if (substr_count ($location_source, "%page%") == 1 || substr_count ($location_source, "%comp%") == 1)
@@ -10859,53 +10912,86 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
     if (substr_count ($location_destination, "%page%") == 1 || substr_count ($location_destination, "%comp%") == 1)
       $location_destination = deconvertpath ($location_destination, "file");  
       
+    // check if destination directory exists
+    if (!is_dir ($location_source) || !is_dir ($location_destination)) return false;
+      
     // add slash if not present at the end of the location string
     if (substr ($location_source, -1) != "/") $location_source = $location_source."/";
-    if (substr ($location_destination, -1) != "/") $location_destination = $location_destination."/";      
+    if (substr ($location_destination, -1) != "/") $location_destination = $location_destination."/";  
     
-    if (is_dir ($location_destination))
+    // open directory
+    $scandir = scandir ($location_source);
+
+    if ($scandir)
     {
-      $dir = @opendir ($location_source);
-  
-      if ($dir != false)
-      { 
-        // loop through source file
-        while ($file = readdir ($dir))
+      foreach ($scandir as $file)
+      {
+        // skip Mac OS files .DS_Store and ._whatever
+        if ($file != '.' && $file != '..' && !is_tempfile ($file)) 
         {
-          // skip Mac OS files .DS_Store and ._whatever
-          if (valid_objectname ($file) && $file != '.' && $file != '..' && !is_tempfile ($file)) 
+          // directory
+          if (is_dir ($location_source.$file))
           {
-            if (is_dir ($location_source.$file))
+            $folder = $folder_new = $file;
+            
+            // correct file namens which were decoded by unzip
+            if (substr_count ($folder_new, "#U") > 0) $folder_new = json_decode (str_replace ('#U', '\u', $folder_new)); 
+
+            // check if folder exists already         
+            if (!object_exists ($location_destination.$folder_new))
             {
-              $folder = $folder_new = $file;
-              
-              // correct file namens which were decoded by unzip
-              if (substr_count ($folder_new, "#U") > 0) $folder_new = json_decode (str_replace ('#U', '\u', $folder_new)); 
-  
-              // create folder          
+              // create folder
               $createfolder = createfolder ($site, $location_destination, $folder_new, $user);
-              if ($createfolder['result'] == true) $result = createmediaobjects ($site, $location_source.$folder."/", $location_destination.$createfolder['folder']."/", $user);
             }
-            elseif (is_file ($location_source.$file))
+            else
             {
-              $objectname = $file;
-              
-              // correct file namens which were decoded by unzip
-              if (substr_count ($objectname, "#U") > 0) $objectname = json_decode (str_replace ('#U', '\u', $objectname));
-  
-              // create multimedia object
-              $createmediaobject = createmediaobject ($site, $location_destination, $objectname, $location_source.$file, $user);
-              if ($createmediaobject['result'] == true) $result[] = $createmediaobject['location_esc'].$createmediaobject['object'];
+              // set folder values
+              $createfolder['result'] = true;
+              $createfolder['folder'] = specialchr_encode ($folder_new, "no");
+            }
+            
+            if ($createfolder['result'] == true)
+            {
+              $result = createmediaobjects ($site, $location_source.$folder."/", $location_destination.$createfolder['folder']."/", $user);
+            }
+            else
+            {
+              $errcode = "10511";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createfolder failed to create '".convertpath ($site, $location_destination, "").$folder_new;
+            }
+          }
+          // file
+          elseif (is_file ($location_source.$file))
+          {
+            $objectname = $file;
+            
+            // correct file namens which were decoded by unzip
+            if (substr_count ($objectname, "#U") > 0) $objectname = json_decode (str_replace ('#U', '\u', $objectname));
+      
+            // remove existing object
+            if (object_exists ($location_destination.$objectname)) deleteobject ($site, $location_destination, $objectname, $user);
+      
+            // create multimedia object
+            $createmediaobject = createmediaobject ($site, $location_destination, $objectname, $location_source.$file, $user);
+            
+            if ($createmediaobject['result'] == true)
+            {
+              $result[] = $createmediaobject['location_esc'].$createmediaobject['object'];
+            }
+            else
+            {
+              $errcode = "10512";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|createmediaobject failed to create '".convertpath ($site, $location_destination, "").$objectname;
             }
           }
         }
-
-        @closedir ($dir);
-        return $result;
       }
-      else return false;
     }
-    else return false;
+      
+    // error log
+    savelog (@$error);
+    
+    return $result;
   }
   else return false;
 }
@@ -11109,7 +11195,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
       $page = correctfile ($location, $page, $user);
 
       // redefine location and object if page is a directory 
-      if ($page != "" && $page != ".folder" && is_dir ($location.$page) && is_file ($location.$page."/.folder"))
+      if ($page !== false && $page != ".folder" && is_dir ($location.$page) && is_file ($location.$page."/.folder"))
       {
         $page = ".folder";
         $location = $location.$page."/";
@@ -11125,7 +11211,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
       // load page file
       $pagedata = loadfile ($location, $page);
-  
+
       if ($pagedata != false) 
       {  
         // get name of content, template and media file
@@ -11161,15 +11247,15 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             // method|site|cat|location|object|object name|filetype
             list ($method, $site_source, $cat_source, $location_source_esc, $page, $pagename, $filetype) = explode ("|", chop ($clipboard));
     
-            if (!is_array ($mgmt_config[$site_source])) require ($mgmt_config['abs_path_data']."config/".$site_source.".conf.php");
+            if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site_source])) require ($mgmt_config['abs_path_data']."config/".$site_source.".conf.php");
             
             $location_source = deconvertpath ($location_source_esc, "file");
-            
+
             // correct object file name
             $page = correctfile ($location_source, $page, $user);
-            
+
             // redefine location and object if page is a directory 
-            if ($page != "" && $page != ".folder" && is_dir ($location_source.$page) && is_file ($location_source.$page."/.folder"))
+            if ($page !== false && $page != ".folder" && is_dir ($location_source.$page) && is_file ($location_source.$page."/.folder"))
             {
               $page = ".folder";
               $location_source = $location_source.$page."/";
@@ -11177,7 +11263,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             }          
             
             // check if object may be pasted in the current publication
-            if ($site == $site_source || ($mgmt_config[$site]['inherit_obj'] == true && $parent_array != false && in_array ($site_source, $parent_array)))
+            if ($site == $site_source || ($mgmt_config[$site]['inherit_obj'] == true && $parent_array !== false && in_array ($site_source, $parent_array)))
             { 
               // if the category of the object (page or component) is different for cut/copy and paste
               if ($cat_source != $cat) 
@@ -11462,18 +11548,15 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           if (strtolower ($cat) == "comp")
           {
             // load publication inheritance setting
-            if (is_file ($mgmt_config['abs_path_data']."config/inheritance.dat")) 
+            $inherit_db = inherit_db_read ();
+      
+            if (sizeof ($inherit_db) > 0)
             {
-              $inherit_db = inherit_db_read ();
-        
-              if (sizeof ($inherit_db) >= 1)
+              $child_array = inherit_db_getchild ($inherit_db, $site);
+              
+              if ($child_array != false)
               {
-                $child_array = inherit_db_getchild ($inherit_db, $site);
-                
-                if ($child_array != false)
-                {
-                  $site_array = array_merge ($site_array, $child_array);
-                }
+                $site_array = array_merge ($site_array, $child_array);
               }        
             }
           }
@@ -11862,11 +11945,11 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
               if ($dir_version != false)
               {
-                $handle_version = @dir ($dir_version);
+                $scandir = scandir ($dir_version);
                                  
-                if ($handle_version != false)
+                if ($scandir)
                 {
-                  while ($entry = $handle_version->read())
+                  foreach ($scandir as $entry)
                   {
                     if ($entry != "." && $entry != ".." && $contentfile_self != "" && (substr_count ($entry, $contentfile_self.".v_") == 1 || substr_count ($entry, "_hcm".$contentfile_id) == 1))
                     {
@@ -11893,8 +11976,6 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                       }   
                     }
                   }
-                  
-                  $handle_version->close();
                 }
               }
             }
@@ -12593,7 +12674,7 @@ function deletemarkobject ($site, $location, $page, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
@@ -12608,14 +12689,14 @@ function deletemarkobject ($site, $location, $page, $user)
     if ($eventsystem['ondeleteobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
       ondeleteobject_pre ($site, $cat, $location, $page, $user);
 
+    // unpublish object
+    unpublishobject ($site, $location, $page, $user);
+      
     // mark as deleted
     $marked = rdbms_setdeletedobjects (array($location_esc.$page), $user, "set");
 
     if (!empty ($marked))
     {
-      // unpublish object
-      unpublishobject ($site, $location, $page, $user);
-    
       $result['result'] = true;
       $add_onload = "if (opener.parent.frames['mainFrame']) {opener.parent.frames['controlFrame'].location='control_objectlist_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'; opener.parent.frames['mainFrame'].location.reload();} else if (opener.parent.frames['objFrame']) {opener.parent.frames['controlFrame'].location='control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&wf_token=".url_encode($wf_token)."'; opener.parent.frames['objFrame'].location='".$mgmt_config['url_path_cms']."empty.php';}";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-was-deleted'][$lang]."</span><br />\n";
@@ -12669,7 +12750,7 @@ function deleteunmarkobject ($site, $location, $page, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {  
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
@@ -12723,7 +12804,7 @@ function deleteobject ($site, $location, $page, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
       
     if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
       $location = deconvertpath ($location, "file");
@@ -12764,7 +12845,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && strlen ($pagenew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   { 
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
        
     if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
       $location = deconvertpath ($location, "file");
@@ -12807,7 +12888,7 @@ function renamefile ($site, $location, $page, $pagenew, $user)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && strlen ($pagenew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {    
       // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
     
     if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
       $location = deconvertpath ($location, "file");
@@ -12858,7 +12939,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
     }
     
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";          
@@ -12875,9 +12956,9 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
       oncutobject_pre ($site, $cat, $location, $page, $user);
     
     // correct file or folder
-    if (!file_exists ($location.$page)) $page = correctfile ($location, $page, $user);
+    $page = correctfile ($location, $page, $user);
     
-    if ($page != false)
+    if ($page !== false)
     {
       // get file info
       $fileinfo = getfileinfo ($site, $location.$page, $cat);    
@@ -12955,7 +13036,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
     }
     
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";           
@@ -12973,11 +13054,11 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
       // eventsystem
       if ($eventsystem['oncopyobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
         oncopyobject_pre ($site, $cat, $location, $page, $user);    
-  
+
       // correct file or folder
-      if (!file_exists ($location.$page)) $page = correctfile ($location, $page, $user);
-      
-      if ($page != false)
+      $page = correctfile ($location, $page, $user);
+
+      if ($page !== false)
       {
         // get file info
         $fileinfo = getfileinfo ($site, $location.$page, $cat);    
@@ -13057,7 +13138,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
     }
     
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");    
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");    
     
     // define category if undefined
     if ($cat == "") $cat = getcategory ($site, $location);
@@ -13077,9 +13158,9 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
     {
       // correct file or folder
-      if (!file_exists ($location.$page)) $page = correctfile ($location, $page, $user);
+      $page = correctfile ($location, $page, $user);
       
-      if ($page != false)
+      if ($page !== false)
       {
         // get file info
         $fileinfo = getfileinfo ($site, $location.$page, $cat);    
@@ -13144,7 +13225,7 @@ function pasteobject ($site, $location, $user, $clipboard_array=array())
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($user))
   {  
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
     
     if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
       $location = deconvertpath ($location, "file");
@@ -13194,7 +13275,7 @@ function lockobject ($site, $location, $page, $user)
     $file = $user.".dat";
     
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
     
     // define category if undefined
     if ($cat == "") $cat = getcategory ($site, $location);
@@ -13329,7 +13410,7 @@ function unlockobject ($site, $location, $page, $user)
     $file = $user.".dat";
       
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");     
     
     // define category if undefined
     if ($cat == "") $cat = getcategory ($site, $location);  
@@ -13459,13 +13540,13 @@ function publishobject ($site, $location, $page, $user)
   // set default language
   if ($lang == "") $lang = "en";
 
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && substr ($page, -8) != ".recycle" && valid_objectname ($user))
   {
     // load template engine (it is not included by API and needs to be loaded seperately!)
     require_once ($mgmt_config['abs_path_cms']."function/hypercms_tplengine.inc.php");
   
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
       
     // define category if undefined
     if ($cat == "") $cat = getcategory ($site, $location);        
@@ -13979,7 +14060,7 @@ function publishobject ($site, $location, $page, $user)
   savelog (@$error);    
 
   // return results
-  if ((isset ($error_switch) && $error_switch == "no") || $release < 3) $result['result'] = true;
+  if ((isset ($error_switch) && $error_switch == "no") || $release < 3 || substr ($page, -8) == ".recycle") $result['result'] = true;
   else $result['result'] = false;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -14088,10 +14169,10 @@ function unpublishobject ($site, $location, $page, $user)
   // set default language
   if ($lang == "") $lang = "en";
   
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && substr ($page, -8) != ".recycle" && valid_objectname ($user))
   {
     // publication management config
-    if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
     
     $cat = getcategory ($site, $location);    
     $location = deconvertpath ($location, "file");
@@ -14268,6 +14349,13 @@ function unpublishobject ($site, $location, $page, $user)
       ".$hcms_lang['you-do-not-have-write-permissions-for-the-item'][$lang]."\n";    
     } 
   }
+  // object is in recycle bin
+  elseif (substr ($page, -8) == ".recycle")
+  {
+    $result['result'] = true;
+    $result['add_onload'] = "";
+    $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['published-item-successfully'][$lang]."</span>";    
+  }
   // input parameters are invalid
   else
   {
@@ -14275,7 +14363,7 @@ function unpublishobject ($site, $location, $page, $user)
     $result['add_onload'] = "";
     $result['message'] = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
     ".$hcms_lang['the-parameters-for-publishing-are-missing'][$lang]."\n";    
-  }                
+  }           
          
   // return results 
   return $result;
@@ -14289,6 +14377,7 @@ function unpublishobject ($site, $location, $page, $user)
 
 // description:
 // Publish, unpublish or delete all objects recursively. This function is used by the job 'minutely' to process all objects of the queue.
+// In order to process all objects recursively a folder name need to be provided and not the .folder file.
 // This function should not be used for the graphical user interface since it does not provide feedback about the process state!
 
 function processobjects ($action, $site, $location, $file, $published_only="0", $user)
@@ -14299,14 +14388,14 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
   {
     // publication management config
     if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
-    
+   
+    // add slash if not present at the end of the location string
+    if (substr ($location, -1) != "/") $location = $location."/";
+   
     $action = strtolower ($action);
     $location = deconvertpath ($location, "file");
     $location_esc = convertpath ($site, $location, "");
-    
-    // add slash if not present at the end of the location string
-    if (substr ($location, -1) != "/") $location = $location."/";
-    
+
     // define object file name
     if (!file_exists ($location.$file))
     {
@@ -14318,11 +14407,11 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
     if (is_dir ($location.$file))
     {  
       // process all objects in folder
-      $handle = @opendir ($location.$file);
+      $scandir = scandir ($location.$file);
       
-      if ($handle != false)
+      if ($scandir)
       {
-        while ($dirfile = @readdir ($handle))
+        foreach ($scandir as $dirfile)
         {
           if ($dirfile != "." && $dirfile != ".." && $dirfile != ".folder")
           {
@@ -14330,13 +14419,11 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
           }
         }
         
-        // process .folder files always at last since action "delete" will trigger deletefolder that can only delete empty folders
+        // process .folder file always at last since action "delete" will trigger deletefolder that can only delete empty folders
         if (is_file ($location.$file."/.folder"))
         {
           processobjects ($action, $site, $location.$file."/", ".folder", $published_only, $user);
         }
-        
-        @closedir ($handle);
     
         return true;
       }
@@ -14350,8 +14437,14 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
       // process object
       if ($result['published'] == true || $published_only == "0")
       {
-        if ($action == "publish") $result = publishobject ($site, $location, $file, $user);
-        elseif ($action == "unpublish") $result = unpublishobject ($site, $location, $file, $user);
+        if ($action == "publish")
+        {
+          $result = publishobject ($site, $location, $file, $user);
+        }
+        elseif ($action == "unpublish")
+        {
+          $result = unpublishobject ($site, $location, $file, $user);
+        }
         elseif ($action == "delete")
         {
           // delete object
@@ -14406,14 +14499,14 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only="0")
     if (is_dir ($location) && accesspermission ($site, $location, $cat) != false)
     {         
       // check if directory is empty
-      $dir = @opendir ($location);
+      $scandir = scandir ($location);
       
       // add slash if not present at the end of the location string
       if (substr ($location, -1) != "/") $location = $location."/";      
       
-      if ($dir != false)
+      if ($scandir)
       {
-        while ($dirfile = @readdir ($dir))
+        foreach ($scandir as $dirfile)
         {
           if ($dirfile != "." && $dirfile != "..")
           {
@@ -14425,8 +14518,6 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only="0")
             }
           }
         }
-        
-        @closedir ($dir);
       }
     }
     // if object
@@ -14511,7 +14602,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
       // restore and deleteunmark are exactly the same actions
       if ($action == "deletemark") $set = "set";
       elseif ($action == "deleteunmark" || $action == "restore") $set = "unset";
-      
+
       // mark or unmark objects as deleted
       $marked = rdbms_setdeletedobjects ($objectpath_array, $user, $set);
       
@@ -14587,7 +14678,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
           $location = getlocation ($location); // location without object 
           $object = correctfile ($location, $object, $user); 
        
-          if (valid_publicationname ($site) && valid_locationname ($location) && $object != "")
+          if (valid_publicationname ($site) && valid_locationname ($location) && $object !== false)
           {
             // define category if undefined
             if ($cat == "") $cat = getcategory ($site, $location);
@@ -14801,25 +14892,19 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
                 // do not overwrite clipboard
                 $result = copyconnectedobject ($site_source, $location_source, $object_source, $user, false, false);
               }
-              
+
               // paste object
               if ($result['result'] == true) 
               {
                 // define destination location for paste action                      
                 $location_dest = str_replace ($rootpathold_array[$root_id], $rootpathnew_array[$root_id], $location_source_esc);
-
-                // copy_done is deprected since linked copies are not supported anymore
-                if (!isset ($copy_done) || (isset ($copy_done) && $copy_done != true))
-                {
-                  $site_dest = getpublication ($rootpathnew_array[$root_id]);
+                $site_dest = getpublication ($rootpathnew_array[$root_id]);
                   
-                  // paste object using the result clipboard entries as input without touching the session clipboard
-                  $test = pasteobject ($site_dest, $location_dest, $user, $result['clipboard']);
-                }
-                else $test['result'] = true;
+                // paste object using the result clipboard entries as input without touching the session clipboard
+                $test = pasteobject ($site_dest, $location_dest, $user, $result['clipboard']);
               }
               else $test['result'] = false;
-  
+
               if ($test['result'] != false)
               {
                 unset ($collection[$i]);
@@ -14879,54 +14964,50 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
     }    
 
     // --------------------------------- execute action for directories --------------------------
-    if (isset ($result['working']) && $result['working'] == false && $test['result'] != false)
+    if (isset ($result['working']) && $result['working'] == false && $test['result'] != false && is_array ($rootpathdelete_array) && sizeof ($rootpathdelete_array) > 0)
     {
+      reset ($rootpathdelete_array);
+      
       // action = delete
       if ($action == "delete")
       {
-        // if roothpath array for deleting folders is set, else use input of multiobject saved in objectpath array
-        // if (is_array ($rootpathdelete_array)) $objectpath_array = $rootpathdelete_array;
-        
-        if (is_array ($rootpathdelete_array) && sizeof ($rootpathdelete_array) > 0)
+        foreach ($rootpathdelete_array as $objectpath)
         {
-          foreach ($rootpathdelete_array as $objectpath)
+          if ($objectpath != "")
           {
-            if ($objectpath != "")
-            {
-              $site = getpublication ($objectpath);                 
-              $folder = getobject ($objectpath); // could be a file or a folder              
-              $location = getlocation ($objectpath);  // location without folder&nbsp;&nbsp;
-              $location = deconvertpath ($location, "file");                
-  
-              if (valid_publicationname ($site) && valid_locationname ($location) && $folder != "" && is_dir ($location.$folder))
-              {
-                // eventsystem
-                if (isset ($eventsystem['ondeletefolder_pre']) && $eventsystem['ondeletefolder_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
-                  ondeletefolder_pre ($site, $cat, $location, $folder, $user);
-                            
-                $test['result'] = deletefile ($location, $folder, 1);
+            $site = getpublication ($objectpath);                 
+            $folder = getobject ($objectpath); // could be a file or a folder              
+            $location = getlocation ($objectpath);  // location without folder&nbsp;&nbsp;
+            $location = deconvertpath ($location, "file");                
 
-                // remote client
-                remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $folder, "");              
-                
-                // eventsystem
-                if (isset ($eventsystem['ondeletefolder_post']) && $eventsystem['ondeletefolder_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $test['result'] != false) 
-                  ondeletefolder_post ($site, $cat, $location, $folder, $user);                 
-              }
+            if (valid_publicationname ($site) && valid_locationname ($location) && $folder != "" && is_dir ($location.$folder))
+            {
+              // eventsystem
+              if (isset ($eventsystem['ondeletefolder_pre']) && $eventsystem['ondeletefolder_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+                ondeletefolder_pre ($site, $cat, $location, $folder, $user);
+                          
+              $test['result'] = deletefile ($location, $folder, 1);
+
+              // remote client
+              remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $folder, "");              
+              
+              // eventsystem
+              if (isset ($eventsystem['ondeletefolder_post']) && $eventsystem['ondeletefolder_post'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0) && $test['result'] != false) 
+                ondeletefolder_post ($site, $cat, $location, $folder, $user);                 
             }
           }
         }
       }
       // action = cut & paste
-      elseif ($action == "paste" && $method == "cut" && is_array ($rootpathdelete_array) && sizeof ($rootpathdelete_array) > 0)
+      elseif ($action == "paste" && $method == "cut")
       {
-        reset ($rootpathdelete_array);
-        
         for ($i = 1; $i <= sizeof ($rootpathdelete_array); $i++)
         {
-          if ($rootpathdelete_array != "")
+          $temp_id = key ($rootpathdelete_array);
+          
+          if ($rootpathdelete_array[$temp_id] != "")
           {
-            $temp_id = key ($rootpathdelete_array);
+            $site = getpublication ($rootpathdelete_array[$temp_id]);  
             $location = deconvertpath ($rootpathdelete_array[$temp_id], "file");  
             $folder = getobject ($location); // could be a file or a folder   
             $location = getlocation ($location);  // location without folder  
@@ -15913,11 +15994,11 @@ function licensenotification ()
   global $eventsystem, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
   
   // license notification configuration file
-  $config_dir = opendir ($mgmt_config['abs_path_data']."config/");
+  $scandir = scandir ($mgmt_config['abs_path_data']."config/");
       
-  if ($config_dir)
+  if ($scandir)
   {
-    while ($file = @readdir ($config_dir))
+    foreach ($scandir as $file)
     {
       if (strpos ($file, ".msg.dat") > 0 && is_file ($mgmt_config['abs_path_data']."config/".$file))
       {
@@ -15994,7 +16075,6 @@ function licensenotification ()
       }
     }
 
-    closedir ($config_dir);
     return true;
   }
   else

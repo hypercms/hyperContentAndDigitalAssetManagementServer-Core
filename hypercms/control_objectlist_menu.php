@@ -33,11 +33,10 @@ $convert_cfg = getrequest ("convert_cfg");
 // initalize object linking
 if ($location == "" && is_array ($hcms_linking)) 
 {
-  $site = valid_publicationname ($hcms_linking['publication']);
-  $cat = $hcms_linking['cat'];
-  $location = $location_ACCESS = valid_locationname ($hcms_linking['location']);
-  if ($hcms_linking['object'] != "") $page = valid_objectname ($hcms_linking['object']);
-  else $page = "";
+  if (!empty ($hcms_linking['publication']) && valid_publicationname ($hcms_linking['publication'])) $site = $hcms_linking['publication'];
+  if (!empty ($hcms_linking['cat']) && valid_objectname ($hcms_linking['cat'])) $cat = $hcms_linking['cat'];
+  if (!empty ($hcms_linking['location']) && valid_locationname ($hcms_linking['location'])) $location = $location_ACCESS = $hcms_linking['location'];
+  if (!empty ($hcms_linking['object']) && valid_objectname ($hcms_linking['object'])) $page = $hcms_linking['object'];
 }
 // location has been provided
 else
@@ -741,16 +740,18 @@ else
          )
        )
     {
-       echo "<img ".
+       echo "
+       <img ".
        "onClick=\"if (locklayer == false) parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_down_esc)."';\" ".
        "class=\"hcmsButton hcmsButtonSizeSquare\" ".
        "name=\"pic_folder_back\" ".
        "src=\"".getthemelocation()."img/button_back.gif\" ".
-       "alt=\"".getescapedtext ($hcms_lang['go-to-parent-folder'][$lang])."\" title=\"".getescapedtext ($hcms_lang['go-to-parent-folder'][$lang])."\" />\n";
+       "alt=\"".getescapedtext ($hcms_lang['go-to-parent-folder'][$lang])."\" title=\"".getescapedtext ($hcms_lang['go-to-parent-folder'][$lang])."\" />";
     }
     else
     {
-      echo "<img src=\"".getthemelocation()."img/button_back.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <img src=\"".getthemelocation()."img/button_back.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     }
     ?> 
   </div>
@@ -765,13 +766,15 @@ else
       <form name=\"memory\" style=\"display:none;\">
         <input name=\"view\" type=\"hidden\" value=\"".$temp_explorerview."\" />
       </form>
-      <div onClick=\"hcms_switchSelector('select_obj_view');\" class=\"hcmsButton hcmsButtonSizeWide\"><img src=\"".getthemelocation()."img/button_view_gallery_".$temp_explorerview.".gif\" style=\"padding:2px; width:18px; height:18px;\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" /><img src=\"".getthemelocation()."img/pointer_select.gif\" class=\" hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" /></div>
-      <div id=\"select_obj_view\" class=\"hcmsSelector\" style=\"position:absolute; top:5px; left:".$left."; visibility:hidden; z-index:999; max-height:80px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">
+      <div onClick=\"hcms_switchSelector('select_obj_view');\" class=\"hcmsButton hcmsButtonSizeWide\">
+        <img src=\"".getthemelocation()."img/button_view_gallery_".$temp_explorerview.".gif\" style=\"padding:2px; width:18px; height:18px;\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" /><img src=\"".getthemelocation()."img/pointer_select.gif\" class=\" hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" />
+      </div>
+      <div id=\"select_obj_view\" class=\"hcmsSelector\" style=\"position:absolute; top:5px; left:".$left."; visibility:hidden; z-index:999; width:auto; max-height:80px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">
         <div class=\"hcmsSelectorItem\" onclick=\"switchview ('large');\"><img src=\"".getthemelocation()."img/button_view_gallery_large.gif\" style=\"border:0; margin:0; padding:1px;\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['large-thumbnails'][$lang])."&nbsp;</div>
         <div class=\"hcmsSelectorItem\" onclick=\"switchview ('medium');\"><img src=\"".getthemelocation()."img/button_view_gallery_medium.gif\" style=\"border:0; padding:1px;\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['medium-thumbnails'][$lang])."&nbsp;</div>
         <div class=\"hcmsSelectorItem\" onclick=\"switchview ('small');\"><img src=\"".getthemelocation()."img/button_view_gallery_small.gif\" style=\"border:0; padding:1px;\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['small-thumbnails'][$lang])."&nbsp;</div>
         <div class=\"hcmsSelectorItem\" onclick=\"switchview ('detail');\"><img src=\"".getthemelocation()."img/button_view_gallery_detail.gif\" style=\"border:0; padding:1px;\" align=\"absmiddle\" />".getescapedtext ($hcms_lang['details'][$lang])."&nbsp;</div>
-      </div>\n";
+      </div>";
     ?>
     
     <?php
@@ -830,9 +833,9 @@ else
          $page != "" && 
          $setlocalpermission['root'] == 1
        )
-    {
+    {    
       echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" ".
-           "onClick=\"if (locklayer == false) hcms_openWindow('popup_action.php?action=unzip&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".$token_new."', '', 'location=no,scrollbars=no,resizable=no,titlebar=no', 400, 180);\" ".
+           "onClick=\"var test = confirm('".getescapedtext ($hcms_lang['existing-objects-will-be-replaced'][$lang])."'); if (locklayer == false && test) hcms_openWindow('popup_action.php?action=unzip&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".$token_new."', '', 'location=no,scrollbars=no,resizable=no,titlebar=no', 400, 180);\" ".
            "name=\"pic_unzip\" src=\"".getthemelocation()."img/button_unzip.gif\" alt=\"".getescapedtext ($hcms_lang['extract-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['extract-file'][$lang])."\" />\n";
     }
     else echo "<img src=\"".getthemelocation()."img/button_unzip.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
@@ -1302,11 +1305,11 @@ else
     <input type="hidden" name="virtual" value="<?php echo $virtual; ?>" />
     <img src="<?php echo getthemelocation(); ?>img/button_filter.gif" style="vertical-align:middle; width:18px; height:18px;" />
     <input type="hidden" name="filter[dummy]" value="1" />
-    <input type="checkbox" onclick="setfilter();" name="filter[comp]" value="1" <?php if (isset ($objectfilter['comp']) && $objectfilter['comp'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter1" class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label>&nbsp;&nbsp;
-    <input type="checkbox" onclick="setfilter();" name="filter[image]" value="1" <?php if (isset ($objectfilter['image']) && $objectfilter['image'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter2" class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label>&nbsp;&nbsp;
-    <input type="checkbox" onclick="setfilter();" name="filter[document]" value="1" <?php if (isset ($objectfilter['document']) && $objectfilter['document'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter3" class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></label>&nbsp;&nbsp;
-    <input type="checkbox" onclick="setfilter();" name="filter[video]" value="1" <?php if (isset ($objectfilter['video']) && $objectfilter['video'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter4" class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label>&nbsp;&nbsp;
-    <input type="checkbox" onclick="setfilter();" name="filter[audio]" value="1" <?php if (isset ($objectfilter['audio']) && $objectfilter['audio'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter5" class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter1" onclick="setfilter();" name="filter[comp]" value="1" <?php if (isset ($objectfilter['comp']) && $objectfilter['comp'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter1" class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter2" onclick="setfilter();" name="filter[image]" value="1" <?php if (isset ($objectfilter['image']) && $objectfilter['image'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter2" class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter3" onclick="setfilter();" name="filter[document]" value="1" <?php if (isset ($objectfilter['document']) && $objectfilter['document'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter3" class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter4" onclick="setfilter();" name="filter[video]" value="1" <?php if (isset ($objectfilter['video']) && $objectfilter['video'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter4" class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label>&nbsp;&nbsp;
+    <input type="checkbox" id="filter5" onclick="setfilter();" name="filter[audio]" value="1" <?php if (isset ($objectfilter['audio']) && $objectfilter['audio'] == 1) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter5" class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label>&nbsp;&nbsp;
   </form>
 </div>
 <?php } ?>

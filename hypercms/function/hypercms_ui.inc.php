@@ -557,8 +557,8 @@ function showobject ($site, $location, $page, $cat="", $name="")
     $filesize = number_format ($filesize, 0, "", ".")." ".$unit;
 
     $mediaview = "<table>
-    <tr><td align=\"left\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" alt=\"".$file_info['name']."\" title=\"".$file_info['name']."\" /></td></tr>
-    <tr><td align=\"middle\" class=\"hcmsHeadlineTiny\">".$name."</td></tr>
+    <tr><td align=\"left\" colspan=\"2\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" alt=\"".$file_info['name']."\" title=\"".$file_info['name']."\" /></td></tr>
+    <tr><td align=\"middle\" colspan=\"2\" class=\"hcmsHeadlineTiny\">".$name."</td></tr>
     <tr><td>".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang).": </td><td class=\"hcmsHeadlineTiny\">".$filetime."</td></tr>\n";
     if (!empty ($filesize) && $filesize > 0) $mediaview .= "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filesize."</td></tr>\n";
     if (!empty ($filecount) && $filecount > 1) $mediaview .= "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['number-of-files'][$lang], $hcms_charset, $lang).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filecount."</td></tr>\n";
@@ -2251,13 +2251,13 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
         $_SESSION['hcms_temp_complocation'] = $temp_complocation;
       }  
     }
-    
+
     // load publication inheritance setting
     $inherit_db = inherit_db_read ();
     $parent_array = inherit_db_getparent ($inherit_db, $site);
     
     // if not configured as DAM, define root location if no dir was provided
-    if (!$mgmt_config[$site]['dam'] && $dir == "")
+    if (empty ($mgmt_config[$site]['dam']) && $dir == "")
     {
       if ($mgmt_config[$site]['inherit_comp'] == false || $parent_array == false)
       {
@@ -2269,7 +2269,7 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
       }
     }
     // if DAM use compaccess
-    elseif ($mgmt_config[$site]['dam'] && ($setlocalpermission['root'] != 1 || $dir == ""))
+    elseif (!empty ($mgmt_config[$site]['dam']) && $dir == "")
     {
       $comp_entry_dir = array();
       
@@ -2322,7 +2322,7 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     // local access permissions
     $ownergroup = accesspermission ($site, $dir, "comp");
     $setlocalpermission = setlocalpermission ($site, $ownergroup, "comp");
-    
+
     // set location in component structure in session
     if (valid_locationname ($dir))
     {
@@ -2465,11 +2465,11 @@ $(document).ready(function()
     
     $result .= "
     <table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n";
-  
+
     // parent directory
     if (
-         (!$mgmt_config[$site]['dam'] && substr_count ($dir, $mgmt_config['abs_path_comp']) > 0 && $dir != $mgmt_config['abs_path_comp']) || 
-         ($mgmt_config[$site]['dam'] && $setlocalpermission['root'] == 1)
+         (empty ($mgmt_config[$site]['dam']) && substr_count ($dir, $mgmt_config['abs_path_comp']) > 0 && $dir != $mgmt_config['abs_path_comp']) || 
+         (!empty ($mgmt_config[$site]['dam']) && $setlocalpermission['root'] == 1)
        )
     {
       //get parent directory
@@ -2517,7 +2517,7 @@ $(document).ready(function()
               $entry_object = getobject ($entry);
               $entry_object = correctfile ($entry_location, $entry_object, $user);
 
-              if ($entry_object != false)
+              if ($entry_object !== false)
               {
                 if ($entry_object == ".folder")
                 {
@@ -2537,13 +2537,13 @@ $(document).ready(function()
     elseif ($dir != "")
     {
       // get all files in dir
-      $outdir = @dir ($dir);
+      $scandir = scandir ($dir);
 
       // get all comp_outdir entries in folder and file array
-      if ($outdir != false)
+      if ($scandir)
       {
-        while ($comp_entry = $outdir->read())
-        { 
+        foreach ($scandir as $comp_entry)
+        {
           if ($comp_entry != "" && $comp_entry != "." && $comp_entry != ".." && $comp_entry != ".folder")
           {
             if ($dir != $mgmt_config['abs_path_comp'] || ($dir == $mgmt_config['abs_path_comp'] && ($mgmt_config[$site]['inherit_comp'] == true && is_array ($parent_array) && in_array ($comp_entry, $parent_array)) || $comp_entry == $site))
@@ -2559,8 +2559,6 @@ $(document).ready(function()
             }
           }
         }
-        
-        $outdir->close();
       }
     }
 
@@ -2575,18 +2573,17 @@ $(document).ready(function()
         
         foreach ($comp_entry_dir as $dirname)
         {
-          // verify that folder has not been marked as deleted
-          if ($dirname != "" && createdownloadlink ($site, getlocation($dirname), getobject($dirname), "comp"))
-          {
-            // folder info
-            $folder_info = getfileinfo ($site, $dirname, "comp");
-            $folder_path = getlocation ($dirname);
-            $location_name = getlocationname ($site, $folder_path, "comp", "path");
+          // folder info
+          $folder_info = getfileinfo ($site, $dirname, "comp");
+          $folder_path = getlocation ($dirname);
+          $location_name = getlocationname ($site, $folder_path, "comp", "path");
+          
+          // define icon
+          if ($dir == $mgmt_config['abs_path_comp']) $icon = getthemelocation()."img/site.gif";
+          else $icon = getthemelocation()."img/".$folder_info['icon'];
             
-            // define icon
-            if ($dir == $mgmt_config['abs_path_comp']) $icon = getthemelocation()."img/site.gif";
-            else $icon = getthemelocation()."img/".$folder_info['icon'];
-              
+          if ($folder_info != false && $folder_info['deleted'] == false)
+          {
             if ($callback == "") $result .= "<tr><td align=\"left\" colspan=\"2\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."\" title=\"".$location_name."\"><img src=\"".$icon."\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 24)."</a></td></tr>\n";
             else $result .= "<tr><td align=\"left\" colspan=\"2\" nowrap><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."\" title=\"".$location_name."\"><img src=\"".$icon."\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 24)."</a></td></tr>\n";
           }
@@ -2603,52 +2600,49 @@ $(document).ready(function()
 
         foreach ($comp_entry_file as $object)
         {
-          // verify that object has not been marked as deleted
-          if ($object != "" && createdownloadlink ($site, getlocation($object), getobject($object), "comp"))
-          {
-            // object info
-            $comp_info = getfileinfo ($site, $object, "comp");    
-            
-            // correct extension if object is unpublished
-            if (substr ($object, -4) == ".off") $object = substr ($object, 0, strlen ($object) - 4);
+          // object info
+          $comp_info = getfileinfo ($site, $object, "comp");    
+          
+          // correct extension if object is unpublished
+          if (substr ($object, -4) == ".off") $object = substr ($object, 0, strlen ($object) - 4);
 
-            // get name
-            $comp_name = getlocationname ($site, $object, "comp", "path");
-            
-            if ($compcat != "media" && strlen ($comp_name) > 50) $comp_name = "...".substr (substr ($comp_name, -50), strpos (substr ($comp_name, -50), "/")); 
+          // get name
+          $comp_name = getlocationname ($site, $object, "comp", "path");
+          
+          if ($compcat != "media" && strlen ($comp_name) > 50) $comp_name = "...".substr (substr ($comp_name, -50), strpos (substr ($comp_name, -50), "/")); 
 
-            if (
-                 $dir.$object != $location.$page && 
-                 (
-                   ($compcat != "media" && !$mgmt_config[$site]['dam'] && $comp_info['type'] == "Component") || // standard components if not DAM for component tag
-                   ($compcat != "media" && $mgmt_config[$site]['dam']) || // any type if is DAM for component tag
-                   ($compcat == "media" && ($mediatype == "" || $mediatype == "comp" || substr_count ($format_ext.".", $comp_info['ext'].".") > 0)) // media assets for media tag
-                 )
+          if (
+               $comp_info != false && $comp_info['deleted'] == false && 
+               $dir.$object != $location.$page && 
+               (
+                 ($compcat != "media" && empty ($mgmt_config[$site]['dam']) && $comp_info['type'] == "Component") || // standard components if not DAM for component tag
+                 ($compcat != "media" && !empty ($mgmt_config[$site]['dam'])) || // any type if is DAM for component tag
+                 ($compcat == "media" && ($comp_info['type'] != "Component" || !empty ($mgmt_config[$site]['dam'])) && ($mediatype == "" || $mediatype == "comp" || substr_count ($format_ext.".", $comp_info['ext'].".") > 0)) // media assets for media tag
                )
-            {
-              $comp_path = $object;
-              
-              // listview - view option for un/published objects
-              if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
-              else $class_image = "class=\"hcmsIconList\"";
+             )
+          {
+            $comp_path = $object;
+            
+            // listview - view option for un/published objects
+            if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
+            else $class_image = "class=\"hcmsIconList\"";
 
-              // warning if file extensions don't match and HTTP include is off and it is not a DAM
-              if ($compcat != "media" && !$mgmt_config[$site]['dam'] && $mgmt_config[$site]['http_incl'] == false && ($comp_info['ext'] != $page_info['ext'] && $comp_info['ext'] != ".page")) $alert = "test = confirm(hcms_entity_decode('".getescapedtext ($hcms_lang['the-object-types-do-not-match'][$lang], $hcms_charset, $lang)."'));";    
-              else $alert = "test = true;";
-              
-              if ($compcat == "single")
-              {
-                $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."')\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
-              }
-              elseif ($compcat == "multi")
-              {
-                $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."')\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
-              }
-              elseif ($compcat == "media")
-              {
-                if ($callback == "") $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
-                else $result .= "<tr><td width=\"85%\" align=\"left\" nowrap><a href=# onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap><a href=# onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
-              }
+            // warning if file extensions don't match and HTTP include is off and it is not a DAM
+            if ($compcat != "media" && !$mgmt_config[$site]['dam'] && $mgmt_config[$site]['http_incl'] == false && ($comp_info['ext'] != $page_info['ext'] && $comp_info['ext'] != ".page")) $alert = "test = confirm(hcms_entity_decode('".getescapedtext ($hcms_lang['the-object-types-do-not-match'][$lang], $hcms_charset, $lang)."'));";    
+            else $alert = "test = true;";
+            
+            if ($compcat == "single")
+            {
+              $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."')\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+            }
+            elseif ($compcat == "multi")
+            {
+              $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."')\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+            }
+            elseif ($compcat == "media")
+            {
+              if ($callback == "") $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+              else $result .= "<tr><td width=\"85%\" align=\"left\" nowrap><a href=# onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap><a href=# onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
             }
           }
         }
@@ -4342,15 +4336,15 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
     if (substr ($currentobject, -1) != "/") $currentobject = $currentobject."/";
   
     // collect navigation data
-    $handler = opendir ($docroot);
+    $scandir = scandir ($docroot);
     
-    if ($handler != false)
+    if ($scandir)
     {
       $i = 0;
       $fileitem = array(); 
       $navitem = array();  
   
-      while ($file = readdir ($handler))
+      foreach ($scandir as $file)
       {
         if ($file != "." && $file != ".." && substr ($file, -4) != ".off") $fileitem[] = $file;
       }
@@ -4422,8 +4416,6 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
           }
         }
       }
-  
-      closedir ($handler);
     }
     
     if (isset ($navitem) && is_array ($navitem)) return $navitem;

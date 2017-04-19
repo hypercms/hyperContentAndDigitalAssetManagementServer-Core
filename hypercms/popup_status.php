@@ -102,17 +102,16 @@ if ($authorized == true || $force == "stop")
     if ($force == "start")
     {
       // multiobjects are not possible if action = paste 
-      if ($multiobject != "" && $action != "paste")
+      if ($multiobject != "" && strlen ($multiobject) > 6 && $action != "paste")
       {
         $multiobject_array = link_db_getobject ($multiobject);
       }
-      elseif ($site != "" && $location != "")
+      elseif ($site != "" && $location != "" && strlen ($location) > 6)
       {
         if ($folder != "") $multiobject_array[0] = convertpath ($site, $location.".folder", $cat); 
         $multiobject_array[0] = convertpath ($site, $location.$page, $cat);
       }
     }
-    else $multiobject_array = Null;
 
     // for publish and unpublish
     if ($published_only != "1") $published_only = "0";

@@ -375,6 +375,7 @@ $items_row = 0;
 
 if ($object_array != false && @sizeof ($object_array) > 0)
 {
+  // the hash can be used for the download and wrapper links
   foreach ($object_array as $hash => $objectpath)
   {
     // folder items
@@ -421,10 +422,6 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             
             if ($objectdata != false)
             {
-              // create and check download link
-              $downloadlink = createdownloadlink ($item_site, $location.$folder."/", ".folder", $item_cat);          
-              if (empty ($downloadlink) && $action != "recyclebin") continue;
-              
               // get name of content file and load content container
               $contentfile = getfilename ($objectdata, "content");
               $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
@@ -451,7 +448,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
               // link for copy & paste of download links
               if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
               {
-                $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"hash\" data-href=\"".$downloadlink."\">";
+                $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$folder."/.folder\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
                 $dlink_end = "</a>";
               }
               else
@@ -625,7 +622,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             {
               // get name of content file and load content container
               $contentfile = getfilename ($objectdata, "content");
-              $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
+              $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
                     
               // get user of locked container
               if ($contentfile != false)
@@ -659,7 +656,6 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                 if (empty ($file_size) && is_file ($mediadir.$item_site."/".$mediafile))
                 {
                   $file_size = round (@filesize ($mediadir.$item_site."/".$mediafile) / 1024);
-                  if ($file_size == 0) $file_size = 1;
                   $file_size = number_format ($file_size, 0, "", ".");
                   
                   $file_modified = date ("Y-m-d H:i", @filemtime ($mediadir.$item_site."/".$mediafile));               
@@ -674,7 +670,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                 // link for copy & paste of download links
                 if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
                 {
-                  $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"hash\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
+                  $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$object."\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
                   $dlink_end = "</a>";
                 }
                 else
@@ -697,7 +693,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
                 // link for copy & paste of download links
                 if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
                 {
-                  $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"hash\" data-href=\"".$mgmt_config['url_path_cms']."?wl=".$hash."\">";
+                  $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"wrapper\" data-location=\"".$location_esc.$object."\" data-href=\"".$mgmt_config['url_path_cms']."?wl=".$hash."\">";
                   $dlink_end = "</a>";
                 }
                 else
@@ -1049,6 +1045,9 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 </head>
 
 <body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" onresize="resizecols();">
+
+<!-- load screen --> 
+<div id="hcmsLoadScreen" class="hcmsLoadScreen"></div>
 
 <!-- live view --> 
 <div id="objectviewLayer" class="hcmsWorkplaceObjectlist" style="display:none; overflow:hidden; position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; z-index:8;">

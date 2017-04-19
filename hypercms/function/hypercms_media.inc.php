@@ -319,12 +319,12 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         } 
         else
         {
-          $dir = @opendir ($temp_dir."ppt/slides/");
+          $scandir = @scandir ($temp_dir."ppt/slides/");
       
-          if ($dir != false)
+          if ($scandir)
           {
             // collect source files
-            while ($file = @readdir ($dir))
+            foreach ($scandir as $file)
             { 
               if (substr_count ($file, ".xml") == 1)
               {    
@@ -680,9 +680,9 @@ function reindexcontent ($site, $container_id_array="")
     {
       $location = $mediadir.$site."/";
       
-      $handle = opendir ($location);
+      $scandir = scandir ($location);
 
-      while (false !== ($file = readdir ($handle)))
+      foreach ($scandir as $file)
       {
         if (is_file ($location.$file) && !is_thumbnail ($file, false) && !is_config ($file) && !is_tempfile ($file))
         {
@@ -715,8 +715,6 @@ function reindexcontent ($site, $container_id_array="")
           }
         }
       }
-      
-      closedir ($handle);
     }
 
     return true;
@@ -1039,7 +1037,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
     
     // publication management config
-    if (valid_publicationname ($site) && !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     
     $converted = false;
     $skip = false;
@@ -1084,8 +1082,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       $file = $temp_source['file'];
     }
     
-    // check if file exists and has content
-    if (!is_file ($location_source.$file) || filesize ($location_source.$file) < 10) return false;
+    // check if file exists
+    if (!is_file ($location_source.$file)) return false;
 
     // get file size of media file in kB
     $filesize_orig = round (@filesize ($location_source.$file) / 1024, 0);
@@ -2703,12 +2701,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         }
       }
     }
-        
+
     // no option was found for given format or no media conversion software defined
     if (empty ($setmedia) && ($type == "thumbnail" || $type == "origthumb"))
     {
       // write media information to container and DB
-      if (!empty ($container_id) && !empty ($md5_hash))
+      if (!empty ($container_id))
       {
         $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, "", "", "", "", "", $md5_hash);
       }
@@ -4034,7 +4032,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
 // output: result array with all object paths / false
 
 // description:
-// Unpacks ZIP file and creates media files in destination location for components or unzips files directly for pages.
+// Unpacks ZIP file and creates media files in destination location for components or unzips files directly for pages (not recommended due to securoty risks by uplaoding unsecured files).
 
 function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $user)
 {
@@ -4045,152 +4043,129 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
       // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
     
-    // folder name for extraction
-    $folder = substr ($filename, 0, strrpos ($filename, "."));
-    
-    // test if folder name includes special characters
-    if (specialchr ($folder, ".-_") == true)
-    {
-      $folder = specialchr_encode ($folder, "no");
-    }
-      
     // extension of zip file
     $file_ext = strtolower (strrchr ($filename, "."));      
 
-    // directory with name of the folder must not exist
-    if (!is_dir ($location.$folder."/"))
+    // temporary directory for extracting files
+    $location_temp = $mgmt_config['abs_path_temp'];
+    $unzipname_temp = uniqid ("unzip");
+    $unzippath_temp = $location_temp.$unzipname_temp."/";
+    
+    $location_zip = getlocation ($zipfilepath);
+    $file_zip = getobject ($zipfilepath);
+    
+    // prepare media file
+    $temp = preparemediafile ($site, $location_zip, $file_zip, $user);
+    
+    if ($temp['result'] && $temp['crypted'])
     {
-      // temporary directory for extracting files
-      $location_temp = $mgmt_config['abs_path_temp'];
-      $unzipname_temp = uniqid ("unzip");
-      $unzippath_temp = $location_temp.$unzipname_temp."/";
-      
-      $location_zip = getlocation ($zipfilepath);
-      $file_zip = getobject ($zipfilepath);
-      
-      // prepare media file
-      $temp = preparemediafile ($site, $location_zip, $file_zip, $user);
-      
-      if ($temp['result'] && $temp['crypted'])
-      {
-        $location_zip = $temp['templocation'];
-        $file_zip = $temp['tempfile'];
-        $zipfilepath = $location_zip.$file_zip;
-      }
-      elseif ($temp['restored'])
-      {
-        $location_zip = $temp['location'];
-        $file_zip = $temp['file'];
-        $zipfilepath = $location_zip.$file_zip;
-      }
+      $location_zip = $temp['templocation'];
+      $file_zip = $temp['tempfile'];
+      $zipfilepath = $location_zip.$file_zip;
+    }
+    elseif ($temp['restored'])
+    {
+      $location_zip = $temp['location'];
+      $file_zip = $temp['file'];
+      $zipfilepath = $location_zip.$file_zip;
+    }
 
-      reset ($mgmt_uncompress);
+    reset ($mgmt_uncompress);
+    
+    for ($i = 1; $i <= sizeof ($mgmt_uncompress); $i++)
+    {
+      // supported extension
+      $extension = key ($mgmt_uncompress);
       
-      for ($i = 1; $i <= sizeof ($mgmt_uncompress); $i++)
+      if (substr_count ($extension.".", $file_ext.".") > 0)
       {
-        // supported extension
-        $extension = key ($mgmt_uncompress);
-        
-        if (substr_count ($extension.".", $file_ext.".") > 0)
+        if ($cat == "page")
         {
-          if ($cat == "page")
+          // extract files directly to page location
+          // this will overwrite existing page files!
+          $cmd = $mgmt_uncompress[$extension]." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($location)."\"";
+          
+          @exec ($cmd, $error_array);
+
+          if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
           {
-            // extract files directly to page location
-            $cmd = $mgmt_uncompress[$extension]." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($location)."\"";
+            $error_message = implode ("<br />", $error_array);
+
+            $errcode = "10639";
+            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzipfile failed for $filename: $error_message";
             
+            // save log
+            savelog (@$error);                       
+          }
+        
+          // collect extracted files
+          $object_array = collectobjects (1, $site, $cat, $location);
+
+          if (is_array ($object_array) && sizeof ($object_array) > 0)
+          {
+            $result = array();
+            
+            foreach ($object_array as $object_record)
+            {
+              list ($root_id, $site_record, $location_record, $object_record) = explode ("|", $object_record);
+              $result[] = $location_record.$object_record;
+            }
+            
+            return $result;
+          }
+          else return false;
+        }
+        elseif ($cat == "comp")
+        {
+          // create temporary directory for extraction
+          $result = @mkdir ($unzippath_temp, $mgmt_config['fspermission']);
+
+          if ($result == true)
+          {
+            // extract files to temporary location for media assets       
+            $cmd = $mgmt_uncompress[$extension]." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($unzippath_temp)."\"";
+
             @exec ($cmd, $error_array);
 
             if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
             {
               $error_message = implode ("<br />", $error_array);
+              $error_message = str_replace ($unzippath_temp, "/".$site."/", $error_message);
 
-              $errcode = "10639";
+              $errcode = "10640";
               $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzipfile failed for $filename: $error_message";
               
               // save log
               savelog (@$error);                       
             }
           
-            // collect extracted files
-            $object_array = collectobjects (1, $site, $cat, $location);
-
-            if (is_array ($object_array) && sizeof ($object_array) > 0)
-            {
-              $result = array();
-              
-              foreach ($object_array as $object_record)
-              {
-                list ($root_id, $site_record, $location_record, $object_record) = explode ("|", $object_record);
-                $result[] = $location_record.$object_record;
-              }
-              
-              return $result;
-            }
-            else return false;
-          }
-          elseif ($cat == "comp")
-          {
-            // create temporary directory for extraction
-            $result = @mkdir ($unzippath_temp, $mgmt_config['fspermission']);
-  
-            // create destination folder for extraction
-            if ($result == true)
-            {
-              $result = createfolder ($site, $location, $folder, $user);
+            // check if files were extracted
+            $scandir = scandir ($unzippath_temp);
             
-              // remote client
-              remoteclient ("save", "abs_path_comp", $site, $location, "", $folder, "");           
+            if ($scandir)
+            {    
+              $check = 0;
+              foreach ($scandir as $buffer) $check++;            
+              if ($check < 1) return false;
             }
-  
-            if ($result['result'] == true)
-            {
-              // extract files to temporary location for media assets (components)         
-              $cmd = $mgmt_uncompress[$extension]." \"".shellcmd_encode ($zipfilepath)."\" -d \"".shellcmd_encode ($unzippath_temp)."\"";
-  
-              @exec ($cmd, $error_array);
-  
-              if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
-              {
-                $error_message = implode ("<br />", $error_array);
-                $error_message = str_replace ($unzippath_temp, "/".$site."/", $error_message);
-  
-                $errcode = "10640";
-                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|unzipfile failed for $filename: $error_message";
-                
-                // save log
-                savelog (@$error);                       
-              }
+            else return false;            
             
-              // check if files were extracted
-              $handle = opendir ($unzippath_temp);
-              
-              if ($handle != false)
-              {    
-                $check = 0;
-                while ($buffer = @readdir ($handle)) $check++;
-                closedir ($handle);              
-                if ($check < 1) return false;
-              }
-              else return false;            
-              
-              // create media objects       
-              $result = createmediaobjects ($site, $unzippath_temp, $location.$result['folder']."/", $user);
-              
-              // delete unzipped temporary files in temporary directory
-              deletefile ($location_temp, $unzipname_temp, 1);
-              
-              // delete decrypted temporary file
-              if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 1);
-              
-              return $result;  
-            }
+            // create media objects       
+            $result = createmediaobjects ($site, $unzippath_temp, $location, $user);
+            
+            // delete unzipped temporary files in temporary directory
+            deletefile ($location_temp, $unzipname_temp, 1);
+            
+            // delete decrypted temporary file
+            if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 1);
+            
+            return $result;  
           }
         }
-        
-        next ($mgmt_uncompress);
       }
+      
+      next ($mgmt_uncompress);
     }
-    else return false;
   }
   else return false;
 }    
@@ -4212,9 +4187,9 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
     $destDir = $destination."/".specialchr_decode (getobject ($source));
     @mkdir ($destDir, $mgmt_config['fspermission'], true);
     
-    if ($dir = opendir ($source))
+    if ($scandir = scandir ($source))
     {
-      while (($file = readdir ($dir)) !== false)
+      foreach ($scandir as $file)
       {
         // check access permissions
         if (!is_array ($setlocalpermission) && $user != "sys")
@@ -4262,8 +4237,7 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
           }
         }
       }
-      
-      closedir ($dir);
+
       return true;
     }
     else return false;    

@@ -89,7 +89,7 @@ function hcms_ajaxService (url)
 function hcms_loadPage (id, nestref, url)
 {
   // layer width
-  content_width = 460;
+  var content_width = 460;
   
   if (nn4)
   {
@@ -641,7 +641,7 @@ function hcms_showInfo (id, sec)
   
   if (info)
   {
-    info.style.display="inline";
+    info.style.display = "inline";
     
     // enable all form elements
     var nodes = info.getElementsByTagName('*');
@@ -673,7 +673,7 @@ function hcms_hideInfo (id)
   
   if (info)
   {
-    info.style.display="none";
+    info.style.display = "none";
     
     // disable all form elements
     var nodes = info.getElementsByTagName('*');

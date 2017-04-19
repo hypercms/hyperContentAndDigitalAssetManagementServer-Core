@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['sr'] = "Otkriti lica";
 $hcms_lang['recycle-bin']['sr'] = "Otpatke";
 $hcms_lang['restore']['sr'] = "Povratiti";
 $hcms_lang['empty-recycle-bin']['sr'] = "Prazna otpatke";
+$hcms_lang['existing-objects-will-be-replaced']['sr'] = "Postojeći objekti će biti zamenjen!";
 ?>

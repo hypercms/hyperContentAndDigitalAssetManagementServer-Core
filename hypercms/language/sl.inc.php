@@ -1392,4 +1392,5 @@ $hcms_lang['detect-faces']['sl'] = "Zaznavanje obrazov";
 $hcms_lang['recycle-bin']['sl'] = "Koš";
 $hcms_lang['restore']['sl'] = "Obnovitev";
 $hcms_lang['empty-recycle-bin']['sl'] = "Prazna koš";
+$hcms_lang['existing-objects-will-be-replaced']['sl'] = "Obstoječi objekti se nadomesti!";
 ?>

@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['ja'] = "顔を検出";
 $hcms_lang['recycle-bin']['ja'] = "ごみ箱";
 $hcms_lang['restore']['ja'] = "リストア";
 $hcms_lang['empty-recycle-bin']['ja'] = "ごみ箱を空にする";
+$hcms_lang['existing-objects-will-be-replaced']['ja'] = "既存のオブジェクトが置き換えられます！";
 ?>

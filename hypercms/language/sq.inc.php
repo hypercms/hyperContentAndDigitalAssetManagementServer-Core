@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['sq'] = "Zbuluar fytyrat";
 $hcms_lang['recycle-bin']['sq'] = "Plehra";
 $hcms_lang['restore']['sq'] = "Kthej";
 $hcms_lang['empty-recycle-bin']['sq'] = "Zbrazet";
+$hcms_lang['existing-objects-will-be-replaced']['sq'] = "Objektet ekzistuese do të zëvendësohet!";
 ?>

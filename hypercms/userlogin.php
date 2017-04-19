@@ -74,7 +74,7 @@ if ($al != "")
     $hcms_objref = $result_al['object_id'];
     $hcms_objcode = hcms_crypt ($hcms_objref);
     $ignore_password = true;
-    
+
     // get download formats
     if (!empty ($result_al['formats']))
     {
@@ -93,6 +93,7 @@ if ($oal != "" && !empty ($mgmt_config['db_connect_rdbms']))
   
   if ($objectpath_esc != "")
   {
+    $accesslink = array();
     $accesslink['hcms_linking']['publication'] = $site = getpublication ($objectpath_esc);
     $accesslink['hcms_linking']['cat'] = getcategory ($site, $objectpath_esc);
     $objectpath = deconvertpath ($objectpath_esc, "file");
@@ -244,7 +245,7 @@ if (checkuserip (getuserip ()) == true)
     $login_result = userlogin ($sentuser, $sentpasswd);
   }
   else $login_result = false;
-  
+
   if (!empty ($login_result['auth']))
   {	
     // start session
@@ -381,10 +382,9 @@ if (checkuserip (getuserip ()) == true)
   // user is logged in
   if (isset ($login_result) && isset ($login_result['writesession']) && $login_result['writesession'] == true)
   {
-    $show = "<script language=\"JavaScript\">
-    <!--
+    $show = "
+    <script type=\"text/javascript\">
     location='".$mgmt_config['url_path_cms'].$result_frameset."';
-    //-->
     </script>
   
     ".$login_result['message']."\n";
@@ -464,7 +464,7 @@ else
 
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
-<script>
+<script type="text/javascript">
 function focusform()
 {
   <?php if (!empty ($mgmt_config['instances'])) { ?>

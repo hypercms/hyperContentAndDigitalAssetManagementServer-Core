@@ -1187,7 +1187,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");  
   
   // publication management config
-  if (!is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+  if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
   
   // create unique ID for temporary pageview file
   $unique_id = uniqid ();
@@ -1315,22 +1315,21 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         
           // find the correct content container
           $versiondir = getcontentlocation ($container_id, 'abs_path_content');
-          $dir_version = dir ($versiondir);
+          $scandir = scandir ($versiondir);
+          $files_v = array();
                
-          if ($dir_version)
+          if ($scandir)
           {
-            while ($entry = $dir_version->read())
+            foreach ($scandir as $entry)
             {
               if ($entry != "." && $entry != ".." && @!is_dir ($versiondir.$entry) && (@preg_match ("/".$contentfile.".v_/i", $entry) || @preg_match ("/_hcm".$container_id."/i", $entry)))
               {
                 $files_v[] = $entry;           
               }
             }
-            
-            $dir_version->close();
           }
       
-          if (is_array ($files_v) && @sizeof ($files_v) > 0)
+          if (is_array ($files_v) && sizeof ($files_v) > 0)
           {
             sort ($files_v);
             reset ($files_v);
@@ -1384,19 +1383,21 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             }           
           }
           
-          $dir_version = dir ($versiondir);
+          $files_v = array();
+          $scandir = scandir ($versiondir);
       
-          while ($entry = $dir_version->read())
+          if ($scandir)
           {
-            if ($entry != "." && $entry != ".." && @!is_dir ($versiondir.$entry) && @preg_match ("/".$templatefile.".v_/i", $entry))
+            foreach ($scandir as $entry)
             {
-              $files_v[] = $entry;           
+              if ($entry != "." && $entry != ".." && @!is_dir ($versiondir.$entry) && @preg_match ("/".$templatefile.".v_/i", $entry))
+              {
+                $files_v[] = $entry;           
+              }
             }
           }
-          
-          $dir_version->close();
       
-          if (@sizeof ($files_v) >= 1)
+          if (is_array ($files_v) && sizeof ($files_v) > 0)
           {
             sort ($files_v);
             reset ($files_v);
@@ -2140,13 +2141,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <select name=\"".$hypertagname."\" style=\"width:250px;\"".$disabled.">
                             <option value=\"\">--------- ".getescapedtext ($hcms_lang['select'][$lang], $charset, $lang)." ---------</option>";
         
-                  $dir_item = @dir ($mgmt_config['abs_path_data']."customer/".$site."/");
+                  $scandir = scandir ($mgmt_config['abs_path_data']."customer/".$site."/");
         
                   $i = 0;
         
-                  if ($dir_item != false)
+                  if ($scandir)
                   {
-                    while ($entry = $dir_item->read())
+                    foreach ($scandir as $entry)
                     {
                       if ($entry != "." && $entry != ".." && !is_dir ($entry))
                       {
@@ -2157,8 +2158,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $i++;
                       }
                     }
-        
-                    $dir_item->close();
         
                     if (sizeof ($item_files) >= 1)
                     {
@@ -5234,13 +5233,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // load customer profiles
                 if (!isset ($profile_array) && ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock"))
                 {
-                  $dir_item = @dir ($mgmt_config['abs_path_data']."customer/".$site."/");
+                  $scandir = scandir ($mgmt_config['abs_path_data']."customer/".$site."/");
   
-                  if ($dir_item != false)
+                  if ($scandir)
                   {
                     $profile_array = array();
                     
-                    while ($entry = $dir_item->read())
+                    foreach ($scandir as $entry)
                     {
                       if ($entry != "." && $entry != ".." && !is_dir ($entry))
                       {
@@ -5253,7 +5252,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     }
                     
                     if (sizeof ($profile_array) > 0) sort ($profile_array);
-                    $dir_item->close();
                   }
                 }
                                         

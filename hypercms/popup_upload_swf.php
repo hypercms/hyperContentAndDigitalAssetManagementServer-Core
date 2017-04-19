@@ -377,7 +377,7 @@ echo showtopbar ($title.": ".$object_name, $lang);
         <br />
 	<div>
         <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
-        <input type="checkbox" name="unzip" id="unzip" value="1" onclick="setpost_multi();" />&nbsp;<?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?><br />
+        <input type="checkbox" name="unzip" id="unzip" value="1" onclick="setpost_multi();" />&nbsp;<?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?> (<?php echo getescapedtext ($hcms_lang['existing-objects-will-be-replaced'][$lang]); ?>)<br />
         <?php } elseif ($uploadmode == "single") { ?> 
           <?php if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) { ?>
           <input type="checkbox" name="versioning" id="versioning" value="1" onchange="setpost_single();" />&nbsp;<?php echo getescapedtext ($hcms_lang['keep-existing-file-as-old-version'][$lang]); ?><br />

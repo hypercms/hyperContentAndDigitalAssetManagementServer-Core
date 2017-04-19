@@ -163,19 +163,17 @@ if ($sender == "search")
   if ($mediacat_name == "")
   {
     // select all files in directory
-    $dir_media = dir ($mediadir);
+    $scandir = scandir ($mediadir);
 
-    if ($dir_media != false)
+    if ($scandir)
     {
-      while ($entry = $dir_media->read())
+      foreach ($scandir as $entry)
       {
         if ($entry != "." && $entry != ".." && !is_dir ($entry) && ($imagesearch == "" || preg_match ("/".$imagesearch."/i", $entry)))
         {
           $files[] = $entry;
         }
       }
-      
-      $dir_media->close();
     }
   }
   elseif (sizeof ($mediacat_array) > 0)
@@ -220,7 +218,7 @@ if ($sender == "search")
   echo "<span class=\"hcmsHeadlineTiny\">".getescapedtext ($hcms_lang['found-media-files'][$lang])."</span><br />\n";
 
   // files in actual directory
-  if (isset ($files) && $files != false && $files != "")
+  if (!empty ($files) && is_array ($files) && sizeof ($files) > 0)
   {
     natcasesort ($files);
     reset ($files);

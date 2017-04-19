@@ -21,17 +21,15 @@ if ($mgmt_config['instances'])
   // collect instances
   $location = $mgmt_config['abs_path_cms']."config/";
   
-  if ($location != "" && $dir = opendir ($location))
+  if ($location != "" && $scandir = scandir ($location))
   {
-    while (($file = readdir ($dir)) !== false)
+    foreach ($scandir as $file)
     {
       if ($file != "" && is_file ($location.$file) && substr_count ($file, ".inc.php") > 0)
       {
         $config_files[] = $file;    
       }
     }
-    
-    closedir ($dir);
   }
 }
 else $config_files[0] = "config.inc.php";
@@ -167,9 +165,9 @@ if (sizeof ($config_files) > 0)
       $location = $mgmt_config['abs_path_temp'];
       $timespan = 86400; // 24 hours
       
-      if ($location != "" && $timespan != "" && $dir = opendir ($location))
+      if ($location != "" && $timespan != "" && $scandir = scandir ($location))
       {
-        while (($file = readdir ($dir)) !== false)
+        foreach ($scandir as $file)
         {
           if ($file != "." && $file != ".." && $file != "" && strtolower ($file) != ".htaccess" && strtolower ($file) != "web.config" && strtolower ($file) != "view")
           {
@@ -179,17 +177,15 @@ if (sizeof ($config_files) > 0)
             }      
           }
         }
-        
-        closedir ($dir);
       }
       
       // delete hyperdav user session files older than the given value in seconds
       $location = $mgmt_config['abs_path_data']."session/";
       $timespan = 86400; // 24 hours
       
-      if ($location != "" && $timespan != "" && $dir = opendir ($location))
+      if ($location != "" && $timespan != "" && $scandir = scandir ($location))
       {
-        while (($file = readdir ($dir)) !== false)
+        foreach ($scandir as $file)
         {
           if ($file != "." && $file != ".." && is_file ($location.$file))
           {
@@ -199,8 +195,6 @@ if (sizeof ($config_files) > 0)
             }      
           }
         }
-        
-        closedir ($dir);
       }
     }
   }

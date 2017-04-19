@@ -145,10 +145,10 @@ $token = getrequest ("token");
 $show = "";
 
 // install hyperCMS
-if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && $mgmt_config['abs_path_cms'] != "" && checktoken ($token, $user))
+if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($token, $user))
 {
   // create data and repository file structure
-  if ($show == "" && $mgmt_config['abs_path_data'] != "" && $mgmt_config['abs_path_rep'] != "" && $publ_config['abs_path_mypublication'] != "")
+  if ($mgmt_config['abs_path_data'] != "" && $mgmt_config['abs_path_rep'] != "" && $publ_config['abs_path_mypublication'] != "")
   {   
     if (!is_writeable ($mgmt_config['abs_path_cms']."config/")) $show .= "<li>Write perission for config-directory is missing (".$mgmt_config['abs_path_cms']."config/)!</li>\n";
     if (!is_writeable ($mgmt_config['abs_path_data'])) $show .= "<li>Write perission for data-directory is missing (".$mgmt_config['abs_path_data'].")!</li>\n";

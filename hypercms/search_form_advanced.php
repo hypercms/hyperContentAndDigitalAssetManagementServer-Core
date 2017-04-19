@@ -45,39 +45,37 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 if ($location != "") $ownergroup = accesspermission ($site, $location, $cat);
 else $ownergroup = "";
 
-if (!valid_publicationname ($site) || !valid_objectname ($template)) killsession ($user);
-
 // check session of user
 checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-// generate form
-if ($site != "" && $template != "")
-{
-  // ---------------------------- call template engine ---------------------------    
-  $viewstore = buildsearchform ($site, $template, "", $ownergroup, $css_display);
+$viewstore = false;
 
-  // show form
-  if ($viewstore != false)
-  {
-    echo $viewstore;
-  }
-  // check if an error occured during building view
-  else
-  {
-    echo "<!DOCTYPE html>\n";
-    echo "<html lang=\"".getsession("hcms_lang", "en")."\">\n";
-    echo "<head>\n";
-    echo "<title>hyperCMS</title>\n";
-    echo "<meta charset=\"".$mgmt_config[$site]['default_codepage']."\" />\n";
-    echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
-    echo "</head>\n";
-    echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-    echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['could-not-create-view-of-the-object'][$lang])."</p>\n";
-    echo getescapedtext ($hcms_lang['an-error-occured-while-creating-the-view'][$lang])."\n";
-    echo "</body>\n";
-    echo "</html>";
-  }
+// generate form
+if (valid_publicationname ($site) && valid_objectname ($template))
+{
+  // call template engine
+  $viewstore = buildsearchform ($site, $template, "", $ownergroup, $css_display);
+}
+
+// show form
+if ($viewstore != false)
+{
+  echo $viewstore;
+}
+// check if an error occured during building view
+else
+{
+  echo "<!DOCTYPE html>\n";
+  echo "<html lang=\"".getsession("hcms_lang", "en")."\">\n";
+  echo "<head>\n";
+  echo "<title>hyperCMS</title>\n";
+  echo "<meta charset=\"".$mgmt_config[$site]['default_codepage']."\" />\n";
+  echo "<link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css\" />\n";
+  echo "</head>\n";
+  echo "<body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" onload=\"parent.hcms_showPage('contentLayer');\">\n";
+  echo "</body>\n";
+  echo "</html>";
 }
 ?>

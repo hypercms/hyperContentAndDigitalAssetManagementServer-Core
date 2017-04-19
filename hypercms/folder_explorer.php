@@ -112,12 +112,12 @@ function sendOption(folder_name, folder_location)
       }
       
       // get all files in dir
-      $outdir = @dir ($dir);
+      $scandir = scandir ($dir);
       
       // get all outdir entries in folder and file array
-      if ($outdir != false)
+      if ($scandir)
       {
-        while ($entry = $outdir->read())
+        foreach ($scandir as $entry)
         {
           if ($entry != "" && $entry != "." && $entry != "..")
           {
@@ -128,22 +128,23 @@ function sendOption(folder_name, folder_location)
           }
         }
         
-        $outdir->close();
-        
         // directory
-        if (sizeof ($entry_dir) >= 1)
+        if (sizeof ($entry_dir) > 0)
         {
           sort ($entry_dir);
           reset ($entry_dir);
         
           foreach ($entry_dir as $folder)
           {
-            // define variables
+            // folder info
           	$folder_info = getfileinfo ($site, $dir.$folder.'/.folder', $cat);
           	$folder_name = $folder_info['name'];
           	$icon = getthemelocation()."img/".$folder_info['icon'];
         
-            echo "<tr><td width=\"90%\" align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&site=".url_encode($site)."\"><img src=\"".$icon."\" border=0 width=16 heigth=16 align=\"absmiddle\">&nbsp;".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=\"javascript:sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" style=\"border:0; width:16px; height:16px;\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></a></td></tr>\n";
+            if ($folder_info != false && $folder_info['deleted'] == false)
+            {
+              echo "<tr><td width=\"90%\" align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&site=".url_encode($site)."\"><img src=\"".$icon."\" border=0 width=16 heigth=16 align=\"absmiddle\">&nbsp;".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=\"javascript:sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" style=\"border:0; width:16px; height:16px;\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></a></td></tr>\n";
+            }
           }
         }
       }

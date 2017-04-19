@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['ro'] = "Detecta fețele";
 $hcms_lang['recycle-bin']['ro'] = "Cos de gunoi";
 $hcms_lang['restore']['ro'] = "Restabili";
 $hcms_lang['empty-recycle-bin']['ro'] = "Goliți coșul de gunoi";
+$hcms_lang['existing-objects-will-be-replaced']['ro'] = "Obiecte existente vor fi înlocuite!";
 ?>

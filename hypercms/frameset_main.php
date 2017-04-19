@@ -145,7 +145,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 }
 ?>
 
-<?php if (is_array ($hcms_linking)) { ?>
+<?php if (is_array ($hcms_linking) && sizeof ($hcms_linking) > 0) { ?>
 <!-- workplace -->
 <div id="workplLayer" style="position:fixed; top:32px; bottom:0; left:0; width:100%; margin:0; padding:0;">
   <iframe id="workplFrame" name="workplFrame" scrolling="no" src="frameset_objectlist.php" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>

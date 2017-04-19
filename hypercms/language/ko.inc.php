@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['ko'] = "얼굴을 감지";
 $hcms_lang['recycle-bin']['ko'] = "종이 빈";
 $hcms_lang['restore']['ko'] = "복원";
 $hcms_lang['empty-recycle-bin']['ko'] = "빈 재활용 통";
+$hcms_lang['existing-objects-will-be-replaced']['ko'] = "기존 오브젝트가 대체됩니다!";
 ?>

@@ -164,7 +164,7 @@ if ($search_expression != "")
         $entry_object = getobject ($entry);
         $entry_object = correctfile ($entry_location, $entry_object, $user);
         
-        if ($entry_object != false)
+        if ($entry_object !== false)
         {
           if ($entry_object == ".folder")
           {
@@ -215,18 +215,14 @@ if (isset ($entry_dir) && sizeof ($entry_dir) > 0)
 
   foreach ($entry_dir as $dirname)
   {
-    // verify that folder has not been marked as deleted
-    if ($dirname != "" && createdownloadlink ($site, getlocation($dirname), getobject($dirname), "page"))
+    // folder info
+    $folder_info = getfileinfo ($site, $dirname, "page");
+    $folder_path = getlocation ($dirname);
+    $location_name = getlocationname ($site, $folder_path, "page", "path"); 
+
+    if ($folder_info != false && $folder_info['deleted'] == false)
     {
-      // folder info
-      $folder_info = getfileinfo ($site, $dirname, "page");
-      $folder_path = getlocation ($dirname);
-      $location_name = getlocationname ($site, $folder_path, "page", "path"); 
-  
-      if ($folder_info != false)
-      {
-        echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".$folder_path."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.gif\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp;".showshorttext($folder_info['name'], 24)."</a></td></tr>\n";
-      }
+      echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".$folder_path."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.gif\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp;".showshorttext($folder_info['name'], 24)."</a></td></tr>\n";
     }
   }
 }
@@ -239,18 +235,14 @@ if (isset ($entry_file) && sizeof ($entry_file) > 0)
 
   foreach ($entry_file as $file)
   {
-    // verify that page has not been marked as deleted
-    if ($file != "" && createdownloadlink ($site, getlocation($file), getobject($file), "page"))
-    {
-      // object info
-      $file_info = getfileinfo ($site, $file, "page");
-      $file_name = getlocationname ($site, $file, "page", "path");
-      $file_path = $file;
+    // object info
+    $file_info = getfileinfo ($site, $file, "page");
+    $file_name = getlocationname ($site, $file, "page", "path");
+    $file_path = $file;
 
-      if ($file_info != false && $file_info['published'] == true)
-      {
-        echo "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp; ".showshorttext($file_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
-      }
+    if ($file_info != false && $file_info['published'] == true && $file_info['delted'] == false)
+    {
+      echo "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp; ".showshorttext($file_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
     }
   }
 }

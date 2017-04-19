@@ -1291,7 +1291,7 @@ Release 02/2016
 - Implemen tation of new streaming logic in function downloadfile
 - Included download events into function downloadfile and removed them from explorer_download and explorer_wrapper
 - Improvements in hypercms_api loader for language file
-- Implementation of new media streaming service "mediastreaming" for video player to solve issues with streaming on mobile browsers
+- Implementation of new media streaming service "mediastream" for video player to solve issues with streaming on mobile browsers
 - Bug fix: UI Function showmessage did not provide text container with ID "message_text" used by YouTube connector
 - Implementation of new function createviewlink
 - Replacement of harcoded logic for links by function creatviewlink in all files
@@ -2100,9 +2100,9 @@ Release 04/2017
 Version 6.2.5
 Release 04/2017
 - Implementation of recycle bin for objects as new system feature
-- Implementation of new database attribute 'deleted_user' in table object in order to store the user name after moving objects to the recycle bin
-- Modification of createtables.sql in order to support new table attribute 
-- Implementation of new function update_database_v625 in update API and function userlogin in Security API
+- Implementation of new database attribute 'delete_user' and 'delete_date' in table object in order to store the user name after moving objects to the recycle bin
+- Modification of createtables.sql in order to support the new table attributes 
+- Implementation of new function update_database_v625 in update API and function userlogin in security API
 - Modification of function rdbms_getobject_hash in DB Connect to verify deleted status of an object
 - Modification of function rdbms_searchcontent and rdbms_replacecontent to include deleted status of an object in the query
 - Modification of function rdbms_getobject, rdbms_getobjects, rdbms_getobject_id, and rdbms_getobject_hash in order to support objects which are marked as deleted
@@ -2136,8 +2136,44 @@ Release 04/2017
 - Bug fix: Function rdbms_searchcontent in DB Connect did not initalize array element for sarch queries
 - Bug fix: Function rdbms_searchcontent in DB Connect did not filter array elements for array 'sql_expr_advanced'
 - Bug fix: Paste of text in the search form has not been working since the JS function hcms_clearSelection has been used in the Navigator for left click events
+
+Version 6.2.6
+Release 04/2017
+- Implementation of IP logging in function allowuserip in security API
+- Implementation of download links on demand due to SQL query performance issues with large amounts of objects in one folder
+- Implementation of new function hcms_getlink in contextmenu.js
+- Modification of function hcms_activateLinks in contextmenu.js in order to support the on demand downloadlinks
+- Implementation of new service getlink
+- Implementation of new function remove_utf8_bom in main API
+- Modifications in explorer_objectlist and search_objectlist in order to support on demand links
+- Implementation of load screen in explorer_objectlist and search_objectlist
+- Implementation of CSS class hcmsLoadScreen in navigator.css
+- Modification of function rdbms_setdeletedobjects in DB Connect to rename all objects using .recycle as file extension
+- Modification of function publishobject and unpublishobject in main API to block the publishing of recycled objects
+- Implementation of new main configuration setting for search operator in main configuration fil
+- Modification of function unzipfiles in media API to extract content directly without acreating a folder with the ZIP file name
+- Modification of function createmediaobjects in main API to support overwriting of existing objects
+- Modification of function valid_publicationnaem, valid_locationname, and valid_objectname to return true instead of the value
+- Implementation of new function objects_exists in main API
+- Modification of control_objectlist_menu to support the new return values of the function valid_publicationnaem, valid_locationname, and valid_objectname
+- Migration from opendir to scandir in all parts of the system
+- Modification of function html_decode and html_encode to return the input value in case of an empty result
+- Modifications of popup_action regarding load screen and JS
+- Modification of function unzipfiles in media API in order to replace existing objects
+- Modification of function specialchr_encode in main API to avoid double encoding of names
+- Modification of function getfileinfo in get API to support new deleted result parameter
+- Modifications in explorer, folder_explorer, link_edit_explorer, and rich text editor to support the new return paramater for deleted objects from function getfileinfo
+- Update of all language files
+- Bug fix: Function rdbms_copycontent in DB Connect did not escape all values for the queries
+- Bug fix: Function createdownloadlink and createwrapperlink in main API did not specify the correct input variables for the error logging
+- Bug fix: Function rdbms_searchcontent in DB Connect did add the where clauses without leading AND for the count query
+- Bug fix: Function showobject in UI API did not display folders correctly (colspan was missing)
+- Bug fix: Lables of filters refered to undefined tags in control_objectlist_menu
+- Bug fix: Function createmedia did not process files smaller than 10 bytes
+- Bug fix: Function showcompexplorer in UI API did not display subfolder contect in DAM mode
+- Bug fix: The navigator did not clean the advanced search form if no template has been selected
 */
 
 // current version
-$mgmt_config['version'] = "Version 6.2.5";
+$mgmt_config['version'] = "Version 6.2.6";
 ?>

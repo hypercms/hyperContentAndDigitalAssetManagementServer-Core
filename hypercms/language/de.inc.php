@@ -1395,4 +1395,5 @@ $hcms_lang['detect-faces']['de'] = "Gesichtserkennung";
 $hcms_lang['recycle-bin']['de'] = "Papierkorb";
 $hcms_lang['restore']['de'] = "Wiederherstellen";
 $hcms_lang['empty-recycle-bin']['de'] = "Papierkorb leeren";
+$hcms_lang['existing-objects-will-be-replaced']['de'] = "Existing objects will be replaced!";
 ?>

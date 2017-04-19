@@ -1395,4 +1395,5 @@ $hcms_lang['detect-faces']['el'] = "ανιχνεύει πρόσωπα";
 $hcms_lang['recycle-bin']['el'] = "σκουπιδοτενεκέ";
 $hcms_lang['restore']['el'] = "Επαναφέρω";
 $hcms_lang['empty-recycle-bin']['el'] = "άδειος κάδος ανακύκλωσης";
+$hcms_lang['existing-objects-will-be-replaced']['el'] = "Τα υπάρχοντα αντικείμενα θα αντικατασταθεί!";
 ?>

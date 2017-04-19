@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['ru'] = "Обнаружение лица";
 $hcms_lang['recycle-bin']['ru'] = "корзина";
 $hcms_lang['restore']['ru'] = "Восстановить";
 $hcms_lang['empty-recycle-bin']['ru'] = "Пустая мусорная корзина";
+$hcms_lang['existing-objects-will-be-replaced']['ru'] = "Существующие объекты будут заменены!";
 ?>

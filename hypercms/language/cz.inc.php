@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['cz'] = "Detekci obličejů";
 $hcms_lang['recycle-bin']['cz'] = "Koš na papír";
 $hcms_lang['restore']['cz'] = "Obnovit";
 $hcms_lang['empty-recycle-bin']['cz'] = "Prázdný koš";
+$hcms_lang['existing-objects-will-be-replaced']['cz'] = "Stávající objekty budou nahrazeny!";
 ?>

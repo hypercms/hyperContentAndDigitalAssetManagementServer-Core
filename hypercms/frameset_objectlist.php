@@ -25,8 +25,12 @@ $search_dir = url_encode (getrequest ("search_dir", "url"));
 $search_expression = url_encode (getrequest ("search_expression", "url"));
 $maxhits = url_encode (getrequest ("maxhits", "url"));
 
+// ------------------------------ permission section --------------------------------
+
 // check session of user
 checkusersession ($user, false);
+
+// --------------------------------- logic section ----------------------------------
 ?>
 <!DOCTYPE html>
 <html>

@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['pl'] = "Wykrywanie twarzy";
 $hcms_lang['recycle-bin']['pl'] = "Kosz";
 $hcms_lang['restore']['pl'] = "Przywracać";
 $hcms_lang['empty-recycle-bin']['pl'] = "Pusty kosz";
+$hcms_lang['existing-objects-will-be-replaced']['pl'] = "Istniejące obiekty zostaną wymienione!";
 ?>

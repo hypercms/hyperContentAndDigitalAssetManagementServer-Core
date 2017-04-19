@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['nl'] = "Detecteert gezichten";
 $hcms_lang['recycle-bin']['nl'] = "Papierbak";
 $hcms_lang['restore']['nl'] = "Herstellen";
 $hcms_lang['empty-recycle-bin']['nl'] = "Lege papierbak";
+$hcms_lang['existing-objects-will-be-replaced']['nl'] = "Bestaande objecten zullen worden vervangen!";
 ?>

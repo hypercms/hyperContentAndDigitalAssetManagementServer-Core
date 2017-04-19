@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['uk'] = "виявлення особи";
 $hcms_lang['recycle-bin']['uk'] = "коши";
 $hcms_lang['restore']['uk'] = "Відновлення";
 $hcms_lang['empty-recycle-bin']['uk'] = "порожня кошик";
+$hcms_lang['existing-objects-will-be-replaced']['uk'] = "Існуючі об'єкти будуть замінені!";
 ?>

@@ -114,9 +114,9 @@ function update_tasks_v584 ()
     $db->close();
     
     // move data from XML to RDBMS
-    if (function_exists ("createtask") && is_dir ($mgmt_config['abs_path_data']."task/") && $handle = opendir ($mgmt_config['abs_path_data']."task/"))
+    if (function_exists ("createtask") && is_dir ($mgmt_config['abs_path_data']."task/") && $scandir = scandir ($mgmt_config['abs_path_data']."task/"))
     {
-      while (false !== ($entry = readdir($handle)))
+      foreach ($scandir as $entry)
       {
         if (strpos ($entry, ".xml.php") > 0)
         {
@@ -166,7 +166,6 @@ function update_tasks_v584 ()
       
       // save log              
       savelog (@$error);
-      closedir ($handle);
     }
   }
   else return true;

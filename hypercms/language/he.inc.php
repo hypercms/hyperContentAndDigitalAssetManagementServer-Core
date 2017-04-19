@@ -1394,4 +1394,5 @@ $hcms_lang['detect-faces']['he'] = "זיהוי פרצופים";
 $hcms_lang['recycle-bin']['he'] = "סל נייר";
 $hcms_lang['restore']['he'] = "לשחזר";
 $hcms_lang['empty-recycle-bin']['he'] = "סל מחזור ריק";
+$hcms_lang['existing-objects-will-be-replaced']['he'] = "אובייקטים קיימים יוחלפו!";
 ?>

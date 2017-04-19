@@ -37,9 +37,9 @@ $object_array = array();
 
 if (is_array ($hcms_linking) && ($location == "" || deconvertpath ($location, "file") == deconvertpath ($hcms_linking['location'], "file"))) 
 {
-  $site = $hcms_linking['publication'];
-  $cat = $hcms_linking['cat'];
-  $location = $hcms_linking['location'];
+  if (!empty ($hcms_linking['publication']) && valid_publicationname ($hcms_linking['publication'])) $site = $hcms_linking['publication'];
+  if (!empty ($hcms_linking['cat']) && valid_objectname ($hcms_linking['cat'])) $cat = $hcms_linking['cat'];
+  if (!empty ($hcms_linking['location']) && valid_locationname ($hcms_linking['location'])) $location = $hcms_linking['location'];
   if (!empty ($hcms_linking['object'])) $object_array[] = $hcms_linking['object'];
 
   $objects_total = sizeof ($object_array);
@@ -59,6 +59,7 @@ if (is_file ($mgmt_config['abs_path_data']."config/plugin.conf.php"))
 // set local permissions
 $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
 // we check for general root element access since localpermissions are checked later
 if (!valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($cat) || ($cat == "comp" && !checkglobalpermission ($site, 'component')) || ($cat == "page" && !checkglobalpermission ($site, 'page'))) killsession ($user);
 
@@ -154,34 +155,33 @@ if (
   // show requested location
   elseif (valid_locationname ($location) && is_dir ($location))
   {
-    $dir = opendir ($location);
+    $scandir = scandir ($location);
     
-    if ($dir != false)
+    if ($scandir)
     {
-      while ($file = @readdir ($dir)) 
+      foreach ($scandir as $file) 
       {
         if ($location.$file != "" && $file != '.' && $file != '..') 
         {
-          if (!$is_mobile && @is_dir ($location.$file))
+          if (!$is_mobile && is_dir ($location.$file))
           {
             $group_array = accesspermission ($site, $location.$file."/", "$cat");
             $setlocalpermission = setlocalpermission ($site, $group_array, "$cat");
                
-            if ($setlocalpermission['root'] == 1) $folder_array[] = $file;
-            
-            $objects_total++;
+            if ($setlocalpermission['root'] == 1)
+            {
+              $folder_array[] = $file;            
+              $objects_total++;
+            }
           }
-          elseif (@is_file ($location.$file) && $file != ".folder")
+          elseif (is_file ($location.$file) && $file != ".folder")
           {
-            $object_array[] = $file;
-            
+            $object_array[] = $file;            
             $objects_total++;     
           }
         }
       }
     }
-  
-    @closedir ($dir);  
   }
 }
 
@@ -220,17 +220,19 @@ if (!$is_mobile && is_array ($folder_array) && @sizeof ($folder_array) > 0)
         $folder = getobject ($folder);
       }
       
+      // folder information
+      $file_info = getfileinfo ($site, $location.$folder."/.folder", $cat);
+      
       // eventsystem
       if ($eventsystem['onobjectlist_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
         onobjectlist_pre ($site, $cat, $location, $folder, $user);        
       
       // if folder exists
-      if (valid_locationname ($location) && valid_objectname ($folder) && is_dir ($location.$folder))
+      if (valid_locationname ($location) && valid_objectname ($folder) && is_dir ($location.$folder) && !$file_info['deleted'])
       {     
         // convert location
         $location_esc = convertpath ($site, $location, $cat);
         // get folder name
-        $file_info = getfileinfo ($site, $location.$folder."/.folder", $cat);
         $folder_name = $file_info['name'];
         
         $metadata = "";
@@ -244,10 +246,6 @@ if (!$is_mobile && is_array ($folder_array) && @sizeof ($folder_array) > 0)
         
         if ($objectdata != false)
         {
-          // create and check download link
-          $downloadlink = createdownloadlink ($site, $location.$folder."/", ".folder", $cat);          
-          if (empty ($downloadlink)) continue;
-        
           // get name of content file and load content container
           $contentfile = getfilename ($objectdata, "content");
           $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
@@ -274,7 +272,7 @@ if (!$is_mobile && is_array ($folder_array) && @sizeof ($folder_array) > 0)
           // link for copy & paste of download links
           if ($mgmt_config[$site]['sendmail'] && $setlocalpermission['download'] == 1)
           {
-            $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"hash\" data-href=\"".$downloadlink."\">";
+            $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$folder."/.folder\" data-href=\"\">";
             $dlink_end = "</a>";
           }
           else
@@ -302,7 +300,7 @@ if (!$is_mobile && is_array ($folder_array) && @sizeof ($folder_array) > 0)
         $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$site."', '".$cat."', '".$location_esc."', '.folder', '".$folder_name."', 'Folder', '', '".$folder."', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
         // listview - view option for locked folders
-        if ($usedby != "")
+        if (!empty ($usedby))
         {
           $file_info['icon'] = "folderlock.gif";
           $file_info['icon_large'] = "folderlock.png";
@@ -397,7 +395,7 @@ if (!$is_mobile && is_array ($folder_array) && @sizeof ($folder_array) > 0)
 }
 
 // write object entries
-if (is_array ($object_array) && @sizeof ($object_array) > 0)
+if (is_array ($object_array) && sizeof ($object_array) > 0)
 {
   natcasesort ($object_array);
   reset ($object_array);
@@ -433,10 +431,10 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
       // eventsystem
       if ($eventsystem['onobjectlist_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
         onobjectlist_pre ($site, $cat, $location, $object, $user);  
-        
+
       // if object exists
-      if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object) && ($cat == "page" || objectfilter ($object)))       
-      {       
+      if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object) && !$file_info['deleted'] && ($cat == "page" || objectfilter ($object)))       
+      {     
         // page
         if ($file_info['type'] == "Page") $file_type = getescapedtext ($hcms_lang['object-page'][$lang]);
         // component
@@ -450,10 +448,6 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
         // get name of media file
         if ($objectdata != false)
         {
-          // create and check download link
-          $downloadlink = createdownloadlink ($site, $location, $object, $cat);          
-          if (empty ($downloadlink)) continue;
-        
           // get name of content file and load content container
           $contentfile = getfilename ($objectdata, "content");
           $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
@@ -490,7 +484,6 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
             if (empty ($file_size) && is_file ($mediadir.$site."/".$mediafile))
             {
               $file_size = round (@filesize ($mediadir.$site."/".$mediafile) / 1024);
-              if ($file_size == 0) $file_size = 1;
               $file_size = number_format ($file_size, 0, "", ".");
               
               $file_modified = date ("Y-m-d H:i", @filemtime ($mediadir.$site."/".$mediafile));               
@@ -506,7 +499,7 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
             // link for copy & paste of download links
             if ($mgmt_config[$site]['sendmail'] && $setlocalpermission['download'] == 1)
             {
-              $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"hash\" data-href=\"".$downloadlink."\">";
+              $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$object."\" data-href=\"\">";
               $dlink_end = "</a>";
             }
             else
@@ -529,7 +522,7 @@ if (is_array ($object_array) && @sizeof ($object_array) > 0)
             // link for copy & paste of download links
             if ($mgmt_config[$site]['sendmail'] && $setlocalpermission['download'] == 1)
             {
-              $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"hash\" data-href=\"".createwrapperlink($site, $location, $object, $cat)."\">";
+              $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"wrapper\" data-location=\"".$location_esc.$object."\" data-href=\"\">";
               $dlink_end = "</a>";
             }
             else
@@ -890,6 +883,9 @@ function openobjectview (location, object, view)
 </head>
 
 <body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" onresize="resizecols();">
+
+<!-- load screen --> 
+<div id="hcmsLoadScreen" class="hcmsLoadScreen"></div>
 
 <!-- contextual help --> 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang], $lang, "position:fixed; top:30px; right:30px;", "hcms_infoboxKeys"); ?>

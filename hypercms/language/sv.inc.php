@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['sv'] = "Identifiera ansikten";
 $hcms_lang['recycle-bin']['sv'] = "Papperskorg";
 $hcms_lang['restore']['sv'] = "Återställa";
 $hcms_lang['empty-recycle-bin']['sv'] = "Töm papperskorg";
+$hcms_lang['existing-objects-will-be-replaced']['sv'] = "Befintliga objekt kommer att ersättas!";
 ?>

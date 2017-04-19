@@ -144,16 +144,16 @@ function plugin_parse ($oldData=array())
 {
   global $mgmt_config;
   
-  $fh = opendir ($mgmt_config['abs_path_plugin']);
+  $scandir = scandir ($mgmt_config['abs_path_plugin']);
     
-  if ($fh)
+  if ($scandir)
   {
     // We must have an array here
     if (!is_array ($oldData)) $oldData = array();
       
     $return = array();
     
-    while ($file = readdir ($fh)) 
+    foreach ($scandir as $file) 
     {
       // We only parse plugin.xml if present
       if ($file != '.' && $file != '..' && is_dir ($mgmt_config['abs_path_plugin'].$file) && is_file ($mgmt_config['abs_path_plugin'].$file.'/plugin.xml')) 

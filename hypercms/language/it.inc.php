@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['it'] = "Rileva volti";
 $hcms_lang['recycle-bin']['it'] = "Cestino";
 $hcms_lang['restore']['it'] = "Ristabilire";
 $hcms_lang['empty-recycle-bin']['it'] = "Vuota il Cestino";
+$hcms_lang['existing-objects-will-be-replaced']['it'] = "Oggetti esistenti verranno sostituiti!";
 ?>

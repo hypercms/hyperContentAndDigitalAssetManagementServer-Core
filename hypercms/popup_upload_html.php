@@ -1189,7 +1189,7 @@ echo showtopbar ($title.": ".$object_name, $lang);
     <div>
       <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
       <div class="inline">
-        <label><input type="checkbox" name="unzip" id="unzip" value="1" /> <?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?></label>
+        <label><input type="checkbox" name="unzip" id="unzip" value="1" /> <?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?> (<?php echo getescapedtext ($hcms_lang['existing-objects-will-be-replaced'][$lang]); ?>)</label>
       </div>
       <br />
       <?php } elseif ($cat == "comp" && $uploadmode == "single") { ?>

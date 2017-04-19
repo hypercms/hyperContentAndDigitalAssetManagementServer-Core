@@ -976,12 +976,12 @@ function collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $pri
     $replace = array('index.php' => '', 'index.htm' => '', 'index.html' => '', 'index.xhtml' => '', 'index.jsp' => '', 'default.asp' => '', 'default.aspx' => '');
       
     // crawl dir
-    $handle = opendir ($dir);
+    $scandir = scandir ($dir);
     $result_array = array();
 
-    if ($handle != false)
+    if ($scandir)
     {
-      while ($file = readdir ($handle))
+      foreach ($scandir as $file)
       {
         // check if this file needs to be ignored, if so, skip it
         if (in_array ($file, $ignore)) continue;
@@ -1092,8 +1092,6 @@ function collecturlnodes ($site, $dir, $url, $getpara, $permalink, $chfreq, $pri
           }
         }
       }
-      
-      closedir ($handle);
     }
     
     if (sizeof ($result_array) > 0) return $result_array;
@@ -1177,13 +1175,13 @@ function getlistelements ($list_sourcefile)
       
       if (is_dir ($sourcelocation))
       {
-        $handle = opendir ($sourcelocation);
+        $scandir = scandir ($sourcelocation);
         
-        if ($handle != false)
+        if ($scandir)
         {
           $folder_array = array();
           
-          while ($item = @readdir ($handle)) 
+          foreach ($scandir as $item) 
           {
             if (is_dir ($sourcelocation.$item) && $item != '.' && $item != '..') 
             {
@@ -1197,8 +1195,6 @@ function getlistelements ($list_sourcefile)
             $list .= implode (",", $folder_array);
           }
         }
-        
-        closedir ($handle);
       }
     }
     // get parameters from file or service (must be comma-seperated)
@@ -1807,7 +1803,7 @@ function getcontainername ($container)
     $location = getcontentlocation ($container_id, 'abs_path_content');
 
     // container exists and is not locked
-    if (@is_file ($location.$containerwrk))
+    if (is_file ($location.$containerwrk))
     {
       // return result
       $result['result'] = true;
@@ -1816,7 +1812,7 @@ function getcontainername ($container)
       return $result;
     }
     // container exists and is locked by current user
-    elseif (@is_file ($location.$containerwrk.".@".$_SESSION['hcms_user']))
+    elseif (is_file ($location.$containerwrk.".@".$_SESSION['hcms_user']))
     {
       // return result
       $result['result'] = true;
@@ -1827,11 +1823,11 @@ function getcontainername ($container)
     // container is locked or does not exist
     else
     {
-      $dir = dir ($location);
+      $scandir = scandir ($location);
 
-      if ($dir)
+      if ($scandir)
       {
-        while ($entry = $dir->read())
+        foreach ($scandir as $entry)
         {
           // if locked working container was found
           if (preg_match ("/$container.wrk.@/", $entry))
@@ -1842,16 +1838,12 @@ function getcontainername ($container)
             $result['result'] = true;
             $result['container'] = $containerwrk;
             $result['user'] = $user;
-            
-            $dir->close();
-            
+
             // return result 
             return $result;
           }   
         }
-        
-        $dir->close();
-        
+ 
         $result['result'] = false;
       }
       else 
@@ -1882,7 +1874,7 @@ function getlocationname ($site, $location, $cat, $source="path")
   if (valid_locationname ($location))
   {
     // load config is not available
-    if (valid_publicationname ($site) && (!isset ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    if (valid_publicationname ($site) && (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
@@ -2286,11 +2278,11 @@ function getmediafileversion ($container)
         $version_dir = getcontentlocation ($container_id, 'abs_path_content');
         
         // select all content version files in directory
-        $handle = dir ($version_dir);
+        $scandir = scandir ($version_dir);
         
         $version_container = array();
     
-        while ($entry = $handle->read())
+        foreach ($scandir as $entry)
         {
           // only select versions when media file has been changed
           if ($entry != "." && $entry != ".." && is_file ($version_dir.$entry) && preg_match ("/_hcm".$container_id."./i", $entry))
@@ -2304,8 +2296,6 @@ function getmediafileversion ($container)
             $version_container[$version_timestamp] = $entry;
           }
         }
-        
-        $handle->close();
         
         // get media file
         if (sizeof ($version_container) > 0)
@@ -2496,11 +2486,11 @@ function getcontainerversions ($container)
     $versiondir = getcontentlocation ($container_id, 'abs_path_content');
   
     // select all content version files in directory
-    $dir_version = dir ($versiondir);
+    $scandir = scandir ($versiondir);
 
-    if ($dir_version)
+    if ($scandir)
     {
-      while ($entry = $dir_version->read())
+      foreach ($scandir as $entry)
       {
         if ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/".$container_id.".xml.v_/i", $entry) || preg_match ("/_hcm".$container_id."./i", $entry)))
         {
@@ -2514,8 +2504,6 @@ function getcontainerversions ($container)
           $result[$date_v] = $entry;
         }
       }
-      
-      $dir_version->close();
     }
     
     if (sizeof ($result) > 0)
@@ -2542,13 +2530,13 @@ function getlocaltemplates ($site, $cat="")
   
   if (valid_publicationname ($site))
   {
-    $dir_template = @dir ($mgmt_config['abs_path_template'].$site."/");
+    $scandir = scandir ($mgmt_config['abs_path_template'].$site."/");
 
     $template_files = array();
   
-    if ($dir_template != false)
+    if ($scandir)
     {
-      while ($entry = $dir_template->read())
+      foreach ($scandir as $entry)
       {
         if ($entry != "." && $entry != ".." && !is_dir ($entry) && substr_count ($entry, ".tpl.v_") == 0 && substr_count ($entry, ".bak") == 0)
         {
@@ -2574,8 +2562,6 @@ function getlocaltemplates ($site, $cat="")
           }
         }
       }
-  
-      $dir_template->close();
     }
       
     if (sizeof ($template_files) > 0)
@@ -2623,11 +2609,11 @@ function gettemplates ($site, $cat="all")
 
     foreach ($site_array as $site_source)
     {
-      $dir_template = dir ($mgmt_config['abs_path_template'].$site_source."/");
+      $scandir = scandir ($mgmt_config['abs_path_template'].$site_source."/");
 
-      if ($dir_template != false)
+      if ($scandir)
       {
-        while ($entry = $dir_template->read())
+        foreach ($scandir as $entry)
         {
           if ($entry != "." && $entry != ".." && !is_dir ($entry) && !preg_match ("/.inc.tpl/", $entry) && !preg_match ("/.tpl.v_/", $entry))
           {
@@ -2646,8 +2632,6 @@ function gettemplates ($site, $cat="all")
             elseif ($cat == "all") $template_array[] = $entry;   
           }
         }
-
-        $dir_template->close();
       }
     }
 
@@ -2682,11 +2666,11 @@ function gettemplateversions ($site, $template)
     $versiondir = $mgmt_config['abs_path_template'].$site."/";
   
     // select all template version files in directory
-    $dir_version = dir ($versiondir);
+    $scandir = scandir ($versiondir);
 
-    if ($dir_version)
+    if ($scandir)
     {
-      while ($entry = $dir_version->read())
+      foreach ($scandir as $entry)
       {
         if ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && preg_match ("/".$template.".v_/i", $entry))
         {
@@ -2700,8 +2684,6 @@ function gettemplateversions ($site, $template)
           $result[$date_v] = $entry;
         }
       }
-      
-      $dir_version->close();
     }
     
     if (sizeof ($result) > 0)
@@ -2728,7 +2710,8 @@ function gettemplateversions ($site, $template)
 //    $result['icon_large']: file name of the large file icon
 //    $result['type']: file type
 //    $result['ext']: file extension incl. dot in lower case
-//    $result['published']: if file published = true else = false
+//    $result['published']: if file is published = true else = false
+//    $result['deleted']: if file is deleted = true else = false
 
 function getfileinfo ($site, $file, $cat="comp")
 {
@@ -2760,6 +2743,14 @@ function getfileinfo ($site, $file, $cat="comp")
         
         if ($cat == "") $cat = getcategory ($site, $file);  
       
+        // if deleted folder
+        if (substr ($folder_name, -8) == ".recycle")
+        {
+          $folder_name = substr ($folder_name, 0, -8);
+          $file_deleted = true;
+        }
+        else $file_deleted = false;
+        
         $file_name = $folder_name;
         $file_nameonly = $folder_name;
         
@@ -2790,17 +2781,31 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_ext = strtolower (strrchr ($file_name, "."));
           
           $file_published = false;
+          $file_deleted = false;
+        }
+        // objects in recycle bin 
+        elseif ($file_ext == ".recycle")
+        {
+          $file_name = substr ($file, 0, -8);
+          // get file name without extensions
+          $file_nameonly = strrev (substr (strstr (strrev ($file_name), "."), 1));
+          // get file extension of file name minus .recycle
+          $file_ext = strtolower (strrchr ($file_name, "."));
+          
+          $file_published = true;
+          $file_deleted = true;
         }
         // unpublished objects 
         elseif ($file_ext == ".off")
         {
-          $file_name = substr ($file, 0, strlen ($file)-4);
+          $file_name = substr ($file, 0, -4);
           // get file name without extensions
           $file_nameonly = strrev (substr (strstr (strrev ($file_name), "."), 1));
           // get file extension of file name minus .off
           $file_ext = strtolower (strrchr ($file_name, "."));
           
           $file_published = false;
+          $file_deleted = false;
         }
         // published objects
         else
@@ -2810,6 +2815,7 @@ function getfileinfo ($site, $file, $cat="comp")
           $file_nameonly = strrev (substr (strstr (strrev ($file), "."), 1));
           
           $file_published = true;
+          $file_deleted = false;
         }
         
         // MS Word
@@ -2991,8 +2997,9 @@ function getfileinfo ($site, $file, $cat="comp")
       $file_type = "unknown";
       $file_ext = "";
       $file_published = true;
+      $file_deleted = false;
     }
-    
+
     // set result array
     $result['file'] = $file_name;
     $result['name'] = specialchr_decode ($file_name);
@@ -3002,6 +3009,7 @@ function getfileinfo ($site, $file, $cat="comp")
     $result['type'] = $file_type;
     $result['ext'] = $file_ext;
     $result['published'] = $file_published;
+    $result['deleted'] = $file_deleted;
   }
   else $result = false;
       
@@ -3209,11 +3217,12 @@ function getfilesize ($file)
       if (is_file ($file_abs))
       {
         // get file size in kB
-        $size = filesize ($file_abs) / 1024;
+        $size = round ((filesize ($file_abs) / 1024), 0);
+        
         return array('filesize'=>$size, 'count'=>0);
       }
       // if folder
-      elseif (is_dir ($file_abs) && $dir = opendir ($file_abs))
+      elseif (is_dir ($file_abs) && $scandir = scandir ($file_abs))
       {
         $size = 0;
         $n = 0;
@@ -3221,7 +3230,7 @@ function getfilesize ($file)
         // add slash if not present at the end
         if (substr ($file, -1) != "/") $file = $file."/";           
 
-        while (($item = readdir ($dir)) !== false)
+        foreach ($scandir as $item)
         {
           if ($item == "." || $item == ".." || $item == ".folder") continue;
           
@@ -3231,12 +3240,10 @@ function getfilesize ($file)
           $n += $data['count'];
         }
         
-        closedir ($dir);
-        
-        return array('filesize'=>$size,'count'=>$n);
+        return array('filesize'=>$size, 'count'=>$n);
       }
       
-      return array('filesize'=>0,'count'=>0);
+      return array('filesize'=>0, 'count'=>0);
     }
     else return false;
   }
@@ -3807,13 +3814,13 @@ function getlockedfileinfo ($location, $file)
     // file is locked
     if (!is_file ($location.$file))
     {
-      $dir = dir ($location);
+      $scandir = scandir ($location);
   
-      if ($dir)
+      if ($scandir)
       {
         $result = array();
         
-        while ($entry = $dir->read())
+        foreach ($scandir as $entry)
         {
           if (preg_match ("/".preg_quote ($file.".@")."/", $entry))
           {
@@ -3823,8 +3830,6 @@ function getlockedfileinfo ($location, $file)
             return $result;
           }   
         }
-        
-        $dir->close();
       }
       else return false;
     }
@@ -3905,7 +3910,7 @@ function getlockedobjects ($user)
                   $page = correctfile ($location, $page, $user);
                   
                   // check if file exists
-                  if ($page != false)
+                  if ($page !== false)
                   {
                     $object_array[] = $location.$page;
                   }
@@ -4047,14 +4052,14 @@ function getusersonline ()
   
   $session_dir = $mgmt_config['abs_path_data']."session/";
   
-  if (is_dir ($session_dir) && $dir = opendir ($session_dir))
+  if (is_dir ($session_dir) && $scandir = scandir ($session_dir))
   {
     // add slash if not present at the end
     if (substr ($session_dir, -1) != "/") $session_dir = $session_dir."/";           
 
     $result = array();
     
-    while (($user = readdir ($dir)) !== false)
+    foreach ($scandir as $user)
     {
       if (is_file ($session_dir.$user) && $user != "." && $user != ".." && strpos ($user, ".dat") > 0 && strpos ($user, "hyperdav_") === false)
       {
@@ -4973,12 +4978,12 @@ function getdirectoryfiles ($dir, $pattern="")
 {
   if (is_dir ($dir))
   {
-    $dir_item = @dir ($dir);
+    $scandir = scandir ($dir);
     $item_files = array();
 
-    if ($dir_item != false)
+    if ($scandir)
     {
-      while ($entry = $dir_item->read())
+      foreach ($scandir as $entry)
       {
         if ($entry != "." && $entry != ".." && is_file ($dir.$entry))
         {
@@ -4986,8 +4991,6 @@ function getdirectoryfiles ($dir, $pattern="")
           else $item_files[] = $entry;
         }
       }
-
-      $dir_item->close();
 
       if (sizeof ($item_files) > 0)
       {

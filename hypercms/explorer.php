@@ -294,10 +294,11 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
           
           foreach ($folder_array as $folder)
           {
+            $folderinfo = getfileinfo ($site, $location.$folder, $cat);
+            
             // verify that folder has not been marked as deleted
-            if ($folder != "" && createdownloadlink ($site, $location, $folder, $cat))
+            if ($folder != "" && $folderinfo['deleted'] == false)
             {
-              $folderinfo = getfileinfo ($site, $location.$folder, $cat);
               $foldername = $folderinfo['name'];
               $icon = $folderinfo['icon'];
               
@@ -1343,10 +1344,14 @@ else
       
       if (template != "")
       {
-        hcms_loadPage('contentLayer',null,'search_form_advanced.php?template=' + template + '&css_display=block');
+        hcms_loadPage('contentLayer', null, 'search_form_advanced.php?template=' + template + '&css_display=block');
         return true;
       }
-      else return false;
+      else
+      {
+        hcms_loadPage('contentLayer', null, 'search_form_advanced.php?template=&css_display=block');
+        return true;
+      }
     }
     
     function initMap ()
@@ -1452,6 +1457,7 @@ else
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
         hcms_showInfo('fulltextLayer',0);
         hcms_hideInfo('advancedLayer');
+        hcms_hideInfo('contentLayer');
         hcms_hideInfo('keywordsLayer');
         hcms_hideInfo('imageLayer');
         hcms_hideInfo('filetypeLayer');
@@ -1473,6 +1479,7 @@ else
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
         hcms_hideInfo('fulltextLayer');
         hcms_showInfo('advancedLayer',0);
+        hcms_showInfo('contentLayer',0);
         hcms_hideInfo('keywordsLayer');
         hcms_hideInfo('imageLayer');
         hcms_hideInfo('filetypeLayer');
@@ -1484,6 +1491,7 @@ else
       else
       {
         hcms_hideInfo('advancedLayer');
+        hcms_hideInfo('contentLayer');
       }
     }
     
@@ -1494,6 +1502,7 @@ else
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
         hcms_hideInfo('fulltextLayer');
         hcms_hideInfo('advancedLayer');
+        hcms_hideInfo('contentLayer');
         hcms_hideInfo('imageLayer');
         hcms_hideInfo('filetypeLayer');
         hcms_showInfo('keywordsLayer',0);
@@ -1515,6 +1524,7 @@ else
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
         hcms_hideInfo('fulltextLayer');
         hcms_hideInfo('advancedLayer');
+        hcms_hideInfo('contentLayer');
         hcms_hideInfo('keywordsLayer');
         hcms_showInfo('imageLayer',0);
         hcms_hideInfo('filetypeLayer');
@@ -1571,6 +1581,7 @@ else
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
         hcms_hideInfo('fulltextLayer',0);
         hcms_hideInfo('advancedLayer');
+        hcms_hideInfo('contentLayer');
         hcms_hideInfo('keywordsLayer');
         hcms_hideInfo('imageLayer');
         hcms_hideInfo('filetypeLayer');
@@ -1592,6 +1603,7 @@ else
         document.forms['searchform_advanced'].elements['action'].value = 'recipient';
         hcms_hideInfo('fulltextLayer',0);
         hcms_hideInfo('advancedLayer');
+        hcms_hideInfo('contentLayer');
         hcms_hideInfo('keywordsLayer');
         hcms_hideInfo('imageLayer');
         hcms_hideInfo('filetypeLayer');
@@ -1640,12 +1652,12 @@ else
         }
         
         // delete search_dir
-        if (document.getElementById('search_expression').disabled == false)
+        if (document.getElementById('fulltextLayer').style.display != 'none')
         {
           form.elements['search_dir'].value = "";
         }
         // set search dir
-        else
+        else if (document.getElementById('advancedLayer').style.display != 'none')
         {
           var selectbox = form.elements['template'];
           var template = form.elements['template'].options[selectbox.selectedIndex].value;
@@ -2027,7 +2039,9 @@ else
           </select><br />
 
           <iframe id="contentFRM" name="contentFRM" width="0" height="0" frameborder="0"></iframe> 
-          <div id="contentLayer" class="hcmsObjectSelected" style="border:1px solid #000000; width:245px; height:200px; padding:2px; overflow:auto;"></div><br />
+          <div class="hcmsObjectSelected" style="border:1px solid #000000; width:245px; height:200px; padding:2px; overflow:auto;">
+            <div id="contentLayer"></div>
+          </div><br />
         </div>
         <hr />
         

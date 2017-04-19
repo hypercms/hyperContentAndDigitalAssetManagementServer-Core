@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['no'] = "Gjenkjenne ansikter";
 $hcms_lang['recycle-bin']['no'] = "Papierkurven";
 $hcms_lang['restore']['no'] = "Restaurere";
 $hcms_lang['empty-recycle-bin']['no'] = "Tøm papirkurven";
+$hcms_lang['existing-objects-will-be-replaced']['no'] = "Eksisterende objekter vil bli erstattet!";
 ?>

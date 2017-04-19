@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['bn'] = "মুখভঙ্গি শনাক্ত 
 $hcms_lang['recycle-bin']['bn'] = "কাগজের বিন";
 $hcms_lang['restore']['bn'] = "প্রত্যর্পণ করা";
 $hcms_lang['empty-recycle-bin']['bn'] = "রিসাইকেল বিন খালি";
+$hcms_lang['existing-objects-will-be-replaced']['bn'] = "বর্তমান বস্তু প্রতিস্থাপন করা হবে!";
 ?>

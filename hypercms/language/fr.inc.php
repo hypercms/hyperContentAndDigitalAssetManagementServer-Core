@@ -1394,4 +1394,5 @@ $hcms_lang['detect-faces']['fr'] = "Détecter les visages";
 $hcms_lang['recycle-bin']['fr'] = "Corbeille";
 $hcms_lang['restore']['fr'] = "Restaurer";
 $hcms_lang['empty-recycle-bin']['fr'] = "Vider la Corbeille";
+$hcms_lang['existing-objects-will-be-replaced']['fr'] = "Les objets existants seront remplacés!";
 ?>

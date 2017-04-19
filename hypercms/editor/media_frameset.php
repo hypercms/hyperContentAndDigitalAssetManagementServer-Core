@@ -35,7 +35,6 @@ checkusersession ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script language="JavaScript">
-<!--
 function minNavFrame ()
 {
   if (document.getElementById('navFrame2'))
@@ -57,7 +56,6 @@ function maxNavFrame ()
     document.getElementById('mainLayer').style.left = width + 'px';
   }
 }
--->
 </script>
 </head>
 

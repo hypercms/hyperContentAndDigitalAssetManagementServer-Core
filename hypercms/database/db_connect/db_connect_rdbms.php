@@ -450,7 +450,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
       while ($row = $db->getResultRow ('textnodes'))
       {
         $sql = 'INSERT INTO textnodes (id, text_id, textcontent, object_id, type, user) ';
-        $sql .= 'VALUES ('.$container_id_dest.', "'.$row['text_id'].'", "'.$row['textcontent'].'", "'.$row['object_id'].'", "'.$row['type'].'", "'.$user.'")';
+        $sql .= 'VALUES ('.$container_id_dest.', "'.$db->escape_string($row['text_id']).'", "'.$db->escape_string($row['textcontent']).'", "'.intval($row['object_id']).'", "'.$db->escape_string($row['type']).'", "'.$user.'")';
         
         $errcode = "50102";
         $db->query ($sql, $errcode, $mgmt_config['today']);
@@ -468,7 +468,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
       if ($row = $db->getResultRow ('media'))
       {
         $sql = 'INSERT INTO media (id, filesize, filetype, width, height, red, green, blue, colorkey, imagetype, md5_hash) ';
-        $sql .= 'VALUES ('.$container_id_dest.', "'.$row['filesize'].'", "'.$row['filetype'].'", "'.$row['width'].'", "'.$row['height'].'", "'.$row['red'].'", "'.$row['green'].'", "'.$row['blue'].'", "'.$row['colorkey'].'", "'.$row['imagetype'].'", "'.$row['md5_hash'].'")';
+        $sql .= 'VALUES ('.$container_id_dest.', "'.intval($row['filesize']).'", "'.$db->escape_string($row['filetype']).'", "'.intval($row['width']).'", "'.intval($row['height']).'", "'.intval($row['red']).'", "'.intval($row['green']).'", "'.intval($row['blue']).'", "'.$db->escape_string($row['colorkey']).'", "'.$db->escape_string($row['imagetype']).'", "'.$db->escape_string($row['md5_hash']).'")';
         
         $errcode = "50104";
         $db->query ($sql, $errcode, $mgmt_config['today']);
@@ -486,7 +486,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
       while ($row = $db->getResultRow ('keywords'))
       {
         $sql = 'INSERT INTO keywords_container (id, keyword_id) ';
-        $sql .= 'VALUES ('.$container_id_dest.', "'.$row['keyword_id'].'")';
+        $sql .= 'VALUES ('.$container_id_dest.', "'.intval($row['keyword_id']).'")';
         
         $errcode = "50106";
         $db->query ($sql, $errcode, $mgmt_config['today']);
@@ -504,7 +504,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
       while ($row = $db->getResultRow ('taxonomy'))
       {
         $sql = 'INSERT INTO taxonomy (id, text_id, taxonomy_id, lang) ';
-        $sql .= 'VALUES ('.$container_id_dest.', "'.$row['text_id'].'", "'.$row['taxonomy_id'].'", "'.$row['lang'].'")';
+        $sql .= 'VALUES ('.$container_id_dest.', "'.$db->escape_string($row['text_id']).'", "'.intval($row['taxonomy_id']).'", "'.$db->escape_string($row['lang']).'")';
         
         $errcode = "50108";
         $db->query ($sql, $errcode, $mgmt_config['today']);
@@ -2264,11 +2264,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as cnt FROM object AS obj';
       if (is_array ($sql_table)) $sql .= ' '.implode (" ", $sql_table);
       $sql .= ' WHERE deleteuser="" ';
-    
-      if (isset ($sql_table) && is_array ($sql_where)) 
-      {
-        $sql .= implode (" AND ", $sql_where);
-      }
+      if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' AND '.implode (' AND ', $sql_where);
       
       $errcode = "50081";
       $done = $db->query ($sql, $errcode, $mgmt_config['today']);
@@ -3345,7 +3341,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
 {
   global $mgmt_config;
 
-  if (is_array ($objects) && sizeof ($objects) > 0 && $user != "")
+  if (is_array ($objects) && sizeof ($objects) > 0 && $user != "" && (strtolower ($mark) == "set" || strtolower ($mark) == "unset"))
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
     
@@ -3353,73 +3349,171 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
     
     // get current date
     $date = date ("Y-m-d", time());
+    
+    $mark = strtolower ($mark);
 
     foreach ($objects as $object)
     {
-      if ($object != "")
+      if ($object != "" && valid_locationname (getlocation ($object)) && valid_objectname (getobject ($object)))
       {
         // correct object name 
         if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
         
         // get publication
         $site = getpublication ($object);
+        
+        // get absolute path in file system
+        $object_abs = deconvertpath ($object, "file");
 
-        // for folders
-        if (getobject ($object) == ".folder" || is_dir (deconvertpath ($object, "file")))
+        // ------------------------- for folders -----------------------
+        if (getobject ($object) == ".folder" || is_dir ($object_abs))
         {
-          $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+          // remove .folder file
+          if (getobject ($object) == ".folder") $object = getlocation ($object);
+          
+          // remove slash
+          if (substr ($object, -1) == "/") $object = substr ($object, 0, -1);
 
-          if (getobject ($object) != ".folder")
-          {
-            // add .folder to path
-            if (substr ($object, -1) != "/") $object= $object."/.folder";
-            else $object = $object.".folder";
-          }
+          // get absolute path in file system without the .folder file
+          $object_abs = deconvertpath ($object, "file");
           
           // clean input
-          $objectpath_folder = $db->escape_string ($object);
+          $object_folder = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+          $object_folder = $db->escape_string ($object_folder);
 
-          // for selected folder
-          if (strtolower($mark) == "set")
+          // mark as deleted
+          if ($mark == "set" && substr ($object_abs, -8) != ".recycle")
           {
-            $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'" WHERE objectpath=_utf8"'.$objectpath_folder.'" COLLATE utf8_bin';
-  
+            // new name
+            $new_abs = $object_abs.".recycle";
+            
+            // remove previously deleted objects
+            if (is_dir ($new_abs)) processobjects ("delete", $site, getlocation ($new_abs), getobject ($new_abs), "0", $user);
+
+            if (is_dir ($object_abs) && !is_dir ($new_abs))
+            {
+              // rename folder
+              $rename = rename ($object_abs, $new_abs);
+            
+              if (empty ($rename))
+              {
+                $errcode = "10901";
+                $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|delete mark (rename) failed for folder $object";
+              }
+              // update query
+              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_folder.'.recycle/.folder" WHERE objectpath=_utf8"'.$object_folder.'/.folder" COLLATE utf8_bin';
+            }
+          }
+          // restore
+          elseif ($mark == "unset" && substr ($object_abs, -8) == ".recycle")
+          {
+            // new name
+            $new_abs = substr ($object_abs, 0, -8);
+            
+            // if folder can be restored
+            if (is_dir ($object_abs) && !is_dir ($new_abs))
+            {
+              // rename folder
+              $rename = rename ($object_abs, $new_abs);
+            
+              if (empty ($rename))
+              {
+                $errcode = "10902";
+                $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|restore failed (rename) for folder $object in recycle bin";
+              }
+              // update query
+              else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_folder, 0, -8).'/.folder" WHERE objectpath=_utf8"'.$object_folder.'/.folder" COLLATE utf8_bin';
+            }
+          }
+
+          if (!empty ($sql))
+          {
             $errcode = "50071";
             $done = $db->query($sql, $errcode, $mgmt_config['today']);
-          }
-          
-          // remove .folder from path
-          $object = getlocation ($object);
-          
-          // clean input
-          $objectpath = $db->escape_string ($object);
-          
-          // for all subitems of the selected folder
-          if (strtolower($mark) == "set") $sql = 'UPDATE object SET deleteuser="['.$user.']", deletedate="'.$date.'" WHERE objectpath!=_utf8"'.$objectpath_folder.'" COLLATE utf8_bin AND objectpath LIKE BINARY "'.$objectpath.'%"';
-          elseif (strtolower($mark) == "unset") $sql = 'UPDATE object SET deleteuser="", deletedate="" WHERE objectpath LIKE BINARY "'.$objectpath.'%"';
 
-          $errcode = "50072";
-          $done = $db->query($sql, $errcode, $mgmt_config['today']);
+            // for all subitems of the selected folder
+            if ($mark == "set" && substr ($object_abs, -8) != ".recycle")
+            {
+              $sql = 'UPDATE object SET deleteuser="['.$user.']", deletedate="'.$date.'", objectpath=REPLACE(objectpath, "'.$object_folder.'/", "'.$object_folder.'.recycle/") WHERE objectpath!=_utf8"'.$object_folder.'/" COLLATE utf8_bin AND objectpath LIKE BINARY "'.$object_folder.'/%"';
+            }
+            elseif ($mark == "unset" && substr ($object_abs, -8) == ".recycle")
+            {
+              $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath=REPLACE(objectpath, "'.$object_folder.'/", "'.substr ($object_folder, 0, -8).'/") WHERE objectpath LIKE BINARY "'.$object_folder.'/%"';
+            }
+
+            if (!empty ($sql))
+            {
+              $errcode = "50072";
+              $done = $db->query($sql, $errcode, $mgmt_config['today']);
+            }
+          }
         }
-        // for non folders 
+        // -------------------- for objects ---------------------
         else
         {
-          $object = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
-          
           // clean input
-          $object = $db->escape_string ($object);
+          $object_file = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
+          $object_file = $db->escape_string ($object_file);
           
-          if (strtolower($mark) == "set") $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'" WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
-          elseif (strtolower($mark) == "unset") $sql = 'UPDATE object SET deleteuser="", deletedate="" WHERE objectpath=_utf8"'.$object.'" COLLATE utf8_bin';
+          if ($mark == "set" && substr ($object_abs, -8) != ".recycle")
+          {
+            // new file name
+            $new_abs = $object_abs.".recycle";
+            
+            // remove previously deleted object
+            if (is_file ($new_abs)) deleteobject ($site, getlocation ($new_abs), getobject ($new_abs), $user);
+            
+            if (is_file ($object_abs) && !is_file ($new_abs))
+            {
+              // rename folder file
+              $rename = rename ($object_abs, $new_abs);
+            
+              if (empty ($rename))
+              {
+                $errcode = "10903";
+                $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|delete mark (rename) failed for object $object";
+              }
+              // update query
+              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_file.'.recycle" WHERE objectpath=_utf8"'.$object_file.'" COLLATE utf8_bin';
+            }
+          }
+          elseif ($mark == "unset" && substr ($object_abs, -8) == ".recycle")
+          {
+            // new file name
+            $new_abs = substr ($object_abs, 0, -8);
+            
+            if (is_file ($object_abs) && !is_file ($new_abs))
+            {
+              // rename folder file
+              $rename = rename ($object_abs, $new_abs);
+            
+              if (empty ($rename))
+              {
+                $errcode = "10904";
+                $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|restore failed (rename) for object $object in recycle bin";
+              }
+              // update query
+              else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_file, 0, -8).'" WHERE objectpath=_utf8"'.$object_file.'" COLLATE utf8_bin';
+            }
+          }
 
-          $errcode = "50073";
-          $done = $db->query($sql, $errcode, $mgmt_config['today']);
+          if (!empty ($sql))
+          {
+            $errcode = "50073";
+            $done = $db->query($sql, $errcode, $mgmt_config['today']);
+          }
         }
-      }   
+      }
+      else
+      {
+        $errcode = "30901";
+        $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|$errcode|reference to object $object is not valid";
+      }  
     }
 
     // save log
     savelog ($db->getError ());
+    savelog (@$error);
     $db->close();
       
     return true;

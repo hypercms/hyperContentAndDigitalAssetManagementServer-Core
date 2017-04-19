@@ -1394,4 +1394,5 @@ $hcms_lang['detect-faces']['id'] = "Mendeteksi wajah";
 $hcms_lang['recycle-bin']['id'] = "Sampah";
 $hcms_lang['restore']['id'] = "Mengembalikan";
 $hcms_lang['empty-recycle-bin']['id'] = "Sampah kosong";
+$hcms_lang['existing-objects-will-be-replaced']['id'] = "Benda yang ada akan diganti!";
 ?>

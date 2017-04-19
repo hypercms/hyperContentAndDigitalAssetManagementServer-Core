@@ -36,13 +36,13 @@ function deletefiles ($location, $file)
     // if selected file is a directory
     if (is_dir ($location.$file))
     {
-      $handler = @opendir ($location.$file);
+      $scandir = scandir ($location.$file);
       
-      if ($handler != false)
+      if ($scandir)
       {
         $result = true;
         
-        while ($dirfile = @readdir ($handler))
+        foreach ($scandir as $dirfile)
         {
           if ($dirfile != "." && $dirfile != "..")
           {
@@ -56,8 +56,6 @@ function deletefiles ($location, $file)
             }   
           }
         }
-        
-        @closedir ($handler);
       }
       
       // delete directory itself

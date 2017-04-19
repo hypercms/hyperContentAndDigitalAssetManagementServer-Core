@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['da'] = "Detect ansigter";
 $hcms_lang['recycle-bin']['da'] = "Papir bin";
 $hcms_lang['restore']['da'] = "Gendan";
 $hcms_lang['empty-recycle-bin']['da'] = "Tøm papirkurv";
+$hcms_lang['existing-objects-will-be-replaced']['da'] = "Eksisterende genstande vil blive erstattet!";
 ?>

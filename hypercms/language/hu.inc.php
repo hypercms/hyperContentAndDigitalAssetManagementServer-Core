@@ -1393,4 +1393,5 @@ $hcms_lang['detect-faces']['hu'] = "Felismeri az arcokat";
 $hcms_lang['recycle-bin']['hu'] = "Papírkosár";
 $hcms_lang['restore']['hu'] = "Visszaállítás";
 $hcms_lang['empty-recycle-bin']['hu'] = "Lomtár ürítése";
+$hcms_lang['existing-objects-will-be-replaced']['hu'] = "Meglévő objektumok kell cserélni!";
 ?>

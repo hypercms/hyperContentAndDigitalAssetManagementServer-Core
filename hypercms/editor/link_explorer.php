@@ -147,7 +147,7 @@ function submitLink (url)
               $object = getobject ($entry);
               $object = correctfile ($location, $object, $user);
               
-              if ($object != false)
+              if ($object !== false)
               {
                 if ($object == ".folder")
                 {
@@ -166,12 +166,12 @@ function submitLink (url)
       else
       {
         // get all files in dir
-        $outdir = @dir ($dir);
+        $scandir = scandir ($dir);
         
         // get all outdir entries in folder and file array
-        if ($outdir != false)
+        if ($scandir)
         {
-          while ($entry = $outdir->read())
+          foreach ($scandir as $entry)
           {
             if ($entry != "" && $entry != "." && $entry != ".." && $entry != ".folder" && accessgeneral ($site, $dir.$entry, "page"))
             {
@@ -185,55 +185,45 @@ function submitLink (url)
               }
             }
           }
-          
-          $outdir->close();
         }
       }  
       
       // directory
-      if (isset ($entry_dir) && sizeof ($entry_dir) > 0)
+      if (!empty ($entry_dir) && sizeof ($entry_dir) > 0)
       {
         natcasesort ($entry_dir);
         reset ($entry_dir);
       
         foreach ($entry_dir as $dirname)
-        {
-          // verify that folder has not been marked as deleted
-          if ($dirname != "" && createdownloadlink ($site, getlocation($dirname), getobject($dirname), "page"))
+        { 
+          // folder info
+          $folder_info = getfileinfo ($site, $dirname, "page");
+          $folder_path = getlocation ($dirname);
+          $location_name = getlocationname ($site, $folder_path, "page", "path");   
+      
+          if ($folder_info != false && $folder_info['deleted'] == false)
           {    
-            // folder info
-            $folder_info = getfileinfo ($site, $dirname, "page");
-            $folder_path = getlocation ($dirname);
-            $location_name = getlocationname ($site, $folder_path, "page", "path");   
-        
-            if ($folder_info != false)
-            {    
-              echo "<tr><td align=\"left\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.gif\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp;".showshorttext($folder_info['name'], 44)."</a></td></tr>\n";
-            }
+            echo "<tr><td align=\"left\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.gif\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp;".showshorttext($folder_info['name'], 44)."</a></td></tr>\n";
           }
         }
       }
       
       // file
-      if (isset ($entry_file) && sizeof ($entry_file) > 0)
+      if (!empty ($entry_file) && sizeof ($entry_file) > 0)
       {
         natcasesort ($entry_file);
         reset ($entry_file);
       
         foreach ($entry_file as $file)
         {
-          // verify that page has not been marked as deleted
-          if ($file != "" && createdownloadlink ($site, getlocation($file), getobject($file), "page"))
+          // object info
+          $file_info = getfileinfo ($site, $file, "page");      
+          $file_url = str_replace ("%page%/".$site."/", $mgmt_config[$site]['url_path_page'], $file);
+          $file_name = getlocationname ($site, $file, "page", "path");
+  
+          if ($file_info != false && $file_info['published'] == true && $file_info['deleted'] == false)
           {
-            // object info
-            $file_info = getfileinfo ($site, $file, "page");      
-            $file_url = str_replace ("%page%/".$site."/", $mgmt_config[$site]['url_path_page'], $file);
-            $file_name = getlocationname ($site, $file, "page", "path");
-    
-            if ($file_info != false && $file_info['published'] == true)
-            {
-              echo "<tr><td align=\"left\"><a href=\"javascript:submitLink('".$file_url."');\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp;".showshorttext($file_info['name'], 44)."</a></td></tr>\n";
-            }
+            echo "<tr><td align=\"left\"><a href=\"javascript:submitLink('".$file_url."');\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp;".showshorttext($file_info['name'], 44)."</a></td></tr>\n";
           }
         }
       }

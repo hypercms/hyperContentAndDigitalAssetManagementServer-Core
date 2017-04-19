@@ -855,7 +855,7 @@ function getlinkedobject ($site, $location, $page, $cat)
     foreach ($site_array as $site)
     {
       // load configuration of publication
-      if (!isset ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+      if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
   
       // load link management database
       $link_db = link_db_read ($site);

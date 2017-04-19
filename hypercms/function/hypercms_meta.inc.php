@@ -25,11 +25,11 @@ function createtaxonomy ($recreate=false)
   $dir = $mgmt_config['abs_path_data']."include/";
 
   $file_array = array();
-  $handler = opendir ($dir);
+  $scandir = scandir ($dir);
   
-  if ($handler != false)
+  if ($scandir)
   {
-    while ($file = readdir ($handler))
+    foreach ($scandir as $file)
     {
       // only taxonomy defintion files
       if ($file != "." && $file != ".." && is_file ($dir.$file) && strpos ($file, ".taxonomy.dat") > 0)
@@ -46,8 +46,6 @@ function createtaxonomy ($recreate=false)
         $file_array[$site][$lang] = $dir.$file;
       }
     }
-    
-    closedir ($handler);
   }
 
 	// create taxonomy
