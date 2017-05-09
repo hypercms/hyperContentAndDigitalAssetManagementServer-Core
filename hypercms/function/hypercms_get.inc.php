@@ -1778,6 +1778,7 @@ function getcontainername ($container)
   global $mgmt_config;
   
   $result = array();
+  $result['result'] = false;
   
   if (valid_objectname ($container))
   {
@@ -1800,6 +1801,7 @@ function getcontainername ($container)
     }
     else $containerwrk = $container.".wrk";
     
+    // get container location
     $location = getcontentlocation ($container_id, 'abs_path_content');
 
     // container exists and is not locked
@@ -1821,7 +1823,7 @@ function getcontainername ($container)
       return $result;
     }
     // container is locked or does not exist
-    else
+    elseif (is_dir ($location))
     {
       $scandir = scandir ($location);
 
@@ -1838,27 +1840,14 @@ function getcontainername ($container)
             $result['result'] = true;
             $result['container'] = $containerwrk;
             $result['user'] = $user;
-
-            // return result 
             return $result;
           }   
         }
- 
-        $result['result'] = false;
       }
-      else 
-      {
-        $result['result'] = false;    
-      }
-      
-      return $result;
     }
   }
-  else
-  {
-    $result['result'] = false;
-    return $result;
-  }
+  
+  return $result;
 }
 
 // ------------------------------------- getlocationname ------------------------------------------

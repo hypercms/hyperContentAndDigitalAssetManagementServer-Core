@@ -132,9 +132,9 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))
       // escape special characters
       $description = html_encode (specialchr_decode ($description));
       
-      if (strlen ($description) > 50) 
+      if (strlen ($description) > 150) 
       {
-        $description_short = substr ($description, 0, 50)."...";
+        $description_short = substr ($description, 0, 150)."...";
       }
       else $description_short = $description;
       

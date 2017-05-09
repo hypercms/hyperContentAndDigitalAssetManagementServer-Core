@@ -2025,15 +2025,15 @@ Release 02/2017
 Version 6.2.0
 Release 02/2017
 - Implementation of support for individual/external user ID in wrapper and download links in order to write the user ID of the request into the daily statistics
-- Implementation of get tagging hyperCMS tag in order to enable the display and manual defintion of an objects geo location
+- Implementation of a new hyperCMS tag for the geolocation in order to enable the display and manual definition of an objects geo location
 - Modifications in template editor in order to support new geolocation tag
 - Modifications in template engine in order to support new geolocation tag and display map with marker
-- Modifications in sacecontent service to support the geolocation
+- Modifications in savecontent service to support the geolocation
 - Improvements in methode getResultRow in DB Connect
 - Improvements in function rdbms_externalquery in DB Connect
 - Improvements in function checkpassword in Security API
 - Corrected window size when creating new users in function creatuser in Main API
-- Modifications in function creatmedia for improved JPEG backround support in Media API
+- Modifications in function createmedia for improved JPEG backround support in Media API
 
 Version 6.2.1
 Release 03/2017
@@ -2066,10 +2066,9 @@ Release 03/2017
 
 Version 6.2.3
 Release 03/2017
-- Bug fix: The action name has not been initalized in explorer leading to a wrong search action
 - Implementation of new JS functions for the activation of the different search tabs and features in explorer
 - Removed second action attribute in search form for recipient search in explorer
-- Implementation of save serach deactivation after each saved search
+- Implementation of save search deactivation after each saved search
 - Modification of open search tabs after initalization of explorer
 - New configuration of search tab button actions in explorer
 - Implementation of open and close action for plus/minus buttuns of search tabs in explorer
@@ -2079,6 +2078,7 @@ Release 03/2017
 - Implementation of a processing message for each file upload in popup_upload_html
 - Modification of CSS for file upload bar
 - Modification of viewport scale in popup_upload_html
+- Bug fix: The action name has not been initalized in explorer leading to a wrong search action
 - Bug fix: ImageMagick failed to convert PSD files since it requires the layer [0] after the source file name
 
 Version 6.2.4
@@ -2163,6 +2163,8 @@ Release 04/2017
 - Modification of function specialchr_encode in main API to avoid double encoding of names
 - Modification of function getfileinfo in get API to support new deleted result parameter
 - Modifications in explorer, folder_explorer, link_edit_explorer, and rich text editor to support the new return paramater for deleted objects from function getfileinfo
+- Modification of function getcontainername in get API in order to verify container location
+- Modifications in log_list in order to display longer descriptions
 - Update of all language files
 - Bug fix: Function rdbms_copycontent in DB Connect did not escape all values for the queries
 - Bug fix: Function createdownloadlink and createwrapperlink in main API did not specify the correct input variables for the error logging
