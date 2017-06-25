@@ -74,12 +74,12 @@ $location_name = getlocationname ($site, $dir_esc, "page", "path");
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css">
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css">
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <!-- Jquery and Jquery UI Autocomplete -->
 <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
-<script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
+<script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
 <script>
 function sendInput(text, value)
 {

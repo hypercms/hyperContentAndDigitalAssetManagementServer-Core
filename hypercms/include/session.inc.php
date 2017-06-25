@@ -35,6 +35,7 @@ $downloadformats = getsession ("hcms_downloadformats");
 // mobile browser
 $is_mobile = getsession ("hcms_mobile");
 $is_iphone = getsession ("hcms_iphone");
+$viewportwidth = getsession ("hcms_temp_viewportwidth");
 // HTML5 file support
 $html5file = getsession ("hcms_html5file");
 // mail linking parameter (array)

@@ -267,7 +267,7 @@ if (!empty ($container_id))
         {
           if (substr_count ($ip, ".") == 3)
           {
-            $user_array[] = "<div style=\"cursor:pointer; color:green; float:left;\" onclick=\"geolocation=window.open('page_info_ip.php?ip=".trim($ip)."', 'ip_locator', 'scrollbars=yes,resizable=yes,width=800,height=600'); geolocation.focus();\">".$ip."</div>";
+            $user_array[] = "<div style=\"cursor:pointer; color:green; float:left;\" onclick=\"parent.opengeoview('".trim($ip)."');\">".$ip."</div>";
           }
           elseif ($ip != "") $user_array[] = trim($ip);
         }

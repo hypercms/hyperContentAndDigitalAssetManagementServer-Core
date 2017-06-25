@@ -240,8 +240,8 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" type="text/css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/jquery/jquery-1.10.2.min.js"></script>
-<script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js"></script>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css" />
+<script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />
 <?php 
 if ($is_audio) echo showaudioplayer_head (false);
 else echo showvideoplayer_head (false); 

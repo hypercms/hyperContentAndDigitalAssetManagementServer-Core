@@ -35,8 +35,8 @@ if ($ip != "")
 <html>
 <head>
 <title>hyperCMS</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta charset="<?php echo getcodepage ($lang); ?>" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -56,15 +56,15 @@ echo showtopbar ($hcms_lang['geo-location-of'][$lang]." ".$ip, $lang);
   if (!empty ($data) && is_array ($data)) 
   {
   ?>
-  <iframe width="760" height="400" frameborder="no" scrolling="no" style="margin:10px; border:0;" 
+  <iframe width="620" height="400" frameborder="no" scrolling="no" style="margin:10px; border:0;" 
     src="https://maps.google.de/maps?ll=<?php echo @$data['lat']; ?>,<?php echo @$data['lon']; ?>&amp;ie=UTF8&amp;om=1&amp;iwloc=near
     &amp;z=13&amp;iwloc=addr&amp;output=embed">
   </iframe>
   
   <div style="margin:10px;">
   <?php
-    echo "<table border=\"0\" celspacing=\"2\" cellpadding=\"1\">\n";
-    echo "  <tr class=\"hcmsRowData1\"><td width=\"180\">Country </td><td width=\"300\">".@$data['country']." </td></tr>\n";
+    echo "<table border=\"0\" celspacing=\"2\" cellpadding=\"1\" width=\"620\">\n";
+    echo "  <tr class=\"hcmsRowData1\"><td width=\"180\">Country </td><td>".@$data['country']." </td></tr>\n";
     echo "  <tr class=\"hcmsRowData2\"><td>Region </td><td>".@$data['regionName']." </td></tr>\n";
     echo "  <tr class=\"hcmsRowData1\"><td>City </td><td>".@$data['city']." </td></tr>\n";
     echo "  <tr class=\"hcmsRowData2\"><td>ZIP code </td><td>".@$data['zip']." </td></tr>\n";

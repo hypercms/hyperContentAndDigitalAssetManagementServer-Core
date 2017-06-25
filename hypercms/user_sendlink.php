@@ -1058,11 +1058,11 @@ $token_new = createtoken ($user);
     <meta charset="<?php echo getcodepage ($lang); ?>" />
     <meta name="viewport" content="width=580, initial-scale=0.9, maximum-scale=1.0, user-scalable=1" />
     <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-    <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css">
+    <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css">
     <script src="javascript/main.js" type="text/javascript"></script>
     <!-- Jquery and Jquery UI Autocomplete -->
     <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
-    <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
+    <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
         
     <link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css">
     <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>

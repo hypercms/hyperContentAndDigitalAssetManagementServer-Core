@@ -637,8 +637,8 @@ elseif ($is_video || $is_audio)
   
   <script src="<?php echo $mgmt_config['url_path_cms']; ?>javascript/jquery/jquery-1.10.2.min.js"></script>
   <script src="javascript/jquery/plugins/jquery.color.js"></script>
-  <script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js"></script>
-  <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css" />
+  <script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
+  <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />
   
   <!-- Tag it script -->
   <script src="javascript/tag-it/tag-it.min.js" type="text/javascript" charset="utf-8"></script>

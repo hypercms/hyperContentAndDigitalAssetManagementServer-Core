@@ -16,7 +16,7 @@ require ("../function/hypercms_api.inc.php");
 
 
 // input parameters
-if ($user == "") $user = getrequest ("user", "objectname");
+$viewportwidth = getrequest ("viewportwidth", "numeric");
 
 // ------------------------------ permission section --------------------------------
 
@@ -25,8 +25,5 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-$data = getserverload ();
-
-header ('Content-Type: application/json; charset=utf-8');
-print json_encode ($data);
+$_SESSION['hcms_temp_viewportwidth'] = $viewportwidth;
 ?>

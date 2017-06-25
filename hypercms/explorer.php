@@ -1198,13 +1198,13 @@ else
   <head>
     <title>hyperCMS</title>
     <meta charset="<?php echo getcodepage ($lang); ?>" />
-    <meta name="viewport" content="width=260, initial-scale=1.0, user-scalable=0" />
+    <meta name="viewport" content="width=260, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     
-    <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" />
+    <link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" />
     <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
     
     <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
-    <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.10.2.min.js"></script>  
+    <script type="text/javascript" src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>  
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.cookie.js"></script>
     <script type="text/javascript" src="javascript/jquery/plugins/jquery.hotkeys.js"></script>
     <script type="text/javascript" src="javascript/jstree/jquery.jstree.js"></script>

@@ -642,6 +642,7 @@ if ($auto)
   }
   
   // request from autosave
+  header ('Content-Type: application/json; charset=utf-8');
 	echo json_encode (array('message' => implode(", ", $message)));  
 }
 else

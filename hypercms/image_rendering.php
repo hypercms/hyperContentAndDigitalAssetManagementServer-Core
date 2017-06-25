@@ -227,9 +227,9 @@ $token_new = createtoken ($user);
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script src="javascript/jquery/plugins/jquery.color.js"></script>
-<script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js"></script>
+<script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js"></script>
 <script src="javascript/jcrop/jquery.Jcrop.min.js"></script>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css" />
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css" />
 <link rel="stylesheet" href="javascript/jcrop/jquery.Jcrop.css" type="text/css" />
 
 <style>
@@ -271,7 +271,6 @@ $token_new = createtoken ($user);
 </style>
 
 <script>
-<!--
 var jcrop;
 var crop_active = false;
 var thumbWidth = <?php echo $thumb_size[0] ?>;
@@ -916,6 +915,15 @@ function toggle_paint ()
   }
 }
 
+function openimageview (link)
+{
+  if (link != "" && parent.document.getElementById('objectview'))
+  {
+    parent.openimageview(link);
+  }
+  else return false;
+}
+
 function showPreview ()
 {  
   if (!checkform()) return false;
@@ -1059,18 +1067,19 @@ function showPreview ()
   link += '&thumbwidth='+thumbWidth;
   link += '&thumbheight='+thumbHeight;
   
-   $.ajax({
+  $.ajax({
     url: link,
     dataType: 'json'
-   })
-   .success(function(data) {
+  })
+  .success(function(data) {
      hcms_showHideLayers('savelayer','','hide');
      if(data.success) {
-       hcms_openWindow(data.imagelink, 'preview', '', data.imagewidth, data.imageheight);
+       // deprecated since version 6.2.7: hcms_openWindow(data.imagelink, 'preview', '', data.imagewidth, data.imageheight);
+       openimageview (data.imagelink);
      } else {
        alert(data.message);
      }
-   });
+  });
 }
 
 function activate ()
@@ -1129,7 +1138,6 @@ $(window).load( function()
 });
 
 <?php echo $add_onload; ?>
--->
 </script>
 </head>
 

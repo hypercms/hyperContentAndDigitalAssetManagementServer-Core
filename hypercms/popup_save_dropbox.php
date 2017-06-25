@@ -118,8 +118,8 @@ $object_name = getlocationname ($site, $location, $cat, "path");
 <!-- JQuery -->
 <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
 <!-- JQuery UI -->
-<script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css">
+<script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css">
 <!-- Dropbox dropin.js -->
 <script type="text/javascript" src="https://www.dropbox.com/static/api/1/dropins.js" id="dropboxjs" data-app-key="<?php echo $mgmt_config['dropbox_appkey']; ?>"></script>
 <script type="text/javascript">
@@ -131,6 +131,7 @@ window.open = function(url,name,params){
 		childwindows.push(windowRef);
 		return windowRef;
 }
+
 $(function() {
  <?php
 	if(!empty($saveObjects))

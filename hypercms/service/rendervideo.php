@@ -475,6 +475,7 @@ if ($savetype == "auto" || $savetype == "")
   $output['success'] = $success;
   $output['message'] = $show;
   
+  header ('Content-Type: application/json; charset=utf-8');
   echo json_encode ($output);
 }
 // refresh after save and open

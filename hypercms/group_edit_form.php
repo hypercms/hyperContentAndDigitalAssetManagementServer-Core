@@ -575,7 +575,7 @@ elseif ($preview == "yes")
       <td align="center"><input type="checkbox" name="permission[compupload]" value="1" <?php if ($compupload==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr>
-      <td><?php echo getescapedtext ($hcms_lang['downloadview-file'][$lang]); ?></td>
+      <td><?php echo getescapedtext ($hcms_lang['download-file'][$lang]); ?></td>
       <td align="center"><input type="checkbox" name="permission[compdownload]" value="1" <?php if ($compdownload==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr> 
     <tr class="hcmsRowData1"> 

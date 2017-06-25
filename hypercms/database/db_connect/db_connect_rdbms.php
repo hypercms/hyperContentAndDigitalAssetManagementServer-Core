@@ -3357,7 +3357,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
       if ($object != "" && valid_locationname (getlocation ($object)) && valid_objectname (getobject ($object)))
       {
         // correct object name 
-        if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
+        if (strtolower (strrchr ($object, ".")) == ".off") $object = substr ($object, 0, -4);
         
         // get publication
         $site = getpublication ($object);
@@ -3454,6 +3454,9 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
           // clean input
           $object_file = str_replace (array("%page%", "%comp%"), array("*page*", "*comp*"), $object);
           $object_file = $db->escape_string ($object_file);
+ 
+          // correct file name
+          $object_corr = getlocation ($object_abs).correctfile (getlocation ($object_abs), getobject ($object_abs), $user);
           
           if ($mark == "set" && substr ($object_abs, -8) != ".recycle")
           {
@@ -3463,10 +3466,10 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
             // remove previously deleted object
             if (is_file ($new_abs)) deleteobject ($site, getlocation ($new_abs), getobject ($new_abs), $user);
             
-            if (is_file ($object_abs) && !is_file ($new_abs))
+            if (is_file ($object_corr) && !is_file ($new_abs))
             {
               // rename folder file
-              $rename = rename ($object_abs, $new_abs);
+              $rename = rename ($object_corr, $new_abs);
             
               if (empty ($rename))
               {
@@ -3481,11 +3484,11 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
           {
             // new file name
             $new_abs = substr ($object_abs, 0, -8);
-            
-            if (is_file ($object_abs) && !is_file ($new_abs))
+
+            if (is_file ($object_corr) && !is_file ($new_abs))
             {
               // rename folder file
-              $rename = rename ($object_abs, $new_abs);
+              $rename = rename ($object_corr, $new_abs);
             
               if (empty ($rename))
               {

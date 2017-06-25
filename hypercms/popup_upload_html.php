@@ -100,8 +100,8 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
 
 <!-- JQuery UI -->
-<script src="javascript/jquery-ui/jquery-ui-1.10.2.min.js" type="text/javascript"></script>
-<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.10.2.css" type="text/css">
+<script src="javascript/jquery-ui/jquery-ui-1.12.1.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="javascript/jquery-ui/jquery-ui-1.12.1.css" type="text/css">
 
 <!-- JQuery File Upload -->
 <script src="javascript/jquery/plugins/jquery.fileupload.js" type="text/javascript"></script>

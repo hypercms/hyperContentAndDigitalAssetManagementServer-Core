@@ -47,6 +47,7 @@ if (valid_locationname ($location) && valid_publicationname ($site) && ($cat == 
 
   if (!empty ($data['downloadlink'])) $data['success'] = true;
 }
-  
+
+header ('Content-Type: application/json; charset=utf-8');
 print json_encode ($data);
 ?>

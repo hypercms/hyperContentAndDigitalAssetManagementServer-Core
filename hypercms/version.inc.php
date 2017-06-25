@@ -2111,7 +2111,7 @@ Release 04/2017
 - Modification of function manipulateallobjects to support new actions "deletemark" and "deleteunmark" in order to mark and unmark objects as deleted
 - Modification of function processobjects to support new actions "deletemark" and "deleteunmark" in order to mark and unmark objects as deleted
 - Implementation of new function deletemarkobject and deleteunmarkobject in main API in order to mark and unmark objects as deleted
-- Modificatiion of globals in various function of main API
+- Modification of globals in various function of main API
 - Modification of function cutobject, copyobject, and copyconnectedobject to support saving clipboard entries in session or only as return value
 - Removed global variable temp_clipboard from all functions in hyperCMS API
 - Implementation of new restore action into JS function hcms_createContextmenuItem in contextmenu.js
@@ -2138,7 +2138,7 @@ Release 04/2017
 - Bug fix: Paste of text in the search form has not been working since the JS function hcms_clearSelection has been used in the Navigator for left click events
 
 Version 6.2.6
-Release 04/2017
+Release 05/2017
 - Implementation of IP logging in function allowuserip in security API
 - Implementation of download links on demand due to SQL query performance issues with large amounts of objects in one folder
 - Implementation of new function hcms_getlink in contextmenu.js
@@ -2150,7 +2150,7 @@ Release 04/2017
 - Implementation of CSS class hcmsLoadScreen in navigator.css
 - Modification of function rdbms_setdeletedobjects in DB Connect to rename all objects using .recycle as file extension
 - Modification of function publishobject and unpublishobject in main API to block the publishing of recycled objects
-- Implementation of new main configuration setting for search operator in main configuration fil
+- Implementation of new main configuration setting for search operator in main configuration file
 - Modification of function unzipfiles in media API to extract content directly without acreating a folder with the ZIP file name
 - Modification of function createmediaobjects in main API to support overwriting of existing objects
 - Modification of function valid_publicationnaem, valid_locationname, and valid_objectname to return true instead of the value
@@ -2162,7 +2162,7 @@ Release 04/2017
 - Modification of function unzipfiles in media API in order to replace existing objects
 - Modification of function specialchr_encode in main API to avoid double encoding of names
 - Modification of function getfileinfo in get API to support new deleted result parameter
-- Modifications in explorer, folder_explorer, link_edit_explorer, and rich text editor to support the new return paramater for deleted objects from function getfileinfo
+- Modifications in explorer, folder_explorer, link_edit_explorer, and rich text editor to support the new return parameter for deleted objects from function getfileinfo
 - Modification of function getcontainername in get API in order to verify container location
 - Modifications in log_list in order to display longer descriptions
 - Update of all language files
@@ -2170,12 +2170,34 @@ Release 04/2017
 - Bug fix: Function createdownloadlink and createwrapperlink in main API did not specify the correct input variables for the error logging
 - Bug fix: Function rdbms_searchcontent in DB Connect did add the where clauses without leading AND for the count query
 - Bug fix: Function showobject in UI API did not display folders correctly (colspan was missing)
-- Bug fix: Lables of filters refered to undefined tags in control_objectlist_menu
+- Bug fix: Labels of filters refered to undefined tags in control_objectlist_menu
 - Bug fix: Function createmedia did not process files smaller than 10 bytes
-- Bug fix: Function showcompexplorer in UI API did not display subfolder contect in DAM mode
+- Bug fix: Function showcompexplorer in UI API did not display subfolder content in DAM mode
 - Bug fix: The navigator did not clean the advanced search form if no template has been selected
+
+Version 6.2.7
+Release 06/2017
+- Implementation of HTTP header for all services which return a JSON object
+- Modification of function readnavigation and createnavigation in UI API
+- Modification of function showmedia in UI API in order to enable detailed preview if user has create or download permissions
+- Modification of text variable in group_edit_form from index downloadview-file to download-file
+- Modification of JS function hcms_openWindow in main.js in order to support empty feature input value and set default window size
+- Implementation and update to JQuery UI version 1.12.1
+- Implementation of new div layer instead of new popup window for mage editing preview
+- Implementation of JQuery zoomcrop for preview of edited images
+- Implementation of new div layer instead of new popup window for geolocation statistics of media objects
+- Design modification of geolocation viewer
+- Implementation of new JS function hcms_getViewportWidth and hcms_setViewportScale to set inital scale factor for mobile devices
+- Implementation of dynamic initial viewport scaling based on screen width
+- Implementation of iPhone document support in function showmedia in UI API
+- Implementation of new service setviewport
+- Implementation of new JS function in frameset_content to post viewport width to service setviewport
+- Implementation of viewport width support in template engine in order to render forms and media based on the viewport width
+- Implementation of new session variable hcms_temp_viewportwidth to store the width of the viewport
+- Bug fix: Variable $pageview_parameter has not been initalized in template engine
+- Bug fix: Function rdbms_setdeletedobjects did not correct the file name
 */
 
 // current version
-$mgmt_config['version'] = "Version 6.2.6";
+$mgmt_config['version'] = "Version 6.2.7";
 ?>

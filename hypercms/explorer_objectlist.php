@@ -766,7 +766,7 @@ else $objects_counted = 0;
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/contextmenu.js"></script>

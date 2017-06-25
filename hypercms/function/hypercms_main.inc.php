@@ -16349,6 +16349,7 @@ function rewrite_targetURI ($site, $text_id, $uri, $exclude_dir_esc="", $rewrite
       // include page file
       if ($rewrite_type == "include" && is_file ($targetFile))
       {
+        chdir (getlocation ($targetFile));
         include ($targetFile);
       }
       // URL forwarding

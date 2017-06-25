@@ -582,7 +582,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 {
   // $mgmt_imageoptions is used for image rendering (in case the format requires the rename of the object file extension)	 
   global $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docpreview, $mgmt_docconvert, $hcms_charset, $hcms_lang_codepage, $hcms_lang, $lang,
-         $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions, $is_mobile;
+         $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions, $is_mobile, $is_iphone;
 
   // Path to PDF.JS and Google Docs
   $pdfjs_path = $mgmt_config['url_path_cms']."javascript/pdfpreview/web/viewer.html?file=";
@@ -749,7 +749,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     $style = "";
 
     // only show details if user has permissions to edit the file or for template media files
-    if ($viewtype == "template" || ($setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1))
+    if ($viewtype == "template" || ($setlocalpermission['root'] == 1 && ($setlocalpermission['create'] == 1 || $setlocalpermission['download'] == 1)))
     {
       // --------------------------------------- if version ----------------------------------------
       if ($is_version && $viewtype != "template")
@@ -2343,7 +2343,7 @@ function showcompexplorer ($site, $dir, $location_esc="", $page="", $compcat="mu
     // javascript code
     $result = "<!-- Jquery and Jquery UI Autocomplete -->
 <script src=\"javascript/jquery/jquery-1.10.2.min.js\" type=\"text/javascript\"></script>
-<script src=\"javascript/jquery-ui/jquery-ui-1.10.2.min.js\" type=\"text/javascript\"></script>
+<script src=\"javascript/jquery-ui/jquery-ui-1.12.1.min.js\" type=\"text/javascript\"></script>
 <script type=\"text/javascript\">
 function sendCompOption(newtext, newvalue)
 {
@@ -4262,7 +4262,7 @@ function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
           {
             $textnode = selectcontent ($xmldata, "<text>", "<text_id>", $navi_config['permalink_text_id'][$key]);
 
-            if ($textnode != false)
+            if (!empty ($textnode[0]))
             {
               $permalink = getcontent ($textnode[0], "<textcontent>");
 
@@ -4369,7 +4369,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
     
               $navitem[$navi['order'].'.'.$i]['item'] = $add_css."|".$navi['link']."|".$navi['title'];
               $navitem[$navi['order'].'.'.$i]['sub'] = "";
-    
+
               $i++;
             }
           }
@@ -4378,13 +4378,18 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
           {
             $navi = readnavigation ($site, $docroot, $object, $view, "sys");
     
-            if (is_array ($navi) && $navi['hide'] == false)
+            if (is_array ($navi) && empty ($navi['hide']))
             {
-              if ($navi['order'] == "X") $navi['order'] = $i;
-    
-              // create main item for sub navigation
-              $navitem[$navi['order'].'.'.$i]['item'] = $navi_config['attr_li_dropdown']."|#|".$navi['title'];
-              $navitem[$navi['order'].'.'.$i]['sub'] = "";
+              // use folder object data
+              if (empty ($navi_config['use_1st_folderitem']))
+              {
+                // "X" means undefined sort order
+                if ($navi['order'] == "X") $navi['order'] = $i;
+                
+                // create main item for sub navigation
+                $navitem[$navi['order'].'.'.$i]['item'] = $navi_config['attr_li_dropdown']."|#|".$navi['title'];
+                $navitem[$navi['order'].'.'.$i]['sub'] = "";
+              }
     
               // create sub navigation
               $subnav = createnavigation ($site, $docroot.$object."/", $urlroot.$object."/", $view, $currentobject);
@@ -4397,8 +4402,13 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
     
                 foreach ($subnav as $key => $value)
                 {
+                  // use page object data
                   if (!empty ($navi_config['use_1st_folderitem']) && $j == 1)
                   {
+                    // "X" means undefined sort order
+                    if ($navi['order'] == "X") $navi['order'] = $key;
+                    
+                    // create main item for sub navigation
                     $navitem[$navi['order'].'.'.$i]['item'] = $value['item'];
                     $navitem[$navi['order'].'.'.$i]['sub'] = "";
                   }
@@ -4417,7 +4427,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
         }
       }
     }
-    
+
     if (isset ($navitem) && is_array ($navitem)) return $navitem;
     else return false;
   }
@@ -4464,7 +4474,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
 // $navi_config['hide_text_id'] = "NavigationHide";
 // $navi_config['sort_text_id'] = "NavigationSortOrder";
 // 
-// Use the first item in a folder for the main navigation item and display all following as sub navigation items [true,false]
+// Use the first object of a folder for the main navigation item and display all following objects as sub navigation items [true,false]
 // $navi_config['use_1st_folderitem'] = false;
 
 function shownavigation ($navigation, $level=1)
@@ -4478,7 +4488,7 @@ function shownavigation ($navigation, $level=1)
   
     ksort ($navigation, SORT_NUMERIC);
     reset ($navigation);
-  
+
     list ($tag_ul_start, $tag_ul_end) = explode ("%list%", $navi_config['tag_ul']);
     
     if ($level == 1) $out .= str_repeat ("  ", $level) . str_replace ("%attr_ul%", $navi_config['attr_ul_top'], $tag_ul_start."\n");
@@ -4504,7 +4514,7 @@ function shownavigation ($navigation, $level=1)
     }
   
     $out .= $tag_ul_end;
-  
+
     return $out;
   }
   else return false;

@@ -313,6 +313,34 @@ function hcms_html5file ()
   else return false;
 }
 
+function hcms_getViewportWidth ()
+{
+  var ratio = window.devicePixelRatio || 1;
+  var screenwidth = screen.width;
+
+  // return logical screen width
+  if (screenwidth > 0) return screenwidth;
+  else return false;
+}
+
+function hcms_setViewportScale ()
+{
+  var screenwidth = hcms_getViewportWidth ();
+
+  if (screenwidth <= 480)
+  { 
+    document.querySelector("meta[name=viewport]").setAttribute('content', 'width=device-width, initial-scale=0.72, maximum-scale=1.0, user-scalable=1');
+  }
+  else if (screenwidth < 1024)
+  { 
+    document.querySelector("meta[name=viewport]").setAttribute('content', 'width=device-width, initial-scale=0.86, maximum-scale=1.0, user-scalable=1');
+  }
+  else if (screenwidth >= 1024)
+  { 
+    document.querySelector("meta[name=viewport]").setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
+  }
+}
+
 function hcms_geolocation ()
 {
   if (navigator.geolocation)
@@ -380,7 +408,11 @@ function hcms_resizeFrameWidth (leftframe, leftwidth, rightframe, rightwidth, un
 
 function hcms_openWindow (theURL, winName, features, width, height)
 {
-  popup = window.open(theURL,winName,features + ',width=' + width + ',height=' + height);    
+  if (width < 1) width = 640;
+  if (height < 1) height = 480;
+  if (features == '') features = "location=0,menubar=0";
+
+  var popup = window.open(theURL, winName, features + ',width=' + width + ',height=' + height);    
   popup.moveTo(screen.width/2-width/2, screen.height/2-height/2);
   popup.focus();
 }

@@ -462,7 +462,8 @@ else
 
 // return json encoded data for AJAX call
 if ($savetype == "auto" || $savetype == "")
-{ 
+{
+  header ('Content-Type: application/json; charset=utf-8');
   echo json_encode ($output);
 }
 // refresh after save and open
