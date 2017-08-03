@@ -4277,7 +4277,7 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
         else 
         {
           $workflow_name = getattribute ($hypertag, "name"); 
-          $viewstore = str_replace ($hypertag, "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>workflow: </b>".$workflow_name."</font>\n    </td>\n  </tr>\n</table>\n", $viewstore);
+          $viewstore = str_replace ($hypertag, "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">\n  <tr>\n    <td>\n      <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>workflow </b>".$workflow_name."</font>\n    </td>\n  </tr>\n</table>\n", $viewstore);
         }      
       }  
     } 

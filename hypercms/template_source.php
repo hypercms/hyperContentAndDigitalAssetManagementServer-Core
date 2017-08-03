@@ -99,10 +99,10 @@ else $charset = trim ($mgmt_config[$site]['default_codepage']);
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
   <table>
-    <tr><td class="hcmsHeadline"><?php echo $pagecomp; ?>:</td><td><input name="extension" type="text" value="<?php echo $templatename; ?>" style="width:220px;" disabled="disabled" /></td></tr>
+    <tr><td class="hcmsHeadline"><?php echo $pagecomp; ?> </td><td><input name="extension" type="text" value="<?php echo $templatename; ?>" style="width:220px;" disabled="disabled" /></td></tr>
     <?php if ($cat == "page" || $cat == "comp") { ?>
-    <tr><td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['file-extension-without-dot'][$lang]); ?>:</td><td><input name="extension" type="text" value="<?php echo $extension; ?>" style="width:50" disabled="disabled" /></td></tr>
-    <tr><td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['application'][$lang]); ?>:</td><td>
+    <tr><td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['file-extension-without-dot'][$lang]); ?> </td><td><input name="extension" type="text" value="<?php echo $extension; ?>" style="width:50" disabled="disabled" /></td></tr>
+    <tr><td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['application'][$lang]); ?> </td><td>
     <select name="application" disabled>
       <option value="asp"<?php if ($application == "asp") echo "selected=\"selected\""; ?>>Active Server Pages (ASP)</option>
       <option value="xml"<?php if ($application == "xml") echo "selected=\"selected\""; ?>>Extensible Markup Language (XML) or Text</option>

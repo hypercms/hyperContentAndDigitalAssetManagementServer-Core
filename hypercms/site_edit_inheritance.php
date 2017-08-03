@@ -254,7 +254,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   @include_once ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
 ?>
 
-<p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['inheritance-setting-of-publication'][$lang]); ?>: <?php echo $site_name; ?></p>
+<p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['inheritance-setting-of-publication'][$lang]); ?> <?php echo $site_name; ?></p>
 
 <form name="siteform" action="<?php echo $action; ?>" method="post">
   <input type="hidden" name="save" value="yes" />
@@ -329,20 +329,20 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     </tr>
     <?php if (isset ($mgmt_config['not-supported'])) { ?>
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['cut-copy-and-paste-objects'][$lang]); ?>: </td>
+      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['cut-copy-and-paste-objects'][$lang]); ?> </td>
       <td width="80%" align="left" valign="top"><input type="checkbox" name="inherit_obj_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_obj'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <?php } ?>       
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['inherit-assets-content-not-editable'][$lang]); ?>: </td>
+      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['inherit-assets-content-not-editable'][$lang]); ?> </td>
       <td width="80%" align="left" valign="top"><input type="checkbox" name="inherit_comp_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_comp'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>   
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['inherit-templates-design-not-editable'][$lang]); ?>: </td> 
+      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['inherit-templates-design-not-editable'][$lang]); ?> </td> 
       <td width="80%" align="left" valign="top"><input type="checkbox" name="inherit_tpl_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_tpl'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>       
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['save-setting'][$lang]); ?>: </td>
+      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['save-setting'][$lang]); ?> </td>
       <td width="80%" align="left" valign="top"><img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" <?php if ($preview == "yes") echo " disabled"; ?> /></td>
     </tr>
   </table>

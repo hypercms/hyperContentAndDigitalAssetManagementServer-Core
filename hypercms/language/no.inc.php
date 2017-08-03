@@ -3,7 +3,8 @@
 $hcms_lang_name['no'] = "Norwegian";
 $hcms_lang_shortcut['no'] = "no";
 $hcms_lang_codepage['no'] = "utf-8";
-$hcms_lang_date['no'] = 'Y-m-d H:i:s';
+$hcms_lang_date['no'] = 'y-m-d H:i:s';
+$hcms_lang_direction['no'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['no'] = "Share";

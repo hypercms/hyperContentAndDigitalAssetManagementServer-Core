@@ -48,7 +48,7 @@ checkusersession ($user, false);
     
     <table border="0">
       <tr>
-        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?>: </td>
+        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?> </td>
         <td>
           <input type="text" style="width:300px" name="mediafile" />
         </td>

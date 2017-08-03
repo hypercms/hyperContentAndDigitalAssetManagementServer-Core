@@ -3,7 +3,8 @@
 $hcms_lang_name['en'] = "English";
 $hcms_lang_shortcut['en'] = "en";
 $hcms_lang_codepage['en'] = "utf-8";
-$hcms_lang_date['en'] = 'Y-m-d H:i:s';
+$hcms_lang_date['en'] = 'y-m-d H:i:s';
+$hcms_lang_direction['en'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['en'] = "Share";
@@ -57,7 +58,7 @@ $hcms_lang['search-expression']['en'] = "Search expression";
 $hcms_lang['upload-file']['en'] = "Upload file";
 $hcms_lang['new-component']['en'] = "New component";
 $hcms_lang['refresh']['en'] = "Refresh";
-$hcms_lang['warning']['en'] = "WARNING";
+$hcms_lang['warning']['en'] = "Warning";
 $hcms_lang['the-selected-item-will-be-removed']['en'] = "The selected item will be removed";
 $hcms_lang['are-you-sure-you-want-to-delete-this-item']['en'] = "Are you sure you want to delete this item?";
 $hcms_lang['instance-management']['en'] = "Instance management";

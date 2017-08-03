@@ -196,8 +196,6 @@ function jumpTo (target)
             $media = "media";
           }
           else echo getescapedtext ($hcms_lang['file'][$lang]);
-          
-          echo ":";
         }
         ?>&nbsp;</span>
         <span class="hcmsHeadlineTiny">
@@ -271,7 +269,7 @@ function jumpTo (target)
   </div>
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;"> 
-      <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>:
+      <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?> 
       <select name="site" onChange="jumpTo('parent.frames[\'mainFrame\']')">
         <option value=""><?php echo getescapedtext ($hcms_lang['all-publications'][$lang]); ?></option>
         <?php
@@ -310,7 +308,7 @@ function jumpTo (target)
   </div>
   <div class="hcmsToolbarBlock">    
     <div style="padding:3px; float:left;">
-      <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>:
+      <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?> 
       <select name="queueuser" onChange="jumpTo('parent.frames[\'mainFrame\']')">
         <option value=""><?php echo getescapedtext ($hcms_lang['all-users'][$lang]); ?></option>
         <?php

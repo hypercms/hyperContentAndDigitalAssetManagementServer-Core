@@ -410,29 +410,29 @@ function cal_on_autoclose (cal)
         <td valign="top"> 
           <table border="0" cellspacing="0" cellpadding="3" width="100%">
             <tr align="left" valign="middle" class="hcmsWorkplaceExplorer">
-              <td colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></td>
+              <td colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?> </td>
             </tr>          
             <tr align="left" valign="top">
-              <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>:</td>
+              <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?> </td>
               <td>
                 <input type="text" name="search_expression" id="search_expression" style="width:220px;" maxlength="200" />
               </td>
             </tr>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?> </td>
               <td>
                 <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:220px;" disabled="disabled" />
               </td>
             </tr>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-restriction'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-restriction'][$lang]); ?> </td>
               <td class="hcmsHeadlineTiny">
                 <label><input type="checkbox" name="search_cat" value="file" /> <?php echo getescapedtext ($hcms_lang['only-object-names'][$lang]); ?></label>
               </td>
             </tr>
             <?php if ($cat == "comp") { ?>
             <tr id="row_searchformat" align="left" valign="top">
-              <td><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?>:</td>
+              <td><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?> </td>
               <td id="filetype_general">
                 <label><input type="checkbox" name="search_format[]" value="comp" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label><br />
                 <label><input type="checkbox" name="search_format[]" value="image" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label><br />
@@ -442,7 +442,7 @@ function cal_on_autoclose (cal)
               </td>
             </tr>
             <tr id="row_searchfilesize" align="left" valign="top">
-              <td><?php echo getescapedtext ($hcms_lang['file-size'][$lang]); ?>:</td>
+              <td><?php echo getescapedtext ($hcms_lang['file-size'][$lang]); ?> </td>
               <td id="filetype_general">
                 <select name="search_filesize_operator"><option>&gt;=</option><option>&gt;</option><option>&lt;=</option><option>&lt;</option></select>
                 <input type="number" name="search_filesize" style="width:70px;" maxlength="10" min="1" max="9999999999" /> KB
@@ -450,12 +450,12 @@ function cal_on_autoclose (cal)
             </tr>   
             <?php } ?>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?> </td>
               <td>
                 <table border="0" cellspacing="0" cellpadding="1">     
                   <tr>
                     <td> 
-                      <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>:&nbsp;&nbsp;
+                      <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>&nbsp;
                     </td>
                     <td>
                       <input type="text" name="date_from" id="date_from_1" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'date_from_1', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" />
@@ -463,7 +463,7 @@ function cal_on_autoclose (cal)
                   </tr>
                   <tr>
                     <td>
-                    <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>:&nbsp;&nbsp; 
+                    <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>&nbsp;
                     </td>
                     <td>
                       <input type="text" name="date_to" id="date_to_1" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'date_to_1', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
@@ -474,21 +474,21 @@ function cal_on_autoclose (cal)
             </tr>
             <tr align="left" valign="middle">
               <td nowrap="nowrap" colspan="2">
-                <?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?>:<br />
+                <?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?><br />
                 <span class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag'][$lang]); ?></span>
                 <div id="map" style="width:500px; height:240px; border:1px solid grey; margin-top:4px;"></div>         
               </td>
             </tr>
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['sw-coordinates'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['sw-coordinates'][$lang]); ?> </td>
               <td><input type="text" name="geo_border_sw" style="width:220px;" maxlength="100" /></td>
             </tr>
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['ne-coordinates'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['ne-coordinates'][$lang]); ?> </td>
               <td><input type="text" name="geo_border_ne" style="width:220px;" maxlength="100" /></td>
             </tr>
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?> </td>
               <td>
           			<img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="startSearch('general');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
               </td>
@@ -514,7 +514,7 @@ function cal_on_autoclose (cal)
               <td colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['advanced-search'][$lang]); ?></td>
             </tr>
             <tr align="left" valign="middle"> 
-              <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['based-on-template'][$lang]); ?>:</td>
+              <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['based-on-template'][$lang]); ?> </td>
               <td>
                 <select name="template" onChange="loadForm();" style="width:220px;">
               <?php
@@ -590,7 +590,7 @@ function cal_on_autoclose (cal)
               </td>
             </tr>
             <tr align="left" valign="middle"> 
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?> </td>
               <td>
                 <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:220px;" disabled="disabled" /> 
               </td>
@@ -603,7 +603,7 @@ function cal_on_autoclose (cal)
             </tr>
             <?php if ($cat == "comp") { ?>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?> </td>
               <td id="filetype_advanced">
                 <label><input type="checkbox" name="search_format[]" value="comp" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label><br />
                 <label><input type="checkbox" name="search_format[]" value="image" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label><br />
@@ -613,7 +613,7 @@ function cal_on_autoclose (cal)
               </td>
             </tr>
             <tr align="left" valign="top">
-              <td><?php echo getescapedtext ($hcms_lang['file-size'][$lang]); ?>:</td>
+              <td><?php echo getescapedtext ($hcms_lang['file-size'][$lang]); ?> </td>
               <td id="filetype_general">
                 <select name="search_filesize_operator"><option>&gt;=</option><option>&gt;</option><option>&lt;=</option><option>&lt;</option></select>
                 <input type="number" name="search_filesize" style="width:70px;" maxlength="10" min="1" max="9999999999" /> KB
@@ -621,24 +621,24 @@ function cal_on_autoclose (cal)
             </tr> 
             <?php } ?>  
             <tr align="left" valign="middle"> 
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?> </td>
               <td>
                 <input type="text" name="object_id" value="" style="width:220px;" /> 
               </td>
             </tr>
             <tr align="left" valign="middle"> 
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['container-id'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['container-id'][$lang]); ?> </td>
               <td>
                 <input type="text" name="container_id" value="" style="width:220px;" /> 
               </td>
             </tr>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?> </td>
               <td>
                 <table border="0" cellspacing="0" cellpadding="1">     
                   <tr>
                     <td> 
-                      <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>:&nbsp;&nbsp;
+                      <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>&nbsp;
                     </td>
                     <td>
                       <input type="text" name="date_from" id="date_from_2" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'date_from_2', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" />
@@ -646,7 +646,7 @@ function cal_on_autoclose (cal)
                   </tr>
                   <tr>
                     <td>
-                    <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>:&nbsp;&nbsp; 
+                    <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>&nbsp; 
                     </td>
                     <td>
                       <input type="text" name="date_to" id="date_to_2" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'date_to_2', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
@@ -656,7 +656,7 @@ function cal_on_autoclose (cal)
               </td>
             </tr>           		
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?> </td>
               <td>
           			<img name="Button2" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="startSearch('advanced');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
               </td>
@@ -679,29 +679,29 @@ function cal_on_autoclose (cal)
         <td valign="top"> 
           <table border="0" cellspacing="0" cellpadding="3" width="100%">
             <tr align="left" valign="middle" class="hcmsWorkplaceExplorer">
-              <td colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['search-and-replace'][$lang]); ?></td>
+              <td colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['search-and-replace'][$lang]); ?> </td>
             </tr>            
             <tr align="left" valign="middle"> 
-              <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>:</td>
+              <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?> </td>
               <td> 
                 <input type="text" name="search_expression" style="width:220px;" />
               </td>
             </tr>
             <tr align="left" valign="middle"> 
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['replace-with'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['replace-with'][$lang]); ?> </td>
               <td> 
                 <input type="text" name="replace_expression" style="width:220px;" />
               </td>
             </tr>          
             <tr align="left" valign="middle"> 
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?> </td>
               <td> 
                 <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:220px;" disabled="disabled" />
               </td>
             </tr>
             <?php if ($cat == "comp") { ?>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['file-type'][$lang]); ?> </td>
               <td id ="filetype_replace">
                 <label><input type="checkbox" name="search_format[]" value="comp" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></label><br />
                 <label><input type="checkbox" name="search_format[]" value="image" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></label><br />
@@ -712,12 +712,12 @@ function cal_on_autoclose (cal)
             </tr>
             <?php } ?>   
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?> </td>
               <td>
                 <table border="0" cellspacing="0" cellpadding="1">     
                   <tr>
                     <td> 
-                      <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>:&nbsp;&nbsp;
+                      <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>&nbsp;
                     </td>
                     <td>
                       <input type="text" name="date_from" id="date_from_3" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'date_from_3', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" />
@@ -725,7 +725,7 @@ function cal_on_autoclose (cal)
                   </tr>
                   <tr>
                     <td>
-                    <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>:&nbsp;&nbsp; 
+                    <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>&nbsp; 
                     </td>
                     <td>
                       <input type="text" name="date_to" id="date_to_3" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'date_to_3', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
@@ -735,7 +735,7 @@ function cal_on_autoclose (cal)
               </td>
             </tr>             
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?> </td>
               <td>
 			          <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm(document.forms['searchform_replace']);" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
               </td>
@@ -765,25 +765,25 @@ function cal_on_autoclose (cal)
               <td colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['image-search'][$lang]); ?></td>
             </tr>          
             <tr align="left" valign="top">
-              <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>:</td>
+              <td width="180" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?> </td>
               <td>
                 <input type="text" name="search_expression" id="image_expression" style="width:220px;" maxlength="60" />
               </td>
             </tr>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-in-folder'][$lang]); ?> </td>
               <td>
                 <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:220px;" disabled="disabled" />
               </td>
             </tr>
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-restriction'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['search-restriction'][$lang]); ?> </td>
               <td class="hcmsHeadlineTiny">
                 <input type="checkbox" name="search_cat" value="file" />&nbsp;<?php echo getescapedtext ($hcms_lang['only-object-names'][$lang]); ?>
               </td>
             </tr>                     
             <tr id="row_imagesize" align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['image-size'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['image-size'][$lang]); ?> </td>
               <td><input type="hidden" name="search_format[image]" value="image" />
                 <select name="search_imagesize" style="width:140px;" onchange="if (this.options[this.selectedIndex].value=='exact') document.getElementById('searchfield_imagesize').style.display='inline'; else document.getElementById('searchfield_imagesize').style.display='none';">
                   <option value="" selected="selected"><?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></option>
@@ -799,14 +799,14 @@ function cal_on_autoclose (cal)
               </td>
             </tr>
             <tr id="row_searchfilesize" align="left" valign="top">
-              <td><?php echo getescapedtext ($hcms_lang['file-size'][$lang]); ?>:</td>
+              <td><?php echo getescapedtext ($hcms_lang['file-size'][$lang]); ?> </td>
               <td id="filetype_general">
                 <select name="search_filesize_operator"><option>&gt;=</option><option>&gt;</option><option>&lt;=</option><option>&lt;</option></select>
                 <input type="number" name="search_filesize" style="width:70px;" maxlength="10" min="1" max="9999999999" /> KB
               </td>
             </tr> 
             <tr id="row_imagecolor" align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['image-color'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['image-color'][$lang]); ?> </td>
               <td>
                 <div style="width:320px; margin:1px; padding:0; float:left;"><div style="float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="" checked="checked" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></div>
                 <div style="width:85px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#000000; float:left;"><input style="margin:2px; padding:0;" type="radio" name="search_imagecolor" value="K" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['black'][$lang]); ?></div>
@@ -824,7 +824,7 @@ function cal_on_autoclose (cal)
               </td>
             </tr>
             <tr id="row_imagetype" align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['image-type'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['image-type'][$lang]); ?> </td>
               <td>
                 <select name="search_imagetype" style="width:140px;">
                   <option value="" selected="selected"><?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></option>
@@ -835,12 +835,12 @@ function cal_on_autoclose (cal)
               </td>
             </tr>            
             <tr align="left" valign="top">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?> </td>
               <td>
                 <table border="0" cellspacing="0" cellpadding="1">     
                   <tr>
                     <td> 
-                      <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>:&nbsp;&nbsp;
+                      <?php echo getescapedtext ($hcms_lang['from'][$lang]); ?>&nbsp;
                     </td>
                     <td>
                       <input type="text" name="date_from" id="date_from_4" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'date_from_4', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" />
@@ -848,7 +848,7 @@ function cal_on_autoclose (cal)
                   </tr>
                   <tr>
                     <td>
-                    <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>:&nbsp;&nbsp; 
+                    <?php echo getescapedtext ($hcms_lang['to'][$lang]); ?>&nbsp; 
                     </td>
                     <td>
                       <input type="text" name="date_to" id="date_to_4" readonly="readonly" value="" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'date_to_4', '%Y-%m-%d');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" />      
@@ -858,7 +858,7 @@ function cal_on_autoclose (cal)
               </td>
             </tr>
             <tr align="left" valign="middle">
-              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?>:</td>
+              <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?> </td>
               <td>
           			<img name="Button4" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="startSearch('images');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button4','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
               </td>

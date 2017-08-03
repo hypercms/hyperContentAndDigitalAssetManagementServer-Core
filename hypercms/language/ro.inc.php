@@ -3,7 +3,8 @@
 $hcms_lang_name['ro'] = "Romanian";
 $hcms_lang_shortcut['ro'] = "ro";
 $hcms_lang_codepage['ro'] = "utf-8";
-$hcms_lang_date['ro'] = 'Y-m-d H:i:s';
+$hcms_lang_date['ro'] = 'y-m-d H:i:s';
+$hcms_lang_direction['ro'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['ro'] = "Share";

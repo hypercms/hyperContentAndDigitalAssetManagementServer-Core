@@ -3,7 +3,8 @@
 $hcms_lang_name['ja'] = "Japanese";
 $hcms_lang_shortcut['ja'] = "ja";
 $hcms_lang_codepage['ja'] = "utf-8";
-$hcms_lang_date['ja'] = 'Y-m-d H:i:s';
+$hcms_lang_date['ja'] = 'y-m-d H:i:s';
+$hcms_lang_direction['ja'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['ja'] = "Share";

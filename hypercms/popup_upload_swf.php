@@ -386,7 +386,7 @@ echo showtopbar ($title.": ".$object_name, $lang);
         <?php } ?> 
         <?php if ($uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) {  ?>
           <input type="checkbox" name="imageresize" id="imageresize" value="percentage" onchange="setpost_multi();" />
-          <?php echo getescapedtext ($hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]); ?>: <input name="imagepercentage" id="imagepercentage" type="text" onkeyup="setpost_multi();" size="3" maxlength="3" value="100" disabled="disabled" /> %<br />
+          <?php echo getescapedtext ($hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]); ?> <input name="imagepercentage" id="imagepercentage" type="text" onkeyup="setpost_multi();" size="3" maxlength="3" value="100" disabled="disabled" /> %<br />
         <?php } ?>
           <input type="checkbox" name="checkduplicates" id="checkduplicates" value="1" onchange="setpost_multi();" <?php if ($mgmt_config['check_duplicates']) echo 'checked="checked"'; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['check-for-duplicates'][$lang]); ?><br />
         <?php if ($uploadmode == "multi") { ?>

@@ -252,42 +252,42 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
     <div style="margin-left:10px; margin-top:10px; float:left; width:250px;">
       <?php if (!$audio) { ?>
       <div style="height:20px">
-        <label for="title"><?php echo getescapedtext ($hcms_lang['title'][$lang]);?>: </label><br/>
+        <label for="title"><?php echo getescapedtext ($hcms_lang['title'][$lang]);?> </label><br/>
       </div>
       <?php } ?>
       <div style="height:20px">
-        <label for="autoplay"><?php echo getescapedtext ($hcms_lang['autoplay'][$lang]);?>: </label>
+        <label for="autoplay"><?php echo getescapedtext ($hcms_lang['autoplay'][$lang]);?> </label>
       </div>
       <?php if (!$audio) { ?>
       <div style="height:20px">
-        <label for="fullscreen"><?php echo getescapedtext ($hcms_lang['enable-fullscreen'][$lang]);?>: </label>
+        <label for="fullscreen"><?php echo getescapedtext ($hcms_lang['enable-fullscreen'][$lang]);?> </label>
       </div>
       <?php } ?>
       <div style="height:20px">
-        <label for="loop"><?php echo getescapedtext ($hcms_lang['loop'][$lang]);?>: </label>
+        <label for="loop"><?php echo getescapedtext ($hcms_lang['loop'][$lang]);?> </label>
       </div>
       <div style="height:20px">
-        <label for="muted"><?php echo getescapedtext ($hcms_lang['muted'][$lang]);?>: </label>
+        <label for="muted"><?php echo getescapedtext ($hcms_lang['muted'][$lang]);?> </label>
       </div>
       <div style="height:20px">
-        <label for="controls"><?php echo getescapedtext ($hcms_lang['controls'][$lang]);?>: </label>
+        <label for="controls"><?php echo getescapedtext ($hcms_lang['controls'][$lang]);?> </label>
       </div>
       <?php if (!empty ($mgmt_config['videoplayer']) && strtolower ($mgmt_config['videoplayer']) == "projekktor") { ?>
       <div style="height:20px">
-        <label for="keyboard"><?php echo getescapedtext ($hcms_lang['enable-keyboard-input'][$lang]);?>: </label>
+        <label for="keyboard"><?php echo getescapedtext ($hcms_lang['enable-keyboard-input'][$lang]);?> </label>
       </div>
       <div style="height:20px">
-        <label for="pause"><?php echo getescapedtext ($hcms_lang['enable-pause'][$lang]);?>: </label>
+        <label for="pause"><?php echo getescapedtext ($hcms_lang['enable-pause'][$lang]);?> </label>
       </div>
       <div style="height:20px">
-        <label for="seek"><?php echo getescapedtext ($hcms_lang['enable-seek'][$lang]);?>: </label>
+        <label for="seek"><?php echo getescapedtext ($hcms_lang['enable-seek'][$lang]);?> </label>
       </div>
       <?php }
        
       if (!$audio) {
       ?>
       <div style="height:20px">
-        <label for="logo"><?php echo getescapedtext ($hcms_lang['start-image'][$lang]);?>: </label>
+        <label for="logo"><?php echo getescapedtext ($hcms_lang['start-image'][$lang]);?> </label>
       </div>
       <?php } ?>
     </div>

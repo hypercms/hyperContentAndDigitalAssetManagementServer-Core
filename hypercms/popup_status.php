@@ -288,7 +288,7 @@ setTimeout('closepopup()', 1000);
 <body class="hcmsWorkplaceGeneric">
 
 <div align="center">
-  <p align="center" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?>: <?php echo $status; ?></p>
+  <p align="center" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['status'][$lang]); ?> <?php echo $status; ?></p>
   
   <table style="width:80%; padding:0; border:1px solid #000000; border-collapse:collapse;">
     <tr> 

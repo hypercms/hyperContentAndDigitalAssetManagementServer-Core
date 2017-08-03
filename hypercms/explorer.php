@@ -1102,7 +1102,8 @@ else
                   if ($text_id != "")
                   {
                     if (!empty ($label_array[$lang])) $label = $label_array[$lang];
-                    else $label = $label_array['default'];
+                    elseif (!empty ($label_array['default'])) $label = $label_array['default'];
+                    else $label = "undefined";
                   
                     $point = new hcms_menupoint($label, '#text_'.$site.'_'.$name, 'folder.gif', 'text_'.$site.'_'.$name);
                     $point->setOnClick('hcms_jstree_open("text_'.$site.'_'.$name.'", event);');
@@ -2340,7 +2341,7 @@ else
         </div>
         <hr />
         
-        <label><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?>:</label>
+        <label><?php echo getescapedtext ($hcms_lang['start-search'][$lang]); ?></label>
     	  <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="startSearch('post');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
       </form>
     </div>

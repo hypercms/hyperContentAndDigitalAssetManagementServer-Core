@@ -260,7 +260,7 @@ function validateForm()
     }
   }
 
-  if (errors) alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-errors-occurred'][$lang], $charset, $lang); ?>:\n'+errors));
+  if (errors) alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-errors-occurred'][$lang], $charset, $lang); ?>\n ' + errors));
   document.returnValue = (errors == '');
 }
 
@@ -383,7 +383,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
       <td colspan=2 class="hcmsHeadlineTiny" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang); ?></td>
     </tr>
     <tr>
-      <td valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang], $charset, $lang); ?>: </td>
+      <td valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang], $charset, $lang); ?> </td>
       <td valign="top">
         <input type="text" name="mediafile" value="<?php echo convertchars (getlocationname ($site, $mediafile, "comp"), $hcms_lang_codepage[$lang], $charset); ?>" style="width:300px;" />
         <img onClick="openBrWindowMedia('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
@@ -396,7 +396,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   if ($mediaalttext != "*Null*")
   {
     echo "<tr>\n";
-    echo "  <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alternative-text'][$lang], $charset, $lang).": </td>\n";
+    echo "  <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alternative-text'][$lang], $charset, $lang)." </td>\n";
     echo "  <td>\n";
     echo "    <input type=\"text\" name=\"mediaalttext\" value=\"".$mediaalttext."\" style=\"width:300px;\" />\n";
     echo "  </td>\n";
@@ -406,7 +406,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   if ($mediaalign != "*Null*")
   {
     echo "<tr>\n";
-    echo "  <td valign=\"top\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang).": </td>\n";
+    echo "  <td valign=\"top\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang)." </td>\n";
     echo "  <td valign=\"top\">\n";
     echo "    <select name=\"mediaalign\" style=\"width:300px;\">\n";
           $alignstandard = "";
@@ -480,7 +480,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   
     echo "<tr>\n";
     echo "  <td valign=\"top\">\n";
-    echo "    ".getescapedtext ($hcms_lang['media-size'][$lang], $charset, $lang).": </td>\n";
+    echo "    ".getescapedtext ($hcms_lang['media-size'][$lang], $charset, $lang)." </td>\n";
     echo "  <td valign=\"top\" class=\"hcmsHeadlineTiny\">\n";
     if ($mediawidth != "*Null*") echo "    ".getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediawidth\" value=\"".$mediawidth."\" size=4 />\n";
     else  echo "    ".getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediawidth\" value=\"\" size=4 disabled=\"disabled\" />\n";

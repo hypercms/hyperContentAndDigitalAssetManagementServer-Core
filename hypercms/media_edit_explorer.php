@@ -106,7 +106,7 @@ function goToURL()
       
         <table border="0" cellspacing="2" cellpadding="0">
           <tr>
-            <td class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['select-media-category'][$lang]); ?>:</td>
+            <td class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['select-media-category'][$lang]); ?> </td>
           </tr>
           <tr>
             <td>
@@ -126,7 +126,7 @@ function goToURL()
             </td>
           </tr>
           <tr>
-            <td class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['select-file-format'][$lang]); ?>:</td>
+            <td class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['select-file-format'][$lang]); ?> </td>
           </tr>
           <tr>
             <td>
@@ -142,7 +142,7 @@ function goToURL()
             </td>
           </tr>
           <tr>
-            <td class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>:</td>
+            <td class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['search'][$lang]); ?> </td>
           </tr>
           <tr>
             <td>

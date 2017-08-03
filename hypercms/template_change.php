@@ -131,11 +131,11 @@ $token_new = createtoken ($user);
     
     <table border="0" cellspacing="2" cellpadding="0">
       <tr>
-        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['template-in-use'][$lang]); ?>:</td>
+        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['template-in-use'][$lang]); ?> </td>
         <td nowrap="nowrap" class="hcmsHeadlineTiny"><?php echo $tpl_name; ?></td>
       </tr>
       <tr>
-        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['change-template'][$lang]); ?>:</td>
+        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['change-template'][$lang]); ?> </td>
         <td>
           <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame2\']',this,0)">
             <?php

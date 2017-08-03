@@ -3,7 +3,8 @@
 $hcms_lang_name['sv'] = "Swedish";
 $hcms_lang_shortcut['sv'] = "sv";
 $hcms_lang_codepage['sv'] = "utf-8";
-$hcms_lang_date['sv'] = 'Y-m-d H:i:s';
+$hcms_lang_date['sv'] = 'y-m-d H:i:s';
+$hcms_lang_direction['sv'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['sv'] = "Share";

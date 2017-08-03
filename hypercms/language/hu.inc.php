@@ -4,6 +4,7 @@ $hcms_lang_name['hu'] = "Hungarian";
 $hcms_lang_shortcut['hu'] = "hu";
 $hcms_lang_codepage['hu'] = "utf-8";
 $hcms_lang_date['hu'] = 'd.m.Y H:i:s';
+$hcms_lang_direction['hu'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['hu'] = "Share";

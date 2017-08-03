@@ -98,7 +98,7 @@ function warning_delete()
 {
   var form = document.forms['tpl_delete'];
   
-  check = confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>:\r<?php echo getescapedtext ($hcms_lang['the-selected-item-will-be-removed'][$lang]); ?>\r<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-the-template'][$lang]); ?>"));
+  check = confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>\n <?php echo getescapedtext ($hcms_lang['the-selected-item-will-be-removed'][$lang]); ?>\n <?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-the-template'][$lang]); ?>"));
   if (check == true) form.submit();
   return check;
 }
@@ -121,7 +121,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert ("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>: "+addText);
+		alert ("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>\n " + addText);
 		return false;
 	}
   else
@@ -269,7 +269,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
       </td>        
     </tr>  
     <tr>
-      <td nowrap="nowrap"><?php echo $pagecomp; ?><font size="1">(<?php echo getescapedtext ($hcms_lang['name-without-ext'][$lang]); ?>)</font>: </td>
+      <td nowrap="nowrap"><?php echo $pagecomp; ?><font size="1">(<?php echo getescapedtext ($hcms_lang['name-without-ext'][$lang]); ?>)</font> </td>
       <td>
         <input type="text" name="template" maxlength="60" style="width:220px;" />
         <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_tpl_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
@@ -290,7 +290,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <tr>
       <td valign="middle" nowrap="nowrap">
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['upload'][$lang]); ?></span><br />
-        <?php echo $pagecomp; ?>:
+        <?php echo $pagecomp; ?> 
         <input type="file" name="file" size="30" />
         <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_file_upload();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
@@ -313,7 +313,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <tr>
       <td valign="middle" nowrap="nowrap">
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
-        <?php echo $pagecomp; ?>:
+        <?php echo $pagecomp; ?> 
         <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
           <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
           <?php
@@ -355,7 +355,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <tr>
       <td valign="middle" nowrap="nowrap">
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
-        <?php echo $pagecomp; ?>:
+        <?php echo $pagecomp; ?> 
         <select name="template" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
           <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
           <?php

@@ -127,7 +127,6 @@ if (!empty ($contentdata))
     
     foreach ($metadata_array as $key => $value)
     {
-      if (trim ($key) != "") $key = $key.":";
       $rows .= "<tr><td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\">".$value."</td></tr>\n";
     }
     

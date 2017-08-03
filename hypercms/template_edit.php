@@ -175,7 +175,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang); ?>: ")+addText);
+		alert(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang); ?>\n ") + addText);
 		return false;
 	}
   else
@@ -572,16 +572,16 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
   
   <table border=0 cellpadding=0 cellspacing=2>
     <tr>
-      <td width="250" class="hcmsHeadline"><?php echo getescapedtext ($pagecomp, $charset, $lang); ?>:</td>
+      <td width="250" class="hcmsHeadline"><?php echo getescapedtext ($pagecomp, $charset, $lang); ?> </td>
       <td><input name="template" type="text" value="<?php echo getescapedtext ($templatename, $charset, $lang); ?>" style="width:220px;" disabled="disabled" /></td>
     </tr>
     <?php if ($cat == "page" || $cat == "comp") { ?>
     <tr>
-      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['file-extension-without-dot'][$lang], $charset, $lang); ?>:</td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['file-extension-without-dot'][$lang], $charset, $lang); ?> </td>
       <td><input name="extension" maxlength="10" type="text" value="<?php echo $extension; ?>" style="width:50px;" /></td>
     </tr>
     <tr>
-      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['application'][$lang], $charset, $lang); ?>:</td>
+      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['application'][$lang], $charset, $lang); ?> </td>
       <td>
       <select name="application">
         <option value="asp"<?php if ($application == "asp") echo " selected=\"selected\""; ?>>Active Server Pages (ASP)</option>
@@ -613,21 +613,21 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
       <td>
         <table border=\"0\" cellspacing=\"2\" cellpadding=\"0\" width=\"100%\">\n";
     if ($cat != "meta") echo "<tr>
-              <td width=\"248\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['article-identification-name'][$lang], $charset, $lang).":</td>
+              <td width=\"248\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['article-identification-name'][$lang], $charset, $lang)." </td>
               <td nowrap=\"nowrap\">
                 <input type=\"text\" name=\"artid\" style=\"width:200px;\" />
                 <input type=\"button\" class=\"hcmsButtonBlue\" name=\"art_clean\" value=\"".getescapedtext ($hcms_lang['no-article'][$lang], $charset, $lang)."\" onClick=\"document.forms['template_edit'].elements['artid'].value = '';\" />
               </td>
             </tr>\n";            
     echo "<tr>
-              <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['content-identification-name'][$lang], $charset, $lang).":</td>
+              <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['content-identification-name'][$lang], $charset, $lang)." </td>
               <td nowrap=\"nowrap\">
                 <input type=\"text\" name=\"tagid\" style=\"width:200px;\" />
                 <input type=\"button\" class=\"hcmsButtonBlue\" name=\"tag_clean\" value=\"".getescapedtext ($hcms_lang['reset'][$lang], $charset, $lang)."\" onClick=\"document.forms['template_edit'].elements['tagid'].value = '';\" />".$checkbox_metainfo."
               </td>
             </tr>\n";
     echo "<tr>
-              <td wnowrap=\"nowrap\">".getescapedtext ($hcms_lang['hide-content'][$lang], $charset, $lang).":</td>
+              <td wnowrap=\"nowrap\">".getescapedtext ($hcms_lang['hide-content'][$lang], $charset, $lang)." </td>
               <td nowrap=\"nowrap\">
                 <input type=\"checkbox\" name=\"onpublish\" value=\"hidden\" />&nbsp;".getescapedtext ($hcms_lang['on-publish'][$lang], $charset, $lang)."&nbsp;
                 <input type=\"checkbox\" name=\"onedit\" value=\"hidden\" />&nbsp;".getescapedtext ($hcms_lang['on-edit'][$lang], $charset, $lang)."

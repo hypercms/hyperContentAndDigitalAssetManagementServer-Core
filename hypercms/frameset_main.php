@@ -116,9 +116,9 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
       <td width="5">&nbsp;</td>
       <td width="320" align="left" valign="middle" nowrap="nowrap"><a href="javascript:openInfo();"><img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" style="border:0; height:28px;" align="absmiddle" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" /></a></td>
       <td>&nbsp;</td>
-      <td align="right" valign="middle" nowrap="nowrap"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>: </span><span class="hcmsHeadlineTiny hcmsTextWhite"><?php echo getsession ('hcms_user'); ?></span></td>
+      <td align="right" valign="middle" nowrap="nowrap"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?> </span><span class="hcmsHeadlineTiny hcmsTextWhite"><?php echo getsession ('hcms_user'); ?></span></td>
       <td width="20" nowrap="nowrap">&nbsp;&nbsp;</td>
-      <td width="260" align="left" valign="middle" nowrap="nowrap"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['server-time'][$lang]); ?>:</span>&nbsp;<?php $servertime->InstallClock(); ?></td>
+      <td width="260" align="left" valign="middle" nowrap="nowrap"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['server-time'][$lang]); ?> </span>&nbsp;<?php $servertime->InstallClock(); ?></td>
       <td width="10" nowrap="nowrap">&nbsp;&nbsp;</td>
       <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
       <td width="30" align="right" valign="middle" nowrap="nowrap">

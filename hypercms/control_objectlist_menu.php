@@ -410,7 +410,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>: ") + addText);
+		alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?> ") + addText);
 		return false;
 	}
   else
@@ -541,7 +541,7 @@ function switchview (view)
     document.forms['memory'].elements['view'].value = view;
     
     // AJAX request to set view
-    $.post("<?php echo $mgmt_config['url_path_cms']; ?>/service/toggleview.php", {view: view});
+    $.post("<?php echo $mgmt_config['url_path_cms']; ?>service/toggleview.php", {view: view});
     
     // change view in object list
     if (eval (parent.frames['mainFrame']) && typeof parent.frames['mainFrame'].toggleview == 'function') parent.frames['mainFrame'].toggleview (view);
@@ -563,7 +563,7 @@ function switchsidebar ()
   if (view == true || view == false)
   {
     // AJAX request to set view
-    $.post("<?php echo $mgmt_config['url_path_cms']; ?>/service/togglesidebar.php", {view: view});
+    $.post("<?php echo $mgmt_config['url_path_cms']; ?>service/togglesidebar.php", {view: view});
     
     // change view in object list
     if (eval (parent.frames['mainFrame']) && eval (parent.frames['sidebarFrame']))
@@ -677,12 +677,12 @@ else
 // define object name
 if (($page != "" && $page != ".folder") || $multiobject)
 {
-  $item = $pagecomp.":";
+  $item = $pagecomp;
   $object_name = $pagename;
 }
 elseif ($folder != "")
 {
-  $item = getescapedtext ($hcms_lang['folder'][$lang]).":";
+  $item = getescapedtext ($hcms_lang['folder'][$lang]);
   $object_name = specialchr_decode ($folder);
 }
 else
@@ -701,7 +701,7 @@ else
       if ($cat == "page" || $cat == "comp")
       {
         echo "
-      <td class=\"hcmsHeadline\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['location'][$lang]).": </td>
+      <td class=\"hcmsHeadline\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['location'][$lang])." </td>
       <td class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">".$location_name."</td>\n";
       }
       else 
@@ -1327,7 +1327,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table width="100%" height="60" border="0" cellspacing="4" cellpadding="0">
     <tr>
       <td valign="middle">
-        <?php echo getescapedtext ($hcms_lang['create-folder'][$lang]); ?>:
+        <?php echo getescapedtext ($hcms_lang['create-folder'][$lang]); ?> 
         <input type="text" name="foldernew" maxlength="<?php if (!is_int ($mgmt_config['max_digits_filename'])) echo $mgmt_config['max_digits_filename']; else echo "200"; ?>" style="width:220px;" />
         <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_folder_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
@@ -1349,7 +1349,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table width="100%" height="60" border="0" cellspacing="4" cellpadding="0">
     <tr>
       <td valign="middle">
-        <?php echo getescapedtext ($hcms_lang['rename-folder'][$lang]); ?>:
+        <?php echo getescapedtext ($hcms_lang['rename-folder'][$lang]); ?> 
         <input type="text" name="foldernew" maxlength="<?php if (!is_int ($mgmt_config['max_digits_filename'])) echo $mgmt_config['max_digits_filename']; else echo "200"; ?>" style="width:220px;" value="<?php echo $pagename; ?>" />
         <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_folder_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
@@ -1371,7 +1371,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
     <tr>
       <td valign="middle">
-        <?php echo getescapedtext ($hcms_lang['rename'][$lang]);  if ($filetype == "Page" || $filetype == "Component") echo " (".getescapedtext ($hcms_lang['name-without-ext'][$lang]).")"; ?>: 
+        <?php echo getescapedtext ($hcms_lang['rename'][$lang]);  if ($filetype == "Page" || $filetype == "Component") echo " (".getescapedtext ($hcms_lang['name-without-ext'][$lang]).")"; ?> 
         <input type="text" name="pagenew" maxlength="<?php if (!is_int ($mgmt_config['max_digits_filename'])) echo $mgmt_config['max_digits_filename']; else echo "200"; ?>" style="width:220px;" value="<?php echo substr ($pagename, 0, strrpos ($pagename, ".")); ?>" />
         <img name="Button5" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_page_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button5','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
@@ -1395,7 +1395,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table width="100%" height="60" border="0" cellspacing="2" cellpadding="0">
     <tr>
       <td valign="middle">
-        <?php echo getescapedtext ($hcms_lang['create-zip-file-without-ext'][$lang]); ?>: 
+        <?php echo getescapedtext ($hcms_lang['create-zip-file-without-ext'][$lang]); ?> 
         <input type="text" name="pagenew" maxlength="100" style="width:220px;" value="<?php echo substr ($pagename, 0, strrpos ($pagename, ".")); ?>" />
         <img name="Button6" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onclick="checkForm_zip();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button6','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
       </td>

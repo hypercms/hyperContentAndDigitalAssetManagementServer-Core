@@ -52,7 +52,7 @@ function warning_media_delete ()
   
   if (form.elements['mediafile'].value != "")
   {
-    check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>:\r<?php echo getescapedtext ($hcms_lang['the-selected-file-will-be-removed'][$lang]); ?>"));
+    check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>\n <?php echo getescapedtext ($hcms_lang['the-selected-file-will-be-removed'][$lang]); ?>"));
     if (check == true) form.submit();
     return check;
   }
@@ -84,7 +84,7 @@ if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, '
     <input type="hidden" name="mediafile" value="" />
     <input type="hidden" name="action" value="delete" />
       <tr>
-        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?>: </td>
+        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?> </td>
         <td>
           <input type="text" style="width:300px;" name="media_name" />
           <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_media_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />

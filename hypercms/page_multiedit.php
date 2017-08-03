@@ -1019,7 +1019,7 @@ elseif ($is_video || $is_audio)
       
       if (errors) 
       {
-        alert (hcms_entity_decode ('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>:\n'+errors));
+        alert (hcms_entity_decode ('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>\n ' + errors));
         return false;
       }  
       else return true;
@@ -1097,7 +1097,7 @@ elseif ($is_video || $is_audio)
       
       if (errors) 
       {
-        alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>:\n'+errors));
+        alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>\n ' + errors));
         return false;
       }  
       else return true;
@@ -1583,7 +1583,7 @@ elseif ($is_video || $is_audio)
         
         if (errors) 
         { 
-          alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang], $charset, $lang); ?>:\n' + errors));
+          alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang], $charset, $lang); ?>\n ' + errors));
           
           result = false;
         }
@@ -2213,7 +2213,7 @@ elseif ($is_video || $is_audio)
           if ($tagdata->ignore == false) $ids[] = $id;
           ?>
           <div style="margin-top: 10px;" class="fieldrow">
-            <label for="<?php echo $id; ?>" style="display:inline-block; width:130px; vertical-align:top;"><b><?php if (trim ($label) != "") { echo $label.":"; if ($tagdata->ignore == false) echo " *"; } ?></b></label>
+            <label for="<?php echo $id; ?>" style="display:inline-block; width:130px; vertical-align:top;"><b><?php if (trim ($label) != "") { echo $label; if ($tagdata->ignore == false) echo " *"; } ?></b></label>
           <?php
           if ($tagdata->type == "u") 
           {

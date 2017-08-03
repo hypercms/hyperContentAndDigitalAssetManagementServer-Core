@@ -3,7 +3,8 @@
 $hcms_lang_name['hi'] = "Hindi";
 $hcms_lang_shortcut['hi'] = "hi";
 $hcms_lang_codepage['hi'] = "utf-8";
-$hcms_lang_date['hi'] = 'Y-m-d H:i:s';
+$hcms_lang_date['hi'] = 'y-m-d H:i:s';
+$hcms_lang_direction['hi'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['hi'] = "Share";

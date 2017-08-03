@@ -137,7 +137,7 @@ $token_new = createtoken ($user);
   <table width="100%" height="100%" border=0 cellpadding="3" cellspacing="0">
     <tr class="hcmsWorkplaceControl"> 
       <td align="left" valign="top">
-        <img src="<?php echo $icon; ?>" align="absmiddle"/><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['message'][$lang]); ?>:</span><br />    
+        <img src="<?php echo $icon; ?>" align="absmiddle"/><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['message'][$lang]); ?> </span><br />    
       </td>
     </tr>
     <tr> 
@@ -157,7 +157,7 @@ $token_new = createtoken ($user);
     </tr>        
     <tr>  
       <td align="left" valign="top">        
-        <div style="width:100px; float:left;"><?php echo getescapedtext ($hcms_lang['send'][$lang]); ?>:</div> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['message'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK">
+        <div style="width:100px; float:left;"><?php echo getescapedtext ($hcms_lang['send'][$lang]); ?> </div> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['message'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK">
       </td>
     </tr>
   </table>

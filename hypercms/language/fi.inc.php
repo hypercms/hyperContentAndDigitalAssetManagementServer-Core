@@ -3,7 +3,8 @@
 $hcms_lang_name['fi'] = "Finnish";
 $hcms_lang_shortcut['fi'] = "fi";
 $hcms_lang_codepage['fi'] = "utf-8";
-$hcms_lang_date['fi'] = 'Y-m-d H:i:s';
+$hcms_lang_date['fi'] = 'y-m-d H:i:s';
+$hcms_lang_direction['fi'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['fi'] = "Share";

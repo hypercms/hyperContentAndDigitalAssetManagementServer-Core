@@ -3,7 +3,8 @@
 $hcms_lang_name['sr'] = "Serbian";
 $hcms_lang_shortcut['sr'] = "sr";
 $hcms_lang_codepage['sr'] = "utf-8";
-$hcms_lang_date['sr'] = 'Y-m-d H:i:s';
+$hcms_lang_date['sr'] = 'y-m-d H:i:s';
+$hcms_lang_direction['sr'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['sr'] = "Share";

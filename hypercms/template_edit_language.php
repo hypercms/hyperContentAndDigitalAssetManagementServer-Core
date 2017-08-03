@@ -63,11 +63,11 @@ function applylanguage ()
       <td colspan="2" nowrap="nowrap" class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['assign-language-information'][$lang]); ?></td>
     </tr>
     <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['session-variable-name'][$lang]); ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['session-variable-name'][$lang]); ?> </td>
       <td><input name="language_sessionvar" type="text" value="" /></td>
     </tr>  
     <tr align="left" valign="top">
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['language-values'][$lang]); ?>:<br />(<?php echo getescapedtext ($hcms_lang['use-as-delimiter'][$lang]); ?>)</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['language-values'][$lang]); ?><br />(<?php echo getescapedtext ($hcms_lang['use-as-delimiter'][$lang]); ?>)</td>
       <td><input name="language_sessionvalues" type="text" value="" /></td>
     </tr>
     <tr align="left" valign="top"> 

@@ -119,12 +119,12 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
   <table border="0" cellspacing="0" cellpadding="5">
     <tr> 
       <td>&nbsp;</td>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['year'][$lang]); ?>:</td>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['month'][$lang]); ?>:</td>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['day'][$lang]); ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['year'][$lang]); ?> </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['month'][$lang]); ?> </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['day'][$lang]); ?> </td>
     </tr>
     <tr> 
-      <td><?php echo getescapedtext ($hcms_lang['show-the-content-online-on'][$lang]); ?>:</td>
+      <td><?php echo getescapedtext ($hcms_lang['show-the-content-online-on'][$lang]); ?> </td>
       <td>
         <select name="content_year">
           <?php                
@@ -164,7 +164,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
        </td>
     </tr>
     <tr> 
-      <td><?php echo getescapedtext ($hcms_lang['show-the-design-online-on'][$lang]); ?>:</td>
+      <td><?php echo getescapedtext ($hcms_lang['show-the-design-online-on'][$lang]); ?> </td>
       <td>
         <select name="template_year">
           <?php 
@@ -204,13 +204,13 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
       </td>
     </tr>
     <tr> 
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['set-date-for-the-journey'][$lang]); ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['set-date-for-the-journey'][$lang]); ?> </td>
       <td><img name="ButtonSet" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('ButtonSet','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /></td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['clean-date-exit'][$lang]); ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['clean-date-exit'][$lang]); ?> </td>
       <td><img name="ButtonClean" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonBlank hcmsButtonSizeSquare" onClick="cleandate();" onMouseOver="hcms_swapImage('ButtonClean','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1)" onMouseOut="hcms_swapImgRestore()" align="absmiddle" title="OK" alt="OK" /></td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>

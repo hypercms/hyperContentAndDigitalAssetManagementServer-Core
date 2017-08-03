@@ -148,7 +148,7 @@ if (@substr_count ($follow, "://") > 0 || @substr_count (strtolower ($follow), "
   echo "</script>\n";
   echo "</head>\n";
   echo "<body class=\"hcmsWorkplaceGeneric\">\n";
-  echo "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['you-will-be-forwarded-to'][$lang]).":</span>".$follow."<br \>\n";
+  echo "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['you-will-be-forwarded-to'][$lang])." </span>".$follow."<br \>\n";
   echo $add_code;
   echo "</body>\n</html>";
   exit;

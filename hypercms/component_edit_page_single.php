@@ -180,7 +180,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
       <td nowrap="nowrap" colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['single-component'][$lang]); ?></td>
     </tr>   
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-component'][$lang]); ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-component'][$lang]); ?></td>
       <td>
         <input type="text" name="comp_name" style="width:265px;" value="<?php echo $component_name; ?>" disabled="disabled" />
         <img onClick="openBrWindowComp('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['select'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select'][$lang]); ?>" />                          
@@ -196,7 +196,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
       <td nowrap="nowrap" class="hcmsHeadlineTiny" colspan="2"><?php echo getescapedtext ($hcms_lang['condition-for-personalization'][$lang]); ?></td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['customer-profile'][$lang]); ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['customer-profile'][$lang]); ?></td>
       <td>
         <select name="condition" style="width:265px;">
           <option value="">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>

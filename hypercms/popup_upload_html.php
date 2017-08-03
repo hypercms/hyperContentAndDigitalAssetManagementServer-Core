@@ -1206,7 +1206,7 @@ echo showtopbar ($title.": ".$object_name, $lang);
       <?php } 
       if ($cat == "comp" && $uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) { ?>
       <div class="inline">
-        <label><input type="checkbox" name="imageresize" id="imageresize" value="percentage" /> <?php echo getescapedtext ($hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]); ?></label>: <input name="imagepercentage" id="imagepercentage" type="text" size="3" maxlength="3" value="100" disabled="disabled" /> %
+        <label><input type="checkbox" name="imageresize" id="imageresize" value="percentage" /> <?php echo getescapedtext ($hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]); ?></label> <input name="imagepercentage" id="imagepercentage" type="text" size="3" maxlength="3" value="100" disabled="disabled" /> %
       </div>
       <br />
       <?php } ?>

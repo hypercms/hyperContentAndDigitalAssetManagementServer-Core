@@ -360,7 +360,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
       <td nowrap colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['link'][$lang], $charset, $lang); ?></td>
     </tr>      
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-linkurl'][$lang], $charset, $lang); ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-linkurl'][$lang], $charset, $lang); ?> </td>
       <td>
         <input type="text" name="link_name" value="<?php echo convertchars (getlocationname ($site, $linkhref, "page", "path"), $hcms_lang_codepage[$lang], $charset); ?>" style="width:220px;" />
         <img onClick="openBrWindowLink('preview','scrollbars=yes,resizable=yes,width=800,height=600', 'preview')" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonView" src="<?php echo getthemelocation(); ?>img/button_file_liveview.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" />
@@ -373,7 +373,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   if ($linktarget != "*Null*")
   {
     echo "<tr>\n";
-    echo "  <td>".getescapedtext ($hcms_lang['open-link'][$lang], $charset, $lang).":</td>\n";
+    echo "  <td>".getescapedtext ($hcms_lang['open-link'][$lang], $charset, $lang)." </td>\n";
     echo "  <td>\n";
     echo "    <select name=\"linktarget\" style=\"width:220px;\">\n";
 
@@ -402,7 +402,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   if ($linktext != "*Null*")
   {
     echo "<tr>\n";
-    echo "  <td>".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang).":</td>\n";
+    echo "  <td>".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang)." </td>\n";
     echo "  <td>\n";
     echo "    <input type=\"text\" name=\"linktext\" value=\"".$linktext."\" style=\"width:220px;\" />\n";
     echo "  </td>\n";

@@ -3,7 +3,8 @@
 $hcms_lang_name['th'] = "Thai";
 $hcms_lang_shortcut['th'] = "th";
 $hcms_lang_codepage['th'] = "utf-8";
-$hcms_lang_date['th'] = 'Y-m-d H:i:s';
+$hcms_lang_date['th'] = 'y-m-d H:i:s';
+$hcms_lang_direction['th'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['th'] = "Share";

@@ -3,7 +3,8 @@
 $hcms_lang_name['he'] = "Hebrew";
 $hcms_lang_shortcut['he'] = "he";
 $hcms_lang_codepage['he'] = "utf-8";
-$hcms_lang_date['he'] = 'Y-m-d H:i:s';
+$hcms_lang_date['he'] = 'y-m-d H:i:s';
+$hcms_lang_direction['he'] = "rtl";
 
 // Text for hyperCMS
 $hcms_lang['share']['he'] = "Share";

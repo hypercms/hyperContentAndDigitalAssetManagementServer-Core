@@ -116,35 +116,35 @@ if ($login != "" && $login != false)
       </td>
     </tr>
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?>: </td>
+      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?> </td>
       <td align="left" valign="top" class="hcmsHeadlineTiny"><?php echo $login; ?></td>
     </tr>
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>: </td>
+      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?> </td>
       <td align="left" valign="top" class="hcmsHeadlineTiny"><?php echo $realname; ?></td>
     </tr>
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>: </td>
+      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?> </td>
       <td align="left" valign="top" class="hcmsHeadlineTiny"><?php echo $email; ?></td>
     </tr>
     <?php 
     if ($site != "*Null*")
     {
       echo "<tr>
-      <td align=\"left\" valign=\"top\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['member-of-group'][$lang]).": </td>
+      <td align=\"left\" valign=\"top\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['member-of-group'][$lang])." </td>
       <td align=\"left\" valign=\"top\" class=\"hcmsHeadlineTiny\">".$usergroup."</td>
     </tr>\n"; 
     } 
     else
     {
       echo "<tr>
-      <td align=\"left\" valign=\"top\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['member-of-publication'][$lang]).": </td>
+      <td align=\"left\" valign=\"top\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['member-of-publication'][$lang])." </td>
       <td align=\"left\" valign=\"top\" class=\"hcmsHeadlineTiny\">".$site_names."</td>
     </tr>\n"; 
     }     
     ?>  
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['remove-user'][$lang]); ?>: </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['remove-user'][$lang]); ?> </td>
       <td><img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm(document.forms['deleteuser'], 'login');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" /></td>
     </tr>
   </table>

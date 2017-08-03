@@ -219,7 +219,7 @@ function selectAll ()
     <table border="0" cellspacing="2" cellpadding="0">
       <tr>
         <td colspan="2" nowrap="nowrap">
-          <?php echo getescapedtext ($hcms_lang['grant-access-to-selected-folders'][$lang]); ?>:
+          <?php echo getescapedtext ($hcms_lang['grant-access-to-selected-folders'][$lang]); ?> 
         </td>
       </tr>
       <tr>
@@ -263,7 +263,7 @@ function selectAll ()
       </tr>
       <tr>
         <td valign="top" nowrap="nowrap">
-          <?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?>:
+          <?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> 
         </td>
         <td>
           <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />

@@ -3,7 +3,8 @@
 $hcms_lang_name['bg'] = "Bulgarian";
 $hcms_lang_shortcut['bg'] = "bg";
 $hcms_lang_codepage['bg'] = "utf-8";
-$hcms_lang_date['bg'] = 'Y-m-d H:i:s';
+$hcms_lang_date['bg'] = 'y-m-d H:i:s';
+$hcms_lang_direction['bg'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['bg'] = "Share";

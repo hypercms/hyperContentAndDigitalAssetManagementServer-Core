@@ -278,7 +278,7 @@ function openBrWindowComp(winName, features, type)
       <td nowrap="nowrap" colspan="2" class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['multiple-component'][$lang]); ?></td>
     </tr>  
     <tr>
-      <td colspan="2" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-components'][$lang]); ?>:</td>
+      <td colspan="2" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-components'][$lang]); ?></td>
     </tr>  
     <tr>
       <td colspan="2">
@@ -329,7 +329,7 @@ function openBrWindowComp(winName, features, type)
     </tr>
     <tr>
       <td nowrap colspan="2">
-        <?php echo getescapedtext ($hcms_lang['customer-profile'][$lang]); ?>:
+        <?php echo getescapedtext ($hcms_lang['customer-profile'][$lang]); ?> 
         <select name="condition" style="width:265px;">
           <option value="">--------- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---------</option>
           <?php

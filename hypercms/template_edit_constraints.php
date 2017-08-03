@@ -78,11 +78,11 @@ function applyconstraints ()
       <td colspan="3" nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['unformatted-text-constraints'][$lang]); ?></td>
     </tr>
     <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['value'][$lang]); ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['value'][$lang]); ?> </td>
       <td nowrap="nowrap"><input name="required" type="checkbox" id="required" value="R" />&nbsp;<?php echo getescapedtext ($hcms_lang['required'][$lang]); ?></td>
     </tr>
     <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['accept'][$lang]); ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['accept'][$lang]); ?> </td>
       <td nowrap="nowrap"><input type="radio" name="accept" value="" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['anything'][$lang]); ?></td>
     </tr>
     <tr align="left" valign="top"> 

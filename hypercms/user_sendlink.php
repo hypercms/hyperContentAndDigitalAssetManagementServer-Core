@@ -1552,13 +1552,13 @@ $token_new = createtoken ($user);
         <div id="LayerRecipient">
           <table width="100%" border="0" cellspacing="0" cellpadding="2">
             <tr>
-              <td width="180" align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-e-mail-to'][$lang]); ?>:</td>
+              <td width="180" align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-e-mail-to'][$lang]); ?> </td>
               <td id="selectbox" align="left" valign="top">
                 <input type="text" value="" style="width:350px;" name="selector" id="selector" />
               </td>
             <tr>
               <td align="left" valign="top" nowrap="nowrap">
-                <?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?>:
+                <?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?> 
               </td>
               <td align="left" valign="top">
                 <div style="overflow:auto; max-height:120px;" id="emails">
@@ -1572,7 +1572,7 @@ $token_new = createtoken ($user);
           <table width="100%" border="0" cellspacing="0" cellpadding="2">
             <tr>
               <td width="180" align="left" valign="top" nowrap="nowrap">
-                <?php echo getescapedtext ($hcms_lang['attention'][$lang]); ?>:
+                <?php echo getescapedtext ($hcms_lang['attention'][$lang]); ?> 
               </td>
               <td align="left" valign="top">
                 <?php echo getescapedtext ($hcms_lang['the-message-will-be-sent-to-all-members-of-the-selected-group'][$lang]); ?>
@@ -1580,7 +1580,7 @@ $token_new = createtoken ($user);
             </tr>
             <tr>
               <td width="180" align="left" valign="top" nowrap="nowrap">
-                <?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?>:
+                <?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?> 
               </td>
               <td align="left" valign="top">
                 <select name="group_login" id="group_login" style="width:350px;">
@@ -1607,14 +1607,14 @@ $token_new = createtoken ($user);
           <table width="100%" border="0" cellspacing="0" cellpadding="2">
             <tr>
               <td width="180" align="left" valign="top" nowrap="nowrap">
-                <?php echo getescapedtext ($hcms_lang['attention'][$lang]); ?>:
+                <?php echo getescapedtext ($hcms_lang['attention'][$lang]); ?> 
               </td>
               <td align="left" valign="top">
                 <?php echo getescapedtext ($hcms_lang['these-are-the-settings-which-will-only-be-assigned-to-new-users'][$lang]); ?>
               </td>
             </tr>
             <tr>
-              <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['language-setting'][$lang]); ?>: </td>
+              <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['language-setting'][$lang]); ?> </td>
               <td align="left" valign="top">
                 <select name="language" style="width:350px;">
                 <?php
@@ -1634,7 +1634,7 @@ $token_new = createtoken ($user);
               </td>
             </tr>
             <tr>
-              <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['member-of-user-group'][$lang]); ?>: </td>
+              <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['member-of-user-group'][$lang]); ?> </td>
               <td align="left" valign="top">
               <?php
                 if ($allgroup_array != false && sizeof ($allgroup_array) > 0)
@@ -1764,13 +1764,13 @@ $token_new = createtoken ($user);
           </tr>
           <!-- CC, BCC -->
           <tr>
-            <td width="180" align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['cc-e-mail'][$lang]); ?>: </td>
+            <td width="180" align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['cc-e-mail'][$lang]); ?> </td>
             <td align="left" valign="top">
               <input type="text" name="email_cc" style="width:350px;" value="<?php echo $email_cc; ?>" />
             </td>
           </tr>
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['bcc-e-mail'][$lang]); ?>: </td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['bcc-e-mail'][$lang]); ?> </td>
             <td align="left" valign="top">
               <input type="text" name="email_bcc" style="width:350px;" value="<?php echo $email_bcc; ?>" />
             </td>
@@ -1782,13 +1782,13 @@ $token_new = createtoken ($user);
           </tr>
           <!-- TITLE and MESSAGE -->
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['subject'][$lang]); ?>:</td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['subject'][$lang]); ?> </td>
             <td align="left" valign="top">
               <input type="text" id="mail_title" name="mail_title" style="width:350px;" value="<?php echo $mail_title; ?>" />
             </td>
           </tr>
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['message'][$lang]); ?>:</td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['message'][$lang]); ?> </td>
             <td align="left" valign="top">
               <textarea id="mail_body" name="mail_body" rows="6" style="width:350px;"><?php
                                       
@@ -1821,7 +1821,7 @@ $token_new = createtoken ($user);
           </tr>
         <?php if ($page != "" || is_array ($multiobject_array)) { ?>
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-files-as'][$lang]); ?>:</td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-files-as'][$lang]); ?> </td>
             <td align="left" valign="top">
               <table border="0" cellpadding="0" cellspacing="0">
                 <?php if ($allow_download) { ?>
@@ -1835,7 +1835,7 @@ $token_new = createtoken ($user);
             </td>
           </tr>
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['period-of-validity'][$lang]); ?>:</td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['period-of-validity'][$lang]); ?> </td>
             <td align="left" valign="top">
               <label><input type="checkbox" name="valid_active" id="valid_active" value="yes" onclick="if (this.checked==true) { document.getElementById('valid_days').disabled=false; document.getElementById('valid_hours').disabled=false; } else { document.getElementById('valid_days').disabled=true; document.getElementById('valid_hours').disabled=true; }" />&nbsp;<?php echo getescapedtext ($hcms_lang['valid-for'][$lang]); ?></label>
               <input type="text" name="valid_days" id="valid_days" value="" style="width:40px;" disabled="disabled" />&nbsp;<?php echo getescapedtext ($hcms_lang['days-and'][$lang]); ?>&nbsp;
@@ -1843,7 +1843,7 @@ $token_new = createtoken ($user);
             </td>
           </tr>
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['meta-data'][$lang]); ?>:</td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['meta-data'][$lang]); ?> </td>
             <td align="left" valign="top">
               <label><input type="checkbox" name="include_metadata" value="yes" <?php if ($include_metadata == "yes") echo "checked=\"checked\""; ?>/> 
               <?php echo getescapedtext ($hcms_lang['include-in-message'][$lang]); ?></label>
@@ -1851,7 +1851,7 @@ $token_new = createtoken ($user);
           </tr>
           <?php if (checkrootpermission ('desktoptaskmgmt') && is_file ($mgmt_config['abs_path_cms']."task/task_list.php")) { ?>
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['create-new-task'][$lang]); ?>:</td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['create-new-task'][$lang]); ?> </td>
             <td align="left" valign="top">
               <label><input type="checkbox" name="create_task" value="yes" onclick="selectLinkType('type_access'); initLinkType();" <?php if ($create_task == "yes") echo "checked=\"checked\""; ?>/> 
               <?php echo getescapedtext ($hcms_lang['for-the-recipients-with-priority'][$lang]); ?></label>
@@ -1871,7 +1871,7 @@ $token_new = createtoken ($user);
           <?php } ?>        
         <?php } ?>
           <tr>
-            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?>: </td>
+            <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?> </td>
             <td align="left" valign="top">
               <img name="ButtonSubmit" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onClick="if (checkForm()) document.forms['mailForm'].submit();" onMouseOver="hcms_swapImage('ButtonSubmit','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" onMouseOut="hcms_swapImgRestore()" style="border:0; cursor:pointer;" align="absmiddle" title="OK" alt="OK" />
             </td>

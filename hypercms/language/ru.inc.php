@@ -3,7 +3,8 @@
 $hcms_lang_name['ru'] = "Russian";
 $hcms_lang_shortcut['ru'] = "ru";
 $hcms_lang_codepage['ru'] = "utf-8";
-$hcms_lang_date['ru'] = 'Y-m-d H:i:s';
+$hcms_lang_date['ru'] = 'y-m-d H:i:s';
+$hcms_lang_direction['ru'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['ru'] = "Share";

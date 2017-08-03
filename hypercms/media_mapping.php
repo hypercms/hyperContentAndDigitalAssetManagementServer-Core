@@ -123,7 +123,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="save" value="reindex" />
     <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
-    <?php echo getescapedtext ($hcms_lang['reindex-content-of-all-media-files'][$lang]); ?>: <img name="Button" onClick="checkReindex()" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /> 
+    <?php echo getescapedtext ($hcms_lang['reindex-content-of-all-media-files'][$lang]); ?> <img name="Button" onClick="checkReindex()" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /> 
   </form>
 </div>
 

@@ -3,7 +3,8 @@
 $hcms_lang_name['pl'] = "Polish";
 $hcms_lang_shortcut['pl'] = "pl";
 $hcms_lang_codepage['pl'] = "utf-8";
-$hcms_lang_date['pl'] = 'Y-m-d H:i:s';
+$hcms_lang_date['pl'] = 'y-m-d H:i:s';
+$hcms_lang_direction['pl'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['pl'] = "Share";

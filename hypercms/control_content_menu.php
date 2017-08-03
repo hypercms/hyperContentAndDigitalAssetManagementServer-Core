@@ -288,7 +288,7 @@ function checkForm_chars(text, exclude_chars)
     }
     
     addText = addText.substr(0, addText.length-separator.length);
-    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>: ") + addText);
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>") + "\n" + addText);
     return false;
   }
   else
@@ -391,7 +391,7 @@ if ($page == ".folder")
 // define object name
 if ($page != "")
 {
-  $item = $pagecomp.":";
+  $item = $pagecomp;
   $object_name = $pagename;
 }  
 // no object declared
@@ -410,12 +410,12 @@ else
       // location
       if ($cat == "page" || $cat == "comp")
       {
-        echo "    <td class=\"hcmsHeadline\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['location'][$lang]).": </td>
+        echo "    <td class=\"hcmsHeadline\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['location'][$lang])." </td>
       <td class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">".$location_name."</td>\n";
       }
       else 
       {
-        echo "    <td class=\"hcmsHeadline\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['location'][$lang]).": </td>
+        echo "    <td class=\"hcmsHeadline\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['location'][$lang])." </td>
       <td class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">".$pagecomp."</td>\n";    
       }
       ?>
@@ -757,7 +757,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
   <table border="0" cellspacing="2" cellpadding="0">
     <tr>
       <td>
-        <?php echo getescapedtext ($hcms_lang['new-object'][$lang]." (".$hcms_lang['name-without-ext'][$lang].")"); ?>:
+        <?php echo getescapedtext ($hcms_lang['new-object'][$lang]." (".$hcms_lang['name-without-ext'][$lang].")"); ?> 
       </td>
       <td>
         <input type="text" name="page" maxlength="<?php if (!is_int ($mgmt_config['max_digits_filename'])) echo $mgmt_config['max_digits_filename']; else echo "200"; ?>" style="width:220px;" />
@@ -766,7 +766,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     </tr>
     <tr>
       <td>
-        <?php echo getescapedtext ($hcms_lang['template-auto-preview'][$lang]); ?>:
+        <?php echo getescapedtext ($hcms_lang['template-auto-preview'][$lang]); ?> 
       </td>
       <td>
         <select name="template" onChange="hcms_jumpMenu('parent.frames[\'objFrame\']',this,0)" style="width:220px;">

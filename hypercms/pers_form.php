@@ -188,7 +188,7 @@ function openHelp ()
 echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;")
 ?>
 
-<p class=hcmsHeadline><?php echo $regpro; ?>: <?php echo $pers_name; ?></p>
+<p class=hcmsHeadline><?php echo $regpro; ?> <?php echo $pers_name; ?></p>
 
 <form id="editor" name="editor" method="post" action="<?php echo $action; ?>">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />

@@ -3,7 +3,8 @@
 $hcms_lang_name['cz'] = "Czech";
 $hcms_lang_shortcut['cz'] = "cz";
 $hcms_lang_codepage['cz'] = "utf-8";
-$hcms_lang_date['cz'] = 'Y-m-d H:i:s';
+$hcms_lang_date['cz'] = 'y-m-d H:i:s';
+$hcms_lang_direction['cz'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['cz'] = "Share";

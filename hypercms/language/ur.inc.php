@@ -3,7 +3,8 @@
 $hcms_lang_name['ur'] = "Urdu";
 $hcms_lang_shortcut['ur'] = "ur";
 $hcms_lang_codepage['ur'] = "utf-8";
-$hcms_lang_date['ur'] = 'Y-m-d H:i:s';
+$hcms_lang_date['ur'] = 'y-m-d H:i:s';
+$hcms_lang_direction[''] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['ur'] = "Share";

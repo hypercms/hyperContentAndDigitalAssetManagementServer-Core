@@ -90,7 +90,7 @@ elseif ($action == "item_delete")
 <!--
 function warning_delete()
 {
-  check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>:\r<?php echo getescapedtext ($hcms_lang['the-selected-item-will-be-removed'][$lang]); ?>\r<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-the-template'][$lang]); ?>"));
+  check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>\n <?php echo getescapedtext ($hcms_lang['the-selected-item-will-be-removed'][$lang]); ?>\n <?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-the-template'][$lang]); ?>"));
   if (check == true) document.forms['item_delete'].submit();
   return check;
 }
@@ -113,7 +113,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr (0, addText.length-separator.length);
-		alert ("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>: "+addText);
+		alert ("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>\n " + addText);
 		return false;
 	}
   else
@@ -208,7 +208,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <tr>
       <td valign="middle" nowrap="nowrap">
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span><br />
-        <?php echo $item_type." ".getescapedtext ($hcms_lang['name'][$lang]); ?>: 
+        <?php echo $item_type." ".getescapedtext ($hcms_lang['name'][$lang]); ?> 
         <input type="text" name="persname" maxlength="100" style="width:220px;" />
         <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_item_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
@@ -230,7 +230,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <tr>
       <td valign="middle" nowrap="nowrap">
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
-        <?php echo $item_type; ?>:
+        <?php echo $item_type; ?> 
         <select name="persfile" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
           <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
           <?php
@@ -298,7 +298,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <tr>
       <td valign="middle" nowrap="nowrap">
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
-        <?php echo $item_type; ?>:
+        <?php echo $item_type; ?> 
         <select name="persfile" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
           <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
           <?php

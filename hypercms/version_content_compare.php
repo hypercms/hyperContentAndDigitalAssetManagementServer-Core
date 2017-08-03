@@ -184,7 +184,7 @@ else echo showvideoplayer_head (false);
 <!-- content -->
 <div class="hcmsWorkplaceFrame">
 <?php
-if (is_array ($date_array)) echo "<p><span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['comparison-of-versions'][$lang]).": </span>".$date_array[0]." / ".$date_array[1]."</p>\n";
+if (is_array ($date_array)) echo "<p><span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['comparison-of-versions'][$lang])." </span>".$date_array[0]." / ".$date_array[1]."</p>\n";
 
 $showmedia_array = array();
 $i = 0;

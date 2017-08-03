@@ -60,7 +60,7 @@ function applyconstraints ()
       <td colspan="3" nowrap="nowrap" class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['assigned-media-types'][$lang]); ?></td>
     </tr>
     <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['select-media-type'][$lang]); ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['select-media-type'][$lang]); ?> </td>
       <td nowrap="nowrap">
       <select name="mediatype">
         <option value=""><?php echo getescapedtext ($hcms_lang['all-types'][$lang]); ?></option>

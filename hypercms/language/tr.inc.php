@@ -3,7 +3,8 @@
 $hcms_lang_name['tr'] = "Turkish";
 $hcms_lang_shortcut['tr'] = "tr";
 $hcms_lang_codepage['tr'] = "utf-8";
-$hcms_lang_date['tr'] = 'Y-m-d H:i:s';
+$hcms_lang_date['tr'] = 'y-m-d H:i:s';
+$hcms_lang_direction['tr'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['tr'] = "Share";

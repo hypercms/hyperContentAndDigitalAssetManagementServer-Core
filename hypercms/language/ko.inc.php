@@ -3,7 +3,8 @@
 $hcms_lang_name['ko'] = "Korean";
 $hcms_lang_shortcut['ko'] = "ko";
 $hcms_lang_codepage['ko'] = "utf-8";
-$hcms_lang_date['ko'] = 'Y-m-d H:i:s';
+$hcms_lang_date['ko'] = 'y-m-d H:i:s';
+$hcms_lang_direction['ko'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['ko'] = "Share";

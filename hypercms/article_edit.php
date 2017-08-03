@@ -153,7 +153,7 @@ function validateForm(select, min, max)
   if (errors) 
   {
     select.focus();    
-    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang], $charset, $lang); ?>:\n' + errors));
+    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang], $charset, $lang); ?>\n' + errors));
   }
   else
   {
@@ -219,7 +219,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
       </td>
     </tr>        
     <tr>
-      <td><?php echo getescapedtext ($hcms_lang['title-will-not-be-shown'][$lang], $charset, $lang); ?>:</td>
+      <td><?php echo getescapedtext ($hcms_lang['title-will-not-be-shown'][$lang], $charset, $lang); ?></td>
       <td>
         <input type="text" name="arttitle[<?php echo $artid; ?>]" value="<?php echo $arttitle; ?>" size="40" />
       </td>
@@ -250,7 +250,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
       </td>
     </tr>
     <tr>
-      <td><?php echo getescapedtext ($hcms_lang['save-release-settings'][$lang], $charset, $lang); ?>:</td>
+      <td><?php echo getescapedtext ($hcms_lang['save-release-settings'][$lang], $charset, $lang); ?></td>
       <td>
         &nbsp;<img name="Button" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" onClick="submitform();" />        
       </td>

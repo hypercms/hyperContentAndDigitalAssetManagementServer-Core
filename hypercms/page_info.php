@@ -148,9 +148,9 @@ if ($pagestore != false)
     
     if (!empty ($contentfile))
     {                
-      echo "<tr><td valign=top>".getescapedtext ($hcms_lang['owner'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$owner[0]."</td></tr>\n";
-      echo "<tr><td valign=top>".getescapedtext ($hcms_lang['modified'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$last_updated[0]."</td></tr>\n";
-      echo "<tr><td valign=top>".getescapedtext ($hcms_lang['published'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$last_published[0]."</td></tr>\n"; 
+      echo "<tr><td valign=top>".getescapedtext ($hcms_lang['owner'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=top>".$owner[0]."</td></tr>\n";
+      echo "<tr><td valign=top>".getescapedtext ($hcms_lang['modified'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=top>".$last_updated[0]."</td></tr>\n";
+      echo "<tr><td valign=top>".getescapedtext ($hcms_lang['published'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=top>".$last_published[0]."</td></tr>\n"; 
     }
  
     // if object will be deleted automatically
@@ -158,13 +158,13 @@ if ($pagestore != false)
 
     if (is_array ($queue) && !empty ($queue[0]['date']))
     {
-      echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['will-be-removed'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".substr ($queue[0]['date'], 0, -3)."</td></tr>\n";
+      echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['will-be-removed'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".substr ($queue[0]['date'], 0, -3)."</td></tr>\n";
     }
     
     // container
     if (!empty ($contentfile))
     {
-      echo "<tr><td valign=top>".getescapedtext ($hcms_lang['container-id'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$container_id."</td></tr>\n";    
+      echo "<tr><td valign=top>".getescapedtext ($hcms_lang['container-id'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=top>".$container_id."</td></tr>\n";    
     }
   
     if (!empty ($template))
@@ -191,7 +191,7 @@ if ($pagestore != false)
         $pagecomp = getescapedtext ($hcms_lang['meta-data-template'][$lang]);
       }    
   
-      echo "<tr><td valign=top>".$pagecomp.": </td><td class=\"hcmsHeadlineTiny\" valign=top>".$tpl_name."</td></tr>\n";
+      echo "<tr><td valign=top>".$pagecomp." </td><td class=\"hcmsHeadlineTiny\" valign=top>".$tpl_name."</td></tr>\n";
     }
     
     // file size    
@@ -209,8 +209,8 @@ if ($pagestore != false)
     
     $filecount = number_format ($filecount, 0, "", ".");
   
-    if ($filesize > 0) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['file-size'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filesize."</td></tr>\n";
-    if ($filecount > 0) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['number-of-files'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filecount."</td></tr>\n";
+    if ($filesize > 0) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['file-size'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filesize."</td></tr>\n";
+    if ($filecount > 0) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['number-of-files'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filecount."</td></tr>\n";
   
     // direct link
     if (!empty ($media) && $mgmt_config[$site]['dam'] != true) $filedirectlink = getmedialocation ($site, $media, "url_path_media").$site."/".$media;
@@ -231,30 +231,30 @@ if ($pagestore != false)
     }
 
     // file access links
-    if (!empty ($filedirectlink)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['direct-link'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filedirectlink."</td></tr>\n";
-    if (!empty ($filewrapperlink)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['wrapper-link'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filewrapperlink."</td></tr>\n";
-    if (!empty ($filewrapperdownload)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['download-link'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filewrapperdownload."</td></tr>\n";
-    if (!empty ($fileaccesslink)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['access-link'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$fileaccesslink."</td></tr>\n";
+    if (!empty ($filedirectlink)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['direct-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filedirectlink."</td></tr>\n";
+    if (!empty ($filewrapperlink)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['wrapper-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filewrapperlink."</td></tr>\n";
+    if (!empty ($filewrapperdownload)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['download-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filewrapperdownload."</td></tr>\n";
+    if (!empty ($fileaccesslink)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['access-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$fileaccesslink."</td></tr>\n";
  
     // MD5 Checksum of media file
-    if (!empty ($fileMD5)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['md5-code-of-the-file'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$fileMD5."</td></tr>\n";
+    if (!empty ($fileMD5)) echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['md5-code-of-the-file'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$fileMD5."</td></tr>\n";
     
     // show connected objects button
     if ($cat == "comp" && $mgmt_config[$site]['linkengine'] == true)
     {
-      echo "<tr><td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['show-where-used'][$lang]).": </td><td><img name=\"Button1\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_inclusions.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button1','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
+      echo "<tr><td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['show-where-used'][$lang])." </td><td><img name=\"Button1\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_inclusions.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button1','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
     
     // show container usage button
     if (!empty ($contentfile))
     {
-      echo "<tr><td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['container-usage'][$lang]).": </td><td><img name=\"Button2\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_container.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button2','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
+      echo "<tr><td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['container-usage'][$lang])." </td><td><img name=\"Button2\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_container.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button2','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
     
     // show statistics button
     if ($cat == "comp" && $mgmt_config['db_connect_rdbms'] != "" && !empty ($container_id))
     {
-      echo "<tr><td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['access-statistics'][$lang]).": </td><td><img name=\"Button3\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_stats.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button3','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
+      echo "<tr><td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['access-statistics'][$lang])." </td><td><img name=\"Button3\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_stats.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button3','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
 
     // show youtube statistics button (requires youtube connector)
@@ -267,25 +267,25 @@ if ($pagestore != false)
       $temp = selectcontent ($contentdata, "<text>", "<text_id>", "Youtube-ID");
       if (!empty ($temp[0])) $temp = getcontent ($temp[0], "<textcontent>");
 
-      if (!empty ($temp[0])) echo "<tr><td nowrap=\"nowrap\">Youtube Link: </td><td><img name=\"Button6\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"hcms_openWindow('".get_youtube_videourl($site, $temp[0])."', '', 'scrollbars=yes,resizable=yes', 640, 640);\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button6','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
+      if (!empty ($temp[0])) echo "<tr><td nowrap=\"nowrap\">Youtube Link </td><td><img name=\"Button6\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"hcms_openWindow('".get_youtube_videourl($site, $temp[0])."', '', 'scrollbars=yes,resizable=yes', 640, 640);\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button6','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
     
     // show meta information button
     if ($cat == "comp" && !empty ($media))
     {
-      echo "<tr><td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['meta-information'][$lang]).": </td><td><img name=\"Button4\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_metadata.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button4','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
+      echo "<tr><td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['meta-information'][$lang])." </td><td><img name=\"Button4\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_metadata.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button4','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
     
     // show recipients button
     if ($cat == "comp" && !empty ($mgmt_config['db_connect_rdbms']))
     {
-      echo "<tr><td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['recipients'][$lang]).": </td><td><img name=\"Button5\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_recipients.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button5','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
+      echo "<tr><td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['recipients'][$lang])." </td><td><img name=\"Button5\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_recipients.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button5','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
   }
   else
   {
-    echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['modified'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".date ("Y-m-d H:i", filemtime ($location.$page))."</td></tr>\n";
-    echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['file-size'][$lang]).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".filesize ($location.$page)." bytes</td></tr>\n";
+    echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['modified'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".date ("Y-m-d H:i", filemtime ($location.$page))."</td></tr>\n";
+    echo "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['file-size'][$lang])." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".filesize ($location.$page)." bytes</td></tr>\n";
   }
   
   echo "</table>\n";

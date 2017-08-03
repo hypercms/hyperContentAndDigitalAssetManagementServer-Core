@@ -97,7 +97,7 @@ function warning_mediacat_delete()
   }
   else
   {
-    check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>:\r<?php echo getescapedtext ($hcms_lang['the-selected-item-will-be-removed'][$lang]); ?>\r<?php echo getescapedtext ($hcms_lang['before-you-can-delete-the-category-it-must-not-hold-any-files'][$lang]); ?>\r<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-this-item'][$lang]); ?>"));
+    check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>\n <?php echo getescapedtext ($hcms_lang['the-selected-item-will-be-removed'][$lang]); ?>\n <?php echo getescapedtext ($hcms_lang['before-you-can-delete-the-category-it-must-not-hold-any-files'][$lang]); ?>\n <?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-this-item'][$lang]); ?>"));
     if (check == true) form.submit();
     return true;
   }
@@ -121,7 +121,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>:\r") + addText);
+		alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>\n ") + addText);
 		return false;
 	}
   else
@@ -327,7 +327,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
     <tr>
       <td valign="middle" nowrap="nowrap">
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['create-media-category'][$lang]); ?></span><br />
-        <?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>:
+        <?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?> 
         <input type="text" name="mediacat_name" maxlength="100" style="width:150px;">
         <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" value="Submit" onclick="checkForm_mediacat_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
@@ -349,7 +349,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
     <tr>
       <td valign="middle" nowrap="nowrap">
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete-media-category'][$lang]); ?></span><br />
-        <?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>:
+        <?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?> 
         <select name="mediacat_name" style="width:150px;">
           <option value="">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
           <?php
@@ -396,7 +396,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
     </tr>
     <tr>
       <td width="100" nowrap="nowrap">
-        <?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>: 
+        <?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?> 
       </td>
       <td>
         <select name="mediacat_name_curr" style="width:150px;" onChange="insertCat()">
@@ -416,7 +416,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
     </tr>
     <tr>
       <td nowrap="nowrap">
-        <?php echo getescapedtext ($hcms_lang['rename-selected-category'][$lang]); ?>: 
+        <?php echo getescapedtext ($hcms_lang['rename-selected-category'][$lang]); ?> 
       </td>
       <td>
         <input type="text" name="mediacat_name" maxlength="100" style="width:150px;" />
@@ -442,7 +442,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
     </tr>  
     <tr>
       <td width="100" nowrap="nowrap">
-        <?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?>: 
+        <?php echo getescapedtext ($hcms_lang['media-category'][$lang]); ?> 
       </td>
       <td>
         <select name="mediacat_name" style="width:150px;">
@@ -462,7 +462,7 @@ echo showmessage ($show, 650, 80, $lang, "position:fixed; left:15px; top:5px; ")
     </tr>
     <tr>
       <td nowrap="nowrap">
-        <?php echo getescapedtext ($hcms_lang['upload-media-file'][$lang]); ?>:
+        <?php echo getescapedtext ($hcms_lang['upload-media-file'][$lang]); ?> 
       </td>
       <td>
         <input type="file" name="file" size="25" />

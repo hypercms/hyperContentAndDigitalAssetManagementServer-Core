@@ -3,7 +3,8 @@
 $hcms_lang_name['sq'] = "Albanian";
 $hcms_lang_shortcut['sq'] = "sq";
 $hcms_lang_codepage['sq'] = "utf-8";
-$hcms_lang_date['sq'] = 'Y-m-d H:i:s';
+$hcms_lang_date['sq'] = 'y-m-d H:i:s';
+$hcms_lang_direction['sq'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['sq'] = "Share";

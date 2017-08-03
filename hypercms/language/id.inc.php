@@ -3,7 +3,8 @@
 $hcms_lang_name['id'] = "Indonesian";
 $hcms_lang_shortcut['id'] = "id";
 $hcms_lang_codepage['id'] = "utf-8";
-$hcms_lang_date['id'] = 'Y-m-d H:i:s';
+$hcms_lang_date['id'] = 'y-m-d H:i:s';
+$hcms_lang_direction['id'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['id'] = "Share";

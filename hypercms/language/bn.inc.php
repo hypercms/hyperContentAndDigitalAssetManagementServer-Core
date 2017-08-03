@@ -3,7 +3,8 @@
 $hcms_lang_name['bn'] = "Bengali";
 $hcms_lang_shortcut['bn'] = "bn";
 $hcms_lang_codepage['bn'] = "utf-8";
-$hcms_lang_date['bn'] = 'Y-m-d H:i:s';
+$hcms_lang_date['bn'] = 'y-m-d H:i:s';
+$hcms_lang_direction[''] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['bn'] = "Share";

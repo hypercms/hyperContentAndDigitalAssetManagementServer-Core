@@ -184,7 +184,7 @@ function checkForm_chars(text, exclude_chars)
     }
     
     addText = addText.substr(0, addText.length-separator.length);
-    alert("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>:\r"+addText);
+    alert("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>\n " + addText);
     return false;
   }
   else
@@ -243,7 +243,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
   
   <table width="100%" border="0" cellspacing="2" cellpadding="0">
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['select-hierarchy'][$lang]); ?>:</td>          
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['select-hierarchy'][$lang]); ?> </td>          
     </tr>    
     <tr>
       <td>
@@ -265,7 +265,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
       </td>
     </tr>
       <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>:</td>          
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['name'][$lang]); ?> </td>          
     </tr>     
     <tr>
       <td>
@@ -381,7 +381,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
     </tr>
     <tr>
       <td>
-        <?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?>:
+        <?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> 
         <img name="Button" type="button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="savehierarchy()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
       </td>
     </tr>

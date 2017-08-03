@@ -3,7 +3,8 @@
 $hcms_lang_name['so'] = "Somali";
 $hcms_lang_shortcut['so'] = "so";
 $hcms_lang_codepage['so'] = "utf-8";
-$hcms_lang_date['so'] = 'Y-m-d H:i:s';
+$hcms_lang_date['so'] = 'y-m-d H:i:s';
+$hcms_lang_direction['so'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['so'] = "Share";

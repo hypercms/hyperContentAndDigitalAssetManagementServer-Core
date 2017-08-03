@@ -3,7 +3,8 @@
 $hcms_lang_name['nl'] = "Dutch";
 $hcms_lang_shortcut['nl'] = "nl";
 $hcms_lang_codepage['nl'] = "utf-8";
-$hcms_lang_date['nl'] = 'Y-m-d H:i:s';
+$hcms_lang_date['nl'] = 'y-m-d H:i:s';
+$hcms_lang_direction['nl'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['nl'] = "Share";

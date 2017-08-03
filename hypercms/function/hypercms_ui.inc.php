@@ -559,9 +559,9 @@ function showobject ($site, $location, $page, $cat="", $name="")
     $mediaview = "<table>
     <tr><td align=\"left\" colspan=\"2\"><img src=\"".getthemelocation()."img/".$file_info['icon_large']."\" alt=\"".$file_info['name']."\" title=\"".$file_info['name']."\" /></td></tr>
     <tr><td align=\"middle\" colspan=\"2\" class=\"hcmsHeadlineTiny\">".$name."</td></tr>
-    <tr><td>".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang).": </td><td class=\"hcmsHeadlineTiny\">".$filetime."</td></tr>\n";
-    if (!empty ($filesize) && $filesize > 0) $mediaview .= "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filesize."</td></tr>\n";
-    if (!empty ($filecount) && $filecount > 1) $mediaview .= "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['number-of-files'][$lang], $hcms_charset, $lang).": </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filecount."</td></tr>\n";
+    <tr><td>".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang)." </td><td class=\"hcmsHeadlineTiny\">".$filetime."</td></tr>\n";
+    if (!empty ($filesize) && $filesize > 0) $mediaview .= "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang)." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filesize."</td></tr>\n";
+    if (!empty ($filecount) && $filecount > 1) $mediaview .= "<tr><td valign=\"top\">".getescapedtext ($hcms_lang['number-of-files'][$lang], $hcms_charset, $lang)." </td><td class=\"hcmsHeadlineTiny\" valign=\"top\">".$filecount."</td></tr>\n";
     $mediaview .= "</table>\n";
     
     return $mediaview;
@@ -2162,27 +2162,27 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "    <table>";
         if (!empty ($owner[0])) $mediaview .= "
         <tr>
-        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['owner'][$lang], $hcms_charset, $lang).": </td>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['owner'][$lang], $hcms_charset, $lang)." </td>
         <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$owner[0]."</td>
         </tr>";
         $mediaview .= "
         <tr>
-        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang).": </td>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['modified'][$lang], $hcms_charset, $lang)." </td>
         <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$mediafiletime."</td>
         </tr>";
         if (!empty ($date_published[0])) $mediaview .= "
         <tr>
-        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['published'][$lang], $hcms_charset, $lang).": </td>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['published'][$lang], $hcms_charset, $lang)." </td>
         <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$date_published[0]."</td>
         </tr>";
         if (!empty ($date_delete)) $mediaview .= "
         <tr>
-        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['will-be-removed'][$lang], $hcms_charset, $lang).": </td>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['will-be-removed'][$lang], $hcms_charset, $lang)." </td>
         <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$date_delete."</td>
         </tr>";
         $mediaview .= "
         <tr>
-        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang).": </td>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['file-size'][$lang], $hcms_charset, $lang)." </td>
         <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$mediafilesize."</td>
         </tr>\n";
   
@@ -2191,21 +2191,21 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           // size in pixel of media file
           $mediaview .= "
         <tr>
-        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang).": </td>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." </td>
         <td class=\"hcmsHeadlineTiny\" style=\"text-align:left; white-space:nowrap;\">".$width_orig."x".$height_orig." px</td>
         </tr>\n";
         
           // size in cm
           $mediaview .= "
         <tr>
-        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." (72 dpi): </td>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." (72 dpi) </td>
         <td class=\"hcmsHeadlineTiny\">".round(($width_orig / 72 * 2.54), 1)."x".round(($height_orig / 72 * 2.54), 1)." cm, ".round(($width_orig / 72), 1)."x".round(($height_orig / 72), 1)." inch</td>
         </tr>\n";
         
           // size in inch
           $mediaview .= "
         <tr>
-        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." (300 dpi): </td>
+        <td style=\"".$col_width."text-align:left; white-space:nowrap;\">".getescapedtext ($hcms_lang['size'][$lang], $hcms_charset, $lang)." (300 dpi) </td>
         <td class=\"hcmsHeadlineTiny\">".round(($width_orig / 300 * 2.54), 1)."x".round(($height_orig / 300 * 2.54), 1)." cm, ".round(($width_orig / 300), 1)."x".round(($height_orig / 300), 1)." inch</td>
         </tr>\n";
         }
@@ -2450,7 +2450,7 @@ $(document).ready(function()
       // search options
       if (($compcat == "media" && $mediatype == "") || $mgmt_config[$site]['dam']) $result .= "
         <div id=\"searchOptions\" class=\"hcmsInfoBox\" style=\"width:210px; margin:2px 0px 8px 0px; display:none;\">
-          &nbsp;<b>".$hcms_lang['search-for-file-type'][$lang].":</b><br />
+          &nbsp;<b>".$hcms_lang['search-for-file-type'][$lang]."</b><br />
           <input type=\"checkbox\" name=\"search_format[object]\" value=\"comp\" checked=\"checked\" />".$hcms_lang['components'][$lang]."<br />
           <input type=\"checkbox\" name=\"search_format[image]\" value=\"image\" checked=\"checked\" />".$hcms_lang['image'][$lang]."<br />
           <input type=\"checkbox\" name=\"search_format[document]\" value=\"document\" checked=\"checked\" />".$hcms_lang['document'][$lang]."<br />
@@ -4101,7 +4101,7 @@ function showAPIdocs ($file, $return="html")
         foreach ($function as $name=>$value)
         {
           $result .= "<h3>".$name."</h3><br/>\n";
-          $result .= "<b>Syntax:</b><br/>\n";          
+          $result .= "<b>Syntax</b><br/>\n";          
           $function[$name] = str_replace (",", ", ", $function[$name]);
           $result .= $function[$name]."<br/><br/>\n";
           
@@ -4110,7 +4110,7 @@ function showAPIdocs ($file, $return="html")
           
           if (is_array ($input_vars) && sizeof ($input_vars) > 0)
           {
-            $result .= "<b>Input parameters:</b><br/>\n";
+            $result .= "<b>Input parameters</b><br/>\n";
             
             $var_text = explode (", ", $input[$name]);
             
@@ -4139,19 +4139,19 @@ function showAPIdocs ($file, $return="html")
           
           if (!empty ($global[$name]))
           {
-            $result .= "<b>global input parameters:</b><br/>\n";
+            $result .= "<b>global input parameters</b><br/>\n";
             $result .= str_replace (", ", "<br/>\n", $global[$name]);
             $result .= "<br/><br/>\n";
           }
           
-          $result .= "<b>Output:</b><br/>\n";
+          $result .= "<b>Output</b><br/>\n";
           $result .= str_replace (", ", "<br/>\n", $output[$name]);
           $result .= "<br/><br/>\n";
           
           if (!empty ($description[$name]))
           {
             $description[$name] = str_replace (",", ", ", $description[$name]);
-            $result .= "<b>Description:</b><br/>\n";
+            $result .= "<b>Description</b><br/>\n";
             $result .= nl2br (trim ($description[$name]))."<br/><br/>\n";
           }
         }

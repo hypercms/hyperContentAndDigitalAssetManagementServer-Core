@@ -547,7 +547,7 @@ Release 11/2014
 - Replacement of all framesets by iframes
 - Bug fix: Error messages on group_access_form, worklfow_folder_form were not shown since object IDs and object paths were mixed up
 - Implementation of resize function for group_access_explorer
-- Bug fix: Search_explorer used wrong inital_dir for the component root
+- Bug fix: Search_explorer used wrong initial_dir for the component root
 - Improvements in inline editing, dynamically adjust width and height of textarea after loading the inline element
 
 Version 5.7.1
@@ -1244,7 +1244,7 @@ Release 01/2016
 - Update of user manuals: Installation guide and users guide
 - Bug fix: Function indexcontent did not use the content container from function setmetadata, causing meta data from files not be saved
 - Implementation of new input parameter for content container and container save in function setmetadata
-- Bug fix: Setting $mgmt_config[$site_name]['upload_userinput'] in site_edit_from has not been initalized
+- Bug fix: Setting $mgmt_config[$site_name]['upload_userinput'] in site_edit_from has not been initialized
 - Implementation of result validation of object in function uploadfile
 
 Version 6.0.4
@@ -1257,7 +1257,7 @@ Release 02/2016
 - Bug fix: Function HTTP_Post did not verify the fsockopen result
 - Bug fix: Install script could not create demo website due to a reset of the $mgmt_config array
 - Changed license verification in function userlogin to avoid issue when license server cannot be accessed
-- Bug fix: Initalization of output varibles in function showobject
+- Bug fix: Initialization of output varibles in function showobject
 - Bug fix: Verification of variable $tpl_name has been missing in explorer
 - Improvements in function tpl_globals_extended of the template engine
 - Bug fix: Button for image and media editing used AJAX save methode of form data and did not forward to image or media editing view
@@ -2069,7 +2069,7 @@ Release 03/2017
 - Implementation of new JS functions for the activation of the different search tabs and features in explorer
 - Removed second action attribute in search form for recipient search in explorer
 - Implementation of save search deactivation after each saved search
-- Modification of open search tabs after initalization of explorer
+- Modification of open search tabs after initialization of explorer
 - New configuration of search tab button actions in explorer
 - Implementation of open and close action for plus/minus buttuns of search tabs in explorer
 - Implementation of lock feature for submit of search if all search tabs in explorer are closed
@@ -2078,7 +2078,7 @@ Release 03/2017
 - Implementation of a processing message for each file upload in popup_upload_html
 - Modification of CSS for file upload bar
 - Modification of viewport scale in popup_upload_html
-- Bug fix: The action name has not been initalized in explorer leading to a wrong search action
+- Bug fix: The action name has not been initialized in explorer leading to a wrong search action
 - Bug fix: ImageMagick failed to convert PSD files since it requires the layer [0] after the source file name
 
 Version 6.2.4
@@ -2133,7 +2133,7 @@ Release 04/2017
 - Bug fix: Function manipulateallobjects in main API did not save error log entries
 - Bug fix: Function manipulateallobjects in main API did paste folders correctly when using the same paste action multiple times
 - Bug fix: Function processobjects in main API did not process folder objects
-- Bug fix: Function rdbms_searchcontent in DB Connect did not initalize array element for sarch queries
+- Bug fix: Function rdbms_searchcontent in DB Connect did not initialize array element for sarch queries
 - Bug fix: Function rdbms_searchcontent in DB Connect did not filter array elements for array 'sql_expr_advanced'
 - Bug fix: Paste of text in the search form has not been working since the JS function hcms_clearSelection has been used in the Navigator for left click events
 
@@ -2187,17 +2187,27 @@ Release 06/2017
 - Implementation of JQuery zoomcrop for preview of edited images
 - Implementation of new div layer instead of new popup window for geolocation statistics of media objects
 - Design modification of geolocation viewer
-- Implementation of new JS function hcms_getViewportWidth and hcms_setViewportScale to set inital scale factor for mobile devices
+- Implementation of new JS function hcms_getViewportWidth and hcms_setViewportScale to set initial scale factor for mobile devices
 - Implementation of dynamic initial viewport scaling based on screen width
 - Implementation of iPhone document support in function showmedia in UI API
 - Implementation of new service setviewport
 - Implementation of new JS function in frameset_content to post viewport width to service setviewport
 - Implementation of viewport width support in template engine in order to render forms and media based on the viewport width
 - Implementation of new session variable hcms_temp_viewportwidth to store the width of the viewport
-- Bug fix: Variable $pageview_parameter has not been initalized in template engine
+- Bug fix: Variable $pageview_parameter has not been initialized in template engine
 - Bug fix: Function rdbms_setdeletedobjects did not correct the file name
+
+Version 6.2.8
+Release 06/2017
+- Implementation of 5 seconds timeout for IP gelocation service call
+- Implemenentation of new paramater for write direction of each language
+- Implemenentation of new Navy design theme
+- Modifications in Arabic language file
+- Modifications in Navigator in order to dislpay 'undefined' for unsupported entries of meta data hierarchies
+- Removed all double quotes of titles/lables for fields in the systems GUI
+- Bug fix: The translation service plugin did request an image via non SSL connection (Requires refresh of plugin data in the plugin management)
 */
 
 // current version
-$mgmt_config['version'] = "Version 6.2.7";
+$mgmt_config['version'] = "Version 6.2.8";
 ?>

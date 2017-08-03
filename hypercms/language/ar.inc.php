@@ -3,10 +3,11 @@
 $hcms_lang_name['ar'] = "Arabic";
 $hcms_lang_shortcut['ar'] = "ar";
 $hcms_lang_codepage['ar'] = "utf-8";
-$hcms_lang_date['ar'] = 'Y-m-d H:i:s';
+$hcms_lang_date['ar'] = 'y-m-d H:i:s';
+$hcms_lang_direction['ar'] = "rtl";
 
 // Text for hyperCMS
-$hcms_lang['share']['ar'] = "Share";
+$hcms_lang['share']['ar'] = "تقاسم";
 $hcms_lang['social-media-sharing']['ar'] = "Social Media sharing";
 $hcms_lang['remember-me']['ar'] = "تذكرنى";
 $hcms_lang['my-recent-tasks']['ar'] = "المهام الاخيرة";
@@ -511,7 +512,7 @@ $hcms_lang['meta-data-templates']['ar'] = "نماذج البيانات الوص�
 $hcms_lang['publishing-queue']['ar'] = "نشر قائمة الانتظار";
 $hcms_lang['collapse']['ar'] = "انهيار";
 $hcms_lang['expand']['ar'] = "توسيع";
-$hcms_lang['plugins']['ar'] = "plugins";
+$hcms_lang['plugins']['ar'] = "الإضافات";
 $hcms_lang['importexport']['ar'] = "استيراد/تصدير";
 $hcms_lang['template-includes']['ar'] = "يتضمن نموذج";
 $hcms_lang['home']['ar'] = "المنزل";

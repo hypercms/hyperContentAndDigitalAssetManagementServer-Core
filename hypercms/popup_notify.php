@@ -180,7 +180,7 @@ echo showtopbar ($hcms_lang['notify-me-on-these-events'][$lang], $lang);
     </tr>
     <tr>  
       <td align="left">  
-        &nbsp;<?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?>: <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+        &nbsp;<?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
       </td>
     </tr>
   </table>

@@ -515,7 +515,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
   <br />  
   <table border="0" cellspacing="0" cellpadding="3" width="100%">
     <tr >
-      <td align="left" valign="top" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['note'][$lang]); ?>:</td>
+      <td align="left" valign="top" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['note'][$lang]); ?> </td>
       <td align="left" valign="top"><?php echo getescapedtext ($hcms_lang['each-content-identification-name-of-a-text-media-link-or-component-tag-set-must-be-unique-inside-a-page-component-or-article'][$lang]); ?></td>
     </tr>
   </table>

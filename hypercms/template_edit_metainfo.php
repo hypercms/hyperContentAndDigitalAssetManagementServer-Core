@@ -60,7 +60,7 @@ function applyconstraints ()
       <td colspan="3" nowrap="nowrap" class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['assign-meta-information'][$lang]); ?></td>
     </tr>
     <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['select-meta-information'][$lang]); ?>:</td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['select-meta-information'][$lang]); ?> </td>
       <td>
         <select name="metainfo">
           <option value="pageauthor"><?php echo getescapedtext ($hcms_lang['page-author'][$lang]); ?></option>

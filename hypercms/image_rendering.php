@@ -388,7 +388,7 @@ function validateForm()
   
   if (errors) 
   {
-    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang]); ?>:\n'+errors));
+    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang]); ?>\n ' + errors));
     return false;
   }  
   else return true;

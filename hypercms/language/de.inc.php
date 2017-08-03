@@ -4,6 +4,7 @@ $hcms_lang_name['de'] = "German";
 $hcms_lang_shortcut['de'] = "de";
 $hcms_lang_codepage['de'] = "utf-8";
 $hcms_lang_date['de'] = 'd.m.Y H:i:s';
+$hcms_lang_direction['de'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['de'] = "Share";
@@ -57,7 +58,7 @@ $hcms_lang['search-expression']['de'] = "Suchbegriff";
 $hcms_lang['upload-file']['de'] = "Datei hochladen";
 $hcms_lang['new-component']['de'] = "Neue Komponente";
 $hcms_lang['refresh']['de'] = "Aktualisieren";
-$hcms_lang['warning']['de'] = "WARNUNG";
+$hcms_lang['warning']['de'] = "Warnung";
 $hcms_lang['the-selected-item-will-be-removed']['de'] = "Das gewählte Element wird entfernt";
 $hcms_lang['are-you-sure-you-want-to-delete-this-item']['de'] = "Sind Sie sicher, dass Sie dieses Element entfernen möchten?";
 $hcms_lang['instance-management']['de'] = "Instanzenverwaltung";

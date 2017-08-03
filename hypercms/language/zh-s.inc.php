@@ -3,7 +3,8 @@
 $hcms_lang_name['zh-s'] = "Chinese (simplified)";
 $hcms_lang_shortcut['zh-s'] = "zh-s";
 $hcms_lang_codepage['zh-s'] = "utf-8";
-$hcms_lang_date['zh-s'] = 'Y-m-d H:i:s';
+$hcms_lang_date['zh-s'] = 'y-m-d H:i:s';
+$hcms_lang_direction['zh-s'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['zh-s'] = "Share";

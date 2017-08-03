@@ -3,7 +3,8 @@
 $hcms_lang_name['it'] = "Italian";
 $hcms_lang_shortcut['it'] = "it";
 $hcms_lang_codepage['it'] = "utf-8";
-$hcms_lang_date['it'] = 'Y-m-d H:i:s';
+$hcms_lang_date['it'] = 'y-m-d H:i:s';
+$hcms_lang_direction['it'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['it'] = "Share";

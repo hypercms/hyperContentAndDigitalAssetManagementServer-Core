@@ -3,7 +3,8 @@
 $hcms_lang_name['da'] = "Danish";
 $hcms_lang_shortcut['da'] = "da";
 $hcms_lang_codepage['da'] = "utf-8";
-$hcms_lang_date['da'] = 'Y-m-d H:i:s';
+$hcms_lang_date['da'] = 'y-m-d H:i:s';
+$hcms_lang_direction['da'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['da'] = "Share";

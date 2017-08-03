@@ -3,7 +3,8 @@
 $hcms_lang_name['el'] = "Greek";
 $hcms_lang_shortcut['el'] = "el";
 $hcms_lang_codepage['el'] = "utf-8";
-$hcms_lang_date['el'] = 'Y-m-d H:i:s';
+$hcms_lang_date['el'] = 'y-m-d H:i:s';
+$hcms_lang_direction['el'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['el'] = "Share";

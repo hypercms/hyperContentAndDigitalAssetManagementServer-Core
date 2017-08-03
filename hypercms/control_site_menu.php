@@ -79,7 +79,7 @@ function warning_delete()
   }
   else
   {
-    check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>:\r<?php echo getescapedtext ($hcms_lang['the-selected-item-will-be-removed'][$lang]); ?>\r<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-this-item'][$lang]); ?>"));
+    check = confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>\n <?php echo getescapedtext ($hcms_lang['the-selected-item-will-be-removed'][$lang]); ?>\n <?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-this-item'][$lang]); ?>"));
     if (check == true) form.submit();
     return check;
   }
@@ -103,7 +103,7 @@ function checkForm_chars(text, exclude_chars)
 		}
     
 		addText = addText.substr(0, addText.length-separator.length);
-		alert("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>: "+addText);
+		alert("<?php echo getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters'][$lang]); ?>\n " + addText);
 		return false;
 	}
   else
@@ -198,7 +198,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <tr>
       <td valign="middle">
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span><br />
-        <?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>:
+        <?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?> 
         <input type="text" name="site_name" maxlength="100" style="width:220px;" />
         <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
@@ -220,7 +220,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <tr>
       <td valign="middle" nowrap="nowrap">
       <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span><br />
-        <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>:
+        <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?> 
         <select name="site_name" style="width:220px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
           <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
         <?php
@@ -272,7 +272,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <tr>
       <td valign="middle" nowrap="nowrap">
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></span><br />
-        <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>:
+        <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?> 
         <select name="site_name" style="width:220px;" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
           <option value="empty.php">--- <?php echo getescapedtext ($hcms_lang['select'][$lang]); ?> ---</option>
           <?php

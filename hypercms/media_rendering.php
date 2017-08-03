@@ -339,7 +339,7 @@ function submitform ()
   
   if (errors) 
   { 
-    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang]); ?>:\n' + errors));
+    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang]); ?>\n ' + errors));
     return false;
   }
   else

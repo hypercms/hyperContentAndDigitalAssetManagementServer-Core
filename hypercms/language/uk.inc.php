@@ -3,7 +3,8 @@
 $hcms_lang_name['uk'] = "Ukrainian";
 $hcms_lang_shortcut['uk'] = "uk";
 $hcms_lang_codepage['uk'] = "utf-8";
-$hcms_lang_date['uk'] = 'Y-m-d H:i:s';
+$hcms_lang_date['uk'] = 'y-m-d H:i:s';
+$hcms_lang_direction['uk'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['uk'] = "Share";

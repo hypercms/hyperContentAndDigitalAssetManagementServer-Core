@@ -106,7 +106,7 @@ function plugin_readmenu ($xml, $pluginFolder)
       if (!is_array ($tmp) || empty ($tmp[0])) continue;
       
       $returnvalue['icon'] = $mgmt_config['url_path_plugin'].$pluginFolder.'/'.trim ($tmp[0]);
-        
+     
       // Reading the page of the menupoint
       $tmp = getcontent ($point, '<page>');
       
