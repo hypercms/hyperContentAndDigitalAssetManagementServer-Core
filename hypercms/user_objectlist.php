@@ -203,7 +203,7 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
               <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                 <input id=\"login\" type=\"hidden\" value=\"".$object_array['login'][$key]."\">
                 <div ".$openUser." ".$setContext.">
-                    <img src=\"".getthemelocation()."img/user.gif\" width=16 height=16 border=0 align=\"absmiddle\" />&nbsp; ".
+                    <img src=\"".getthemelocation()."img/user.png\" width=16 height=16 border=0 align=\"absmiddle\" />&nbsp; ".
                     $object_array['login'][$key]."&nbsp;
                 </div>
               </td>
@@ -235,7 +235,6 @@ else $objects_counted = 0;
 <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script>
-<!--
 function confirm_delete ()
 {
   return confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-delete-this-user'][$lang]); ?>"));
@@ -254,10 +253,10 @@ function buttonaction (action)
 function resizecols()
 {
   // get width of table header columns
-  var c1 = $('#c1').width();
-  var c2 = $('#c2').width();
-  var c3 = $('#c3').width();
-  var c4 = $('#c4').width();
+  var c1 = $('#c1').width() + 3;
+  var c2 = $('#c2').width() + 3;
+  var c3 = $('#c3').width() + 3;
+  var c4 = $('#c4').width() + 3;
 
   // set width for table columns
   $('.hcmsCol1').width(c1);
@@ -272,11 +271,10 @@ var contextymove = 1;
 
 // define global variable for popup window name used in contextmenu.js
 var session_id = '<?php session_id(); ?>';
-//-->
 </script>
 </head>
 
-<body class="hcmsWorkplaceObjectlist" style="overflow:hidden;">
+<body class="hcmsWorkplaceObjectlist" style="overflow:hidden;" onresize="resizecols()">
 
 <div id="contextLayer" style="position:absolute; width:150px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_user" method="post" action="" target="">
@@ -297,15 +295,15 @@ var session_id = '<?php session_id(); ?>';
           <?php $tblrow = 1;  
           if (($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('useredit')) || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) { 
           ?>
-          <a href=# id="href_edit" onClick="if (buttonaction('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_user_edit.gif" id="img_edit" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
+          <a href=# id="href_edit" onClick="if (buttonaction('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_user_edit.png" id="img_edit" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
           <hr />
           <?php }
           if (($site == "*Null*" && checkrootpermission ('user') && checkrootpermission ('userdelete')) || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'userdelete'))) {
           ?>
-          <a href=# id="href_delete" onClick="if (buttonaction('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_user_delete.gif" id="img_delete" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
+          <a href=# id="href_delete" onClick="if (buttonaction('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_user_delete.png" id="img_delete" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
           <hr />        
           <?php } ?>   
-          <a href=# id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.gif" id="img_refresh" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
+          <a href=# id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
         </td>
       </tr>    
     </table>
@@ -315,20 +313,17 @@ var session_id = '<?php session_id(); ?>';
 <div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:30px; width:100%; z-index:1; visibility:visible;">
   <table id="objectlist_head" cellpadding="0" cellspacing="0" cols="4" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:177px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>
       </td>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:177px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
       </td>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:300px; white-space:nowrap;">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:297px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>
       </td> 
       <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['date-created'][$lang]); ?>
-      </td>
-      <td class="hcmsTableHeader" style="width:16px;">
-        &nbsp;
       </td>
     </tr>
   </table>
@@ -350,7 +345,7 @@ if ($objects_counted >= $next_max)
 <!-- status bar incl. more button -->
 <div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="window.location='<?php echo $_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location)."&next=".url_encode($objects_counted); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['versionhcms_lang'][$lang]); ?>">
   <div style="padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
-  <div style="margin-left:auto; margin-right:auto; text-align:center; padding-top:3px;"><img src="<?php echo getthemelocation(); ?>img/button_explorer_more.gif" style="border:0;" alt="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" /></div>
+  <div style="margin-left:auto; margin-right:auto; text-align:center; padding-top:3px;"><img src="<?php echo getthemelocation(); ?>img/button_explorer_more.png" style="border:0;" alt="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" /></div>
 </div>
 <?php
 }

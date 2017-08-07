@@ -109,7 +109,7 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
 <!-- top bar -->
 <?php echo showtopbar ($hcms_lang['travel-through-time'][$lang], $lang); ?>
 
-<div style="background: url('<?php echo getthemelocation(); ?>img/backgrd_history.gif') no-repeat left top; width:450px; min-height:400px; border:0; margin:0; padding:4px;">
+<div style="background: url('<?php echo getthemelocation(); ?>img/backgrd_history.png') no-repeat left top; width:450px; min-height:450px; border:0; margin:0; padding:4px;">
 <p><?php echo getescapedtext ($hcms_lang['here-you-can-start-your-journey-into-the-past'][$lang]); ?></p>
 <form name="history" action="" method="post">
   <input type="hidden" name="action" value="">
@@ -204,16 +204,12 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
       </td>
     </tr>
     <tr> 
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['set-date-for-the-journey'][$lang]); ?> </td>
-      <td><img name="ButtonSet" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('ButtonSet','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /></td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
+      <td nowrap="nowrap">&nbsp;</td>
+      <td colspan="3"><button name="ButtonSet" class="hcmsButtonGreen" onClick="submitform();"><?php echo getescapedtext ($hcms_lang['set-date-for-the-journey'][$lang]); ?></button></td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['clean-date-exit'][$lang]); ?> </td>
-      <td><img name="ButtonClean" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonBlank hcmsButtonSizeSquare" onClick="cleandate();" onMouseOver="hcms_swapImage('ButtonClean','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1)" onMouseOut="hcms_swapImgRestore()" align="absmiddle" title="OK" alt="OK" /></td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
+      <td nowrap="nowrap">&nbsp;</td>
+      <td colspan="3"><button name="ButtonClean" class="hcmsButtonOrange" onClick="cleandate();"><?php echo getescapedtext ($hcms_lang['clean-date-exit'][$lang]); ?></button></td>
     </tr>
   </table>
 </form>

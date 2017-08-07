@@ -43,7 +43,6 @@ checkusersession ($user);
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript">
-<!--
 function markAll ()
 {
   f = document.forms[0];
@@ -79,13 +78,12 @@ function goToAccess (target)
 
   return true;
 }
-//-->
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif')">
-<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
+<body class="hcmsWorkplaceGeneric" onload="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png')">
 
+<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 <?php
 // check if login is an attribute of a sent string
 if (strpos ($group_name, ".php") > 0)
@@ -326,7 +324,7 @@ elseif ($preview == "yes")
       <td>&nbsp;</td>
     </tr>
     <tr class="hcmsRowHead1"> 
-      <td nowrap="nowrap"><b><img src="<?php echo getthemelocation(); ?>img/desk.gif" width="16px" height="16px" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-desktop-management'][$lang]); ?></b></td>
+      <td nowrap="nowrap"><b><img src="<?php echo getthemelocation(); ?>img/desk.png" class="hcmsIconList" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-desktop-management'][$lang]); ?></b></td>
       <td align="center"><input type="checkbox" name="permission[desktopglobal]" value="1" <?php if ($desktopglobal==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr class="hcmsRowData1"> 
@@ -364,7 +362,7 @@ elseif ($preview == "yes")
     {
     ?>
     <tr class="hcmsRowHead1">
-      <td nowrap="nowrap"><b><img src="<?php echo getthemelocation(); ?>img/site.gif" width="16px" height="16px" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-publication-management'][$lang]); ?></b></td>
+      <td nowrap="nowrap"><b><img src="<?php echo getthemelocation(); ?>img/site.png" class="hcmsIconList" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-publication-management'][$lang]); ?></b></td>
       <td align="center"><input type="checkbox" name="permission[siteglobal]" value="1" <?php if ($siteglobal==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr class="hcmsRowData1">
@@ -383,7 +381,7 @@ elseif ($preview == "yes")
     }
     ?>
     <tr class="hcmsRowHead1"> 
-      <td nowrap="nowrap"><b><img src="<?php echo getthemelocation(); ?>img/user.gif" width="16px" height="16px" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-user-management'][$lang]); ?></b></td>
+      <td nowrap="nowrap"><b><img src="<?php echo getthemelocation(); ?>img/user.png" class="hcmsIconList" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-user-management'][$lang]); ?></b></td>
       <td align="center"><input type="checkbox" name="permission[userglobal]" value="1" <?php if ($userglobal==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr class="hcmsRowData1"> 
@@ -399,7 +397,7 @@ elseif ($preview == "yes")
       <td align="center"><input type="checkbox" name="permission[useredit]" value="1" <?php if ($useredit==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr class="hcmsRowHead1"> 
-      <td nowrap="nowrap"> <b><img src="<?php echo getthemelocation(); ?>img/usergroup.gif" width="16px" height="16px" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-group-management'][$lang]); ?></b></td>
+      <td nowrap="nowrap"> <b><img src="<?php echo getthemelocation(); ?>img/usergroup.png" class="hcmsIconList" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-group-management'][$lang]); ?></b></td>
       <td align="center"><input type="checkbox" name="permission[groupglobal]" value="1" <?php if ($groupglobal==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr class="hcmsRowData1"> 
@@ -416,7 +414,7 @@ elseif ($preview == "yes")
     </tr>
     <?php if (!isset ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false) { ?>
     <tr class="hcmsRowHead1"> 
-      <td nowrap="nowrap" align="left" valign="bottom"> <b><img src="<?php echo getthemelocation(); ?>img/pers_registration.gif" width="16px" height="16px" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-personalization-management'][$lang]); ?></b></td>
+      <td nowrap="nowrap" align="left" valign="bottom"> <b><img src="<?php echo getthemelocation(); ?>img/pers_registration.png" class="hcmsIconList" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-personalization-management'][$lang]); ?></b></td>
       <td align="center"><input type="checkbox" name="permission[persglobal]" value="1" <?php if ($persglobal==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr class="hcmsRowHead2"> 
@@ -454,7 +452,7 @@ elseif ($preview == "yes")
     <?php } ?>
     <?php if (is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php")) { ?>
     <tr class="hcmsRowHead1"> 
-      <td nowrap="nowrap" align="left" valign="bottom"> <b><img src="<?php echo getthemelocation(); ?>img/workflow.gif" width="16px" height="16px" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-workflow-management'][$lang]); ?></b></td>
+      <td nowrap="nowrap" align="left" valign="bottom"> <b><img src="<?php echo getthemelocation(); ?>img/workflow.png" class="hcmsIconList" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-workflow-management'][$lang]); ?></b></td>
       <td align="center"><input type="checkbox" name="permission[workflowglobal]" value="1" <?php if ($workflowglobal==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr class="hcmsRowHead2"> 
@@ -495,7 +493,7 @@ elseif ($preview == "yes")
     </tr>
     <?php } ?>
     <tr class="hcmsRowHead1"> 
-      <td nowrap="nowrap" align="left" valign="bottom"> <b><img src="<?php echo getthemelocation(); ?>img/template.gif" width="16px" height="16px" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-template-management'][$lang]); ?></b></td>
+      <td nowrap="nowrap" align="left" valign="bottom"> <b><img src="<?php echo getthemelocation(); ?>img/template.png" class="hcmsIconList" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-template-management'][$lang]); ?></b></td>
       <td align="center"><input type="checkbox" name="permission[templateglobal]" value="1" <?php if ($templateglobal==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr class="hcmsRowHead2"> 
@@ -541,12 +539,12 @@ elseif ($preview == "yes")
     </tr>
     <?php } ?>
     <tr class="hcmsRowHead1"> 
-      <td nowrap="nowrap"><b><img src="<?php echo getthemelocation(); ?>img/folder_comp.gif" width="16px" height="16px" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-asset-management'][$lang]); ?></b></td>
+      <td nowrap="nowrap"><b><img src="<?php echo getthemelocation(); ?>img/folder_comp.png" class="hcmsIconList" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-asset-management'][$lang]); ?></b></td>
       <td align="center"><input type="checkbox" name="permission[componentglobal]" value="1" <?php if ($componentglobal==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr class="<?php if ($mgmt_config[$site]['sendmail']) echo "hcmsRowData1"; ?>"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['access-to-folders'][$lang]); ?></td>
-      <td align="center"><img onClick="goToAccess('comp');" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('go_compaccess','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1);" style="cursor:pointer;" src="<?php echo getthemelocation(); ?>img/button_OK.gif" name="go_compaccess" border="0" align="absmiddle" / alt="<?php echo getescapedtext ($hcms_lang['grantdisable'][$lang]); ?>" <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
+      <td align="center"><img onClick="goToAccess('comp');" class="hcmsButtonTiny hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/folder_comp.png" name="go_compaccess" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['grantdisable'][$lang]); ?>" <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <?php if ($mgmt_config[$site]['sendmail']) { ?>
     <tr> 
@@ -593,13 +591,13 @@ elseif ($preview == "yes")
       <td align="center"><input type="checkbox" name="permission[comppublish]" value="1" <?php if ($comppublish==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr class="hcmsRowHead1"> 
-      <td nowrap="nowrap"><b><img src="<?php echo getthemelocation(); ?>img/folder_page.gif" align="absmiddle" /> 
+      <td nowrap="nowrap"><b><img src="<?php echo getthemelocation(); ?>img/folder_page.png" class="hcmsIconList" align="absmiddle" /> 
         <?php echo getescapedtext ($hcms_lang['grant-page-management'][$lang]); ?></b></td>
       <td align="center"><input type="checkbox" name="permission[pageglobal]" value="1" <?php if ($pageglobal==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <tr class="<?php if ($mgmt_config[$site]['sendmail']) echo "hcmsRowData1"; ?>"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['access-to-folders'][$lang]); ?></td>
-      <td align="center"><img onClick="goToAccess('page');" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('go_pageaccess','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1);"  style="cursor:pointer;" src="<?php echo getthemelocation(); ?>img/button_OK.gif" name="go_pageaccess" border="0" align="absmiddle" / alt="<?php echo getescapedtext ($hcms_lang['grantdisable'][$lang]); ?>" <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
+      <td align="center"><img onClick="goToAccess('page');" class="hcmsButtonTiny hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/folder_page.png" name="go_pageaccess" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['grantdisable'][$lang]); ?>" <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
     <?php if ($mgmt_config[$site]['sendmail']) { ?>
     <tr> 
@@ -646,14 +644,14 @@ elseif ($preview == "yes")
     {
       echo "<tr>
         <td rowspan=\"2\"><strong>".getescapedtext ($hcms_lang['save-group-settings'][$lang])."</strong>
-          <img name=\"Button\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onclick=\"document.forms['groupform'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />
+          <img name=\"Button\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onclick=\"document.forms['groupform'].submit();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_ok_over.png',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />
         </td>
       </tr>";
     }
     ?>
   </table>
 </form>
-
 </div>
+
 </body>
 </html>

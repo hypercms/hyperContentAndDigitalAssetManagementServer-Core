@@ -260,7 +260,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
           }
           ?>
         </select>
-        <img onClick="deletehierarchy()" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
+        <img onClick="deletehierarchy()" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
         <hr />
       </td>
     </tr>
@@ -382,7 +382,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
     <tr>
       <td>
         <?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> 
-        <img name="Button" type="button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="savehierarchy()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+        <img name="Button" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="savehierarchy()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
       </td>
     </tr>
   </table>  

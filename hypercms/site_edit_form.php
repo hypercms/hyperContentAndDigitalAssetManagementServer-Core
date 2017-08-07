@@ -180,7 +180,7 @@ function submitForm ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onLoad="<?php if ($preview != "yes") echo "switchDAM();"; ?> hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif'); <?php if ($add_onload != "") echo $add_onload; ?>">
+<body class="hcmsWorkplaceGeneric" onLoad="<?php if ($preview != "yes") echo "switchDAM();"; ?> hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png'); <?php if ($add_onload != "") echo $add_onload; ?>">
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <?php
@@ -550,8 +550,8 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     </tr> 
      <?php if ($preview != "yes") { ?>             
     <tr>
-      <td nowrap="nowrap"><b><?php echo getescapedtext ($hcms_lang['save-publication-configuration'][$lang]); ?> </b></td>
-      <td nowrap="nowrap"> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /></td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['save-publication-configuration'][$lang]); ?> </td>
+      <td nowrap="nowrap"><img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" /></td>
     </tr>
     <?php } ?>
   </table>

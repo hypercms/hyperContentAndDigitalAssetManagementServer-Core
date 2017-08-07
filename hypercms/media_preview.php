@@ -40,7 +40,7 @@ checkusersession ($user, false);
 <body class="hcmsWorkplaceGeneric">
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
-  <p class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['media-file-view'][$lang]); ?></p>
+  <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['media-file-view'][$lang]); ?></p>
   
   <form name="media">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />

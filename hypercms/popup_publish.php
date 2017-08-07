@@ -124,7 +124,6 @@ if ($action != "" && valid_publicationname ($site) && $cat != "" && valid_locati
 <script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
 <script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
 <script type="text/javascript">
-<!--
 var cal_obj = null;
 var cal_format = '%Y-%m-%d %H:%i';
 var cal_field = null;
@@ -193,7 +192,6 @@ function submitform ()
     }
   }
 }
--->
 </script>
 </head>
 
@@ -231,8 +229,7 @@ echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px
         <td align="left">		
           <label>
             <input name="publish" type="radio" value="later" /> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?>
-            <input type="text" name="publishdate" id="publishdate" readonly="readonly" value="<?php echo $publishdate; ?>" />
-            <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this, 'publishdate', '%Y-%m-%d %H:%i');" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
+            <input type="text" name="publishdate" id="publishdate" readonly="readonly" value="<?php echo $publishdate; ?>" /><img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'publishdate', '%Y-%m-%d %H:%i');" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
           </label>
   	    </td>
       </tr>
@@ -245,7 +242,7 @@ echo showmessage ($message, 360, 70, $lang, "position:fixed; left:15px; top:15px
       <?php } ?>
       <tr>  
         <td align="left">  
-          <?php echo $headline; ?> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+          <?php echo $headline; ?> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onClick="submitform();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
         </td>
       </tr>
     </table>

@@ -132,12 +132,12 @@ function goToURL()
             <td>
             <select name="mediaformat" style="width:200px;">
               <option value=""><?php echo getescapedtext ($hcms_lang['all-formats'][$lang]); ?></option>
-              <option value="audio" <?php if ($mediatype == "audio") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></option>
-              <option value="compressed" <?php if ($mediatype == "compressed") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['compressed'][$lang]); ?></option>
-              <option value="flash" <?php if ($mediatype == "flash") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['flash'][$lang]); ?></option>
-              <option value="image" <?php if ($mediatype == "image") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['media'][$lang]); ?></option>
-              <option value="text" <?php if ($mediatype == "text") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['text'][$lang]); ?></option>
-              <option value="video" <?php if ($mediatype == "video") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></option>
+              <option value="audio" <?php if ($mediaformat == "audio") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></option>
+              <option value="compressed" <?php if ($mediaformat == "compressed") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['compressed'][$lang]); ?></option>
+              <option value="flash" <?php if ($mediaformat == "flash") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['flash'][$lang]); ?></option>
+              <option value="image" <?php if ($mediaformat == "image") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></option>
+              <option value="text" <?php if ($mediaformat == "text") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['text'][$lang]); ?></option>
+              <option value="video" <?php if ($mediaformat == "video") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></option>
             </select>
             </td>
           </tr>
@@ -147,7 +147,7 @@ function goToURL()
           <tr>
             <td>
             <input type="text" name="imagesearch" size="18" style="width:170px;" />
-            <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['imagesearch'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" />
+            <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['imagesearch'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" />
             </td>
           </tr>
         </table>
@@ -237,7 +237,7 @@ if ($sender == "search")
           // set icon media and check
           $file_info = getfileinfo ($site, $file, "comp");           
 
-          if ($file_info != false && $file != "Null_media.gif")
+          if ($file_info != false && $file != "Null_media.png")
           {
             echo "<img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" width=\"16\" heigth=\"16\" /><a href=# onClick=\"sendInput('".$site."/".$file."'); goToURL('parent.frames[\'mainFrame2\']','media_view.php?site=".url_encode($site)."&mediacat=tpl&mediafile=".url_encode($site."/".$file)."'); return document.returnValue;\"> ".$file_info['name']."</a><br />\n";
           }

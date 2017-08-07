@@ -289,7 +289,7 @@ foreach ($multiobject_array as $object)
     // no thumbnail available
     else
     {                 
-       $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".getthemelocation()."img/".$media_info['icon_large']."\" style=\"border:0; width:100px;\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";
+       $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:100px; float:left;\"><img src=\"".getthemelocation()."img/".$media_info['icon']."\" style=\"border:0; width:100px;\" alt=\"".$oinfo['name']."\" title=\"".$oinfo['name']."\" /></div>";
     }
   }
   
@@ -1804,8 +1804,8 @@ elseif ($is_video || $is_audio)
       <table style="width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;">
         <tr>
           <td class="hcmsHeadline" style="text-align:left; vertical-align:middle; padding:0px 1px 0px 2px">
-            <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="save(true);" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" align="absmiddle" />
-            <img name="Button_sc" src="<?php echo getthemelocation()?>img/button_saveclose.gif" class="hcmsButton" onClick="saveClose()" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" />
+            <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="save(true);" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" align="absmiddle" />
+            <img name="Button_sc" src="<?php echo getthemelocation()?>img/button_saveclose.png" class="hcmsButton" onClick="saveClose()" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" />
             <?php if ($is_image || $is_video) { ?>
             <div class="hcmsButtonMenu" onclick="toggleDivAndButton(this, '#renderOptions');"><?php echo getescapedtext ($hcms_lang['options'][$lang], $charset, $lang); ?></div>
             <?php } ?>
@@ -2285,7 +2285,7 @@ elseif ($is_video || $is_audio)
             if ($tagdata->ignore == false) 
             {
             ?>
-            <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="<?php echo $onclick; ?>" align="absmiddle" style="width:22px; height:22px; border:0; cursor:pointer;" alt="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" />
+            <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="<?php echo $onclick; ?>" align="absmiddle" style="width:22px; height:22px; border:0; cursor:pointer;" alt="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" />
             <script type="text/javascript">
             <!--
             var cal_obj_<?php echo $id; ?> = null;

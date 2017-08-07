@@ -161,7 +161,7 @@ $token = createtoken ($user);
     <?php echo showvideoplayer_head (false); ?>
   </head>
   
-  <body class="hcmsWorkplaceGeneric" leftmargin="3" topmargin="3" marginwidth="0" marginheight="0">
+  <body class="hcmsWorkplaceGeneric">
 
     <!-- top bar -->
     <?php
@@ -171,7 +171,7 @@ $token = createtoken ($user);
     ?>
 
     <!-- form for content -->
-    <div style="padding:0; width:100%; z-index:1;">
+    <div class="hcmsWorkplaceFrame">
       <form action="<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php" method="post" name="hcms_formview" id="hcms_formview">
         <input type="hidden" name="contenttype" value="<?php echo $contenttype; ?>"> 
         <input type="hidden" name="site" value="<?php echo $site; ?>"> 
@@ -190,11 +190,11 @@ $token = createtoken ($user);
         <table border="0" cellspacing="2">
           <tr>
             <td nowrap="nowrap" align="left">
-              <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" align="absmiddle" />   
-              <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" />
+              <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" align="absmiddle" />   
+              <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorf_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" />
               <?php if (intval ($mgmt_config['autosave']) > 0) { ?>
-              <div class="hcmsButton" style="height:22px;">
-                &nbsp;<input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" /><label for="autosave">&nbsp;<?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?></label>&nbsp;
+              <div class="hcmsButton hcmsButtonSizeHeight" style="line-height:28px;">
+                &nbsp;<label for="autosave"><input type="checkbox" id="autosave" name="autosave" value="yes" checked="checked" />&nbsp;<?php echo getescapedtext ($hcms_lang['autosave'][$lang], $charset, $lang); ?>&nbsp;</label>
               </div>
               <?php } ?>
             </td>

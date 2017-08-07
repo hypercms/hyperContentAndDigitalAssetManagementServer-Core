@@ -343,6 +343,11 @@ if ($login != "" && $login != false)
   }
 }
 ?>
+
+<!-- top bar -->
+<?php echo showtopbar ($hcms_lang['settings-for-user'][$lang].": ".$login, $lang); ?>
+
+<div class="hcmsWorkplaceFrame">
 <form name="userform" action="" method="post">
   <input type="hidden" name="action" value="user_save">
   <input type="hidden" name="site" value="<?php echo $site; ?>">
@@ -354,9 +359,6 @@ if ($login != "" && $login != false)
   elseif ($login_cat == "") echo "<input type=\"hidden\" name=\"usersite\" value=\"".$usersite."\">\n";
   ?>
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
-  
-  <!-- top bar -->
-  <?php echo showtopbar ($hcms_lang['settings-for-user'][$lang].": ".$login, $lang); ?>
   
   <table border="0" cellspacing="0" cellpadding="3">
     <?php if ($login_cat == "home" || $login == $user) { ?>
@@ -626,11 +628,12 @@ if ($login != "" && $login != false)
     <tr>
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> </td>
       <td>
-        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onclick="checkForm();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="checkForm();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
       </td>
     </tr>
   </table>
 </form>
+</div>
 
 </body>
 </html>

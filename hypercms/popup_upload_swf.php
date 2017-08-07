@@ -129,7 +129,7 @@ window.onload = function()
 				},
         
 				// Button settings
-				button_image_url: "<?php echo getthemelocation(); ?>img/button_upload.gif",
+				button_image_url: "<?php echo getthemelocation(); ?>img/button_file_upload.png",
 				button_width: "160",
 				button_height: "22",
 				button_placeholder_id: "spanButtonPlaceHolder",
@@ -392,8 +392,7 @@ echo showtopbar ($title.": ".$object_name, $lang);
         <?php if ($uploadmode == "multi") { ?>
           <input type="checkbox" name="deleteobject" id="deleteobject" value="1" onchange="setpost_multi();" />&nbsp;<?php echo getescapedtext ($hcms_lang['remove-uploaded-files-on'][$lang]); ?>
           <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" />
-          <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
-          <img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" /><br />
+          <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" /><img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this);" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" /><br />
         <?php } ?>
         <br />
         <table cellspacing="3">

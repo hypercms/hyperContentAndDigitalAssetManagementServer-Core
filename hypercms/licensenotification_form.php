@@ -168,7 +168,7 @@ function selectAll (form_name, select_name, input_name)
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif')">
+<body class="hcmsWorkplaceGeneric" onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png')">
 
 <?php
 echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;");
@@ -271,7 +271,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
               </select>
             </td>
             <td align="center" valign="middle">
-              <img onClick="deleteSelected(document.forms['notification_area'].elements['folder']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
+              <img onClick="deleteSelected(document.forms['notification_area'].elements['folder']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
           </td>
           </tr>
         </table>
@@ -282,7 +282,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
     </tr>
     <tr>
       <td valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> 
-        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll('notification_area', 'folder', 'result');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll('notification_area', 'folder', 'result');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
       </td>
     </tr>
   </table>

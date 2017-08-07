@@ -45,23 +45,14 @@ checkusersession ($user);
 
 <body class="hcmsWorkplaceControl">
 
-  <div id="Layer_tab" class="hcmsTabContainer" style="position:absolute; z-index:10; visibility:visible; left:0px; top:1px">
-    <table border="0" cellspacing="0" cellpadding="0" style="z-index:1;">
-      <tr>
-        <td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:3px; border:0;" /></td>
-        <td align="left" valign="top" class="hcmsTab">
-          &nbsp;<a href="site_edit_form.php?site=<?php echo $site; ?>&preview=<?php echo $preview; ?>&site_name=<?php echo $site_name; ?>" target="mainFrame2" onClick="hcms_showHideLayers('Layer_tab1','','show','Layer_tab2','','hide');" title="<?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?></a>
-        </td>
-        <td style="width:3px;"><img src="<?php echo getthemelocation(); ?>img/backgrd_tabs_spacer.gif" style="width:3px; height:3px; border:0;"></td>
-        <td align="left" valign="top" class="hcmsTab">
-          &nbsp;<a href="site_edit_inheritance.php?site=<?php echo $site; ?>&preview=<?php echo $preview; ?>&site_name=<?php echo $site_name; ?>" target="mainFrame2" onClick="hcms_showHideLayers('Layer_tab1','','hide','Layer_tab2','','show');" title="<?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?></a>
-        </td>
-      </tr>
-    </table>
+  <div id="tabLayer" class="hcmsTabContainer" style="position:absolute; z-index:10; visibility:visible; left:0px; top:1px">
+    <div id="tab1" class="hcmsTabActive">
+      <a href="site_edit_form.php?site=<?php echo $site; ?>&preview=<?php echo $preview; ?>&site_name=<?php echo $site_name; ?>" target="mainFrame2" onClick="hcms_ElementbyIdStyle('tab1','hcmsTabActive'); hcms_ElementbyIdStyle('tab2','hcmsTabPassive');" title="<?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?></a>
+    </div>
+    <div id="tab2" class="hcmsTabPassive">
+      <a href="site_edit_inheritance.php?site=<?php echo $site; ?>&preview=<?php echo $preview; ?>&site_name=<?php echo $site_name; ?>" target="mainFrame2" onClick="hcms_ElementbyIdStyle('tab1','hcmsTabPassive'); hcms_ElementbyIdStyle('tab2','hcmsTabActive');" title="<?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?></a>
+    </div>
   </div>
-
-  <div id="Layer_tab1" class="hcmsWorkplaceGeneric" style="position:absolute; width:118px; height:2px; z-index:20; visibility:visible; left:4px; top:23px; visibility:visible;"> </div>
-  <div id="Layer_tab2" class="hcmsWorkplaceGeneric" style="position:absolute; width:118px; height:2px; z-index:20; visibility:visible; left:127px; top:23px; visibility:hidden;"> </div>
 
 </body>
 </html>

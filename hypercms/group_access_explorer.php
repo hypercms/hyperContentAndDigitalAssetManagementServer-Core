@@ -88,7 +88,7 @@ if (($cat == "page" && $mgmt_config[$site]['abs_path_page'] != "") || $cat == "c
   // generate virtual root directories
   if (substr_count ($dir, $initialdir) == 0)
   {
-    echo "<tr><td align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($initialdir_esc)."&group_name=".url_encode($group_name)."\"><img src=\"".getthemelocation()."img/folder_".$cat.".gif\" border=0 align=\"absmiddle\">&nbsp; ".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=\"javascript:sendOption('/".$site."/', '%".$cat."%/".$site."/');\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" style=\"border:0; width:16px; height:16px;\" align=\"absmiddle\" alt=\"OK\" /></a></td></tr>\n";
+    echo "<tr><td align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($initialdir_esc)."&group_name=".url_encode($group_name)."\"><img src=\"".getthemelocation()."img/folder_".$cat.".png\" class=\"hcmsIconList\" align=\"absmiddle\">&nbsp; ".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=\"javascript:sendOption('/".$site."/', '%".$cat."%/".$site."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" style=\"border:0; width:16px; height:16px;\" align=\"absmiddle\" alt=\"OK\" /></a></td></tr>\n";
   }
   else
   {
@@ -109,7 +109,7 @@ if (($cat == "page" && $mgmt_config[$site]['abs_path_page'] != "") || $cat == "c
     // back to parent directory
     if (substr_count ($dir, $initialdir) > 0)
     {
-      echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($updir_esc)."&group_name=".url_encode($group_name)."\"><img src=\"".getthemelocation()."img/back.gif\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" />&nbsp;".getescapedtext ($hcms_lang['back'][$lang])."</a></td></tr>\n";
+      echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($updir_esc)."&group_name=".url_encode($group_name)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".getescapedtext ($hcms_lang['back'][$lang])."</a></td></tr>\n";
     }
   
     // get all files in dir
@@ -154,7 +154,7 @@ if (($cat == "page" && $mgmt_config[$site]['abs_path_page'] != "") || $cat == "c
           $folder_name = $folder_data['name'];
           $icon = getthemelocation()."img/".$folder_data['icon'];
   
-          echo "<tr><td width=\"90%\" align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&group_name=".url_encode($group_name)."\"><img src=\"".$icon."\" border=0 width=16 heigth=16 align=\"absmiddle\" />&nbsp;".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=# onClick=\"sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" border=0 width=16 height=16 align=\"absmiddle\" alt=\"OK\" /></a></td></tr>\n";
+          echo "<tr><td width=\"90%\" align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&group_name=".url_encode($group_name)."\"><img src=\"".$icon."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=# onClick=\"sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" border=0 width=16 height=16 align=\"absmiddle\" alt=\"OK\" /></a></td></tr>\n";
         }
       }
     }

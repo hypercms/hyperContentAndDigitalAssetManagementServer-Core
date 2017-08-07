@@ -1,3 +1,13 @@
+img
+{
+  -ms-interpolation-mode: nearest-neighbor; // IE 7+ (non-standard property)
+  image-rendering: -webkit-optimize-contrast; // Safari 6, UC Browser 9.9
+  image-rendering: -webkit-crisp-edges; // Safari 7+
+  image-rendering: -moz-crisp-edges; // Firefox 3.6+
+  image-rendering: -o-crisp-edges; // Opera 12
+  image-rendering: pixelated; // Chrome 41+ and Opera 26+
+}
+
 .hcmsStartBar
 {
   width: 100%;
@@ -16,7 +26,7 @@
   background-position: center center; 
   background-color: #B2CDFA;
   font-size: 14px;
-  text-align: center;
+  text-align: left;
   padding: 0;
   margin: 0;
 }
@@ -46,12 +56,12 @@
   background-image: linear-gradient(#C8DCFF 0%, #A2C5F9 100%);
   background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #A2C5F9) );
   background: -moz-linear-gradient( center top, #C8DCFF 5%, #A2C5F9 100% );
-  border-bottom: 1px solid #5AAD5A;
+  border-bottom: 1px solid #FB8C0C;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 28px;
+  height: 38px;
   margin: 0;
   padding: 0;
   z-index: 900;
@@ -60,7 +70,7 @@
 .hcmsLocationBar
 {
   width: 100%;
-  margin: 0;
+  margin: 0px 3px;
   padding: 0;
   border: 0;
   display: block;
@@ -110,7 +120,7 @@
 .hcmsToolbar
 {
   width: 100%;
-  height: 26px;
+  height: 32px;
   padding: 2px;
   border-top: 1px solid #ABD0F9;
   border-bottom: 1px solid #ABD0F9; 
@@ -144,8 +154,6 @@
 
 .hcmsWorkplaceGeneric
 {
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   background-color: #C8DCFF;
   margin: 0; 
   padding: 0;  
@@ -156,13 +164,14 @@
 
 .hcmsWorkplaceFrame
 {
+  margin: 0;
   border: 0;
-  padding: 4px;
+  padding: 8px;
 }
 
 .hcmsMediaRendering
 {
-  border: 1px solid #4294FF;
+  border: 1px solid #FB8C0C;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
@@ -247,9 +256,8 @@
   z-index: 100;
   padding: 5px;
   overflow: auto;
-  filter: alpha(opacity=90); -moz-opacity: 0.9; opacity: 0.9;
+  filter: alpha(opacity=95); -moz-opacity: 0.95; opacity: 0.95;
   vertical-align: middle;
-  border: 1px solid #4294FF;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
@@ -258,6 +266,15 @@
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
   filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+}
+
+.hcmsIconList
+{
+  width: 16px;
+  height: 16px;
+  border: 0;
+  margin: 0px 0px 2px 2px;
+  vertical-align: middle;
 }
 
 .hcmsButton
@@ -273,7 +290,7 @@
 {
   padding: 2px;
   margin: 0;
-  background-color: #FCAD45;
+  background-color: #FB9004;
 }
 
 .hcmsButtonBlank
@@ -310,13 +327,7 @@
   padding: 0;
   margin: 0;
   border: 0;
-  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
-  background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
-  background-color: #FFC477;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
+  background-color: #FB9004;
 }
 
 .hcmsButtonTinyBlank
@@ -339,40 +350,51 @@
 
 .hcmsButtonClose
 {
-  background-image: url(../img/button_close.gif);
+  cursor: pointer;
+  background-image: url(../img/button_close.png);
+  background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center center;
+  margin: 0;
+  border: 0;
+  float: left;
 }
 
 .hcmsButtonClose:hover
 {
-  background-image: url(../img/button_close_over.gif);
+  background-image: url(../img/button_close_over.png);
 }
 
 .hcmsButtonSizeSquare
 {
-  width: 22px;
-  height: 22px;
+  width: 32px;
+  height: 32px;
 }
 
 .hcmsButtonSizeNarrow
 {
-  width: 12px;
-  height: 22px;
+  width: 16px;
+  height: 32px;
 }
 
 .hcmsButtonSizeWide
 {
-  width: 34px;
-  height: 22px;
+  width: 50px;
+  height: 32px;
+}
+
+.hcmsButtonSizeHeight
+{
+  height: 32px;
 }
 
 .hcmsButtonMenu
 {
-  height: 22px;
-  border-right: 1px solid #CEE0FE;
+  height: 32px;
+  line-height: 32px;
+  border-right: 1px solid #C0C0C0;
   float: left;
-  padding: 6px 10px 0px 10px;
+  padding: 0px 6px;
   margin: 0;
   text-decoration: none;
   cursor: pointer;
@@ -380,10 +402,7 @@
 
 .hcmsButtonMenu:hover
 {
-  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #6A9FEF) );
-  background: -moz-linear-gradient( center top, #C8DCFF 5%, #6A9FEF 100% );
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#6A9FEF');
-  background-color: #A2C5F9;
+  background-color: #FB8C0C;
 }
 
 .hcmsButtonMenu:active
@@ -394,10 +413,7 @@
 
 .hcmsButtonMenuActive
 {
-  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #6A9FEF) );
-  background: -moz-linear-gradient( center top, #C8DCFF 5%, #6A9FEF 100% );
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#6A9FEF');
-  background-color: #A2C5F9;
+  background-color: #FB8C0C;
   position: relative;
   top: 1px;
 }
@@ -446,7 +462,7 @@
 
 .hcmsButtonOrange
 {
-  background-color: #FCAD45;
+  background-color: #FB9004;
   border: 1px solid #C28B2C;
   display: inline-block;
   padding: 2px 10px;
@@ -481,11 +497,7 @@
 {
   margin: 0;
   padding: 1px;
-  background-image: linear-gradient(#FFC477 0%, #FB940C 100%);
-  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
-  background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
-  background-color: #FFC477;
+  background-color: #FCB335;
   border: 1px solid #FF8411;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -494,7 +506,7 @@
 
 .hcmsSelectorItem
 {
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
   margin: 0;
   padding: 0 20px 0 0;
@@ -514,7 +526,7 @@
   font-weight: bold; 
   color: #000000; 
   text-decoration: none;
-  padding: 3px;
+  padding: 3px 0px;
 }
 
 .hcmsHeadlineTiny 
@@ -538,6 +550,7 @@
 .hcmsTabContainer
 {
   width: 100%;
+  min-width: 500px;
   height: 22px;
   padding: 0;
   margin: 0;
@@ -545,13 +558,35 @@
   display: block;
 }
 
-.hcmsTab
+.hcmsTabActive
 {
-  background-image:url('../img/backgrd_tabs.gif');
+  float: left;
+  background-color: #CEDEFF;
+  border-top: 1px solid #000000;
+  border-right: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-bottom: 2px solid #CEDEFF;
   width: 116px;
-  height: 18px;
+  height: 17px;
   padding: 2px;
-  margin: 0;
+  margin: 0px 0px -2px 3px;
+  overflow: hidden;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.hcmsTabPassive
+{
+  float: left;
+  background-color: #CEDEFF;
+  border-top: 1px solid #000000;
+  border-right: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-bottom: 0;
+  width: 116px;
+  height: 17px;
+  padding: 2px;
+  margin: 0px 0px -2px 3px;
   overflow: hidden;
   display: inline-block;
   white-space: nowrap;
@@ -600,7 +635,7 @@
   -moz-box-shadow: 2px 2px 10px #000000;
 }
 
-input, select, textarea 
+input, select, textarea, button
 {
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 12px; 
@@ -608,10 +643,10 @@ input, select, textarea
   color: #000000;
   text-decoration: none;
   vertical-align: middle;
-  border: 1px solid #C6C6C6;
+  border: 1px solid #808080;
   background-color: #FFFFFF;
   margin: 0;
-  padding: 2px;
+  padding: 5px;
 }
 
 a 
@@ -648,9 +683,11 @@ html, body
 {
   width: 100%;
   height: 100%;
+  padding: 0;
+  margin: 0;
 }
 
-html, body, table, td, span
+html, body, table, td, span, div
 {  
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 12px; 

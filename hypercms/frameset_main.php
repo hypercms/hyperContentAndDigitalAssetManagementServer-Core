@@ -41,7 +41,20 @@ checkusersession ($user, false);
 $servertime = new servertime;
 $servertime->InstallClockHead();
 ?>
-<script>
+<script type="text/javascript">
+function setviewport ()
+{
+  var width = hcms_getViewportWidth();
+
+  if (width > 0)
+  {
+    // AJAX request to set viewport width
+    $.post("<?php echo $mgmt_config['url_path_cms']; ?>service/setviewport.php", {viewportwidth: width});
+    return true;
+  }
+  else return false;
+}
+
 function openInfo()
 {
   hcms_openWindow('top_info.php', 'help', 'resizable=no,scrollbars=no', '640', '400');
@@ -92,6 +105,13 @@ $(document).ready(function()
   $("#search_expression").autocomplete({
     source: available_expressions
   });
+  
+  setviewport();
+  
+  window.onresize = function()
+  {
+    setviewport();
+  };
 });
 
 <?php
@@ -114,29 +134,32 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   <table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
     <tr> 
       <td width="5">&nbsp;</td>
-      <td width="320" align="left" valign="middle" nowrap="nowrap"><a href="javascript:openInfo();"><img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" style="border:0; height:28px;" align="absmiddle" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" /></a></td>
-      <td>&nbsp;</td>
-      <td align="right" valign="middle" nowrap="nowrap"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?> </span><span class="hcmsHeadlineTiny hcmsTextWhite"><?php echo getsession ('hcms_user'); ?></span></td>
-      <td width="20" nowrap="nowrap">&nbsp;&nbsp;</td>
-      <td width="260" align="left" valign="middle" nowrap="nowrap"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['server-time'][$lang]); ?> </span>&nbsp;<?php $servertime->InstallClock(); ?></td>
-      <td width="10" nowrap="nowrap">&nbsp;&nbsp;</td>
-      <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
-      <td width="30" align="right" valign="middle" nowrap="nowrap">
-        <img src="<?php echo getthemelocation(); ?>img/button_chat.gif" align="absmiddle" class="hcmsButton hcmsButtonSizeSquare" onClick="hcms_openChat();" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
+      <td width="320" align="left" valign="middle" nowrap="nowrap">
+        <a href="javascript:openInfo();"><img src="<?php if ($mgmt_config['logo_top'] != "") echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" style="border:0; height:28px;" align="absmiddle" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" /></a>
       </td>
-      <?php } ?>
+      <td>&nbsp;</td>
+      <td align="right" valign="middle" nowrap="nowrap">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?> </span>
+        <span class="hcmsHeadlineTiny hcmsTextWhite"><?php echo getsession ('hcms_user'); ?></span>
+      </td>
+      <td width="20" nowrap="nowrap">&nbsp;&nbsp;</td>
+      <td width="260" align="left" valign="middle" nowrap="nowrap">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['server-time'][$lang]); ?> </span>&nbsp;<?php $servertime->InstallClock(); ?>
+      </td>
+      <td width="260" nowrap="nowrap">
       <?php if (!empty ($mgmt_config['db_connect_rdbms']) && empty ($hcms_linking['object'])) { ?>
-      <td id="selectbox" width="240" align="right" valign="middle" nowrap="nowrap">
         <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
           <input type="hidden" name="action" value="base_search" />
           <input type="hidden" name="search_dir" value="" />
           <input type="hidden" name="maxhits" value="300" />
-          <input type="text" name="search_expression" id="search_expression" style="width:200px;" maxlength="200" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="" />
-          <img name="SearchButton" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onClick="submitForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+          <input type="text" name="search_expression" id="search_expression" style="position:fixed; top:3px; right:36px; width:200px; height:20px; padding:2px;" maxlength="200" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="" />
+          <img src="<?php echo getthemelocation(); ?>img/button_search.png" style="cursor:pointer; position:fixed; top:5px; right:36px; width:22px; height:22px;" onClick="submitForm();" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
         </form>
-      </td>
       <?php } ?>
-      <td width="5">&nbsp;</td>
+      <?php if (isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true) { ?>
+        <img src="<?php echo getthemelocation(); ?>img/button_chat.png" class="hcmsButtonTiny" style="position:fixed; top:2px; right:4px; width:28px; height:28px;" onClick="hcms_openChat();" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
+      <?php } ?>
+      </td>
     </tr>
   </table>
 </div>

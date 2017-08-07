@@ -76,7 +76,7 @@ echo showtopbar ($hcms_lang['content-container'][$lang]." '".$container."' ".$hc
 ?>
 
 <!-- content -->
-<div style="padding:0; width:100%; z-index:1;">
+<div class="hcmsWorkplaceFrame">
 <?php
 echo "<table border=\"0\" cellspacing=\"2\" cellpadding=\"3\" width=\"99%\">
   <tr>

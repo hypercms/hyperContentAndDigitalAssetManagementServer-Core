@@ -170,14 +170,12 @@ elseif ($preview == "yes")
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script>
-<!--
 function openHelp ()
 {
   help = window.open('<?php echo $mgmt_config['url_path_cms']."pers_help.php?site=".url_encode($site)."&cat=".url_encode($cat); ?>','help','resizable=yes,scrollbars=yes,width=640,height=400');
   help.moveTo(screen.width/2-640/2, screen.height/2-400/2);
   help.focus();
 }
-//-->
 </script>
 </head>
 
@@ -188,7 +186,7 @@ function openHelp ()
 echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;")
 ?>
 
-<p class=hcmsHeadline><?php echo $regpro; ?> <?php echo $pers_name; ?></p>
+<p class="hcmsHeadline"><?php echo $regpro; ?> <?php echo $pers_name; ?></p>
 
 <form id="editor" name="editor" method="post" action="<?php echo $action; ?>">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
@@ -201,10 +199,10 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:15px; top:100px;"
   <table cellspacing="0" cellpadding="0" style="border:1px solid #000000; margin:2px;">
     <tr>
       <td align="left">
-        <?php if ($preview == "no") echo "<img onclick=\"document.forms['editor'].submit();\" name=\"save\" src=\"".getthemelocation()."img/button_save.gif\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['save'][$lang])."\" title=\"".getescapedtext ($hcms_lang['save'][$lang])."\" />"; ?>
+        <?php if ($preview == "no") echo "<img onclick=\"document.forms['editor'].submit();\" name=\"save\" src=\"".getthemelocation()."img/button_save.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['save'][$lang])."\" title=\"".getescapedtext ($hcms_lang['save'][$lang])."\" />"; ?>
       </td>
-      <td align="right">
-        <a href=# onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('pic_obj_help','','<?php echo getthemelocation(); ?>img/button_help_over.gif',1);" onClick="openHelp();"><img name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" /></a>
+      <td align="right" width="36">
+        <img onClick="openHelp();" name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.png" class="hcmsButton hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" />
       </td>
     </tr>
     <tr>

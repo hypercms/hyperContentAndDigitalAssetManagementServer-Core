@@ -287,7 +287,7 @@ $(document).ready(function ()
     var cancel = $('<div>&nbsp;</div>');
     cancel.prop('title', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
           .prop('alt', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
-          .addClass('hcmsButtonBlank hcmsButtonSizeSquare hcmsButtonClose file_cancel')
+          .addClass('hcmsButtonClose hcmsButtonSizeSquare file_cancel')
           .click( { }, function( event ) {
             // If we are sending data we stop it or else we remove the entry completely
             if(data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
@@ -584,7 +584,7 @@ $(document).ready(function ()
     
     cancel.prop ('title', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
           .prop ('alt', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
-          .addClass ('hcmsButtonBlank hcmsButtonSizeSquare hcmsButtonClose file_cancel')
+          .addClass ('hcmsButtonClose hcmsButtonSizeSquare file_cancel')
           .click (function(event)
           {
             // If we are sending data we stop it or else we remove the entry completely
@@ -870,7 +870,7 @@ $(document).ready(function ()
     
     cancel.prop ('title', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
           .prop ('alt', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
-          .addClass ('hcmsButtonBlank hcmsButtonSizeSquare hcmsButtonClose file_cancel')
+          .addClass ('hcmsButtonClose hcmsButtonSizeSquare file_cancel')
           .click (function(event)
           {
             // If we are sending data we stop it or else we remove the entry completely
@@ -1220,13 +1220,12 @@ echo showtopbar ($title.": ".$object_name, $lang);
       <div class="inline">
         <label><input type="checkbox" name="deleteobject" id="deleteobject" value="1" /> <?php echo getescapedtext ($hcms_lang['remove-uploaded-files-on'][$lang]); ?></label>
         <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
-        <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
-        <img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
+        <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" /><img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this);" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
       </div>
       <br />
       <?php } ?>
       <div style="margin:10px 0px 10px 0px;">
-        <img src="<?php echo getthemelocation(); ?>img/info.gif" align="absmiddle" />
+        <img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsButtonSizeSquare" align="absmiddle" />
         <?php echo getescapedtext ($hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]); ?>
       </div>
       <div>

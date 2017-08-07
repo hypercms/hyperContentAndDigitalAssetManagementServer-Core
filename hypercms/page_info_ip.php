@@ -54,7 +54,6 @@ echo showtopbar ($hcms_lang['geo-location-of'][$lang]." ".$ip, $lang);
 
 <!-- content -->
 <div class="hcmsWorkplaceFrame">
-
   <?php
   if (!empty ($data) && is_array ($data)) 
   {

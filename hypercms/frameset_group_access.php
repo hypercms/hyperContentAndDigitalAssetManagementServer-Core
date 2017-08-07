@@ -37,7 +37,7 @@ function minNavFrame ()
 {
   if (document.getElementById('navFrame2'))
   {
-    var width = 26;
+    var width = 36;
     
     document.getElementById('navLayer').style.width = width + 'px';
     document.getElementById('mainLayer').style.left = width + 'px';
@@ -51,7 +51,7 @@ function maxNavFrame ()
 {
   if (document.getElementById('navFrame2'))
   {
-    var width = 250;
+    var width = 260;
     
     document.getElementById('navLayer').style.width = width + 'px';
     document.getElementById('mainLayer').style.left = width + 'px';

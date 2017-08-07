@@ -29,7 +29,7 @@ checkusersession ($user, false);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="theme-color" content="#464646" />
-<meta name="viewport" content="width=device-width, initial-scale=0.54, maximum-scale=1.0, user-scalable=1" />
+<meta name="viewport" content="width=device-width, initial-scale=0.57, maximum-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
@@ -37,7 +37,7 @@ checkusersession ($user, false);
 function setviewport ()
 {
   var width = hcms_getViewportWidth();
-  
+  alert (width);
   if (width > 0)
   {
     // AJAX request to set viewport width
@@ -51,7 +51,7 @@ function minControlFrame ()
 {
   if (document.getElementById('controlLayer'))
   {
-    var height = 44;
+    var height = 34;
     
     document.getElementById('controlLayer').style.height = height + 'px';
     document.getElementById('objLayer').style.top = height + 'px';
@@ -101,12 +101,12 @@ function closeobjectview ()
 </script>
 </head>
 
-<body style="width:100%; height:100%; margin:0; padding:0;" onload="hcms_setViewportScale(); setviewport();">
+<body style="width:100%; height:100%; margin:0; padding:0;" onload="hcms_setViewportScale();">
 
 <!-- preview/live-view --> 
 <div id="objectviewLayer" class="hcmsWorkplaceExplorer" style="display:none; overflow:hidden; position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; z-index:8;">
   <div style="position:fixed; right:5px; top:5px; z-index:9;">
-    <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="closeobjectview();" />
+    <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closeobjectview();" />
   </div>
   <iframe id="objectview" src="" <?php if (!$is_mobile) echo 'scrolling="no"'; else echo 'scrolling="yes"'; ?> frameBorder="0" <?php if (!$is_iphone) echo 'style="width:100%; height:100%; border:0; margin:0; padding:0;"'; ?>></iframe>
 </div>

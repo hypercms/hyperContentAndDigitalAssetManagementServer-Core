@@ -189,8 +189,10 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
             $title = $searchindex_record[2];
             $description = $searchindex_record[3];
             $content = $searchindex_record[4];
+            
+            $query_check = true;
 
-            // query attributes if given (all attribute checks must be successful!)
+            // query attributes is given (all attribute checks must be successful!)
             if (is_array ($query_attribute) && sizeof ($query_attribute) > 0)
             { 
               $qa = 0;
@@ -211,10 +213,9 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
                 $qa++;
               }
             }
-            else $query_check = true;
           }
 
-          if ($query_check && ($exclude_url == "" || (is_string ($exclude_url) && substr_count ($url, $exclude_url) == 0)))
+          if (!empty ($query_check) && ($exclude_url == "" || (is_string ($exclude_url) && substr_count ($url, $exclude_url) == 0)))
           {
             if (strlen ($content) > 0 && strlen ($content) < 90000)
             {
@@ -440,6 +441,8 @@ function createindex ($newurl, $newtitle, $newdescription, $newcontent, $charset
             $title = $searchindex_record[2];
             $description = $searchindex_record[3];
             $content = $searchindex_record[4];
+            
+            $query_check = true;
 
             // check query attributes (all checks must be successful)
             if (is_array ($query_attribute) && sizeof ($query_attribute) > 0)
@@ -462,9 +465,8 @@ function createindex ($newurl, $newtitle, $newdescription, $newcontent, $charset
                 $j++;
               }
             }
-            else $query_check = true;
   
-            if ($query_check && $newurl == $url)
+            if (!empty ($query_check) && $newurl == $url)
             {
               if ($newtitle != false || $newdescription != false || $newcontent != false) $newdata .= date ("Y-m-d", time())."|$url|$newtitle|$newdescription|$newcontent".$add_attributes."\r\n";        
               $update = true;

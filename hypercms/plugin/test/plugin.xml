@@ -10,17 +10,17 @@
     <main>
       <group>
         <name>Plugin Group 1</name>
-        <icon>img/group.gif</icon>
+        <icon>img/group.png</icon>
         <subpoints>
           <point>
             <name>Plugin Point 1.1</name>
-            <icon>img/menupoint.gif</icon>
+            <icon>img/menupoint.png</icon>
             <page>pages/page.php</page>
             <control>pages/control.php</control>
           </point>
           <point>
             <name>Plugin Point 1.2</name>
-            <icon>img/menupoint.gif</icon>
+            <icon>img/menupoint.png</icon>
             <page>pages/page.php</page>
           </point>
         <subpoints>
@@ -31,12 +31,12 @@
         <subpoints>
           <point>
             <name>Plugin Point 2.1</name>
-            <icon>img/menupoint.gif</icon>
+            <icon>img/menupoint.png</icon>
             <page>pages/page.php</page>
           </point>
           <point>
             <name>Plugin Point 2.2</name>
-            <icon>img/menupoint.gif</icon>
+            <icon>img/menupoint.png</icon>
             <page>pages/page.php</page>
             <control>pages/control.php</control>
           </point>
@@ -44,21 +44,21 @@
       </group>
       <point>
         <name>Plugin Point 3</name>
-        <icon>img/menupoint.gif</icon>
+        <icon>img/menupoint.png</icon>
         <page>pages/page.php</page>
       </point>
     </main>
     <publication>
       <point>
         <name>Plugin for Publication</name>
-        <icon>img/menupoint.gif</icon>
+        <icon>img/menupoint.png</icon>
         <page>pages/page.php</page>
       </point>
     </publication>
     <context>
       <point>
         <name>Contextmenu Item</name>
-        <icon>img/menupoint.gif</icon>
+        <icon>img/menupoint.png</icon>
         <page>pages/page.php</page>
       </point>
     </context>

@@ -131,15 +131,14 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 
 <body class="hcmsWorkplaceGeneric">
 
-<!-- top bar -->
-<?php echo showtopbar (getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang), $lang); ?>
-
 <!-- content -->
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
-<?php
-if (!empty ($mediaview)) echo $mediaview;
-if (!empty ($metadata)) echo $metadata;
-?>
+  <div style="width:auto; display:table; margin:16px auto 0px auto;">
+  <?php
+  if (!empty ($mediaview)) echo $mediaview;
+  if (!empty ($metadata)) echo $metadata;
+  ?>
+  </div>
 </div>
 
 </body>

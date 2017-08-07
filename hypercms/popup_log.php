@@ -40,7 +40,6 @@ $description = str_replace ("\t", "<br />", $description);
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script>
-<!--
 function popupfocus ()
 {
   self.focus();
@@ -48,13 +47,12 @@ function popupfocus ()
 }
 
 popupfocus ();
-//-->
 </script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
 <?php
-echo showtopbar ("<img src=\"".getthemelocation()."img/info.gif\" align=\"absmiddle\" />&nbsp;".getescapedtext ($hcms_lang['system-events'][$lang]), $lang);
+echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" align=\"absmiddle\" />&nbsp;".getescapedtext ($hcms_lang['system-events'][$lang]), $lang);
 ?>
 <div class="hcmsWorkplaceFrame">
   <?php echo $description; ?>

@@ -56,12 +56,12 @@ $show = "";
 // icons and default messages
 if ($action == "accept")
 {
-  $icon = getthemelocation()."img/button_workflow_accept.gif";
+  $icon = getthemelocation()."img/button_workflow_accept.png";
   $message_default = getescapedtext ($hcms_lang['please-check-the-content'][$lang]);
 }
 else
 {
-  $icon = getthemelocation()."img/button_workflow_reject.gif";
+  $icon = getthemelocation()."img/button_workflow_reject.png";
   $message_default = getescapedtext ($hcms_lang['your-content-has-been-rejected'][$lang]);
 }
 
@@ -157,7 +157,7 @@ $token_new = createtoken ($user);
     </tr>        
     <tr>  
       <td align="left" valign="top">        
-        <div style="width:100px; float:left;"><?php echo getescapedtext ($hcms_lang['send'][$lang]); ?> </div> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['message'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK">
+        <div style="width:100px; float:left;"><?php echo getescapedtext ($hcms_lang['send'][$lang]); ?> </div> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['message'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK">
       </td>
     </tr>
   </table>
@@ -165,7 +165,7 @@ $token_new = createtoken ($user);
 <?php } else { ?>
 <table width="100%" height="100%" border=0 cellpadding="3" cellspacing="0">
   <tr>
-    <td class="hcmsWorkplaceControl" align="left" valign="top" width="20"><img src="<?php echo getthemelocation(); ?>img/info.gif" align="absmiddle" /></td>
+    <td class="hcmsWorkplaceControl" align="left" valign="top" width="20"><img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsButtonSizeSquare" align="absmiddle" /></td>
     <td align="left" valign="middle"><?php echo $show; ?></td>
   </tr>
 </table>

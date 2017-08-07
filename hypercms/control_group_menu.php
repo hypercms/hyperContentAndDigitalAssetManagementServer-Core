@@ -70,7 +70,6 @@ elseif (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript">
-<!--
 function warning_delete()
 {
   var form = document.forms['group_delete'];
@@ -141,18 +140,17 @@ function goToURL()
   var i, args=goToURL.arguments; document.returnValue = false;
   for (i=0; i<(args.length-1); i+=2) eval(args[i]+".location='"+args[i+1]+"'");
 }
-//-->
 </script>
 </head>
 
-<body class="hcmsWorkplaceControlWallpaper" onLoad="<?php echo $add_onload; ?>">
+<body class="hcmsWorkplaceControlWallpaper" onload="<?php echo $add_onload; ?>">
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
 
 <div class="hcmsLocationBar">
-  <table border=0 cellspacing=0 cellpadding=0>
+  <table border=0 cellspacing=0 cellpadding=1>
     <tr>
-      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['group-management'][$lang]); ?></td>
+      <td><b><?php echo getescapedtext ($hcms_lang['group-management'][$lang]); ?></b></td>
     </tr>
     <tr>
       <td>&nbsp;</td>
@@ -165,29 +163,29 @@ function goToURL()
   <div class="hcmsToolbarBlock">
     <?php
     if (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 'groupcreate'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('creategroupLayer','','show','deletegroupLayer','','hide','editgroupLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_new\" src=\"".getthemelocation()."img/button_usergroup_new.gif\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\">";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('creategroupLayer','','show','deletegroupLayer','','hide','editgroupLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_new\" src=\"".getthemelocation()."img/button_usergroup_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\">";}
     else
-    {echo "<img src=\"".getthemelocation()."img/button_usergroup_new.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
+    {echo "<img src=\"".getthemelocation()."img/button_usergroup_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
     ?>
     <?php
     if (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 'groupdelete'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('creategroupLayer','','hide','deletegroupLayer','','show','editgroupLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_delete\" src=\"".getthemelocation()."img/button_usergroup_delete.gif\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\">";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('creategroupLayer','','hide','deletegroupLayer','','show','editgroupLayer','','hide','hcms_messageLayer','','hide')\" name=\"media_delete\" src=\"".getthemelocation()."img/button_usergroup_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\">";}
     else
-    {echo "<img src=\"".getthemelocation()."img/button_usergroup_delete.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
+    {echo "<img src=\"".getthemelocation()."img/button_usergroup_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
     ?>
     <?php
     if (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 'groupedit'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('creategroupLayer','','hide','deletegroupLayer','','hide','editgroupLayer','','show','hcms_messageLayer','','hide')\" name=\"media_edit\" src=\"".getthemelocation()."img/button_usergroup_edit.gif\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\">";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('creategroupLayer','','hide','deletegroupLayer','','hide','editgroupLayer','','show','hcms_messageLayer','','hide')\" name=\"media_edit\" src=\"".getthemelocation()."img/button_usergroup_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\">";}
     else
-    {echo "<img src=\"".getthemelocation()."img/button_usergroup_edit.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
+    {echo "<img src=\"".getthemelocation()."img/button_usergroup_edit.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
     ?>   
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    if (!$is_mobile && file_exists ($mgmt_config['abs_path_cms']."help/adminguide_".$hcms_lang_shortcut[$lang].".pdf") && checkglobalpermission ($site, 'group'))
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', 800, 600);\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\"></a>\n";}
-    elseif (!$is_mobile && file_exists ($mgmt_config['abs_path_cms']."help/adminguide_en.pdf") && checkglobalpermission ($site, 'group'))
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', 800, 600);\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\"></a>\n";}
+    if (file_exists ($mgmt_config['abs_path_cms']."help/adminguide_".$hcms_lang_shortcut[$lang].".pdf") && checkglobalpermission ($site, 'group'))
+    {echo "<img onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', 800, 600);\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\">\n";}
+    elseif (file_exists ($mgmt_config['abs_path_cms']."help/adminguide_en.pdf") && checkglobalpermission ($site, 'group'))
+    {echo "<img onClick=\"hcms_openWindow('help/adminguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', 800, 600);\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\">\n";}
     ?>
   </div>
 </div>
@@ -207,10 +205,10 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         <span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span><br />
         <?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?> 
         <input type="text" name="group_name" maxlength="100" style="width:150px;" />
-        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
+        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
       <td width="16" align="right" valign="top">
-        <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('creategroupLayer','','hide');" />
+        <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('creategroupLayer','','hide');" />
       </td>         
     </tr>
   </table>
@@ -253,10 +251,10 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
           }
         ?>
         </select>
-        <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
+        <img name="Button3" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
       <td width="16" align="right" valign="top">
-        <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('deletegroupLayer','','hide');" />
+        <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('deletegroupLayer','','hide');" />
       </td>           
     </tr>
   </table>
@@ -286,7 +284,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         </select>
       </td>
       <td width="16" align="right" valign="top">
-        <img name="hcms_mediaClose3" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose3','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('editgroupLayer','','hide');" />
+        <img name="hcms_mediaClose3" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose3','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('editgroupLayer','','hide');" />
       </td>          
     </tr>
   </table>

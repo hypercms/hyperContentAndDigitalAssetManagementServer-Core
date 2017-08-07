@@ -561,83 +561,83 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     </ol>
     
     <a name="main"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Main API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Main API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."function/hypercms_main.inc.php";
     echo showAPIdocs ($file);
     ?>
     
     <a name="get"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Get API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Get API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."function/hypercms_get.inc.php";
     echo showAPIdocs ($file);
     ?>
     
     <a name="set"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Set API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Set API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."function/hypercms_set.inc.php";
     echo showAPIdocs ($file);
     ?>
     
     <a name="connect"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Connect API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Connect API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."function/hypercms_connect.inc.php";
     echo showAPIdocs ($file);
     ?>
     
     <a name="sec"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Security API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Security API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."function/hypercms_sec.inc.php";
     echo showAPIdocs ($file);
     ?>
     
     <a name="media"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Media API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Media API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."function/hypercms_media.inc.php";
     echo showAPIdocs ($file);
     ?>
     
     <a name="meta"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Metadata API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Metadata API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."function/hypercms_meta.inc.php";
     echo showAPIdocs ($file);
     ?>
     
     <a name="link"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Link API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Link API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."function/hypercms_link.inc.php";
     echo showAPIdocs ($file);
     ?>
     
     <a name="plugin"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Plugin API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Plugin API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."function/hypercms_plugin.inc.php";
     echo showAPIdocs ($file);
     ?>
     <a name="ui"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> User Interface API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> User Interface API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."function/hypercms_ui.inc.php";
     echo showAPIdocs ($file);
     ?>
     
     <a name="tplengine"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Template Engine API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Template Engine API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."function/hypercms_tplengine.inc.php";
     echo showAPIdocs ($file);
     ?>
     
     <a name="xml"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> XML API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> XML API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."function/hypercms_xml.inc.php";
     echo showAPIdocs ($file);
@@ -645,7 +645,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     
     <?php if (is_file ($mgmt_config['abs_path_cms']."report/hypercms_report.inc.php")) { ?>
     <a name="report"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Report API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Report API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."report/hypercms_report.inc.php";
     echo showAPIdocs ($file);
@@ -653,7 +653,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     
     <?php if (is_file ($mgmt_config['abs_path_cms']."project/hypercms_project.inc.php")) { ?>
     <a name="project"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Project API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Project API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."project/hypercms_project.inc.php";
     echo showAPIdocs ($file);
@@ -661,7 +661,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     
     <?php if (is_file ($mgmt_config['abs_path_cms']."task/hypercms_task.inc.php")) { ?>
     <a name="task"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Task API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Task API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."task/hypercms_task.inc.php";
     echo showAPIdocs ($file);
@@ -669,7 +669,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     
     <?php if (is_file ($mgmt_config['abs_path_cms']."workflow/hypercms_workflow.inc.php")) { ?>
     <a name="workflow"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Workflow API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Workflow API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."workflow/hypercms_workflow.inc.php";
     echo showAPIdocs ($file);
@@ -677,7 +677,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     
     <?php if (is_file ($mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php")) { ?>
     <a name="cloud"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Cloud Storage API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Cloud Storage API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."connector/cloud/hypercms_cloud.inc.php";
     echo showAPIdocs ($file);
@@ -685,7 +685,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     
     <?php if (is_file ($mgmt_config['abs_path_cms']."connector/imexport/hypercms_imexport.inc.php")) { ?>
     <a name="imexport"></a>
-    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.gif" class="hcmsButton" /></a> Import/Export API Functions</h2>
+    <h2><a href="#index"><img src="<?php echo getthemelocation(); ?>img/button_moveup_over.png" class="hcmsButton" /></a> Import/Export API Functions</h2>
     <?php
     $file = $mgmt_config['abs_path_cms']."connector/imexport/hypercms_imexport.inc.php";
     echo showAPIdocs ($file);

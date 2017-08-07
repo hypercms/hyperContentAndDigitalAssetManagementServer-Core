@@ -131,7 +131,6 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script>
-<!--
 function openHelp()
 {
   hcms_openWindow('template_help.php?site=<?php echo $site; ?>', 'help', 'resizable=yes,scrollbars=yes', 750, 680);
@@ -547,7 +546,6 @@ function savetemplate(mode)
     return true;
   }
 }
-//-->
 </script>
 </head>
 
@@ -641,80 +639,109 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
     <tr>
       <td>
         <div class="hcmsToolbar" style="width:816px;">
+        
           <div class="hcmsToolbarBlock">
-            <img onClick="savetemplate('');" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" name="save" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
-            <?php if ($cat != "meta") { ?><img onClick="savetemplate('preview');" class="hcmsButton hcmsButtonSizeSquare" name="savepreview" src="<?php echo getthemelocation(); ?>img/button_file_preview.gif" alt="<?php echo getescapedtext ($hcms_lang['save-and-preview'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-preview'][$lang], $charset, $lang); ?>" /><?php } ?>
+            <img onClick="savetemplate('');" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" name="save" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
+            <?php if ($cat != "meta") { ?><img onClick="savetemplate('preview');" class="hcmsButton hcmsButtonSizeSquare" name="savepreview" src="<?php echo getthemelocation(); ?>img/button_file_preview.png" alt="<?php echo getescapedtext ($hcms_lang['save-and-preview'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-preview'][$lang], $charset, $lang); ?>" /><?php } ?>
+          </div>
+          
             <?php
             if ($cat == "page")
             {
-              echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
-              echo "<img onClick=\"pagetitle();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_pagetitletag.gif\" alt=\"".getescapedtext ($hcms_lang['page-title'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['page-title'][$lang], $charset, $lang)."\" />\n";
-              echo "<img onClick=\"openmetaInfo();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_pagemetatag.gif\" alt=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" />\n";
+              echo "
+            <div class=\"hcmsToolbarBlock\">
+              <img onClick=\"pagetitle();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_pagetitle.png\" alt=\"".getescapedtext ($hcms_lang['page-title'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['page-title'][$lang], $charset, $lang)."\" />
+              <img onClick=\"openmetaInfo();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_pagemeta.png\" alt=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" />
+            </div>";
             }
             elseif ($cat == "comp" || $cat == "inc")
             {
-              echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
-              echo "<img onClick=\"compcontenttype();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_pagemetatag.gif\" alt=\"".getescapedtext ($hcms_lang['character-set'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['character-set'][$lang], $charset, $lang)."\" />\n";
-              echo "<img onClick=\"openmetaInfo();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_pagemetatag.gif\" alt=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" />\n";
+              echo "
+            <div class=\"hcmsToolbarBlock\">
+              <img onClick=\"compcontenttype();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_pagemeta.png\" alt=\"".getescapedtext ($hcms_lang['character-set'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['character-set'][$lang], $charset, $lang)."\" />
+              <img onClick=\"openmetaInfo();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_pagemeta.png\" alt=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['meta-information'][$lang], $charset, $lang)."\" />
+            </div>";
             }
 
             if ($cat == "page" || $cat == "comp" || $cat == "meta" || $cat == "inc")
             {
-              echo "<img onClick=\"geolocation();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_marker.gif\" alt=\"".getescapedtext ($hcms_lang['geo-location'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['geo-location'][$lang], $charset, $lang)."\" />\n";
-              if ($cat != "meta") echo "<img onClick=\"openLanguageInfo();\" class=\"hcmsButton hcmsButtonSizeSquare\" border=0 src=\"".getthemelocation()."img/button_languagetag.gif\" alt=\"".getescapedtext ($hcms_lang['language'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['language'][$lang], $charset, $lang)."\" />\n";
-              echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
-              
-              echo "<img onClick=\"openConstraints ();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_texttag.gif\" alt=\"".getescapedtext ($hcms_lang['unformatted-text'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['unformatted-text'][$lang], $charset, $lang)."\" />\n";
-              echo "<img onClick=\"format_tag('textf');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_ftexttag.gif\" alt=\"".getescapedtext ($hcms_lang['formatted-text'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['formatted-text'][$lang], $charset, $lang)."\" />\n";
-              echo "<img onClick=\"format_tag_attr('textl')\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_ltexttag.gif\" alt=\"".getescapedtext ($hcms_lang['text-options'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['text-options'][$lang], $charset, $lang)."\" />\n";
-              echo "<img onClick=\"format_tag('textc')\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_ctexttag.gif\" alt=\"".getescapedtext ($hcms_lang['checkbox'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['checkbox'][$lang], $charset, $lang)."\" />\n";
-              echo "<img onClick=\"format_tag('textd')\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_datepicker.gif\" alt=\"".getescapedtext ($hcms_lang['date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['date'][$lang], $charset, $lang)."\" />\n";
-              if ($cat == "meta") echo "<img onClick=\"format_tag('textk');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_keywordtag.gif\" alt=\"".getescapedtext ($hcms_lang['keywords'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['keywords'][$lang], $charset, $lang)."\" />\n";
-              if ($cat == "meta") echo "<img onClick=\"format_tag('commentu');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_commentutag.gif\" alt=\"".getescapedtext ($hcms_lang['unformatted-comment'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['unformatted-comment'][$lang], $charset, $lang)."\" />\n";
-              if ($cat == "meta") echo "<img onClick=\"format_tag('commentf');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_commentftag.gif\" alt=\"".getescapedtext ($hcms_lang['formatted-comment'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['formatted-comment'][$lang], $charset, $lang)."\" />\n";
-              if ($cat != "meta") echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
-              if ($cat != "meta") echo "<img onClick=\"openmediaType();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediatag.gif\" alt=\"".getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang)."\" />\n";
-              if ($cat != "meta") echo "<img onClick=\"format_tag('mediaalign');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediaaligntag.gif\" alt=\"".getescapedtext ($hcms_lang['media-alignment'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-alignment'][$lang], $charset, $lang)."\" />\n";
-              if ($cat != "meta") echo "<img onClick=\"format_tag('mediawidth');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediawidthtag.gif\" alt=\"".getescapedtext ($hcms_lang['media-width'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-width'][$lang], $charset, $lang)."\" />\n";
-              if ($cat != "meta") echo "<img onClick=\"format_tag('mediaheight');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediaheighttag.gif\" alt=\"".getescapedtext ($hcms_lang['media-height'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-height'][$lang], $charset, $lang)."\" />\n";
-              if ($cat != "meta") echo "<img onClick=\"format_tag('mediaalttext');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediaalttexttag.gif\" alt=\"".getescapedtext ($hcms_lang['media-alternative-text'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-alternative-text'][$lang], $charset, $lang)."\" />\n";
-              if ($cat != "meta") echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
-              if ($cat != "meta") echo "<img onClick=\"format_tag('linkhref');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_linktag.gif\" alt=\"".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang)."\" />\n";
-              if ($cat != "meta") echo "<img onClick=\"format_tag_attr('linktarget');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_linktargettag.gif\" alt=\"".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang)."\" />\n";
-              if ($cat != "meta") echo "<img onClick=\"format_tag('linktext');\" class=\"hcmsButton hcmsButtonSizeSquare\" border=0 src=\"".getthemelocation()."img/button_linktexttag.gif\" alt=\"".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang)."\" />\n";
-              echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
+              echo "
+            <div class=\"hcmsToolbarBlock\">
+                <img onClick=\"geolocation();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_marker.png\" alt=\"".getescapedtext ($hcms_lang['geo-location'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['geo-location'][$lang], $charset, $lang)."\" />";
+              if ($cat != "meta") echo "
+                <img onClick=\"openLanguageInfo();\" class=\"hcmsButton hcmsButtonSizeSquare\" border=0 src=\"".getthemelocation()."img/button_language.png\" alt=\"".getescapedtext ($hcms_lang['language'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['language'][$lang], $charset, $lang)."\" />";
+              echo "
+            </div>
+            
+            <div class=\"hcmsToolbarBlock\">
+              <img onClick=\"openConstraints ();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_textu.png\" alt=\"".getescapedtext ($hcms_lang['unformatted-text'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['unformatted-text'][$lang], $charset, $lang)."\" />
+              <img onClick=\"format_tag('textf');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_textf.png\" alt=\"".getescapedtext ($hcms_lang['formatted-text'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['formatted-text'][$lang], $charset, $lang)."\" />
+              <img onClick=\"format_tag_attr('textl')\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_textl.png\" alt=\"".getescapedtext ($hcms_lang['text-options'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['text-options'][$lang], $charset, $lang)."\" />
+              <img onClick=\"format_tag('textc')\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_textc.png\" alt=\"".getescapedtext ($hcms_lang['checkbox'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['checkbox'][$lang], $charset, $lang)."\" />
+              <img onClick=\"format_tag('textd')\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_datepicker.png\" alt=\"".getescapedtext ($hcms_lang['date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['date'][$lang], $charset, $lang)."\" />";
+              if ($cat == "meta") echo "
+              <img onClick=\"format_tag('textk');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_keyword.png\" alt=\"".getescapedtext ($hcms_lang['keywords'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['keywords'][$lang], $charset, $lang)."\" />
+              <img onClick=\"format_tag('commentu');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_commentu.png\" alt=\"".getescapedtext ($hcms_lang['unformatted-comment'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['unformatted-comment'][$lang], $charset, $lang)."\" />
+              <img onClick=\"format_tag('commentf');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_commentf.png\" alt=\"".getescapedtext ($hcms_lang['formatted-comment'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['formatted-comment'][$lang], $charset, $lang)."\" />";
+             echo "
+           </div>";
+           
+              if ($cat != "meta") echo "
+            <div class=\"hcmsToolbarBlock\">
+              <img onClick=\"openmediaType();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.png\" alt=\"".getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang)."\" />
+              <img onClick=\"format_tag('mediaalign');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediaalign.png\" alt=\"".getescapedtext ($hcms_lang['media-alignment'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-alignment'][$lang], $charset, $lang)."\" />
+              <img onClick=\"format_tag('mediawidth');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediawidth.png\" alt=\"".getescapedtext ($hcms_lang['media-width'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-width'][$lang], $charset, $lang)."\" />
+              <img onClick=\"format_tag('mediaheight');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediaheight.png\" alt=\"".getescapedtext ($hcms_lang['media-height'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-height'][$lang], $charset, $lang)."\" />
+             <img onClick=\"format_tag('mediaalttext');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_mediaalttext.png\" alt=\"".getescapedtext ($hcms_lang['media-alternative-text'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['media-alternative-text'][$lang], $charset, $lang)."\" />
+            </div>
+            <div class=\"hcmsToolbarBlock\">
+              <img onClick=\"format_tag('linkhref');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_link.png\" alt=\"".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang)."\" />
+              <img onClick=\"format_tag_attr('linktarget');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_linktarget.png\" alt=\"".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang)."\" />
+              <img onClick=\"format_tag('linktext');\" class=\"hcmsButton hcmsButtonSizeSquare\" border=0 src=\"".getthemelocation()."img/button_linktext.png\" alt=\"".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang)."\" />
+            </div>";
             }
             
             if ($cat == "page" || $cat == "comp" || $cat == "meta" || $cat == "inc")
             {
-              echo "<img onClick=\"format_tag('components');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compsingletag.gif\" alt=\"".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang)."\" />\n";
-              echo "<img onClick=\"format_tag('componentm');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compmultitag.gif\" alt=\"".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang)."\" />\n";
-              echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
+              echo "
+            <div class=\"hcmsToolbarBlock\">
+              <img onClick=\"format_tag('components');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compsingle.png\" alt=\"".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang)."\" />
+              <img onClick=\"format_tag('componentm');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_compmulti.png\" alt=\"".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang)."\" />
+            </div>";
             }  
             
             if ($cat == "page") 
             {
-              echo "<img onClick=\"customertracking()\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_sessionreg.gif\" alt=\"".getescapedtext ($hcms_lang['customer-tracking'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['customer-tracking'][$lang], $charset, $lang)."\" />\n";
-              echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
+              echo "
+            <div class=\"hcmsToolbarBlock\">
+              <img onClick=\"customertracking()\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_sessionreg.png\" alt=\"".getescapedtext ($hcms_lang['customer-tracking'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['customer-tracking'][$lang], $charset, $lang)."\" />
+            </div>";
             }  
 
             if ($cat == "page" || $cat == "comp" || $cat == "meta" || $cat == "inc")
             {
-              echo "<img onClick=\"db_connect();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_db_connect.gif\" alt=\"".getescapedtext ($hcms_lang['database-connectivity'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['database-connectivity'][$lang], $charset, $lang)."\" />\n";              
-              echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
-              echo "<img onClick=\"workflow();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_workflowinsert.gif\" alt=\"".getescapedtext ($hcms_lang['workflow'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['workflow'][$lang], $charset, $lang)."\">\n";                              
-              echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";     
-              echo "<img onClick=\"script();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_script.gif\" alt=\"".getescapedtext ($hcms_lang['script'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['script'][$lang], $charset, $lang)."\" />\n";                              
-              echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";                       
-              echo "<img onClick=\"date();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_tpldate.gif\" alt=\"".getescapedtext ($hcms_lang['insert-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-date'][$lang], $charset, $lang)."\" />\n";
-              echo "<img onClick=\"tplmedia();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_tplmediapath.gif\" alt=\"".getescapedtext ($hcms_lang['insert-path-to-template-media'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-path-to-template-media'][$lang], $charset, $lang)."\" />\n";
-              echo "</div>\n<div class=\"hcmsToolbarBlock\">\n";
-              echo "<img onClick=\"include('');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_tplincludetag.gif\" alt=\"".getescapedtext ($hcms_lang['include-template-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['include-template-component'][$lang], $charset, $lang)."\" />\n";
-              echo "<img onClick=\"include('php');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_phpincludetag.gif\" alt=\"".getescapedtext ($hcms_lang['inclusion-of-a-file'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['inclusion-of-a-file'][$lang], $charset, $lang)."\" />\n";
+              echo "
+            <div class=\"hcmsToolbarBlock\">
+              <img onClick=\"db_connect();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_db_connect.png\" alt=\"".getescapedtext ($hcms_lang['database-connectivity'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['database-connectivity'][$lang], $charset, $lang)."\" />             
+            </div>
+            <div class=\"hcmsToolbarBlock\">
+             <img onClick=\"workflow();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_workflowinsert.png\" alt=\"".getescapedtext ($hcms_lang['workflow'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['workflow'][$lang], $charset, $lang)."\">                           
+            </div>
+            <div class=\"hcmsToolbarBlock\">    
+              <img onClick=\"script();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_script.png\" alt=\"".getescapedtext ($hcms_lang['script'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['script'][$lang], $charset, $lang)."\" />                            
+            </div>
+            <div class=\"hcmsToolbarBlock\">                     
+              <img onClick=\"date();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_tpldate.png\" alt=\"".getescapedtext ($hcms_lang['insert-date'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-date'][$lang], $charset, $lang)."\" />
+              <img onClick=\"tplmedia();\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_tplmediapath.png\" alt=\"".getescapedtext ($hcms_lang['insert-path-to-template-media'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['insert-path-to-template-media'][$lang], $charset, $lang)."\" />
+            </div>
+            <div class=\"hcmsToolbarBlock\">
+              <img onClick=\"include('');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_tplinclude.png\" alt=\"".getescapedtext ($hcms_lang['include-template-component'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['include-template-component'][$lang], $charset, $lang)."\" />
+              <img onClick=\"include('php');\" class=\"hcmsButton hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_phpinclude.png\" alt=\"".getescapedtext ($hcms_lang['inclusion-of-a-file'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['inclusion-of-a-file'][$lang], $charset, $lang)."\" />
+            </div>";
             }
             ?>
-          </div>
-          <a href=# onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('pic_obj_help','','<?php echo getthemelocation(); ?>img/button_help_over.gif',1)" onClick="openHelp();"><img name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.gif" class="hcmsButtonBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['help'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['help'][$lang], $charset, $lang); ?>" /></a>
+          
+          <img onClick="openHelp();" name="pic_obj_help" src="<?php echo getthemelocation(); ?>img/button_help.png" class="hcmsButton hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['help'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['help'][$lang], $charset, $lang); ?>" />
         </div>
       </td>
     </tr>

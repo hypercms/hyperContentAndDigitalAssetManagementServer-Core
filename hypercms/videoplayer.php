@@ -161,7 +161,7 @@ if ($playercode != "")
     else echo showvideoplayer_head (false);
     ?>
   </head>
-  <body style="padding: 0px; margin: 0px;">
+  <body style="padding:0; margin:0;">
     <?php echo $playercode; ?>
   </body>
 </html>

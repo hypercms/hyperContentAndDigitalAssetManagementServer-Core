@@ -77,11 +77,11 @@ $location_name = getlocationname ($site, $dir_esc, "page", "path");
 <title>Page Browser</title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=1;" />
 <meta charset="<?php echo getcodepage ($lang); ?>" />
+<meta name="theme-color" content="#464646" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css" />
 <script src="../javascript/click.js" type="text/javascript"></script>
 <script src="../javascript/main.js" type="text/javascript"></script>
 <script language="JavaScript">
-<!--
 function popupfocus ()
 {
   self.focus();
@@ -96,7 +96,6 @@ function submitLink (url)
   window.top.close();
   return true;
 }
-//-->
 </script>
 </head>
 
@@ -114,7 +113,7 @@ function submitLink (url)
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
       <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
       <input type="text" name="search_expression" value="<?php if ($search_expression != "") echo html_encode ($search_expression); else echo $hcms_lang['search-expression'][$lang]; ?>" onblur="if (this.value=='') this.value='<?php echo $hcms_lang['search-expression'][$lang]; ?>';" onfocus="if (this.value=='<?php echo $hcms_lang['search-expression'][$lang]; ?>') this.value='';" style="width:210px;" maxlength="60" />
-      <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onclick="document.forms['searchform_general'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="top" alt="OK" title="OK" />
+      <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="document.forms['searchform_general'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" align="absmiddle" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
     </form>
     </div>
     <?php } ?>
@@ -129,7 +128,7 @@ function submitLink (url)
         //get parent directory
         $updir_esc = getlocation ($dir_esc);  
         
-        echo "<tr class=\"hcmsWorkplaceGeneric\"><td align=\"left\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\"><img src=\"".getthemelocation()."img/back.gif\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp;".$hcms_lang['back'][$lang]."</a></td></tr>\n";
+        echo "<tr class=\"hcmsWorkplaceGeneric\"><td align=\"left\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\"><img src=\"".getthemelocation()."img/back.png\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".$hcms_lang['back'][$lang]."</a></td></tr>\n";
       }
       
       // search results
@@ -203,7 +202,7 @@ function submitLink (url)
       
           if ($folder_info != false && $folder_info['deleted'] == false)
           {    
-            echo "<tr><td align=\"left\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.gif\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp;".showshorttext($folder_info['name'], 44)."</a></td></tr>\n";
+            echo "<tr><td align=\"left\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 44)."</a></td></tr>\n";
           }
         }
       }
@@ -223,7 +222,7 @@ function submitLink (url)
   
           if ($file_info != false && $file_info['published'] == true && $file_info['deleted'] == false)
           {
-            echo "<tr><td align=\"left\"><a href=\"javascript:submitLink('".$file_url."');\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp;".showshorttext($file_info['name'], 44)."</a></td></tr>\n";
+            echo "<tr><td align=\"left\"><a href=\"javascript:submitLink('".$file_url."');\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($file_info['name'], 44)."</a></td></tr>\n";
           }
         }
       }

@@ -272,7 +272,6 @@ if ($progress == 0) $progress = 1;
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script>
-<!--
 window.innerHeight = 120;
 
 function closepopup ()
@@ -281,7 +280,6 @@ function closepopup ()
 }
 
 setTimeout('closepopup()', 1000);
-//-->
 </script>
 </head>
 

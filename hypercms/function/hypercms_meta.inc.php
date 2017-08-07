@@ -1927,14 +1927,14 @@ function getmapping ($site)
   
   $mapping_data = "";
   
-  if (valid_publicationname ($site) && @is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
+  if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
   {
     // load pers file
     $mapping_data = loadfile ($mgmt_config['abs_path_data']."config/", $site.".media.map.php");
 
     if ($mapping_data != "")
     {
-      list ($mapping_data, $empty) = explode ("/* hcms_mapping */", $mapping_data);
+      list ($mapping_data) = explode ("/* hcms_mapping */", $mapping_data);
       
       // convert from older version to 5.5.8
       if (substr_count ($mapping_data, "\$mapping[") > 0)

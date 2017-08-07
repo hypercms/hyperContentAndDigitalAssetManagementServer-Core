@@ -34,7 +34,7 @@ checkusersession ($user, false);
 <table width="100%" height="100%">
   <tr>
     <td align="middle" valign="middle">
-      <img src="<?php echo getthemelocation(); ?>img/logo_server.png" />
+      <img src="<?php echo getthemelocation(); ?>img/logo_server.png" style="width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>;" alt="hypercms.com" />
     </td>
   </tr>
 </table>

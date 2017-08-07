@@ -472,7 +472,7 @@ if ($action == "unzip" && $authorized == true)
 ?>
 
 <?php
-echo showtopbar ("<img src=\"".getthemelocation()."img/info.gif\" align=\"absmiddle\" />&nbsp;".getescapedtext ($hcms_lang['information'][$lang]), $lang);
+echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" align=\"absmiddle\" />&nbsp;".getescapedtext ($hcms_lang['information'][$lang]), $lang);
 ?>
 <div class="hcmsWorkplaceFrame">
   <table width="100%" height="140" border="0" cellpadding="0" cellspacing="0">

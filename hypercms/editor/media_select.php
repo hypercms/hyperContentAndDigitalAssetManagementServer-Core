@@ -81,7 +81,7 @@ if ($mediaobject != "")
   }
 }
 
-if (!empty ($mediafile) && $mediafile != "Null_media.gif")
+if (!empty ($mediafile) && $mediafile != "Null_media.png")
 {
   $file_info = getfileinfo ($site, $mediafile, "comp");
   
@@ -129,7 +129,6 @@ if (!empty ($mediafile) && $mediafile != "Null_media.gif")
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="../javascript/main.js" type="text/javascript"></script>
 <script language="JavaScript">
-<!--
 function checkType()
 {
   var mediafile = document.forms['media'].mediafile.value;
@@ -180,7 +179,6 @@ function submitMedia ()
   }
   else return false;
 }
-//-->
 </script>
 <?php
 if (!empty ($file_info['ext']))
@@ -191,47 +189,53 @@ if (!empty ($file_info['ext']))
 ?>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 marginwidth=0 marginheight=0>
-
-<?php echo showtopbar ($hcms_lang['selected-file'][$lang], $lang); ?>
-
-<?php
-if (!empty ($mediafile))
-{
-  // output information
-  echo "<form name=\"media\" target=\"_parent\" method=\"post\">\n";
-  if ($mediatype == "video") echo "<input type=\"hidden\" name=\"mediafile\" value=\"".$mediafile."\" />\n";
-  else echo "<input type=\"hidden\" name=\"mediafile\" value=\"".$mediaurl.$mediafile."\" />\n";
-  echo "<input type=\"hidden\" name=\"mediawidth\" value=\"".$mediawidth."\" />
-  <input type=\"hidden\" name=\"mediaheight\" value=\"".$mediaheight."\" />
-  <input type=\"hidden\" name=\"mediatype\" value=\"".$mediatype."\" />
-
-  <table border=0 cellpadding=0 cellspacing=2>
-    <tr>
-      <td align=left valign=top>\n";
-        
-  if ($show == "" || substr_count ($mediafile, "Null_media.gif") == 1)
-  {
-    echo "<p class=hcmsHeadline>".$hcms_lang['no-file-selected'][$lang]."</p>";
-  }
-  else
-  {
-    echo $show; 
-  }
+<body class="hcmsWorkplaceGeneric">
+  <div class="hcmsWorkplaceFrame">
+  <?php echo showtopbar ($hcms_lang['selected-file'][$lang], $lang); ?>
   
-  echo "      </td>
+  <?php
+  if (!empty ($mediafile))
+  {
+    // output information
+    echo "
+    <form name=\"media\" target=\"_parent\" method=\"post\">\n";
+    if ($mediatype == "video") echo "
+    <input type=\"hidden\" name=\"mediafile\" value=\"".$mediafile."\" />\n";
+    else echo "
+    <input type=\"hidden\" name=\"mediafile\" value=\"".$mediaurl.$mediafile."\" />\n";
+    echo "
+    <input type=\"hidden\" name=\"mediawidth\" value=\"".$mediawidth."\" />
+    <input type=\"hidden\" name=\"mediaheight\" value=\"".$mediaheight."\" />
+    <input type=\"hidden\" name=\"mediatype\" value=\"".$mediatype."\" />
+  
+    <table border=0 cellpadding=0 cellspacing=2>
+      <tr>
+        <td align=left valign=top>";
+          
+    if ($show == "" || substr_count ($mediafile, "Null_media.png") == 1)
+    {
+      echo "
+        <p class=hcmsHeadline>".$hcms_lang['no-file-selected'][$lang]."</p>";
+    }
+    else
+    {
+      echo $show; 
+    }
+    
+    echo "
+    </td>
+        </tr>
+      <tr>
+      <tr>
+        <td align=left valign=center>
+          ".$hcms_lang['confirm-selection'][$lang].":&nbsp;
+          <img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"submitMedia();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('ButtonOK','','".getthemelocation()."img/button_ok_over.png',1)\" name=\"ButtonOK\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" />
+        </td>
       </tr>
-    <tr>
-    <tr>
-      <td align=left valign=center>
-        ".$hcms_lang['confirm-selection'][$lang].":&nbsp;
-        <img src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"submitMedia();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('ButtonOK','','".getthemelocation()."img/button_OK_over.gif',1)\" name=\"ButtonOK\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" />
-      </td>
-    </tr>
-  </table>
-</form>";
-}
-?>
-
+    </table>
+  </form>";
+  }
+  ?>
+  </div>
 </body>
 </html>

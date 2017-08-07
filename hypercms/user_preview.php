@@ -41,7 +41,6 @@ checkusersession ($user, false);
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script>
-<!--
 function checkForm (form, field)
 {
   if (form.elements[field].value == "")
@@ -55,7 +54,6 @@ function checkForm (form, field)
     return true;
   }
 }
-//-->
 </script>
 </head>
 
@@ -145,7 +143,7 @@ if ($login != "" && $login != false)
     ?>  
     <tr>
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['remove-user'][$lang]); ?> </td>
-      <td><img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm(document.forms['deleteuser'], 'login');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" /></td>
+      <td><img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm(document.forms['deleteuser'], 'login');" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" /></td>
     </tr>
   </table>
 </form>

@@ -110,7 +110,6 @@ $pagename = $file_info['name'];
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script>
-<!--
 function warning_versions_update()
 {
   var form = document.forms['versionform'];
@@ -175,11 +174,10 @@ function compare_submit ()
     return false; 
   }
 }
-//-->
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onLoad="<?php echo $add_onload; ?>hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif');">
+<body class="hcmsWorkplaceGeneric" onLoad="<?php echo $add_onload; ?>hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png');">
 
 <div class="hcmsWorkplaceFrame">
 <!-- change versions -->
@@ -262,9 +260,10 @@ function compare_submit ()
     // save log
     savelog (@$error);     
     ?>
-  </table><br />
+  </table>
+  <br />
   <div style="width:300px; float:left;"><?php echo getescapedtext ($hcms_lang['submit-changes-to-versions'][$lang]); ?> </div>
-  <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_versions_update();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /><br />
+  <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_versions_update();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" /><br />
 </form>
 
 <?php
@@ -272,7 +271,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
 ?>
 
 <!-- compare versions -->
-<form name="compareform" action="version_content_compare.php" method="post">
+<form name="compareform" action="version_content_compare.php" method="post" style="margin-top:4px;">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
@@ -282,7 +281,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:100px;")
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
   <div style="width:300px; float:left;"><?php echo getescapedtext ($hcms_lang['compare-selected-versions'][$lang]); ?> </div>
-  <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="compare_submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+  <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="compare_submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
 </form>
 </div>
 

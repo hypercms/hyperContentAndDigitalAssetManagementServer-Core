@@ -1,3 +1,13 @@
+img
+{
+  -ms-interpolation-mode: nearest-neighbor; // IE 7+ (non-standard property)
+  image-rendering: -webkit-optimize-contrast; // Safari 6, UC Browser 9.9
+  image-rendering: -webkit-crisp-edges; // Safari 7+
+  image-rendering: -moz-crisp-edges; // Firefox 3.6+
+  image-rendering: -o-crisp-edges; // Opera 12
+  image-rendering: pixelated; // Chrome 41+ and Opera 26+
+}
+
 .hcmsWorkplaceExplorer
 {
   margin: 0;
@@ -42,7 +52,21 @@
 {
   border: 0;
   margin: 0; 
-  padding: 4px;
+  padding: 8px;
+}
+
+.hcmsWorkplaceBar
+{
+  background-color: #A2C5F9;
+  border-left: 5px solid #EB6804;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 38px;
+  margin: 0;
+  padding: 0;
+  z-index: 900;
 }
 
 .hcmsContextMenu
@@ -59,9 +83,8 @@
 {
   z-index: 100;
   padding: 5px;
-  filter: alpha(opacity=90); -moz-opacity: 0.9; opacity: 0.9;
+  filter: alpha(opacity=95); -moz-opacity: 0.95; opacity: 0.95;
   vertical-align: middle;
-  border: 1px solid #4294FF;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
@@ -104,6 +127,15 @@
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
+}
+
+.hcmsButtonBlank
+{
+  cursor: pointer;
+  padding: 2px;
+  margin: 0;
+  border: 0;
+  float: left;
 }
 
 .hcmsButtonDownload
@@ -171,100 +203,85 @@
 
 .hcmsButtonSizeSquare
 {
-  width: 22px;
-  height: 22px;
+  width: 32px;
+  height: 32px;
+}
+
+.hcmsButtonSizeHeight
+{
+  height: 32px;
 }
 
 .hcmsButtonBlue
 {
-	-moz-box-shadow: inset 0px 1px 0px 0px #cae3fc;
-	-webkit-box-shadow: inset 0px 1px 0px 0px #cae3fc;
-	box-shadow: inset 0px 1px 0px 0px #cae3fc;
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #79bbff), color-stop(1, #4197ee) );
-	background: -moz-linear-gradient( center top, #79bbff 5%, #4197ee 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#79bbff', endColorstr='#4197ee');
-	background-color: #79bbff;
+  background-color: #65B1FC;
 	-moz-border-radius: 4px;
 	-webkit-border-radius:4px;
 	border-radius: 4px;
-	border: 1px solid #469df5;
-	display: inline-block;
-	padding: 2px 10px;
-	text-decoration: none;
+  border: 1px solid #469df5;
+  display: inline-block;
+  padding: 2px 10px;
+  text-decoration: none;
   cursor: pointer;
 }
+
 .hcmsButtonBlue:hover
 {
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #4197ee), color-stop(1, #79bbff) );
-	background: -moz-linear-gradient( center top, #4197ee 5%, #79bbff 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4197ee', endColorstr='#79bbff');
-	background-color: #4197ee;
+  background-color: #7EBDFD;
 }
+
 .hcmsButtonBlue:active
 {
-	position: relative;
-	top: 1px;
+  position: relative;
+  top: 1px;
 }
 
 .hcmsButtonGreen
 {
-	-moz-box-shadow: inset 0px 1px 0px 0px #caefab;
-	-webkit-box-shadow: inset 0px 1px 0px 0px #caefab;
-	box-shadow: inset 0px 1px 0px 0px #caefab;
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #77d42a), color-stop(1, #5cb811) );
-	background: -moz-linear-gradient( center top, #77d42a 5%, #5cb811 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#77d42a', endColorstr='#5cb811');
-	background-color: #77d42a;
+  background-color: #77d42a;
 	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
+	-webkit-border-radius:4px;
 	border-radius: 4px;
-	border: 1px solid #268a16;
-	display: inline-block;
-	padding: 2px 10px;
-	text-decoration: none;
+  border: 1px solid #268a16;
+  display: inline-block;
+  padding: 2px 10px;
+  text-decoration: none;
   cursor: pointer;
-}
-.hcmsButtonGreen:hover
-{
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #5cb811), color-stop(1, #77d42a) );
-	background: -moz-linear-gradient( center top, #5cb811 5%, #77d42a 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5cb811', endColorstr='#77d42a');
-	background-color: #5cb811;
-}
-.hcmsButtonGreen:active
-{
-	position:relative;
-	top:1px;
 }
 
-.hcmsButtonOrange {
-	-moz-box-shadow: inset 0px 1px 0px 0px #FCE2C1;
-	-webkit-box-shadow: inset 0px 1px 0px 0px #FCE2C1;
-	box-shadow: inset 0px 1px 0px 0px #FCE2C1;
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
-	background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
-	background-color: #FFC477;
+.hcmsButtonGreen:hover
+{
+  background-color: #99E75A;
+}
+
+.hcmsButtonGreen:active
+{
+  position:relative;
+  top:1px;
+}
+
+.hcmsButtonOrange
+{
+  background-color: #FB9004;
 	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
+	-webkit-border-radius:4px;
 	border-radius: 4px;
-	border: 1px solid #C28B2C;
-	display: inline-block;
-	padding: 2px 10px;
-	text-decoration: none;
+  border: 1px solid #C28B2C;
+  display: inline-block;
+  padding: 2px 10px;
+  text-decoration: none;
   cursor: pointer;
 }
+
 .hcmsButtonOrange:hover
 {
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FB940C), color-stop(1, #FFC477) );
-	background: -moz-linear-gradient( center top, #FB940C 5%, #FFC477 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FB940C', endColorstr='#FFC477');
-	background-color: #FB9E25;
+  background-color: #FFC477;
 }
+
 .hcmsButtonOrange:active
 {
-	position: relative;
-	top: 1px;
+  position: relative;
+  top: 1px;
 }
 
 .hcmsMore
@@ -277,24 +294,6 @@
 .hcmsMore:hover
 {
   background-color: #C7DBED;
-}
-
-.hcmsWorkplaceBar
-{
-  background-color: #A2C5F9;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8DCFF', endColorstr='#A2C5F9');
-  background-image: linear-gradient(#C8DCFF 0%, #A2C5F9 100%);
-  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C8DCFF), color-stop(1, #A2C5F9) );
-  background: -moz-linear-gradient( center top, #C8DCFF 5%, #A2C5F9 100% );
-  border-bottom: 1px solid #5AAD5A;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 28px;
-  marin: 0;
-  padding: 0;
-  z-index:900;
 }
 
 .hcmsStatusbar
@@ -342,8 +341,8 @@
 
 .hcmsIconTree
 {
-  background-repeat:no-repeat !important;
-  background-position:0 !important;
+  background-repeat: no-repeat !important;
+  background-position: 0 !important;
   background-size: 16px 16px !important;
   height: 16px !important;
   width: 16px !important;
@@ -373,6 +372,20 @@
   filter: gray() alpha(opacity=30);
   -moz-opacity: 0.3;
   opacity: 0.3;
+}
+
+input, select, textarea, button
+{
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 12px; 
+  font-weight: normal;
+  color: #000000;
+  text-decoration: none;
+  vertical-align: middle;
+  border: 1px solid #808080;
+  background-color: #FFFFFF;
+  margin: 0;
+  padding: 5px;
 }
 
 a 
@@ -407,7 +420,7 @@ a:active
   color: #000000;
 }
 
-body 
+html, body 
 {
   width: 100%;
   height: 100%;
@@ -415,7 +428,7 @@ body
   margin: 0;
 }
 
-html, body, table, td, span
+html, body, table, td, span, div
 {  
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 11px; 
@@ -426,21 +439,20 @@ html, body, table, td, span
 
 .hcmsTableHeader
 {
-  background-color: #61A3F9;
-  border-left: 1px solid #99CCFF;
-  border-right: 1px solid #61A3F9;
-  border-top: 1px solid #579DF7;
-  border-bottom: 1px solid #61A3F9;
+  border-left: 3px solid #EB6804;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 0;
   cursor: pointer;
 }
 
 .hcmsTableHeader:hover
 {
   background-color: #7BB5FF;
-  border-left: 1px solid #99CCFF;
-  border-right: 1px solid #7BB5FF;
-  border-top: 1px solid #99CCFF;
-  border-bottom: 1px solid #7BB5FF;
+  border-left: 3px solid #EB6804;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 0;
   cursor: pointer;
 }
 
@@ -452,13 +464,13 @@ html, body, table, td, span
 
 .hcmsThumbnailWidthmedium img
 {
-  width: 150px;
+  width: 140px;
   border: 0;
 }
 
 .hcmsThumbnailWidthsmall img
 {
-  width: 124px;
+  width: 100px;
   border: 0;
 }
 
@@ -476,13 +488,13 @@ html, body, table, td, span
 
 .hcmsThumbnailHeightmedium img
 {
-  height: 150px;
+  height: 140px;
   border: 0;
 }
 
 .hcmsThumbnailHeightsmall img
 {
-  height: 124px;
+  height: 100px;
   border: 0;
 }
 

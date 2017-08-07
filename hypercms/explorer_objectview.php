@@ -24,10 +24,10 @@ $screenheight = getrequest ("height", "numeric", 600);
 
 // set default width and height
 if ($screenwidth < 1) $screenwidth = 800;
-$width = $screenwidth - 80;
+$width = $screenwidth - 100;
 
 if ($screenheight < 1) $screenheight = 600;
-$height = $screenheight - 80;
+$height = $screenheight - 100;
 
 // location and object is set by assetbrowser
 if ($location == "" && !empty ($hcms_assetbrowser_location) && !empty ($hcms_assetbrowser_object))
@@ -85,12 +85,12 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     if (valid_publicationname ($site)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
       
     $url_page = str_ireplace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$page;
-    $objectview = "<div id=\"objectcontainer\" style=\"width:".($screenwidth - 80)."px; height:".($screenheight - 80)."px; border:1px #000000 solid;\"><iframe id=\"objectiframe\" scrolling=\"auto\" src=\"".$url_page."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>";
+    $objectview = "<div id=\"objectcontainer\" style=\"width:".($screenwidth - 100)."px; height:".($screenheight - 100)."px; border:1px #000000 solid;\"><iframe id=\"objectiframe\" scrolling=\"auto\" src=\"".$url_page."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>";
   }
   // page or component preview (no multimedia file)
   else
   {
-    $objectview = "<div id=\"objectcontainer\" style=\"width:".($screenwidth - 80)."px; height:".($screenheight - 80)."px; border:1px #000000 solid;\"><iframe scrolling=\"auto\" src=\"page_preview.php?location=".url_encode($location_esc)."&page=".url_encode($page)."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>";
+    $objectview = "<div id=\"objectcontainer\" style=\"width:".($screenwidth - 100)."px; height:".($screenheight - 100)."px; border:1px #000000 solid;\"><iframe scrolling=\"auto\" src=\"page_preview.php?location=".url_encode($location_esc)."&page=".url_encode($page)."\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0;\"></iframe></div>";
   }
 }
 ?>
@@ -198,7 +198,7 @@ function openBrWindowLink (winName, features, type)
     }
     return false;
   }
-  else alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-link-selected'][$lang]); ?>'));
+  else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-link-selected'][$lang]); ?>'));
 }
 </script>
 </head>
@@ -214,8 +214,8 @@ if (empty ($mediafile) && !empty ($mgmt_config['screensize']) && is_array ($mgmt
   foreach ($mgmt_config['screensize'] as $device => $name_array)
   {
     echo "
-  <div onClick=\"closeselectors(); hcms_switchSelector('select_view_".$device."');\" class=\"hcmsButton hcmsButtonSizeWide\"><img src=\"".getthemelocation()."img/icon_".$device.".png\" style=\"padding:2px; width:18px; height:18px;\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /><img src=\"".getthemelocation()."img/pointer_select.gif\" class=\" hcmsButtonSizeNarrow\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /></div>
-  <div id=\"select_view_".$device."\" class=\"hcmsSelector\" style=\"position:absolute; top:26px; left:".(38 * $i + 5)."px; visibility:hidden; z-index:999; max-height:200px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">";
+  <div onClick=\"closeselectors(); hcms_switchSelector('select_view_".$device."');\" class=\"hcmsButton hcmsButtonSizeWide\"><img src=\"".getthemelocation()."img/icon_".$device.".png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\" hcmsButtonSizeNarrow\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /></div>
+    <div id=\"select_view_".$device."\" class=\"hcmsSelector\" style=\"position:absolute; top:26px; left:".(38 * $i + 5)."px; visibility:hidden; z-index:999; max-height:200px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">";
 
     foreach ($name_array as $name => $size)
     {
@@ -230,11 +230,11 @@ if (empty ($mediafile) && !empty ($mgmt_config['screensize']) && is_array ($mgmt
   }
   
     echo "
-  <div onClick=\"closeselectors(); rotate();\" class=\"hcmsButton hcmsButtonSizeSquare\"><img src=\"".getthemelocation()."img/icon_rotate.png\" style=\"padding:2px; width:18px; height:18px;\" id=\"pic_rotate\" name=\"pic_rotate\" alt=\"".getescapedtext($hcms_lang['rotate'][$lang])."\" title=\"".getescapedtext($hcms_lang['rotate'][$lang])."\" /></div>";
+  <div onClick=\"closeselectors(); rotate();\" class=\"hcmsButton hcmsButtonSizeSquare\"><img src=\"".getthemelocation()."img/icon_rotate.png\" class=\"hcmsButtonSizeSquare\" id=\"pic_rotate\" name=\"pic_rotate\" alt=\"".getescapedtext($hcms_lang['rotate'][$lang])."\" title=\"".getescapedtext($hcms_lang['rotate'][$lang])."\" /></div>";
 }
 ?>
 <?php if ($cat == "page") { ?>
-  <div onClick="openBrWindowLink('preview','scrollbars=yes,resizable=yes,width=800,height=600', 'preview')" class="hcmsButton hcmsButtonSizeSquare"><img name="ButtonView" src="<?php echo getthemelocation(); ?>img/icon_newwindow.png" style="padding:2px; width:18px; height:18px;" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" /></div>
+  <div onClick="openBrWindowLink('preview','scrollbars=yes,resizable=yes,width=800,height=600', 'preview')" class="hcmsButton hcmsButtonSizeSquare"><img name="ButtonView" src="<?php echo getthemelocation(); ?>img/icon_newwindow.png" class="hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" /></div>
 <?php } ?>
 </div>
 

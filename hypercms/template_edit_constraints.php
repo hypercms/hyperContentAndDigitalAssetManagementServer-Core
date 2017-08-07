@@ -36,7 +36,6 @@ checkusersession ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script>
-<!--
 function applyconstraints ()
 {
   var constraint = "";
@@ -64,7 +63,6 @@ function applyconstraints ()
   opener.format_tag('textu');
   self.close();
 }
-//-->
 </script>
 </head>
 

@@ -284,8 +284,6 @@ else echo showvideoplayer_head (false);
 }
 </style>
 <script type="text/javascript">
-<!--
-
 function checkCut()
 {
   var area1 = $('#cut_area');
@@ -731,12 +729,12 @@ function setsegements ()
         div.style.cssText = segment_color + 'cursor:pointer; display:inline-block; width:' + width + 'px; height:22px;';
         
         // define delete button for split
-        var segment_delete = '<img src="<?php echo getthemelocation(); ?>img/button_delete.gif" onclick="deletebreakpoint(\'' + id + '\')" class="hcmsButton hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />';    
+        var segment_delete = '<div style="float:right; line-height:22px;"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" onclick="deletebreakpoint(\'' + id + '\')" class="hcmsButtonTiny hcmsIconList" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /></div>';    
 
         // define split
         if ((parseInt(width_bar) - parseInt(left)) > 0)
         {
-          var segment_split = '<div style="background-color:#A20303; display:inline-block; width:1px; height:100%;" onmouseover="$(\'#popup_' + id + '\').show();" onmouseout="$(\'#popup_' + id + '\').hide();"><div style="background-color:#A20303; position:relative; top:22px; left:-3px; width:7px; height:7px; vertical-align:middle;"></div><div id="popup_' + id + '" class="hcmsInfoBox" style="position:relative; top:22px; left:-60px; width:120px; height:28px; display:none; vertical-align:middle;"><div style="padding:4px; float:left;">' + time + '</div>' + segment_delete + '</div></div>';
+          var segment_split = '<div style="background-color:#A20303; display:inline-block; width:1px; height:100%;" onmouseover="$(\'#popup_' + id + '\').show();" onmouseout="$(\'#popup_' + id + '\').hide();"><div style="background-color:#A20303; position:relative; top:22px; left:-3px; width:7px; height:7px;"><div id="popup_' + id + '" class="hcmsInfoBox" style="white-space:nowrap; position:absolute; top:7px; left:-60px; width:120px; height:22px; padding:4px; display:none;"><div style="float:left; line-height:22px;">' + time + '&nbsp;</div>' + segment_delete + '</div></div></div>';
         }
         else var segment_split = '';
         
@@ -797,8 +795,6 @@ $().ready(function() {
   $('#mediaplayer_cut').show();
   $('#mediaplayer_options').show();
 });
-
--->  
 </script>
 </head>
 
@@ -825,7 +821,7 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
 ?>
 
 <!-- rendering settings -->
-<div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; vertical-align:top; z-index:1; display:none; margin-left:10px" class="hcmsMediaRendering">
+<div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; vertical-align:top; z-index:1; display:none; margin:-4px 10px 0px 10px" class="hcmsMediaRendering">
   <form name="mediaconfig" action="service/rendervideo.php" method="post">
   	<input type="hidden" name="action" value="rendermedia" />
     <input type="hidden" name="savetype" value="editor_so">
@@ -1019,7 +1015,7 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
 </div>
 
 <!-- media view -->
-<div style="margin:0; padding:10px; width:700px; height:500px; display:inline-block; z-index:1;">
+<div class="hcmsWorkplaceFrame">
   <!-- show video -->
   <?php echo $playercode; ?>
 </div>

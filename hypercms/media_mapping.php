@@ -107,7 +107,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
   <table border="0" cellspacing="0px" cellpadding="0px" style="border:1px solid #000000; margin:2px;">
     <tr>
       <td align="left">
-        <img onclick="document.forms['editor'].submit();" name="save" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" title="<?php echo getescapedtext ($hcms_lang['save'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang]); ?>" />
+        <img onclick="document.forms['editor'].submit();" name="save" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" title="<?php echo getescapedtext ($hcms_lang['save'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang]); ?>" />
       </td>
     </tr>
     <tr>
@@ -123,7 +123,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="save" value="reindex" />
     <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
-    <?php echo getescapedtext ($hcms_lang['reindex-content-of-all-media-files'][$lang]); ?> <img name="Button" onClick="checkReindex()" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" /> 
+    <?php echo getescapedtext ($hcms_lang['reindex-content-of-all-media-files'][$lang]); ?> <img name="Button" onClick="checkReindex()" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" /> 
   </form>
 </div>
 

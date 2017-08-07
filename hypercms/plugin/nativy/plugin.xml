@@ -10,14 +10,14 @@
     <main>
       <point>
         <name>Translation Service</name>
-        <icon>img/language.gif</icon>
+        <icon>img/language.png</icon>
         <page>pages/page.php</page>
       </point>
     </main>
     <context>
       <point>
         <name>Send to translation</name>
-        <icon>img/language.gif</icon>
+        <icon>img/language.png</icon>
         <page>pages/page.php</page>
       </point>
     </context>

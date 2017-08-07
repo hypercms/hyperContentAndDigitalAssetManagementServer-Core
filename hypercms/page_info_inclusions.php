@@ -64,7 +64,7 @@ echo showtopbar ($pagename." ".$hcms_lang['is-used-by'][$lang], $lang, $mgmt_con
 ?>
 
 <!-- content -->
-<div style="padding:0; width:100%; z-index:1;">
+<div class="hcmsWorkplaceFrame">
 <?php
 $site_buffer = $site;
 

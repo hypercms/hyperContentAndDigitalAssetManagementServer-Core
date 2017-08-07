@@ -79,7 +79,8 @@ CKEDITOR.editorConfig = function( config )
 
   config.toolbar = 'Default';
   config.skin = 'hypercms';
-  config.filebrowserWindowWidth = 500;
+  config.filebrowserWindowWidth = 600;
+  config.filebrowserWindowHeight = 600;
   
   // Here we load the hcms plugins for CKEDitor
   var customPath = CKEDITOR.basePath.split("/");

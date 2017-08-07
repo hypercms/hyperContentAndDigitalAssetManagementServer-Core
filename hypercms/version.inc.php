@@ -2198,16 +2198,71 @@ Release 06/2017
 - Bug fix: Function rdbms_setdeletedobjects did not correct the file name
 
 Version 6.2.8
-Release 06/2017
-- Implementation of 5 seconds timeout for IP gelocation service call
-- Implemenentation of new paramater for write direction of each language
-- Implemenentation of new Navy design theme
+Release 07/2017
+- Implementation of 5 seconds timeout for IP geolocation service call
+- Implementation of new parameter for write direction of each language
+- Implementation of new Navy design theme
 - Modifications in Arabic language file
-- Modifications in Navigator in order to dislpay 'undefined' for unsupported entries of meta data hierarchies
-- Removed all double quotes of titles/lables for fields in the systems GUI
+- Modifications in Navigator in order to display 'undefined' for unsupported entries of meta data hierarchies
+- Removed all double quotes of titles/lablels for fields in the systems GUI
 - Bug fix: The translation service plugin did request an image via non SSL connection (Requires refresh of plugin data in the plugin management)
+
+Version 7.0.0
+Release 08/2017
+- Improvements in function getsearchhistory in the Get API
+- Implementation of new GUI for the system including new icon sets with support of 4K displays
+- Implementation of new rename icon and action to support renaming of objects and folders in control_objectlist_menu
+- Removed support for small icons from function getfileinfo in Get API
+- Removed small file icon set (gif) from themes
+- Implementation of new JS function hcms_ElementbyIdStyle in main.js
+- Implementation of new tabs based on CSS instead of background images
+- Improved loading speed of all icons due to single file icon set 
+- Removed navigation history buttons from control_content_menu
+- Removed publication filter from keyword search in explorer
+- Enabled help buttons for all controls in mobile edition
+- Improvements in task_list, search_objectlist 
+- Implementation of new function getobjectlistcells in Get API 
+- Implementation of a screen resolution matrix for mobiles and desktops for explorer_objectlist and search_objectlist
+- Modifications of JS function hcms_getViewportWidth in main.js in order to support desktop window width
+- Modifications in JS function hcms_setViewportScale in main.js
+- Implementation of new logic for JS function hcms_detectBrowser in order to detect more mobile devices
+- Replaced is_int by new logic in explorer_objectlist and search_objectlist due to issues after redesign
+- Changed viewport settings for user_sendlink
+- Implementation of video color search support based on video thumbnail image
+- Merged image search and file-type search to media search
+- Reduced toolbar length by implementation of new edit selector in control_objectlist_menu
+- Modifications in function showtopbar and showtopmenubar in UI API in order to support larger button icons
+- Implementation of new JS function hcms_hideSelector
+- Implementation of click events in order to hide opened selector in control_objectlist_menu
+- Modifications in function showmedia in UI API with new design layout
+- Modifications in function creatmedia to support different empty values (0 and false) for the watermark parameter (wm)
+- Removed JS function hcms_resizeFrameWidth due to changes in function switchsidebar in control_objectlist_menu
+- Implementation of columns for sorting for gallery views
+- Enabled annotations for iOS devices (iPad and iPhone)
+- Improvements in function getmapping in Media API
+- Improvements in function createindex and searchindex in external Search API
+- Modifications in annotations to disable browser textarea resizing (does not change maxwidth) and new textarea default size
+- Modifications of face/object detection in order to delete detected or marked faces and objects by delete button
+- Modifications in service savecontent in order to remove empty entries from faces JSON string
+- Modifications in video editing/montage GUI
+- Modifications in VTT editing GUI
+- Moved function getpdfinfo from Media to Get API
+- Implementation of ImageMagick identify command support in function getpdfinfo in Get API
+- Update of all user manuals
+- Updates in language files
+- Design update for all standard plugins
+- Bug fix: The empty cells in object lists have not been added at the end
+- Bug fix: The folder title has not been displayed if a multiobject has been submitted to control_objectlist_menu
+- Bug fix: Resizing of columns has not been enabled if window size changes in user_objectlist
+- Bug fix: Mediaformat has not been defined for select box in media_edit_explorer
+- Bug fix: Function showprojectrecord in Project API used wrong parameter name for publication when selecting users
+- Bug fix: Wrong index name for deleted in link_edit_explorer
+- Bug fix: Modified date for template media files has not been set in function showmedia in UI API
+- Bug fix: Function correctfile in main API did convert locked file names and removed @ before user name
+- Bug fix: JS function collectFaces in template engine did include empty entries in the JSON object
+- Bug fix: Function showmedia in UI API did not calculate the proper height of documents for the preview
 */
 
 // current version
-$mgmt_config['version'] = "Version 6.2.8";
+$mgmt_config['version'] = "Version 7.0.0";
 ?>

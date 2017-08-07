@@ -36,7 +36,6 @@ checkusersession ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script>
-<!--
 function applylanguage ()
 {
   var language_sessionvar = document.forms['language'].elements['language_sessionvar'].value;
@@ -48,7 +47,6 @@ function applylanguage ()
   opener.language();
   self.close();
 }
-//-->
 </script>
 </head>
 

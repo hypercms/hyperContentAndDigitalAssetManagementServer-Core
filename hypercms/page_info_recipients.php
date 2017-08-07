@@ -56,7 +56,6 @@ $pagename = $fileinfo['name'];
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script>
-<!--
 function warning_recipients_delete()
 {
   var form = document.forms['recipientform'];
@@ -65,7 +64,6 @@ function warning_recipients_delete()
   if (check == true) form.submit();
   return check;
 }
-//-->
 </script>
 </head>
 
@@ -77,7 +75,7 @@ echo showtopbar ($pagename." ".$hcms_lang['was-send-to'][$lang], $lang, $mgmt_co
 ?>
 
 <!-- content -->
-<div style="padding:0; width:100%; z-index:1;">
+<div class="hcmsWorkplaceFrame">
 <?php
 // delete recipients
 if (is_array ($delete_id) && @sizeof ($delete_id) > 0 && $setlocalpermission['delete'] == 1)
@@ -171,7 +169,7 @@ if ($result_array != false && sizeof ($result_array) > 0)
     <tr>
       <td colspan=\"3\" nowrap=\"nowrap\">
         ".getescapedtext ($hcms_lang['delete-selected-recipients'][$lang]).":
-        <img name=\"Button\" src=\"".getthemelocation()."img/button_OK.gif\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onclick=\"warning_recipients_delete();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_OK_over.gif',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />
+        <img name=\"Button\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onclick=\"warning_recipients_delete();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button','','".getthemelocation()."img/button_ok_over.png',1)\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" />
       </td>
     </tr>";  
 }

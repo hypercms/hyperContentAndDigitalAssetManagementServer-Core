@@ -257,19 +257,19 @@ function hcms_showContextmenu ()
     {
       if (contexttype == "object" || contexttype == "folder" || (multiobject != "" && contexttype == "media"))
       {
-        if (eval (document.getElementById("img_preview"))) document.getElementById("img_preview").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_cmsview"))) document.getElementById("img_cmsview").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_notify"))) document.getElementById("img_notify").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_chat"))) document.getElementById("img_chat").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_restore"))) document.getElementById("img_restore").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_cut"))) document.getElementById("img_cut").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_copy"))) document.getElementById("img_copy").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_copylinked"))) document.getElementById("img_copylinked").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOn";
+        if (eval (document.getElementById("img_preview"))) document.getElementById("img_preview").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_cmsview"))) document.getElementById("img_cmsview").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_notify"))) document.getElementById("img_notify").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_chat"))) document.getElementById("img_chat").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_restore"))) document.getElementById("img_restore").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_cut"))) document.getElementById("img_cut").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_copy"))) document.getElementById("img_copy").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_copylinked"))) document.getElementById("img_copylinked").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOn hcmsIconList";
         if (eval (document.getElementsByName("img_plugin")))
         {
           var plugin_items = document.getElementsByName("img_plugin");
@@ -278,19 +278,19 @@ function hcms_showContextmenu ()
       }
       else if (multiobject == "" && contexttype == "media")
       {
-        if (eval (document.getElementById("img_preview"))) document.getElementById("img_preview").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_cmsview"))) document.getElementById("img_cmsview").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_notify"))) document.getElementById("img_notify").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_chat"))) document.getElementById("img_chat").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_restore"))) document.getElementById("img_restore").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOn";   
-        if (eval (document.getElementById("img_cut"))) document.getElementById("img_cut").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_copy"))) document.getElementById("img_copy").className = "hcmsIconOn";      
-        if (eval (document.getElementById("img_copylinked"))) document.getElementById("img_copylinked").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOn";
-        if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOn";
+        if (eval (document.getElementById("img_preview"))) document.getElementById("img_preview").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_cmsview"))) document.getElementById("img_cmsview").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_notify"))) document.getElementById("img_notify").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_chat"))) document.getElementById("img_chat").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_restore"))) document.getElementById("img_restore").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOn hcmsIconList";   
+        if (eval (document.getElementById("img_cut"))) document.getElementById("img_cut").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_copy"))) document.getElementById("img_copy").className = "hcmsIconOn hcmsIconList";      
+        if (eval (document.getElementById("img_copylinked"))) document.getElementById("img_copylinked").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOn hcmsIconList";
+        if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOn hcmsIconList";
         if (eval (document.getElementsByName("img_plugin")))
         {
           var plugin_items = document.getElementsByName("img_plugin");
@@ -299,19 +299,19 @@ function hcms_showContextmenu ()
       }
       else
       {  
-        if (eval (document.getElementById("img_preview"))) document.getElementById("img_preview").className = "hcmsIconOff";
-        if (eval (document.getElementById("img_cmsview"))) document.getElementById("img_cmsview").className = "hcmsIconOff";
-        if (eval (document.getElementById("img_notify"))) document.getElementById("img_notify").className = "hcmsIconOff";
-        if (eval (document.getElementById("img_chat"))) document.getElementById("img_chat").className = "hcmsIconOff";
-        if (eval (document.getElementById("img_restore"))) document.getElementById("img_restore").className = "hcmsIconOff";
-        if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOff";   
-        if (eval (document.getElementById("img_cut"))) document.getElementById("img_cut").className = "hcmsIconOff";
-        if (eval (document.getElementById("img_copy"))) document.getElementById("img_copy").className = "hcmsIconOff";      
-        if (eval (document.getElementById("img_copylinked"))) document.getElementById("img_copylinked").className = "hcmsIconOff";
-        if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOff";
-        if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOff";
-        if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOff";
-        if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOff";
+        if (eval (document.getElementById("img_preview"))) document.getElementById("img_preview").className = "hcmsIconOff hcmsIconList";
+        if (eval (document.getElementById("img_cmsview"))) document.getElementById("img_cmsview").className = "hcmsIconOff hcmsIconList";
+        if (eval (document.getElementById("img_notify"))) document.getElementById("img_notify").className = "hcmsIconOff hcmsIconList";
+        if (eval (document.getElementById("img_chat"))) document.getElementById("img_chat").className = "hcmsIconOff hcmsIconList";
+        if (eval (document.getElementById("img_restore"))) document.getElementById("img_restore").className = "hcmsIconOff hcmsIconList";
+        if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOff hcmsIconList";   
+        if (eval (document.getElementById("img_cut"))) document.getElementById("img_cut").className = "hcmsIconOff hcmsIconList";
+        if (eval (document.getElementById("img_copy"))) document.getElementById("img_copy").className = "hcmsIconOff hcmsIconList";      
+        if (eval (document.getElementById("img_copylinked"))) document.getElementById("img_copylinked").className = "hcmsIconOff hcmsIconList";
+        if (eval (document.getElementById("img_publish"))) document.getElementById("img_publish").className = "hcmsIconOff hcmsIconList";
+        if (eval (document.getElementById("img_unpublish"))) document.getElementById("img_unpublish").className = "hcmsIconOff hcmsIconList";
+        if (eval (document.getElementById("img_unlock"))) document.getElementById("img_unlock").className = "hcmsIconOff hcmsIconList";
+        if (eval (document.getElementById("img_fav_delete"))) document.getElementById("img_fav_delete").className = "hcmsIconOff hcmsIconList";
         if (eval (document.getElementsByName("img_plugin")))
         {
           var plugin_items = document.getElementsByName("img_plugin");
@@ -329,13 +329,13 @@ function hcms_showContextmenu ()
 
     if (login != "")
     {
-      if (eval (document.getElementById("img_edit"))) document.getElementById("img_edit").className = "hcmsIconOn";
-      if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOn";
+      if (eval (document.getElementById("img_edit"))) document.getElementById("img_edit").className = "hcmsIconOn hcmsIconList";
+      if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOn hcmsIconList";
     }    
     else
     {
-      if (eval (document.getElementById("img_edit"))) document.getElementById("img_edit").className = "hcmsIconOff";
-      if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOff";
+      if (eval (document.getElementById("img_edit"))) document.getElementById("img_edit").className = "hcmsIconOff hcmsIconList";
+      if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOff hcmsIconList";
     }  
   }
   else if (eval (document.forms['contextmenu_queue']))
@@ -347,13 +347,13 @@ function hcms_showContextmenu ()
 
     if (queue_id != "")
     {
-      if (eval (document.getElementById("img_edit"))) document.getElementById("img_edit").className = "hcmsIconOn";
-      if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOn";
+      if (eval (document.getElementById("img_edit"))) document.getElementById("img_edit").className = "hcmsIconOn hcmsIconList";
+      if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOn hcmsIconList";
     }    
     else
     {
-      if (eval (document.getElementById("img_edit"))) document.getElementById("img_edit").className = "hcmsIconOff";
-      if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOff";
+      if (eval (document.getElementById("img_edit"))) document.getElementById("img_edit").className = "hcmsIconOff hcmsIconList";
+      if (eval (document.getElementById("img_delete"))) document.getElementById("img_delete").className = "hcmsIconOff hcmsIconList";
     }
   }
   

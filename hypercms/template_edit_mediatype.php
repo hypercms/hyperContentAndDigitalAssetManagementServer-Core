@@ -36,7 +36,6 @@ checkusersession ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/click.js" type="text/javascript"></script>
 <script>
-<!--
 function applyconstraints ()
 {
   var constraint = document.forms['valid'].elements['mediatype'].value; 
@@ -45,7 +44,6 @@ function applyconstraints ()
   opener.format_tag('mediafile');
   self.close();
 }
-//-->
 </script>
 </head>
 

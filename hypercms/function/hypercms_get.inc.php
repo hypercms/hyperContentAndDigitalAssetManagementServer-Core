@@ -204,6 +204,34 @@ function getuserip ()
   else return false;
 }
 
+// ----------------------------------------- getobjectlistcells ------------------------------------------
+// function: getobjectlistcells()
+// input: width of viewport or window in pixels, is mobile device [0,1] (optional)
+// output: number of table cells/rows for the gallery view of object lists
+
+function getobjectlistcells ($viewportwidth, $is_mobile=0)
+{
+  // max thumbnail size in pixels
+  $maxthumbsize = 180;
+  
+  // for mobile screens
+  if ($is_mobile)
+  {
+    // Navigator does not require space
+    if ($viewportwidth > 0) $table_cells = floor ($viewportwidth / ($maxthumbsize + 10));
+    else $table_cells = 3;
+  }
+  // for desktop/notebook screens
+  else
+  {
+    // Navigator and also side bar might take space
+    if ($viewportwidth > 0) $table_cells = floor (($viewportwidth - 260 - 330) / ($maxthumbsize + 10));
+    else $table_cells = 5;
+  }
+  
+  return $table_cells;
+}
+
 // ----------------------------------------- getlanguageoptions ------------------------------------------
 // function: getlanguageoptions()
 // input: %
@@ -334,7 +362,7 @@ function getescapedtext ($text, $charset="", $lang="")
 // ----------------------------------------- getsearchhistory ------------------------------------------
 // function: getsearchhistory()
 // input: user name (optional)
-// output: array holding all expressions of the search history / false on error
+// output: array holding all expressions (in single quotes) of the search history of a user / false on error
 
 function getsearchhistory ($user="")
 {
@@ -360,7 +388,7 @@ function getsearchhistory ($user="")
       }
       
       // only unique expressions
-      $keywords = array_unique ($keywords);
+      if (sizeof ($keywords) > 0) $keywords = array_unique ($keywords);
       
       return $keywords;
     }
@@ -1233,13 +1261,13 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
     if ($container == "")
     {
       // if object is folder
-    	if (@is_dir ($location.$object))
+    	if (is_dir ($location.$object))
       {
     		$location = $location.$object."/";
     		$object = ".folder";
     	}
       
-      if (@is_file ($location.$object))
+      if (is_file ($location.$object))
       {
     		// read file
     		$objectdata = loadfile ($location, $object);
@@ -2696,7 +2724,6 @@ function gettemplateversions ($site, $template)
 //    $result['name']: readable file name without hypercms management extension
 //    $result['filename']: file name without file extensions
 //    $result['icon']: file name of the file icon
-//    $result['icon_large']: file name of the large file icon
 //    $result['type']: file type
 //    $result['ext']: file extension incl. dot in lower case
 //    $result['published']: if file is published = true else = false
@@ -2742,14 +2769,10 @@ function getfileinfo ($site, $file, $cat="comp")
         
         $file_name = $folder_name;
         $file_nameonly = $folder_name;
-        
-        if ($cat == "page") $file_icon = "folder_page.gif";
-        elseif ($cat == "comp") $file_icon = "folder_comp.gif";
-        else $file_icon = "folder.gif";
-        
-        if ($cat == "page") $file_icon_large = "folder_page.png";
-        elseif ($cat == "comp") $file_icon_large = "folder_comp.png";
-        else $file_icon_large = "folder.png";
+
+        if ($cat == "page") $file_icon = "folder_page.png";
+        elseif ($cat == "comp") $file_icon = "folder_comp.png";
+        else $file_icon = "folder.png";
         
         $file_type = "Folder";
         $file_published = true;
@@ -2810,106 +2833,91 @@ function getfileinfo ($site, $file, $cat="comp")
         // MS Word
         if ($file_ext == ".doc" || $file_ext == ".docx" || $file_ext == ".docm" || $file_ext == ".dot" || $file_ext == ".dotx")
         {
-          $file_icon = "file_doc.gif";
-          $file_icon_large = "file_doc.png";
+          $file_icon = "file_doc.png";
           $file_type = "MS Word";
         }
         // MS Powerpoint
         elseif ($file_ext == ".ppt" || $file_ext == ".pptx" || $file_ext == ".pps" || $file_ext == ".ppsx" || $file_ext == ".pot" || $file_ext == ".potm" || $file_ext == ".potx")
         {
-          $file_icon = "file_ppt.gif";
-          $file_icon_large = "file_ppt.png";
+          $file_icon = "file_ppt.png";
           $file_type = "MS Powerpoint";
         }
         // MS Excel
         elseif ($file_ext == ".xls" || $file_ext == ".xlsx" || $file_ext == ".xlst" || $file_ext == ".xlsm" ||$file_ext == ".csv")
         {
-          $file_icon = "file_xls.gif";
-          $file_icon_large = "file_xls.png";
+          $file_icon = "file_xls.png";
           $file_type = "MS Excel";
         }
         // Adobe PDF
         elseif ($file_ext == ".pdf")
         {
-          $file_icon = "file_pdf.gif";
-          $file_icon_large = "file_pdf.png";
+          $file_icon = "file_pdf.png";
           $file_type = "Adobe Acrobat";
         }
         // Open Office Text
         elseif ($file_ext == ".odt" || $file_ext == ".fodt")
         {
-          $file_icon = "file_odt.gif";
-          $file_icon_large = "file_odt.png";
+          $file_icon = "file_odt.png";
           $file_type = "OO Text";
         }
         // Open Office Spreadsheet
         elseif ($file_ext == ".ods" || $file_ext == ".fods")
         {
-          $file_icon = "file_ods.gif";
-          $file_icon_large = "file_ods.png";
+          $file_icon = "file_ods.png";
           $file_type = "OO Spreadsheet";
         }
         // Open Office Presentation
         elseif ($file_ext == ".odp" || $file_ext == ".fodp")
         {
-          $file_icon = "file_odp.gif";
-          $file_icon_large = "file_odp.png";
+          $file_icon = "file_odp.png";
           $file_type = "OO Presentation";
         }                      
         // text based documents in proprietary format    
         elseif (@substr_count (strtolower ($hcms_ext['bintxt']).".", $file_ext.".") > 0)
         {
-          $file_icon = "file_txt.gif";
-          $file_icon_large = "file_txt.png";
+          $file_icon = "file_txt.png";
           $file_type = "Text";
         }
         // text based documents in clear text  
         elseif (@substr_count (strtolower ($hcms_ext['cleartxt']).".", $file_ext.".") > 0)
         {
-          $file_icon = "file_txt.gif";
-          $file_icon_large = "file_txt.png";
+          $file_icon = "file_txt.png";
           $file_type = "Text";
         }        
         // image files 
         elseif (@substr_count (strtolower ($hcms_ext['image']).".", $file_ext.".") > 0)
         {
-          $file_icon = "file_image.gif";
-          $file_icon_large = "file_image.png";
+          $file_icon = "file_image.png";
           $file_type = "Image";
         }
         // Adobe Flash
         elseif (@substr_count (strtolower ($hcms_ext['flash']).".", $file_ext.".") > 0)
         {
-          $file_icon = "file_flash.gif";
-          $file_icon_large = "file_flash.png";
+          $file_icon = "file_flash.png";
           $file_type = "Macromedia Flash";
         }
         // Audio files
         elseif (@substr_count (strtolower ($hcms_ext['audio']).".", $file_ext.".") > 0)
         {
-          $file_icon = "file_audio.gif";
-          $file_icon_large = "file_audio.png";
+          $file_icon = "file_audio.png";
           $file_type = "Audio";
         }
         // Apple Quicktime files
         elseif ($file_ext == ".qt" || $file_ext == ".qtl" || $file_ext == ".mov")
         {
-          $file_icon = "file_qt.gif";
-          $file_icon_large = "file_qt.png";
+          $file_icon = "file_qt.png";
           $file_type = "Quicktime Video";
         }
         // Video files  
         elseif (@substr_count (strtolower ($hcms_ext['video']).".", $file_ext.".") > 0)
         {
-          $file_icon = "file_mpg.gif";
-          $file_icon_large = "file_mpg.png";
+          $file_icon = "file_mpg.png";
           $file_type = "Video";
         }
         // Compressed files
         elseif (@substr_count (strtolower ($hcms_ext['compressed']).".", $file_ext.".") > 0)
         {
-          $file_icon = "file_zip.gif";
-          $file_icon_large = "file_zip.png";
+          $file_icon = "file_zip.png";
           $file_type = "compressed";
         }
         // CMS template files
@@ -2917,26 +2925,22 @@ function getfileinfo ($site, $file, $cat="comp")
         {
           if (@substr_count ($file, ".page.tpl"))
           {
-            $file_icon = "template_page.gif";
-            $file_icon_large = "template_page.gif";
+            $file_icon = "template_page.png";
             $file_type = "Page Template";
           }
           elseif (@substr_count ($file, ".comp.tpl"))
           {
-            $file_icon = "template_comp.gif";
-            $file_icon_large = "template_comp.gif";
+            $file_icon = "template_comp.png";
             $file_type = "Component Template";
           }
           elseif (@substr_count ($file, ".meta.tpl"))
           {
-            $file_icon = "template_media.gif";
-            $file_icon_large = "template_media.gif";
+            $file_icon = "template_media.png";
             $file_type = "Meta Data Template";
           }        
           elseif (@substr_count ($file, ".inc.tpl"))
           {
-            $file_icon = "template_comp.gif";
-            $file_icon_large = "template_comp.gif";
+            $file_icon = "template_comp.png";
             $file_type = "Template Component";
           }          
               
@@ -2947,28 +2951,24 @@ function getfileinfo ($site, $file, $cat="comp")
         {
           if ($cat == "page")
           {
-            $file_icon = "file_page.gif";
-            $file_icon_large = "file_page.png";
+            $file_icon = "file_page.png";
             $file_type = "Page";
           }
           elseif ($cat == "comp")
           {
-            $file_icon = "file_comp.gif";
-            $file_icon_large = "file_comp.png";
+            $file_icon = "file_comp.png";
             $file_type = "Component";      
           }
           else
           {
-            $file_icon = "file_page.gif";
-            $file_icon_large = "file_page.png";
+            $file_icon = "file_page.png";
             $file_type = "Page";        
           }
         }  
         // all other files    
         else
         {
-          $file_icon = "file_binary.gif";
-          $file_icon_large = "file_binary.png";
+          $file_icon = "file_binary.png";
           $file_type = substr ($file_ext, 1);
         }
       } 
@@ -2981,8 +2981,7 @@ function getfileinfo ($site, $file, $cat="comp")
           
       $file_name = $file;
       $file_nameonly = $file;
-      $file_icon = "file_binary.gif";
-      $file_icon_large = "file_binary.png";
+      $file_icon = "file_binary.png";
       $file_type = "unknown";
       $file_ext = "";
       $file_published = true;
@@ -2994,7 +2993,6 @@ function getfileinfo ($site, $file, $cat="comp")
     $result['name'] = specialchr_decode ($file_name);
     $result['filename'] = $file_nameonly;
     $result['icon'] = $file_icon;
-    $result['icon_large'] = $file_icon_large;
     $result['type'] = $file_type;
     $result['ext'] = $file_ext;
     $result['published'] = $file_published;

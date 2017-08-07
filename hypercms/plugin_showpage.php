@@ -67,7 +67,6 @@ if (is_array ($mgmt_plugin) && array_key_exists ($plugin, $mgmt_plugin) && is_ar
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script>
-<!--
 function adjust_height ()
 {
   var height = hcms_getDocHeight();  
@@ -75,7 +74,6 @@ function adjust_height ()
   setheight = height - 100;
   if (document.getElementById('mainFrame')) document.getElementById('mainFrame').style.height = setheight + "px";
 }
--->
 </script>
 </head>
 

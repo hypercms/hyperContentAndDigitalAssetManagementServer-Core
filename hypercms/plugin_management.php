@@ -90,13 +90,13 @@ if ($action)
 
     <!-- top bar -->
     <?php
-    if (!$is_mobile && file_exists ($mgmt_config['abs_path_cms']."help/pluginguide_".$hcms_lang_shortcut[$lang].".pdf"))
+    if (file_exists ($mgmt_config['abs_path_cms']."help/pluginguide_".$hcms_lang_shortcut[$lang].".pdf"))
     {
-      $help = "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/pluginguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', 800, 600);\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" /></a>";
+      $help = "<img onClick=\"hcms_openWindow('help/pluginguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', 800, 600);\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"margin-right:7px;\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />";
     }
-    elseif (!$is_mobile && file_exists ($mgmt_config['abs_path_cms']."help/pluginguide_en.pdf"))
+    elseif (file_exists ($mgmt_config['abs_path_cms']."help/pluginguide_en.pdf"))
     {
-      $help = "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/pluginguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', 800, 600);\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" /></a>";
+      $help = "<img onClick=\"hcms_openWindow('help/pluginguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', 800, 600);\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" style=\"margin-right:7px;\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />";
     }
     else $help = "";
 
@@ -104,9 +104,10 @@ if ($action)
     echo showmessage ($show, 500, 40, $lang, "position:fixed; left:15px; top:40px;");
     ?>
     
-    <!-- content -->    
-    <form action="?action=change" method="POST" name="editplugins" class="hcmsWorkplaceFrame">
-      <table cellspacing="2" cellpadding="3" border="0" width="98%">
+    <!-- content -->
+    <div class="hcmsWorkplaceFrame">
+    <form action="?action=change" method="POST" name="editplugins">
+      <table cellspacing="2" cellpadding="2" border="0" width="95%">
         <tbody>
           <tr>
             <th class="hcmsHeadline" align="left" nowrap="nowrap" width="50"><?php echo getescapedtext ($hcms_lang['number'][$lang]); ?></th>
@@ -144,13 +145,14 @@ if ($action)
       
       <div style="margin-top:10px;">
         <div style="width:260px; float:left;"><?php echo getescapedtext ($hcms_lang['apply-changes'][$lang]); ?> </div>
-        <img align="absmiddle" alt="OK" title="OK" onmouseover="hcms_swapImage('Button1','', '<?php echo getthemelocation(); ?>/img/button_OK_over.gif',1)" onmouseout="hcms_swapImgRestore()" onclick="document.forms['editplugins'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" name="Button1">
+        <img align="absmiddle" alt="OK" title="OK" onmouseover="hcms_swapImage('Button1','', '<?php echo getthemelocation(); ?>/img/button_ok_over.png',1)" onmouseout="hcms_swapImgRestore()" onclick="document.forms['editplugins'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" name="Button1">
         <div style="clear:both;"></div>
         <div style="width:260px; float:left;"><?php echo getescapedtext ($hcms_lang['check-for-new-or-changed-plugins'][$lang]); ?> </div>
-        <img align="absmiddle" alt="OK" title="OK" onmouseover="hcms_swapImage('Button2','', '<?php echo getthemelocation(); ?>/img/button_OK_over.gif',1)" onmouseout="hcms_swapImgRestore()" onclick="window.location='?action=reparse'" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_OK.gif" name="Button2">
+        <img align="absmiddle" alt="OK" title="OK" onmouseover="hcms_swapImage('Button2','', '<?php echo getthemelocation(); ?>/img/button_ok_over.png',1)" onmouseout="hcms_swapImgRestore()" onclick="window.location='?action=reparse'" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" name="Button2">
       </div>
         
     </form>
+    </div>
     
   </body>
 </html>

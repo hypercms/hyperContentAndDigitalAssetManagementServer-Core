@@ -202,7 +202,7 @@ function selectAll ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onload="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif');">
+<body class="hcmsWorkplaceGeneric" onload="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png');">
 
 <!-- top bar -->
 <?php echo showtopbar ($pagecomp." ".getescapedtext ($hcms_lang['access-for-group'][$lang]).": ".$group_name, $lang, $mgmt_config['url_path_cms']."group_edit_form.php?site=".url_encode($site)."&group_name=".url_encode($group_name)."&preview=no", "_parent"); ?>
@@ -223,12 +223,11 @@ function selectAll ()
         </td>
       </tr>
       <tr>
-        <td colspan="2">
-          <table border="0">
+        <td>
+          <table border="0" cellpadding="0" cellspacing="0">
             <tr>
               <td>
-                &nbsp;&nbsp;&nbsp;
-                <select name="folder" size="10">
+                <select name="folder" style="width:250px;" size="10">
                   <?php
                   if (isset ($folderaccesslist) && is_array ($folderaccesslist) && sizeof ($folderaccesslist) > 0)
                   {
@@ -252,7 +251,7 @@ function selectAll ()
                 </select>
               </td>
               <td align="center" valign="middle">
-                <img onClick="deleteSelected();" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" alt="<?php getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
+                <img onClick="deleteSelected();" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
             </td>
             </tr>
           </table>
@@ -262,11 +261,9 @@ function selectAll ()
         <td>&nbsp;</td>
       </tr>
       <tr>
-        <td valign="top" nowrap="nowrap">
-          <?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> 
-        </td>
-        <td>
-          <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+        <td colspan="2" nowrap="nowrap">
+          <?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?>&nbsp;
+          <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
         </td>
       </tr>
     </table>

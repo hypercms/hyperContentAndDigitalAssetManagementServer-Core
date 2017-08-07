@@ -76,7 +76,7 @@ if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, '
   $show = $result['message'];
 }
 ?>
-<body class="hcmsWorkplaceGeneric" onLoad="<?php echo $add_onload; ?>hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif');">
+<body class="hcmsWorkplaceGeneric" onLoad="<?php echo $add_onload; ?>hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png');">
 <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete-media-file'][$lang]); ?></p>
   <table border="0">
   <form name="media" action="">
@@ -87,7 +87,7 @@ if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, '
         <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang]); ?> </td>
         <td>
           <input type="text" style="width:300px;" name="media_name" />
-          <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_media_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+          <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="warning_media_delete();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
         </td>
       </tr>
   </form>    

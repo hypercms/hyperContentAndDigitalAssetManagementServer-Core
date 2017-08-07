@@ -88,7 +88,6 @@ $token = createtoken ($user);
 <script language="Javascript" type="text/javascript" src="../javascript/rich_calendar/domready.js"></script>
 
 <script language="JavaScript">
-<!--
 var cal_obj = null;
 var format = '<?php echo $format; ?>';
 
@@ -129,11 +128,10 @@ function setsavetype(type)
   document.forms['editor'].elements['savetype'].value = type;
   document.forms['editor'].submit();
 }
-//-->
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 marginwidth=0 marginheight=0>
+<body class="hcmsWorkplaceGeneric">
 <?php
 // read content using db_connect
 if ($contentbot == "")
@@ -178,7 +176,7 @@ if ($label == "") $label = $id;
 <?php echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame"); ?>
 
 <!-- form for content -->
-<div style="padding:0; width:100%; z-index:1;">
+<div class="hcmsWorkplaceFrame">
   <form name="editor" method="post" action="<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php">
     <input type="hidden" name="contenttype" value="<?php echo $contenttype; ?>">
     <input type="hidden" name="site" value="<?php echo $site; ?>">
@@ -196,11 +194,11 @@ if ($label == "") $label = $id;
     <table border="0" cellspacing="2">
       <tr>
         <td>
-        <img border="0" name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editord_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>">
-        <img border="0" name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.gif" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editord_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>">
+        <img border="0" name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editord_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>">
+        <img border="0" name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editord_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>">
         <br />
         <input type="text" id="date_field" name="<?php echo $tagname."[".$id."]"; ?>" value="<?php echo $contentbot; ?>" />
-        <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.gif" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" />
+        <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" />
         </td>
       </tr>
     </table>

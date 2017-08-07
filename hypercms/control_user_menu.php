@@ -243,11 +243,11 @@ function goToURL()
 <div class="hcmsLocationBar">
   <table border=0 cellspacing=0 cellpadding=0>
     <tr>
-      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['user-management'][$lang]); ?></td>
+      <td><b><?php echo getescapedtext ($hcms_lang['user-management'][$lang]); ?></b></td>
     </tr>
     <tr>
       <td>
-        <span class="hcmsHeadline"><?php if ($login != "") echo getescapedtext ($hcms_lang['user'][$lang]); ?>&nbsp;</span>
+        <b><?php if ($login != "") echo getescapedtext ($hcms_lang['user'][$lang]); ?>&nbsp;</b>
         <span class="hcmsHeadlineTiny">
           <?php
             if ($multiobject != "")
@@ -284,11 +284,11 @@ function goToURL()
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
              "onClick=\"hcms_showHideLayers('createuserLayer','','show','hcms_messageLayer','','hide');\" ".
-             "name=\"media_new\" src=\"".getthemelocation()."img/button_user_new.gif\" alt=\"".getescapedtext ($hcms_lang['create-new-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create-new-user'][$lang])."\" />\n";
+             "name=\"media_new\" src=\"".getthemelocation()."img/button_user_new.png\" alt=\"".getescapedtext ($hcms_lang['create-new-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create-new-user'][$lang])."\" />\n";
     }
     else
     {
-      echo "<img src=\"".getthemelocation()."img/button_user_new.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "<img src=\"".getthemelocation()."img/button_user_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     }
     ?>
     <?php
@@ -300,11 +300,11 @@ function goToURL()
         "class=\"hcmsButton hcmsButtonSizeSquare\" ".
         "onClick=\"if (warning_delete()==true) ".
         "submitTo('control_user_menu.php', 'delete', 'controlFrame'); \" ".
-        "name=\"media_delete\" src=\"".getthemelocation()."img/button_user_delete.gif\" alt=\"".getescapedtext ($hcms_lang['remove-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-user'][$lang])."\" />\n";
+        "name=\"media_delete\" src=\"".getthemelocation()."img/button_user_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-user'][$lang])."\" />\n";
     }    
     else
     {
-      echo "<img src=\"".getthemelocation()."img/button_user_delete.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "<img src=\"".getthemelocation()."img/button_user_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     }
     ?>
     <?php
@@ -314,11 +314,11 @@ function goToURL()
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
              "onClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."','','status=yes,scrollbars=no,resizable=yes', '500', '540');\" ".
-             "name=\"media_edit\" src=\"".getthemelocation()."img/button_user_edit.gif\" alt=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" />\n";
+             "name=\"media_edit\" src=\"".getthemelocation()."img/button_user_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" />\n";
     }    
     else
     {
-      echo "<img src=\"".getthemelocation()."img/button_user_edit.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "<img src=\"".getthemelocation()."img/button_user_edit.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     }
     ?>
   </div>
@@ -330,17 +330,17 @@ function goToURL()
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
              "onClick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&login=".url_encode($login)."&action=user_files';\" name=\"media_userfiles\" ".
-             "src=\"".getthemelocation()."img/button_user_files.gif\" alt=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" />\n";
+             "src=\"".getthemelocation()."img/button_user_files.png\" alt=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" />\n";
     }    
     else
     {
-      echo "<img src=\"".getthemelocation()."img/button_user_files.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "<img src=\"".getthemelocation()."img/button_user_files.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     }
     ?>
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    echo "<td><img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" /></a></td>\n";
+    echo "<td><img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" /></a></td>\n";
     ?> 
   </div>
   <div class="hcmsToolbarBlock">
@@ -423,10 +423,14 @@ function goToURL()
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    if (!$is_mobile && file_exists ("help/adminguide_".$hcms_lang_shortcut[$lang].".pdf"))
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','650');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" /></a>\n";}
-    elseif (!$is_mobile && file_exists ("help/adminguide_en.pdf"))
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_en.pdf','help','scrollbars=no,resizable=yes','800','650');\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" /></a>\n";}
+    if (file_exists ("help/adminguide_".$hcms_lang_shortcut[$lang].".pdf"))
+    {
+      echo "<img  onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf','help','scrollbars=no,resizable=yes','800','650');\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";
+    }
+    elseif (file_exists ("help/adminguide_en.pdf"))
+    {
+      echo "<img  onClick=\"hcms_openWindow('help/adminguide_en.pdf','help','scrollbars=no,resizable=yes','800','650');\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";
+    }
     ?>
   </div>
 </div>
@@ -435,7 +439,7 @@ function goToURL()
 echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; ");
 ?>
 
-<div id="createuserLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:90px; z-index:4; left:15px; top:2px; visibility:hidden;">
+<div id="createuserLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:80px; z-index:4; left:15px; top:4px; visibility:hidden;">
 <form name="userform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="group" value="<?php echo $group; ?>" />
@@ -446,27 +450,22 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <tr>
       <td colspan="2"><span class=hcmsHeadline><?php echo getescapedtext ($hcms_lang['create-new-user'][$lang]); ?></span></td>
       <td rowspan="2" width="16" align="right" valign="top">
-        <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.gif',1);" onClick="hcms_showHideLayers('createuserLayer','','hide');" />
+        <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('createuserLayer','','hide');" />
       </td>        
     </tr>    
     <tr>
       <td width="100" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?> </td>
       <td>
         <input type="text" name="login" style="width:150px;" maxlength="60" value="" tabindex="1" />
-        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" tabindex="4" />
       </td>
     </tr>
     <tr>
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['password'][$lang]); ?> </td>
       <td>
-        <input type="password" name="password" maxlength="20" style="width:150px;" tabindex="2" />
+        <input type="password" name="password" maxlength="20" style="width:150px;" placeholder="<?php echo getescapedtext ($hcms_lang['password'][$lang]); ?>" tabindex="2" />
+        <input type="password" name="confirm_password" maxlength="20" style="width:150px;" placeholder="<?php echo getescapedtext ($hcms_lang['confirm-password'][$lang]); ?>" tabindex="3" />
+        <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" tabindex="4" />
       </td>
-    </tr>
-    <tr>
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['confirm-password'][$lang]); ?> </td>
-      <td>
-        <input type="password" name="confirm_password" maxlength="20" style="width:150px;" tabindex="3" />
-      </td>     
     </tr>
   </table>
 </form>

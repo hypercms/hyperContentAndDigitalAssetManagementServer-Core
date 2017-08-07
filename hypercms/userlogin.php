@@ -426,7 +426,7 @@ if (checkuserip (getuserip ()) == true)
         </div>
 
         <div style=\"padding:4px 0px 4px 0px;\">
-          <button class=\"hcmsButtonGreen\" style=\"width:255px; heigth:20px;\" onClick=\"submitlogin()\">Log in</button>
+          <button class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:255px;\" onClick=\"submitlogin()\">Log in</button>
         </div>
 
         <div class=\"hcmsTextOrange\" style=\"padding:4px 0px 4px 0px; font-size:small; font-weight:normal;\">Popups must be allowed</div>
@@ -535,8 +535,8 @@ function setwallpaper ()
 <body class="hcmsStartScreen" onLoad="focusform(); is_mobilebrowser(); is_iphone(); html5support(); setwallpaper();">
 
 <div class="hcmsStartBar">
-  <div style="position:absolute; top:10px; left:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" alt="hypercms.com" /></div>
-  <div style="position:absolute; top:48px; right:10px; text-align:right;"><?php echo $mgmt_config['version']; ?></div>
+  <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>
+  <div style="position:absolute; top:48px; right:15px; text-align:right;"><?php echo $mgmt_config['version']; ?></div>
 </div>
 
 <div class="hcmsLogonScreen">

@@ -133,7 +133,7 @@ $(document).ready(function()
       <input type="hidden" name="dir" value="<?php echo $dir_esc; ?>" />
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
       <input type="text" name="search_expression" id="search_expression" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" value="<?php if ($search_expression != "") echo html_encode ($search_expression); ?>" style="width:190px;" maxlength="200" />
-      <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="top" alt="OK" title="OK" />
+      <img name="SearchButton" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="submitForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('SearchButton','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="top" alt="OK" title="OK" />
     </form>
   </td>
  </tr>
@@ -146,7 +146,7 @@ if (substr_count ($dir, $mgmt_config[$site]['abs_path_page']) > 0 && $dir != $mg
   //get parent directory
   $updir_esc = getlocation ($dir_esc);
 
-  echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.gif\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" />&nbsp; ".getescapedtext ($hcms_lang['back'][$lang])."</a></td></tr>\n";
+  echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp; ".getescapedtext ($hcms_lang['back'][$lang])."</a></td></tr>\n";
 }
 
 // search results
@@ -222,7 +222,7 @@ if (isset ($entry_dir) && sizeof ($entry_dir) > 0)
 
     if ($folder_info != false && $folder_info['deleted'] == false)
     {
-      echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".$folder_path."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.gif\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp;".showshorttext($folder_info['name'], 24)."</a></td></tr>\n";
+      echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".$folder_path."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 24)."</a></td></tr>\n";
     }
   }
 }
@@ -240,9 +240,9 @@ if (isset ($entry_file) && sizeof ($entry_file) > 0)
     $file_name = getlocationname ($site, $file, "page", "path");
     $file_path = $file;
 
-    if ($file_info != false && $file_info['published'] == true && $file_info['delted'] == false)
+    if ($file_info != false && $file_info['published'] == true && $file_info['deleted'] == false)
     {
-      echo "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" style=\"border:0; width:16px; heigth:16px;\" />&nbsp; ".showshorttext($file_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+      echo "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp; ".showshorttext($file_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
     }
   }
 }

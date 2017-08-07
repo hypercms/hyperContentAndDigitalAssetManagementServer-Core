@@ -10,7 +10,7 @@
     <publication>
       <point>
         <name>Custom System Events</name>
-        <icon>img/event.gif</icon>
+        <icon>img/event.png</icon>
         <page>pages/log_list.php</page>
         <control>pages/control_log_menu.php</control>
       </point>

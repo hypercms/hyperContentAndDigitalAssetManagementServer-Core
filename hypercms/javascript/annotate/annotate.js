@@ -132,30 +132,30 @@ var annotatestatus = false;
           '<i class="glyphicon glyphicon-arrow-right"></i></button>' +
           '</div>';
       }else{
-        self.$tool = "<div id=\"\" style=\"display:inline-block\">";
+        self.$tool = "<div id=\"\" style=\"display:inline-block; margin-top:-4px;\">";
 
         if (self.options.unselectTool){
           self.$tool += "<div id=\"annotationToolbar\" class=\"hcmsToolbarBlock\">"
-          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"null\" checked /><img id=\"annotationStop\" src=\"\" style=\"float:left;\" /></label></div>"
+          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"null\" checked /><img id=\"annotationStop\" src=\"\" class=\"hcmsButtonSizeSquare\" style=\"float:left;\" /></label></div>"
           + "</div>";
         }
 
         self.$tool += "<div id=\"annotationToolbar\" class=\"hcmsToolbarBlock\">"
-          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"rectangle\" /><img id=\"annotationRectangle\" src=\"\" style=\"float:left;\" /></label></div>"
-          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"circle\" /><img id=\"annotationCircle\" src=\"\" style=\"float:left;\" /></label></div>"
-          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"text\" /><img id=\"annotationText\" src=\"\" style=\"float:left;\" /></label></div>"
-          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"arrow\" /><img id=\"annotationArrow\" src=\"\" style=\"float:left;\" /></label></div>"
-          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"pen\" /><img id=\"annotationPen\" src=\"\" style=\"float:left;\" /></label></div>"
+          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"rectangle\" /><img id=\"annotationRectangle\" src=\"\" class=\"hcmsButtonSizeSquare\" style=\"float:left;\" /></label></div>"
+          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"circle\" /><img id=\"annotationCircle\" src=\"\" class=\"hcmsButtonSizeSquare\" style=\"float:left;\" /></label></div>"
+          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"text\" /><img id=\"annotationText\" src=\"\" class=\"hcmsButtonSizeSquare\" style=\"float:left;\" /></label></div>"
+          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"arrow\" /><img id=\"annotationArrow\" src=\"\" class=\"hcmsButtonSizeSquare\" style=\"float:left;\" /></label></div>"
+          + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"pen\" /><img id=\"annotationPen\" src=\"\" class=\"hcmsButtonSizeSquare\" style=\"float:left;\" /></label></div>"
           + "</div>"
           + "<div class=\"hcmsToolbarBlock\">"
-          + "<div id=\"download\" class=\"hcmsButton hcmsButtonSizeSquare\" style=\"float:left;\"><img id=\"annotationDownload\" src=\"\" /></div>"
+          + "<div id=\"download\" class=\"hcmsButton hcmsButtonSizeSquare\"><img id=\"annotationDownload\" src=\"\" class=\"hcmsButtonSizeSquare\" /></div>"
           + "</div>"
           + "<div class=\"hcmsToolbarBlock\">"
-          + "<div id=\"undoaction\" class=\"annotate-undo hcmsButtonOff hcmsButtonSizeSquare\" style=\"float:left;\"><img id=\"annotationUndo\" src=\"\" /></div>"
-          + "<div id=\"redoaction\" class=\"annotate-redo hcmsButtonOff hcmsButtonSizeSquare\" style=\"float:left;\"><img id=\"annotationRedo\" src=\"\" /></div>"
+          + "<div id=\"undoaction\" class=\"annotate-undo hcmsButtonOff hcmsButtonSizeSquare\"><img id=\"annotationUndo\" src=\"\" class=\"hcmsButtonSizeSquare\" /></div>"
+          + "<div id=\"redoaction\" class=\"annotate-redo hcmsButtonOff hcmsButtonSizeSquare\"><img id=\"annotationRedo\" src=\"\" class=\"hcmsButtonSizeSquare\" /></div>"
           + "</div>"
           + "<div class=\"hcmsToolbarBlock\">"
-          + "<div id=\"help\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" style=\"float:left;\"><img id=\"annotationHelp\" src=\"\" /></div>"
+          + "<div id=\"help\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\"><img id=\"annotationHelp\" src=\"\" class=\"hcmsButtonSizeSquare\" /></div>"
           + "</div>"
           + "</div>";
       }
@@ -192,12 +192,12 @@ var annotatestatus = false;
       }
       
       self.$textbox = $('<textarea id=""' +
-        ' style="position:absolute;z-index:100000;display:none;top:0;left:0;' +
-        'background:transparent;border:1px dotted; line-height:25px;' +
+        ' style="resize:none; position:absolute; z-index:100000; display:none; top:0; left:0; ' +
+        'background:transparent; border:1px dotted; line-height:25px; ' +
         ';font-size:' + self.fontsize +
-        ';font-family:sans-serif;color:' + self.options.color +
-        ';word-wrap: break-word;outline-width: 0;overflow: hidden;' +
-        'padding:0px"></textarea>');
+        ';font-family:sans-serif; color:' + self.options.color +
+        ';word-wrap:break-word; outline-width:0; overflow:hidden; ' +
+        'padding:0px;"></textarea>');
       $('body').append(self.$textbox);
       
       if (self.options.images) {
@@ -586,7 +586,7 @@ var annotatestatus = false;
       self.checkUndoRedo();
       self.redraw();
     },
-    
+  
     // Events
     selectTool: function(element) {
       if (element.data('tool') != null) clickevent = 'annotate';
@@ -602,13 +602,13 @@ var annotatestatus = false;
     annotatestart: function(event) {
       var self = this;
       self.clicked = true;
-      var offset = self.$el.offset();      
+      var offset = self.$el.offset();
       if (self.$textbox.is(':visible')) {
         var text = self.$textbox.val();
         self.$textbox.val('').hide();
         if (text !== '') {
           if (!self.tox) {
-            self.tox = 100;
+            self.tox = 200;
           }
           self.storedElement.push({
             type: 'text',
@@ -719,8 +719,8 @@ var annotatestatus = false;
         self.$textbox.css({
           left: self.fromxText + 2,
           top: self.fromyText,
-          width: 100,
-          height: 50
+          width: 200,
+          height: 25
         });
       }
     },
@@ -820,6 +820,9 @@ var annotatestatus = false;
       var canvases = self.$el.find("canvas");
       var canvas = document.createElement("canvas");
       var ctx = null;
+      if (self.$textbox.is(':visible')) {
+        self.pushText();
+      }
       for (var idx = 0; idx < canvases.length; ++idx) {
         if (idx === 0) {
           canvas.width = canvases[idx].width;
@@ -852,7 +855,7 @@ var annotatestatus = false;
       }
       var exportDefaults = {
         type: 'image/jpeg',
-        quality: 0.75
+        quality: 0.85
       };
       options = $.extend({}, exportDefaults, options);
       var image = self.baseCanvas.toDataURL(options.type, options.quality);

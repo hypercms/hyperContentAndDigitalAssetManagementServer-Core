@@ -132,7 +132,7 @@ function submitfiles()
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 marginwidth=0 marginheight=0>
+<body class="hcmsWorkplaceGeneric">
 
 <!-- top bar -->
 <?php
@@ -205,6 +205,7 @@ else
   // show messages
   echo showmessage ($show, 360, 70, $lang, "position:fixed; left:15px; top:15px;");
 ?>
+<div class="hcmsWorkplaceFrame">
   <form name="publish" method="post" action="">
     <input type="hidden" name="action" value="<?php echo $action; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" /> 
@@ -231,7 +232,7 @@ else
         {
           $link = "<a href=\"?path=".url_encode(getlocation($path))."&multi=".$multi."\"><span class=\"hcmsStandardText\">".getescapedtext ($hcms_lang['go-to-parent-folder'][$lang])."</span></a>";
           
-          echo "<tr height=\"16\" class=\"hcmsWorkplaceObjectlist\"><td nowrap=\"nowrap\">&nbsp;</td><td nowrap=\"nowrap\">&nbsp;<img src=\"".getthemelocation()."img/back.gif\" align=\"absmiddle\" />&nbsp;".$link."</td><td nowrap=\"nowrap\">&nbsp;</td><td align=\"right\" nowrap=\"nowrap\">&nbsp;</td></tr>\n";
+          echo "<tr height=\"16\" class=\"hcmsWorkplaceObjectlist\"><td nowrap=\"nowrap\">&nbsp;</td><td nowrap=\"nowrap\">&nbsp;<img src=\"".getthemelocation()."img/back.png\" align=\"absmiddle\" />&nbsp;".$link."</td><td nowrap=\"nowrap\">&nbsp;</td><td align=\"right\" nowrap=\"nowrap\">&nbsp;</td></tr>\n";
         }
         
         foreach ($file_array as $name => $file)
@@ -242,7 +243,7 @@ else
             if ($file['type'] == "directory")
             {
               // icon
-              $file_info['icon'] = "folder.gif";
+              $file_info['icon'] = "folder.png";
               
               // file size
               $file_size = "";
@@ -292,6 +293,7 @@ else
     </div>
     
   </form>
+</div>
 <?php
 }
 

@@ -169,12 +169,12 @@ function buttonaction (action)
 function resizecols()
 {
   // get width of table header columns
-  var c1 = $('#c1').width();
-  var c2 = $('#c2').width();
-  var c3 = $('#c3').width();
-  var c4 = $('#c4').width();
-  var c5 = $('#c5').width();
-  var c6 = $('#c6').width();
+  var c1 = $('#c1').width() + 3;
+  var c2 = $('#c2').width() + 3;
+  var c3 = $('#c3').width() + 3;
+  var c4 = $('#c4').width() + 3;
+  var c5 = $('#c5').width() + 3;
+  var c6 = $('#c6').width() + 3;
 
   // set width for table columns
   $('.hcmsCol1').width(c1);
@@ -212,11 +212,11 @@ function resizecols()
     <table width="150px" cellspacing="0" cellpadding="3" class="hcmsContextMenu">
       <tr>
         <td>
-          <a href=# id="href_edit" onClick="if (buttonaction ('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" id="img_edit" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
+          <a href=# id="href_edit" onClick="if (buttonaction ('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_edit" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
           <hr />
-          <a href=# id="href_delete" onClick="if (buttonaction ('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_file_delete.gif" id="img_delete" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
+          <a href=# id="href_delete" onClick="if (buttonaction ('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
           <hr />
-          <a href=# id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.gif" id="img_refresh" align="absmiddle" border=0 class="hcmsIconOn" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
+          <a href=# id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" align="absmiddle" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
         </td>
       </tr>    
     </table>
@@ -226,26 +226,23 @@ function resizecols()
 <div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:30px; margin:0; padding:0; width:100%; z-index:3; visibility:visible;">
   <table id="objectlist_head" cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:180px; white-space:nowrap;">
+      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:177px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>
       </td>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:100px; white-space:nowrap;">
+      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader" style="width:97px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>
       </td>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:200px; white-space:nowrap;">
+      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader" style="width:197px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>
       </td> 
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:120px; white-space:nowrap;">
+      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader" style="width:117px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['date'][$lang]); ?>
       </td>
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="width:60px; white-space:nowrap;">
+      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader" style="width:57px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['action'][$lang]); ?>
       </td>
       <td id="c6" onClick="hcms_sortTable(5);" class="hcmsTableHeader" style="white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>
-      </td>                    
-      <td class="hcmsTableHeader" style="width:16px;">
-        &nbsp;
       </td>
     </tr>
   </table>
@@ -267,7 +264,7 @@ if ($objects_counted >= $next_max)
 <!-- status bar incl. more button -->
 <div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0px; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="window.location='<?php echo $_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&next=".url_encode($objects_counted); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['sionhcms_lang'][$lang]); ?>">
   <div style="padding:8px; float:left;"><?php echo $objects_counted." / ".$objects_total." ".getescapedtext ($hcms_lang['objects'][$lang]); ?></div>
-  <div style="margin-left:auto; margin-right:auto; text-align:center; padding-top:3px;"><img src="<?php echo getthemelocation(); ?>img/button_explorer_more.gif" style="border:0;" alt="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" /></div>
+  <div style="margin-left:auto; margin-right:auto; text-align:center; padding-top:3px;"><img src="<?php echo getthemelocation(); ?>img/button_explorer_more.png" style="border:0;" alt="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>" /></div>
 </div>
 <?php
 }

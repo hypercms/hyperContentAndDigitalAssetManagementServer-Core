@@ -46,12 +46,12 @@ else
 ?>
 
 <div class="hcmsStartBar">
-  <div style="position:absolute; top:10px; left:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation(); ?>img/logo.png" alt="hyperCMS" /></div>
+  <div style="position:absolute; top:10px; left:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation(); ?>img/logo.png" style="border:0; height:48px;" alt="hyperCMS" /></div>
 </div>
 
 <p class="hcmsTextGreen">
   <?php echo "&gt;&gt; ".$user." ".$answer."&nbsp;"; ?>
-  <img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="location='userlogin.php';" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" />
+  <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="location='userlogin.php';" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
 </p>
 
 </body>

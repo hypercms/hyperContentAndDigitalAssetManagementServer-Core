@@ -58,9 +58,9 @@ checkusersession ($user, false);
     <!-- toolbar -->
     <div class="hcmsToolbar">
       <div class="hcmsToolbarBlock">
-        <img onClick="parent.frames['mainFrame'].location='page.php?<?php echo 'plugin='.url_encode($plugin).'&page='.url_encode($page); ?>&content=featureA';" class="hcmsButton hcmsButtonSizeSquare" name="button1" src="../img/button_a.gif" alt="<?php echo getescapedtext ($hcms_lang['feature-a'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['feature-a'][$lang]); ?>" />
-        <img onClick="parent.frames['mainFrame'].location='page.php?<?php echo 'plugin='.url_encode($plugin).'&page='.url_encode($page); ?>&content=featureB';" class="hcmsButton hcmsButtonSizeSquare" name="button2" src="../img/button_b.gif" alt="<?php echo getescapedtext ($hcms_lang['feature-b'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['feature-b'][$lang]); ?>" />
-        <img onClick="parent.frames['mainFrame'].location='page.php?<?php echo 'plugin='.url_encode($plugin).'&page='.url_encode($page); ?>&content=featureC';" class="hcmsButton hcmsButtonSizeSquare" name="button3" src="../img/button_c.gif" alt="<?php echo getescapedtext ($hcms_lang['feature-c'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['feature-c'][$lang]); ?>" />
+        <img onClick="parent.frames['mainFrame'].location='page.php?<?php echo 'plugin='.url_encode($plugin).'&page='.url_encode($page); ?>&content=featureA';" class="hcmsButton hcmsButtonSizeSquare" name="button1" src="../img/button_a.png" alt="<?php echo getescapedtext ($hcms_lang['feature-a'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['feature-a'][$lang]); ?>" />
+        <img onClick="parent.frames['mainFrame'].location='page.php?<?php echo 'plugin='.url_encode($plugin).'&page='.url_encode($page); ?>&content=featureB';" class="hcmsButton hcmsButtonSizeSquare" name="button2" src="../img/button_b.png" alt="<?php echo getescapedtext ($hcms_lang['feature-b'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['feature-b'][$lang]); ?>" />
+        <img onClick="parent.frames['mainFrame'].location='page.php?<?php echo 'plugin='.url_encode($plugin).'&page='.url_encode($page); ?>&content=featureC';" class="hcmsButton hcmsButtonSizeSquare" name="button3" src="../img/button_c.png" alt="<?php echo getescapedtext ($hcms_lang['feature-c'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['feature-c'][$lang]); ?>" />
       </div>
     </div>
 

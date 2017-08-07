@@ -213,7 +213,7 @@ if (!empty ($media_size[0]) && !empty ($media_size[1]))
 }
 
 // generate preview of media for image editor
-$mediaview = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_no_rendering", "cropbox", $thumb_size[0], $thumb_size[1], "");
+$mediaview = showmedia ($site."/".$mediafile, $pagefile_info['name'], "preview_download", "cropbox", $thumb_size[0], $thumb_size[1], "");
 
 // security token
 $token_new = createtoken ($user);
@@ -1162,7 +1162,7 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
 ?>
 
 <!-- rendering settings -->
-<div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; display:none; vertical-align:top; z-index:1; margin-left:10px" class="hcmsMediaRendering">    
+<div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; display:none; vertical-align:top; z-index:1; margin:-4px 10px 0px 10px" class="hcmsMediaRendering">    
   <!-- start edit image -->
   <form name="mediaconfig" id="mediaconfig" action="service/renderimage.php" method="post">
     <input type="hidden" id="action" name="action" value="rendermedia">

@@ -43,7 +43,7 @@ checkusersession ($user, false);
 <script src="javascript/click.js" type="text/javascript"></script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" style="width:90%; height:90%;">
+<body class="hcmsWorkplaceGeneric">
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <table border=0 cellspacing=3 cellpadding=0>

@@ -169,13 +169,13 @@ function jumpTo (target)
 <?php echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "); ?>
 
 <div class="hcmsLocationBar">
-  <table border=0 cellspacing=0 cellpadding=0>
+  <table border=0 cellspacing=0 cellpadding=1>
     <tr>
-      <td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['publishing-queue-management'][$lang]); ?></td>
+      <td><b><?php echo getescapedtext ($hcms_lang['publishing-queue-management'][$lang]); ?></b></td>
     </tr>
     <tr>
       <td>
-        <span class="hcmsHeadline">
+        <b>
         <?php 
         if ($page != "") 
         {
@@ -197,7 +197,7 @@ function jumpTo (target)
           }
           else echo getescapedtext ($hcms_lang['file'][$lang]);
         }
-        ?>&nbsp;</span>
+        ?>&nbsp;</b>
         <span class="hcmsHeadlineTiny">
         <?php 
         if ($page != "") 
@@ -236,11 +236,11 @@ function jumpTo (target)
         "class=\"hcmsButton hcmsButtonSizeSquare\" ".
         "onClick=\"if (warning_delete()==true) ".
         "submitTo('control_queue_menu.php', 'delete', 'controlFrame'); \" ".
-        "name=\"media_delete\" src=\"".getthemelocation()."img/button_file_delete.gif\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />\n";
+        "name=\"media_delete\" src=\"".getthemelocation()."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />\n";
     }    
     else
     {
-      echo "<img src=\"".getthemelocation()."img/button_file_delete.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "<img src=\"".getthemelocation()."img/button_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     }
     ?>
     <?php
@@ -252,18 +252,18 @@ function jumpTo (target)
       echo "<img ".
              "class=\"hcmsButton hcmsButtonSizeSquare\" ".
              "onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."', '', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\" ".
-             "name=\"media_edit\" src=\"".getthemelocation()."img/button_file_edit.gif\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />\n";
+             "name=\"media_edit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />\n";
     }    
     else
     {
-      echo "<img src=\"".getthemelocation()."img/button_file_edit.gif\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "<img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
     }
     ?>
     
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.gif\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />\n";
+    echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" name=\"pic_obj_refresh\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />\n";
     ?>
     
   </div>
@@ -341,10 +341,10 @@ function jumpTo (target)
   </div>
   <div class="hcmsToolbarBlock">  
     <?php
-    if (!$is_mobile && file_exists ($mgmt_config['abs_path_cms']."help/adminguide_".$hcms_lang_shortcut[$lang].".pdf") && (checkrootpermission ('user') || checkglobalpermission ($site, 'user')))
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', 800, 600);\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" /></a>\n";}
-    elseif (!$is_mobile && file_exists ($mgmt_config['abs_path_cms']."help/adminguide_en.pdf") && (checkrootpermission ('user') || checkglobalpermission ($site, 'user')))
-    {echo "<a href=# onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('pic_obj_help','','".getthemelocation()."img/button_help_over.gif',1)\" onClick=\"hcms_openWindow('help/adminguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', 800, 600);\"><img name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.gif\" class=\"hcmsButtonBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" /></a>\n";}
+    if (file_exists ($mgmt_config['abs_path_cms']."help/adminguide_".$hcms_lang_shortcut[$lang].".pdf") && (checkrootpermission ('user') || checkglobalpermission ($site, 'user')))
+    {echo "<img  onClick=\"hcms_openWindow('help/adminguide_".$hcms_lang_shortcut[$lang].".pdf', 'help', 'scrollbars=no,resizable=yes', 800, 600);\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
+    elseif (file_exists ($mgmt_config['abs_path_cms']."help/adminguide_en.pdf") && (checkrootpermission ('user') || checkglobalpermission ($site, 'user')))
+    {echo "<img  onClick=\"hcms_openWindow('help/adminguide_en.pdf', 'help', 'scrollbars=no,resizable=yes', 800, 600);\" name=\"pic_obj_help\" src=\"".getthemelocation()."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />\n";}
     ?>      
   </div>
   </form>

@@ -44,7 +44,7 @@ checkusersession ($user, false);
 <table width="100%" height="100%">
   <tr>
     <td align="middle" valign="middle">
-      <img src="<?php echo getthemelocation(); ?>img/logo_server.png" style="margin:40px;" />
+      <img src="<?php echo getthemelocation(); ?>img/logo_server.png" style="width:<?php if ($is_mobile) echo "320px"; else echo "420px"; ?>; margin:40px;" />
       <div>
         <?php
         echo "<strong>".getescapedtext ($hcms_lang['plugin-name'][$lang]).": </strong>".$plugin."<br/>

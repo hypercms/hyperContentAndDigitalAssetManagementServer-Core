@@ -115,7 +115,7 @@ foreach ($variables as $variable)
 $file_info = getfileinfo ($site, $location.$page, $cat);
 
 // clean Null_media
-if (substr_count ($mediafile, "Null_media.gif") == 1)
+if (substr_count ($mediafile, "Null_media.png") == 1)
 {
   $mediafile = "";
 }
@@ -343,7 +343,7 @@ function openBrWindowMedia(winName, features, type)
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 marginwidth=0 marginheight=0>
+<body class="hcmsWorkplaceGeneric">
 
 <?php
 if ($mediawidth != "*Null*" || $mediaheight != "*Null*")
@@ -361,6 +361,7 @@ $hcms_charset = $charset;
 echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
 ?>
 
+<div class="hcmsWorkplaceFrame">
 <form name="media" action="service/savecontent.php" target="_parent" method="post">
   <input type="hidden" name="contenttype" value="<?php echo $contenttype; ?>" />
   <input type="hidden" name="view" value="<?php echo $view; ?>" />
@@ -380,35 +381,38 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
 
   <table border="0" cellspacing="3" cellpadding="0">
     <tr>
-      <td colspan=2 class="hcmsHeadlineTiny" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang); ?></td>
+      <td colspan="2" class="hcmsHeadlineTiny" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['media-file'][$lang], $charset, $lang); ?></td>
     </tr>
     <tr>
-      <td valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang], $charset, $lang); ?> </td>
-      <td valign="top">
-        <input type="text" name="mediafile" value="<?php echo convertchars (getlocationname ($site, $mediafile, "comp"), $hcms_lang_codepage[$lang], $charset); ?>" style="width:300px;" />
-        <img onClick="openBrWindowMedia('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
-        <img onClick="deleteEntry(document.forms['media'].elements['mediafile']); deleteEntry(document.forms['media'].elements['mediaobject']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" />
-        <img onClick="<?php echo $onsubmit; ?>" name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang], $charset, $lang); ?> </td>
+      <td  nowrap="nowrap">
+        <input type="text" name="mediafile" value="<?php echo convertchars (getlocationname ($site, $mediafile, "comp"), $hcms_lang_codepage[$lang], $charset); ?>" style="width:220px;" />
+        <img onClick="openBrWindowMedia('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
+        <img onClick="deleteEntry(document.forms['media'].elements['mediafile']); deleteEntry(document.forms['media'].elements['mediaobject']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" />
+        <img onClick="<?php echo $onsubmit; ?>" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
     </tr>
 
   <?php
   if ($mediaalttext != "*Null*")
   {
-    echo "<tr>\n";
-    echo "  <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alternative-text'][$lang], $charset, $lang)." </td>\n";
-    echo "  <td>\n";
-    echo "    <input type=\"text\" name=\"mediaalttext\" value=\"".$mediaalttext."\" style=\"width:300px;\" />\n";
-    echo "  </td>\n";
-    echo "</tr>\n";
+    echo "
+    <tr>
+      <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alternative-text'][$lang], $charset, $lang)." </td>
+      <td>
+        <input type=\"text\" name=\"mediaalttext\" value=\"".$mediaalttext."\" style=\"width:220px;\" />
+      </td>
+    </tr>";
   }
 
   if ($mediaalign != "*Null*")
   {
-    echo "<tr>\n";
-    echo "  <td valign=\"top\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang)." </td>\n";
-    echo "  <td valign=\"top\">\n";
-    echo "    <select name=\"mediaalign\" style=\"width:300px;\">\n";
+    echo "
+    <tr>
+      <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang)." </td>
+        <td valign=\"top\">
+          <select name=\"mediaalign\" style=\"width:220px;\">";
+          
           $alignstandard = "";
           $aligntop = "";
           $alignmiddle = "";
@@ -446,16 +450,17 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
             $alignright="selected=\"selected\"";
           }
 
-          echo "<option value=\"\" ".$alignstandard.">".getescapedtext ($hcms_lang['standard'][$lang], $charset, $lang)."</option>\n";
-          echo "<option value=\"top\" ".$aligntop.">".getescapedtext ($hcms_lang['top'][$lang], $charset, $lang)."</option>\n";
-          echo "<option value=\"middle\" ".$alignmiddle.">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>\n";
-          echo "<option value=\"absmiddle\" ".$alignabsmiddle.">".getescapedtext ($hcms_lang['absolute-middle'][$lang], $charset, $lang)."</option>\n";
-          echo "<option value=\"bottom\" ".$alignbottom.">".getescapedtext ($hcms_lang['bottom'][$lang], $charset, $lang)."</option>\n";
-          echo "<option value=\"left\" ".$alignleft.">".getescapedtext ($hcms_lang['left'][$lang], $charset, $lang)."</option>\n";
-          echo "<option value=\"right\" ".$alignright.">".getescapedtext ($hcms_lang['right'][$lang], $charset, $lang)."</option>\n";
-    echo "    </select>\n";
-    echo "  </td>\n";
-    echo "</tr>\n";
+          echo "
+          <option value=\"\" ".$alignstandard.">".getescapedtext ($hcms_lang['standard'][$lang], $charset, $lang)."</option>
+          <option value=\"top\" ".$aligntop.">".getescapedtext ($hcms_lang['top'][$lang], $charset, $lang)."</option>
+          <option value=\"middle\" ".$alignmiddle.">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>
+          <option value=\"absmiddle\" ".$alignabsmiddle.">".getescapedtext ($hcms_lang['absolute-middle'][$lang], $charset, $lang)."</option>
+          <option value=\"bottom\" ".$alignbottom.">".getescapedtext ($hcms_lang['bottom'][$lang], $charset, $lang)."</option>
+          <option value=\"left\" ".$alignleft.">".getescapedtext ($hcms_lang['left'][$lang], $charset, $lang)."</option>
+          <option value=\"right\" ".$alignright.">".getescapedtext ($hcms_lang['right'][$lang], $charset, $lang)."</option>
+        </select>
+      </td>
+    </tr>";
   }
 
   if (($mediawidth != "*Null*" || $mediaheight != "*Null*") || $scaling != "")
@@ -478,20 +483,26 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     	}
     }
   
-    echo "<tr>\n";
-    echo "  <td valign=\"top\">\n";
-    echo "    ".getescapedtext ($hcms_lang['media-size'][$lang], $charset, $lang)." </td>\n";
-    echo "  <td valign=\"top\" class=\"hcmsHeadlineTiny\">\n";
-    if ($mediawidth != "*Null*") echo "    ".getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediawidth\" value=\"".$mediawidth."\" size=4 />\n";
-    else  echo "    ".getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediawidth\" value=\"\" size=4 disabled=\"disabled\" />\n";
-    if ($mediaheight != "*Null*") echo "    ".getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediaheight\" value=\"".$mediaheight."\" size=4 />\n";
-    else echo "    ".getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediaheight\" value=\"\" size=4 disabled=\"disabled\" />\n";
-    echo "  </td>\n";
-    echo "</tr>\n";
+    echo "
+    <tr>
+      <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['media-size'][$lang], $charset, $lang)." </td>
+      <td valign=\"top\" class=\"hcmsHeadlineTiny\">
+    ";
+      
+    if ($mediawidth != "*Null*") echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang)." <input type=\"text\" name=\"mediawidth\" value=\"".$mediawidth."\" size=\"4\" />&nbsp;";
+    else  echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediawidth\" value=\"\" size=\"4\" disabled=\"disabled\" />&nbsp;";
+    
+    if ($mediaheight != "*Null*") echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang)." <input type=\"text\" name=\"mediaheight\" value=\"".$mediaheight."\" size=\"4\" />";
+    else echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": <input type=\"text\" name=\"mediaheight\" value=\"\" size=\"4\"  disabled=\"disabled\" />";
+    
+    echo "
+      </td>
+    </tr>";
   }
   ?>
   </table>
 </form>
+</div>
 
 </body>
 </html>

@@ -339,6 +339,7 @@ $hcms_charset = $charset;
 echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
 ?>
 
+<div class="hcmsWorkplaceFrame">
 <form name="link" action="service/savecontent.php" target="_parent" method="post">
   <input type="hidden" name="contenttype" value="<?php echo $contenttype; ?>">
   <input type="hidden" name="view" value="<?php echo $view; ?>">
@@ -361,21 +362,22 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     </tr>      
     <tr>
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-linkurl'][$lang], $charset, $lang); ?> </td>
-      <td>
+      <td nowrap="nowrap">
         <input type="text" name="link_name" value="<?php echo convertchars (getlocationname ($site, $linkhref, "page", "path"), $hcms_lang_codepage[$lang], $charset); ?>" style="width:220px;" />
-        <img onClick="openBrWindowLink('preview','scrollbars=yes,resizable=yes,width=800,height=600', 'preview')" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonView" src="<?php echo getthemelocation(); ?>img/button_file_liveview.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" />
-        <img onClick="openBrWindowLink('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_file_edit.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
-        <img onClick="deleteEntry(document.link.linkhref); deleteEntry(document.link.link_name);" class="hcmsButtonTiny hcmsButtonSizeSquare" border=0 name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.gif" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" />
-        <img onClick="checkForm();" border=0 name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" alt="OK" title="OK" />
+        <img onClick="openBrWindowLink('preview','scrollbars=yes,resizable=yes,width=800,height=600', 'preview')" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonView" src="<?php echo getthemelocation(); ?>img/button_file_liveview.png" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['preview'][$lang], $charset, $lang); ?>" />
+        <img onClick="openBrWindowLink('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
+        <img onClick="deleteEntry(document.link.linkhref); deleteEntry(document.link.link_name);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" />
+        <img onClick="checkForm();" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
     </tr>
   <?php
   if ($linktarget != "*Null*")
   {
-    echo "<tr>\n";
-    echo "  <td>".getescapedtext ($hcms_lang['open-link'][$lang], $charset, $lang)." </td>\n";
-    echo "  <td>\n";
-    echo "    <select name=\"linktarget\" style=\"width:220px;\">\n";
+    echo "
+    <tr>
+     <td>".getescapedtext ($hcms_lang['open-link'][$lang], $charset, $lang)." </td>
+      <td>
+       <select name=\"linktarget\" style=\"width:220px;\">";
 
     $list_array = array();
     
@@ -386,33 +388,37 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     {
       foreach ($list_array as $target)
       {
-        echo "<option value=\"".$target."\""; if ($linktarget == $target) echo " selected=\"selected\""; echo ">".$target."</option>\n";
+        echo "
+          <option value=\"".$target."\""; if ($linktarget == $target) echo " selected=\"selected\""; echo ">".$target."</option>";
       }
     }
-    
-    echo "<option value=\"_self\""; if ($linktarget == "_self") echo " selected=\"selected\""; echo ">".getescapedtext ($hcms_lang['in-same-frame'][$lang], $charset, $lang)."</option>\n";
-    echo "<option value=\"_parent\""; if ($linktarget == "_parent") echo " selected=\"selected\""; echo ">".getescapedtext ($hcms_lang['in-parent-frame'][$lang], $charset, $lang)."</option>\n";
-    echo "<option value=\"_top\""; if ($linktarget == "_top") echo " selected=\"selected\""; echo ">".getescapedtext ($hcms_lang['in-same-browser-window'][$lang], $charset, $lang)."</option>\n";
-    echo "<option value=\"_blank\""; if ($linktarget == "_blank") echo " selected=\"selected\""; echo ">".getescapedtext ($hcms_lang['in-new-browser-window'][$lang], $charset, $lang)."</option>\n";
-    echo "    </select>\n";
-    echo "  </td>\n";
-    echo "</tr>\n";
+  
+    echo "
+          <option value=\"_self\""; if ($linktarget == "_self") echo " selected=\"selected\""; echo ">".getescapedtext ($hcms_lang['in-same-frame'][$lang], $charset, $lang)."</option>
+          <option value=\"_parent\""; if ($linktarget == "_parent") echo " selected=\"selected\""; echo ">".getescapedtext ($hcms_lang['in-parent-frame'][$lang], $charset, $lang)."</option>
+          <option value=\"_top\""; if ($linktarget == "_top") echo " selected=\"selected\""; echo ">".getescapedtext ($hcms_lang['in-same-browser-window'][$lang], $charset, $lang)."</option>
+          <option value=\"_blank\""; if ($linktarget == "_blank") echo " selected=\"selected\""; echo ">".getescapedtext ($hcms_lang['in-new-browser-window'][$lang], $charset, $lang)."</option>
+        </select>
+      </td>
+    </tr>";
   }
 
   if ($linktext != "*Null*")
   {
-    echo "<tr>\n";
-    echo "  <td>".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang)." </td>\n";
-    echo "  <td>\n";
-    echo "    <input type=\"text\" name=\"linktext\" value=\"".$linktext."\" style=\"width:220px;\" />\n";
-    echo "  </td>\n";
-    echo "</tr>\n";
+    echo "
+    <tr>
+      <td>".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang)." </td>
+      <td>
+        <input type=\"text\" name=\"linktext\" value=\"".$linktext."\" style=\"width:220px;\" />
+      </td>
+    </tr>";
   }
   ?>
   </table>
   
   <iframe id="preview" src="" style="width:98%; height:500px; border:1px solid #000000; margin:5px;" sandbox=""></iframe>
 </form>
+</div>
 
 </body>
 </html>

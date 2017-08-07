@@ -953,11 +953,11 @@ function correctfile ($abs_path, $filename, $user="")
     {
       $abs_path = specialchr_encode ($abs_path, "no");
       $abs_path = deconvertpath ($abs_path, "file");
+      
+      // encode file name
+      if (strpos ($filename, ".@") < 1) $filename = specialchr_encode ($filename, "no");
     }
-    
-    // encode file name
-    $filename = specialchr_encode ($filename, "no");
-    
+
     // if given file or directory exists
     if (file_exists ($abs_path.$filename))
     {
@@ -2481,11 +2481,11 @@ function loadfile ($abs_path, $filename)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
-    
+
     // check and correct file
     $filename_unlocked = $filename;
     $filename = correctfile ($abs_path, $filename, $user);
-     
+
     // load file
     if ($filename != false)
     {    
@@ -3756,10 +3756,10 @@ function loadcontainer ($container, $type="work", $user)
       
       // get container info
       $container_info = getcontainername ($container);
-  
+
       // try to load container if it is locked by another user and current user is superadmin or sys-user
       if ($type == "work" && ($user == "sys" || !empty ($_SESSION['hcms_superadmin']) && $_SESSION['hcms_superadmin'] == 1) && !empty ($container_info['container']) && is_file ($location.$container_info['container']))
-      {
+      {  
         $contentdata = loadfile ($location, $container_info['container']);
       }
       // load unlocked container

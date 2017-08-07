@@ -146,7 +146,6 @@ $token_new = createtoken ($user);
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script>
-<!--
 function selectAll ()
 {
   var assigned = "";
@@ -227,11 +226,10 @@ function move (fbox, tbox)
     tbox[c] = no;
   }
 }
-//-->
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onLoad="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_OK_over.gif')">
+<body class="hcmsWorkplaceGeneric" onload="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png')">
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <?php
@@ -342,8 +340,8 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td width="80%" align="left" valign="top"><input type="checkbox" name="inherit_tpl_new" value="true" <?php if ($mgmt_config[$site_name]['inherit_tpl'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>       
     <tr>
-      <td align="left" valign="top" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['save-setting'][$lang]); ?> </td>
-      <td width="80%" align="left" valign="top"><img name="Button" src="<?php echo getthemelocation(); ?>img/button_OK.gif" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_OK_over.gif',1)" align="absmiddle" title="OK" alt="OK" <?php if ($preview == "yes") echo " disabled"; ?> /></td>
+      <td align="left" nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['save-setting'][$lang]); ?> </td>
+      <td width="80%" align="left" valign="top"><img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="selectAll();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" <?php if ($preview == "yes") echo " disabled"; ?> /></td>
     </tr>
   </table>
 </form>

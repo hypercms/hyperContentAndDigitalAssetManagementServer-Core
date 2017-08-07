@@ -41,11 +41,25 @@ toggleview ($view);
 <link rel="apple-touch-icon" media="screen and (resolution: 326dpi)" href="<?php echo getthemelocation(); ?>img/mobile_icon114.png" />
 <!-- 57 x 57 Nokia icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
+<script src="javascript/main.js" type="text/javascript"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/jquery.mobile-1.3.1.min.js"></script>
 </head> 
 
-<script type='text/javascript'>
+<script type="text/javascript">
+function setviewport ()
+{
+  var width = hcms_getViewportWidth();
+
+  if (width > 0)
+  {
+    // AJAX request to set viewport width
+    $.post("<?php echo $mgmt_config['url_path_cms']; ?>service/setviewport.php", {viewportwidth: width});
+    return true;
+  }
+  else return false;
+}
+
 function minNavFrame ()
 {
   return true;
@@ -63,6 +77,7 @@ $(document).ready(function()
   $("#navFrame").height($(window).height() - 48);
   if ($("#chatContainer")) $("#chatContainer").height($(window).height());
   if ($("#chatFrame")) $("#chatFrame").height($(window).height());
+  setviewport();
   
   window.onresize = function()
   {
@@ -72,6 +87,7 @@ $(document).ready(function()
     $("#navFrame").height($(window).height() - 48);
     if ($("#chatContainer")) $("#chatContainer").height($(window).height());
     if ($("#chatFrame")) $("#chatFrame").height($(window).height());
+    setviewport();
   };
 });
 

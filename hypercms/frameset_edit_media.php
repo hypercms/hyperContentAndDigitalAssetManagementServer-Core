@@ -71,7 +71,7 @@ function maxNavFrame ()
 {
   if (document.getElementById('navFrame2'))
   {
-    var width = 250;
+    var width = 260;
     
     document.getElementById('navLayer').style.width = width + 'px';
     document.getElementById('controlLayer').style.left = width + 'px';

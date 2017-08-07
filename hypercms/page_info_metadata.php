@@ -65,6 +65,7 @@ echo showtopbar ($hcms_lang['meta-information-of-'][$lang]." ".$pagename, $lang,
 ?>
 
 <!-- content -->
+<div class="hcmsWorkplaceFrame">
   <?php
   if ($mediafile != "")
   {
@@ -121,6 +122,7 @@ echo showtopbar ($hcms_lang['meta-information-of-'][$lang]." ".$pagename, $lang,
     echo getescapedtext ($hcms_lang['no-meta-inforamtion-available'][$lang]);
   } 
   ?>
+</div>
 
 </body>
 </html>

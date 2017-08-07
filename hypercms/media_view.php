@@ -102,7 +102,7 @@ if ($mediaobject != "")
 }
 
 // media preview
-if (substr_count ($mediafile, "Null_media.gif") == 1)
+if (substr_count ($mediafile, "Null_media.png") == 1)
 {
   echo "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['no-file-selected'][$lang])."</p>";
 }

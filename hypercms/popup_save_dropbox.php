@@ -67,33 +67,31 @@ checkusersession ($user, false);
 //extract and prepare information for uploading to dropbox
 $saveObjects = array();
 $displayObjects = array();
-if((!empty($multiobject) || !empty($page)) && !empty($location))
+
+if ((!empty ($multiobject) || !empty ($page)) && !empty ($location))
 {
 	$multiObjectArray = array();
-	if(!empty($multiobject))
+	if (!empty ($multiobject))
 	{
-		if(strpos($multiobject, "|") === 0 && strlen($multiobject) > 2)
-			$multiobject = substr($multiobject, 1);
-		$multiObjectArray = explode("|", $multiobject);
+		if (strpos ($multiobject, "|") === 0 && strlen ($multiobject) > 2) $multiobject = substr ($multiobject, 1);
+		$multiObjectArray = explode ("|", $multiobject);
 	}
-	else if(!empty($page) && !empty($location))
-		$multiObjectArray[] = convertpath ($site, $location.$page, $cat);
+	else if (!empty ($page) && !empty ($location)) $multiObjectArray[] = convertpath ($site, $location.$page, $cat);
 	
-	if(!empty($multiObjectArray))
+	if (!empty ($multiObjectArray))
 	{
-		
-		foreach($multiObjectArray as $object) {
-			$objectLocation = getlocation($object);
-			$objectFile = getobject($object);
+		foreach ($multiObjectArray as $object)
+    {
+			$objectLocation = getlocation ($object);
+			$objectFile = getobject ($object);
 			$objectInfo = getobjectinfo ($site, $objectLocation, $objectFile);
-			if(empty($objectInfo['media']))
-				continue;
-			$downlaodlink = createdownloadlink($site, $objectLocation, $objectFile, $cat);
+			if (empty ($objectInfo['media'])) continue;
+			$downlaodlink = createdownloadlink ($site, $objectLocation, $objectFile, $cat);
 			$objectFileInfo = getfileinfo ($site, $object, $cat);
-			$objectMediaPath = getmedialocation($site, $objectInfo['media'], "abs_path_media").$site."/".$objectInfo['media'];
-			$objectMediaSize = filesize($objectMediaPath);
+			$objectMediaPath = getmedialocation ($site, $objectInfo['media'], "abs_path_media").$site."/".$objectInfo['media'];
+			$objectMediaSize = filesize ($objectMediaPath);
 			$saveObjects[] = "{'filename': '".$objectFileInfo['name']."', 'url': '".$downlaodlink."'}";
-			$displayObjects[] = array("name" => $objectFileInfo['name'], "size" => $objectMediaSize );
+			$displayObjects[] = array ("name" => $objectFileInfo['name'], "size" => $objectMediaSize);
 		}
 	}
 }
@@ -101,7 +99,6 @@ if((!empty($multiobject) || !empty($page)) && !empty($location))
 //prepare info for topbar
 $title = getescapedtext ($hcms_lang['save-files-to-dropbox-from'][$lang]);
 $object_name = getlocationname ($site, $location, $cat, "path");
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -125,27 +122,28 @@ $object_name = getlocationname ($site, $location, $cat, "path");
 <script type="text/javascript">
 // override window open function
 var childwindows = [];
-window._open = window.open; // saving original function
-window.open = function(url,name,params){
-    var windowRef = window._open(url,name,params)
+
+// saving original function
+window._open = window.open;
+
+window.open = function(url,name,params) {
+    var windowRef = window._open(url, name, params);
 		childwindows.push(windowRef);
 		return windowRef;
 }
 
 $(function() {
  <?php
-	if(!empty($saveObjects))
+	if (!empty ($saveObjects))
 	{	
  ?> 
 	var options = {
-    files: [ <?php echo implode(",", $saveObjects); ?> ],
+    files: [ <?php echo implode (",",  $saveObjects); ?> ],
     success: function() { 
 			$("#progress").hide();
 			$('#success').show();
 			$('#btnCancel').hide();
-			$('.file').removeClass('file_normal')
-								.addClass('file_success');
-			
+			$('.file').removeClass('file_normal').addClass('file_success');
 		},
 		cancel: function() { 
 			$("#progress").hide();
@@ -153,7 +151,7 @@ $(function() {
 			$('#btnCancel').hide();
 			$('#btnUpload').show();			
 		},
-		error: function(err) { alert(err)},
+		error: function(err) { alert(err); },
 	}
 	
 	$('#btnCancel').hide();
@@ -170,8 +168,9 @@ $(function() {
 }
 ?>
 	$("#btnCancel").click( function() {
-		for(var i=0; i<childwindows.length; i++){
-			 childwindows[i].close()
+		for (var i=0; i<childwindows.length; i++)
+    {
+			 childwindows[i].close();
 		}
 		window.close();
 	});
@@ -179,61 +178,69 @@ $(function() {
 });
 </script>
 </head>
-	<body class="hcmsWorkplaceGeneric" leftmargin=3 topmargin=3 marginwidth=0 marginheight=0>
-		<!-- top bar -->
-		<?php
-			echo showtopbar ($title.": ".$object_name, $lang);
-		?>
-		<div class="hcmsWorkplaceBar" id="progress">
-			<div style="padding: 6px;">
-				<div class="hcmsHeadline" style="float: left; "><?php echo getescapedtext ($hcms_lang['saving-files-to-dropbox'][$lang]); ?></div>
-				<div style="float: left; margin-left: 20px; margin-top: 2px;"><img src="/cms_dev/theme/standard/img/loading.gif" /></div>
-			</div>
-		</div>
-		<div class="hcmsWorkplaceBar" id="success">
-			<div style="padding: 6px;">
-				<div class="hcmsHeadline" style="float: left; "><?php echo getescapedtext ($hcms_lang['successfully-saved-files-to-dropbox-'][$lang]); ?></div>
-			</div>
-		</div>
-		<div id="content" class="hcmsWorkplaceFrame">
-			<div id="selectedFiles">
-			<?php 
-			if (!empty($displayObjects)) 
-			{ 
-				foreach($displayObjects as $displayObject) 
-				{
-			?>
-				<div class="file file_normal">
-					<div class="inline file_name"><?php echo prepareFilename($displayObject['name']); ?></div>
-					<div class="inline file_size" style="float: right; width: 80px;"><?php echo bytesToUnits($displayObject['size']); ?></div>
-				</div>
-			<?php 	
-				}
-			}
-			else
-			{
-			?>
-				<div class="file file_error">
-					<div class="inline file_name"><?php echo getescapedtext ($hcms_lang['no-files-selected'][$lang]);; ?></div>
-					<div class="inline file_size" style="float: right; width: 80px;">&nbsp;</div>
-				</div>	
-			<?php 	
-			}
-			?>
-			</div>
-			<div>
-			<?php 
-			if (!empty($displayObjects)) 
-			{
-			?>
-				<div id="btnUpload" class="button hcmsButtonBlue" ><?php echo getescapedtext ($hcms_lang['save'][$lang]); ?></div>
-			<?php 
-			}
-			?>
-				<div id="btnCancel" class="button hcmsButtonOrange" ><?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?></div>
-			</div>
-			<br />
-			<br />
-		</div>
-	</body>
+
+<body class="hcmsWorkplaceGeneric">
+  <!-- top bar -->
+  <?php
+  echo showtopbar ($title.": ".$object_name, $lang);
+  ?>
+    
+  <div class="hcmsWorkplaceBar" id="progress">
+    <div style="padding:6px;">
+      <div class="hcmsHeadline" style="float:left;"><?php echo getescapedtext ($hcms_lang['saving-files-to-dropbox'][$lang]); ?></div>
+      <div style="float: left; margin-left:20px; margin-top:2px;"><img src="/cms_dev/theme/standard/img/loading.gif" /></div>
+    </div>
+  </div>
+  
+  <div class="hcmsWorkplaceBar" id="success">
+    <div style="padding:6px;">
+      <div class="hcmsHeadline" style="float:left;"><?php echo getescapedtext ($hcms_lang['successfully-saved-files-to-dropbox-'][$lang]); ?></div>
+    </div>
+  </div>
+  
+  <div id="content" class="hcmsWorkplaceFrame">
+  
+    <div id="selectedFiles">
+    <?php 
+    if (!empty ($displayObjects)) 
+    { 
+      foreach ($displayObjects as $displayObject) 
+      {
+    ?>
+      <div class="file file_normal">
+        <div class="inline file_name"><?php echo prepareFilename ($displayObject['name']); ?></div>
+        <div class="inline file_size" style="float:right; width:80px;"><?php echo bytesToUnits ($displayObject['size']); ?></div>
+      </div>
+    <?php 	
+      }
+    }
+    else
+    {
+    ?>
+      <div class="file file_error">
+        <div class="inline file_name"><?php echo getescapedtext ($hcms_lang['no-files-selected'][$lang]);; ?></div>
+        <div class="inline file_size" style="float:right; width:80px;">&nbsp;</div>
+      </div>	
+    <?php 	
+    }
+    ?>
+    </div>
+    
+    <div>
+    <?php 
+    if (!empty ($displayObjects)) 
+    {
+    ?>
+      <div id="btnUpload" class="button hcmsButtonBlue" ><?php echo getescapedtext ($hcms_lang['save'][$lang]); ?></div>
+    <?php 
+    }
+    ?>
+      <div id="btnCancel" class="button hcmsButtonOrange" ><?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?></div>
+    </div>
+    <br />
+    <br />
+    
+  </div>
+  
+</body>
 </html>

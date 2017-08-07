@@ -1581,7 +1581,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 {
                   $watermarking = getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-wm");
                   
-                  if ($watermarking == "" || $watermarking == false)
+                  if ($watermarking == "" || $watermarking == "0"  || $watermarking == "false" || $watermarking == false)
                   {
                     $watermark = "";
                   }
@@ -2639,8 +2639,22 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 }
 
                 // capture screen from video to use as thumbnail image
-                if (($type == "origthumb" || $type == "original") && is_video ($file_ext)) createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
-     
+                if (($type == "origthumb" || $type == "original") && is_video ($file_ext))
+                {
+                  $videothumbnail = createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
+                  
+                  // get media information from thumbnail
+                  $imagecolor = getimagecolors ($site, $videothumbnail);
+                }
+                else
+                {
+                  $imagecolor = array();
+                  $imagecolor['red'] = "";
+                  $imagecolor['green'] = "";
+                  $imagecolor['blue'] = "";
+                  $imagecolor['colorkey'] = "";
+                }
+                
                 // new video info (only if it is not a thumbnail file of the original file)
                 if ($type == "original") $videoinfo = getvideoinfo ($location_dest.$newfile);
                 
@@ -2680,7 +2694,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // write media information to DB
                   if (!empty ($container_id))
                   {
-                    $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $mediawidth_orig, $mediaheight_orig, "", "", "", "", $imagetype_orig, $md5_hash);
+                    $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $mediawidth_orig, $mediaheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagetype_orig, $md5_hash);
                   }
                   
                   // create preview (new preview for video/audio file)

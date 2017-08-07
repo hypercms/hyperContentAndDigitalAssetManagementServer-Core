@@ -70,7 +70,7 @@ function sendOption(folder_name, folder_location)
       $initialdir = $mgmt_config[$site]['abs_path_page'];
       $initialdir_esc = convertpath ($site, $initialdir, $cat);
     }
-    elseif ($cat == "comp")
+    else
     {
       $folder_name = getescapedtext ($hcms_lang['assets'][$lang]);
       $initialdir = $mgmt_config['abs_path_comp'].$site."/";
@@ -87,12 +87,12 @@ function sendOption(folder_name, folder_location)
     // generate virtual root directories
     if (!empty ($dir) && substr_count ($dir, $initialdir) == 0)
     {
-      echo "<tr><td align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($initialdir_esc)."\"><img src=\"".getthemelocation()."img/folder_".$cat.".gif\" border=0 align=\"absmiddle\">&nbsp; ".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=\"javascript:sendOption('/".$site."/', '%".$cat."%/".$site."/')\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" style=\"border:0; width:16px; height:16px;\" align=\"absmiddle\" alt=\"OK\"></a></td></tr>\n";
+      echo "<tr><td align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($initialdir_esc)."\"><img src=\"".getthemelocation()."img/folder_".$cat.".png\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp; ".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=\"javascript:sendOption('/".$site."/', '%".$cat."%/".$site."/')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" align=\"absmiddle\" alt=\"OK\" /></a></td></tr>\n";
     }
     else
     {
       // define root location if no location data is available
-      if (!valid_locationname ($dir))
+      if (!valid_locationname ($dir) || empty ($dir))
       {
         $dir = $initialdir;
         $dir_esc = $initialdir_esc;
@@ -108,7 +108,7 @@ function sendOption(folder_name, folder_location)
       // back to parent directory
       if (substr_count ($dir, $initialdir) > 0)
       {
-        echo "<tr><td align=\"left\" colspan=\"2\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.gif\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" />&nbsp;".getescapedtext ($hcms_lang['back'][$lang])."</a></td></tr>\n";
+        echo "<tr><td align=\"left\" colspan=\"2\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($updir_esc)."&site=".url_encode($site)."\"><img src=\"".getthemelocation()."img/back.png\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".getescapedtext ($hcms_lang['back'][$lang])."</a></td></tr>\n";
       }
       
       // get all files in dir
@@ -143,7 +143,7 @@ function sendOption(folder_name, folder_location)
         
             if ($folder_info != false && $folder_info['deleted'] == false)
             {
-              echo "<tr><td width=\"90%\" align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&site=".url_encode($site)."\"><img src=\"".$icon."\" border=0 width=16 heigth=16 align=\"absmiddle\">&nbsp;".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=\"javascript:sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_OK_small.gif\" style=\"border:0; width:16px; height:16px;\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></a></td></tr>\n";
+              echo "<tr><td width=\"90%\" align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&site=".url_encode($site)."\"><img src=\"".$icon."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=\"javascript:sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></a></td></tr>\n";
             }
           }
         }

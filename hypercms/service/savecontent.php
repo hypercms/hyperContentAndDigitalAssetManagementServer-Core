@@ -249,7 +249,8 @@ if ($usedby == "" || $usedby == $user)
       // face detection data
       if (isset ($faces))
       {
-        $textu['Faces-JSON'] = $faces;
+        // remove empty entries
+        $textu['Faces-JSON'] = str_replace (", , ", ", ", $faces);
       }
     
       // text content
