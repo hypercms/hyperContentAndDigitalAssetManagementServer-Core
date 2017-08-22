@@ -658,29 +658,20 @@ else
 
   // create main Menu points
   // ---------------------------------------- logout ---------------------------------------------
-  if (empty ($hcms_assetbrowser))
+  if (empty ($hcms_assetbrowser) && $is_mobile)
   {
-    $point = new hcms_menupoint ($hcms_lang['logout'][$lang], '#', 'logout.png');
+    $point = new hcms_menupoint ($hcms_lang['logout'][$lang], '#', 'button_logout.png');
     $point->setOnClick('javascript:top.location="userlogout.php"');
     $point->setOnMouseOver('hcms_resetContext();');
     $maintree .= $point->generateHTML();
   }
 
   // ----------------------------------------- home ---------------------------------------------- 
-  if (empty ($hcms_assetbrowser))
+  if (empty ($hcms_assetbrowser) && $is_mobile)
   {
     $point = new hcms_menupoint ($hcms_lang['home'][$lang], 'home.php', 'home.png');
     $point->setOnClick('changeSelection(this)');
     $point->setTarget('workplFrame');
-    $point->setOnMouseOver('hcms_resetContext();');
-    $maintree .= $point->generateHTML();
-  }
-  
-  // ----------------------------------------- chat ----------------------------------------------
-  if (empty ($hcms_assetbrowser) && !$is_mobile && isset ($mgmt_config['chat']) && $mgmt_config['chat'] == true)
-  {
-    $point = new hcms_menupoint ($hcms_lang['chat'][$lang], '#', 'chat.png');
-    $point->setOnClick('changeSelection(this); hcms_openChat();');
     $point->setOnMouseOver('hcms_resetContext();');
     $maintree .= $point->generateHTML();
   }
@@ -1237,7 +1228,7 @@ else
     
     $(function ()
     {
-      // We need to fix the html of the existing menupoint for jstree to work correctly (no newline and no more than one space)
+      // fix the html of the existing menupoint for jstree to work correctly (no newline and no more than one space)
       var html = $('#menupointlist').html();
       html = html.replace('\n', '');
       html = html.replace(/ {2,}/, '');
@@ -1785,6 +1776,16 @@ else
         document.location='?search_delete=' + form.elements['search_execute'].options[form.elements['search_execute'].selectedIndex].value + '&token=<?php echo $token_new; ?>';
       }
     }
+    
+    function showSearch ()
+    {
+      hcms_showHideLayers ('menu','','hide','search','','show'); 
+    }
+    
+    function showNav ()
+    {
+      hcms_showHideLayers ('menu','','show','search','','hide'); 
+    }
 
     // Google Maps JavaScript API v3: Map Simple
     var map;
@@ -1853,14 +1854,6 @@ else
   
   <body class="hcmsWorkplaceExplorer">
   
-  <?php if (!$is_mobile) { ?>
-  <!-- min/max buttons -->
-  <div id="NavFrameButtons" style="position:fixed; z-index:1000; right:0; top:45%; margin:0; padding:0;">
-    <img onclick="parent.minNavFrame(); hcms_showHideLayers('menu','','hide','search','','hide');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" /><br />
-    <img onclick="parent.maxNavFrame(); hcms_showHideLayers('menu','','show','search','','hide');" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
-  </div>
-  <?php } ?>
-  
   <?php /* Saves the token for the context menu */ ?>
   <span id="context_token" style="display:none;"><?php echo $token_new; ?></span>
   <div id="contextLayer" style="position:absolute; width:150px; height:128px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
@@ -1900,12 +1893,6 @@ else
         </tr>    
       </table>
     </form>
-    </div>
-    
-    <!-- buttons -->
-    <div style="position:fixed; top:4px; right:4px; z-index:200;">
-      <img onClick="hcms_showHideLayers('menu','','show','search','','hide'); parent.maxNavFrame();" class="hcmsButton hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_explorer.png" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
-      <img onClick="hcms_showHideLayers('menu','','hide','search','','show'); parent.maxNavFrame();" class="hcmsButton hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_search.png" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
     </div>
 
     <!-- navigator -->

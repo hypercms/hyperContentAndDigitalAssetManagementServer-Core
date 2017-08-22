@@ -127,7 +127,7 @@ if (
   // generate page or component list using access permission data
   if (accesspermission ($site, $location, $cat) == false)
   {
-    if (@is_array ($access) && @sizeof ($access) > 0 && is_array ($access[$site]))
+    if (!empty ($access) && is_array ($access) && sizeof ($access) > 0 && is_array ($access[$site]))
     {
       reset ($access);
 
@@ -161,7 +161,7 @@ if (
     {
       foreach ($scandir as $file) 
       {
-        if ($location.$file != "" && $file != '.' && $file != '..') 
+        if ($location.$file != "" && $file != '.' && $file != '..' && substr ($file, -8) != ".recycle") 
         {
           if (!$is_mobile && is_dir ($location.$file))
           {
@@ -197,7 +197,7 @@ $listview = "";
 $items_row = 0;
   
 // folder entries
-if (!$is_mobile && is_array ($folder_array) && @sizeof ($folder_array) > 0)
+if (!$is_mobile && is_array ($folder_array) && sizeof ($folder_array) > 0)
 {
   natcasesort ($folder_array);
   reset ($folder_array);

@@ -435,7 +435,8 @@ if (checkuserip (getuserip ()) == true)
   }
   
   // wallpaper
-  if ($themename != "mobile") $wallpaper = getwallpaper ();
+  if ($themename != "mobile" && empty ($mgmt_config['wallpaper'])) $wallpaper = getwallpaper ();
+  else $wallpaper = $mgmt_config['wallpaper'];
 }
 // client ip is banned
 else
@@ -532,7 +533,7 @@ function setwallpaper ()
 </script>
 </head>
 
-<body class="hcmsStartScreen" onLoad="focusform(); is_mobilebrowser(); is_iphone(); html5support(); setwallpaper();">
+<body class="hcmsStartScreen" onload="focusform(); is_mobilebrowser(); is_iphone(); html5support(); setwallpaper();">
 
 <div class="hcmsStartBar">
   <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>

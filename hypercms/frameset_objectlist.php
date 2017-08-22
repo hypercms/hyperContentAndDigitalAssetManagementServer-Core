@@ -58,7 +58,7 @@ function closeobjectview ()
 </script>
 </head>
 
-<body style="width:100%; height:100%; margin:0; padding:0;">
+<body>
 
 <!-- preview/live-view --> 
 <div id="objectviewLayer" class="hcmsWorkplaceExplorer" style="display:none; overflow:hidden; position:fixed; margin:0; padding:0; left:0; top:0; right:0; bottom:0; z-index:8;">

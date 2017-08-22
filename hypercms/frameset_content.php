@@ -101,7 +101,7 @@ function closeobjectview ()
 </script>
 </head>
 
-<body style="width:100%; height:100%; margin:0; padding:0;" onload="hcms_setViewportScale();">
+<body onload="hcms_setViewportScale();">
 
 <!-- preview/live-view --> 
 <div id="objectviewLayer" class="hcmsWorkplaceExplorer" style="display:none; overflow:hidden; position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; z-index:8;">

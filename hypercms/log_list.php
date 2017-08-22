@@ -83,7 +83,7 @@ function resizecols()
 <body class="hcmsWorkplaceObjectlist" style="overflow:hidden;" onresize="resizecols();">
 
 <div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:0; width:100%; z-index:1; visibility:visible;">
-  <table id="objectlist_head" cellpadding="0" cellspacing="0" style="border:0; width:100%; height:20px; table-layout:fixed;"> 
+  <table id="objectlist_head" cellspacing="0" style="border:0; padding:0; width:100%; height:20px; table-layout:fixed;"> 
     <tr>
       <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader" style="width:102px; white-space:nowrap;">
         &nbsp; <?php echo getescapedtext ($hcms_lang['type'][$lang]); ?>

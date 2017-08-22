@@ -120,11 +120,11 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 <!-- content -->
 <div class="hcmsWorkplaceFrame">
 
-<div class="hcmsHeadline" style="width:740px; padding-top:8px; text-align:center;">
-  <input class="hcmsButtonBlue" type="button" name="previous" value="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" onclick="document.forms['previousform'].submit();" style="width:150px;" />&nbsp;&nbsp;&nbsp;
-  <?php echo getescapedtext ($hcms_lang['time-frame'][$lang]).": ".$date_month."/".$date_year; ?>&nbsp;&nbsp;&nbsp;
-  <input class="hcmsButtonBlue" type="button" name="next" value="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>" onclick="document.forms['nextform'].submit();" style="width:150px;" <?php if ($date_month == date ("m", time()) && $date_year == date ("Y", time())) echo "disabled=\"disabled\""; ?> />
-</div>
+  <div class="hcmsHeadline" style="width:740px; padding-top:8px; text-align:center;">
+    <input class="hcmsButtonBlue" type="button" name="previous" value="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" onclick="document.forms['previousform'].submit();" style="width:150px;" />&nbsp;&nbsp;&nbsp;
+    <?php echo getescapedtext ($hcms_lang['time-frame'][$lang]).": ".$date_month."/".$date_year; ?>&nbsp;&nbsp;&nbsp;
+    <input class="hcmsButtonBlue" type="button" name="next" value="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>" onclick="document.forms['nextform'].submit();" style="width:150px;" <?php if ($date_month == date ("m", time()) && $date_year == date ("Y", time())) echo "disabled=\"disabled\""; ?> />
+  </div>
 
 <?php 
 // show results
@@ -231,12 +231,13 @@ if (!empty ($container_id))
   <?php
   if (is_array ($result_download)) 
   { 
-    echo "<table border=\"0\" celspacing=\"2\" cellpadding=\"1\">
-  <tr>
-    <td class=\"hcmsHeadline\" width=\"150\" nowrap=\"nowrap\">Download </td>
-    <td class=\"hcmsHeadline\" width=\"250\" nowrap=\"nowrap\">Users/IP </td>
-    <td class=\"hcmsHeadline\" width=\"150\" nowrap=\"nowrap\">Hits </td>
-  </tr>\n";
+    echo "
+    <table border=\"0\" celspacing=\"2\" cellpadding=\"1\">
+      <tr>
+        <td class=\"hcmsHeadline\" width=\"150\" nowrap=\"nowrap\">Download </td>
+        <td class=\"hcmsHeadline\" width=\"250\" nowrap=\"nowrap\">Users/IP </td>
+        <td class=\"hcmsHeadline\" width=\"150\" nowrap=\"nowrap\">Hits </td>
+      </tr>";
   
     $color = false;
     
@@ -278,10 +279,11 @@ if (!empty ($container_id))
       // user name
       else $user = $row['user'];
       
-      echo "  <tr class=\"".$rowcolor."\"><td>".$row['date']." </td><td>".$user." </td><td>".$row['count']." </td></tr>\n";
+      echo "
+        <tr class=\"".$rowcolor."\"><td>".$row['date']." </td><td>".$user." </td><td>".$row['count']." </td></tr>";
     }
     
-    echo "</table>\n";
+    echo "</table>";
   }
   ?>
   </div>

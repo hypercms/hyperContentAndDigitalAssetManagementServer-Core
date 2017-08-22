@@ -11,7 +11,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
   else $width = "320px";
   
   echo "
-  <div id=\"recent\" class=\"hcmsInfoBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
+  <div id=\"recent\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
     <div class=\"hcmsHeadline\" style=\"margin:2px;\">".getescapedtext ($hcms_lang['my-recent-objects'][$lang])."</div>";
   
   array_reverse ($object_array);

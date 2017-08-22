@@ -32,7 +32,6 @@ checkusersession ($user, false);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script src="javascript/main.js" type="text/javascript"></script>
 <script>
-<!--
 function minNavFrame ()
 {
   if (document.getElementById('navFrame2'))
@@ -60,11 +59,10 @@ function maxNavFrame ()
     window.frames['navFrame2'].document.getElementById('NavFrameButtons').style.right = '0px';
   }
 }
--->
 </script>
 </head>
 
-<body style="width:100%; height:100%; margin:0; padding:0;">
+<body>
   <div id="navLayer" style="position:fixed; top:0; bottom:0; left:0; width:260px; margin:0; padding:0;">
     <iframe id="navFrame2" name="navFrame2" scrolling="auto" src="<?php echo "group_access_explorer.php?site=".$site."&group_name=".$group_name."&cat=".$cat; ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>
   </div>

@@ -33,6 +33,10 @@ if ($action == "save")
 {
   setboxes ($homeboxes, $user);
 }
+
+// wallpaper
+if ($hcms_themename != "mobile" && empty ($mgmt_config['wallpaper'])) $wallpaper = getwallpaper ();
+else $wallpaper = $mgmt_config['wallpaper'];
 ?>
 <!DOCTYPE html>
 <html>
@@ -163,10 +167,20 @@ function submitHomeBoxes ()
   form.elements['homeboxes'].value = homeboxes;
   form.submit();
 }
+
+function setwallpaper ()
+{
+  <?php if (!empty ($wallpaper)) { ?>
+  document.body.style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
+  return true;
+  <?php } else { ?>
+  return false;
+  <?php } ?>
+}
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" style="width:100%; height:100%;" onload="<?php if (empty ($_SESSION['hcms_temp_latitude']) || empty ($_SESSION['hcms_temp_longitude'])) echo "hcms_geolocation();"; ?>">
+<body class="hcmsStartScreen" onload="<?php if (empty ($_SESSION['hcms_temp_latitude']) || empty ($_SESSION['hcms_temp_longitude'])) echo "hcms_geolocation(); "; ?>setwallpaper();">
 
 <div style="width:100%; height:100%; overflow:auto;">
 
@@ -183,7 +197,7 @@ function submitHomeBoxes ()
   <?php } ?>
   
   <!-- add / remove boxes menu -->
-  <div id="menubox" class="hcmsInfoBox" style="position:fixed; top:32px; right:25px; z-index:200; display:none;">
+  <div id="menubox" class="hcmsHomeBox" style="position:fixed; top:32px; right:25px; z-index:200; display:none;">
     <form id="box_form" name="box_form" action="" method="post">
       <input type="hidden" name="action" value="save" />
       <input type="hidden" name="homeboxes" value="" />

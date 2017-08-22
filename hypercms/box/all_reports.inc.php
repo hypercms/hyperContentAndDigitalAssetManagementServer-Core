@@ -9,7 +9,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
   else $width = "670px";
   
   echo "
-  <div id=\"reportviewer\" class=\"hcmsInfoBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
+  <div id=\"reportviewer\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
     <div style=\"display:block; padding-bottom:5px;\">
       <span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['report'][$lang])." </span>
       <select name=\"reportfile\" onChange=\"document.getElementById('report').src=this.value\">

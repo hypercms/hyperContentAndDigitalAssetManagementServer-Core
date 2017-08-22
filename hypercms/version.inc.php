@@ -2261,8 +2261,32 @@ Release 08/2017
 - Bug fix: Function correctfile in main API did convert locked file names and removed @ before user name
 - Bug fix: JS function collectFaces in template engine did include empty entries in the JSON object
 - Bug fix: Function showmedia in UI API did not calculate the proper height of documents for the preview
+
+Version 7.0.1
+Release 08/2017
+- Implementation of new main configuration parameter $mgmt_config['wallpaper'] to define a wallpaper for the logon and home screen
+- Redesign of home screen using a background image incl. changes in CSS classes and new CSS classes
+- Moved logout, home screen, navigation tree, and search buttons to top bar in desktop version
+- Mobile edition remains unchanged except for removed chat button from the navigation tree
+- Implementation of new JS functions for the top bar buttons
+- Modifications in CSS of all themes
+- Implementation of new top bar logo for all themes
+- Design modifications in installation routine
+- Modifications in JS function hcms_mobileBrowser in main.js in order to include tablets as mobile devices
+- Modifications in function is_mobilebrowser in Main API to detect smartphones and tablets
+- modifications in  img class in main.css and navigator.css to improve image rendering quality in IE browser
+- Modifications in colorful design theme
+- Modifications in template engine for the width of form fields
+- Modifications in contextmenu.js, control_user_menu, and user_objectlist in order to increase the edit window height
+- Modifications in project and task management module
+- Removed local styles from all framesets
+- Design modifications in user_sendlink
+- Modifications in top_info 
+- Update of user manuals
+- Bug fix: CSS class hcmsWorkplaceObjectlist in main.css caused issues with scroll bars
+- Bug fix: Object lists did not exclude deleted objects fomr the total count of items
 */
 
 // current version
-$mgmt_config['version'] = "Version 7.0.0";
+$mgmt_config['version'] = "Version 7.0.1";
 ?>

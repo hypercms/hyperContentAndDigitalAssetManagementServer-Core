@@ -829,6 +829,45 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       elseif ($file_info['orig_ext'] != "" && substr_count ($doc_ext.".", $file_info['orig_ext'].".") > 0 && !empty ($mgmt_config['docviewer']))
       {
         $mediaview_doc = "";
+        $mediaratio = 0;
+        
+        // check for document PDF preview
+        $mediafile_thumb = $file_info['filename'].".thumb.pdf";
+  
+        // if original file is a pdf
+        if (substr_count (".pdf", $file_info['orig_ext']) == 1) $mediafile_pdf = $mediafile_orig;
+        // document thumb file is a pdf
+        elseif (is_file ($thumb_root.$mediafile_thumb) || is_cloudobject ($thumb_root.$mediafile_thumb)) $mediafile_pdf = $mediafile_thumb;
+  
+        // calculate the ratio based ont the PDF file
+        if (!empty ($mediafile_pdf))
+        {
+          // get PDF width and height which should be available for documents depeding on the used extensions
+          $pdf_info = getpdfinfo ($thumb_root.$mediafile_pdf);
+
+          // define ratio
+          if (!empty ($pdf_info['width']) || !empty ($pdf_info['height']))
+          {
+            $mediaratio = $pdf_info['width'] / $pdf_info['height'];
+          }
+        }
+        
+        // define media ratio based on file extension
+        if ($mediaratio == 0)
+        {
+          // presentation and spreadsheet formats, older versiuons use 4:3
+          if (strpos ("_.ppt.pot.pps.otp.xls.xlsx.ods", $file_info['orig_ext']) > 0) 
+          {
+            $mediaratio = 4 / 3;
+          }
+          // presentation formats, newer versions use 16:9
+          elseif (strpos ("_.pptx.potx.ppsx", $file_info['orig_ext']) > 0) 
+          {
+            $mediaratio = 16 / 9;
+          }
+          // use A4 format
+          else $mediaratio = 0.707;
+        }
       
         // media size
         if (is_numeric ($width) && $width > 0 && is_numeric ($height) && $height > 0)
@@ -839,19 +878,19 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         {
           // min. width is required for document viewer
           if ($width < 320) $width = 320;
-          
-          $height = round (($width / 0.75), 0);
+ 
+          $height = round (($width / $mediaratio), 0);
           $style .= "width=\"".$width."\" height=\"".$height."\"";
         }
         elseif (is_numeric ($height) && $height > 0)
         {
-          $width = round (($height * 0.75), 0);
+          $width = round (($height * $mediaratio), 0);
           
           // min. width is required for document viewer
           if ($width < 320)
           {
             $width = 320;
-            $height = round (($width / 0.68), 0);
+            $height = round (($width / $mediaratio), 0);
           }
           
           $style .= "width=\"".$width."\" height=\"".$height."\"";
@@ -859,7 +898,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         else
         {
           $width = 576;
-          $height = 740;
+          $height = $height = round (($width / $mediaratio), 0);
           
           $style .= "width=\"".$width."\" height=\"".$height."\"";
         }
@@ -1015,8 +1054,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $pdf_info['height'] = 806;
             }
 
-            // create pages as images from document
-            $mgmt_imageoptions['.jpg.jpeg']['annotation'] = "-s ".round($pdf_info['width'],0)."x".round($pdf_info['height'],0)." -f jpg";
+            // create pages as images from PDF document
+            $mgmt_imageoptions['.jpg.jpeg']['annotation'] = "-s ".round($pdf_info['width'], 0)."x".round($pdf_info['height'], 0)." -f jpg";
             createmedia ($site, $thumb_root, $thumb_root, $mediafile_pdf, 'jpg', 'annotation');
           }
           
@@ -2509,7 +2548,7 @@ $(document).ready(function()
         
         <input type=\"text\" name=\"search_expression\" id=\"search_expression\" placeholder=\"".getescapedtext ($hcms_lang['search-expression'][$lang], $hcms_charset, $lang)."\" 
         value=\"".($search_expression != "" ? html_encode ($search_expression) : "")."\" style=\"width:192px;\" maxlength=\"200\" onclick=\"showOptions();\" />
-        <img name=\"SearchButton\" src=\"".getthemelocation()."img/button_ok.png\" onClick=\"submitForm();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('SearchButton','','".getthemelocation()."img/button_ok_over.png',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" align=\"top\" alt=\"OK\" title=\"OK\" />";
+        <img name=\"SearchButton\" src=\"".getthemelocation()."img/button_ok.png\" onClick=\"submitForm();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('SearchButton','','".getthemelocation()."img/button_ok_over.png',1)\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" />";
 
       // search options
       if (($compcat == "media" && $mediatype == "") || $mgmt_config[$site]['dam']) $result .= "

@@ -1,6 +1,5 @@
 img
 {
-  -ms-interpolation-mode: nearest-neighbor; // IE 7+ (non-standard property)
   image-rendering: -webkit-optimize-contrast; // Safari 6, UC Browser 9.9
   image-rendering: -webkit-crisp-edges; // Safari 7+
   image-rendering: -moz-crisp-edges; // Firefox 3.6+
@@ -49,6 +48,15 @@ img
   background-color: #5EA2EB;
 }
 
+.hcmsLogoTop
+{
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  float: left;
+}
+
 .hcmsWorkplaceBar
 {
   background-color: #A2C5F9;
@@ -70,9 +78,10 @@ img
 .hcmsLocationBar
 {
   width: 100%;
-  margin: 0px 3px;
-  padding: 0;
+  margin: 0;
+  padding: 0px 3px;
   border: 0;
+  background-color: #B7D5FD;
   display: block;
 }
 
@@ -114,7 +123,6 @@ img
   margin: 0;
   padding: 0;
   background-color: #90BEFB;
-  background-repeat: no-repeat;
 }
 
 .hcmsToolbar
@@ -122,8 +130,6 @@ img
   width: 100%;
   height: 32px;
   padding: 2px;
-  border-top: 1px solid #ABD0F9;
-  border-bottom: 1px solid #ABD0F9; 
   display: block;
 }
 
@@ -132,7 +138,7 @@ img
   float: left;
   padding-right: 1px;
   margin-right: 1px;
-  border-right: 1px solid #ABD0F9; 
+  border-right: 2px solid #ABD0F9; 
 }
 
 .hcmsWorkplaceExplorer
@@ -156,9 +162,7 @@ img
 {
   background-color: #C8DCFF;
   margin: 0; 
-  padding: 0;  
-  width: 100%;
-  height: 100%;
+  padding: 0;
   overflow: auto;
 }
 
@@ -225,16 +229,19 @@ img
 .hcmsPriorityHigh
 {
   background-color: #FC9A45;
+  color: #000000;
 }
 
 .hcmsPriorityMedium
 {
   background-color: #FDCE7E;
+  color: #000000;
 }
 
 .hcmsPriorityLow
 {
   background-color: #AECDFE;
+  color: #000000;
 }
 
 .hcmsMessage
@@ -245,6 +252,25 @@ img
   -webkit-border-radius: 5px;
   border-radius: 5px;
   background-color: #ABD0FF;
+  box-shadow: 3px 3px 12px #000000;
+  -webkit-box-shadow: 3px 3px 12px #000000;
+  -moz-box-shadow: 3px 3px 12px #000000;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+}
+
+.hcmsHomeBox
+{
+  z-index: 100;
+  padding: 5px;
+  overflow: auto;
+  filter: alpha(opacity=95); -moz-opacity: 0.95; opacity: 0.95;
+  vertical-align: middle;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  color: #FFFFFF;
+  font-size: 12px;
+  background-color: #39689D;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
@@ -307,9 +333,7 @@ img
   padding: 2px;
   margin: 0;
   border: 0;
-  filter: gray() alpha(opacity=30);
-  -moz-opacity: 0.3;
-  opacity: 0.3;
+  filter: gray() alpha(opacity=30); -moz-opacity: 0.3; opacity: 0.3;
   float: left;
   z-index: 0;
 }
@@ -343,9 +367,7 @@ img
   padding: 0;
   margin: 0;
   border: 0;
-  filter: gray() alpha(opacity=30);
-  -moz-opacity: 0.3;
-  opacity: 0.3;
+  filter: gray() alpha(opacity=30); -moz-opacity: 0.3; opacity: 0.3;
 }
 
 .hcmsButtonClose
@@ -524,7 +546,6 @@ img
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 12px; 
   font-weight: bold; 
-  color: #000000; 
   text-decoration: none;
   padding: 3px 0px;
 }
@@ -684,11 +705,7 @@ html, body
   width: 100%;
   height: 100%;
   padding: 0;
-  margin: 0;
-}
-
-html, body, table, td, span, div
-{  
+  margin: 0;  
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 12px; 
   font-weight: normal; 

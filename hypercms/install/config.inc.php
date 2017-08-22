@@ -211,6 +211,9 @@ $mgmt_config['theme'] = "";
 // Define alternative logo (image file name) for top frame. the file must be in cms/images
 $mgmt_config['logo_top'] = "";
 
+// Define alternative wallpaper image (must be an URL) for the logon and home screen
+$mgmt_config['wallpaper'] = "";
+
 // Show (true) or hide (false) information boxes to provide additional information to the user
 $mgmt_config['showinfobox'] = true;
 

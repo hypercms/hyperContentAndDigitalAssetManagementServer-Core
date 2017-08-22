@@ -94,7 +94,7 @@ if (is_file ($mgmt_config['abs_path_data']."check.dat"))
 </head>
 <body class="hcmsWorkplaceGeneric">
 <div class="hcmsHeadline" style="width:380px; margin: 20px auto 20px auto;">
-  The hyper Content &amp; Digital Asset Management has been installed already!
+  The hyper Content &amp; Digital Asset Management is already installed!
 </div>
 </body>
 </html>
@@ -674,14 +674,15 @@ $(document).ready(function(){
 </script>
 
 <!-- top bar -->
-<?php echo showtopbar ("<img src=\"".$mgmt_config['url_path_cms']."theme/standard/img/logo_top.png\" style=\"height:32px; border:0;\" align=\"absmiddle\" /> Installation of ".$mgmt_config['version'], "en"); ?>
+<?php echo showtopbar ("Installation of ".$mgmt_config['version'], "en"); ?>
 
 <!-- content area -->
-<div id="content" style="width:480px; margin:0 auto 10px auto;">
+<div id="content" style="width:480px; margin:0 auto;">
 
 <div id="error" style="padding:4px; border:1px solid red; background:#ffdcd5;">There were errors on the form!</div>
 
-<div style="margin:20px 0px 20px 0px;">
+<div style="margin:10px 0px;">
+<img src="<?php echo $mgmt_config['url_path_cms']."theme/standard/img/logo.png"; ?>" style="width:480px; border:0; margin:10px 0px;" align="absmiddle" /><br />
 Welcome to the one-step hyper Content &amp; Digital Asset Management Server installation. 
 You may want to read the <a href="<?php echo $mgmt_config['url_path_cms']; ?>help/installationguide_en.pdf" target="_blank">installation guide</a> or watch the <a href="https://youtu.be/qR_wZBSw9Ao" target="_blank">installation tutorial</a> at your leisure.<br/>
 Otherwise just provide the information below and install the most powerful Content and Digital Asset Management System.

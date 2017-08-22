@@ -9,7 +9,7 @@ if (checkrootpermission ('desktoptaskmgmt'))
 
   if (is_array ($task_array) && sizeof ($task_array) > 0)
   {
-    echo "<div id=\"task\" onclick=\"document.location.href='task/task_list.php';\" class=\"hcmsInfoBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left; cursor:pointer;\">\n";
+    echo "<div id=\"task\" onclick=\"document.location.href='task/task_list.php';\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left; cursor:pointer;\">\n";
 
     echo "<div class=\"hcmsHeadline\" style=\"margin:2px;\">".getescapedtext ($hcms_lang['my-recent-tasks'][$lang])."</div>
     <table width=\"100%\" border=\"0\" cellspacing=\"2\" cellpadding=\"2\">";

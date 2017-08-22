@@ -1,6 +1,5 @@
 img
 {
-  -ms-interpolation-mode: nearest-neighbor; // IE 7+ (non-standard property)
   image-rendering: -webkit-optimize-contrast; // Safari 6, UC Browser 9.9
   image-rendering: -webkit-crisp-edges; // Safari 7+
   image-rendering: -moz-crisp-edges; // Firefox 3.6+
@@ -55,6 +54,15 @@ img
   background-repeat: repeat;
 }
 
+.hcmsLogoTop
+{
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  float: left;
+}
+
 .hcmsWorkplaceTop input
 {
   border:1px solid #EB7F04;
@@ -87,7 +95,7 @@ img
 
 .hcmsContextMenu
 {
-  border: 1px solid #EB6804;
+  border: 1px solid #000000;
   background-color: #6F6F6F;
   box-shadow: 3px 3px 10px #000000;
   -webkit-box-shadow: 3px 3px 10px #000000;
@@ -169,9 +177,7 @@ img
 {
   background-color: #424242;
   margin: 0; 
-  padding: 0;  
-  width: 100%;
-  height: 100%;
+  padding: 0;
   overflow: auto;
 }
 
@@ -268,6 +274,25 @@ img
   filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
 }
 
+.hcmsHomeBox
+{
+  z-index: 100;
+  padding: 5px;
+  overflow: auto;
+  filter: alpha(opacity=95); -moz-opacity: 0.95; opacity: 0.95;
+  vertical-align: middle;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  color: #FFFFFF;
+  font-size: 12px;
+  background-color: #292929;
+  box-shadow: 3px 3px 12px #000000;
+  -webkit-box-shadow: 3px 3px 12px #000000;
+  -moz-box-shadow: 3px 3px 12px #000000;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+}
+
 .hcmsInfoBox
 {
   z-index: 100;
@@ -312,9 +337,6 @@ img
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
   background-color: #FFC477;
   border: 1px solid #FF8411;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
 }
 
 .hcmsButtonBlank
@@ -331,9 +353,7 @@ img
   padding: 2px;
   margin: 0;
   border: 0;
-  filter: gray() alpha(opacity=30);
-  -moz-opacity: 0.3;
-  opacity: 0.3;
+  filter: gray() alpha(opacity=30);  -moz-opacity: 0.3; opacity: 0.3;
   float: left;
   z-index: 0;
 }
@@ -355,9 +375,6 @@ img
   background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
   background-color: #FFC477;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
 }
 
 .hcmsButtonTinyBlank
@@ -373,9 +390,7 @@ img
   padding: 0;
   margin: 0;
   border: 0;
-  filter: gray() alpha(opacity=30);
-  -moz-opacity: 0.3;
-  opacity: 0.3;
+  filter: gray() alpha(opacity=30); -moz-opacity: 0.3; opacity: 0.3;
 }
 
 .hcmsButtonClose
@@ -451,9 +466,6 @@ img
 .hcmsButtonBlue
 {
   background-color: #65B1FC;
-	-moz-border-radius: 4px;
-	-webkit-border-radius:4px;
-	border-radius: 4px;
   border: 1px solid #469df5;
   display: inline-block;
   padding: 2px 10px;
@@ -475,9 +487,6 @@ img
 .hcmsButtonGreen
 {
   background-color: #77d42a;
-	-moz-border-radius: 4px;
-	-webkit-border-radius:4px;
-	border-radius: 4px;
   border: 1px solid #268a16;
   display: inline-block;
   padding: 2px 10px;
@@ -499,9 +508,6 @@ img
 .hcmsButtonOrange
 {
   background-color: #FB9004;
-	-moz-border-radius: 4px;
-	-webkit-border-radius:4px;
-	border-radius: 4px;
   border: 1px solid #C28B2C;
   display: inline-block;
   padding: 2px 10px;
@@ -710,11 +716,7 @@ html, body
   width: 100%;
   height: 100%;
   padding: 0;
-  margin: 0;
-}
-
-html, body, table, td, span, div
-{  
+  margin: 0; 
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 12px; 
   font-weight: normal; 

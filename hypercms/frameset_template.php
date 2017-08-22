@@ -32,7 +32,7 @@ checkusersession ($user, false);
 <script src="javascript/main.js" type="text/javascript"></script>
 </head>
 
-<body style="width:100%; height:100%; margin:0; padding:0;">
+<body>
   <iframe id="controlFrame" name="controlFrame" scrolling="no" src="<?php echo "control_template_menu.php?site=".$site."&cat=".$cat; ?>" frameBorder="0" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;"></iframe>
   <div style="position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;">
     <iframe id="mainFrame" name="mainFrame" scrolling="auto" src="empty.php?site=<?php echo $site; ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>

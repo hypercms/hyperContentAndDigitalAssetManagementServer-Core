@@ -19,10 +19,6 @@
 
 .hcmsWorkplaceObjectlist
 {
-  margin: 0; 
-  padding: 0;
-  width: 100%;
-  height: 100%;
   background-color: #D7E6FE;
 }
 
@@ -64,6 +60,25 @@
   -webkit-box-shadow: 3px 3px 10px #000000;
   -moz-box-shadow: 3px 3px 10px #000000;
   filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+}
+
+.hcmsHomeBox
+{
+  z-index: 100;
+  padding: 5px;
+  overflow: auto;
+  filter: alpha(opacity=95); -moz-opacity: 0.95; opacity: 0.95;
+  vertical-align: middle;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  color: #FFFFFF;
+  font-size: 12px;
+  background-color: #292929;
+  box-shadow: 3px 3px 12px #000000;
+  -webkit-box-shadow: 3px 3px 12px #000000;
+  -moz-box-shadow: 3px 3px 12px #000000;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
 }
 
 .hcmsInfoBox
@@ -294,7 +309,6 @@
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 16px; 
   font-weight: bold; 
-  color: #000000; 
   text-decoration: none
 }
 
@@ -303,7 +317,6 @@
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 16px; 
   font-weight: normal; 
-  color: #000000; 
   text-decoration: none
 }
 
@@ -312,7 +325,6 @@
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 14px; 
   font-weight: normal; 
-  color: #000000; 
   text-decoration: none
 }
 
@@ -407,16 +419,12 @@ a:active
   color: #000000;
 }
 
-html, body 
+html, body, span
 {
   width: 100%;
   height: 100%;
   padding: 0;
   margin: 0;
-}
-
-html, body, table, td, span, div
-{  
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 16px; 
   font-weight: normal;

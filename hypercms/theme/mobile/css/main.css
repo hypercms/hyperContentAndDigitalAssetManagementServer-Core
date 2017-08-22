@@ -43,6 +43,15 @@
   background-repeat: repeat;
 }
 
+.hcmsLogoTop
+{
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  float: left;
+}
+
 .hcmsWorkplaceBar
 {
   background-color: #A2C5F9;
@@ -238,6 +247,24 @@
   -webkit-border-radius: 5px;
   border-radius: 5px;
   background-color: #ABD0FF;
+  box-shadow: 3px 3px 12px #000000;
+  -webkit-box-shadow: 3px 3px 12px #000000;
+  -moz-box-shadow: 3px 3px 12px #000000;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
+}
+
+.hcmsHomeBox
+{
+  z-index: 100;
+  padding: 5px;
+  overflow: auto;
+  filter: alpha(opacity=95); -moz-opacity: 0.95; opacity: 0.95;
+  vertical-align: middle;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  font-size: 12px;
+  background-color: #DFEBFE;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
@@ -548,7 +575,6 @@
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 16px; 
   font-weight: bold; 
-  color: #000000; 
   text-decoration: none;
   padding: 3px 0px;
 }
@@ -567,7 +593,6 @@
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 14px; 
   font-weight: normal; 
-  color: #000000; 
   text-decoration: none;
 }
 
@@ -710,10 +735,6 @@ html, body
   height: 100%;
   padding: 0;
   margin: 0;
-}
-
-html, body, table, td, span, div
-{  
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 15px; 
   font-weight: normal; 

@@ -190,7 +190,7 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
       // open on double click
       if (checkrootpermission ('user') && checkrootpermission ('useredit') || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) 
       {
-        $openUser = "onDblClick=\"window.open('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."','','status=yes,scrollbars=no,resizable=yes,width=500,height=540');\"";
+        $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'status=yes,scrollbars=no,resizable=yes', 500, 600);\"";
       }
       else $openUser = "";
       
@@ -230,8 +230,8 @@ else $objects_counted = 0;
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/navigator.css">
-<script src="javascript/main.js" type="text/javascript"></script>
-<script src="javascript/contextmenu.js" type="text/javascript"></script>
+<script type="text/javascript" src="javascript/main.js"></script>
+<script type="text/javascript" src="javascript/contextmenu.js"></script>
 <script type="text/javascript" src="javascript/jquery/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable-1.5.min.js"></script>
 <script>

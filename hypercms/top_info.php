@@ -27,29 +27,25 @@ checkusersession ($user, false);
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
-<script src="javascript/click.js" type="text/javascript"></script>
 <script>
-<!--
 function popupfocus ()
 {
   self.focus();
-  setTimeout('popupfocus()', 10);
+  setTimeout('popupfocus()', 100);
 }
-
-popupfocus ();
-//-->
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" leftmargin=0 topmargin=0 marginwidth=0 marginheight=0>
+<body class="hcmsWorkplaceGeneric" onload="popupfocus();">
 
-<div style="width:100%; padding:5px; background-color:#FFFFFF;">
-  <a href="http://www.hypercms.com" target="_blank"><img src="<?php echo getthemelocation(); ?>img/logo.png" style="border:0; height:48px;" alt="hyperCMS" /></a>&nbsp;&nbsp;&nbsp;<?php echo $mgmt_config['version']; ?>
-</div>
-
-<div style="width:100%; padding:5px;">
-  <textarea name="textarea" style="width:620px; height:290px;"><?php @include ("license.txt"); ?></textarea>
-</div>
+  <div style="width:100%; height:58px; background-color:#FFFFFF;">
+    <div style="float:left; padding:5px;"><a href="http://www.hypercms.com" target="_blank"><img src="<?php echo getthemelocation(); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></a></div>
+    <div style="float:right; padding:20px; color:#000000;"><?php echo $mgmt_config['version']; ?></div>
+  </div>
+  
+  <div style="position:fixed; top:68px; bottom:20px; left:10px; right:20px;">
+    <textarea name="textarea" style="width:100%; height:100%;"><?php @include ("license.txt"); ?></textarea>
+  </div>
   
 </body>
 </html>

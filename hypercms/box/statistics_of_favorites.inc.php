@@ -23,7 +23,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
         else $width = "670px";
         
         echo "
-        <div id=\"stats_".$item_object."\" class=\"hcmsInfoBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
+        <div id=\"stats_".$item_object."\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
           <div class=\"hcmsHeadline\" style=\"margin:2px;\">".getescapedtext ($hcms_lang['access-statistics-for'][$lang])." ".specialchr_decode ($item_object)."</div>";
 
         $date_from = date ("Y-m-01", time());

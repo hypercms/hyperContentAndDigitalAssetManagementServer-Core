@@ -1164,11 +1164,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   }
   
   // check viewport width
-  if ($is_mobile && $viewportwidth > 0)
-  {
-    $maxwidth = $viewportwidth;
-  }
+  if ($is_mobile && $viewportwidth > 0) $maxwidth = $viewportwidth;
   else $maxwidth = 0;
+  
+  // correct field width for mobile devices
+  if ($maxwidth > 0 && 350 > $maxwidth) $fieldwidth = $maxwidth;
+  else $fieldwidth = 350;
 
   // validate publication access for all views except publish
   if ($buildview != "publish")
@@ -1999,7 +2000,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     <table cellpadding=0 cellspacing=0 border=0>
                       <tr>
                         <td style=\"width:150px;\">
-                          ".getescapedtext ($hcms_lang['character-set'][$lang], $charset, $lang).":
+                          ".getescapedtext ($hcms_lang['character-set'][$lang], $charset, $lang)."
                         </td>
                         <td>";
                   
@@ -2145,7 +2146,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     <table cellpadding=0 cellspacing=0 border=0>
                       <tr>
                         <td style=\"width:150px;\">
-                          ".getescapedtext ($hcms_lang['customer-tracking'][$lang], $charset, $lang).":
+                          ".getescapedtext ($hcms_lang['customer-tracking'][$lang], $charset, $lang)."
                         </td>
                         <td>
                           <select name=\"".$hypertagname."\" style=\"width:250px;\"".$disabled.">
@@ -2244,7 +2245,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 <table cellpadding=0 cellspacing=0 border=0>
                   <tr>
                     <td style=\"width:150px;\">
-                      ".getescapedtext ($hcms_lang['character-set'][$lang], $charset, $lang).":
+                      ".getescapedtext ($hcms_lang['character-set'][$lang], $charset, $lang)."
                     </td>
                     <td>";
           
@@ -3031,13 +3032,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                             <b>".$labelname."</b>
                           </div>
                           <div class=\"hcmsFormRowContent\">
-                            <table border=0 cellspacing=1 bgcolor=#000000 style=\"width:".$sizewidth."px; height:".$sizeheight."px;\">
-                              <tr>
-                                <td bgcolor=\"#FFFFFF\" align=left valign=top>
-                                  ".$contentbot."
-                                </td>
-                              </tr>
-                            </table>
+                            <div style=\"width:".$sizewidth."px; height:".$sizeheight."px; border:1px solid #000000; background-color:#FFFFFF; padding:2px;\">
+                              ".$contentbot."
+                            </div>
                           </div>";
                         }
                         else
@@ -3055,7 +3052,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
-                        <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
                               <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />
@@ -3089,15 +3086,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <div class=\"hcmsFormRowLabel\">
                             <b>".$labelname."</b>
                           </div>
-                          <div>
-                            <table border=0 cellspacing=1 bgcolor=#000000 style=\"width:".$sizewidth."px; height:".$sizeheight."px;\">
-                              <tr>
-                                <td bgcolor=bgcolor=\"#FFFFFF\" align=left valign=top>
-                                ".$contentbot."
-                                </td>
-                              </tr>
-                            </table>
-                          <div>";
+                          <div class=\"hcmsFormRowContent\">
+                            <div style=\"width:".$sizewidth."px; height:".$sizeheight."px; border:1px solid #000000; background-color:#FFFFFF; padding:2px;\">
+                              ".$contentbot."
+                            <div>
+                          </div>";
                         }
                         else
                         {
@@ -3114,7 +3107,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
-                        <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
                               <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>article: ".$artid."</b><br />
@@ -3267,7 +3260,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       elseif ($buildview == "template" && $onedit != "hidden" && $infotype != "meta")
                       {
                         $taglink = "
-                        <table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">
+                        <table style=\"width:200px; padding:0px; border:1px solid #000000; background-color:#FFFFFF;\">
                           <tr>
                             <td>
                               <font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>element: ".$id."</b><br />
@@ -3927,11 +3920,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $mediawidthbot[$id] = ""; 
               $mediaheightbot[$id] = "";  
             }
-            
-            // correct field width for mobile devices
-            if ($maxwidth > 0 && 350 > $maxwidth) $fieldwidth = $maxwidth;
-            else $fieldwidth = 350;           
-            
+
             // loop for each unique tag
             for ($tagid = 1; $tagid <= $tagid_max; $tagid++)
             {
@@ -3999,7 +3988,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       {
                         if ($buildview == "formedit" || $buildview == "formmeta")
                         {
-                          $taglink = " <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['mediaobject[".$id."]'],'','scrollbars=yes,resizable=yes,width=800,height=600', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.png\" align=\"absmiddle\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".$hcms_lang['edit'][$lang]."\" />
+                          $taglink = "
+                          <img onClick=\"openBrWindowComp(document.forms['hcms_formview'].elements['mediaobject[".$id."]'],'','scrollbars=yes,resizable=yes,width=800,height=600', 'cmsview');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonEdit\" src=\"".getthemelocation()."img/button_edit.png\" align=\"absmiddle\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".$hcms_lang['edit'][$lang]."\" />
                           <img onClick=\"deleteEntry(document.forms['hcms_formview'].elements['".$hypertagname_file[$id]."[".$id."]']); deleteEntry(document.forms['hcms_formview'].elements['mediaobject[".$id."]']);\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" name=\"ButtonDelete\" src=\"".getthemelocation()."img/button_delete.png\" align=\"absmiddle\" alt=\"".$hcms_lang['delete'][$lang]."\" title=\"".$hcms_lang['delete'][$lang]."\" />
                           <img onClick=\"setSaveType('form_so', '".$mgmt_config['url_path_cms']."frameset_edit_media.php?view=".url_encode($buildview)."&savetype=form_so&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&contentfile=".url_encode($contentfile)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".urlencode($label[$id])."&tagname=media&mediacat=comp&scaling=".url_encode($scalingfactor)."&mediatype=".url_encode($mediatype[$id])."&contenttype=".url_encode($contenttype)."&mediafile=".url_encode($mediafilebot[$id][$tagid])."&mediaobject_curr=".url_encode($mediaobjectbot[$id])."&mediaobject=".url_encode("%comp%")."' + getValue('".$hypertagname_file[$id]."[".$id."]','') + '&mediaalttext=' + getValue('".$hypertagname_text[$id]."[".$id."]','*Null*') + '&mediaalign=' + getSelectedOption('".$hypertagname_align[$id]."[".$id."]','*Null*') + '&mediawidth=' + getValue('".$hypertagname_width[$id]."[".$id."]','*Null*') + '&mediaheight=' + getValue('".$hypertagname_height[$id]."[".$id."]','*Null*'), 'post');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_media.png\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['set-media'][$lang], $charset, $lang)."\" />\n";
                         }
@@ -4028,11 +4018,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           
                           $formitem[$key] .= "
                           <tr>
-                            <td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering", "hcms_mediaplayer_".$id)."</td>
+                            <td colspan=\"2\">".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering", "hcms_mediaplayer_".$id)."</td>
                           </tr>
                           <tr>
                             <td width=\"150\">".getescapedtext ($hcms_lang['multimedia-file'][$lang], $charset, $lang)." </td>
-                            <td>
+                            <td nowrap=\"nowrap\">
                               <input type=\"hidden\" name=\"mediaobject_curr[".$id."]\" value=\"".$mediaobjectbot[$id]."\" />
                               <input type=\"hidden\" name=\"mediaobject[".$id."]\" value=\"".$mediaobjectbot[$id]."\" />
                               <input name=\"".$hypertagname_file[$id]."[".$id."]\" value=\"".convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:".$fieldwidth."px;\" ".$disabled." />".$taglink."
@@ -4044,15 +4034,21 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         
                         if ($mediaalignbot[$id] != "*Null*")
                         {
-                          $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang)." </td><td><select name=\"".$hypertagname_align[$id]."[".$id."]\" style=\"width:".$fieldwidth."px;\"".$disabled.">\n";
-                          $formitem[$key] .= "<option value=\"\""; if ($mediaalignbot[$id] == "") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['standard'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "<option value=\"top\""; if ($mediaalignbot[$id] == "top") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['top'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "<option value=\"middle\""; if ($mediaalignbot[$id] == "middle") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "<option value=\"absmiddle\""; if ($mediaalignbot[$id] == "absmiddle") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['absolute-middle'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "<option value=\"bottom\""; if ($mediaalignbot[$id] == "bottom") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['bottom'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "<option value=\"left\""; if ($mediaalignbot[$id] == "left") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['left'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "<option value=\"right\""; if ($mediaalignbot[$id] == "right") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['right'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "</select></td></tr>\n";          
+                          $formitem[$key] .= "
+                          <tr>
+                            <td width=\"150\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang)." </td>
+                            <td>
+                            <select name=\"".$hypertagname_align[$id]."[".$id."]\" style=\"width:".$fieldwidth."px;\"".$disabled.">
+                              <option value=\"\""; if ($mediaalignbot[$id] == "") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['standard'][$lang], $charset, $lang)."</option>
+                              <option value=\"top\""; if ($mediaalignbot[$id] == "top") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['top'][$lang], $charset, $lang)."</option>
+                              <option value=\"middle\""; if ($mediaalignbot[$id] == "middle") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>
+                              <option value=\"absmiddle\""; if ($mediaalignbot[$id] == "absmiddle") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['absolute-middle'][$lang], $charset, $lang)."</option>
+                              <option value=\"bottom\""; if ($mediaalignbot[$id] == "bottom") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['bottom'][$lang], $charset, $lang)."</option>
+                              <option value=\"left\""; if ($mediaalignbot[$id] == "left") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['left'][$lang], $charset, $lang)."</option>
+                              <option value=\"right\""; if ($mediaalignbot[$id] == "right") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['right'][$lang], $charset, $lang)."</option>
+                            </select>
+                            </td>
+                          </tr>";          
                         }
                         
                         if ($mediawidthbot[$id] != "*Null*")
@@ -4125,11 +4121,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                                        
                           $formitem[$key] .= "
                           <tr>
-                            <td colspan=2>".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering", "hcms_mediaplayer_".$id)."</td>
+                            <td colspan=\"2\">".showmedia ($mediafilebot[$id][$tagid], convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset), "preview_no_rendering", "hcms_mediaplayer_".$id)."</td>
                           </tr>
                           <tr>
                             <td width=\"150\">".getescapedtext ($hcms_lang['multimedia-file'][$lang], $charset, $lang)." </td>
-                            <td>                          
+                            <td nowrap=\"nowrap\">                          
                               <input type=\"hidden\" name=\"artmediaobject_curr[".$id."]\" value=\"".$mediaobjectbot[$id]."\" />
                               <input type=\"hidden\" name=\"artmediaobject[".$id."]\" value=\"".$mediaobjectbot[$id]."\" />
                               <input name=\"".$hypertagname_file[$id]."[".$id."]\" value=\"".convertchars ($mediaobjectname, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:".$fieldwidth."px;\"".$disabled." />".$taglink."
@@ -4148,15 +4144,21 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         
                         if ($mediaalignbot[$id] != "*Null*")
                         {
-                          $formitem[$key] .= "<tr><td width=\"150\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang)." </td><td><select name=\"".$hypertagname_align[$id]."[".$id."]\" style=\"width:".$fieldwidth."px;\"".$disabled.">\n";
-                          $formitem[$key] .= "<option value=\"\""; if ($mediaalignbot[$id] == "") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['standard'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "<option value=\"top\""; if ($mediaalignbot[$id] == "top") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['top'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "<option value=\"middle\""; if ($mediaalignbot[$id] == "middle") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "<option value=\"absmiddle\""; if ($mediaalignbot[$id] == "absmiddle") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['absolute-middle'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "<option value=\"bottom\""; if ($mediaalignbot[$id] == "bottom") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['bottom'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "<option value=\"left\""; if ($mediaalignbot[$id] == "left") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['left'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "<option value=\"right\""; if ($mediaalignbot[$id] == "right") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['right'][$lang], $charset, $lang)."</option>\n";
-                          $formitem[$key] .= "</select></td></tr>\n";                       
+                          $formitem[$key] .= "
+                          <tr>
+                            <td width=\"150\">".getescapedtext ($hcms_lang['alignment'][$lang], $charset, $lang)." </td>
+                            <td>
+                            <select name=\"".$hypertagname_align[$id]."[".$id."]\" style=\"width:".$fieldwidth."px;\"".$disabled.">
+                              <option value=\"\""; if ($mediaalignbot[$id] == "") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['standard'][$lang], $charset, $lang)."</option>
+                              <option value=\"top\""; if ($mediaalignbot[$id] == "top") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['top'][$lang], $charset, $lang)."</option>
+                              <option value=\"middle\""; if ($mediaalignbot[$id] == "middle") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['middle'][$lang], $charset, $lang)."</option>
+                              <option value=\"absmiddle\""; if ($mediaalignbot[$id] == "absmiddle") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['absolute-middle'][$lang], $charset, $lang)."</option>
+                              <option value=\"bottom\""; if ($mediaalignbot[$id] == "bottom") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['bottom'][$lang], $charset, $lang)."</option>
+                              <option value=\"left\""; if ($mediaalignbot[$id] == "left") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['left'][$lang], $charset, $lang)."</option>
+                              <option value=\"right\""; if ($mediaalignbot[$id] == "right") $formitem[$key] .= " selected"; $formitem[$key] .= ">".getescapedtext ($hcms_lang['right'][$lang], $charset, $lang)."</option>
+                            </select>
+                            </td>
+                          </tr>";                       
                         }
                         
                         if ($mediawidthbot[$id] != "*Null*")
@@ -4716,7 +4718,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if ($linkhrefbot[$id] != "*Null*") $formitem[$key] .= "
                               <tr>
                                 <td width=\"150\">".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang)." </td>
-                                <td>
+                                <td nowrap=\"nowrap\">
                                   <input type=\"hidden\" name=\"".$hypertagname_href[$id]."_curr[".$id."]\" value=\"".$linkhrefbot[$id]."\" />
                                   <input type=\"hidden\" name=\"".$hypertagname_href[$id]."[".$id."]\" value=\"".$linkhrefbot[$id]."\" />
                                   <input type=\"text\" name=\"temp_".$hypertagname_href[$id]."[".$id."]\" value=\"".convertchars (getlocationname ($site, $linkhrefbot[$id], "page"), $hcms_lang_codepage[$lang], $charset)."\" style=\"width:".$fieldwidth."px;\" ".$disabled." /> ".$taglink."
@@ -4728,7 +4730,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           $formitem[$key] .= "
                               <tr>
                                 <td width=\"150\">
-                                  ".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang).":
+                                  ".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang)."
                                 </td>
                                 <td>
                                   <select name=\"".$hypertagname_target[$id]."[".$id."]\" style=\"width:".$fieldwidth."px;\"".$disabled.">";
@@ -4763,7 +4765,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           $formitem[$key] .= "
                               <tr>
                                 <td width=\"150\">
-                                  ".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang).":
+                                  ".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang)."
                                 </td>
                                 <td>
                                   <input type=\"text\" name=\"".$hypertagname_text[$id]."[".$id."]\" value=\"".$linktextbot[$id]."\" style=\"width:".$fieldwidth."px;\"".$disabled." />
@@ -4817,7 +4819,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         if ($linkhrefbot[$id] != "*Null*") $formitem[$key] .= "
                               <tr>
                                 <td width=\"150\">".getescapedtext ($hcms_lang['link'][$lang], $charset, $lang)." </td>
-                                <td>
+                                <td nowrap=\"nowrap\">
                                   <input type=\"hidden\" name=\"".$hypertagname_href[$id]."_curr[".$id."]\" value=\"".$linkhrefbot[$id]."\" />
                                   <input type=\"hidden\" name=\"".$hypertagname_href[$id]."[".$id."]\" value=\"".$linkhrefbot[$id]."\" />
                                   <input type=\"text\" name=\"temp_".$hypertagname_href[$id]."[".$id."]\" value=\"".convertchars (getlocationname ($site, $linkhrefbot[$id], "page", "path"), $hcms_lang_codepage[$lang], $charset)."\" style=\"width:".$fieldwidth."px;\"".$disabled." /> ".$taglink."
@@ -4828,9 +4830,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         {
                           $formitem[$key] .= "
                               <tr>
-                                <td width=\"150\">
-                                  ".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang).":
-                                </td>
+                                <td width=\"150\">".getescapedtext ($hcms_lang['link-target'][$lang], $charset, $lang)."  </td>
                                 <td>
                                   <select name=\"".$hypertagname_target[$id]."[".$id."]\" style=\"width:".$fieldwidth."px;\"".$disabled.">";
   
@@ -4861,9 +4861,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         {
                           $formitem[$key] .= "
                               <tr>
-                                <td width=\"150\">
-                                  ".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang).":
-                                </td>
+                                <td width=\"150\">".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang)." </td>
                                 <td>
                                   <input type=\"text\" name=\"".$hypertagname_text[$id]."[".$id."]\" value=\"".$linktextbot[$id]."\" style=\"width:".$fieldwidth."px;\"".$disabled.">
                                 </td>
@@ -5271,11 +5269,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     if (sizeof ($profile_array) > 0) sort ($profile_array);
                   }
                 }
-                
-                // correct field width for mobile devices
-                if ($maxwidth > 0 && 350 > $maxwidth) $fieldwidth = $maxwidth;
-                else $fieldwidth = 350;
-                                        
+                     
                 // ------------ single component --------------        
                 // replace hyperCMS tag with content
                 if ($hypertagname == $searchtag."s")
@@ -5310,12 +5304,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               
                         // only if not DAM  
                         if (!$mgmt_config[$site]['dam']) $formitem[$key] .= "
-                                <td width=\"150\">
-                                  ".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang).":
-                                </td>";
+                                <td width=\"150\">".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang)." </td>";
                                 
                         $formitem[$key] .= "
-                                <td>
+                                <td nowrap=\"nowrap\">
                                   <input type=\"hidden\" name=\"component_curr[".$id."]\" value=\"".$contentbot."\" />
                                   <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
                                   <input type=\"text\" name=\"temp_".$hypertagname."_".$id."\" value=\"".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:".$fieldwidth."px;\" disabled=\"disabled\" />\n";
@@ -5395,10 +5387,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <div class=\"hcmsFormRowContent\">
                             <table cellpadding=0 cellspacing=0 border=0>
                               <tr>
-                                <td width=\"150\">
-                                  ".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang).":
-                                </td>
-                                <td>
+                                <td width=\"150\">".getescapedtext ($hcms_lang['single-component'][$lang], $charset, $lang)." </td>
+                                <td nowrap=\"nowrap\">
                                   <input type=\"hidden\" name=\"artcomponent_curr[".$id."]\" value=\"".$contentbot."\" />
                                   <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
                                   <input type=\"text\" name=\"temp_".$hypertagname."_".$artid."_".$elementid."\" value=\"".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."\" style=\"width:".$fieldwidth."px;\" disabled />\n";
@@ -5493,12 +5483,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                               
                         // only if not DAM  
                         if (!$mgmt_config[$site]['dam']) $formitem[$key] .= "
-                                <td align=left valign=top width=\"150\">
-                                  ".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang).":
-                                </td>";
+                                <td align=left valign=top width=\"150\">".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang)." </td>";
                                 
                         $formitem[$key] .= "
-                                <td>
+                                <td nowrap=\"nowrap\">
                                   <input type=\"hidden\" name=\"component_curr[".$id."]\" value=\"".$contentbot."\" />
                                   <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
                                   <select name=\"".$hypertagname."_".$id."\" size=\"10\" style=\"width:".$fieldwidth."px;\" ".$disabled.">";                     
@@ -5545,12 +5533,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         {
                           $formitem[$key] .= "
                           <tr>
-                            <td width=\"150\">
-                              ".getescapedtext ($hcms_lang['customer-profile'][$lang], $charset, $lang).":
-                            </td>
+                            <td width=\"150\">".getescapedtext ($hcms_lang['customer-profile'][$lang], $charset, $lang)." </td>
                             <td style=\"padding-top:3px;\">
                               <select name=\"condition[".$id."]\" style=\"width:".$fieldwidth."px;\" ".$disabled.">
-                                <option value=\"\">--------- ".getescapedtext ($hcms_lang['select'][$lang], $charset, $lang)." ---------</option>\n";
+                                <option value=\"\">--------- ".getescapedtext ($hcms_lang['select'][$lang], $charset, $lang)." ---------</option>";
               
                           if (sizeof ($profile_array) >= 1)
                           {
@@ -5605,13 +5591,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <div class=\"hcmsFormRowContent\">
                             <table cellpadding=0 cellspacing=0 border=0>
                               <tr>
-                                <td align=left valign=top width=\"150\">
-                                  ".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang).":
-                                </td>
+                                <td align=left valign=top width=\"150\">".getescapedtext ($hcms_lang['multiple-component'][$lang], $charset, $lang)." </td>
                                 <td>
                                   <input type=\"hidden\" name=\"artcomponent_curr[".$id."]\" value=\"".$contentbot."\" />
                                   <input type=\"hidden\" name=\"".$hypertagname."[".$id."]\" value=\"".$contentbot."\" />
-                                  <select name=\"".$hypertagname."_".$artid."_".$elementid."\" size=\"10\" style=\"width:".$fieldwidth."px;\" ".$disabled.">\n";                     
+                                  <select name=\"".$hypertagname."_".$artid."_".$elementid."\" size=\"10\" style=\"width:".$fieldwidth."px;\" ".$disabled.">";                     
                                 
                         if (!empty ($contentbot) && $contentbot != false)
                         {
@@ -5630,7 +5614,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                             if (strlen ($comp_entry_name) > 50) $comp_entry_name = "...".substr (substr ($comp_entry_name, -50), strpos (substr ($comp_entry_name, -50), "/"));  
                                                                                
                             $formitem[$key] .= "
-                                    <option value=\"".$comp_entry."\">".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."</option>\n";
+                                    <option value=\"".$comp_entry."\">".convertchars ($comp_entry_name, $hcms_lang_codepage[$lang], $charset)."</option>";
                           }
                         }
                         
@@ -8247,7 +8231,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // table for form
       $viewstore .= "
     <!-- form for content -->
-    <div class=\"hcmsWorkplaceFrame\" style=\"z-index:1;\">";
+    <div class=\"hcmsWorkplaceFrame\">";
         
         // add preview of media file (for media view the characters set is always UTF-8)
         if ($mediafile != false && $mediafile != "")

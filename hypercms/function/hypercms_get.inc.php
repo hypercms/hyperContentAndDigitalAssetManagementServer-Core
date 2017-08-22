@@ -3309,6 +3309,78 @@ function getfiletype ($file_ext)
   else return false;
 }
 
+// ---------------------- getpdfinfo -----------------------------
+// function: getpdfinfo()
+// input: path to PDF file, box attribute [BleedBox,CropBox,MediaBox] (optional)
+// output: result array with width and height as keys / false on error
+
+// description:
+// Extracts width and height in pixel of a PDF file based on the MediaBox in the filex content or ImageMagick as fallback
+
+function getpdfinfo ($filepath, $box="MediaBox")
+{
+  global $mgmt_config, $mgmt_imagepreview, $user;
+  
+  if (valid_locationname ($filepath))
+  {
+    $result = false;
+    
+    // get publication, location and media object
+    $site = getpublication ($filepath);
+    $location = getlocation ($filepath);
+    $media = getobject ($filepath);
+  
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $media, $user);
+    
+    if ($temp['result'] && $temp['crypted'])
+    {
+      $location = $temp['templocation'];
+      $media = $temp['tempfile'];
+      
+      // set new file path
+      $filepath = $location.$media;
+    }
+    elseif ($temp['restored'])
+    {
+      $location = $temp['location'];
+      $media = $temp['file'];
+      
+      // set new file path
+      $filepath = $location.$media;
+    }
+
+    // verify local media file
+    if (!is_file ($filepath)) return false;
+    
+    // read dimensions from file stream
+    $stream = new SplFileObject ($filepath); 
+
+    while (!$stream->eof())
+    {
+      if (preg_match("/".$box."\[[0-9]{1,}.[0-9]{1,} [0-9]{1,}.[0-9]{1,} ([0-9]{1,}.[0-9]{1,}) ([0-9]{1,}.[0-9]{1,})\]/", $stream->fgets(), $matches))
+      {
+        $result["width"] = $matches[1];
+        $result["height"] = $matches[2]; 
+        break;
+      }
+    }
+
+    $stream = null;
+
+    // use ImageMagick if MediaBox failed
+    if ((empty ($result["width"]) || empty ($result["height"])) && is_supported ($mgmt_imagepreview, $media))
+    {
+      $cmdresult = exec ("identify -format \"%wx%h\" \"".shellcmd_encode ($filepath)."[0]\"");
+
+      if (strpos ($cmdresult, "x") > 0) list ($result["width"], $result["height"]) = explode ("x", $cmdresult);
+    }
+
+    return $result;
+  }
+  else return false;
+}
+
 // ---------------------- getvideoinfo -----------------------------
 // function: getvideoinfo()
 // input: path to video file

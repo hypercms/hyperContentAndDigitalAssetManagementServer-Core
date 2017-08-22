@@ -18,7 +18,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
       else $width = "670px";
       
       echo "
-      <div id=\"stats_".$item_site."\" class=\"hcmsInfoBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
+      <div id=\"stats_".$item_site."\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
         <div class=\"hcmsHeadline\" style=\"margin:2px;\">".$title." ".$item_site."</div>";
         
       $rootlocation_esc = "%comp%/".$item_site."/.folder";

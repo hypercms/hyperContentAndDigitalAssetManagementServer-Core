@@ -1534,7 +1534,7 @@ $token_new = createtoken ($user);
       </div>
       
       <!-- Tabs for recipients, groups and settings --> 
-      <div id="Tabs" style="position:absolute; z-index:5; visibility:visible; left:0px; top:75px; width:100%; height:200px;">
+      <div id="Tabs" style="position:absolute; z-index:5; visibility:visible; left:0px; top:70px; width:100%; height:200px;">
         
         <div id="LayerRecipient" style="padding-left:4px;">
           <table width="100%" border="0" cellspacing="0" cellpadding="2">

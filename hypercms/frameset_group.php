@@ -36,7 +36,7 @@ checkusersession ($user, false);
 if ($is_iphone) $css_iphone = " overflow:scroll !important; -webkit-overflow-scrolling:touch !important;";
 else $css_iphone = "";
 ?>
-<body style="width:100%; height:100%; margin:0; padding:0;">
+<body>
   <iframe id="controlFrame" name="controlFrame" scrolling="no" src="control_group_menu.php?site=<?php echo $site; ?>" frameBorder="0" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0;"></iframe>
   <div style="position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0; <?php echo $css_iphone; ?>">
     <iframe id="mainFrame" name="mainFrame" scrolling="auto" src="empty.php?site=<?php echo $site; ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;"></iframe>

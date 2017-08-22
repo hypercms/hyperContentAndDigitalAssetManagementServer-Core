@@ -40,7 +40,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
   $object_array = array_unique ($object_array);
 
   echo "
-  <div id=\"recent_downloads\" class=\"hcmsInfoBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
+  <div id=\"recent_downloads\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
     <div class=\"hcmsHeadline\" style=\"margin:2px;\">".getescapedtext ($hcms_lang['my-recent-downloads'][$lang])."</div>";
   
   reset ($object_array);
