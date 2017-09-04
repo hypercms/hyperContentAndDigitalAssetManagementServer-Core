@@ -421,13 +421,17 @@ html, body, span
 {
   text-align: left;
   font-weight: normal;
-  background-color: #7BB5FF;
+  border-left: 3px solid #A3AFBF;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 0;
   cursor: pointer;
 }
 
 .hcmsTableHeader:hover
 {
-  background-color: #61A3F9;
+  border-left: 3px solid #358BFC;
+  background-color: #7BB5FF;
   cursor: pointer;
 }
 

@@ -204,49 +204,44 @@ function submitMultiComp(select)
   return true;
 }
 
-function openBrWindowComp(winName, features, type)
+function openBrWindowComp (winName, features, type)
 {
-  theURL = document.forms['component'].elements['component_array'].value;
+  var url = document.forms['component'].elements['component_array'].value;
+  var theURL  = "";
   
-  if (theURL != "")
+  if (url != "")
   {
     if (type == "preview")
     {
-      if (theURL.indexOf('://') == -1)
+      if (url.indexOf('://') == -1)
       {
-        position1 = theURL.indexOf("/");
-        theURL = '<?php echo $mgmt_config['url_path_comp']; ?>' + theURL.substring(position1+1, theURL.length);
+        var position1 = url.indexOf("/");
+        theURL = '<?php echo $mgmt_config['url_path_comp']; ?>' + url.substring(position1+1, url.length);
       }
-  
-      popup = window.open(theURL,winName,features);
-      popup.moveTo(screen.width/2-800/2, screen.height/2-600/2);
-      popup.focus();
     }
     else if (type == "cmsview")  
     {
-      if (theURL.indexOf('://') == -1)
+      if (url.indexOf('://') == -1)
       {      
-        position1 = theURL.indexOf("/");
-        position2 = theURL.lastIndexOf("/");
+        var position1 = url.indexOf("/");
+        var position2 = url.lastIndexOf("/");
         
-        location_comp = "%comp%/" + theURL.substring (position1 + 1, position2 + 1);
+        var location_comp = "%comp%/" + url.substring (position1 + 1, position2 + 1);
         location_comp = escape (location_comp);
         
-        location_site = theURL.substring (position1+1, theURL.length-position1);              
+        var location_site = theURL.substring (position1+1, url.length-position1);              
         location_site = location_site.substring(0, location_site.indexOf('/'));
         location_site = escape (location_site);
         
-        page_comp = theURL.substr (position2 + 1, theURL.length);
+        var page_comp = url.substr (position2 + 1, url.length);
         page_comp = escape (page_comp);
         
         theURL = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_content.php?ctrlreload=yes&cat=comp&site=' + location_site + '&location=' + location_comp + '&page=' + page_comp + '&user=<?php echo $user; ?>';
-
-        popup = window.open(theURL,winName,features);
-        popup.moveTo(screen.width/2-800/2, screen.height/2-600/2);
-        popup.focus();
       }
       else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['this-is-an-external-component-link'][$lang]); ?>'));
     }
+    
+    if (theURL != "") hcms_openWindow (theURL, winName, features, <?php echo windowwidth ("object"); ?>, <?php echo windowheight ("object"); ?>);
   }
   else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-component-selected'][$lang]); ?>'));  
 }
@@ -311,7 +306,7 @@ function openBrWindowComp(winName, features, type)
             </td>
             <td align="left" valign="middle">
               <img onClick="moveSelected(document.forms['component'].elements['component_array'], false)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonUp" src="<?php echo getthemelocation(); ?>img/button_moveup.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /></a><br />
-              <img onClick="openBrWindowComp('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?>" /><br />                          
+              <img onClick="openBrWindowComp('','scrollbars=yes,resizable=yes,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?>" /><br />                          
               <img onClick="deleteSelected(document.forms['component'].elements['component_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /><br />            
               <img onClick="moveSelected(document.forms['component'].elements['component_array'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDown" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /><br />
               <img onclick="submitMultiComp(document.forms['component'].elements['component_array']);" align="absmiddle" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />

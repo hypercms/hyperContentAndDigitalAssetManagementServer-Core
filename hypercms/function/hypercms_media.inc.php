@@ -4214,50 +4214,59 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
     // check max file size (set default value to 2000 MB)
     if (!isset ($mgmt_config['maxzipsize'])) $mgmt_config['maxzipsize'] = 2000;
     
-    if ($mgmt_config['maxzipsize'] > 0 && $mgmt_config['db_connect_rdbms'] != "")
+    if ($mgmt_config['db_connect_rdbms'] != "")
     {
       $filesize = 0;
       
+      // get total file size of all files which will be zipped
       foreach ($multiobject_array as $multiobject)
       {
         $multiobject = convertpath ($site, $multiobject, "comp");
+        
         // get file size in KB
         $filesize_array = rdbms_getfilesize ("", $multiobject);
-        if (is_array ($filesize_array)) $filesize = $filesize + $filesize_array['filesize'];                
-        // return false if max file size limit in MB is exceeded
-        if (($filesize / 1024) > $mgmt_config['maxzipsize']) return false;
+        if (is_array ($filesize_array)) $filesize = $filesize + $filesize_array['filesize'];
       }
-    }  
-    
-    // check if ZIP file exists and there are no new files that need to be included, and the ZIP file size > 1024 bytes
-    if (is_file ($destination.$zipfilename.".zip") && filesize ($destination.$zipfilename.".zip") > 1024)
-    {
-      // get ZIP file time
-      $zipfiletime = filemtime ($destination.$zipfilename.".zip");
-      $zipfiledate = date ("Y-m-d H:i:s", $zipfiletime);
       
-      // query for files that are new or have been updated after the ZIP file has been created
-      foreach ($multiobject_array as $multiobject)
+      // return false if max file size limit in MB is exceeded
+      if ($mgmt_config['maxzipsize'] > 0  && ($filesize / 1024) > $mgmt_config['maxzipsize']) return false;
+
+      // check if ZIP file exists and there are no new files that need to be excluded or included based on the file size (important: the zip process must not use compression!) and the ZIP file size > 100 kB
+      if (is_file ($destination.$zipfilename.".zip") && filesize ($destination.$zipfilename.".zip") > 100000)
       {
-        $multiobject = convertpath ($site, $multiobject, "comp");
+        // get ZIP file time
+        $zipfiletime = filemtime ($destination.$zipfilename.".zip");
+        $zipfiledate = date ("Y-m-d H:i:s", $zipfiletime);
         
-        // remove folder object
-        if (getobject ($multiobject) == ".folder") $multiobject = getlocation ($multiobject);
+        // get ZIP file size in kB
+        $zipfilesize = round ((filesize ($destination.$zipfilename.".zip") / 1024), 0);
+       
+        // compare file sizes with 10% (5+5%) tolerance
+        if ($zipfilesize < ($filesize * 1.05) || $zipfilesize > ($filesize * 0.95))  return true;
         
-        // if location path
-        if (substr ($multiobject, -1) == "/")
+        // query for files that are new or have been updated after the ZIP file has been created
+        foreach ($multiobject_array as $multiobject)
         {
-          $updates = rdbms_externalquery ("SELECT object.objectpath FROM object INNER JOIN container ON object.id=container.id WHERE object.objectpath LIKE \"".$multiobject."%\" AND container.date>=\"".$zipfiledate."\"");
+          $multiobject = convertpath ($site, $multiobject, "comp");
+          
+          // remove folder object
+          if (getobject ($multiobject) == ".folder") $multiobject = getlocation ($multiobject);
+          
+          // if location path
+          if (substr ($multiobject, -1) == "/")
+          {
+            $updates = rdbms_externalquery ("SELECT object.objectpath FROM object INNER JOIN container ON object.id=container.id WHERE object.objectpath LIKE \"".$multiobject."%\" AND object.objectpath NOT LIKE \"%.recycle%\" AND container.date>=\"".$zipfiledate."\"");
+          }
+          // if object path
+          else
+          {
+            $updates = rdbms_externalquery ("SELECT object.objectpath FROM object INNER JOIN container ON object.id=container.id WHERE object.objectpath=\"".$multiobject."\" AND object.objectpath NOT LIKE \"%.recycle\" AND object.objectpath NOT LIKE \"%.recycle/%\" AND container.date>=\"".$zipfiledate."\"");
+          }
         }
-        // if object path
-        else
-        {
-          $updates = rdbms_externalquery ("SELECT object.objectpath FROM object INNER JOIN container ON object.id=container.id WHERE object.objectpath=\"".$multiobject."\" AND container.date>=\"".$zipfiledate."\"");
-        }
+        
+        // if no new objects have been found
+        if (!is_array ($updates) || sizeof ($updates) < 1) return true;
       }
-      
-      // if no objects have been found
-      if (!is_array ($updates) || sizeof ($updates) < 1) return true;
     }
 
     // temporary directory for file collection
@@ -4307,51 +4316,54 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
         {
           $destinationFolder = str_replace ($commonRoot, "", $location);
           @mkdir ($tempFolder."/".$destinationFolder, $mgmt_config['fspermission'], true);
-      
-          if ($filename != ".folder" && is_file ($location.$filename))
+          
+          if (strpos ($location.$filename, ".recycle") === false)
           {
-            $objectdata = loadfile ($location, $filename);
-        
-            if ($objectdata != false)
+            if ($filename != ".folder" && is_file ($location.$filename))
             {
-              $mediafile = getfilename ($objectdata, "media");
-              
-              if ($mediafile != false)
+              $objectdata = loadfile ($location, $filename);
+          
+              if ($objectdata != false)
               {
-                $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
+                $mediafile = getfilename ($objectdata, "media");
                 
-                // prepare media file
-                $temp = preparemediafile ($site, $mediadir, $mediafile, $user);
-                
-                if ($temp['result'] && $temp['crypted'])
+                if ($mediafile != false)
                 {
-                  $mediadir = $temp['templocation'];
-                  $mediafile = $temp['tempfile'];
+                  $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
+                  
+                  // prepare media file
+                  $temp = preparemediafile ($site, $mediadir, $mediafile, $user);
+                  
+                  if ($temp['result'] && $temp['crypted'])
+                  {
+                    $mediadir = $temp['templocation'];
+                    $mediafile = $temp['tempfile'];
+                  }
+                  elseif ($temp['restored'])
+                  {
+                    $mediadir = $temp['location'];
+                    $mediafile = $temp['file'];
+                  }
+  
+                  // copy file to new location
+                  copy ($mediadir.$mediafile, $tempFolder."/".specialchr_decode ($destinationFolder.$filename));
+                  
+                  // remove decrypted temporary file
+                  if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
                 }
-                elseif ($temp['restored'])
-                {
-                  $mediadir = $temp['location'];
-                  $mediafile = $temp['file'];
-                }
-
-                // copy file to new location
-                copy ($mediadir.$mediafile, $tempFolder."/".specialchr_decode ($destinationFolder.$filename));
-                
-                // remove decrypted temporary file
-                if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
               }
             }
-          }
-          elseif ($filename == ".folder" || is_dir ($location.$filename))
-          {
-            if ($filename == ".folder")
+            elseif ($filename == ".folder" || is_dir ($location.$filename))
             {
-              $filename = "";
-              // cut off last /
-              $location = substr ($location, 0, -1);
+              if ($filename == ".folder")
+              {
+                $filename = "";
+                // cut off last /
+                $location = substr ($location, 0, -1);
+              }
+              
+              clonefolder ($site, $location.$filename, $tempFolder."/".specialchr_decode ($destinationFolder), $user, $activity);
             }
-            
-            clonefolder ($site, $location.$filename, $tempFolder."/".specialchr_decode ($destinationFolder), $user, $activity);
           }
         }
       }

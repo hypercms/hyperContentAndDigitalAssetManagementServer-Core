@@ -140,6 +140,10 @@ $(document).ready(function()
   
   setviewport();
   
+  // set window width and height for contextmenu
+  localStorage.setItem ('windowwidth', <?php echo windowwidth ("object"); ?>);
+  localStorage.setItem ('windowheight', <?php echo windowheight ("object"); ?>);
+  
   window.onresize = function()
   {
     setviewport();

@@ -132,15 +132,15 @@ var annotatestatus = false;
           '<i class="glyphicon glyphicon-arrow-right"></i></button>' +
           '</div>';
       }else{
-        self.$tool = "<div id=\"\" style=\"display:inline-block; margin-top:-4px;\">";
+        self.$tool = "<div id=\"annotationToolbar\" style=\"display:inline-block; margin-top:-4px; margin-left:-13px; white-space:nowrap; min-width:380px;\">";
 
         if (self.options.unselectTool){
-          self.$tool += "<div id=\"annotationToolbar\" class=\"hcmsToolbarBlock\">"
+          self.$tool += "<div class=\"hcmsToolbarBlock\">"
           + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"null\" checked /><img id=\"annotationStop\" src=\"\" class=\"hcmsButtonSizeSquare\" style=\"float:left;\" /></label></div>"
           + "</div>";
         }
 
-        self.$tool += "<div id=\"annotationToolbar\" class=\"hcmsToolbarBlock\">"
+        self.$tool += "<div class=\"hcmsToolbarBlock\">"
           + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"rectangle\" /><img id=\"annotationRectangle\" src=\"\" class=\"hcmsButtonSizeSquare\" style=\"float:left;\" /></label></div>"
           + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"circle\" /><img id=\"annotationCircle\" src=\"\" class=\"hcmsButtonSizeSquare\" style=\"float:left;\" /></label></div>"
           + "<div class=\"hcmsButton hcmsButtonSizeSquare\"><label style=\"float:left; margin-top:-13px; cursor:pointer;\"><input type=\"radio\" style=\"float:left; visibility:hidden\" name=\"" + self.toolOptionId + "\" data-tool=\"text\" /><img id=\"annotationText\" src=\"\" class=\"hcmsButtonSizeSquare\" style=\"float:left;\" /></label></div>"

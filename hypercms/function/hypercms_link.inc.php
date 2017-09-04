@@ -1154,7 +1154,7 @@ function complinks_to_medialinks ($link_array)
       // deconvert
       $link_converted = deconvertpath ($link, "file");
       
-      if (@is_file ($link_converted))
+      if (is_file ($link_converted))
       { 
         $site = getpublication ($link);
         $location = getlocation ($link_converted);

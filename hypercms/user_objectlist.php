@@ -190,7 +190,7 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
       // open on double click
       if (checkrootpermission ('user') && checkrootpermission ('useredit') || ($site != "*Null*" && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) 
       {
-        $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'status=yes,scrollbars=no,resizable=yes', 500, 600);\"";
+        $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'status=yes,scrollbars=no,resizable=yes', 520, 660);\"";
       }
       else $openUser = "";
       

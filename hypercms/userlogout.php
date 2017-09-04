@@ -13,6 +13,21 @@ define ("SESSION", "create");
 require ("config.inc.php");
 // hyperCMS API
 require ("function/hypercms_api.inc.php");
+
+
+// delete session file of user
+$test = killsession ($user, true);
+
+if (empty ($lang)) $lang = "en";
+
+if ($test == true) 
+{ 
+  $answer = getescapedtext ($hcms_lang['logged-out'][$lang]);
+}
+else
+{ 
+  $answer = getescapedtext ($hcms_lang['session-cannot-be-closed'][$lang]);
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -25,34 +40,19 @@ require ("function/hypercms_api.inc.php");
 <script src="javascript/main.js" type="text/javascript"></script>
 </head>
 
-<body class="hcmsStartScreen" onload="location='userlogin.php';">
-
-<?php
-// delete session file of user
-$test = killsession ($user);
-
-if (empty ($lang)) $lang = "en";
-
-if ($test == true) 
-{
-  @session_destroy();
-  $answer = getescapedtext ($hcms_lang['logged-out'][$lang]);
-}
-else
-{ 
-  @session_destroy();
-  $answer = getescapedtext ($hcms_lang['session-cannot-be-closed'][$lang]);
-}
-?>
+<body class="hcmsStartScreen" onload="<?php if ($test == true) echo "location='userlogin.php';"; ?>">
 
 <div class="hcmsStartBar">
-  <div style="position:absolute; top:10px; left:10px; float:left; text-align:left;"><img src="<?php echo getthemelocation(); ?>img/logo.png" style="border:0; height:48px;" alt="hyperCMS" /></div>
+  <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation(); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>
+  <div style="position:absolute; top:48px; right:15px; text-align:right;">See you soon...</div>
 </div>
 
-<p class="hcmsTextGreen">
-  <?php echo "&gt;&gt; ".$user." ".$answer."&nbsp;"; ?>
-  <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="location='userlogin.php';" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
-</p>
+<div class="hcmsLogonScreen">
+  <p class="hcmsTextGreen">
+    <?php echo "&gt;&gt; ".$user." ".$answer."&nbsp;"; ?>
+    <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="location='userlogin.php';" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" />
+  </p>
+</div>
 
 </body>
 </html>

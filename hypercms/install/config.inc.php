@@ -183,6 +183,10 @@ $mgmt_config['explorerview'] = "detail";
 // How many items (folders and objects) should be displayed in the explorer object list initally
 $mgmt_config['explorer_list_maxitems'] = 500;
 
+// Window size for objects in pixel
+$mgmt_config['window_object_width'] = 800;
+$mgmt_config['window_object_height'] = 1000;
+
 // Should metadata on mouse over be displayed in the explorer object list if the sidebar is not displayed
 $mgmt_config['explorer_list_metadata'] = false;
 
@@ -208,7 +212,7 @@ $mgmt_config['maillink'] = "download";
 // Themes are located in directory hypercms/theme/
 $mgmt_config['theme'] = "";
 
-// Define alternative logo (image file name) for top frame. the file must be in cms/images
+// Define alternative logo (URL notation) for top frame.
 $mgmt_config['logo_top'] = "";
 
 // Define alternative wallpaper image (must be an URL) for the logon and home screen

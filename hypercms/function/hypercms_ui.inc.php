@@ -9,6 +9,38 @@
  
 // ================================ USER INTERFACE / LAYOUT ITEMS ===============================
 
+// --------------------------------------- windowwidth -------------------------------------------
+// function: windowwidth ()
+// input: type [object] (optional)
+// output: window width in pixels
+
+// description:
+// Returns the width of the object window when editing/opening an object
+
+function windowwidth ($type="object")
+{
+  global $mgmt_config;
+  
+  if ($type == "object" && !empty ($mgmt_config['window_object_width']) && $mgmt_config['window_object_width'] > 0) return $mgmt_config['window_object_width'] ;
+  else return 800;
+}
+
+// --------------------------------------- windowheight -------------------------------------------
+// function: windowheight ()
+// input: type [object] (optional)
+// output: window height in pixels
+
+// description:
+// Returns the height of the object window when editing/opening an object
+
+function windowheight ($type="object")
+{
+  global $mgmt_config;
+  
+  if ($type == "object" && !empty ($mgmt_config['window_object_height']) && $mgmt_config['window_object_height'] > 0) return $mgmt_config['window_object_height'] ;
+  else return 1000;
+}
+
 // --------------------------------------- toggleview -------------------------------------------
 // function: toggleview ()
 // input: view [detail,small,medium,large]
@@ -177,7 +209,7 @@ function showshorttext ($text, $length=0, $linebreak=false, $charset="UTF-8")
       // max. 3 lines
       if (mb_strlen ($text, $charset) > ($length * 3)) $text = mb_substr ($text, 0, $length, $charset)."<br />\n".mb_substr ($text, $length, $length, $charset)."<br />\n".mb_substr ($text, ($length*2), ($length-2), $charset)."...";
       elseif (mb_strlen ($text, $charset) > ($length * 2)) $text = mb_substr ($text, 0, $length, $charset)."<br />\n".mb_substr ($text, $length, $length, $charset)."<br />\n".mb_substr ($text, ($length*2), NULL, $charset);
-      elseif (mb_strlen ($text,$charset) > $length) $text = mb_substr ($text, 0, $length, $charset)."<br />\n".mb_substr ($text, $length, NULL, $charset);
+      elseif (mb_strlen ($text, $charset) > $length) $text = mb_substr ($text, 0, $length, $charset)."<br />\n".mb_substr ($text, $length, NULL, $charset);
       
       // keep 
       return "<div style=\"vertical-align:top; height:50px; display:block;\">".$text."</div>";
@@ -1192,7 +1224,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       // annotations download event
       $('#annotationDownload').click(function(event) {
         $('#annotation').annotate('export', {type: 'image/jpeg', quality: 0.95}, function(data){
-          hcms_openWindow (data, 'annotionDownload', '', 800, 600);
+          hcms_openWindow (data, 'annotionDownload', '', ".windowwidth ("object").", ".windowheight ("object").");
         });
       });
 		});
@@ -1506,7 +1538,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       // annotations download event
       $('#annotationDownload').click(function(event) {
         $('#annotation').annotate('export', {type: 'image/jpeg', quality: 0.95}, function(data){
-          hcms_openWindow (data, 'annotionDownload', '', 800, 600);
+          hcms_openWindow (data, 'annotionDownload', '', ".windowwidth ("object").", ".windowheight ("object").");
         });
       });
 		});
@@ -2514,7 +2546,7 @@ $(document).ready(function()
       $result .= "
       <div style=\"align:center; padding:2px; width:100%;\">
         <input name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:198px; margin-right:4px; float:left;\" type=\"button\" 
-        onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms'].$popup_upload."?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."','','status=yes,scrollbars=no,resizable=yes,width=800,height=600','800','600');\" value=\"".getescapedtext ($hcms_lang['upload-file'][$lang], $hcms_charset, $lang)."\" />
+        onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms'].$popup_upload."?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\" value=\"".getescapedtext ($hcms_lang['upload-file'][$lang], $hcms_charset, $lang)."\" />
         <img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" />
       </div>
       <div style=\"clear:both;\"></div>\n";
@@ -2525,7 +2557,7 @@ $(document).ready(function()
       $result .= "
       <div style=\"align:center; padding:2px; width:100%;\">
         <input name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:198px; margin-right:4px; float:left;\" type=\"button\" 
-        onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."frameset_content.php?site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."','','status=yes,scrollbars=no,resizable=yes,width=800,height=600','800','600');\" value=\"".getescapedtext ($hcms_lang['new-component'][$lang], $hcms_charset, $lang)."\" />
+        onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms']."frameset_content.php?site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\" value=\"".getescapedtext ($hcms_lang['new-component'][$lang], $hcms_charset, $lang)."\" />
         <img class=\"hcmsButtonTiny hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" />
       </div>
       <div style=\"clear:both;\"></div>\n";

@@ -2209,9 +2209,12 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         {
           foreach ($imagecolor as $colorkey)
           {
-            if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
-            
-            $sql_where['media'] .= 'INSTR(med.colorkey,"'.$colorkey.'")>0';
+            if (!empty ($colorkey))
+            {
+              if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
+              
+              $sql_where['media'] .= 'INSTR(med.colorkey,"'.$colorkey.'")>0';
+            }
           }
         }
         
@@ -4383,8 +4386,9 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
       
       $sqladd = ', object WHERE media.id = object.id';
       
-      if ($object_info['type'] == "Folder") $sqladd .= ' AND object.objectpath LIKE "'.$objectpath.'%"';
-      else $sqladd .= ' AND object.objectpath = "'.$objectpath.'"';
+      // exclude recycled files
+      if ($object_info['type'] == "Folder") $sqladd .= ' AND object.objectpath LIKE "'.$objectpath.'%" AND object.objectpath NOT LIKE "%.recycle" AND object.objectpath NOT LIKE "%.recycle%"';
+      else $sqladd .= ' AND object.objectpath = "'.$objectpath.'" AND object.objectpath NOT LIKE "%.recycle" AND object.objectpath NOT LIKE "%.recycle%"';
       
       $sqlfilesize = 'SUM(filesize) AS filesize';
     }
@@ -4401,10 +4405,10 @@ function rdbms_getfilesize ($container_id="", $objectpath="")
       $result['count'] = 1;
     }
 
-    // count files
+    // count files (exclude recycled files)
     if ($objectpath != "" && !empty ($object_info['type']) && $object_info['type'] == "Folder")
     {
-      $sql = 'SELECT count(objectpath) AS count FROM object WHERE objectpath LIKE "'.$objectpath.'%"'; 
+      $sql = 'SELECT count(objectpath) AS count FROM object WHERE objectpath LIKE "'.$objectpath.'%" AND object.objectpath NOT LIKE "%.recycle" AND object.objectpath NOT LIKE "%.recycle%"'; 
 
       $errcode = "50042";
       $done = $db->query ($sql, $errcode, $mgmt_config['today'], 'selectcount');

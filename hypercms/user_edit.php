@@ -408,7 +408,7 @@ if ($login != "" && $login != false)
     <tr>
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['language'][$lang]); ?> </td>
       <td align="right">
-        <select name="language" style="width:200px;">
+        <select name="language" style="width:210px;">
         <?php
         if (!empty ($mgmt_lang_shortcut) && is_array ($mgmt_lang_shortcut))
         {
@@ -444,7 +444,7 @@ if ($login != "" && $login != false)
     <tr>
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['theme'][$lang]); ?> </td>
       <td align="right">
-        <select name="theme" style="width:200px;">
+        <select name="theme" style="width:210px;">
         <?php
         $theme_dir = $mgmt_config['abs_path_cms']."theme/";
         $dir_handler = opendir ($theme_dir);

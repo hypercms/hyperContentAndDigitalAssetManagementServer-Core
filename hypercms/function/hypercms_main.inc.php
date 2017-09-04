@@ -1845,7 +1845,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
     if ($mediacfg) $add .= '&mediacfg='.url_encode($mediacfg);
     
     // return result
-    if ($media != "" && $result_zip) return createviewlink ($site, $media, $name, "", $linktype).$add;
+    if ($media != "" && $result_zip) return createviewlink ($site, $media, $name, true, $linktype).$add;
     else return false;
   }
   else return false;
@@ -8818,7 +8818,7 @@ function createfolder ($site, $location, $foldernew, $user)
   // set default language
   if ($lang == "") $lang = "en";
 
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($foldernew) && accessgeneral ($site, $location, "") && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user) && !is_tempfile ($foldernew))
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($foldernew) && !strpos ($foldernew, ".recycle") && accessgeneral ($site, $location, "") && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user) && !is_tempfile ($foldernew))
   {
     // publication management config
     if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -9278,7 +9278,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
   // set default language
   if ($lang == "") $lang = "en";
   
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && valid_objectname ($foldernew) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && !strpos ($foldernew, ".recycle") && valid_objectname ($foldernew) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
     // publication management config
     if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
@@ -9588,7 +9588,7 @@ function createobject ($site, $location, $page, $template, $user)
   // include hypermailer class
   if (!class_exists ("HyperMailer")) include_once ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");  
 
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && accessgeneral ($site, $location, "") && strlen ($page) <= $mgmt_config['max_digits_filename'] && valid_objectname ($template) && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && !strpos ($page, ".recycle") && accessgeneral ($site, $location, "") && strlen ($page) <= $mgmt_config['max_digits_filename'] && valid_objectname ($template) && valid_objectname ($user))
   {
     // publication management config
     if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -10339,7 +10339,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
             $dup_location = getlocation ($duplicate['objectpath']);
             $dup_object = getobject ($duplicate['objectpath']);
             $dup_name = specialchr_decode ($dup_object);
-            $links[] = '<a href="#" onclick="hcms_openWindow(\''.$mgmt_config['url_path_cms'].'frameset_content.php?site='.$site.'&ctrlreload=yes&cat=comp&location='.urlencode($dup_location).'&page='.urlencode($dup_object).'\',\''.uniqid().'\',\'status=yes,scrollbars=no,resizable=yes\',\'800\',\'600\');">'.$dup_name.'</a>';
+            $links[] = '<a href="#" onclick="hcms_openWindow(\''.$mgmt_config['url_path_cms'].'frameset_content.php?site='.$site.'&ctrlreload=yes&cat=comp&location='.urlencode($dup_location).'&page='.urlencode($dup_object).'\', \''.uniqid().'\', \'status=yes,scrollbars=no,resizable=yes\', '.windowwidth ("object").', '.windowheight ("object").');">'.$dup_name.'</a>';
           }
         }
         
@@ -10725,7 +10725,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
 // output: result array
 
 // description:
-// This function creates an asset (multimedia object) by reading a given source file. The file name must not match the temp file patterns defined in include/tempfilepatterns.inc.php
+// This function creates an asset (multimedia object) by reading a given source file. The file name must not match the temp file patterns defined in include/tempfilepatterns.inc.php and .recycle for recycled files
 
 function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0)
 {
@@ -10756,6 +10756,13 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 
     if (is_file ($path_source_file))
     {
+      // remove .recycle from object name
+      if (strpos ($file, ".recycle") > 0)
+      {
+        if (mb_strlen ($file) > 12) $file = str_replace (".recycle", "", $file);
+        else $file = str_replace (".recycle", "recycle", $file);
+      } 
+    
       // create new multimedia object
       $result = createobject ($site, $location, $file, "default.meta.tpl", $user);
 
@@ -12845,7 +12852,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
   
   if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
   
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && strlen ($pagenew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && !strpos ($pagenew, ".recycle")  && strlen ($pagenew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   { 
     // publication management config
     if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 

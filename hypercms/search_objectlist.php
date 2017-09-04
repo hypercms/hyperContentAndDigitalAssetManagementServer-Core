@@ -29,6 +29,7 @@ $search_cat = getrequest ("search_cat", "objectname");
 $search_format = getrequest ("search_format", "array");
 $search_filesize = getrequest ("search_filesize", "numeric");
 $search_filesize_operator = getrequest ("search_filesize_operator");
+$search_imagecolor = getrequest ("search_imagecolor", "array");
 $date_from = getrequest ("date_from");
 $date_to = getrequest ("date_to");
 $from_user = getrequest ("from_user");
@@ -67,7 +68,12 @@ else
   $search_imageheight = "";
 }
 
-if (getrequest ("search_imagecolor") != "") $search_imagecolor[] = getrequest ("search_imagecolor");
+// image color keys
+if (is_array ($search_imagecolor))
+{
+  // array holds no values
+  if (!array_filter ($search_imagecolor)) $search_imagecolor = "";
+}
 else $search_imagecolor = "";
 
 $search_imagetype = getrequest ("search_imagetype");
@@ -697,7 +703,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             }
         
             // open on double click
-            if ($action != "recyclebin") $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\"";
+            if ($action != "recyclebin") $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
             else $openObject = "";
             // refresh sidebar
             if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
@@ -877,7 +883,7 @@ if ($object_array != false && @sizeof ($object_array) > 0)
             if ($is_mobile && (($mediafile == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || ($mediafile != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
             {   
               $linking_buttons .= "
-              <button class=\"hcmsButtonDownload\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
+              <button class=\"hcmsButtonDownload\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
             }
             
             // if assetbrowser is used display edit button

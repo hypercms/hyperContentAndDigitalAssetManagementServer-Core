@@ -1164,7 +1164,7 @@ function getgooglesitemap ($site, $dir, $url, $getpara=array(), $permalink=array
 
 function getlistelements ($list_sourcefile)
 {
-	global $mgmt_config;
+	global $mgmt_config, $lang;
   
 	if (valid_locationname ($list_sourcefile))
   {
@@ -1182,7 +1182,8 @@ function getlistelements ($list_sourcefile)
       if (isset ($slice[4])) $taxonomy_levels = $slice[4];
       
       // set user language as default
-      if (empty ($language) || strtolower ($language) == "all") $language = $lang;
+      if ((empty ($language) || strtolower ($language) == "all") && !empty ($lang)) $language = $lang;
+      else $language = "en";
 
       // reset source file to service/getkeywords
       if (!empty ($publication) && !empty ($language) && isset ($taxonomy_id))

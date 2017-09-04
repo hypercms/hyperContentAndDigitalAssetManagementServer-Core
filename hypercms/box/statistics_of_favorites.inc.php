@@ -14,7 +14,10 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
       if ($item_objectpath != "")
       {
         $item_site = getpublication ($item_objectpath);
+        $item_cat = getcategory ($item_site, $item_objectpath);
+        $item_location = getlocation ($item_objectpath);
         $item_object = getobject ($item_objectpath);
+        $item_fileinfo = getfileinfo ($item_site, $item_location.$item_object, $item_cat);
     
         // publication management config
         if (valid_publicationname ($item_site)) require ($mgmt_config['abs_path_data']."config/".$item_site.".conf.php");
@@ -23,8 +26,8 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
         else $width = "670px";
         
         echo "
-        <div id=\"stats_".$item_object."\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
-          <div class=\"hcmsHeadline\" style=\"margin:2px;\">".getescapedtext ($hcms_lang['access-statistics-for'][$lang])." ".specialchr_decode ($item_object)."</div>";
+        <div id=\"stats_".$item_object."\" onclick=\"hcms_openWindow('frameset_content.php?site=".url_encode($item_site)."&ctrlreload=yes&cat=".url_encode($item_cat)."&location=".url_encode($item_location)."&page=".url_encode($item_object)."', '".$item_object."', 'location=no,status=yes,scrollbars=no,resizable=yes,titlebar=no', ".windowwidth ("object").", ".windowheight ("object").");\" class=\"hcmsHomeBox\" style=\"cursor:pointer; overflow:auto; margin:10px; width:".$width."; height:400px; float:left;\">
+          <div class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['access-statistics-for'][$lang])." ".showshorttext($item_fileinfo['name'], 40)."</div>";
 
         $date_from = date ("Y-m-01", time());
         $date_to = date ("Y-m-t", time());

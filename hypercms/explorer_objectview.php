@@ -182,21 +182,13 @@ function closeselectors ()
   }
 }
 
-function openBrWindowLink (winName, features, type)
+function openBrWindowLink (winName, features)
 {
   if (document.getElementById('objectiframe'))
   {
     var theURL = document.getElementById('objectiframe').src;
 
-    if (theURL != "")
-    {
-      popup = window.open(theURL,winName,features);
-      popup.moveTo(screen.width/2-800/2, screen.height/2-600/2);
-      popup.focus();
-    
-      return true;
-    }
-    return false;
+    if (theURL != "") hcms_openWindow (theURL, winName, features, <?php echo windowwidth ("object"); ?>, <?php echo windowheight ("object"); ?>);
   }
   else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-link-selected'][$lang]); ?>'));
 }
@@ -234,7 +226,7 @@ if (empty ($mediafile) && !empty ($mgmt_config['screensize']) && is_array ($mgmt
 }
 ?>
 <?php if ($cat == "page") { ?>
-  <div onClick="openBrWindowLink('preview','scrollbars=yes,resizable=yes,width=800,height=600', 'preview')" class="hcmsButton hcmsButtonSizeSquare"><img name="ButtonView" src="<?php echo getthemelocation(); ?>img/icon_newwindow.png" class="hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" /></div>
+  <div onClick="openBrWindowLink('preview', 'scrollbars=yes,resizable=yes')" class="hcmsButton hcmsButtonSizeSquare"><img name="ButtonView" src="<?php echo getthemelocation(); ?>img/icon_newwindow.png" class="hcmsButtonSizeSquare" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['in-new-browser-window'][$lang]); ?>" /></div>
 <?php } ?>
 </div>
 

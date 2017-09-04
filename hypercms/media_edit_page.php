@@ -296,47 +296,42 @@ function submitMediaType ()
 
 function openBrWindowMedia(winName, features, type)
 {
-  theURL = document.forms['media'].elements['mediaobject'].value;
+  var url = document.forms['media'].elements['mediaobject'].value;
+  var theURL = "";
   
-  if (theURL != "")
+  if (url != "")
   {
     if (type == "preview")
     {
-      if (theURL.indexOf('://') == -1)
+      if (url.indexOf('://') == -1)
       {
-        position1 = theURL.indexOf("/");
+        var position1 = url.indexOf("/");
         theURL = '<?php echo $mgmt_config['url_path_comp']; ?>' + theURL.substring (position1+1, theURL.length);
       }
-  
-      popup = window.open(theURL,winName,features);
-      popup.moveTo(screen.width/2-800/2, screen.height/2-600/2);
-      popup.focus();
     }
     else if (type == "cmsview")  
     {
-      if (theURL.indexOf('://') == -1)
+      if (url.indexOf('://') == -1)
       {      
-        position1 = theURL.indexOf("/");
-        position2 = theURL.lastIndexOf("/");
+        var position1 = url.indexOf("/");
+        position2 = url.lastIndexOf("/");
         
-        location_comp = "%comp%/" + theURL.substring (position1+1, position2+1);
+        var location_comp = "%comp%/" + url.substring (position1+1, position2+1);
         location_comp = escape (location_comp);
         
-        location_site = theURL.substring (position1+1, theURL.length);              
+        var location_site = url.substring (position1+1, url.length);              
         location_site = location_site.substring(0, location_site.indexOf('/'));
         location_site = escape (location_site);
         
-        page_comp = theURL.substr (position2+1, theURL.length);
+        var page_comp = theURL.substr (position2+1, url.length);
         page_comp = escape (page_comp);
         
         theURL = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_content.php?ctrlreload=yes&cat=comp&site=' + location_site + '&location=' + location_comp + '&page=' + page_comp + '&user=<?php echo $user; ?>';
-
-        popup = window.open(theURL,winName,features);
-        popup.moveTo(screen.width/2-800/2, screen.height/2-600/2);
-        popup.focus();
       }
       else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['this-is-an-external-link'][$lang], $charset, $lang); ?>'));
     }
+    
+    if (theURL != "") hcms_openWindow (theURL, winName, features, <?php echo windowwidth ("object"); ?>, <?php echo windowheight ("object"); ?>);
   }
   else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-file-selected'][$lang], $charset, $lang); ?>'));  
 }
@@ -387,7 +382,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['selected-media-file'][$lang], $charset, $lang); ?> </td>
       <td  nowrap="nowrap">
         <input type="text" name="mediafile" value="<?php echo convertchars (getlocationname ($site, $mediafile, "comp"), $hcms_lang_codepage[$lang], $charset); ?>" style="width:220px;" />
-        <img onClick="openBrWindowMedia('','scrollbars=yes,resizable=yes,width=800,height=600,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
+        <img onClick="openBrWindowMedia('','scrollbars=yes,resizable=yes,status=yes', 'cmsview');" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonEdit" src="<?php echo getthemelocation(); ?>img/button_edit.png" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang); ?>" />
         <img onClick="deleteEntry(document.forms['media'].elements['mediafile']); deleteEntry(document.forms['media'].elements['mediaobject']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang); ?>" />
         <img onClick="<?php echo $onsubmit; ?>" name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
       </td>

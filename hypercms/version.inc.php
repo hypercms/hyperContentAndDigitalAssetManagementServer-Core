@@ -2284,9 +2284,41 @@ Release 08/2017
 - Modifications in top_info 
 - Update of user manuals
 - Bug fix: CSS class hcmsWorkplaceObjectlist in main.css caused issues with scroll bars
-- Bug fix: Object lists did not exclude deleted objects fomr the total count of items
+- Bug fix: Object lists did not exclude deleted objects from the total count of items
+
+Version 7.0.2
+Release 09/2017
+- Implementation of open window feature in home box for the statistics of the users favorites
+- Implementation of multiple color search feature
+- Modifications in function searchcontent in DB Connect in order to exclude empty color keys
+- Modifications in flat design theme
+- Design and functional modifications in simple statistics plugin
+- Implementation of new free storage home box displaying total and free storage space
+- Modifications in black design theme
+- Implementation of import order for different object types in order to import folder and media objects before components and pages so the folder exists before importing additiuonal objects and media links used in pages and components can be resolved during the import process
+- Modifications in statistics_of_favorites home box in order to support and display folder names
+- Modifications in annotation toolbar in order to keep icons inline for smaller images
+- Design modifications in userlogout
+- Modifications in version_template in order to open source code in multiple windows
+- Modifications of popup window sizes for Chrome browser
+- Modifications in function createfolder, createobject, createmediaobject, renamefolder, renameobject in main API in order to exclude .recycle in object names
+- Modifications in function createmultidownloadlink in main API in order to force the file download and not to use the local browser cache
+- Implementation of scroll-to-top of the navigatior when changing from search to the navigator
+- Design modifications in simple statistics plugin
+- Implementation of Hybridauth library in connector
+- Imlpementation of main configuaration settings fow the objects window width and height
+- Implementation of new functions windowwidth and windowheight in UI API
+- Implementation of new windowwidth and windowheight feature in the system incl. the use of JS localstoragefor the contextmenu
+- Implementation of new window positioning modes in JS function hcms_openWindow in main.js
+- Bug fix: Icon of Plugins in context menu have not been resized by CSS class in JS function hcms_showContextmenu in contextmenu.js
+- Enabled keyword tag in template editor for pages and components
+- Bug fix: Template engine displayed wrong icons for single component in WYSIWYG interface
+- Bug fix: Function zipfiles in media API included recycled files in the ZIP file and cached ZIP file created for the download
+- Bug fix: Function rdbms_getfilesize in DB Connect did not exclude recycled files in the query
+- bug fix: Function getlistelements in Get API could not access the global language setting
+- Bug fix: Tagit for keyword lists did present the helper
 */
 
 // current version
-$mgmt_config['version'] = "Version 7.0.1";
+$mgmt_config['version'] = "Version 7.0.2";
 ?>

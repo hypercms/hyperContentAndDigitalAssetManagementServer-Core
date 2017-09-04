@@ -434,6 +434,8 @@ html, body, span
 
 .hcmsTableHeader
 {
+  text-align: left;
+  font-weight: normal;
   border-left: 3px solid #EB6804;
   border-right: 0;
   border-top: 0;

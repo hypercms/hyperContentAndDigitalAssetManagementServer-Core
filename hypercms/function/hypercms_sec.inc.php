@@ -1747,9 +1747,9 @@ function killsession ($user="", $destroy_php=true)
   global $mgmt_config;
 
   // if hypercms user session file exists
-  if (valid_objectname ($user) && @is_file ($mgmt_config['abs_path_data']."session/".$user.".dat"))
+  if (valid_objectname ($user) && is_file ($mgmt_config['abs_path_data']."session/".$user.".dat"))
   {
-    $session_array = @file ($mgmt_config['abs_path_data']."session/".$user.".dat");
+    $session_array = file ($mgmt_config['abs_path_data']."session/".$user.".dat");
     
     if ($session_array != false && sizeof ($session_array) > 0)
     {
