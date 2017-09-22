@@ -963,15 +963,34 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
     
     if (is_file ($location_source.$file))
     {
+      // original video info
+      $videoinfo = getvideoinfo ($location_source.$file);
+    
       reset ($mgmt_mediapreview);
         
       // supported extensions for media rendering
       foreach ($mgmt_mediapreview as $mediapreview_ext => $mediapreview)
-      {        
+      {
+        $correct = "";
+        
+        // rotate original video if rotation is used
+        if (!empty ($videoinfo['rotate']))
+        {
+          // usage: transpose=1
+          // for the transpose parameter you can pass:
+          // 0 = 90CounterCLockwise and Vertical Flip (default)
+          // 1 = 90Clockwise
+          // 2 = 90CounterClockwise
+          // 3 = 90Clockwise and Vertical Flip
+          if ($videoinfo['rotate'] == "90") $correct = "-vf \"transpose=1\"";
+          elseif ($videoinfo['rotate'] == "180") $correct = "-vf \"hflip,vflip\"";
+          elseif ($videoinfo['rotate'] == "-90") $correct = "-vf \"transpose=2\"";
+        }
+           
         // check file extension
         if ($fileinfo['ext'] != "" && substr_count ($mediapreview_ext.".", $fileinfo['ext'].".") > 0 && !empty ($mgmt_mediapreview[$mediapreview_ext]))
         {
-          $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" -ss ".shellcmd_encode ($frame)." -f image2 -vframes 1 \"".shellcmd_encode ($location_dest.$newfile)."\"";
+          $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" ".$correct." -ss ".shellcmd_encode ($frame)." -f image2 -vframes 1 \"".shellcmd_encode ($location_dest.$newfile)."\"";
 
           // execute 
           exec ($cmd, $error_array, $errorCode);
@@ -1041,6 +1060,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     
     $converted = false;
     $skip = false;
+    $temp_file_delete = array();
     
     // save input type in new variable
     $type_memory = $type;
@@ -2075,7 +2095,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         
         if (empty ($mgmt_mediaoptions['thumbnail-audio'])) $mgmt_mediaoptions_audio = "-f mp3 -c:a libmp3lame -b:a 64k";
         else $mgmt_mediaoptions_audio = $mgmt_mediaoptions['thumbnail-audio'];
-        
+
+        // Default value for auto rotate video if a rotation has been detected (true) or leave video in it's original state (false)
+        if (!isset ($mgmt_mediaoptions['autorotate-video'])) $mgmt_mediaoptions['autorotate-video'] = true;
+        $mgmt_mediaoptions_autorotate = $mgmt_mediaoptions['autorotate-video'];
+
         // reset type to input value
         $type = $type_memory;
 
@@ -2118,7 +2142,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
             else $mgmt_mediaoptions['.mp4'] = $mgmt_mediaoptions_video;
           }
         }
-        // define target format if type is "original" (overwrite originla file with same format)
+        // define target format if type is "original" (overwrite original file with same format)
         elseif ($format == "" || $type == "original")
         {
           $format_set = strtolower (substr ($file_ext, 1));
@@ -2133,10 +2157,86 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         $videoinfo = getvideoinfo ($location_source.$file);
               
         reset ($mgmt_mediapreview);
-        
+
         // supported extensions for media rendering
         foreach ($mgmt_mediapreview as $mediapreview_ext => $mediapreview)
-        {        
+        {
+          // auto correct video rotation by video filter
+          $correct = "";
+          
+          // rotate original video if rotation is used
+          if (!empty ($videoinfo['rotate']))
+          {
+            // usage: transpose=1
+            // for the transpose parameter you can pass:
+            // 0 = 90CounterCLockwise and Vertical Flip (default)
+            // 1 = 90Clockwise
+            // 2 = 90CounterClockwise
+            // 3 = 90Clockwise and Vertical Flip  
+            if ($videoinfo['rotate'] == "90") $correct = "-vf \"transpose=1\"";
+            elseif ($videoinfo['rotate'] == "180") $correct = "-vf \"hflip,vflip\"";
+            elseif ($videoinfo['rotate'] == "-90") $correct = "-vf \"transpose=2\"";
+            
+            if (!empty ($correct))
+            {
+              // prefix for temporary file name
+              $prefix = uniqid().".";
+              
+              // render video (copy audio coded and set quality)
+              if (!empty ($mgmt_mediaoptions_autorotate)) $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" ".$correct." -c:a copy -crf 16 \"".shellcmd_encode ($location_temp.$prefix.$file)."\"";
+              // reset metadata with rotate = 0 to avoid bideo player auto rotation
+              else $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_source.$file)."\" -c copy -metadata:s:v:0 rotate=0 \"".shellcmd_encode ($location_temp.$prefix.$file)."\"";
+
+              @exec ($cmd, $buffer, $errorCode);
+
+              // on success
+              if (empty ($errorCode) && is_file ($location_temp.$prefix.$file))
+              {
+                // check video info
+                $videoinfo_after = getvideoinfo ($location_temp.$prefix.$file);
+
+                // correct rotate metadata
+                if ($videoinfo_after['rotate'] == $videoinfo['rotate'])
+                {
+                  $cmd = $mgmt_mediapreview[$mediapreview_ext]." -i \"".shellcmd_encode ($location_temp.$prefix.$file)."\" -c copy -metadata:s:v:0 rotate=0 \"".shellcmd_encode ($location_temp."meta.".$prefix.$file)."\"";
+                  
+                  @exec ($cmd, $buffer, $errorCode);
+
+                  // on error
+                  if ($errorCode)
+                  {
+                    $errcode = "10338";
+                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|metadata update (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
+                  }
+                  // replace video file
+                  else
+                  {
+                    rename ($location_temp."meta.".$prefix.$file, $location_temp.$prefix.$file);
+                  }
+                }
+                
+                // reset source file parameters
+                if (is_file ($location_temp.$prefix.$file) && empty ($errorCode))
+                {
+                  // remember temp file
+                  $temp_file_delete[] = $location_temp.$prefix.$file;
+
+                  $location_source = $location_temp;
+                  $file = $prefix.$file;
+                }
+                
+                $errcode = "00339";
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|information|$errcode|original video ".$location_source.$file." has been rotated in createmedia";
+              }
+              // on error
+              else
+              {
+                $errcode = "10339";
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of ffmpeg (code:$errorCode, $cmd) failed in createmedia for file: ".$location_source.$file;
+              }
+            }
+          }
+        
           // check file extension
           if ($file_ext != "" && substr_count (strtolower ($mediapreview_ext).".", $file_ext.".") > 0 && !empty ($mediapreview))
           {
@@ -2145,7 +2245,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
             // extensions for certain media rendering options
             foreach ($mgmt_mediaoptions as $mediaoptions_ext => $mediaoptions)
             {
-              // get media rendering options based on given destination format
+              // get media rendering options based on given destination format (skip default setting extensions)
               if ($mediaoptions_ext != "thumbnail-video" && $mediaoptions_ext != "thumbnail-audio" && $mediaoptions_ext != "segments" && substr_count (strtolower ($mediaoptions_ext).".", ".".$format_set.".") > 0)
               {
                 // media format (media file extension) definition
@@ -2655,24 +2755,25 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   $imagecolor['colorkey'] = "";
                 }
                 
-                // new video info (only if it is not a thumbnail file of the original file)
-                if ($type == "original") $videoinfo = getvideoinfo ($location_dest.$newfile);
-                
                 // set media width and height to empty string
                 if ($mediawidth < 1 || $mediaheight < 1)
                 {
                   $mediawidth = "";
                   $mediaheight = "";
                 }
-
+ 
                 // save config
                 if ($type == "origthumb" || $type == "original")
                 {
-                  savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $videoinfo['width'], $videoinfo['height'], $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels'], $videoinfo['videocodec'], $videoinfo['audiocodec']);
+                  // new video info (only if it is not a thumbnail file of the original file)
+                  if ($type == "original") $videoinfo = getvideoinfo ($location_dest.$newfile);
+
+                  // needs to save 
+                  savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $videoinfo['width'], $videoinfo['height'], $videoinfo['rotate'], $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels'], $videoinfo['videocodec'], $videoinfo['audiocodec']);
                 }
                 else
                 {
-                  savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $mediawidth, $mediaheight, $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels'], $videoinfo['videocodec'], $videoinfo['audiocodec']);
+                  savemediaplayer_config ($location_dest, $file_name.$config_extension, $videos, $mediawidth, $mediaheight, $videoinfo['rotate'], $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels'], $videoinfo['videocodec'], $videoinfo['audiocodec']);
                 }
                 
                 // get video information to save in DB
@@ -2713,6 +2814,15 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
             }     
           }
         }
+      }
+    }
+
+    // delete temp files
+    if (is_array ($temp_file_delete) && sizeof ($temp_file_delete) > 0)
+    {
+      foreach ($temp_file_delete as $temp_file)
+      {
+        if (is_file ($temp_file)) unlink ($temp_file);
       }
     }
 
@@ -2826,7 +2936,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
 
 function convertimage ($site, $file_source, $location_dest, $format="jpg", $colorspace="RGB", $iccprofile="", $width="", $height="", $slug=0, $units="px", $dpi=72, $quality="")
 {
-  global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext;
+  global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $user;
 
   if (valid_publicationname ($site) && valid_locationname ($file_source) && valid_locationname ($location_dest))
   {
@@ -3538,6 +3648,11 @@ function readmediaplayer_config ($location, $configfile)
         {
           list ($name, $config['ratio']) = explode ("=", $value);
         }
+        // rotation in degrees
+        elseif (strpos ("_".$value, "rotate=") > 0)
+        {
+          list ($name, $config['rotate']) = explode ("=", $value);
+        }
         // file size in kB
         elseif (strpos ("_".$value, "filesize=") > 0)
         {
@@ -3672,7 +3787,7 @@ function readmediaplayer_config ($location, $configfile)
       // get video info
       $videoinfo = getvideoinfo ($videofile);
         
-      savemediaplayer_config ($location, $configfile, $media_array, $config['width'], $config['height'], $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels'], $videoinfo['videocodec'], $videoinfo['audiocodec']); 
+      savemediaplayer_config ($location, $configfile, $media_array, $config['width'], $config['height'], $videoinfo['rotate'], $videoinfo['filesize'], $videoinfo['duration'], $videoinfo['videobitrate'], $videoinfo['audiobitrate'], $videoinfo['audiofrequenzy'], $videoinfo['audiochannels'], $videoinfo['videocodec'], $videoinfo['audiocodec']); 
     }
 
     // return video config
@@ -3683,11 +3798,11 @@ function readmediaplayer_config ($location, $configfile)
 
 // ------------------------- savemediaplayer_config -----------------------------
 // function: savemediaplayer_config()
-// input: path to media config file, media config file name, media file name array or string, width in px (optional), height in px (optional), file size in kB (optional), 
+// input: path to media config file, media config file name, media file name array or string, width in px (optional), height in px (optional), rotation in degree (optional), file size in kB (optional), 
 //        duration in hh:mmm:ss (optional), video bitrate in kb/s (optional), audio bitrate in kb/s (optional), audio frequenzy in Hz (optional), audio channels [mono, stereo] (optional), video codec name (optional), audio codec name (optional)
 // output: true / false on error
 
-function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320, $height=240, $filesize="", $duration="", $videobitrate="", $audiobitrate="", $audiofrequenzy="", $audiochannels="", $video_codec="", $audio_codec="")
+function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320, $height=240, $rotation="", $filesize="", $duration="", $videobitrate="", $audiobitrate="", $audiofrequenzy="", $audiochannels="", $video_codec="", $audio_codec="")
 {
   global $mgmt_config, $user;
 
@@ -3705,27 +3820,28 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
   	elseif ($height == $width) $imagetype = "square";
             
     $config = array();
-    $config[0] = "V2.4";
+    $config[0] = "V2.5";
     $config[1] = "width=".$width;
     $config[2] = "height=".$height;
     if ($width > 0 && $height > 0) $config[3] = "dimension=".$width."x".$height." px";
     else $config[3] = "dimension=";
     if ($height > 0) $config[4] = "ratio=".round (($width / $height), 5);
-    else $result['ratio'] = "ratio=";   
-    $config[5] = "filesize=".$filesize;
-    $config[6] = "duration=".$duration;
-    $config[7] = "videobitrate=".$videobitrate;
+    else $result['ratio'] = "ratio=";
+    $config[5] = "rotate=".$rotation;
+    $config[6] = "filesize=".$filesize;
+    $config[7] = "duration=".$duration;
+    $config[8] = "videobitrate=".$videobitrate;
     $config[8] = "imagetype=".$imagetype;
-    $config[9] = "audiobitrate=".$audiobitrate;
-    $config[10] = "audiofrequenzy=".$audiofrequenzy;
-    $config[11] = "audiochannels=".$audiochannels;
-    $config[12] = "videocodec=".$video_codec;
-    $config[13] = "audiocodec=".$audio_codec;
+    $config[10] = "audiobitrate=".$audiobitrate;
+    $config[11] = "audiofrequenzy=".$audiofrequenzy;
+    $config[12] = "audiochannels=".$audiochannels;
+    $config[13] = "videocodec=".$video_codec;
+    $config[14] = "audiocodec=".$audio_codec;
     
     // array
     if (is_array ($mediafiles)) 
     {
-      $i = 14;
+      $i = 15;
       
       foreach ($mediafiles as $media)
       {
@@ -3751,10 +3867,10 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
       if (strpos ($mediafiles, ";") < 1)
       {
         $mimetype = ";".getmimetype ($mediafiles);
-        $config[12] = $mediafiles.$mimetype;
+        $config[$i] = $mediafiles.$mimetype;
       }
       // dont add mime-type
-      else $config[12] = $mediafiles;
+      else $config[$i] = $mediafiles;
     }
     
     // save config
@@ -3913,7 +4029,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                            
                 @exec ($cmd." 2>&1", $error_array, $errorCode);
   
-                // error if conersion failed
+                // error if conversion failed
                 if ($errorCode || !is_file ($location_source.$file_name.".".$docformat))
                 {
                   $errcode = "20276";
@@ -3954,6 +4070,25 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
   
                     // save in cloud storage
                     if (is_file ($location_dest.$newfile) && function_exists ("savecloudobject")) savecloudobject ($site, $location_dest, $newfile, $user);
+                  }
+                  
+                  // create thumbnail image for document form converted PDF file
+                  if (strpos ($file, "_hcm") > 0 && $docformat = "pdf")
+                  {
+                    $location_media = getmedialocation ($site, $file, "abs_path_media").$site."/";
+                    $thumbnail = $file_name_orig.".thumb.jpg";
+                    
+                    if (!is_file ($thumbnail) || filemtime ($location_source.$file) > filemtime ($location_media.$thumbnail))
+                    {
+                      $thumbnail_new = createmedia ($site, $location_dest, $location_media, $newfile, "jpg", "thumbnail", true);
+                      
+                      // correct file name by removing double .thumb
+                      if (!empty ($thumbnail_new) && is_file ($location_media.$thumbnail_new))
+                      {
+                        if (is_file ($location_media.$thumbnail)) deletefile ($location_media, $thumbnail, 0);
+                        rename ($location_media.$thumbnail_new, $location_media.$thumbnail);
+                      }
+                    }
                   }
                 }
               }

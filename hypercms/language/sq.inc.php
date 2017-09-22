@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['sq'] = "Plehra";
 $hcms_lang['restore']['sq'] = "Kthej";
 $hcms_lang['empty-recycle-bin']['sq'] = "Zbrazet";
 $hcms_lang['existing-objects-will-be-replaced']['sq'] = "Objektet ekzistuese do të zëvendësohet!";
+$hcms_lang['import-list-comma-delimited']['sq'] = "Importi CSV";
+$hcms_lang['upload-csv-file']['sq'] = "Ngarko dosjen CSV për importimin e meta të dhënave/përmbajtjes për objekte në të njëjtin vend (Jepni 'Name' ose 'ContainerID' si titull dhe identifikues të kolonës)";
+$hcms_lang['link-fields-with']['sq'] = "Lidhni fushat me";
 ?>

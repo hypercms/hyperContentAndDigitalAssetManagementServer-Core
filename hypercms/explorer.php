@@ -359,78 +359,83 @@ function generateExplorerTree ($location, $user, $runningNumber=1)
         $access = $pageaccess;
         $right = 'page';
       }
-      
+
       if (isset ($access[$site]) && is_array ($access[$site]))
       {
-        $folder = array();
-        
+        $folder_array = array ();
+
         foreach ($access[$site] as $group => $value)
-        {  
+        {
           if ($localpermission[$site][$group][$right] == 1 && $value != "")
           { 
             // create folder array
-            $folder_new = link_db_getobject ($value);
+            $accesspath_array = link_db_getobject ($value);
             
-            foreach ($folder_new as $key => $value)
+            foreach ($accesspath_array as $key => $value)
             {
               // path must be inside the location, avoid double entries
               if ($value != "" && substr ($value, 0, strlen ($location)) == $location)
-              { 
-                $folder[] = $value;
-              }               
-            }  
+              {
+                $folder_array[] = $value;
+              }    
+            }
           }
         }
         
         $result = array();
         
         // if we have access anywhere
-        if (is_array ($folder) && sizeof ($folder) > 0)
+        if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         {
           // remove double entries 
-          $folder = array_unique ($folder);
+          $folder_array = array_unique ($folder_array);
           
-          natcasesort ($folder);
-          reset ($folder);   
+          natcasesort ($folder_array);
+          reset ($folder_array);
 
           $i = 1;
           
-          foreach ($folder as $path)
-          {             
-            $location_esc = convertpath ($site, $path, $cat); 
-            $folderpath = getlocation ($location_esc);
-            $folder = getobject ($location_esc);
-            
+          foreach ($folder_array as $path)
+          {
             $folderinfo = getfileinfo ($site, $path, $cat);
-            $foldername = $folderinfo['name'];
-            $icon = $folderinfo['icon'];
-            
-            // the folder to be used for the AJAX request
-            $ajaxfolder = $location_esc;
-            
-            $id = $cat.'_'.$site.'_';
 
-            // generating the id from the running number so we don't have any ID problems
-            if (!empty ($runningNumber))
+            // verify that folder has not been marked as deleted
+            if ($path != "" && $folderinfo['deleted'] == false)
             {
-              $id .= $runningNumber.'_';
-              $rnrid = $runningNumber.'_';
-            }
-            
-            $id .= $i;
-            $rnrid .= $i++;
-
-            // Generating the menupoint object with the needed configuration
-            $point = new hcms_menupoint($foldername, 'frameset_objectlist.php?site='.url_encode($site).'&cat='.$cat.'&location='.url_encode($location_esc), $icon, $id);
-            $point->setOnClick('hcms_jstree_open("'.$id.'");');
-            $point->setTarget('workplFrame');
-            $point->setNodeCSSClass('jstree-closed jstree-reload');
-            $point->setAjaxData($ajaxfolder, $rnrid);
-            $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "'.$cat.'", "'.$folderpath.'", ".folder", "'.$foldername.'", "Folder", "", "'.$folder.'", "'.$id.'", $("#context_token").text());');
-            $point->setOnMouseOut('hcms_resetContext();');
-            $result[] = $point;
-          } 
+              $location_esc = convertpath ($site, $path, $cat); 
+              $folderpath = getlocation ($location_esc);
+              $folder = getobject ($location_esc);
+              $foldername = $folderinfo['name'];
+              $icon = $folderinfo['icon'];
+              
+              // the folder to be used for the AJAX request
+              $ajaxfolder = $location_esc;
+              
+              $id = $cat.'_'.$site.'_';
+  
+              // generating the id from the running number so we don't have any ID problems
+              if (!empty ($runningNumber))
+              {
+                $id .= $runningNumber.'_';
+                $rnrid = $runningNumber.'_';
+              }
+              
+              $id .= $i;
+              $rnrid .= $i++;
+  
+              // Generating the menupoint object with the needed configuration
+              $point = new hcms_menupoint($foldername, 'frameset_objectlist.php?site='.url_encode($site).'&cat='.$cat.'&location='.url_encode($location_esc), $icon, $id);
+              $point->setOnClick('hcms_jstree_open("'.$id.'");');
+              $point->setTarget('workplFrame');
+              $point->setNodeCSSClass('jstree-closed jstree-reload');
+              $point->setAjaxData($ajaxfolder, $rnrid);
+              $point->setOnMouseOver('hcms_setObjectcontext("'.$site.'", "'.$cat.'", "'.$folderpath.'", ".folder", "'.$foldername.'", "Folder", "", "'.$folder.'", "'.$id.'", $("#context_token").text());');
+              $point->setOnMouseOut('hcms_resetContext();');
+              $result[] = $point;
+            } 
+          }
         }
+        
         return $result;
       } 
       else return array();
@@ -1930,8 +1935,8 @@ else
         <input type="hidden" name="maxhits" value="300" />
 
         <div style="display:block; margin-bottom:3px;">
-          <b><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></b>
-          <img onClick="activateFulltextSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></span>
+          <img onClick="activateFulltextSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
         </div>
         <div id="fulltextLayer" style="display:none;"> 
         
@@ -1966,8 +1971,8 @@ else
         <hr />
         
         <div style="display:block; margin-bottom:3px;">
-          <b><?php echo getescapedtext ($hcms_lang['advanced-search'][$lang]); ?></b>
-          <img onClick="activateAdvancedSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['advanced-search'][$lang]); ?></span>
+          <img onClick="activateAdvancedSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
         </div>
         <div id="advancedLayer" style="display:none;">
         
@@ -2037,13 +2042,22 @@ else
           <iframe id="contentFRM" name="contentFRM" width="0" height="0" frameborder="0"></iframe> 
           <div class="hcmsObjectSelected" style="border:1px solid #000000; width:245px; height:200px; padding:2px; overflow:auto;">
             <div id="contentLayer"></div>
-          </div><br />
+          </div>
+
+          <div style="margin-top:5px;">
+            <label for="search_operator"><?php echo getescapedtext ($hcms_lang['link-fields-with'][$lang]); ?></label><br />
+            <select id="search_operator" name="search_operator" style="width:220px;">
+              <option value="AND" <?php if (empty ($mgmt_config['search_operator']) || (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator']) == "AND")) echo "selected"; ?>>AND</option>
+              <option value="OR" <?php if (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator']) == "OR") echo "selected"; ?>>OR</option>
+            </select>
+          </div>
+          
         </div>
         <hr />
         
         <div style="display:block; margin-bottom:3px;">
-          <b><?php echo getescapedtext ($hcms_lang['keywords'][$lang]); ?></b>
-          <img onClick="activateKeywordSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['keywords'][$lang]); ?></span>
+          <img onClick="activateKeywordSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
         </div>
         <div id="keywordsLayer" style="display:none;">
           <!--
@@ -2109,8 +2123,8 @@ else
         <hr />
         
         <div style="display:block; margin-bottom:3px;">
-          <b><?php echo getescapedtext ($hcms_lang['media'][$lang]); ?></b>
-          <img onClick="activateImageSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['media'][$lang]); ?></span>
+          <img onClick="activateImageSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
         </div>
         <div id="imageLayer" style="display:none;">
 
@@ -2164,18 +2178,18 @@ else
             <label><?php echo getescapedtext ($hcms_lang['image-color'][$lang]); ?></label><br />
             <div style="display:block;">
               <div style="width:240px; margin:1px; padding:0; float:left;"><div style="float:left;"><input id="unsetcolors" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="" checked="checked" onclick="unsetColors()"  /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['all'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#000000; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="K" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['black'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FFFFFF; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="W" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['white'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#808080; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="E" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['grey'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FF0000; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="R" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['red'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#00C000; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="G" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['green'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#0000FF; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="B" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['blue'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#00FFFF; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="C" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['cyan'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FF0090; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="M" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['magenta'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FFFF00; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="Y" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['yellow'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FF8A00; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="O" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['orange'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#FFCCDD; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="P" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['pink'][$lang]); ?></div>
-              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #999999; background:#A66500; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="N" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['brown'][$lang]); ?></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#000000; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="K" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['black'][$lang]); ?></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#FFFFFF; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="W" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['white'][$lang]); ?></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#808080; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="E" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['grey'][$lang]); ?></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#FF0000; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="R" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['red'][$lang]); ?></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#00C000; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="G" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['green'][$lang]); ?></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#0000FF; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="B" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['blue'][$lang]); ?></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#00FFFF; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="C" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['cyan'][$lang]); ?></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#FF0090; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="M" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['magenta'][$lang]); ?></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#FFFF00; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="Y" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['yellow'][$lang]); ?></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#FF8A00; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="O" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['orange'][$lang]); ?></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#FFCCDD; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="P" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['pink'][$lang]); ?></div>
+              <div style="width:105px; margin:1px; padding:0; float:left;"><div style="border:1px solid #666666; background-color:#A66500; padding:2px; float:left;"><input class="hcmsColorKey" style="margin:2px; padding:0;" type="checkbox" name="search_imagecolor[]" value="N" onclick="setColors()" /></div>&nbsp;<?php echo getescapedtext ($hcms_lang['brown'][$lang]); ?></div>
               <div style="clear:both;"></div>
             </div>
           </div>
@@ -2185,8 +2199,8 @@ else
 
         <?php if (!$is_mobile) { ?>
         <div style="display:block; margin-bottom:3px;">
-          <b><?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?></b>
-          <img onClick="activateGeolocationSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?></span>
+          <img onClick="activateGeolocationSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
         </div>
         <div id="mapLayer" style="display:none;">
           <div style="position:relative; left:190px; top:15px; width:22px; height:22px; z-index:1000;"><img src="<?php echo getthemelocation(); ?>img/info.png" title="<?php echo getescapedtext ($hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag'][$lang]); ?>" class="hcmsButtonSizeSquare" /></div>
@@ -2200,8 +2214,8 @@ else
         <?php } ?>
         
         <div style="display:block; margin-bottom:3px;">
-          <b><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?></b>
-          <img onClick="activateLastmodifiedSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['last-modified'][$lang]); ?></span>
+          <img onClick="activateLastmodifiedSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
         </div>
         <div id="dateLayer" style="display:none;">
         
@@ -2228,8 +2242,8 @@ else
         <hr />
         
         <div style="display:block; margin-bottom:3px;">
-          <b><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></b>
-          <img onClick="activateIdSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></span>
+          <img onClick="activateIdSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
         </div>
         <div id="idLayer" style="display:none;">
         
@@ -2247,8 +2261,8 @@ else
         <hr />
         
         <div style="display:block; margin-bottom:3px;">
-          <b><?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?></b>
-          <img onClick="activateRecipientSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['recipient'][$lang]); ?></span>
+          <img onClick="activateRecipientSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
         </div>
         <div id="recipientLayer" style="display:none;">
         
@@ -2285,8 +2299,8 @@ else
         <hr />
 
         <div style="display:block; margin-bottom:3px;">
-          <b><?php echo getescapedtext ($hcms_lang['save-search'][$lang]); ?></b>
-          <img onClick="activateSaveSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" alt="+/-" title="+/-" />
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['save-search'][$lang]); ?></span>
+          <img onClick="activateSaveSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
         </div>
         <div id="saveLayer" style="display:none;">
         

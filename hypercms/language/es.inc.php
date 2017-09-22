@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['es'] = "Papelera";
 $hcms_lang['restore']['es'] = "Restaurar";
 $hcms_lang['empty-recycle-bin']['es'] = "Vaciar papelera de reciclaje";
 $hcms_lang['existing-objects-will-be-replaced']['es'] = "Los objetos existentes serán reemplazados!";
+$hcms_lang['import-list-comma-delimited']['es'] = "Importar CSV";
+$hcms_lang['upload-csv-file']['es'] = "Subir archivo CSV para la importación de metadatos/contenido para objetos en la misma ubicación (Proporcione 'Name' o 'ContainerID' como título de la columna y el identificador)";
+$hcms_lang['link-fields-with']['es'] = "Vincular los campos con";
 ?>

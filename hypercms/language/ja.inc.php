@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['ja'] = "ごみ箱";
 $hcms_lang['restore']['ja'] = "リストア";
 $hcms_lang['empty-recycle-bin']['ja'] = "ごみ箱を空にする";
 $hcms_lang['existing-objects-will-be-replaced']['ja'] = "既存のオブジェクトが置き換えられます！";
+$hcms_lang['import-list-comma-delimited']['ja'] = "CSVインポート";
+$hcms_lang['upload-csv-file']['ja'] = "同じ場所にあるオブジェクトのメタデータ/コンテンツをインポートするためのCSVファイルをアップロードする（列のタイトルと識別子として 'Name'または 'ContainerID'を指定）";
+$hcms_lang['link-fields-with']['ja'] = "フィールドをリンクする";
 ?>

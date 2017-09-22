@@ -4,7 +4,7 @@ $hcms_lang_name['ur'] = "Urdu";
 $hcms_lang_shortcut['ur'] = "ur";
 $hcms_lang_codepage['ur'] = "utf-8";
 $hcms_lang_date['ur'] = 'y-m-d H:i:s';
-$hcms_lang_direction[''] = "ltr";
+$hcms_lang_direction['ur'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['ur'] = "Share";
@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['ur'] = "ریسایکل بن";
 $hcms_lang['restore']['ur'] = "بحال";
 $hcms_lang['empty-recycle-bin']['ur'] = "خالی ریسایکل بن";
 $hcms_lang['existing-objects-will-be-replaced']['ur'] = "موجودہ اشیاء کی جگہ لے لی جائے گی";
+$hcms_lang['import-list-comma-delimited']['ur'] = "CSV درآمد";
+$hcms_lang['upload-csv-file']['ur'] = "ایک ہی مقام میں اشیاء کے لئے میٹا ڈیٹا / مواد کے درآمد کیلئے CSV فائل اپ لوڈ کریں ('Name' یا 'ContainerID' کو کالم عنوان اور شناختی طور پر فراہم کریں)";
+$hcms_lang['link-fields-with']['ur'] = "شعبوں سے رابطہ کریں";
 ?>

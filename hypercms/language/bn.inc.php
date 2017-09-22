@@ -4,7 +4,7 @@ $hcms_lang_name['bn'] = "Bengali";
 $hcms_lang_shortcut['bn'] = "bn";
 $hcms_lang_codepage['bn'] = "utf-8";
 $hcms_lang_date['bn'] = 'y-m-d H:i:s';
-$hcms_lang_direction[''] = "ltr";
+$hcms_lang_direction['bn'] = "ltr";
 
 // Text for hyperCMS
 $hcms_lang['share']['bn'] = "Share";
@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['bn'] = "কাগজের বিন";
 $hcms_lang['restore']['bn'] = "প্রত্যর্পণ করা";
 $hcms_lang['empty-recycle-bin']['bn'] = "রিসাইকেল বিন খালি";
 $hcms_lang['existing-objects-will-be-replaced']['bn'] = "বর্তমান বস্তু প্রতিস্থাপন করা হবে!";
+$hcms_lang['import-list-comma-delimited']['bn'] = "সিএসভি আমদানি";
+$hcms_lang['upload-csv-file']['bn'] = "একই অবস্থানে বস্তুর জন্য মেটাডেটা/সামগ্রী আমদানিের জন্য CSV ফাইল আপলোড করুন ('Name' বা 'ContainerID' কলাম শিরোনাম এবং শনাক্তকারী হিসাবে প্রদান করুন)";
+$hcms_lang['link-fields-with']['bn'] = "ক্ষেত্রের সাথে লিঙ্ক করুন";
 ?>

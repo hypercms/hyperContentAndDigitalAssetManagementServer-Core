@@ -585,7 +585,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
             {
               $type = $type_array[$text_id];
               
-              // add text prefix if only text type letter has been provided
+              // add text prefix only if a text type has been provided
               if ($type == "u" || $type == "f" || $type == "l" || $type == "c" || $type == "d" || $type == "k") $type = "text".$type;
             }
             else $type = "";

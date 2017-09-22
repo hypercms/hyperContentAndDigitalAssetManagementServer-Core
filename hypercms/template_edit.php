@@ -185,7 +185,7 @@ function checkForm_chars(text, exclude_chars)
 
 function checkForm (expression)
 {  
-  if (!checkForm_chars(expression, "_"))
+  if (!checkForm_chars(expression, " _-"))
   {
     return false;
   }   

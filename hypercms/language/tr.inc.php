@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['tr'] = "Geridönüşüm kutusu";
 $hcms_lang['restore']['tr'] = "Geri yükle";
 $hcms_lang['empty-recycle-bin']['tr'] = "Boş geri dönüşüm kutusu";
 $hcms_lang['existing-objects-will-be-replaced']['tr'] = "Mevcut nesneler değiştirilecek!";
+$hcms_lang['import-list-comma-delimited']['tr'] = "CSV İçe Aktarma";
+$hcms_lang['upload-csv-file']['tr'] = "Aynı konumdaki nesneler için meta veriler/içerik içe aktarmak için CSV dosyası yükle (Sütun başlığı ve tanımlayıcı olarak 'Name' veya 'ContainerID' sağlayın)";
+$hcms_lang['link-fields-with']['tr'] = "Ile alanları bağla";
 ?>

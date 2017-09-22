@@ -116,33 +116,50 @@ function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
 {
   global $mgmt_config;
   
-  if ($expression != "" && $charset_from != "" && $charset_to != "")
+  if ($expression != "" && $charset_to != "")
   {
     $expression_orig = $expression;
-  
-    if ($charset_from == $charset_to)
-    {
-      return $expression;
-    }
-    else
+    
+    // detect character set if not provided
+    if (function_exists ("mb_detect_encoding") && $charset_from == "")
     {
       if (!is_array ($expression))
       {
-        // convert
-        $expression = iconv ($charset_from, $charset_to, $expression);
+        $charset_from = mb_detect_encoding ($expression, mb_detect_order(), true);
       }
       elseif (is_array ($expression))
       {
-        foreach ($expression as &$value)
+        $charset_from = mb_detect_encoding (implode ("", $expression), mb_detect_order(), true);
+      }
+    }
+
+    if ($charset_from != "")
+    {
+      if (strtolower ($charset_from) == strtolower ($charset_to))
+      {
+        return $expression;
+      }
+      else
+      {
+        if (!is_array ($expression))
         {
           // convert
-          $value = convertchars ($value, $charset_from, $charset_to);
+          $expression = iconv ($charset_from, $charset_to, $expression);
         }
+        elseif (is_array ($expression))
+        {
+          foreach ($expression as &$value)
+          {
+            // convert
+            $value = convertchars ($value, $charset_from, $charset_to);
+          }
+        }
+        
+        if ($expression != "") return $expression;
+        else return $expression_orig;      
       }
-      
-      if ($expression != "") return $expression;
-      else return $expression_orig;      
     }
+    else return false;
   }
   else return false;
 }
@@ -180,7 +197,7 @@ function specialchr_encode ($expression, $remove="no")
   
   if (is_string ($expression))
   {
-    $path_parts = array();
+    $expression_parts = array();
     $result_parts = array();
     
     // check if expression holds a path
@@ -196,19 +213,19 @@ function specialchr_encode ($expression, $remove="no")
       if ($expression != "" && specialchr ($expression, "~_-.") && $expression != "%comp%" && $expression != "%page%" && $expression != "%media%" && $expression != "%tplmedia%" && $expression != "%media%" && $expression != "%object%")
       {
         // encode to UTF-8 if name is not utf-8 coded
-        if (!is_utf8 ($expression)) $expression = utf8_encode (trim ($expression));    
+        if (!is_utf8 ($expression)) $expression = utf8_encode (trim ($expression));
         // replace ~ since this is the identifier and replace invalid file name characters (symbols)
         $strip = array ("~", "%", "`", "!", "@", "#", "$", "^", "&", "*", "=", 
                         "\\", "|", ";", ":", "\"", "&quot;", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
                         "Ã¢â‚¬â€", "Ã¢â‚¬â€œ", ",", "<", "&lt;", ">", "&gt;", "?");
                          
-        $expression = str_replace ($strip, "", strip_tags ($expression));  
+        $expression = str_replace ($strip, "", strip_tags ($expression));
         // replace multiple spaces
-        $expression = preg_replace ('/\s+/', " ", $expression);  
+        $expression = preg_replace ('/\s+/', " ", $expression);
         // replace all special characters
         if ($remove == "yes") $expression = preg_replace ("/[^a-zA-Z0-9_\\-]/", "", $expression);
         // url encoding for file name transformation (replace all special characters according to RFC 1738)
-        $expression = rawurlencode ($expression); 
+        $expression = rawurlencode ($expression);
         // replace % to avoid urldecoding 
         $expression = str_replace ("%", "~", $expression);
       }
@@ -831,6 +848,33 @@ function is_audio ($file)
   else return false;
 }
 
+// -------------------------------- is_compressed --------------------------------
+// function: is_compresseddocument()
+// input: file name or file extension
+// output: true / false
+
+// description:
+// This function determines if a certain file is compressed
+
+function is_compressed ($file)
+{
+  global $mgmt_config, $hcms_ext;
+  
+  if ($file != "")
+  {
+    // load file extensions
+    if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+    
+    // get file extension
+    if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
+    else $ext = $file;
+    
+    if (substr_count (strtolower ($hcms_ext['compressed']).".", ".".$ext.".") > 0) return true;
+    else return false;
+  }
+  else return false;
+}
+
 // ---------------------- is_mobilebrowser -----------------------------
 // function: is_mobilebrowser()
 // input: %
@@ -950,17 +994,16 @@ function correctfile ($abs_path, $filename, $user="")
   {
     // add slash if not present at the end of the location string
     if (substr ($abs_path, -1) != "/") $abs_path = $abs_path."/";    
-  
+
     // deconvert path
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
-      $abs_path = specialchr_encode ($abs_path, "no");
-      $abs_path = deconvertpath ($abs_path, "file");
+      $abs_path = deconvertpath ($abs_path, "file", true);
       
-      // encode file name
+      // encode file name if it is not locked (locked file name means it is already encoded)
       if (strpos ($filename, ".@") < 1) $filename = specialchr_encode ($filename, "no");
     }
-
+    
     // if given file or directory exists
     if (file_exists ($abs_path.$filename))
     {
@@ -1137,7 +1180,7 @@ function convertlink ($site, $path, $cat)
 
   if (valid_publicationname ($site) && $path != "" && is_array ($mgmt_config))
   {  
-    if (@substr_count ($path, "%page%") == 0 && @substr_count ($path, "%comp%") == 0 && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
+    if (substr_count ($path, "%page%") == 0 && substr_count ($path, "%comp%") == 0 && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
     {
       // load ini
       $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");     
@@ -1224,110 +1267,114 @@ function convertlink ($site, $path, $cat)
 
 // ---------------------------------- deconvertpath -------------------------------------------
 // function: deconvertpath ()
-// input: string including path to folder or object, convert to file system path or URL [file, url] (optional), transform special characters using specialchr_encode [treu,false] (optional)
+// input: string including path to folder or object, convert to file system path or URL [file, url] (optional), transform special characters using specialchr_encode [true,false] (optional)
 // output: deconverted path/false
 
 // description:
 // This function replaces all %page% and %comp% path variables with the path of the content management config.
 // It converts the path only on content management side not for the publication target.
 // It optionally transform special characters as well.
+// BE AWARE: The input path must not provide template data since valid_publicationname mightreturn false.
 
-function deconvertpath ($path, $type="file", $specialchr_transform=false)
+function deconvertpath ($objectpath, $type="file", $specialchr_transform=true)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
-  
-  // BE AWARE: path could hold template data and therefore valid_publicationname could cause problems!
-  if ($path != "" && (strtolower ($type) == "file" || strtolower ($type) == "url") && is_array ($mgmt_config))
+
+  if (is_string ($objectpath) && $objectpath != "" && (strtolower ($type) == "file" || strtolower ($type) == "url") && is_array ($mgmt_config))
   {
     $type = strtolower ($type);
-     
-    // page and component root variable
-    if (@substr_count ($path, "%page%") > 0)
+    
+    $path_parts = array();
+    $result_parts = array();
+    
+    // check if expression holds a path seperator for multiple pathes and is not some sort of code
+    if (substr_count ($objectpath, "|") > 0 && substr_count ($objectpath, "<") == 0 && substr_count ($objectpath, ">") == 0 && substr_count ($objectpath, "<") == 0 && substr_count ($objectpath, " || ") == 0)
     {
-      $root_var = "%page%/";
+      $path_parts = explode ("|", trim ($objectpath, "|"));
     }
-    elseif (@substr_count ($path, "%comp%") > 0)
+    else $path_parts[0] = $objectpath;
+    
+    foreach ($path_parts as $path)
     {
-      $root_var = "%comp%/";
-    }
-    else $root_var = false;
-  
-    
-    if ($root_var != false)
-    {
-      // test if path includes special characters
-      if ($specialchr_transform == true && specialchr ($path, ".-_~%") == true)
-      {      
-        $path = specialchr_encode ($path, "no");
-      }
-    
-      // extract publication from the converted path for page locations (first found path entry only!)
-      if (@substr_count ($path, "%page%") > 0 )
+      if ($path != "")
       {
-        $pos1 = @strpos ($path, $root_var) + strlen ($root_var);
+        // page and component root variable
+        if (substr_count ($path, "%page%") > 0 || substr_count ($path, "%comp%") > 0) $root_var = true;
+        else $root_var = false;
         
-        if ($pos1 !== false) $pos2 = @strpos ($path, "/", $pos1);
-        else $pos2 = false;
-        
-        if ($pos1 !== false && $pos2 !== false) $site = @substr ($path, $pos1, $pos2-$pos1);
-        else $site = false;
-        
-        // load publication config if not available
-        if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+        if ($root_var != false)
         {
-          require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-        }        
-      }
+          // test if path includes special characters
+          if ($specialchr_transform == true && specialchr ($path, ".-_~%") == true)
+          {      
+            $path = specialchr_encode ($path, "no");
+          }
+        
+          // extract publication from the converted path for page locations (first found path entry only!)
+          if (substr_count ($path, "%page%") > 0)
+          {
+            $site = getpublication ($path);
+            
+            // load publication config if not available
+            if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+            {
+              require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+            }        
+          }
+        
+          // if absolute file path is reuquested
+          if ($type == "file") 
+          {   
+            // deconvert page locations
+            if (substr_count ($path, "%page%") > 0 && valid_publicationname ($site) && !empty ($mgmt_config[$site]['abs_path_page']))
+            {
+              if (substr ($mgmt_config[$site]['abs_path_page'], -1) == "/") $root_var = "%page%/".$site."/";
+              else $root_var = "%page%/".$site;
     
-      // if absolute file path is reuquested
-      if ($type == "file") 
-      {   
-        // deconvert page locations
-        if (@substr_count ($path, "%page%") > 0 && valid_publicationname ($site) && !empty ($mgmt_config[$site]['abs_path_page']))
-        {
-          if ($mgmt_config[$site]['abs_path_page'][strlen ($mgmt_config[$site]['abs_path_page'])-1] == "/") $root_var = "%page%/".$site."/";
-          else $root_var = "%page%/".$site;
-
-          $path = str_replace ($root_var, $mgmt_config[$site]['abs_path_page'], $path);      
-        }
-              
-        // deconvert component locations 
-        if (@substr_count ($path, "%comp%") > 0 && !empty ($mgmt_config['abs_path_comp']))
-        {
-          if ($mgmt_config['abs_path_comp'][strlen ($mgmt_config['abs_path_comp'])-1] == "/") $root_var = "%comp%/";
-          else $root_var = "%comp%";
-  
-          $path = str_replace ($root_var, $mgmt_config['abs_path_comp'], $path);          
-        }    
-      }
-      // if URL is reuquested
-      elseif ($type == "url") 
-      {
-        // deconvert page locations
-        if (@substr_count ($path, "%page%") > 0 && valid_publicationname ($site) && !empty ($mgmt_config[$site]['url_path_page']))
-        {
-          if ($mgmt_config[$site]['url_path_page'][strlen ($mgmt_config[$site]['url_path_page'])-1] == "/") $root_var = "%page%/".$site."/";
-          else $root_var = "%page%/".$site;
-          
-          $path = str_replace ($root_var, $mgmt_config[$site]['url_path_page'], $path);
-        }
-           
-        // deconvert component locations
-        if (@substr_count ($path, "%comp%") > 0 && !empty ($mgmt_config['url_path_comp']))
-        {
-          if ($mgmt_config['url_path_comp'][strlen ($mgmt_config['url_path_comp'])-1] == "/") $root_var = "%comp%/";
-          else $root_var = "%comp%";
-          
-          $path = str_replace ($root_var, $mgmt_config['url_path_comp'], $path);
-        }
-      }
+              $path = str_replace ($root_var, $mgmt_config[$site]['abs_path_page'], $path);      
+            }
+                  
+            // deconvert component locations 
+            if (substr_count ($path, "%comp%") > 0 && !empty ($mgmt_config['abs_path_comp']))
+            {
+              if (substr ($mgmt_config['abs_path_comp'], -1) == "/") $root_var = "%comp%/";
+              else $root_var = "%comp%";
       
-      // return result
-      if ($path != "") return $path;
-      else return false;      
+              $path = str_replace ($root_var, $mgmt_config['abs_path_comp'], $path);          
+            }    
+          }
+          // if URL is reuquested
+          elseif ($type == "url") 
+          {
+            // deconvert page locations
+            if (substr_count ($path, "%page%") > 0 && valid_publicationname ($site) && !empty ($mgmt_config[$site]['url_path_page']))
+            {
+              if (substr ($mgmt_config[$site]['url_path_page'], -1) == "/") $root_var = "%page%/".$site."/";
+              else $root_var = "%page%/".$site;
+              
+              $path = str_replace ($root_var, $mgmt_config[$site]['url_path_page'], $path);
+            }
+               
+            // deconvert component locations
+            if (substr_count ($path, "%comp%") > 0 && !empty ($mgmt_config['url_path_comp']))
+            {
+              if (substr ($mgmt_config['url_path_comp'], -1) == "/") $root_var = "%comp%/";
+              else $root_var = "%comp%";
+              
+              $path = str_replace ($root_var, $mgmt_config['url_path_comp'], $path);
+            }
+          }
+        }
+        
+        // assign path to result array
+        $result_parts[] = $path;
+      }
     }
-    // nothing to deconvert
-    else return $path;    
+
+    // merge and return result
+    if (sizeof ($result_parts) > 1) return implode ("|", $result_parts);
+    elseif (!empty ($result_parts[0])) return $result_parts[0];
+    else return false;
   }
   // wrong input
   else return false;
@@ -1441,15 +1488,19 @@ function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type
 function createaccesslink ($site, $location="", $object="", $cat="", $object_id="", $login, $type="al", $lifetime=0, $formats="")
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
+  
+  // deconvert location
+  $location = deconvertpath ($location, "file"); 
+      
+  // if object includes special characters
+  if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
 
   if (((valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "") || $object_id != "") && (($type == "al" && valid_objectname ($login)) || $type == "dl") && isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
   {
     // check if object is folder or page/component
     if ($site != "" && $location != "" && $object != "")
     {
-      $location = deconvertpath ($location, "file"); 
-      
-      if (@is_dir ($location.$object))
+      if (is_dir ($location.$object))
       {
         $location = $location.$object."/";
         $object = ".folder";
@@ -1511,10 +1562,17 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
   {
     $object_hash = false;
     
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+      
+    // if object includes special characters
+    if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
+    
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
     {
-      $location = deconvertpath ($location, "file"); 
+      // if object includes special characters
+      if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
       
       if (@is_dir ($location.$object))
       {
@@ -1592,11 +1650,15 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
   {
     $object_hash = false;
     
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+      
+    // if object includes special characters
+    if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
+    
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
     {
-      $location = deconvertpath ($location, "file"); 
-      
       if (@is_dir ($location.$object))
       {
         $location = $location.$object."/";
@@ -1677,11 +1739,15 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
   {
     $object_hash = false;
     
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+    
+    // if object includes special characters
+    if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
+    
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
-    {
-      $location = deconvertpath ($location, "file"); 
-      
+    { 
       if (is_dir ($location.$object))
       {
         $location = $location.$object."/";
@@ -2032,6 +2098,12 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
   $result['message'] = "";
   
   if (empty ($lang)) $lang = "en";
+  
+  // deconvert location
+  $location = deconvertpath ($location, "file");
+  
+  // if object includes special characters
+  if (specialchr ($page, ".-_~") == true) $page = specialchr_encode ($page, "no");
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($container_version) && strpos ($container_version, ".v_") > 0)
   {
@@ -2039,9 +2111,6 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
   
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";  
-    
-    // convert location
-    $location = deconvertpath ($location, "file");
     
     // read actual object info (to get associated content)
     $objectinfo = getobjectinfo ($site, $location, $page);
@@ -2478,7 +2547,7 @@ function loadfile ($abs_path, $filename)
   {
     // add slash if not present at the end of the location string
     if (substr ($abs_path, -1) != "/") $abs_path = $abs_path."/";  
-    
+
     // deconvert path
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
@@ -3431,6 +3500,9 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
   global $mgmt_config, $eventsystem, $hcms_lang, $lang;
   
   $location = deconvertpath ($location, "file");
+  
+  // if object includes special characters
+  if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
 
   if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object))
   {
@@ -3948,8 +4020,12 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
       
       if (!empty ($objectinfo['container'])) $contentfile = $objectinfo['container'];
       if (!empty ($objectinfo['template'])) $templatefile = $objectinfo['template'];
-      
-      if ($viewstore == "") $viewstore = loadtemplate ($site, $templatefile);
+
+      if ($viewstore == "")
+      {
+        $temp = loadtemplate ($site, $templatefile);
+        if (!empty ($temp['content'])) $viewstore = $temp['content'];
+      }
     }
     
     // check contentdata
@@ -3959,10 +4035,10 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
     }
 
     // get all hyperCMS tags
-    $hypertag_array = gethypertag ($viewstore, "workflow", 0);
+    if ($viewstore != "") $hypertag_array = gethypertag ($viewstore, "workflow", 0);
     
     // check view
-    if (in_array ($buildview, array("cmsview","inlineview","publish","formedit","formmeta")) && ($cat == "page" || $cat == "comp") && $contentfile != "" && $contentdata != "" && $viewstore != "")
+    if (in_array ($buildview, array("cmsview","inlineview","publish","formedit","formmeta")) && ($cat == "page" || $cat == "comp") && !empty ($contentfile) && !empty ($contentdata) && !empty ($viewstore))
     {
       // get applied workflows on folders
       if (is_file ($mgmt_config['abs_path_data']."workflow_master/".$site.".".$cat.".folder.dat"))
@@ -9147,8 +9223,7 @@ function deletefolder ($site, $location, $folder, $user)
   if ($lang == "") $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, $cat) && $user != "")
-  {  
-    
+  {
     // publication management config
     if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
     
@@ -13237,8 +13312,7 @@ function pasteobject ($site, $location, $user, $clipboard_array=array())
     // publication management config
     if (empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php"); 
     
-    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
-      $location = deconvertpath ($location, "file");
+    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1) $location = deconvertpath ($location, "file");
 
     // check location (only components of given publication are allowed)
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
@@ -13293,8 +13367,7 @@ function lockobject ($site, $location, $page, $user)
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";  
     
-    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
-      $location = deconvertpath ($location, "file");    
+    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)  $location = deconvertpath ($location, "file");    
     
     // define object file name
     if (is_dir ($location.$page))
@@ -13428,8 +13501,7 @@ function unlockobject ($site, $location, $page, $user)
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
     
-    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
-      $location = deconvertpath ($location, "file");    
+    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1) $location = deconvertpath ($location, "file");    
     
     // define object file name
     if (is_dir ($location.$page))
@@ -13566,7 +13638,9 @@ function publishobject ($site, $location, $page, $user)
     
     // convert location
     $location = deconvertpath ($location, "file");
-    $location_esc = convertpath ($site, $location, $cat); 
+    $location_esc = convertpath ($site, $location, $cat);
+    
+    if (specialchr ($page, ".-_~") == true) $page = specialchr_encode ($page, "no");
       
     // check location (only components of given publication are allowed)
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
@@ -14187,6 +14261,7 @@ function unpublishobject ($site, $location, $page, $user)
     $cat = getcategory ($site, $location);    
     $location = deconvertpath ($location, "file");
     $location_esc = convertpath ($site, $location, $cat);
+    if (specialchr ($page, ".-_~") == true) $page = specialchr_encode ($page, "no");
     
     // check location (only components of given publication are allowed)
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
@@ -14684,8 +14759,8 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
           // check for .folder file and remove it, otherwise the folder is treated as a file
           if (getobject ($location) == ".folder") $location = getlocation ($location);
               
-          $object = getobject ($location); // could be a file or a folder                 
-          $location = getlocation ($location); // location without object 
+          $object = getobject ($location); // could be a file or a folder
+          $location = getlocation ($location); // location without object
           $object = correctfile ($location, $object, $user); 
        
           if (valid_publicationname ($site) && valid_locationname ($location) && $object !== false)
@@ -15721,6 +15796,11 @@ function notifyusers ($site, $location, $object, $event, $user_from)
   
   // set default language
   if ($lang == "") $lang = "en";
+  
+  $location = deconvertpath ($location, "file"); 
+      
+  // if object includes special characters
+  if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
   
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");

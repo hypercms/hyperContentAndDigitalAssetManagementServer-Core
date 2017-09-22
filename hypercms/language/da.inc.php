@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['da'] = "Papir bin";
 $hcms_lang['restore']['da'] = "Gendan";
 $hcms_lang['empty-recycle-bin']['da'] = "Tøm papirkurv";
 $hcms_lang['existing-objects-will-be-replaced']['da'] = "Eksisterende genstande vil blive erstattet!";
+$hcms_lang['import-list-comma-delimited']['da'] = "CSV Import";
+$hcms_lang['upload-csv-file']['da'] = "Upload CSV-fil til import af metadata/indhold for objekter på samme sted (Angiv 'Name' eller 'ContainerID' som kolonneoverskrift og identifikator)";
+$hcms_lang['link-fields-with']['da'] = "Link felterne med";
 ?>

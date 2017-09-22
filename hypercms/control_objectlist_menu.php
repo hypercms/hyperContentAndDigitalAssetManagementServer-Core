@@ -244,6 +244,21 @@ if (checktoken ($token, $user))
       $show = getescapedtext ($hcms_lang['the-file-'][$lang].$pagenew.str_replace ("%filesize%", $mgmt_config['maxzipsize'], $hcms_lang['zip-could-not-be-created-max'][$lang]));
     }
   }
+  // import metadata from CSV file
+  elseif ($action == "import" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+  {
+    $file_temp = $mgmt_config['abs_path_temp'].uniqid ("tmp").".csv";
+    
+    if (!empty ($_FILES["importfile"]) && move_uploaded_file ($_FILES["importfile"]["tmp_name"], $file_temp))
+    {
+      $import = importmetadata ($site, $location, $file_temp, $user, "", "", "", "utf-8");
+      
+      deletefile (getlocation ($file_temp), getobject ($file_temp), 0);
+    }
+    
+    if (!empty ($import)) $show = getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang]);
+    else $show = getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang]);
+  }
   // export selected objects as CSV
   elseif ($action == "export" && $setlocalpermission['root'] == 1)
   {
@@ -532,6 +547,22 @@ function imgConvert (type, config)
     hcms_showHideLayers('downloadLayer','','show');
   }
   else return false; 
+}
+
+function checkForm_import()
+{
+  var form = document.forms['import'];
+  var filename = form.elements['importfile'].value;
+  
+  if (filename.trim() == "" || filename.substr((filename.lastIndexOf('.') + 1)).toLowerCase() != "csv")
+  {
+    alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-select-a-file-to-upload'][$lang]); ?>"));
+    form.elements['foldernew'].focus();
+    return false;
+  }
+
+  form.submit();
+  return true;
 }
 
 function switchview (view)
@@ -860,6 +891,7 @@ else
                                                       "'folderrenameLayer','','hide',".
                                                       "'fileuploadLayer','','hide',".
                                                       "'objrenameLayer','','show',".
+                                                      "'importLayer','','hide',".
                                                       "'hcms_messageLayer','','hide'); document.getElementById('button_obj_edit').display='none';\" name=\"pic_obj_rename\" src=\"".getthemelocation()."img/button_rename.png\" alt=\"".getescapedtext ($hcms_lang['rename'][$lang])."\" title=\"".getescapedtext ($hcms_lang['rename'][$lang])."\" />";
     }
     // Rename Folder Button
@@ -871,6 +903,7 @@ else
                                                       "'folderrenameLayer','','show',".
                                                       "'fileuploadLayer','','hide',".
                                                       "'objrenameLayer','','hide',".
+                                                      "'importLayer','','hide',".
                                                       "'hcms_messageLayer','','hide'); document.getElementById('button_obj_edit').display='none';\" name=\"pic_folder_rename\" src=\"".getthemelocation()."img/button_rename.png\" alt=\"".getescapedtext ($hcms_lang['rename-folder'][$lang])."\" title=\"".getescapedtext ($hcms_lang['rename-folder'][$lang])."\" />";
     }
     else
@@ -1169,6 +1202,7 @@ else
                                                       "'folderrenameLayer','','hide',".
                                                       "'fileuploadLayer','','hide',".
                                                       "'objrenameLayer','','hide',".
+                                                      "'importLayer','','hide',".
                                                       "'hcms_messageLayer','','hide'".
                                                       ");\" name=\"pic_folder_create\" src=\"".getthemelocation()."img/button_folder_new.png\" alt=\"".getescapedtext ($hcms_lang['create-folder'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create-folder'][$lang])."\" />";
     }
@@ -1211,6 +1245,7 @@ else
                                                       "'folderrenameLayer','','hide',".
                                                       "'fileuploadLayer','','hide',".
                                                       "'objrenameLayer','','hide',".
+                                                      "'importLayer','','hide',".
                                                       "'hcms_messageLayer','','hide',".
                                                       "'zipLayer','','show'".
                                                       ");\" name=\"pic_zip_create\" src=\"".getthemelocation()."img/button_zip.png\" alt=\"".getescapedtext ($hcms_lang['compress-files'][$lang])."\" title=\"".getescapedtext ($hcms_lang['compress-files'][$lang])."\" />\n";
@@ -1366,6 +1401,28 @@ else
     {
       echo "
     <img src=\"".getthemelocation()."img/button_search.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+    }
+    
+    // CSV import
+    if ((!is_array ($hcms_linking) || @$hcms_linking['type'] != "Object") && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1 && $from_page == "")
+    {
+      echo "
+    <img onClick=\"if (locklayer == false) hcms_showHideLayers(".
+                                                      "'select_obj_view','','hide',".
+                                                      "'select_obj_edit','','hide',".
+                                                      "'select_obj_convert','','hide',".
+                                                      "'foldercreateLayer','','hide',".
+                                                      "'folderrenameLayer','','hide',".
+                                                      "'fileuploadLayer','','hide',".
+                                                      "'objrenameLayer','','hide',".
+                                                      "'importLayer','','show',".
+                                                      "'hcms_messageLayer','','hide'".
+                                                      ");\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"media_import\" src=\"".getthemelocation()."img/button_import.png\" alt=\"".getescapedtext ($hcms_lang['import-list-comma-delimited'][$lang])."\" title=\"".getescapedtext ($hcms_lang['import-list-comma-delimited'][$lang])."\" />";
+    }
+    else
+    {
+      echo "
+    <img src=\"".getthemelocation()."img/button_import.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     }
     
     // CSV export
@@ -1555,6 +1612,27 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
 </form>
 </div>
 
+<div id="importLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "850px"; ?>; height:75px; z-index:1; left:15px; top:10px; visibility:hidden">
+<form name="import" action="" method="post" enctype="multipart/form-data" onsubmit="return checkForm_import();">
+  <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+  <input type="hidden" name="action" value="import" />
+  <input type="hidden" name="token" value="<?php echo $token_new; ?>">
+  
+  <table width="100%" height="75" border="0" cellspacing="4" cellpadding="0">
+    <tr>
+      <td valign="middle">
+        <?php echo str_replace ("(", "<br/>(", getescapedtext ($hcms_lang['upload-csv-file'][$lang])); ?><br />
+        <input name="importfile" type="file" size="60" accept="text/*" />
+        <img name="Button7" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_import();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button7','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
+      </td>
+      <td width="16" align="right" valign="top">
+        <img name="hcms_mediaClose7" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose7','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('importLayer','','hide');" />
+      </td>      
+    </tr>
+  </table>
+</form>
+</div>
+
 <div id="downloadLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "80%"; else echo "650px"; ?>; height:60px; z-index:15; left:15px; top:15px; visibility:<?php echo ($action == 'download' ? 'visible' : 'hidden'); ?>;" >
   <table width="100%" height="60" border=0 cellspacing=0 cellpadding=3 class="hcmsMessage">
     <tr>
@@ -1576,7 +1654,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         </div>
       </td>
       <td width="16" align="right" valign="top">
-        <img name="hcms_mediaClose5" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose5','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('downloadLayer','','hide');" />
+        <img name="hcms_mediaClose6" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose6','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('downloadLayer','','hide');" />
       </td>        
     </tr>
   </table>

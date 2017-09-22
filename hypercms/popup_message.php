@@ -50,7 +50,6 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-$add_javascript = "";
 $show = "";
 
 // icons and default messages
@@ -95,18 +94,6 @@ if ($intention == "send" && ($action == "accept" || $action == "reject") && chec
     $add_onload = $result['add_onload'];
     $show = $result['message'];  
   }
-  
-  // javascript code
-  if ($result['result'] != false)
-  {
-    $add_javascript = $add_onload."  
-function popupclose ()
-{
-  self.close();
-}
-
-setTimeout('popupclose()', 1000);\n";  
-  }  
 }
 
 // security token
@@ -126,56 +113,46 @@ $token_new = createtoken ($user);
 <body class="hcmsWorkplaceGeneric">
 
 <?php if ($show == "") { ?>
-<form name="message" method="post" action="">
-  <input type="hidden" name="action" value="<?php echo $action; ?>">      
-  <input type="hidden" name="location" value="<?php echo $location; ?>">
-  <input type="hidden" name="page" value="<?php echo $page; ?>">       
-  <input type="hidden" name="wf_token" value="<?php echo $wf_token; ?>">
-  <input type="hidden" name="intention" value="send">
-  <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   
-  <table width="100%" height="100%" border=0 cellpadding="3" cellspacing="0">
-    <tr class="hcmsWorkplaceControl"> 
-      <td align="left" valign="top">
-        <img src="<?php echo $icon; ?>" align="absmiddle"/><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['message'][$lang]); ?> </span><br />    
-      </td>
-    </tr>
-    <tr> 
-      <td align="left" valign="top">
-        <textarea name="message" rows="7" style="width:380px; height:100px;"><?php echo $message_default; ?></textarea>
-      </td>
-    </tr>    
-    <tr>  
-      <td align="left" valign="top">
-			  <div style="width:100px; float:left;"><?php echo getescapedtext ($hcms_lang['priority'][$lang]); ?></div>
+  <!-- top bar -->
+  <?php
+  echo showtopbar ("<img src=\"".$icon."\" class=\"hcmsButtonSizeSquare\" align=\"absmiddle\" /> ".$hcms_lang['message'][$lang], $lang);
+  ?>
+
+  <!-- content -->
+  <div class="hcmsWorkplaceFrame" style="display:block; width:420px; margin:20px auto;">
+    <form name="message" method="post" action="">
+      <input type="hidden" name="action" value="<?php echo $action; ?>">      
+      <input type="hidden" name="location" value="<?php echo $location; ?>">
+      <input type="hidden" name="page" value="<?php echo $page; ?>">       
+      <input type="hidden" name="wf_token" value="<?php echo $wf_token; ?>">
+      <input type="hidden" name="intention" value="send">
+      <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
+      <div class="hcmsFormRowContent">
+        <textarea name="message" style="width:380px; height:200px;" placeholder="<?php echo $message_default; ?>"></textarea><br />
+      </div>
+      <div class="hcmsFormRowContent">
+  	    <?php echo getescapedtext ($hcms_lang['priority'][$lang]); ?>
+      </div>
+      <div class="hcmsFormRowContent">
         <select name="priority">
           <option value="low"><?php echo getescapedtext ($hcms_lang['low'][$lang]); ?></option>
           <option value="medium" selected="selected"><?php echo getescapedtext ($hcms_lang['medium'][$lang]); ?></option>
           <option value="high"><?php echo getescapedtext ($hcms_lang['high'][$lang]); ?></option>
-        </select>
-      </td>
-    </tr>        
-    <tr>  
-      <td align="left" valign="top">        
-        <div style="width:100px; float:left;"><?php echo getescapedtext ($hcms_lang['send'][$lang]); ?> </div> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['message'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK">
-      </td>
-    </tr>
-  </table>
-</form>
+        </select> <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['message'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK">
+     </div>
+    </form>
+  </div>
 <?php } else { ?>
-<table width="100%" height="100%" border=0 cellpadding="3" cellspacing="0">
-  <tr>
-    <td class="hcmsWorkplaceControl" align="left" valign="top" width="20"><img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsButtonSizeSquare" align="absmiddle" /></td>
-    <td align="left" valign="middle"><?php echo $show; ?></td>
-  </tr>
-</table>
+  <!-- top bar -->
+  <?php
+  echo showtopbar ("<img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" align=\"absmiddle\" /> ".$hcms_lang['information'][$lang], $lang);
+  ?>
+  <!-- content -->
+  <div class="hcmsWorkplaceFrame">
+    <?php echo $show; ?>
+  </div>
 <?php } ?>
-
-<script>
-<!--
-<?php echo $add_javascript; ?>
-//-->
-</script>
 
 </body>
 </html>

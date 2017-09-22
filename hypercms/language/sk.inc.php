@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['sk'] = "Kôš";
 $hcms_lang['restore']['sk'] = "Obnoviť";
 $hcms_lang['empty-recycle-bin']['sk'] = "Prázdny kôš";
 $hcms_lang['existing-objects-will-be-replaced']['sk'] = "Existujúce objekty budú nahradené!";
+$hcms_lang['import-list-comma-delimited']['sk'] = "Import CSV";
+$hcms_lang['upload-csv-file']['sk'] = "Nahrať súbor CSV na import metadát/obsahu pre objekty v rovnakom mieste (Zadajte ako názov a identifikátor stĺpca 'Name' alebo 'ContainerID')";
+$hcms_lang['link-fields-with']['sk'] = "Prepojte polia s";
 ?>

@@ -9,6 +9,339 @@
  
 // =================================== META DATA FUNCTIONS =======================================
 
+// --------------------------------------- importmetadata -------------------------------------------
+// function: importmetadata ()
+// input: publication name, location, path to CSV file, user name, type array or string [u,f,l,c,d,k] (optional), delimiter (optional), enclosure (optional), character set (optional)
+// output: true / false
+
+// description:
+// Imports metadata form CSV file for various assets linked by name or conatiner ID. Empty rows or rows without a delimiter will be ignored.
+// In order to identify an asset the file name as "Name" or the container ID as "containerID" must be provided in the first row before the content rows.
+
+function importmetadata ($site, $location, $file, $user, $type="", $delimiter=";", $enclosure='"', $charset="utf-8")
+{
+  global $mgmt_config, $eventsystem;
+  
+  // define delimiters and enclosures
+  $delimiters_csv = array (",", ";", "\t", "|");
+  $enclosures_csv = array ('"', "'");
+  $delimiters_keywords = array (",", ";", "\t", "|", "º", ":");
+
+  if ($file != "" && is_file ($file))
+  {
+    $cat = getcategory ($site, $location);
+  
+    // convert to input character set
+    $data = file_get_contents ($file);
+    
+    if ($data != "")
+    {
+      // detect
+      $charset_csv = mb_detect_encoding ($data, mb_detect_order(), true);
+
+      // convert if not the same character set
+      if ($charset_csv != "" && strtolower ($charset_csv) != strtolower ($charset))
+      {
+        $data = convertchars ($data, "", $charset);
+        if ($data != "") $save = file_put_contents ($file, $data);
+      }
+    }
+  
+    $row = 1;
+    $header = false;
+    $id_filename = "";
+    $id_containerid = "";
+    $id_content = array();
+    $art = array ();
+
+    if (($handle = fopen ($file, "r")) !== false)
+    {
+      // analyze CSV file
+      if ($delimiter == "" || $enclosure == "")
+      {
+        $filedata = @fread ($handle, filesize ($file));
+        
+        if ($filedata != "")
+        {
+          // find delimiter
+          if ($delimiter == "")
+          {
+            $count = array();
+            reset ($delimiters_csv);
+            
+            foreach ($delimiters_csv as $key)
+            {
+              $count[$key] = substr_count ($filedata, $key);
+            }
+            
+            if (max ($count) > 0)
+            {
+              // use highest count for delimiter
+              $temp = array_keys ($count, max ($count));
+              
+              if (!empty ($temp[0])) $delimiter = $temp[0];
+            }
+          }
+          
+          // find enclosure
+          if ($enclosure == "")
+          {
+            $count = array();
+            reset ($enclosures_csv);
+            
+            foreach ($enclosures_csv as $key)
+            {
+              $count[$key] = substr_count ($filedata, $key);
+            }
+            
+            if (max ($count) > 0)
+            {
+              // use highest count for delimiter
+              $temp = array_keys ($count, max ($count));
+              
+              if (!empty ($temp[0])) $enclosure = $temp[0];
+            }
+          }
+        }
+      }
+
+      rewind ($handle);
+    
+      if ($delimiter != "")
+      {
+        while (($data = fgetcsv ($handle, 0, $delimiter, $enclosure)) !== false)
+        {
+          // get number of colums
+          $cols = count ($data);
+          
+          // reset header switch
+          if (is_array ($data) && $cols < 2) $header = false;
+  
+          // verify if row holds columns
+          if (is_array ($data) && $cols > 1)
+          {
+            // first valid row holds content IDs
+            if ($header == false)
+            {
+              // find asset identifier and content IDs
+              for ($c = 0; $c < $cols; $c++)
+              {
+                // use file name
+                if (strtolower ($data[$c]) == "name")
+                {
+                  $id_filename = $c;
+                  $header = true;
+                }
+                // but container ID is prefered
+                elseif (strtolower ($data[$c]) == "containerid")
+                {
+                  $id_container = $c;
+                  $header = true;
+                }
+                // must be content ID
+                else
+                {
+                  // assign content ID
+                  $id_content[$c] = $data[$c];
+                  
+                  // assign article
+                  if (strpos ($data[$c], ":") > 0) $art[$id_content[$c]] = "yes";
+                  else $art[$id_content[$c]] = "no";
+                }
+              }
+            }
+            // all other rows hold metadata
+            else
+            {
+              $text = array();
+              if ($type == "") $type = array();
+              $object = "";
+              $contentfile = "";
+              $contendata = "";
+              $loaded = false;
+              
+              for ($c = 0; $c < $cols; $c++)
+              {
+                // load container by its ID
+                if (!empty ($id_container) && $c == $id_container && $data[$c] != "" && (is_numeric ($data[$c]) || strpos ($data[$c], ".xml") > 0))
+                {
+                  $contentfile = $data[$c];
+                  $contendata = loadcontainer ($contentfile, "work", $user);                
+                  if (!empty ($contendata)) $loaded = true;
+                }
+                
+                // get and load container from object
+                if ($c == $id_filename && $data[$c] != "" && $loaded == false)
+                {
+                  if (is_file (deconvertpath ($location.$data[$id_filename], "file", true)))
+                  {
+                    $location = deconvertpath ($location, "file", true);
+                    
+                    if (specialchr ($data[$id_filename], ".-_~") == true) $object = specialchr_encode ($data[$id_filename], "no");
+                    else $object = $data[$id_filename];
+                    
+                    $object_info = getobjectinfo ($site, $location, $object, $user);
+                    $contentfile = $object_info['content'];
+                    $contentdata = loadcontainer ($contentfile, "work", $user);
+                  }
+                }
+  
+                // get text nodes content and text type
+                if ($c != $id_filename && $c != $id_containerid)
+                {
+                  if ($data[$c] != "")
+                  {
+                    // detect content text type if it has not already analyzed and is not "k", "d", or "f"
+                    if (empty ($type[$id_content[$c]]) || (!empty ($type[$id_content[$c]]) && $type[$id_content[$c]] != "f" && $type[$id_content[$c]] != "k" && $type[$id_content[$c]] != "d"))
+                    {
+                      // unformatted text
+                      $type[$id_content[$c]] = "u";
+                      
+                      // formatted text
+                      if (strpos ("_".$data[$c], "<") > 0 && strpos ("_".$data[$c], ">") > 0)
+                      {
+                        $type[$id_content[$c]] = "f";
+                      }
+                      // date
+                      elseif (substr_count ("_".$data[$c], "/") == 2 || substr_count ("_".$data[$c], "-") == 2 && strlen ($data[$c]) < 20)
+                      {
+                        $type[$id_content[$c]] = "d";
+                      }
+                      // keywords
+                      else
+                      {
+                        // try to detect keywords
+                        $count = array();
+                        reset ($delimiters_keywords);
+                        
+                        foreach ($delimiters_keywords as $key)
+                        {
+                          $count[$key] = substr_count ($data[$c], $key);
+                        }
+                        
+                        if (max ($count) > 0)
+                        {
+                          // use highest count for delimiter
+                          $temp = array_keys ($count, max ($count));
+                          
+                          if (!empty ($temp[0]))
+                          {
+                            $seperator = $temp[0];
+                          
+                            // verify if text holds keywords based on ratio 12:1 and convert to comma
+                            if (mb_strlen ($data[$c]) < ((substr_count ($data[$c], $seperator) + 1) * 12))
+                            {
+                              $data[$c] = str_replace ($seperator, ",", $data[$c]);
+                              $type[$id_content[$c]] = "k";
+                            }
+                          }
+                        }
+                      }
+                    }
+                    
+                    // conversions based on text type
+                    if ($type[$id_content[$c]] == "k")
+                    {
+                      // try to detect keywords
+                      $count = array();
+                      reset ($delimiters_keywords);
+                      
+                      foreach ($delimiters_keywords as $key)
+                      {
+                        $count[$key] = substr_count ($data[$c], $key);
+                      }
+                      
+                      if (max ($count) > 0)
+                      {
+                        // use highest count for delimiter
+                        $temp = array_keys ($count, max ($count));
+                        
+                        if (!empty ($temp[0]))
+                        {
+                          $seperator = $temp[0];
+                        
+                          // verify if text holds keywords based on ratio 12:1 and convert to comma
+                          if (mb_strlen ($data[$c]) < ((substr_count ($data[$c], $seperator) + 1) * 12))
+                          {
+                            $data[$c] = str_replace ($seperator, ",", $data[$c]);
+                          }
+                        }
+                      }
+                    }
+
+                    // assign text
+                    $text[$id_content[$c]] = $data[$c];
+                  }
+                }
+              }
+
+              if ($contentdata != "" && $contentfile != "" && sizeof ($text) > 0 && $type != "" && $art != "" && $user != "")
+              {
+                $contentdata_new = settext ($site, $contentdata, $contentfile, $text, $type, $art, $user, $user, $charset);
+     
+                // on error
+                if ($contentdata_new == false)
+                {
+                  $errcode = "10198";
+                  $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|CSV content for ".$contentfile." could not be imported into container";
+                }
+                // save container on success
+                else
+                {
+                  // eventsystem
+                  if ($eventsystem['onsaveobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+                  {
+                    $contentdataevent = onsaveobject_pre ($site, $cat, $location, $object, $contentfile, $contentdata_new, $user);
+                  
+                    // check if event returns a string, if so, the event returns the container and not true or false 
+                    if (!empty ($contentdataevent) && strlen ($contentdataevent) > 10) $contentdata_new = $contentdataevent;
+                  }
+                
+                  // insert new date into content file
+                  $contentdata_new = setcontent ($contentdata_new, "<hyperCMS>", "<contentdate>", $mgmt_config['today'], "", "");
+                  
+                  // set encoding
+                  $charset_old = getcharset ("", $contentdata_new); 
+                  
+                  if (empty ($charset_old['charset']) || strtolower ($charset_old['charset']) != strtolower ($charset))
+                  {
+                    // write XML declaration parameter for text encoding
+                    if ($charset != "") $contentdatanew = setxmlparameter ($contentdata_new, "encoding", $charset);
+                  }
+                  
+                  // save working xml content container file
+                  $savefile = savecontainer ($contentfile, "work", $contentdata_new, $user);
+                  
+                  if ($savefile == false)
+                  {
+                    $errcode = "10199";
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|$errcode|container  ".$contentfile." could not be saved after CSV import";
+                  }
+                  else
+                  {
+                    $errcode = "00199";
+                    $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|information|$errcode|CSV content for ".convertpath ($site, $location.$object, $cat)." (".$contentfile.") has been successfully imported and saved into container by user '".$user."' (".getuserip().")";
+                  }
+                }
+              }
+            }
+            
+            $row++;
+          }
+        }
+      }
+      
+      fclose ($handle);      
+      savelog (@$error);
+      
+      if ($row > 1 && !empty ($savefile)) return true;
+      else return false;
+    }
+    else return false;
+  }
+  else return false;
+}
+
 // --------------------------------------- createtaxonomy -------------------------------------------
 // function: createtaxonomy ()
 // input: recreate taxonomy file [true,false] (optional)
@@ -812,95 +1145,6 @@ function xmp_getdata ($file)
         else return false;
       }
       else return false;
-      
-      /*
-      // XMP -> Dublin Core namespace tags
-      $mapping['dc:title'] = "Title";
-      $mapping['dc:subject'] = "Subject";
-      $mapping['dc:description'] = "Description";
-      $mapping['dc:creator'] = "Creator";
-      $mapping['dc:rights'] = "Copyright";
-      $mapping['dc:contributor'] = "Contributor";
-      $mapping['dc:coverage'] = "Coverage";
-      $mapping['dc:date'] = "Date";
-      $mapping['dc:format'] = "Format";
-      $mapping['dc:identifier'] = "Identifier";
-      $mapping['dc:language'] = "Language";
-      $mapping['dc:publisher'] = "Publisher";
-      $mapping['dc:relation'] = "Relation";
-      $mapping['dc:source'] = "Source";
-      $mapping['dc:type'] = "Type";
-
-      // XMP -> Adobe PhotoShop namespace tags
-      $mapping['photoshop:Source'] = "Source";
-      $mapping['photoshop:Credit'] = "Credit";
-      $mapping['photoshop:DateCreated'] = "Creation date";
-      $mapping['photoshop:AuthorsPosition'] = "Authors position";
-      $mapping['photoshop:CaptionWriter'] = "Caption writer";
-      $mapping['photoshop:Category'] = "Category";
-      $mapping['photoshop:SupplementalCategories'] = "Supplemental categories";
-      $mapping['photoshop:City'] = "City";
-      $mapping['photoshop:State'] = "State";
-      $mapping['photoshop:Country'] = "Country";
-      $mapping['photoshop:DocumentAncestors'] = "Document ancestors";
-      $mapping['photoshop:DocumentAncestorID'] = "Document ancestor ID";
-      $mapping['photoshop:Headline'] = "Headline";
-      $mapping['photoshop:Instructions'] = "Instructions";
-      $mapping['photoshop:History'] = "History";
-      $mapping['photoshop:Urgency'] = "Urgency";
-      // ColorMode:
-      // 0 = Bitmap
-      // 1 = Grayscale
-      // 2 = Indexed
-      // 3 = RGB
-      // 4 = CMYK
-      // 7 = Multichannel
-      // 8 = Duotone
-      // 9 = Lab	
-      $mapping['photoshop:ColorMode'] = "Color mode";
-      $mapping['photoshop:ICCProfileName'] = "ICC Profile name";
-      $mapping['photoshop:LegacyIPTCDigest'] = "Legacy IPTC digest";
-      $mapping['photoshop:SidecarForExtension'] = "Sidecar for extension";
-      $mapping['photoshop:TextLayers'] = "Text layers";
-      $mapping['photoshop:TextLayerName'] = "Text layer name";
-      $mapping['photoshop:TextLayerText'] = "Text layer text";
-      $mapping['photoshop:TransmissionReference'] = "Transmission reference";
-      
-      // get XMP meta data
-      $xmp = getcontent ($content, "<x:xmpmeta *>");
-    
-      if (is_array ($xmp))
-      {
-        reset ($mapping);
-        
-        foreach ($mapping as $tag => $name)
-        {
-          // only for XMP (XML-based) tags (DC, PhotoShop ...)
-          if ($tag != "")
-          {          
-            $xmpstr = "";
-            
-            // namespace
-            if (strpos ($tag, ":") > 0) $namespace = strtoupper (substr ($tag, 0, strpos ($tag, ":")));
-            else $namespace = Null;
-            
-            // get content
-            $xmp_node = getcontent ($xmp[0], "<".$tag." *>");
-            if ($xmp_node != false) $xmp_li = getcontent ($xmp_node[0], "<rdf:li *>");
-            if ($xmp_li != false) $xmpstr = implode (", ", $xmp_li);
-        
-            if (trim ($xmpstr) != "")
-            {
-              $result[$namespace][$name] = trim ($xmpstr);
-            }
-          }
-        }
-        
-        if (sizeof ($result) > 0) return $result;
-        else return false;
-      }
-      else return false;
-      */
     }
     else return false;
 	}
@@ -1919,7 +2163,7 @@ function createmapping ($site, $mapping)
 // output: mapping code for display / false
 
 // description:
-// Loads the mapping file of the provided publication
+// Load the mapping file of the provided publication.
 
 function getmapping ($site)
 {
@@ -1929,7 +2173,7 @@ function getmapping ($site)
   
   if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
   {
-    // load pers file
+    // load mapping file
     $mapping_data = loadfile ($mgmt_config['abs_path_data']."config/", $site.".media.map.php");
 
     if ($mapping_data != "")
@@ -1947,9 +2191,6 @@ function getmapping ($site)
       
       // remove php tags
       $mapping_data = str_replace (array("<?php", "?>"), array("", ""), $mapping_data);
-      
-      // escape & < >
-      $mapping_data = str_replace (array("<", ">"), array("&lt;", "&gt;"), $mapping_data);
       
       // trim
       return trim ($mapping_data);
@@ -1983,7 +2224,7 @@ iptc:photo_number => ""
 iptc:photo_source => ""
 iptc:charset => ""
 
-// XMP -> Dublin Core namespace tags
+// XMP Dublin Core namespace tags
 dc:title => "textu:Title"
 dc:subject => "textk:Keywords"
 dc:description => "textu:Description"
@@ -2001,7 +2242,7 @@ dc:rights => ""
 dc:source => ""
 dc:type => ""
 
-// XMP -> Adobe PhotoShop namespace tags
+// XMP Adobe PhotoShop namespace tags
 photoshop:AuthorsPosition => ""
 photoshop:CaptionWriter => ""
 photoshop:Category => ""
@@ -2036,7 +2277,7 @@ photoshop:TextLayerText => ""
 photoshop:TransmissionReference => ""
 photoshop:Urgency => ""
 
-// XMP -> Adobe Lightroom namespace tags
+// XMP Adobe Lightroom namespace tags
 lr:hierarchicalSubject => "automatic"
 
 // EXIF tags
@@ -2048,6 +2289,7 @@ lr:hierarchicalSubject => "automatic"
 // THUMBNAIL ...	A file is supposed to contain a thumbnail if it has a second IFD. All tagged information about the embedded thumbnail is stored in this section.
 // COMMENT ...	Comment headers of JPEG images.
 // EXIF ... The EXIF section is a sub section of IFD0. It contains more detailed information about an image. Most of these entries are digital camera related.
+
 // exif:SECTION.Tag-Name
 exif:FILE.FileName => ""
 exif:FILE.FileDateTime => ""
@@ -2075,7 +2317,7 @@ exif:THUMBNAIL.JPEGInterchangeFormatLength => ""
 exif:EXIF.DateTimeOriginal => ""
 exif:EXIF.DateTimeDigitized => ""
 
-// ID3 -> ID3 namespace tags
+// ID3 namespace tags
 id3:title => "textu:Title"
 id3:artist => "textu:Creator"
 id3:album => ""

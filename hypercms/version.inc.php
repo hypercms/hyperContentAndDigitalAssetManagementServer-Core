@@ -2295,7 +2295,7 @@ Release 09/2017
 - Design and functional modifications in simple statistics plugin
 - Implementation of new free storage home box displaying total and free storage space
 - Modifications in black design theme
-- Implementation of import order for different object types in order to import folder and media objects before components and pages so the folder exists before importing additiuonal objects and media links used in pages and components can be resolved during the import process
+- Implementation of import order for different object types in order to import folder and media objects before components and pages so the folder exists before importing additional objects and media links used in pages and components can be resolved during the import process
 - Modifications in statistics_of_favorites home box in order to support and display folder names
 - Modifications in annotation toolbar in order to keep icons inline for smaller images
 - Design modifications in userlogout
@@ -2306,19 +2306,81 @@ Release 09/2017
 - Implementation of scroll-to-top of the navigatior when changing from search to the navigator
 - Design modifications in simple statistics plugin
 - Implementation of Hybridauth library in connector
-- Imlpementation of main configuaration settings fow the objects window width and height
+- Imlpementation of main configuaration settings for the objects window width and height
 - Implementation of new functions windowwidth and windowheight in UI API
-- Implementation of new windowwidth and windowheight feature in the system incl. the use of JS localstoragefor the contextmenu
+- Implementation of new windowwidth and windowheight feature in the system incl. the use of JS localstorage for the contextmenu
 - Implementation of new window positioning modes in JS function hcms_openWindow in main.js
-- Bug fix: Icon of Plugins in context menu have not been resized by CSS class in JS function hcms_showContextmenu in contextmenu.js
 - Enabled keyword tag in template editor for pages and components
+- Bug fix: Icon of Plugins in context menu have not been resized by CSS class in JS function hcms_showContextmenu in contextmenu.js
 - Bug fix: Template engine displayed wrong icons for single component in WYSIWYG interface
 - Bug fix: Function zipfiles in media API included recycled files in the ZIP file and cached ZIP file created for the download
 - Bug fix: Function rdbms_getfilesize in DB Connect did not exclude recycled files in the query
-- bug fix: Function getlistelements in Get API could not access the global language setting
+- Bug fix: Function getlistelements in Get API could not access the global language setting
 - Bug fix: Tagit for keyword lists did present the helper
+
+Version 7.0.3
+Release 10/2017
+- Implementation of CSV metadata import for assets
+- Modification in various functions in all API modules in order to encode the input object name
+- Implementation of new function importmetadata in Meta API to support metadata import based on CSV format
+- Modification of default value for 3rd input parameter of function deconvertpath in Main API
+- Modifications in function buildsearchform to support editable field width
+- Design modifications of headlines in search form of navigator
+- Implementation of boolean search (AND/OR) in search forms and search_objectlist
+- Implementation for the support of free space and dash in tag IDs in the template editor
+- Implementation of file/media-type for the assignment of metadata fields to certain media types
+- Implementation of function is_compressed in Main API
+- Modifications in function createdocument in Media API in order to support thumbnails of any document format
+- Modifications in function convertchars inb Main API in order to support automatic detection of the character set if not provided as input
+- Modifications in service savecontent in order to compare old and new character set on lower case basis
+- Modifications in function getvideoinfo in Get API in order to extract video rotation information
+- Modifications in function savemediaplayer_config and readmediaplayer_config in Media API to support video configuration file version 2.5 including the videos rotation
+- Modifications in template engine in order to support JS function setsavetype for various elements
+- Implementation of new main configuration setting $mgmt_mediaoptions['autorotate-video'] to rotate videos automatically
+- Implementation of auto rotation feature for rotated videos incl. correction of metadata in function createmedia and createthumbnail_video in Media API (original video will be kept)
+- Implementation of new text variables in all language files
+- Implementation of new function showmapping in UI API to generate HTML form for media mapping
+- Modification in mapping editor 'media_mapping' to support the new mapping form
+- Modifications in function getmapping in Meta API in order to support new function showmapping
+- Implementation of new SOAP webservices workflow_accept and workflow_reject in OpenAPI
+- Implementation of new function prepareWSDL in SOAP API
+- Modifications in WSDL template in order to support new functions
+- Removed function prepare_location from OpenAPI
+- Removed sendmail parameter from SOAP webservices for task in OpenAPI
+- Modifications of create object layer in control_content_menu
+- Modifications in order to optimize function deconvertpath in Main API
+- Modifications in function acceptobject and rejectobject in Workflow API in order to support error messages for missing input
+- Modifications in SAOP client test scenarios for testing the SOAP webservices
+- Define default language code in API loader to include the Englisch language file if not language code has been provided
+- Design modifications in popup_message window
+- Implementation of new JS function openmessageview in frameset_content and control_content in order to support workflow message popup window
+- Update of template designers guide
+- Update of connectors guide
+- Design modifications in workflow manager
+- Design modifications in colorful theme
+- Integration of upload popup window (HTML and Flash) for update of media files in in frameset_content in order to avoid opening a new popup window
+- Removed CSS style for image-rendering:pixelated for Chrome browser due to bad rendering quality of icons
+- Modifications in project management toolbar in order to avoid a line break
+- Bug fix: Function getmetadata in Meta PI did assign wrong parameter to function call deconvertpath
+- Bug fix: The template engine did not present text input areas in template view for info-type "meta"
+- Bug fix: Image references have not been correct in template_help 
+- Bug fix: Loading bar did not work when reindexing metadata in media_mapping
+- Bug fix: Service savecontent did not access the array element of the result of function getcharset
+- Bug fix: Article edit button has not been displayed in inline editing mode
+- Bug fix: Undefined global variable $user in function convertimage in Media API
+- Bug fix: More button in objectlists had no CSS class assigned
+- Bug fix: Issue with accesspermissions of standard users, the navigator does not display the folders a user has access to
+- Bug fix: Issue due to missing path separator support in function deconvertpath in Main API
+- Bug fix: Function showcompexplorer in UI API did not exclude recycled folders and objects
+- Bug fix: folder_explorer, link_explorer, link_edit_explorer, export_explorer, and group_access_explorer did not exclude recycled folder and objects
+- Bug fix: The navigator did not exclude recycled folders if compaccess or pageaccess of a user has been applied instead of the root access to pages and assets
+- Bug fix: Function acceptobject  and rejectobject in Workflow API did not provide the object name in the result array
+- Bug fix: Function checkworkflow did not assign loaded template data to viewstore variable, if the viewstore has not been provided as input
+- Bug fix: Template engine did not initialize map for 'formlock' view mode
+- Bug fix: Function getobjectlistcells in Get API returned zero if viewportwidth was too small
+- Bug fix: Function getworkflowitem did not verify the result
 */
 
 // current version
-$mgmt_config['version'] = "Version 7.0.2";
+$mgmt_config['version'] = "Version 7.0.3";
 ?>

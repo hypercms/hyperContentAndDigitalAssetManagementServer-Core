@@ -941,7 +941,7 @@ function getconnectedobject ($container, $type="work")
   {
     // load container
     $container_data = loadcontainer ($container, $type, $user);
- 
+
     // extract object references
     if ($container_data != "")
     {

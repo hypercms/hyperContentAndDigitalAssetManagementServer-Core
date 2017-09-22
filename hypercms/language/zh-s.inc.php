@@ -1396,4 +1396,7 @@ $hcms_lang['recycle-bin']['zh-s'] = "回收站";
 $hcms_lang['restore']['zh-s'] = "恢复";
 $hcms_lang['empty-recycle-bin']['zh-s'] = "空的回收箱";
 $hcms_lang['existing-objects-will-be-replaced']['zh-s'] = "现有对象将被替换";
+$hcms_lang['import-list-comma-delimited']['zh-s'] = "CSV导入";
+$hcms_lang['upload-csv-file']['zh-s'] = "上传用于导入相同位置的对象的元数据/内容的CSV文件（提供'Name'或'ContainerID'作为列标题和标识符）";
+$hcms_lang['link-fields-with']['zh-s'] = "链接字段";
 ?>

@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['th'] = "ถังกระดาษ";
 $hcms_lang['restore']['th'] = "คืนค่า";
 $hcms_lang['empty-recycle-bin']['th'] = "ถังรีไซเคิลว่างเปล่า";
 $hcms_lang['existing-objects-will-be-replaced']['th'] = "วัตถุที่มีอยู่จะถูกแทนที่!";
+$hcms_lang['import-list-comma-delimited']['th'] = "การนำเข้า CSV";
+$hcms_lang['upload-csv-file']['th'] = "อัปโหลดไฟล์ CSV เพื่อนำเข้าข้อมูลเมตา/เนื้อหาสำหรับวัตถุในตำแหน่งเดียวกัน (ระบุ 'Name' หรือ 'ContainerID' เป็นชื่อและชื่อของคอลัมน์)";
+$hcms_lang['link-fields-with']['th'] = "ลิงก์ฟิลด์ด้วย";
 ?>

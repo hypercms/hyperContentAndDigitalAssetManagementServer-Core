@@ -186,7 +186,7 @@ $hcms_lang['autosave']['en'] = "Autosave";
 $hcms_lang['drag']['en'] = "Drag";
 $hcms_lang['duration-hhmmss']['en'] = "Duration (hh:mm:ss)";
 $hcms_lang['video-bitrate']['en'] = "Video bitrate";
-$hcms_lang['width-x-height']['en'] = "width x height";
+$hcms_lang['width-x-height']['en'] = "Width x Height";
 $hcms_lang['original']['en'] = "Original";
 $hcms_lang['embed']['en'] = "Embed";
 $hcms_lang['the-template-holds-no-information']['en'] = "The template holds no information";
@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['en'] = "Recycle bin";
 $hcms_lang['restore']['en'] = "Restore";
 $hcms_lang['empty-recycle-bin']['en'] = "Empty recycle bin";
 $hcms_lang['existing-objects-will-be-replaced']['en'] = "Existing objects will be replaced!";
+$hcms_lang['import-list-comma-delimited']['en'] = "CSV Import";
+$hcms_lang['upload-csv-file']['en'] = "Upload CSV file for the import of metadata/content for objects in the same location (Provide 'Name' or 'ContainerID' as column title and identifier)";
+$hcms_lang['link-fields-with']['en'] = "Link the fields with";
 ?>

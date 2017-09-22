@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['pl'] = "Kosz";
 $hcms_lang['restore']['pl'] = "Przywracać";
 $hcms_lang['empty-recycle-bin']['pl'] = "Pusty kosz";
 $hcms_lang['existing-objects-will-be-replaced']['pl'] = "Istniejące obiekty zostaną wymienione!";
+$hcms_lang['import-list-comma-delimited']['pl'] = "Import CSV";
+$hcms_lang['upload-csv-file']['pl'] = "Prześlij plik CSV w celu zaimportowania metadanych/treści dla obiektów znajdujących się w tej samej lokalizacji (podaj nazwę 'Name' lub 'ContainerID' jako tytuł i identyfikator kolumny)";
+$hcms_lang['link-fields-with']['pl'] = "Połącz pola z";
 ?>

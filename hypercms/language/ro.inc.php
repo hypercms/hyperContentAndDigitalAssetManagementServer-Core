@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['ro'] = "Cos de gunoi";
 $hcms_lang['restore']['ro'] = "Restabili";
 $hcms_lang['empty-recycle-bin']['ro'] = "Goliți coșul de gunoi";
 $hcms_lang['existing-objects-will-be-replaced']['ro'] = "Obiecte existente vor fi înlocuite!";
+$hcms_lang['import-list-comma-delimited']['ro'] = "Importul CSV";
+$hcms_lang['upload-csv-file']['ro'] = "Încărcați fișierul CSV pentru importul metadatelor/conținutului pentru obiecte din aceeași locație (furnizați numele de coloană și identificatorul 'Name' sau 'ContainerID')";
+$hcms_lang['link-fields-with']['ro'] = "Legați câmpurile cu";
 ?>

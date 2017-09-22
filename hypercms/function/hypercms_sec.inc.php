@@ -1179,7 +1179,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                         $userpermission = getcontent ($usergroupnode[0], "<permission>");
                         $userpageaccess = getcontent ($usergroupnode[0], "<pageaccess>");
                         $usercompaccess = getcontent ($usergroupnode[0], "<compaccess>");
-    
+
                         if ($userpermission != false)
                         {
                           $permission_str[$site_name][$group_name] = trim ($userpermission[0]);
@@ -1188,7 +1188,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                         {
                           $permission_str = null;
                         }
-                        
+
                         // page accsess
                         if ($userpageaccess != false && strlen ($userpageaccess[0]) >= 1)
                         {
@@ -1250,6 +1250,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                         {
                           $result['compaccess'][$site_name][$group_name] = null;
                         }
+                        
                         // deseralize the permission string and define root, global and local permissions
                         if (isset ($permission_str[$site_name][$group_name]))
                         {

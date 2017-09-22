@@ -1396,4 +1396,7 @@ $hcms_lang['recycle-bin']['he'] = "סל נייר";
 $hcms_lang['restore']['he'] = "לשחזר";
 $hcms_lang['empty-recycle-bin']['he'] = "סל מחזור ריק";
 $hcms_lang['existing-objects-will-be-replaced']['he'] = "אובייקטים קיימים יוחלפו!";
+$hcms_lang['import-list-comma-delimited']['he'] = "ייבוא CSV";
+$hcms_lang['upload-csv-file']['he'] = "העלה קובץ CSV לייבוא מטא נתונים / תוכן עבור אובייקטים באותו מיקום (ציין 'Name' או 'ContainerID' ככותרת ומזהה של עמודה)";
+$hcms_lang['link-fields-with']['he'] = "קשר את השדות עם";
 ?>

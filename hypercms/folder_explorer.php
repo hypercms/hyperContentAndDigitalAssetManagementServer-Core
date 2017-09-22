@@ -138,12 +138,16 @@ function sendOption(folder_name, folder_location)
           {
             // folder info
           	$folder_info = getfileinfo ($site, $dir.$folder.'/.folder', $cat);
-          	$folder_name = $folder_info['name'];
-          	$icon = getthemelocation()."img/".$folder_info['icon'];
-        
-            if ($folder_info != false && $folder_info['deleted'] == false)
+            
+            if ($folder != "" && $folder_info['deleted'] == false)
             {
-              echo "<tr><td width=\"90%\" align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&site=".url_encode($site)."\"><img src=\"".$icon."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=\"javascript:sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></a></td></tr>\n";
+            	$folder_name = $folder_info['name'];
+            	$icon = getthemelocation()."img/".$folder_info['icon'];
+          
+              if ($folder_info != false && $folder_info['deleted'] == false)
+              {
+                echo "<tr><td width=\"90%\" align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&site=".url_encode($site)."\"><img src=\"".$icon."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=\"javascript:sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" align=\"absmiddle\" title=\"OK\" alt=\"OK\" /></a></td></tr>\n";
+              }
             }
           }
         }

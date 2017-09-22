@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['uk'] = "коши";
 $hcms_lang['restore']['uk'] = "Відновлення";
 $hcms_lang['empty-recycle-bin']['uk'] = "порожня кошик";
 $hcms_lang['existing-objects-will-be-replaced']['uk'] = "Існуючі об'єкти будуть замінені!";
+$hcms_lang['import-list-comma-delimited']['uk'] = "Імпорт CSV";
+$hcms_lang['upload-csv-file']['uk'] = "Завантажте файл CSV для імпорту метаданих/вмісту для об'єктів у одному місці (надайте 'Name' або 'ContainerID' як назву та ідентифікатор стовпця)";
+$hcms_lang['link-fields-with']['uk'] = "Пов'язати поля з";
 ?>

@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['no'] = "Papierkurven";
 $hcms_lang['restore']['no'] = "Restaurere";
 $hcms_lang['empty-recycle-bin']['no'] = "Tøm papirkurven";
 $hcms_lang['existing-objects-will-be-replaced']['no'] = "Eksisterende objekter vil bli erstattet!";
+$hcms_lang['import-list-comma-delimited']['no'] = "CSV Import";
+$hcms_lang['upload-csv-file']['no'] = "Last opp CSV-fil for import av metadata/innhold for objekter på samme sted (Gi 'Name' eller 'ContainerID' som kolonnenavn og -identifikator)";
+$hcms_lang['link-fields-with']['no'] = "Link feltene med";
 ?>

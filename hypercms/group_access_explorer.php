@@ -150,11 +150,15 @@ if (($cat == "page" && $mgmt_config[$site]['abs_path_page'] != "") || $cat == "c
         foreach ($entry_dir as $folder)
         {
           // folder name
-          $folder_data = getfileinfo($site, $dir.$folder.'/.folder', $cat);
-          $folder_name = $folder_data['name'];
-          $icon = getthemelocation()."img/".$folder_data['icon'];
-  
-          echo "<tr><td width=\"90%\" align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&group_name=".url_encode($group_name)."\"><img src=\"".$icon."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=# onClick=\"sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" border=0 width=16 height=16 align=\"absmiddle\" alt=\"OK\" /></a></td></tr>\n";
+          $folder_info = getfileinfo ($site, $dir.$folder.'/.folder', $cat);
+          
+          if ($folder != "" && $folder_info['deleted'] == false)
+          {
+            $folder_name = $folder_info['name'];
+            $icon = getthemelocation()."img/".$folder_info['icon'];
+    
+            echo "<tr><td width=\"90%\" align=\"left\" nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?site=".url_encode($site)."&cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&group_name=".url_encode($group_name)."\"><img src=\"".$icon."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp;".$folder_name."</a></td><td align=\"right\" nowrap=\"nowrap\"><a href=# onClick=\"sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" border=0 width=16 height=16 align=\"absmiddle\" alt=\"OK\" /></a></td></tr>\n";
+          }
         }
       }
     }

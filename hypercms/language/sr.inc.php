@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['sr'] = "Otpatke";
 $hcms_lang['restore']['sr'] = "Povratiti";
 $hcms_lang['empty-recycle-bin']['sr'] = "Prazna otpatke";
 $hcms_lang['existing-objects-will-be-replaced']['sr'] = "Postojeći objekti će biti zamenjen!";
+$hcms_lang['import-list-comma-delimited']['sr'] = "CSV Import";
+$hcms_lang['upload-csv-file']['sr'] = "Otpremite CSV datoteku za uvoz metapodataka/sadržaja za objekte na istoj lokaciji (Obezbedite 'Name' ili 'ContainerID' kao naziv kolone i identifikator)";
+$hcms_lang['link-fields-with']['sr'] = "Povezite polja sa";
 ?>

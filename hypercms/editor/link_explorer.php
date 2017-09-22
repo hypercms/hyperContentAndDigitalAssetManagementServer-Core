@@ -197,12 +197,16 @@ function submitLink (url)
         { 
           // folder info
           $folder_info = getfileinfo ($site, $dirname, "page");
-          $folder_path = getlocation ($dirname);
-          $location_name = getlocationname ($site, $folder_path, "page", "path");   
-      
-          if ($folder_info != false && $folder_info['deleted'] == false)
-          {    
-            echo "<tr><td align=\"left\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 44)."</a></td></tr>\n";
+          
+          if ($dirname != "" && $folder_info['deleted'] == false)
+          {
+            $folder_path = getlocation ($dirname);
+            $location_name = getlocationname ($site, $folder_path, "page", "path");   
+        
+            if ($folder_info != false && $folder_info['deleted'] == false)
+            {    
+              echo "<tr><td align=\"left\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 44)."</a></td></tr>\n";
+            }
           }
         }
       }
@@ -216,13 +220,17 @@ function submitLink (url)
         foreach ($entry_file as $file)
         {
           // object info
-          $file_info = getfileinfo ($site, $file, "page");      
-          $file_url = str_replace ("%page%/".$site."/", $mgmt_config[$site]['url_path_page'], $file);
-          $file_name = getlocationname ($site, $file, "page", "path");
-  
-          if ($file_info != false && $file_info['published'] == true && $file_info['deleted'] == false)
+          $file_info = getfileinfo ($site, $file, "page"); 
+          
+          if ($file != "" && $file_info['deleted'] == false)
           {
-            echo "<tr><td align=\"left\"><a href=\"javascript:submitLink('".$file_url."');\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($file_info['name'], 44)."</a></td></tr>\n";
+            $file_url = str_replace ("%page%/".$site."/", $mgmt_config[$site]['url_path_page'], $file);
+            $file_name = getlocationname ($site, $file, "page", "path");
+    
+            if ($file_info != false && $file_info['published'] == true && $file_info['deleted'] == false)
+            {
+              echo "<tr><td align=\"left\"><a href=\"javascript:submitLink('".$file_url."');\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($file_info['name'], 44)."</a></td></tr>\n";
+            }
           }
         }
       }

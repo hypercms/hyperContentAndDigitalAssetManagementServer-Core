@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['nl'] = "Papierbak";
 $hcms_lang['restore']['nl'] = "Herstellen";
 $hcms_lang['empty-recycle-bin']['nl'] = "Lege papierbak";
 $hcms_lang['existing-objects-will-be-replaced']['nl'] = "Bestaande objecten zullen worden vervangen!";
+$hcms_lang['import-list-comma-delimited']['nl'] = "CSV Import";
+$hcms_lang['upload-csv-file']['nl'] = "Upload CSV-bestand voor de invoer van metagegevens/inhoud voor objecten op dezelfde locatie (Geef 'Name' of 'ContainerID' als kolomnaam en -identificatie)";
+$hcms_lang['link-fields-with']['nl'] = "Link de velden met";
 ?>

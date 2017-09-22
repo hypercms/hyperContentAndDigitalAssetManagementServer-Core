@@ -1394,4 +1394,7 @@ $hcms_lang['recycle-bin']['sl'] = "Koš";
 $hcms_lang['restore']['sl'] = "Obnovitev";
 $hcms_lang['empty-recycle-bin']['sl'] = "Prazna koš";
 $hcms_lang['existing-objects-will-be-replaced']['sl'] = "Obstoječi objekti se nadomesti!";
+$hcms_lang['import-list-comma-delimited']['sl'] = "CSV uvoz";
+$hcms_lang['upload-csv-file']['sl'] = "Naloži datoteko CSV za uvoz metapodatkov / vsebine za predmete na isti lokaciji (v naslovu in identifikacijski oznaki stolpca navedite »Name« ali »ContainerID«)";
+$hcms_lang['link-fields-with']['sl'] = "Povežite polja z";
 ?>

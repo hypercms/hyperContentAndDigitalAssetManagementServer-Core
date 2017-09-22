@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['hu'] = "Papírkosár";
 $hcms_lang['restore']['hu'] = "Visszaállítás";
 $hcms_lang['empty-recycle-bin']['hu'] = "Lomtár ürítése";
 $hcms_lang['existing-objects-will-be-replaced']['hu'] = "Meglévő objektumok kell cserélni!";
+$hcms_lang['import-list-comma-delimited']['hu'] = "CSV importálás";
+$hcms_lang['upload-csv-file']['hu'] = "CSV-fájl feltöltése ugyanazon a helyen lévő objektumok metaadatainak/tartalmainak importálásához (Adjon meg 'Name' vagy 'ContainerID' oszlopcímként és azonosítóban)";
+$hcms_lang['link-fields-with']['hu'] = "Csatlakoztassa a mezőket a következővel";
 ?>

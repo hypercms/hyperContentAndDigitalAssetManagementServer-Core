@@ -102,7 +102,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   if ($mediaview != "") $mediaview = str_replace ("<td>", "<td style=\"width:20%; vertical-align:top;\">", $mediaview);
 
   // meta data
-  $metadata_array = getmetadata ("", "", $contentdata, "array", $site."/".$object_info['template']);
+  $metadata_array = getmetadata ($location, $page, $contentdata, "array", $site."/".$object_info['template']);
 
   if (is_array ($metadata_array))
   {

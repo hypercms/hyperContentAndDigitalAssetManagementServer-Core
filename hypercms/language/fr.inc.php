@@ -1396,4 +1396,7 @@ $hcms_lang['recycle-bin']['fr'] = "Corbeille";
 $hcms_lang['restore']['fr'] = "Restaurer";
 $hcms_lang['empty-recycle-bin']['fr'] = "Vider la Corbeille";
 $hcms_lang['existing-objects-will-be-replaced']['fr'] = "Les objets existants seront remplacés!";
+$hcms_lang['import-list-comma-delimited']['fr'] = "Importation CSV";
+$hcms_lang['upload-csv-file']['fr'] = "Télécharger le fichier CSV pour l'importation de métadonnées/contenu pour les objets situés dans le même emplacement (Fournissez 'Name' ou 'ContainerID' comme titre et identificateur de colonne)";
+$hcms_lang['link-fields-with']['fr'] = "Lier les champs avec";
 ?>

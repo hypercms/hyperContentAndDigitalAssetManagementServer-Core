@@ -1,6 +1,5 @@
 img
 {
-  image-rendering: pixelated; // Chrome 41+ and Opera 26+
   image-rendering: -webkit-optimize-contrast; // Safari 6, UC Browser 9.9
   image-rendering: -webkit-crisp-edges; // Safari 7+
   image-rendering: -moz-crisp-edges; // Firefox 3.6+

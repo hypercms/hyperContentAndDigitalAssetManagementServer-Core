@@ -142,28 +142,6 @@ function cal_on_autoclose(cal)
 	cal_obj = null;
 }
 
-function validateForm(select, min, max) 
-{
-  var errors = '';
-  
-  val = select.value;
-
-  if (val<min || max<val) errors += '<?php echo getescapedtext ($hcms_lang['time-must-contain-a-number-between'][$lang], $charset, $lang); ?> ' + min + ' <?php echo getescapedtext ($hcms_lang['and'][$lang], $charset, $lang); ?> ' + max + ' <?php echo getescapedtext ($hcms_lang['be'][$lang], $charset, $lang); ?>.\n';
-  
-  if (errors) 
-  {
-    select.focus();    
-    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-following-error-occurred'][$lang], $charset, $lang); ?>\n' + errors));
-  }
-  else
-  {
-    if (val.length == 1) select.value = '0' + val;
-    else if (val.length < 1) select.value = '00';
-  }
-  
-  return false;
-}
-
 function submitform ()
 {
   var artdatefromcheck = document.getElementById("artdatefrom").value;
@@ -226,33 +204,35 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     </tr>
     <tr>
       <td>
-        <input type="radio" name="artstatus[<?php echo $artid; ?>]" value="active" <?php if ($artstatus == "active" || $artstatus == "") {echo "checked=\"checked\"";} ?>>
-        <?php echo getescapedtext ($hcms_lang['set-active'][$lang], $charset, $lang); ?></td>
-      <td>
-
+        <label><input type="radio" name="artstatus[<?php echo $artid; ?>]" value="active" <?php if ($artstatus == "active" || $artstatus == "") {echo "checked=\"checked\"";} ?>>
+        <?php echo getescapedtext ($hcms_lang['set-active'][$lang], $charset, $lang); ?></label>
       </td>
-    </tr>
-    <tr>
-      <td><input type="radio" name="artstatus[<?php echo $artid; ?>]" value="inactive" <?php if ($artstatus == "inactive") {echo "checked=\"checked\"";} ?> />
-      <?php echo getescapedtext ($hcms_lang['set-inactive'][$lang], $charset, $lang); ?></td>
       <td>
-        
       </td>
     </tr>
     <tr>
       <td>
-        <input type="radio" name="artstatus[<?php echo $artid; ?>]" value="timeswitched" <?php if ($artstatus == "timeswitched") {echo "checked=\"checked\"";} ?> />
-        <?php echo getescapedtext ($hcms_lang['active-from'][$lang], $charset, $lang); ?></td>
+        <label><input type="radio" name="artstatus[<?php echo $artid; ?>]" value="inactive" <?php if ($artstatus == "inactive") {echo "checked=\"checked\"";} ?> />
+        <?php echo getescapedtext ($hcms_lang['set-inactive'][$lang], $charset, $lang); ?></label>
+      </td>
       <td>
-        <input type="text" name="artdatefrom" id="artdatefrom" readonly="readonly" value="<?php echo $artdatefrom; ?>" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'artdatefrom', '%Y-%m-%d %H:%i');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" />
+      </td>
+    </tr>
+    <tr>
+      <td valign="top">
+        <label><input type="radio" name="artstatus[<?php echo $artid; ?>]" value="timeswitched" <?php if ($artstatus == "timeswitched") {echo "checked=\"checked\"";} ?> />
+        <?php echo getescapedtext ($hcms_lang['active-from'][$lang], $charset, $lang); ?></label>
+      </td>
+      <td valign="top">
+        <input type="text" name="artdatefrom" id="artdatefrom" readonly="readonly" value="<?php echo $artdatefrom; ?>" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'artdatefrom', '%Y-%m-%d %H:%i');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" />
         <?php echo getescapedtext ($hcms_lang['to'][$lang], $charset, $lang); ?>
-        <input type="text" name="artdateto" id="artdateto" readonly="readonly" value="<?php echo $artdateto; ?>" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'artdateto', '%Y-%m-%d %H:%i');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" align="top" class="hcmsButtonTiny hcmsButtonSizeSquare" />
+        <input type="text" name="artdateto" id="artdateto" readonly="readonly" value="<?php echo $artdateto; ?>" /><img src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'artdateto', '%Y-%m-%d %H:%i');" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang], $charset, $lang); ?>" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" />
       </td>
     </tr>
     <tr>
-      <td><?php echo getescapedtext ($hcms_lang['save-release-settings'][$lang], $charset, $lang); ?></td>
+      <td><?php echo getescapedtext ($hcms_lang['save-release-settings'][$lang], $charset, $lang); ?>&nbsp;</td>
       <td>
-        &nbsp;<img name="Button" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" onClick="submitform();" />        
+        <img name="Button" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" onClick="submitform();" />        
       </td>
     </tr>
   </table>

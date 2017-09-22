@@ -1397,4 +1397,7 @@ $hcms_lang['recycle-bin']['el'] = "σκουπιδοτενεκέ";
 $hcms_lang['restore']['el'] = "Επαναφέρω";
 $hcms_lang['empty-recycle-bin']['el'] = "άδειος κάδος ανακύκλωσης";
 $hcms_lang['existing-objects-will-be-replaced']['el'] = "Τα υπάρχοντα αντικείμενα θα αντικατασταθεί!";
+$hcms_lang['import-list-comma-delimited']['el'] = "Εισαγωγή CSV";
+$hcms_lang['upload-csv-file']['el'] = "Μεταφόρτωση αρχείου CSV για την εισαγωγή μεταδεδομένων/περιεχομένου για αντικείμενα στην ίδια τοποθεσία (Παρέχετε το όνομα 'Name' ή 'ContainerID' ως τίτλο και αναγνωριστικό στήλης)";
+$hcms_lang['link-fields-with']['el'] = "Συνδέστε τα πεδία με";
 ?>

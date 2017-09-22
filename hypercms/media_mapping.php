@@ -17,7 +17,9 @@ require ("function/hypercms_api.inc.php");
 
 // input parameters
 $site = getrequest_esc ("site", "publicationname");
-$mapping_data = getrequest ("mapping_data");
+$mapping_data = getrequest ("mapping_data"); // version before 7.0.2 posted plain text
+$mapping_texttype = getrequest ("mapping_texttype", "array");
+$mapping_textid = getrequest ("mapping_textid", "array");
 $save = getrequest ("save");
 $token = getrequest ("token");
 
@@ -50,7 +52,7 @@ function checkReindex ()
 
   if (check == true)
   {   
-    hcms_showHideLayers('savelayer','','show');
+    hcms_showInfo ('savelayer', 0);
     document.forms['reindex'].submit();
   }
 }
@@ -60,27 +62,55 @@ function checkReindex ()
 <body class="hcmsWorkplaceGeneric">
 
 <!-- saving --> 
-<div id="savelayer" class="hcmsWorkplaceGeneric" style="position:fixed; width:100%; height:100%; margin:0; padding:0; left:0px; top:0px; visibility:hidden; z-index:10;">
-	<span style="position:absolute; top:50%; height:150px; margin-top:-75px; width:200px; left:50%; margin-left:-100px;">
-		<img src="<?php echo getthemelocation(); ?>img/loading.gif" />
-	</span>
-</div>
+<div id="savelayer" class="hcmsLoadScreen"></div>
 
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <?php
-// save mapping file
+// save mapping
 if (valid_publicationname ($site) && $save == "yes" && checktoken ($token, $user))
 {
-  // creating mapping from definition
-  $mapping_data_save = createmapping ($site, $mapping_data);
+  // create mapping from form fields
+  if (!empty ($mapping_texttype) && is_array ($mapping_texttype) && sizeof ($mapping_texttype) > 0 && !empty ($mapping_textid) && is_array ($mapping_textid) && sizeof ($mapping_textid) > 0)
+  {
+    $mapping_array = explode (PHP_EOL, $mapping_data);
 
+    // update values in mapping data
+    foreach ($mapping_textid as $metatag => $textid)
+    {
+      if (trim ($textid) != "")
+      {
+        $value = trim ($mapping_texttype[$metatag]).":".trim ($textid);
+  
+        // replace values in mapping data
+        foreach ($mapping_array as $key => $line)
+        {
+          if (substr_count ($line, $metatag) == 1 && substr_count ($line, "=>") == 1)
+          {
+            $mapping_array[$key] = "'".$metatag."' => '".$value."'";
+          }
+          else $mapping_array[$key] = $line;
+        }
+      }
+    }
+    
+    // stringify array
+    if (is_array ($mapping_array) && sizeof ($mapping_array) > 0) $mapping_data = implode (PHP_EOL, $mapping_array);
+  }
+
+  // create mapping from plain text
+  if (!empty ($mapping_data))
+  {
+    $mapping_data_save = createmapping ($site, $mapping_data);
+  }
+  
   if ($mapping_data_save == false) $show = "<p class=hcmsHeadline>".getescapedtext ($hcms_lang['error-while-saving'][$lang])."</p>\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang])."\n";
 }
-// load mapping file
-else
+
+// load mapping
+if (valid_publicationname ($site))
 {
-  $mapping_data = getmapping ($site);
+  $mapping_data = showmapping ($site, $lang);
 }
 
 // reindex all media files
@@ -103,19 +133,9 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="save" value="yes" />
   <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
-  
-  <table border="0" cellspacing="0px" cellpadding="0px" style="border:1px solid #000000; margin:2px;">
-    <tr>
-      <td align="left">
-        <img onclick="document.forms['editor'].submit();" name="save" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" title="<?php echo getescapedtext ($hcms_lang['save'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang]); ?>" />
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <textarea name="mapping_data" wrap="VIRTUAL" style="width:750px;" rows=20><?php echo $mapping_data; ?></textarea>
-      </td>
-    </tr>
-  </table>  
+  <?php echo $mapping_data; ?>
+  <br />
+  <div style="width:220px; float:left;"><?php echo getescapedtext ($hcms_lang['save-setting'][$lang]); ?> </div><img name="Button1" onClick="document.forms['editor'].submit();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" /> 
 </form>
 
 <div style="margin-top:10px; padding:2px;">
@@ -123,7 +143,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:5px; top:50px;");
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="save" value="reindex" />
     <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>" />
-    <?php echo getescapedtext ($hcms_lang['reindex-content-of-all-media-files'][$lang]); ?> <img name="Button" onClick="checkReindex()" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" /> 
+    <div style="width:220px; float:left;"><?php echo getescapedtext ($hcms_lang['reindex-content-of-all-media-files'][$lang]); ?> </div><img name="Button2" onClick="checkReindex()" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_ok.png" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" title="OK" alt="OK" /> 
   </form>
 </div>
 

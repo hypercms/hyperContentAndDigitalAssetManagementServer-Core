@@ -172,6 +172,9 @@ function settaxonomy ($site, $container_id, $langcode="")
 // input: publication name, container (XML), container name, article title array, article status array, article beginn date array, article end date array, user array or string, user name
 // output: updated content container (XML), false on error
 
+// description:
+// Set article content in container. The content container will be returned and not saved. 
+
 function setarticle ($site, $contentdata, $contentfile, $arttitle, $artstatus, $artdatefrom, $artdateto, $artuser, $user)
 {
   global $mgmt_config;
@@ -239,6 +242,9 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle, $artstatus, $
 // input: publication name, container (XML), container name, text array, type array or string [u,f,l,c,d,k], article array or string [yes,no], 
 //        text user array or string, user name, character set of text content, add microtime to ID [true,false] used for comments
 // output: updated content container (XML), false on error
+
+// description:
+// Set text content in container and database. The content container will be returned and not saved. 
 
 function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textuser, $user, $charset="", $addmicrotime=false)
 {
@@ -604,6 +610,9 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
 // input: publication name, container (XML), container name, media arrays (some are optional), article array or string [yes,no], content user array or string, user name, chracter set of text content
 // output: updated content container (XML), false on error
 
+// description:
+// Set media content in container and database. The content container will be returned and not saved. 
+
 function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_curr, $mediaobject, $mediaalttext, $mediaalign, $mediawidth, $mediaheight, $art, $mediauser, $user, $charset="")
 {
   global $mgmt_config;
@@ -790,6 +799,9 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
 // input: publication name, container (XML), container name, current link array, new link array, link target array, link text array, article array or string [yes,no], content user array or string, user name, chracter set of text content
 // output: updated content container (XML), false on error
 
+// description:
+// Set link content in container and database. The content container will be returned and not saved. 
+
 function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhref, $linktarget, $linktext, $art, $linkuser, $user, $charset="")
 {
   global $mgmt_config;
@@ -958,6 +970,9 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhr
 // function: setcomplink()
 // input: publication name, container (XML), container name, component arrays (some are optional), article array or string [yes,no], content user array or string, user name
 // output: updated content container (XML), false on error
+
+// description:
+// Set component link content in container and database. The content container will be returned and not saved. 
 
 function setcomplink ($site, $contentdata, $contentfile, $component_curr, $component, $condition, $art, $compuser, $user)
 {
@@ -1133,7 +1148,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
 // output: updated content container (XML), false on error
 
 // description:
-// Only used for content in general head information of container
+// Only used for content in general head information of container.
 
 function sethead ($site, $contentdata, $contentfile, $headcontent, $user, $charset="")
 {

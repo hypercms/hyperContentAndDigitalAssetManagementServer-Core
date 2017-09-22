@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['ms'] = "Tong kitar semula";
 $hcms_lang['restore']['ms'] = "Memulihkan";
 $hcms_lang['empty-recycle-bin']['ms'] = "Kitar semula kosong bin";
 $hcms_lang['existing-objects-will-be-replaced']['ms'] = "Objek yang sedia ada akan digantikan!";
+$hcms_lang['import-list-comma-delimited']['ms'] = "Import CSV";
+$hcms_lang['upload-csv-file']['ms'] = "Muat naik fail CSV untuk mengimport metadata/kandungan untuk objek di lokasi yang sama (Sediakan 'Name' atau 'ContainerID' sebagai tajuk dan pengenal lajur)";
+$hcms_lang['link-fields-with']['ms'] = "Pautkan medan dengan";
 ?>

@@ -120,22 +120,22 @@ var editobjects = [];
 function frameReload (objectpath, timeout)
 {
   // reload main frame (upload by control objectlist)
-  if (eval (opener.parent.frames['mainFrame']))
+  if (opener && opener.parent.frames['mainFrame'])
   {
     opener.parent.frames['mainFrame'].location.reload();
   }
   
   // reload explorer frame (upload by component explorer)
-  if (eval (opener.parent.frames['navFrame2']))
+  if (opener && opener.parent.frames['navFrame2'])
   {
     opener.parent.frames['navFrame2'].location.reload();
   }
   // reload object frame (upload by control content)
-  else if (eval (opener.parent.frames['objFrame']))
+  else if (parent.frames['objFrame'])
   {
     if (objectpath == "")
     {
-      opener.parent.frames['objFrame'].location.reload();
+      parent.frames['objFrame'].location.reload();
     }
     else
     {
@@ -144,10 +144,10 @@ function frameReload (objectpath, timeout)
       var location = objectpath.substring(0, index);
       var newpage = objectpath.substr(index);
 
-      opener.parent.frames['objFrame'].location='page_view.php?ctrlreload=yes&location=' +  location + '&page=' + newpage;
+      parent.frames['objFrame'].location='page_view.php?ctrlreload=yes&location=' +  location + '&page=' + newpage;
     }
     
-    setTimeout('window.close()', timeout);
+    setTimeout('parent.closeobjectview()', timeout);
   }
 }
 
@@ -225,8 +225,8 @@ $(document).ready(function ()
   // In Miliseconds
   var hcms_waitTillRemove = 5*1000;
   // Time after which the window is closed in miliseconds
-  // Currently only applies to single uploads
-  var hcms_waitTillClose =  5*1000;
+  // Only applies to single uploads
+  var hcms_waitTillClose =  2000;
   // Number of Items which can be in the queue at the same time
   // negative value or NaN values mean unlimited
   var hcms_maxItemInQueue = <?php echo $maximumQueueItems; ?>;
@@ -1228,7 +1228,7 @@ echo showtopbar ($title.": ".$object_name, $lang);
         <img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsButtonSizeSquare" align="absmiddle" />
         <?php echo getescapedtext ($hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]); ?>
       </div>
-      <div>
+      <div style="margin:0px 0px 10px 0px;">
         <div for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen" ><span id="txtSelectFile" class="inline"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></span><input id="inputSelectFile" type="file" name="Filedata" <?php if ($uploadmode == "multi") echo "multiple"; ?>/></div>
         <?php if (!empty ($mgmt_config['dropbox_appkey']) && !empty ($mgmt_config['publicdownload'])) { ?>
         <div id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile" class="inline"><?php echo getescapedtext ($hcms_lang['dropbox'][$lang]); ?></span></div>

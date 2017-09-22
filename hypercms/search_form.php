@@ -588,10 +588,19 @@ function cal_on_autoclose (cal)
           <input type="text" name="folder" value="<?php echo $searcharea; ?>" style="width:220px;" disabled="disabled" /> 
         </td>
       </tr>
-   <tr align="left" valign="top">
+      <tr align="left" valign="top">
         <td colspan="2">
           <iframe id="contentFRM" name="contentFRM" width="0" height="0" frameborder="0"></iframe> 
-          <div id="contentLayer" class="hcmsWorkplaceExplorer" style="border:1px solid #000000; width:486px; height:150px; padding:2px; overflow:auto; visibility:hidden;"></div>              
+          <div id="contentLayer" class="hcmsWorkplaceExplorer" style="border:1px solid #000000; width:486px; height:150px; padding:2px; overflow:auto; visibility:hidden;"></div>
+        </td>			  
+      </tr>
+      <tr align="left" valign="top">
+        <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['link-fields-with'][$lang]); ?> </td>
+        <td>
+          <select id="search_operator" name="search_operator" style="width:220px;">
+              <option value="AND" <?php if (empty ($mgmt_config['search_operator']) || (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator'])== "AND")) echo "selected"; ?>>AND</option>
+              <option value="OR" <?php if (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator'])== "OR") echo "selected"; ?>>OR</option>
+          </select>
         </td>			  
       </tr>
       <?php if ($cat == "comp") { ?>

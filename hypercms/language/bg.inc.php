@@ -1396,4 +1396,7 @@ $hcms_lang['recycle-bin']['bg'] = "хартия бин";
 $hcms_lang['restore']['bg'] = "Възстановяване";
 $hcms_lang['empty-recycle-bin']['bg'] = "изпразване на кошчето";
 $hcms_lang['existing-objects-will-be-replaced']['bg'] = "Съществуващите обекти ще бъдат заменени!";
+$hcms_lang['import-list-comma-delimited']['bg'] = "CSV импортиране";
+$hcms_lang['upload-csv-file']['bg'] = "Качете CSV файл за импортиране на метаданни/съдържание за обекти в едно и също място 'Name' или 'ContainerID' (Посочете име на колона и идентификатор)";
+$hcms_lang['link-fields-with']['bg'] = "";
 ?>

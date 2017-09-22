@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['so'] = "Bin recycle";
 $hcms_lang['restore']['so'] = "Soo Celinta";
 $hcms_lang['empty-recycle-bin']['so'] = "Bin recycle madhan";
 $hcms_lang['existing-objects-will-be-replaced']['so'] = "Waxyaabaha hadda jira waxaa lagu beddeli doonaa!";
+$hcms_lang['import-list-comma-delimited']['so'] = "Canshuurta CSV";
+$hcms_lang['upload-csv-file']['so'] = "Keenee faylka CSV ee soo dejinta metadata/nuxurka shayada isla goobta (Bixin 'Name' ama 'ContainerID' oo ah astaanta column iyo aqoonsiga)";
+$hcms_lang['link-fields-with']['so'] = "La xiriir beeraha";
 ?>

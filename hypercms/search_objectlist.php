@@ -30,6 +30,7 @@ $search_format = getrequest ("search_format", "array");
 $search_filesize = getrequest ("search_filesize", "numeric");
 $search_filesize_operator = getrequest ("search_filesize_operator");
 $search_imagecolor = getrequest ("search_imagecolor", "array");
+$search_operator = getrequest ("search_operator", "objectname");
 $date_from = getrequest ("date_from");
 $date_to = getrequest ("date_to");
 $from_user = getrequest ("from_user");
@@ -225,6 +226,12 @@ $search_filename = "";
 // create secure token
 $token = createtoken ($user);
 
+// search operator for multiple fields in advanced search
+if ($search_operator == "AND" || $search_operator == "OR")
+{
+  $mgmt_config['search_operator'] = $search_operator;
+}
+
 // deleted objects of a user
 if ($action == "recyclebin" && $user != "")
 {
@@ -372,7 +379,7 @@ $galleryview = Null;
 $listview = Null;
 $items_row = 0;
 
-if ($object_array != false && @sizeof ($object_array) > 0)
+if (!empty ($object_array) && @sizeof ($object_array) > 0)
 {
   // the hash can be used for the download and wrapper links
   foreach ($object_array as $hash => $objectpath)

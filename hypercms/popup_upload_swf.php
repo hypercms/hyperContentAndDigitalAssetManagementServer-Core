@@ -278,23 +278,29 @@ function translatemessage (errorno)
 function frameReload (newpage)
 {
   // reload main frame (upload by control objectlist)
-  if (eval (opener.parent.frames['mainFrame']))
+  if (opener && opener.parent.frames['mainFrame'])
   {
     opener.parent.frames['mainFrame'].location.reload();
   }
 
   // reload explorer frame (upload by component explorer)
-  if (eval (opener.parent.frames['navFrame2']))
+  if opener && opener.parent.frames['navFrame2'])
   {
     opener.parent.frames['navFrame2'].location.reload();
   }
   // reload object frame (upload by control content)
-  else if (eval (opener.parent.frames['objFrame']))
+  else if (parent.frames['objFrame'])
   {
-    if (newpage == "") opener.parent.frames['objFrame'].location.reload();
-    else opener.parent.frames['objFrame'].location='page_view.php?ctrlreload=yes&site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&location=<?php echo $location_esc; ?>&page='+newpage;
+    if (newpage == "")
+    {
+      parent.frames['objFrame'].location.reload();
+    }
+    else
+    {
+      parent.frames['objFrame'].location='page_view.php?ctrlreload=yes&site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&location=<?php echo $location_esc; ?>&page='+newpage;
+    }
     
-    setTimeout('window.close()', 1000);
+    setTimeout('parent.closeobjectview()', 2000);
   }
   
   return true;

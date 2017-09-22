@@ -4,7 +4,6 @@ img
   image-rendering: -webkit-crisp-edges; // Safari 7+
   image-rendering: -moz-crisp-edges; // Firefox 3.6+
   image-rendering: -o-crisp-edges; // Opera 12
-  image-rendering: pixelated; // Chrome 41+ and Opera 26+
 }
 
 .hcmsWorkplaceExplorer

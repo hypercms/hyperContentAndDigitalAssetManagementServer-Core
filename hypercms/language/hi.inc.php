@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['hi'] = "कागज का डिब्बा";
 $hcms_lang['restore']['hi'] = "पुनर्स्थापित करें";
 $hcms_lang['empty-recycle-bin']['hi'] = "खाली रीसायकल बिन";
 $hcms_lang['existing-objects-will-be-replaced']['hi'] = "मौजूदा वस्तुओं की जगह होगी!";
+$hcms_lang['import-list-comma-delimited']['hi'] = "सीएसवी आयात";
+$hcms_lang['upload-csv-file']['hi'] = "उसी स्थान में ऑब्जेक्ट के लिए मेटाडेटा/कंटेंट के आयात के लिए CSV फ़ाइल अपलोड करें (कॉलम शीर्षक और पहचानकर्ता के रूप में 'Name' या 'ContainerID' प्रदान करें)";
+$hcms_lang['link-fields-with']['hi'] = "फ़ील्ड के साथ लिंक करें";
 ?>

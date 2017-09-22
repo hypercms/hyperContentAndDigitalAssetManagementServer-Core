@@ -229,7 +229,8 @@ function getobjectlistcells ($viewportwidth, $is_mobile=0)
     else $table_cells = 5;
   }
   
-  return $table_cells;
+  if ($table_cells >= 1) return $table_cells;
+  else return 1;
 }
 
 // ----------------------------------------- getlanguageoptions ------------------------------------------
@@ -1241,47 +1242,46 @@ function getlistelements ($list_sourcefile)
 // ---------------------- getmetadata -----------------------------
 // function: getmetadata()
 // input: location, object (both optional if container is given), container name/ID or container content (optional), 
-//        seperator of meta data fields [any string,array] (optional), publication name/template name to extract label names (optional)
+//         seperator of meta data fields [any string,array] (optional), publication name/template name to extract label names (optional)
 // output: string with all metadata from given object based on container / false
 
 function getmetadata ($location, $object, $container="", $seperator="\n", $template="")
 {
 	global $mgmt_config;
   
+  // deconvert location
+  if (@substr_count ($location, "%page%") > 0 || @substr_count ($location, "%comp%") > 0)
+  {
+    $site = getpublication ($location);
+    $cat = getcategory ($site, $location);
+    $location = deconvertpath ($location, "file");
+  }
+      
+  // if object includes special characters
+  if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
+  
 	if ((valid_locationname ($location) && valid_objectname ($object)) || $container != "")
   {
-    // deconvert location
-    if (@substr_count ($location, "%page%") > 0 || @substr_count ($location, "%comp%") > 0)
+    // if object is folder
+  	if (is_dir ($location.$object))
     {
-      $site = getpublication ($location);
-      $cat = getcategory ($site, $location);
-      $location = deconvertpath ($location, $cat);
-    }
-  
-  	// check if object is folder or page/component
-    if ($container == "")
+  		$location = $location.$object."/";
+  		$object = ".folder";
+  	}
+    
+    // get all pointers from object file
+    if (is_file ($location.$object))
     {
-      // if object is folder
-    	if (is_dir ($location.$object))
-      {
-    		$location = $location.$object."/";
-    		$object = ".folder";
-    	}
+  		// read file
+  		$objectdata = loadfile ($location, $object);
       
-      if (is_file ($location.$object))
+  		// get name of container
+  		if ($objectdata != "")
       {
-    		// read file
-    		$objectdata = loadfile ($location, $object);
-        
-    		// get name of container
-    		if ($objectdata != "")
-        {
-          $container = getfilename ($objectdata, "content");
-          $template = getfilename ($objectdata, "template");
-        }
-        else $container = false;
+        $container = getfilename ($objectdata, "content");
+        $template = getfilename ($objectdata, "template");
+        $mediafile = getfilename ($objectdata, "media");
       }
-      else $container = false;
     }
     
 		// read meta data of media file
@@ -1328,6 +1328,23 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
               
               foreach ($hypertag_array as $tag)
               {
+                // get mediatype
+                $mediatype = getattribute ($tag, "mediatype");
+                
+                // verify mediatype for assets only
+                if (!empty ($mediatype) && !empty ($mediafile))
+                {
+                  $continue = true;
+                  
+                  if (strpos (strtolower ("_".$mediatype), "audio") > 0 && is_audio ($mediafile)) $continue = false;
+                  elseif (strpos (strtolower ("_".$mediatype), "image") > 0 && is_image ($mediafile)) $continue = false;
+                  elseif ((strpos (strtolower ("_".$mediatype), "document") > 0 || strpos (strtolower ("_".$mediatype), "text") > 0) && is_document ($mediafile)) $continue = false;
+                  elseif (strpos (strtolower ("_".$mediatype),"video") > 0 && is_video ($mediafile)) $continue = false;
+                  elseif (strpos (strtolower ("_".$mediatype), "compressed") > 0 && is_compressed ($mediafile)) $continue = false;
+                  
+                  if ($continue == true) continue;
+                }
+              
                 $id = getattribute ($tag, "id");
                 $label = getattribute ($tag, "label");
                 
@@ -1699,18 +1716,24 @@ function getobjectcontainer ($site, $location, $object, $user)
 {
   global $mgmt_config;
 
+  // deconvert location
+  if (@substr_count ($path, "%page%") > 0 || @substr_count ($path, "%comp%") > 0)
+  {
+    $cat = getcategory ($site, $location);
+    $location = deconvertpath ($location, $cat);
+  }
+  
+  // if object includes special characters
+  if (specialchr ($object, ".-_~") == true)
+  {      
+    $object = specialchr_encode ($object, "no");
+  }
+
   if (valid_publicationname ($site) && valid_locationname ($location) && $object != "" && valid_objectname ($user))
   {
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
-    
-    // deconvert location
-    if (@substr_count ($path, "%page%") > 0 || @substr_count ($path, "%comp%") > 0)
-    {
-      $cat = getcategory ($site, $location);
-      $location = deconvertpath ($location, $cat);
-    }
-    
+
     // evaluate if object is a file or a folder
     if (@is_dir ($location.$object))
     {
@@ -2739,7 +2762,7 @@ function getfileinfo ($site, $file, $cat="comp")
     include ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
     
     // if file has an extension or holds a path
-    if (@substr_count ($file, ".") > 0 || substr_count ($file, "/") > 0)
+    if (substr_count ($file, ".") > 0 || substr_count ($file, "/") > 0)
     {            
       // get the file extension of the file
       $file_ext_orig = strrchr ($file, ".");
@@ -2782,7 +2805,7 @@ function getfileinfo ($site, $file, $cat="comp")
       else
       {
         // if file holds a path
-        if (@substr_count ($file, "/") > 0) $file = getobject ($file);
+        if (substr_count ($file, "/") > 0) $file = getobject ($file);
         
         // object versions
         if (substr_count ($file, ".") > 0 && substr ($file_ext, 0, 3) == ".v_")
@@ -3016,12 +3039,18 @@ function getfileinfo ($site, $file, $cat="comp")
 function getobjectinfo ($site, $location, $object, $user="sys", $container_version="")
 {
   global $mgmt_config;
+  
+  // deconvert location
+  $location = deconvertpath ($location, "file"); 
+      
+  // if object includes special characters
+  if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object))
   {
     $result = array();
     $result['template'] = "";
-    $result['content'] = "";
+    $result['content'] = $result['container'] = "";
     $result['media'] = "";
     $result['file'] = $object;
     $result['name'] = "";
@@ -3036,16 +3065,8 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
     // get category
     $cat = getcategory ($site, $location.$object);
     
-    // deconvert location
-    if (@substr_count ($location, "%page%") > 0 || @substr_count ($location, "%comp%") > 0)
-    {
-      $location_esc = $location;
-      $location = deconvertpath ($location, "file");
-    }
-    else
-    {
-      $location_esc = convertpath ($site, $location, $cat);
-    }
+    // convert location
+    $location_esc = convertpath ($site, $location, $cat);
     
     // evaluate if object is a file or a folder
     if (is_dir ($location.$object))
@@ -3068,11 +3089,11 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
   
     // load object file
     $data = loadfile ($location, $object);
-    
+
     if ($data != "")
     {
       $result['template'] = getfilename ($data, "template");
-      $result['content'] = getfilename ($data, "content");
+      $result['content'] = $result['container'] = getfilename ($data, "content");
       $result['media'] = getfilename ($data, "media");
       $result['file'] = $object;
       $result['name'] = specialchr_decode ($name);
@@ -3387,6 +3408,9 @@ function getpdfinfo ($filepath, $box="MediaBox")
 // input: path to video file
 // output: video file information as result array / false on error
 
+// description:
+// Extract video metadata from video file.
+
 function getvideoinfo ($mediafile)
 {
   global $mgmt_config, $mgmt_mediapreview, $user;
@@ -3400,7 +3424,8 @@ function getvideoinfo ($mediafile)
 
     $dimension = "";
     $width = "";
-    $height = ""; 
+    $height = "";
+    $rotate = "0";
     $duration = "";
     $duration_no_ms = "";  
     $video_bitrate = "";
@@ -3506,6 +3531,26 @@ function getvideoinfo ($mediafile)
           {
     				$video_bitrate = $matches[1];
     			}
+          
+          // video roation in degrees
+          reset ($metadata);
+          
+          foreach ($metadata as $line)
+          {
+            if (strpos ("_".$line, "rotate") > 0)
+            {
+              // Rotate    : 180
+              $line = substr ($line, strpos ($line, "rotate") + 7);
+              
+              // audio (audio bitrate might be missing in flac files)
+              @list ($rest, $rotate) = explode (":", $line);
+              
+              // clean
+              if (!empty ($rotate)) $rotate = trim ($rotate);
+
+              break;
+            }
+          }
 
           // audio and video information (codec, bitrate and frequenzy)
           reset ($metadata);
@@ -3569,7 +3614,8 @@ function getvideoinfo ($mediafile)
     $result['width'] = $width;
     $result['height'] = $height;
     if ($height > 0) $result['ratio'] = round (($width / $height), 5);
-    else $result['ratio'] = 0;      
+    else $result['ratio'] = 0;
+    $result['rotate'] = $rotate;
     $result['duration'] = $duration;
     $result['duration_no_ms'] = $duration_no_ms;
     $result['videobitrate'] = $video_bitrate;
@@ -5299,12 +5345,12 @@ function getworkflowitem ($site, $workflow_file, $workflow, $user)
     else return false;
    
     // check for free items of the user
-    if (is_array ($freeitem_array) && sizeof ($freeitem_array) > 0)
+    if (!empty ($freeitem_array) && is_array ($freeitem_array) && sizeof ($freeitem_array) > 0)
     {
       return $freeitem_array[0];
     }
     // check for passed items of the user
-    elseif (is_array ($passeditem_array) && sizeof ($passeditem_array) > 0)
+    elseif (!empty ($passeditem_array) && is_array ($passeditem_array) && sizeof ($passeditem_array) > 0)
     {
       return $passeditem_array[0];
     }

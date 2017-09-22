@@ -1395,4 +1395,7 @@ $hcms_lang['recycle-bin']['ru'] = "корзина";
 $hcms_lang['restore']['ru'] = "Восстановить";
 $hcms_lang['empty-recycle-bin']['ru'] = "Пустая мусорная корзина";
 $hcms_lang['existing-objects-will-be-replaced']['ru'] = "Существующие объекты будут заменены!";
+$hcms_lang['import-list-comma-delimited']['ru'] = "Импорт CSV";
+$hcms_lang['upload-csv-file']['ru'] = "Загрузите CSV-файл для импорта метаданных/содержимого для объектов в одном месте (укажите 'Name' или 'ContainerID' в качестве заголовка и идентификатора столбца)";
+$hcms_lang['link-fields-with']['ru'] = "Свяжите поля с";
 ?>

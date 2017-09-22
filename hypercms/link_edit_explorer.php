@@ -217,12 +217,16 @@ if (isset ($entry_dir) && sizeof ($entry_dir) > 0)
   {
     // folder info
     $folder_info = getfileinfo ($site, $dirname, "page");
-    $folder_path = getlocation ($dirname);
-    $location_name = getlocationname ($site, $folder_path, "page", "path"); 
-
-    if ($folder_info != false && $folder_info['deleted'] == false)
+    
+    if ($dirname != "" && $folder_info['deleted'] == false)
     {
-      echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".$folder_path."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 24)."</a></td></tr>\n";
+      $folder_path = getlocation ($dirname);
+      $location_name = getlocationname ($site, $folder_path, "page", "path"); 
+  
+      if ($folder_info != false && $folder_info['deleted'] == false)
+      {
+        echo "<tr><td align=\"left\" colspan=2 nowrap=\"nowrap\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".$folder_path."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".showshorttext($folder_info['name'], 24)."</a></td></tr>\n";
+      }
     }
   }
 }
@@ -237,12 +241,16 @@ if (isset ($entry_file) && sizeof ($entry_file) > 0)
   {
     // object info
     $file_info = getfileinfo ($site, $file, "page");
-    $file_name = getlocationname ($site, $file, "page", "path");
-    $file_path = $file;
-
-    if ($file_info != false && $file_info['published'] == true && $file_info['deleted'] == false)
+    
+    if ($file != "" && $file_info['deleted'] == false)
     {
-      echo "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp; ".showshorttext($file_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+      $file_name = getlocationname ($site, $file, "page", "path");
+      $file_path = $file;
+  
+      if ($file_info != false && $file_info['published'] == true && $file_info['deleted'] == false)
+      {
+        echo "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp; ".showshorttext($file_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+      }
     }
   }
 }

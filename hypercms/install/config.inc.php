@@ -690,6 +690,9 @@ $mgmt_mediapreview['.3g2.3gp.4xm.a64.aac.ac3.act.adf.adts.adx.aea.aiff.alaw.alsa
 $mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 576x432 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2"; 
 $mgmt_mediaoptions['thumbnail-audio'] = "-f mp3 -c:a libmp3lame -b:a 64k";
 
+// Auto rotate video if a rotation has been detected (true) or leave video in it's original state (false)
+$mgmt_mediaoptions['autorotate-video'] = true;
+
 // Define the supported target formats for video/audio editing (please use the variables %videobitrate%, %audiobitrate%, %width%, %height%)
 // Video formats:
 $mgmt_mediaoptions['.flv'] = "-b:v %videobitrate% -s:v %width%x%height% -f flv -c:a libmp3lame -b:a %audiobitrate% -ac 2 -ar 22050";
