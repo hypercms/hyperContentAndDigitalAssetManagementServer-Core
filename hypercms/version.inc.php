@@ -2020,7 +2020,7 @@ Release 02/2017
 - Modifications in explorer in order to support search of user name and e-mail address of a sender or recipient
 - Modification of default max. event entries in log viewer to 500 records in logviewer plugin
 - Renamed software version variable $version to $mgmt_config['version'] in all files
-- Bug fix: Modification in template engine to support upper and lower case characters for the the replacement of application tags in order to avoid errors during publishing
+- Bug fix: Modification in template engine to support upper and lower case characters for the replacement of application tags in order to avoid errors during publishing
 
 Version 6.2.0
 Release 02/2017
@@ -2379,8 +2379,66 @@ Release 10/2017
 - Bug fix: Template engine did not initialize map for 'formlock' view mode
 - Bug fix: Function getobjectlistcells in Get API returned zero if viewportwidth was too small
 - Bug fix: Function getworkflowitem did not verify the result
+
+Version 7.0.4
+Release 10/2017
+- Implementation of new main configuration parameter $mgmt_config['restore_exported_media'] in order to define the location of exported media files
+- Implementation of restore setting in function restoremediafile in order to restore the media file or keep at in the backup (export location)
+- Modifications in function getmapping in Meta API in order to use single quotes instead of double quotes in the mapping definition
+- Modification of FFMPEG standard audio codecs (libfdk_aac) used for conversion due to missing support of libfaac in most recent FFMPEG versions
+- Removed autorotation process for videos in function createmedia in Media API and integrated the autoration in the standard video rendering process in order to reduce a rendering step
+- Set option -noautorotate for all FFMPEG rendering modes to avoid double auto rotation of videos
+- Replaced option -sameq by -q:v 4 in function createmedia in Media API since the option is not longer supported by FFMPEG
+- Replaced H.263 by H.263+ video codec setting in main configuration
+- Implementation of Full and Ultra HD video support for video editor
+- Removed FLV support for video player rendering option in service rendervideo
+- Changed maximum video size settings in service rendervideo in order to support videos larger than Full HD
+- Changed maximum video rendering time to 2 hours in service rendervideo
+- Moved from deprecated s:v video size setting to new video filter based video scaling in function createmedia in Media API without changing the input media optionsfor compatibility
+- Modification of the standard media rendering options for MPEG videos in main configuration file
+- Implementation of new include file mediaoptions.inc.php for media definitions
+- Modifications in function getvideoinfo in Get API in order to verify extracted audio and video parameters
+- Modifications in function hcms_crypt in Security API and remote client in order to have a 2 digit salt for DES encryption
+- All .htaccess files in data and repository install directories and hypercms directory have been migrated from Apache 2.2 to 2.4 directives. The .htaccess need to be adopted accordingly if an older version than Apache 2.4 is used.
+- Modifications in function editpublication in Main API in order to support Apache 2.4 directives
+- Modifications in function buildview in template engine in order to set the character set (required by Apache 2.4 if not UTF-8)
+- Modifications in CSS classes of colorful design theme
+- Option -noautorotate of FFMPEG can be disabled by the main configuration setting: $mgmt_mediaoptions['autorotate-video'] = false; This is required for older FFMPEG versions without noautorotate option support.
+- Hide Faces-JSON content in function getmetadata in Get API 
+- Implementation of new input parameter autorotate in function createthumbnail_video in Media API in order to control auto rotation
+- Implementation of default character set ini-setting in article_edit, page_multiedit, template_edit, temlpate_source, version_content_compare, and version_template_compare since browsers ignore the metadata character set definition (Apache 2.4 related)
+- Implementation of logging for deprecated access tokens in userlogin
+- Implementation of a fallback rule for encryption standards in function hcms_encrypt and hcms_decrypt in Security API
+- Improvements in installation routine
+- Design modifications in project management
+- Resizing of upload window in control_content_menu
+- Implementation of a sort algorithm in function getprojectstructure in Project Management API in order to sort subprojects by startdate
+- Implementation of a select area for selecting objects using the mouse click and drag feature
+- Implementation of new JS function hcms_selectArea and hcms_endSelectArea in contextmenu.js
+- Modifications in explorer_objectlist, search_objectlist, queue_objectlist, and user_objectlist in order to support the select area
+- Modifications in various JS functions in order to support the select area in contextmenu.js
+- Implementation of a new CSS class named hcmsSelectArea for all design themes
+- Implementation of full screen video preview
+- Modification of function showmedia in UI API in order to use original video for higher video resolutions, if supported
+- Design improvements in page_multiedit
+- Modification of search expression verification in frameset_main
+- Bug fix: Video editor did not exclude 'thumbnail-audio' media option
+- Bug fix: Function restoremediafile in Main API did not remove the symbolic link before restoring the media file, so the media file could not be restored back to the media repository
+- Bug fix: Function showmapping in UI API did not escape special characters for the hidden form field
+- Bug fix: Wallpaper configuration setting has not been verified in userlogin
+- Bug fix: Verification of variable $contentdataevent in service savecontent was missing
+- Bug fix: Function savemediaplayer_config in Media API did not assign proper array key to video bitrate
+- Bug fix: CSS class for button size has not been assigned to saveclose button
+- Bug fix: page_multiedit did not close JS statement in JS function checkImageForm
+- Bug fix: control_objectlist_menu did reset the variable pagename if a multiobject and page has been provided
+- Bug fix: Function createmedia in Media API did not set the correct size of the original video and used the size of the rendered preview video
+- Bug fix: control_objectlist_menu did not display the number of selected objects if a folder has been selected as last object
+- Bug fix: Function createmedia in Media API did not set proper width and height of cropped images if GD library has been used
+- Bug fix: component_edit_page_single did not remove seperators from single component string
+- Bug fix: Template engine did not remove separators from single component string
+- Bug fix: Mail links opened in Mobile Edition di not disable the search functionality
 */
 
 // current version
-$mgmt_config['version'] = "Version 7.0.3";
+$mgmt_config['version'] = "Version 7.0.4";
 ?>

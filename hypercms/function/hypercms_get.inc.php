@@ -1375,8 +1375,8 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
               // get info from container
   						$text_id = getcontent ($buffer, "<text_id>");
               
-              // dont include comments or articles (they use :)
-              if (strpos ($text_id[0], ":") == 0)
+              // dont include comments or articles (they use :) or JSON string of faces definition
+              if (strpos ($text_id[0], ":") == 0 && $text_id[0] != "Faces-JSON")
               {
                 $label = str_replace ("_", " ", $text_id[0]);
               
@@ -1402,11 +1402,11 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
           {
             $text_str = "";
             
-            // dont include comments or articles (they use :)
-            if (strpos ($id, ":") == 0)
+            // dont include comments or articles (they use :) or JSON string of faces definition
+            if (strpos ($id, ":") == 0 && $id != "Faces-JSON")
             {
               $textnode = selectcontent ($contentdata, "<text>", "<text_id>", $id);
-              
+
               if ($textnode != false)
               {
                 $text_content = getcontent ($textnode[0], "<textcontent>");
@@ -3531,7 +3531,7 @@ function getvideoinfo ($mediafile)
           {
     				$video_bitrate = $matches[1];
     			}
-          
+
           // video roation in degrees
           reset ($metadata);
           
@@ -3557,17 +3557,25 @@ function getvideoinfo ($mediafile)
           
           foreach ($metadata as $line)
           {
-            if (strpos ("_".$line, "Audio: ") > 0)
+            if (strpos ("_".$line, " Audio: ") > 0)
             {
-              // Audio: aac (mp4a / 0x6134706D), 11025 Hz, mono, s16, 53 kb/s
-              $line = substr ($line, strpos ($line, "Audio: ") + 7);
+              // MP4 Audio: aac (mp4a / 0x6134706D), 11025 Hz, mono, s16, 53 kb/s
+              // MPEG Audio: mp2, 0 channels, s16p
+              $line = substr ($line, strpos ($line, " Audio: ") + 8);
               
               // audio (audio bitrate might be missing in flac files)
-              @list ($audio_codec, $audio_frequenzy, $audio_channels, $audio_sample, $audio_bitrate) = explode (", ", $line);
+              if (substr_count ($line, ",") >= 4) list ($audio_codec, $audio_frequenzy, $audio_channels, $audio_sample, $audio_bitrate) = explode (", ", $line);
+              elseif (substr_count ($line, ",") >= 2)  list ($audio_codec, $audio_channels, $audio_sample) = explode (", ", $line);
               
               // clean codec name
               if (strpos ($audio_codec, "(") > 0) $audio_codec = substr ($audio_codec, 0, strpos ($audio_codec, "("));
               $audio_codec = strtoupper (trim ($audio_codec));
+              
+              // verify frequenzy
+              if (strpos (strtolower ($audio_frequenzy), "hz") < 1) $audio_frequenzy = "";
+              
+              // verify audio channels
+              if (strlen ($audio_channels) > 10) $audio_channels = "";
 
               break;
             }
@@ -3577,7 +3585,7 @@ function getvideoinfo ($mediafile)
           
           foreach ($metadata as $line)
           {
-            if (strpos ("_".$line, "Video: ") > 0)
+            if (strpos ("_".$line, " Video: ") > 0)
             {
               // Video: wmv2 (WMV2 / 0x32564D57), yuv420p, 320x240, 409 kb/s, 25 tbr, 1k tbn, 1k tbc
               
@@ -3585,7 +3593,7 @@ function getvideoinfo ($mediafile)
               // tbc = the time base in AVCodecContext for the codec used for a particular stream
               // tbr = tbr is guessed from the video stream and is the value users want to see when they look for the video frame rate
 
-              $line = substr ($line, strpos ($line, "Video: ") + 7);
+              $line = substr ($line, strpos ($line, " Video: ") + 8);
               
               // video
               @list ($video_codec, $colorspace) = explode (", ", $line);
@@ -5078,7 +5086,7 @@ function getfirstkey ($array)
 // ------------------------------ getdirectoryfiles ----------------------------------
 // function: getdirectoryfiles()
 // input: path to directory, pattern as string (optional)
-// output: sorted array of all files macthing the pattern / false on error
+// output: sorted array of all files matching the pattern / false on error
 
 function getdirectoryfiles ($dir, $pattern="")
 {

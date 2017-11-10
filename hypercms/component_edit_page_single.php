@@ -63,6 +63,13 @@ $file_info = getfileinfo ($site, $location.$page, $cat);
 // create secure token
 $token = createtoken ($user);
 
+// get the first objectpath from the single component string
+$temp = link_db_getobject ($component_curr);
+$component_curr = $temp[0];
+
+$temp = link_db_getobject ($component);
+$component = $temp[0];
+
 // convert object ID to object path
 $component_curr = getobjectlink ($component_curr);
 $component = getobjectlink ($component);

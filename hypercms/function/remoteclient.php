@@ -79,29 +79,41 @@ function deletefiles ($location, $file)
 
 // ---------------------- hcms_crypt -----------------------------
 // function: hcms_crypt()
-// input: string to encode
+// input: string to encode, start position, length for string extraction
 // output: encoded string / false on error
 
 // description:
-// encoded string using crypt, MD5 and urlencode
+// Unidrectional encryption using crypt, MD5 and urlencode
 
-function hcms_crypt ($string)
+function hcms_crypt ($string, $start=0, $length=0)
 {
   global $mgmt_config;
   
   if ($string != "")
   {
+    // crypt only uses the first 8 digits of a string!
+    if (strlen ($string ) > 8)
+    {
+      if (strpos ($string, ".thumb.") > 0) $string = str_replace (".thumb.", ".", $string);
+      else $string = substr ($string, -8);
+    }
+    
     // encoding algorithm
-    $string_encoded = crypt ($string, substr ($string, 0, 1));
+    $string_encoded = crypt ($string, substr ($string, 0, 2));
     $string_encoded = md5 ($string_encoded);
-    $string_encoded = substr ($string_encoded, 3, 12);
+    
+    // extract substring
+    if ($length > 0) $string_encoded = substr ($string_encoded, $start, $length);
+    else $string_encoded = substr ($string_encoded, $start);
+    
+    // urlencode string
     $string_encoded = urlencode ($string_encoded);
 
-    // return
     if ($string_encoded != "") return $string_encoded;
+    else return false;
   }
   else return false;
-} 
+}
 
 // --------------------------------------- savefile ------------------------------------------------
 // function: savefile()

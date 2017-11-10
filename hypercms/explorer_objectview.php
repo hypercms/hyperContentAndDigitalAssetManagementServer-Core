@@ -103,7 +103,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 <script type="text/javascript" src="javascript/main.js"></script>
 <script type="text/javascript" src="javascript/click.js"></script>
 <?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) echo showaudioplayer_head (false); ?>
-<?php if (!empty ($file_info['ext']) && is_video ($file_info['ext'])) echo showvideoplayer_head (false, false); ?>
+<?php if (!empty ($file_info['ext']) && is_video ($file_info['ext'])) echo showvideoplayer_head (false); ?>
 <script>
 function setscreensize (size)
 {

@@ -122,6 +122,9 @@ if ($contentfield != "")
 
 // create secure token
 $token_new = createtoken ($user);
+
+// set character set in header
+if (!empty ($charset)) ini_set ('default_charset', $charset);
 ?>
 <!DOCTYPE html>
 <html>

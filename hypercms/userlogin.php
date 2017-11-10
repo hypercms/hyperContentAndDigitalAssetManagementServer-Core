@@ -72,6 +72,7 @@ if ($al != "")
     $hcms_user = $result_al['user'];
     $hcms_pass = "";
     $hcms_objref = $result_al['object_id'];
+    // encrypt object ID
     $hcms_objcode = hcms_crypt ($hcms_objref);
     $ignore_password = true;
 
@@ -146,6 +147,10 @@ if ($hcms_user_token != "")
     if (checktimetoken ($hcms_timetoken)) $hcms_objcode = hcms_crypt ($hcms_objref);
     else $hcms_objcode = "invalid";
   }
+  
+  // warning
+  $errcode = "00111";
+  $error[] = $mgmt_config['today']."|userlogin.php|warning|$errcode|deprecated user token provided for access (used before version 5.6.1)";
 }
 
 // deprecated since version 5.6.1 but still supported:
@@ -154,6 +159,10 @@ if ($hcms_id_token != "")
 {
   $hcms_id_string = hcms_decrypt ($hcms_id_token);
   if ($hcms_id_string != "" && strpos ($hcms_id_string, ":") > 0) list ($hcms_objref, $hcms_objcode) = explode (":", $hcms_id_string);
+  
+  // warning
+  $errcode = "00112";
+  $error[] = $mgmt_config['today']."|userlogin.php|warning|$errcode|deprecated object token provided for access (used before version 5.5.13)";
 }
 
 // deprecated since version 5.6.1 but still supported:
@@ -436,7 +445,11 @@ if (checkuserip (getuserip ()) == true)
   
   // wallpaper
   if ($themename != "mobile" && empty ($mgmt_config['wallpaper'])) $wallpaper = getwallpaper ();
-  else $wallpaper = $mgmt_config['wallpaper'];
+  elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
+  else $wallpaper = "";
+  
+  // save log
+  savelog (@$error);
 }
 // client ip is banned
 else

@@ -618,7 +618,7 @@ else
     if ($page != "" && $mgmt_config[$site]['sendmail'] && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1 && $mgmt_config['db_connect_rdbms'] != "")
     {
         echo "
-        <img onClick=\"submitToWindow('user_sendlink.php', '', 'sendlink', 'scrollbars=yes,resizable=no','600','680');\" ".
+        <img onClick=\"submitToWindow('user_sendlink.php', '', 'sendlink', 'scrollbars=yes,resizable=no','600','780');\" ".
                    "class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_preview\" ".
                    "src=\"".getthemelocation()."img/button_user_sendlink.png\" ".
                    "alt=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\" title=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\" />";

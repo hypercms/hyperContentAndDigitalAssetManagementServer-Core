@@ -161,6 +161,9 @@ else
 $token = createtoken ($user);
 
 if ($label == "") $label = $id;
+
+// set character set in header
+if (!empty ($charset)) ini_set ('default_charset', $charset);
 ?>
 <!DOCTYPE html>
 <html>

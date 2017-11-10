@@ -113,7 +113,6 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
   <!-- navigator panel -->
   <div id="navigator" data-role="panel" data-position="left" data-display="overlay" style="padding:0; margin:0; width:260px;">
-    <?php if ($mgmt_config['db_connect_rdbms'] != "") { ?>
     <div class="ui-bar-b" style="position:absolute; top:0; left:0; width:258px;">
       <form name="searchform_general" method="post" action="frameset_objectlist.php" target="workplFrame" style="margin:0; padding:0; border:0;">
         <input type="hidden" name="action" value="base_search" />
@@ -122,16 +121,15 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
         <table style="padding:0; margin:0; width:100%;">
           <tr>
             <td>
-              <input type="text" name="search_expression" data-mini="true" maxlength="60" value="" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" />
+              <input type="text" name="search_expression" <?php if (empty ($mgmt_config['db_connect_rdbms']) || !empty ($hcms_linking['object'])) echo "readonly=\"readonly\""; ?> data-mini="true" maxlength="100" value="" placeholder="<?php echo getescapedtext ($hcms_lang['search-expression'][$lang]); ?>" />
             </td>
             <td>
-              <button id="SearchButton" data-mini="true" style="width:40px;" onclick="if (document.forms['searchform_general'].elements['search_expression'].value!='') document.forms['searchform_general'].submit();">OK</button>
+              <button id="SearchButton" data-mini="true" style="width:40px;" <?php if (!empty ($mgmt_config['db_connect_rdbms']) && empty ($hcms_linking['object'])) echo "onclick=\"if (document.forms['searchform_general'].elements['search_expression'].value!='') document.forms['searchform_general'].submit();\""; else echo "disabled=\"disabled\""; ?>>OK</button>
             </td>
           </tr>
         </table>
       </form>
     </div>
-    <?php } ?>
     <div id="navContainer" style="position:absolute; top:0; left:0; padding:0; margin:48px 0px 0px 0px; border:0; width:260px; overflow:auto; -webkit-overflow-scrolling:touch;">
       <iframe id="navFrame" src="explorer.php" frameBorder="0" style="border:0; width:260px;"></iframe>
     </div>

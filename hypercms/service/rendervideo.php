@@ -115,7 +115,7 @@ function startConversion ($videotype)
   if ($videotype == "original") $filetype = strtolower (substr ($file_info['ext'], 1));
 
   // define FFMPEG options
-  if ($bitrate == "" || $bitrate == "original") $mgmt_mediaoptions['.'.$filetype] = str_replace ("-b:v %videobitrate%", "", $mgmt_mediaoptions['.'.$filetype]);
+  if ($bitrate == "" || $bitrate == "original") $mgmt_mediaoptions['.'.$filetype] = str_replace ("-b:v %videobitrate%", "-q:v 5", $mgmt_mediaoptions['.'.$filetype]);
   if ($audiobitrate == "" || $audiobitrate == "original") $mgmt_mediaoptions['.'.$filetype] = str_replace ("-b:a %audiobitrate%", "", $mgmt_mediaoptions['.'.$filetype]);
   if ($width < 1 || $height < 1) $mgmt_mediaoptions['.'.$filetype] = str_replace ("-s:v %width%x%height%", "", $mgmt_mediaoptions['.'.$filetype]);
 
@@ -173,102 +173,8 @@ foreach ($mgmt_mediaoptions as $ext => $options)
   }
 }
 
-// availbale formats
-$available_formats = array();
-
-$available_formats['fs'] = array(
-	'name'					 => $hcms_lang['standard-video-43'][$lang],
-	'checked'				 => false
-);
-
-$available_formats['ws'] = array(
-	'name'					 => $hcms_lang['widescreen-video-169'][$lang],
-	'checked'				 => true
-);
-
-// available bitrates
-$available_bitrates = array();
-
-$available_bitrates['original'] = array(
-	'name'					=> $hcms_lang['original'][$lang],
-	'checked'				=> true
-);
-
-$available_bitrates['200k'] = array(
-	'name'					=> $hcms_lang['low'][$lang].' (200k)',
-	'checked'				=> false
-);
-
-$available_bitrates['768k'] = array(
-	'name'					=> $hcms_lang['medium'][$lang].' (768k)',
-	'checked'				=> true
-);
-
-$available_bitrates['1856k'] = array(
-	'name'		 => $hcms_lang['high'][$lang].' (1856k)',
-	'checked'	 => false
-);
-
-// availbale video sizes
-$available_videosizes = array();
-
-$available_videosizes['o'] = array(
-	'name'					=> $hcms_lang['original'][$lang],
-	'checked'				=> true,
-	'individual'		=> false
-);
-
-$available_videosizes['s'] = array(
-	'name'					=> $hcms_lang['low-resolution-of-320-pixel-width'][$lang],
-	'checked'				=> false,
-	'individual'		=> false
-);
-
-$available_videosizes['l'] = array(
-	'name'					=> $hcms_lang['medium-resolution-of-640-pixel-width'][$lang],
-	'checked'				=> true,
-	'individual'		=> false
-);
-
-$available_videosizes['xl'] = array(
-	'name'					=> $hcms_lang['high-resoltion-of-1280x720-pixel'][$lang],
-	'checked'				=> false,
-	'individual'		=> false
-);
-
-$available_videosizes['i'] = array(
-	'name'		 => $hcms_lang['individual-of-'][$lang],
-	'checked'	 => false,
-	'individual' => true
-);
-
-//available bitrates for the audio
-$available_audiobitrates = array();
-
-$available_audiobitrates['original'] = array(
-  'name'    => $hcms_lang['original'][$lang],
-  'checked' => true
-);
-
-$available_audiobitrates['64k'] = array(
-  'name'    => $hcms_lang['low'][$lang].' (64 kb/s)',
-  'checked' => true
-);
-
-$available_audiobitrates['128k'] = array(
-  'name'    => $hcms_lang['medium'][$lang].' (128 kb/s)',
-  'checked' => false
-);
-
-$available_audiobitrates['192k'] = array(
-  'name'    => $hcms_lang['high'][$lang].' (192 kb/s)',
-  'checked' => false
-);
-
-// flip
-$available_flip = array();
-$available_flip['fv'] = $hcms_lang['vertical'][$lang];
-$available_flip['fh'] = $hcms_lang['horizontal'][$lang];
+// include media options
+require ($mgmt_config['abs_path_cms']."include/mediaoptions.inc.php");
 
 // check input paramters and define video settings
 if ($format != "" && array_key_exists ($format, $available_formats)) $format = $format;
@@ -315,10 +221,23 @@ else $filetype = "videoplayer";
 // render media
 if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
 {
-	ini_set ("max_execution_time", "3600"); // sets the maximum execution time of this script to 1 hour.
+  // sets the maximum execution time to 2 hours
+	ini_set ("max_execution_time", "7200");
 
+	// Ultra HD
+	if ($videosize == "uhd")
+  {
+    $width = "3840";
+    $height = "2160";
+	}
+	// Full HD
+	elseif ($videosize == "fhd")
+  {
+    $width = "1920";
+    $height = "1080";
+	}
 	// HDTV 720p
-	if ($videosize == "xl")
+	elseif ($videosize == "xl")
   {
     $width = "1280";
     $height = "720";
@@ -349,6 +268,10 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
     $width = "0";
     $height = "0";
   }
+  
+  // check for max video size
+	if ($width > 5000) $width = 3840;
+	if ($height > 3000) $height = 2160;
   
   // Video montage
   $cut_add = "";
@@ -429,11 +352,7 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
                     
     $gbcs_add = "-gbcs ".$gamma.":".$brightness.":".$contrast.":".$saturation." ";
   }
-
-  // check for max video size
-	if ($width > 1920) $width = 1920;
-	if ($height > 1080) $height = 1080;    
-
+  
   // conversion of videoplayer videos
   if ($filetype == "videoplayer")
   {
@@ -443,8 +362,8 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
     {
       $filetype = strtolower ($filetype);
       
-      // we only convert the commonly used video formats (FLV, MP4, OGV)
-      if (in_array ($filetype, array('flv', 'mp4', 'ogv')))
+      // we only convert the commonly used video formats (MP4, OGV)
+      if (in_array ($filetype, array('mp4', 'ogv')))
       {
         // only capture video screen for thumbnail image for the first video
         if ($run == 1) $thumb = 0;

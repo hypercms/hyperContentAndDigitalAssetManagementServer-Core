@@ -1,3 +1,6 @@
-order deny,allow
-deny from all
-allow from 127.0.0.1
+# Apache 2.2
+Deny from all
+Allow from 127.0.01
+# Apache 2.4
+Require all denied
+Require ip 127.0.01

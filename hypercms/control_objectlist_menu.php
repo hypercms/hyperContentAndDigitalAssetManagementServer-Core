@@ -296,7 +296,6 @@ else
 {
   $file_info = Null;
   $filetype = "";
-  $pagename = "";
 }
 
 // define object category name
@@ -715,15 +714,15 @@ else
 }
 
 // define object name
-if ($folder != "")
-{
-  $item = getescapedtext ($hcms_lang['folder'][$lang]);
-  $object_name = specialchr_decode ($folder);
-}
-elseif (($page != "" && $page != ".folder") || $multiobject)
+if (($page != "" && $page != ".folder") || $multiobject_count > 1)
 {
   $item = $pagecomp;
   $object_name = $pagename;
+}
+elseif ($folder != "")
+{
+  $item = getescapedtext ($hcms_lang['folder'][$lang]);
+  $object_name = specialchr_decode ($folder);
 }
 else
 {

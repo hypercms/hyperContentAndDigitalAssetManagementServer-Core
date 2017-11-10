@@ -498,8 +498,8 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
             $listview .= "
                          <tr id=g".$items_row." ".$selectclick." style=\"cursor:pointer\" align=\"left\">
                            <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
-                             <input id=\"objectpath\" type=hidden value=\"".$location_esc.$folder."\">
-                             <div ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" style=\"display:block; padding-left:5px; padding-right:5px;\">
+                             <input type=\"hidden\" value=\"".$location_esc.$folder."\">
+                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" style=\"display:block; padding-left:5px; padding-right:5px;\">
                                <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" /> ".$dlink_start.$folder_name.$dlink_end."
                              </div>
                             </td>";
@@ -563,7 +563,7 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
         
             $galleryview .= "
                             <td id=t".$items_row." style=\"width:".$cell_width."; text-align:center; vertical-align:bottom;\">
-                              <div ".$selectclick." ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer; display:block;\">".
+                              <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$selectclick." ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer; display:block;\">".
                                 $dlink_start."
                                   <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" style=\"border:0;\" /></div>
                                   ".showshorttext($folder_name, 18, true)."
@@ -736,8 +736,8 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
             $listview .= "
                          <tr id=\"g".$items_row."\" style=\"text-align:left; cursor:pointer;\" ".$selectclick.">
                            <td id=\"h".$items_row."_0\"class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
-                             <input id=\"objectpath\" type=hidden value=\"".$location_esc.$object."\" />
-                             <div ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"display:block; padding-left:5px; padding-right:5px;\">
+                             <input type=\"hidden\" value=\"".$location_esc.$object."\" />
+                             <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"display:block; padding-left:5px; padding-right:5px;\">
                                <img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" ".$class_image." /> ".$dlink_start.$object_name.$dlink_end."
                              </div>
                            </td>";
@@ -910,7 +910,7 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
 
             $galleryview .= "
                             <td id=\"t".$items_row."\" style=\"width:".$cell_width."; text-align:center; vertical-align:bottom;\">
-                              <div ".$selectclick." ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"cursor:pointer; display:block; text-align:center;\">".
+                              <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$selectclick." ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"cursor:pointer; display:block; text-align:center;\">".
                                 $dlink_start."
                                   ".$thumbnail."
                                   ".showshorttext($object_name, 18, true)."
@@ -1055,6 +1055,9 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 
 <!-- load screen --> 
 <div id="hcmsLoadScreen" class="hcmsLoadScreen"></div>
+
+<!-- select area --> 
+<div id="selectarea" class="hcmsSelectArea"></div>
 
 <!-- live view --> 
 <div id="objectviewLayer" class="hcmsWorkplaceObjectlist" style="display:none; overflow:hidden; position:fixed; width:100%; height:100%; margin:0; padding:0; left:0; top:0; z-index:8;">
@@ -1266,6 +1269,7 @@ if ($galleryview != "")
 <script>
 toggleview (explorerview);
 $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
+var selectarea = document.getElementById('selectarea');
 </script>
 
 </body>

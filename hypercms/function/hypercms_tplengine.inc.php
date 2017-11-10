@@ -1510,6 +1510,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     
     $contenttype = $result['contenttype'];
     $hcms_charset = $charset = $result['charset'];
+    
+    // set default character set
+    if (!empty ($charset)) ini_set ('default_charset', $charset);
 
     // get content-type from component template, if set
     $hypertag_array = gethypertag ($viewstore, "compcontenttype", 0);
@@ -5305,6 +5308,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 {
                   $repl_offset = 0;
                   $viewstore_offset = $viewstore;
+                  
+                  // get the first objectpath from the single component string
+                  $temp = link_db_getobject ($contentbot);
+                  $contentbot = $temp[0];
 
                   while (@substr_count ($viewstore_offset, $hypertag) >= 1)  // necessary loop for unique media names for rollover effect
                   {

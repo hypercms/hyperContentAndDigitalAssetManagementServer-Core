@@ -809,7 +809,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
     $passwd_crypted = urldecode ($passwd);
     $linking_auth = false;
 
-    // check object reference (ID) and object code (token) in version before and after 5.5.8
+    // check object reference (ID) and object code (token) in version before and after version 5.5.8
     if ($mgmt_config['db_connect_rdbms'] != "" && ($objcode == hcms_crypt ($objref, 3, 12) || $objcode == hcms_crypt ($objref)))
     {
       $objectpath = rdbms_getobject ($objref);
@@ -2743,7 +2743,7 @@ function hcms_crypt ($string, $start=0, $length=0)
     }
     
     // encoding algorithm
-    $string_encoded = crypt ($string, substr ($string, 0, 1));
+    $string_encoded = crypt ($string, substr ($string, 0, 2));
     $string_encoded = md5 ($string_encoded);
     
     // extract substring
@@ -2793,27 +2793,10 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
       else $key = "h1y2p3e4r5c6m7s8";
     }
     
-    // weak
-    // main purpose is to gain a short encrypted string, please don't use it for sensitive data or files!
-    if ($crypt_level == "weak")
-    {
-      $key = sha1 ($key);
-      $strLen = strlen ($string);
-      $keyLen = strlen ($key);
-      $j = 0;
-      $hash = "";
-      
-      for ($i = 0; $i < $strLen; $i++)
-      {
-        $ordStr = ord (substr ($string, $i, 1));
-        if ($j == $keyLen) $j = 0;
-        $ordKey = ord (substr ($key, $j, 1));
-        $j++;
-        $hash .= strrev (base_convert (dechex ($ordStr + $ordKey), 16, 36));
-      }
-    }
+    // PHP7 does not support mcrypt anymore
+    
     // strong (binary-safe)
-    elseif ($crypt_level == "strong")
+    if ($crypt_level == "strong" && (function_exists ("openssl_decrypt") || function_exists ("mcrypt_get_iv_size")))
     {
       // use OpenSSL if available with AES 256 encryption (requires a key with 32 digits)
       if (function_exists ("openssl_encrypt"))
@@ -2829,7 +2812,7 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
         $hash = $iv.$hash;
       }
       // use PHP Mcrypt with AES 256 encryption (requires a key with 32 digits)
-      else
+      elseif (function_exists ("mcrypt_get_iv_size"))
       {
         // base 64 encode binary data to be binary-safe
         $string = base64_encode ($string);
@@ -2843,14 +2826,42 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
       }
     }
     // standard
-    else
+    elseif ($crypt_level == "standard" && function_exists ("mcrypt_get_iv_size"))
     {
       // MCRYPT_MODE_ECB (electronic codebook) 
       // is suitable for random data, such as encrypting other keys. Since data there is short and random, the disadvantages of ECB have a favorable negative effect.
       $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
       $iv = mcrypt_create_iv ($ivsize, MCRYPT_RAND);
       $hash = mcrypt_encrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB, $iv);
-    } 
+    }
+    // weak
+    // main purpose is to gain a short encrypted string, please don't use it for sensitive data or files!
+    else
+    {
+      $key = sha1 ($key);
+      $strLen = strlen ($string);
+      $keyLen = strlen ($key);
+      $j = 0;
+      $hash = "";
+      
+      for ($i = 0; $i < $strLen; $i++)
+      {
+        $ordStr = ord (substr ($string, $i, 1));
+        if ($j == $keyLen) $j = 0;
+        $ordKey = ord (substr ($key, $j, 1));
+        $j++;
+        $hash .= strrev (base_convert (dechex ($ordStr + $ordKey), 16, 36));
+      }
+      
+      if ($crypt_level != "weak")
+      {
+        // warning
+        $errcode = "00110";
+        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|$errcode|fallback to crypt level 'weak' due to missing support of stronger encryption technologies";
+        
+        savelog (@$error);
+      }
+    }
     
     if ($hash != "")
     {
@@ -2908,8 +2919,46 @@ function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
     // to be used for strings passed via GET 
     elseif (strtolower($encoding) == "url") $string = base64_decode (urldecode (str_replace (".", "%", $string)));
 
+    // strong (binary-safe)
+    if ($crypt_level == "strong" && (function_exists ("openssl_decrypt") || function_exists ("mcrypt_get_iv_size")))
+    {
+      // use OpenSSL if available with AES 256 decryption (requires a key with 32 digits)
+      if (function_exists ("openssl_decrypt"))
+      {
+        $method = "aes-256-cbc";
+        $ivsize = openssl_cipher_iv_length ($method);
+        $iv = mb_substr ($string, 0, $ivsize, '8bit');
+        $string = mb_substr ($string, $ivsize, null, '8bit');
+        
+        $hash_decrypted = openssl_decrypt ($string, $method, $key, OPENSSL_RAW_DATA, $iv);
+      }
+      elseif (function_exists ("mcrypt_get_iv_size"))
+      {
+        // MCRYPT_MODE_CBC (cipher block chaining) 
+        // is especially suitable for encrypting files where the security is increased over ECB significantly.
+        $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+        if (strlen ($string) < $ivsize) return false;
+        $iv = substr ($string, 0, $ivsize);
+        $string = substr ($string, $ivsize);
+        $hash_decrypted = mcrypt_decrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_CBC, $iv);
+        $hash_decrypted = rtrim ($hash_decrypted, "\0");
+        
+        // base 64 decode (binary-safe)
+        $hash_decrypted = base64_decode ($hash_decrypted);
+      }
+    }
+    // standard
+    elseif ($crypt_level == "standard" && function_exists ("mcrypt_get_iv_size"))
+    {
+      // MCRYPT_MODE_ECB (electronic codebook) 
+      // is suitable for random data, such as encrypting other keys. Since data there is short and random, the disadvantages of ECB have a favorable negative effect.
+      $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
+      $iv = mcrypt_create_iv ($ivsize, MCRYPT_RAND);
+      $hash_decrypted = mcrypt_decrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB, $iv);
+      $hash_decrypted = rtrim ($hash_decrypted, "\0");
+    }
     // weak
-    if ($crypt_level == "weak")
+    else
     {
       $key = sha1 ($key);
       $strLen = strlen ($string);
@@ -2926,45 +2975,7 @@ function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
         $hash_decrypted .= chr ($ordStr - $ordKey);
       }
     }
-    // strong (binary-safe)
-    elseif ($crypt_level == "strong")
-    {
-      // use OpenSSL if available with AES 256 decryption (requires a key with 32 digits)
-      if (function_exists ("openssl_decrypt"))
-      {
-        $method = "aes-256-cbc";
-        $ivsize = openssl_cipher_iv_length ($method);
-        $iv = mb_substr ($string, 0, $ivsize, '8bit');
-        $string = mb_substr ($string, $ivsize, null, '8bit');
-        
-        $hash_decrypted = openssl_decrypt ($string, $method, $key, OPENSSL_RAW_DATA, $iv);
-      }
-      else
-      {
-        // MCRYPT_MODE_CBC (cipher block chaining) 
-        // is especially suitable for encrypting files where the security is increased over ECB significantly.
-        $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
-        if (strlen ($string) < $ivsize) return false;
-        $iv = substr ($string, 0, $ivsize);
-        $string = substr ($string, $ivsize);
-        $hash_decrypted = mcrypt_decrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_CBC, $iv);
-        $hash_decrypted = rtrim ($hash_decrypted, "\0");
-        
-        // base 64 decode (binary-safe)
-        $hash_decrypted = base64_decode ($hash_decrypted);
-      }
-    }
-    // standard
-    else
-    {
-      // MCRYPT_MODE_ECB (electronic codebook) 
-      // is suitable for random data, such as encrypting other keys. Since data there is short and random, the disadvantages of ECB have a favorable negative effect.
-      $ivsize = mcrypt_get_iv_size (MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
-      $iv = mcrypt_create_iv ($ivsize, MCRYPT_RAND);
-      $hash_decrypted = mcrypt_decrypt (MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB, $iv);
-      $hash_decrypted = rtrim ($hash_decrypted, "\0");
-    }
-
+    
     if ($hash_decrypted != "") return $hash_decrypted;
     else return false;
   }

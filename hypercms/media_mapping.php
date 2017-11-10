@@ -73,6 +73,8 @@ if (valid_publicationname ($site) && $save == "yes" && checktoken ($token, $user
   // create mapping from form fields
   if (!empty ($mapping_texttype) && is_array ($mapping_texttype) && sizeof ($mapping_texttype) > 0 && !empty ($mapping_textid) && is_array ($mapping_textid) && sizeof ($mapping_textid) > 0)
   {
+    // unescape > and double quotes
+    $mapping_data = str_replace ("&gt;", ">", stripslashes ($mapping_data));
     $mapping_array = explode (PHP_EOL, $mapping_data);
 
     // update values in mapping data

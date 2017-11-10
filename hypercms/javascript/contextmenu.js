@@ -5,7 +5,7 @@ var scrollX = 0;
 var scrollY = 0;
 var allow_tr_submit = true;
 
-// clear selected
+// remove selection marks of browser
 function hcms_clearSelection()
 {
   if (window.getSelection)
@@ -38,7 +38,7 @@ function hcms_loadSidebar()
 }
 
 // reset context menu  
-function hcms_resetContext ()
+function hcms_resetContext()
 {
   if (eval (document.forms['contextmenu_object']) && document.forms['contextmenu_object'].elements['contextmenustatus'].value == "hidden")
   {
@@ -80,7 +80,7 @@ function hcms_resetContext ()
 } 
 
 // lock/unlock context menu for writing  
-function hcms_lockContext (status)
+function hcms_lockContext(status)
 {
   if (status == "true" || status == true || status == "false" || status == false)
   {
@@ -96,7 +96,7 @@ function hcms_lockContext (status)
 }
 
 // lock/unlock status of context menu  
-function hcms_isLockedContext ()
+function hcms_isLockedContext()
 {
   var status = "false";
   
@@ -111,7 +111,7 @@ function hcms_isLockedContext ()
 }
 
 // retrieve mouse x-y position
-function hcms_getMouseXY (e) 
+function hcms_getMouseXY(e) 
 {
   if (!e) var e = window.event;
   
@@ -121,23 +121,33 @@ function hcms_getMouseXY (e)
     hcms_getScrollXY ();
     tempX = e.clientX + scrollX;
     tempY = e.clientY + scrollY;
+    
+    // select area
+    x2 = e.clientX;
+    y2 = e.clientY;
   } 
   else if (e.pageX || e.pageY) 
   {
     // grab the x-y pos if browser is NS
     tempX = e.pageX;
     tempY = e.pageY;
+    
+    // select area
+    x2 = e.pageX;
+    y2 = e.pageY;
   }  
   
   // catch possible negative values in NS4
   if (tempX < 0) tempX = 0;
-  if (tempY < 0) tempY = 0; 
+  if (tempY < 0) tempY = 0;
+  
+  hcms_drawSelectArea();
   
   return true;
 }
 
 // retrieve scrolling
-function hcms_getScrollXY ()
+function hcms_getScrollXY()
 { 
   if (typeof(window.pageYOffset) == 'number')
   {
@@ -748,15 +758,15 @@ function hcms_selectObject (row_id, event)
 {
   var contextmenu_form = false;
 
-  if (eval (document.forms['contextmenu_object']))
+  if (document.forms['contextmenu_object'])
   {
     contextmenu_form = document.forms['contextmenu_object'];
   }
-  else if (eval (document.forms['contextmenu_user']))
+  else if (document.forms['contextmenu_user'])
   {
     contextmenu_form = document.forms['contextmenu_user'];
   }
-  else if (eval (document.forms['contextmenu_queue']))
+  else if (document.forms['contextmenu_queue'])
   {
     contextmenu_form = document.forms['contextmenu_queue'];
   }
@@ -770,40 +780,20 @@ function hcms_selectObject (row_id, event)
   // reset object list if multiobject is empty
   if (contextmenu_form.elements['multiobject'].value == "")
   {
-    if (eval (document.getElementById('objectlist')))
-    {
-      var table = document.getElementById('objectlist');   
-      var tablerows = table.getElementsByTagName("tr");
-      
-      for (i = 0; i < tablerows.length; i++)
-      {           
-        tablerows[i].className = "hcmsObjectUnselected";
-      }
-    }
-    
-    if (eval (document.getElementById('objectgallery')))
-    {
-      var table = document.getElementById('objectgallery');   
-      var tabledata = table.getElementsByTagName("td");
-      
-      for (i = 0; i < tabledata.length; i++)
-      {           
-        tabledata[i].className = "hcmsObjectUnselected";     
-      }  
-    }
+    hcms_unselectAll();
   }
-  
-  var multiobject_str = contextmenu_form.elements['multiobject'].value;
-  var multiobject_str2 = multiobject_str + '|';
-  
-  // if ctrl-key is pressed
-  if (hcms_keyPressed('ctrl', event)==true)
+
+  // if ctrl-key is pressed or select area is used
+  if (hcms_keyPressed('ctrl', event) == true || event == 'selectarea')
   {
+    var multiobject_str = contextmenu_form.elements['multiobject'].value;
+    var multiobject_str2 = multiobject_str + '|';
+  
     var td = document.getElementById('h' + row_id + '_0');
-    var inputs = td.getElementsByTagName('input'); 
+    var inputs = td.getElementsByTagName('input');
     var object = inputs[0].value;
 
-    if (multiobject_str == '' || multiobject_str2.indexOf ('|'+object+'|') == -1 )
+    if (multiobject_str == '|' || multiobject_str2.indexOf ('|'+object+'|') == -1 )
     {
       contextmenu_form.elements['multiobject'].value = multiobject_str + '|' + object;
       document.getElementById('g' + row_id).className='hcmsObjectSelected';
@@ -828,8 +818,11 @@ function hcms_selectObject (row_id, event)
     else return false; 
   }
   // if shift-key is pressed
-  else if (hcms_keyPressed('shift', event)==true)
+  else if (hcms_keyPressed('shift', event) == true)
   {
+    var multiobject_str = contextmenu_form.elements['multiobject'].value;
+    var multiobject_str2 = multiobject_str + '|';
+  
     var td = document.getElementById('h' + row_id + '_0');    
     var inputs = td.getElementsByTagName('input'); 
     var object = inputs[0].value;    
@@ -896,11 +889,15 @@ function hcms_selectObject (row_id, event)
   // if no key is pressed
   else
   {
+    hcms_unselectAll();
+    
+    var multiobject_str = contextmenu_form.elements['multiobject'].value;
+  
     var td = document.getElementById('h' + row_id + '_0');
     var inputs = td.getElementsByTagName('input'); 
     var object = inputs[0].value;
 
-    if (multiobject_str == '' || multiobject_str2.indexOf ('|'+object+'|') == -1 )
+    if (multiobject_str == '')
     {
       contextmenu_form.elements['multiobject'].value = multiobject_str + '|' + object;
       document.getElementById('g' + row_id).className='hcmsObjectSelected';
@@ -964,58 +961,46 @@ function hcms_updateControlQueueMenu()
 
 // unselect all objects
 function hcms_unselectAll()
-{ 
- if (document.getElementsByTagName)
- {  
-   if (eval (document.getElementById('objectlist')))
-   {
-     var table = document.getElementById('objectlist');   
-     var tablerows = table.getElementsByTagName("tr");
-      
-     for (i = 0; i < tablerows.length; i++)
-     {           
-       tablerows[i].className = "hcmsObjectUnselected";
-     }
-   }
-   
-   if (eval (document.getElementById('objectgallery')))
-   {
-     var table = document.getElementById('objectgallery');   
-     var tabledata = table.getElementsByTagName("td");
-      
-     for (i = 0; i < tabledata.length; i++)
-     {           
-       tabledata[i].className = "hcmsObjectUnselected";     
-     }  
-   } 
-   
-   if (eval (document.forms['contextmenu_object']))
-   {
-     if (document.forms['contextmenu_object'].elements['multiobject'].value)
-     {
-       document.forms['contextmenu_object'].elements['multiobject'].value = '';
-       hcms_updateControlObjectListMenu();
-     }
-   }
-   else if (eval (document.forms['contextmenu_user']))
-   {
-     if (document.forms['contextmenu_user'].elements['multiobject'].value)
-     {
-       document.forms['contextmenu_user'].elements['multiobject'].value = '';
-       hcms_updateControlUserMenu();
-     }
-   }
-   else if (eval (document.forms['contextmenu_queue']))
-   {
-     if (document.forms['contextmenu_queue'].elements['multiobject'].value)
-     {
-       document.forms['contextmenu_queue'].elements['multiobject'].value = '';
-       hcms_updateControlQueueMenu();
-     }
-   }
-   
-   return true; 
- } 
+{
+  if (document.getElementById('objectlist'))
+  {
+    var table = document.getElementById('objectlist');   
+    var tablerows = table.getElementsByTagName("tr");
+    
+    for (i = 0; i < tablerows.length; i++)
+    {           
+      tablerows[i].className = "hcmsObjectUnselected";
+    }
+  }
+  
+  if (document.getElementById('objectgallery'))
+  {
+    var table = document.getElementById('objectgallery');   
+    var tabledata = table.getElementsByTagName("td");
+    
+    for (i = 0; i < tabledata.length; i++)
+    {           
+      tabledata[i].className = "hcmsObjectUnselected";     
+    }  
+  } 
+  
+  if (document.forms['contextmenu_object'] && document.forms['contextmenu_object'].elements['multiobject'].value)
+  {
+    document.forms['contextmenu_object'].elements['multiobject'].value = '';
+    hcms_updateControlObjectListMenu();
+  }
+  else if (document.forms['contextmenu_user'] && document.forms['contextmenu_user'].elements['multiobject'].value)
+  {
+    document.forms['contextmenu_user'].elements['multiobject'].value = '';
+    hcms_updateControlUserMenu();
+  }
+  else if (document.forms['contextmenu_queue'] && document.forms['contextmenu_queue'].elements['multiobject'].value)
+  {
+    document.forms['contextmenu_queue'].elements['multiobject'].value = '';
+    hcms_updateControlQueueMenu();
+  }
+  
+  return true; 
 } 
 
 // contextmenu
@@ -1032,7 +1017,7 @@ function hcms_Contextmenu(e)
 function hcms_rightClick(e) 
 {
   if (!e) var e = window.event;
-  
+
   // if alt-key is not pressed
   if (activatelinks == false)
   {
@@ -1046,6 +1031,8 @@ function hcms_rightClick(e)
       hcms_showContextmenu();
     }
   }
+
+  hcms_startSelectArea(e);
   
   return true;
 }
@@ -1054,46 +1041,40 @@ function hcms_rightClick(e)
 function hcms_leftClick(e) 
 {
   if (!e) var e = window.event;
+  
+  var object;
   var multiobject;
-  var objectcount=0;
+  var objectcount = 0;
+  
+  // remove selection marks of browser
+  hcms_clearSelection();
 
   if (eval (document.forms['contextmenu_object']))
   {
+    object = document.forms['contextmenu_object'].elements['page'].value;
     multiobject = document.forms['contextmenu_object'].elements['multiobject'].value;
   }
   else if (eval (document.forms['contextmenu_user']))
   {
+    object = document.forms['contextmenu_user'].elements['login'].value;
     multiobject = document.forms['contextmenu_user'].elements['multiobject'].value;
   }
   else if (eval (document.forms['contextmenu_queue']))
   {
+    object = document.forms['contextmenu_queue'].elements['page'].value;
     multiobject = document.forms['contextmenu_queue'].elements['multiobject'].value;
   }
   
-  // count object stored in multiobject
+  // count objects stored in multiobject
   if (multiobject != "") objectcount = multiobject.split("|").length - 1;
 
-  // remove selection marks of browser
-  if (objectcount > 0) hcms_clearSelection();
-
   // left mouse click
-  if (e.which == 0 || e.which == 1) 
+  if (e.which == 0 || e.which == 1 || e.button == 0 || e.button == 1) 
   {
     hcms_hideContextmenu();
-    
+   
     // if no key is pressed and multiobject stores more than 1 object
-    if (hcms_keyPressed('', e) == false && objectcount > 1)
-    {
-      hcms_unselectAll();
-      hcms_resetContext();
-    }
-  }
-  else if (e.button == 0 || e.button == 1) 
-  {
-    hcms_hideContextmenu();
-    
-    // if no key is pressed and multiobject stores more than 1 object
-    if (hcms_keyPressed('', e) == false && objectcount > 1)
+    if (hcms_keyPressed('', e) == false && object == "" && objectcount <= 1)
     {
       hcms_unselectAll();
       hcms_resetContext();
@@ -1110,24 +1091,24 @@ function hcms_keyPressed(key, e)
   var altPressed = 0;
   var shiftPressed = 0;
 
-  if (parseInt(navigator.appVersion)>3)
+  if (parseInt(navigator.appVersion) > 3 && e != null && e != 'selectarea')
   {
-    var evt = navigator.appName=="Netscape" ? e:event;
+    var evt = navigator.appName == "Netscape" ? e:event;
 
-    if (navigator.appName=="Netscape" && parseInt(navigator.appVersion)==4)
+    if (navigator.appName == "Netscape" && parseInt(navigator.appVersion) == 4)
     {
       // NETSCAPE 4 CODE
-      var mString =(e.modifiers+32).toString(2).substring(3,6);
-      shiftPressed=(mString.charAt(0)=="1");
-      ctrlPressed =(mString.charAt(1)=="1");
-      altPressed  =(mString.charAt(2)=="1");
+      var mString = (e.modifiers+32).toString(2).substring(3,6);
+      shiftPressed = (mString.charAt(0) == "1");
+      ctrlPressed = (mString.charAt(1) == "1");
+      altPressed = (mString.charAt(2) == "1");
     }
     else
     {
       // NEWER BROWSERS [CROSS-PLATFORM]
-      shiftPressed=evt.shiftKey;
-      altPressed  =evt.altKey;
-      ctrlPressed =evt.ctrlKey;
+      shiftPressed = evt.shiftKey;
+      altPressed = evt.altKey;
+      ctrlPressed = evt.ctrlKey;
     }
     
     if (key == 'ctrl' && ctrlPressed) return true;
@@ -1137,7 +1118,7 @@ function hcms_keyPressed(key, e)
     else return false;
   }
  
-  return true;
+  return false;
 }
 
 // get download or wrapper link from service
@@ -1249,6 +1230,134 @@ function hcms_activateLinks(e)
   }
 }
 
+// select area
+var selectarea = null;
+var x1 = 0;
+var y1 = 0;
+var x2 = 0;
+var y2 = 0;
+var x3 = 0;
+var y3 = 0;
+var x4 = 0;
+var y4 = 0;
+
+function hcms_startSelectArea(e)
+{
+  if (!e) var e = window.event;
+      
+  // start select area on left mouse button down
+  if (selectarea && (e.which == 0 || e.which == 1 || e.button == 0 || e.button == 1))
+  {
+    x1 = e.clientX;
+    y1 = e.clientY;
+    return true;
+  }
+  
+  return false;
+}
+
+function hcms_drawSelectArea()
+{
+  if (selectarea && x1 > 0 && y1 > 0)
+  {
+    x3 = Math.min(x1,x2);
+    x4 = Math.max(x1,x2);
+    y3 = Math.min(y1,y2);
+    y4 = Math.max(y1,y2);
+    
+    // remove selection marks of browser
+    hcms_clearSelection();
+  
+    // enable select area if width and height are larger than 5 pixels
+    if (selectarea.style.display == 'none' && (x4 - x3) > 5 && (y4 - y3) > 5)
+    {
+      selectarea.style.display = 'inline';
+    }
+    
+    // size select area
+    if (selectarea.style.display != 'none')
+    {
+      selectarea.style.left = x3 + 'px';
+      selectarea.style.top = y3 + 'px';
+      selectarea.style.width = x4 - x3 + 'px';
+      selectarea.style.height = y4 - y3 + 'px';
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+function hcms_endSelectArea()
+{
+  var selected = false;
+
+  // if select area is used
+  if (selectarea && x1 > 0 && y1 > 0 && x3 != 0 && y3 != 0 && x4 != 0 && y4 != 0 && (x4-x3) > 5 && (y4-y3) > 5)
+  {    
+    // unselect all
+    hcms_unselectAll ();
+    
+    // select objects in the given area
+    if (document.getElementById('objectLayer') && document.getElementById('objectLayer').style.visibility == "visible")
+    {
+      // list view
+      var objects = document.getElementsByClassName('hcmsObjectListMarker');
+      var x_diff = 80;
+      var y_diff = 10;
+    }
+    else if (document.getElementById('galleryviewLayer') && document.getElementById('galleryviewLayer').style.visibility == "visible")
+    {
+      // gallery view
+      var objects = document.getElementsByClassName('hcmsObjectGalleryMarker');
+      var x_diff = 80;
+      var y_diff = 80;
+    }
+
+    if (objects && objects.length > 0)
+    {
+      for (var i = 0; i < objects.length; i++)
+      {
+        var row_id = objects[i].id;
+        var pos = objects[i].getBoundingClientRect();
+        var x = pos.left;
+        var y = pos.top;
+  
+        if (row_id != "" && x >= (x3-x_diff) && y >= (y3-y_diff) && x <= (x4-x_diff) && y <= (y4-y_diff))
+        {
+          hcms_selectObject (row_id, 'selectarea');
+          selected = true;
+        }
+      }
+    
+      // update control
+      if (selected)
+      {
+        if (document.forms['contextmenu_object']) setTimeout (hcms_updateControlObjectListMenu, 300);
+        else if (document.forms['contextmenu_user']) setTimeout (hcms_updateControlUserMenu, 300);
+        else if (document.forms['contextmenu_queue']) setTimeout (hcms_updateControlQueueMenu, 300);
+      }
+    }
+  }
+    
+  // reset select area
+  x1 = 0;
+  y1 = 0;
+  x2 = 0;
+  y2 = 0;
+  x3 = 0;
+  y3 = 0;
+  x4 = 0;
+  y4 = 0;
+  
+  // hide select area
+  selectarea.style.display = 'none';
+
+  if (selected) return true;
+  else return false;
+}
+
+
 // initialize
 var activatelinks = false;
 
@@ -1256,4 +1365,5 @@ document.onkeydown = hcms_activateLinks;
 document.onmousemove = hcms_getMouseXY;
 document.oncontextmenu = hcms_Contextmenu;
 document.onmousedown = hcms_rightClick;
+document.onmouseup = hcms_endSelectArea;
 document.onclick = hcms_leftClick;

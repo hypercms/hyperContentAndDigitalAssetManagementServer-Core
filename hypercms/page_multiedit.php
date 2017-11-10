@@ -522,7 +522,7 @@ elseif ($is_video || $is_audio)
   
   foreach ($mgmt_mediaoptions as $ext => $options)
   {
-    if ($ext != "thumbnail-video" && $ext != "thumbnail-audio")
+    if ($ext != "thumbnail-video" && $ext != "thumbnail-audio" && $ext != "autorotate-video")
     {
     	// remove the dot
     	$name = strtolower (trim ($ext, "."));    
@@ -530,103 +530,12 @@ elseif ($is_video || $is_audio)
     }
   }
   
-  // availbale formats
-  $available_formats = array();
-  
-  $available_formats['fs'] = array(
-  	'name'					 => $hcms_lang['standard-video-43'][$lang],
-  	'checked'				 => false
-  );
-  
-  $available_formats['ws'] = array(
-  	'name'					 => $hcms_lang['widescreen-video-169'][$lang],
-  	'checked'				 => true
-  );
-  
-  // available bitrates
-  $available_bitrates = array();
-  
-  $available_bitrates['original'] = array(
-  	'name'					=> $hcms_lang['original'][$lang],
-  	'checked'				=> true
-  );
-
-  $available_bitrates['200k'] = array(
-  	'name'					=> $hcms_lang['low'][$lang].' (200k)',
-  	'checked'				=> false
-  );
-  
-  $available_bitrates['768k'] = array(
-  	'name'					=> $hcms_lang['medium'][$lang].' (768k)',
-  	'checked'				=> false
-  );
-  
-  $available_bitrates['1856k'] = array(
-  	'name'		 => $hcms_lang['high'][$lang].' (1856k)',
-  	'checked'	 => false
-  );
-  
-  // availbale video sizes
-  $available_videosizes = array();
-  
-  $available_videosizes['o'] = array(
-  	'name'					=> $hcms_lang['original'][$lang],
-  	'checked'				=> true,
-  	'individual'		=> false
-  );
-  
-  $available_videosizes['s'] = array(
-  	'name'					=> $hcms_lang['low-resolution-of-320-pixel-width'][$lang],
-  	'checked'				=> false,
-  	'individual'		=> false
-  );
-  
-  $available_videosizes['l'] = array(
-  	'name'					=> $hcms_lang['medium-resolution-of-640-pixel-width'][$lang],
-  	'checked'				=> false,
-  	'individual'		=> false
-  );
-  
-  $available_videosizes['xl'] = array(
-  	'name'					=> $hcms_lang['high-resoltion-of-1280x720-pixel'][$lang],
-  	'checked'				=> false,
-  	'individual'		=> false
-  );
-  
-  $available_videosizes['i'] = array(
-  	'name'		 => $hcms_lang['individual-of-'][$lang],
-  	'checked'	 => false,
-  	'individual' => true
-  );
-  
-  // available audio bitrates
-  $available_audiobitrates = array();
-  
-  $available_audiobitrates['original'] = array(
-    'name'    => $hcms_lang['original'][$lang],
-    'checked' => true
-  );
-
-  $available_audiobitrates['64k'] = array(
-    'name'    => $hcms_lang['low'][$lang].' (64 kb/s)',
-    'checked' => false
-  );
-  
-  $available_audiobitrates['128k'] = array(
-    'name'    => $hcms_lang['medium'][$lang].' (128 kb/s)',
-    'checked' => false
-  );
-  
-  $available_audiobitrates['192k'] = array(
-    'name'    => $hcms_lang['high'][$lang].' (192 kb/s)',
-    'checked' => false
-  );
-  
-  // flip
-  $available_flip = array();
-  $available_flip['fv'] = $hcms_lang['vertical'][$lang];
-  $available_flip['fh'] = $hcms_lang['horizontal'][$lang];
+  // include media options
+  require ($mgmt_config['abs_path_cms']."include/mediaoptions.inc.php");
 }
+
+// set character set in header
+if (!empty ($charset)) ini_set ('default_charset', $charset);
 ?>
 <!DOCTYPE html>
 <html>
@@ -1134,13 +1043,13 @@ elseif ($is_video || $is_audio)
       if (result && $('#chbx_brightness').prop('checked'))
       {
         image_checked = true;
-        result = validateImageForm('brightness', '', 'RinRange-100:100')
+        result = validateImageForm('brightness', '', 'RinRange-100:100');
       } 
       
       if (result && $('#chbx_contrast').prop('checked'))
       {
         image_checked = true;
-        result = validateImageForm('contrast', '', 'RinRange-100:100')
+        result = validateImageForm('contrast', '', 'RinRange-100:100');
       } 
       
       if (result && $('#chbx_colorspace').prop('checked'))
@@ -1787,7 +1696,7 @@ elseif ($is_video || $is_audio)
   </script>
   </head>
   
-  <body class="hcmsWorkplaceFrame hcmsWorkplaceGeneric" style="overflow:auto">
+  <body class="hcmsWorkplaceGeneric" style="overflow:auto">
   
     <!-- save layer --> 
     <div id="savelayer" class="hcmsWorkplaceGeneric" style="position:fixed; width:100%; height:100%; margin:0; padding:0; left:0px; top:0px; display:none; z-index:100;">
@@ -1805,7 +1714,7 @@ elseif ($is_video || $is_audio)
         <tr>
           <td class="hcmsHeadline" style="text-align:left; vertical-align:middle; padding:0px 1px 0px 2px">
             <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="save(true);" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" align="absmiddle" />
-            <img name="Button_sc" src="<?php echo getthemelocation()?>img/button_saveclose.png" class="hcmsButton" onClick="saveClose()" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" />
+            <img name="Button_sc" src="<?php echo getthemelocation()?>img/button_saveclose.png" class="hcmsButton hcmsButtonSizeSquare" onClick="saveClose()" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" align="absmiddle" />
             <?php if ($is_image || $is_video) { ?>
             <div class="hcmsButtonMenu" onclick="toggleDivAndButton(this, '#renderOptions');"><?php echo getescapedtext ($hcms_lang['options'][$lang], $charset, $lang); ?></div>
             <?php } ?>
@@ -1819,7 +1728,7 @@ elseif ($is_video || $is_audio)
     
     
     <!-- rendering settings -->
-    <div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; display:none; vertical-align:top; z-index:1; margin-top:34px; margin-left:10px" class="hcmsMediaRendering">
+    <div id="renderOptions" style="padding:0px 5px 10px 5px; width:740px; display:none; vertical-align:top; z-index:1; margin-top:36px; margin-left:10px" class="hcmsMediaRendering">
     
       <?php if ($is_image) { ?>
       <!-- start edit image -->
@@ -2195,7 +2104,7 @@ elseif ($is_video || $is_audio)
       ?>
     </form>
     
-    
+    <div class="hcmsWorkplaceFrame">
     <form id="sendform">
       <div style="display:block; margin-top:8px;">
         <span class="hcmsHeadlineTiny">
@@ -2287,7 +2196,6 @@ elseif ($is_video || $is_audio)
             ?>
             <img name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="<?php echo $onclick; ?>" align="absmiddle" style="width:22px; height:22px; border:0; cursor:pointer;" alt="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['pick-a-date'][$lang], $charset, $lang); ?>" />
             <script type="text/javascript">
-            <!--
             var cal_obj_<?php echo $id; ?> = null;
             var format_<?php echo $id; ?> = '<?php echo $tagdata->format; ?>';
 
@@ -2322,7 +2230,6 @@ elseif ($is_video || $is_audio)
             {
               cal_obj_<?php echo $id; ?> = null;
             }
-            -->
             </script>
           <?php
             }
@@ -2393,6 +2300,7 @@ elseif ($is_video || $is_audio)
       <input type="hidden" id="objs" value="<?php echo $multiobject; ?>" />
       <input type="hidden" id="fields" value="<?php echo implode('|', $ids); ?>" />
     </form>
+    </div>
     <?php
     }
     

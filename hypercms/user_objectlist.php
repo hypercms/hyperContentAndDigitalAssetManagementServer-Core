@@ -202,7 +202,7 @@ if (@isset ($object_array) && @sizeof ($object_array) > 0)
             <tr id=\"g".$items_row."\" ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
               <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                 <input id=\"login\" type=\"hidden\" value=\"".$object_array['login'][$key]."\">
-                <div ".$openUser." ".$setContext.">
+                <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$openUser." ".$setContext.">
                     <img src=\"".getthemelocation()."img/user.png\" width=16 height=16 border=0 align=\"absmiddle\" />&nbsp; ".
                     $object_array['login'][$key]."&nbsp;
                 </div>
@@ -275,6 +275,9 @@ var session_id = '<?php session_id(); ?>';
 </head>
 
 <body class="hcmsWorkplaceObjectlist" style="overflow:hidden;" onresize="resizecols()">
+
+<!-- select area --> 
+<div id="selectarea" class="hcmsSelectArea"></div>
 
 <div id="contextLayer" style="position:absolute; width:150px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_user" method="post" action="" target="">
@@ -362,9 +365,8 @@ else
 
 <!-- initalize -->
 <script>
-<!--
 $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
-//-->
+var selectarea = document.getElementById('selectarea');
 </script>
   
 </body>

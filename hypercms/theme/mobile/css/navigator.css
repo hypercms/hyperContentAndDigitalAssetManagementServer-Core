@@ -532,3 +532,15 @@ hr
   position: fixed;
   opacity: 0.7;
 }
+
+.hcmsSelectArea
+{
+  display: none;
+  border: 1px solid #359FFC;
+  background-color: #65B3FC;
+  position: absolute;
+  z-index: 5;
+  filter: gray() alpha(opacity=70);
+  -moz-opacity: 0.7;
+  opacity: 0.7;
+}

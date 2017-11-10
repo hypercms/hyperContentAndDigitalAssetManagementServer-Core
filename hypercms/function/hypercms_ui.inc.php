@@ -1731,19 +1731,36 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
 
         // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
-        if (!is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) <= 1)
+        if (!is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) <= 1 || $width > 640)
         {
-          if (strpos ($mediafile_orig, ".config.") == 0 && substr_count (".mp4.ogg.ogv.webm.flv.", $file_info['orig_ext'].".") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
+          if (strpos ($mediafile_orig, ".config.") == 0 && substr_count (".mp4.ogg.ogv.webm.", $file_info['orig_ext'].".") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
           {
-            $config['mediafiles'][] = $site."/".$mediafile_orig.";".getmimetype ($mediafile_orig);
+            if (!is_array ($config['mediafiles'])) $config['mediafiles'] = array();
+            $temp = $site."/".$mediafile_orig.";".getmimetype ($mediafile_orig);
+            array_unshift ($config['mediafiles'], $temp);
           }
         }
 
-        // use config values
-        if (!empty ($config['width']) && $config['width'] > 0 && !empty ($config['height']) && $config['height'] > 0)
+        // calculate ratio
+        if (!empty ($config['width']) && !empty ($config['height'])) $mediaratio = $config['width'] / $config['height'];
+
+        // use provided width and corrected height
+        if (!empty ($width) && !empty ($height) && !empty ($mediaratio)) 
+        {
+          $mediawidth = $width;
+          $mediaheight = round (($mediawidth / $mediaratio), 0);
+        }
+        // use config values if no width and height has been provided
+        elseif (!empty ($config['width']) && $config['width'] > 0 && !empty ($config['height']) && $config['height'] > 0)
         {
           $mediawidth = $config['width'];
           $mediaheight = $config['height'];
+        }
+        // fallback to provided width and height
+        else
+        {
+          $mediawidth = $width;
+          $mediaheight = $height;
         }
 
         // use default values
@@ -2215,15 +2232,15 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   $video_filename = substr ($medianame, 0, strrpos ($medianame, ".")).".".$media_extension;
                   
                   $filesizes[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['filesize'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $dimensions[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['dimension'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $rotations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['rotate'].' '.getescapedtext ($hcms_lang['degree'][$lang], $hcms_charset, $lang).'&nbsp;&nbsp;</td>';
-                  $durations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['duration_no_ms'].'&nbsp;&nbsp;&nbsp;</td>';
+                  $dimensions[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['dimension'].'&nbsp;&nbsp;&nbsp;</td>';
+                  $rotations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['rotate'].' '.getescapedtext ($hcms_lang['degree'][$lang], $hcms_charset, $lang).'&nbsp;&nbsp;</td>';
+                  $durations[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['duration_no_ms'].'&nbsp;&nbsp;&nbsp;</td>';
                   $video_codecs[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['videocodec'].'&nbsp;&nbsp;&nbsp;</td>';
                   $audio_codecs[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiocodec'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['videobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $audio_bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $audio_frequenzies[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';
-                  $audio_channels[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
+                  $bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['videobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
+                  $audio_bitrates[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiobitrate'].'&nbsp;&nbsp;&nbsp;</td>';
+                  $audio_frequenzies[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiofrequenzy'].'&nbsp;&nbsp;&nbsp;</td>';
+                  $audio_channels[$media_extension] = '<td class="hcmsHeadlineTiny" style="text-align:left; white-space:nowrap;">'.@$videoinfo['audiochannels'].'&nbsp;&nbsp;&nbsp;</td>';
       
                   $download_link = "top.location.href='".createviewlink ($site, $video_thumbfile, $video_filename, false, "download")."'; return false;";
                  
@@ -4794,7 +4811,7 @@ function showmapping ($site, $lang="en")
   if (!empty ($mapping_array) && is_array ($mapping_array) && sizeof ($mapping_array) > 0)
   {
     $content = "
-  <input name=\"mapping_data\" type=\"hidden\" value=\"".$mapping_data."\" />
+  <input name=\"mapping_data\" type=\"hidden\" value=\"".str_replace (array("<", ">"), array("&lt;", "&gt;"), addslashes ($mapping_data))."\" />
   <table width=\"640\" cellpadding=\"2\" cellspacing=\"0\" border=\"0\">";
     
     foreach ($mapping_array as $mapping_data)
@@ -4819,7 +4836,7 @@ function showmapping ($site, $lang="en")
       {
         list ($metatag, $hypertag) = explode ("=>", $mapping_data);
                   
-        // clean text
+        // clean text (remove double and single quotes)
         $metatag = trim (str_replace (array("'", '"', "<", ">"), array("", "", "&lt;", "&gt;"), $metatag));
         $hypertag = trim (str_replace (array("'", '"', "<", ">"), array("", "", "&lt;", "&gt;"), $hypertag));
         $texttype = "";

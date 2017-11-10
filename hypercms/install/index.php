@@ -283,6 +283,9 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
         
         $config = str_replace ("%instances%", "", $config);
         
+        // enable the GD library and disable ImageMagick
+        if ($convert == "") $config = str_replace (array("// \$mgmt_imagepreview['.gif", "\$mgmt_imagepreview['.ai"), array("\$mgmt_imagepreview['.gif", "// \$mgmt_imagepreview['.ai"), $config);
+        
         $result_config = savefile ($mgmt_config['abs_path_cms']."config/", "config.inc.php", $config);
         
         if ($result_config == false) $show .= "<li>Create of config file failed. Please check write permissions of config/config.inc.php.</li>\n";
@@ -682,7 +685,7 @@ $(document).ready(function(){
 <div id="error" style="padding:4px; border:1px solid red; background:#ffdcd5;">There were errors on the form!</div>
 
 <div style="margin:10px 0px;">
-<img src="<?php echo $mgmt_config['url_path_cms']."theme/standard/img/logo.png"; ?>" style="width:480px; border:0; margin:10px 0px;" align="absmiddle" /><br />
+<img src="<?php echo $mgmt_config['url_path_cms']."theme/standard/img/logo.png"; ?>" style="width:466px; border:0; margin:10px 0px;" align="absmiddle" /><br />
 Welcome to the one-step hyper Content &amp; Digital Asset Management Server installation. 
 You may want to read the <a href="<?php echo $mgmt_config['url_path_cms']; ?>help/installationguide_en.pdf" target="_blank">installation guide</a> or watch the <a href="https://youtu.be/qR_wZBSw9Ao" target="_blank">installation tutorial</a> at your leisure.<br/>
 Otherwise just provide the information below and install the most powerful Content and Digital Asset Management System.
@@ -966,10 +969,21 @@ Otherwise just provide the information below and install the most powerful Conte
       <td colspan="2" nowrap="nowrap" class="hcmsHeadline">Scheduled Tasks</td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap">After installation the following scheduled Cron Jobs (Linux/UNIX) <br/>
+      <td colspan="2" nowrap="nowrap">
+      After installation the following scheduled Cron Jobs (Linux/UNIX) <br/>
       or scheduled Tasks (MS Windows) need to be created manually:<br/>
       <strong>cms/job/daily.php</strong> ... needs to be executed daily (e.g. midnight)<br/>
-      <strong>cms/job/minutely.php</strong> ... needs to be executed every minute</td>
+      <strong>cms/job/minutely.php</strong> ... needs to be executed every minute<br/>
+      <br/>
+      Please make sure that the .htaccess files of the system are supported by adding<br/>
+      these directives to your Apache 2.4 configuration of your virtual host:<br/>
+  		<strong>Require all granted<br/>
+  		AllowOverride All<br/>
+  		Options -Indexes +FollowSymLinks</strong><br/>
+      <br/>
+      If you are using earlier Apache versions you need to remove the Apache 2.4<br/>
+      directives in the .htaccess files of the system.
+      </td>
     </tr>
     <tr>
       <td colspan="2" nowrap="nowrap">&nbsp;</td>

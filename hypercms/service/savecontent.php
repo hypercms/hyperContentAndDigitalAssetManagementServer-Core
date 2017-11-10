@@ -456,7 +456,7 @@ if ($usedby == "" || $usedby == $user)
       // set encoding 
       $charset_old = getcharset ("", $contentdatanew); 
       
-      if ($charset_old == false || $charset_old == "" || $charset_old != $charset)
+      if (empty ($charset_old['charset']) || strtolower ($charset_old['charset']) != strtolower ($charset))
       {
         // write XML declaration parameter for text encoding
         if ($charset != "") $contentdatanew = setxmlparameter ($contentdatanew, "encoding", $charset);
@@ -489,7 +489,7 @@ if ($usedby == "" || $usedby == $user)
           $contentdataevent = onsaveobject_post ($site, $cat, $location, $page, $contentfile, $contentdatanew, $user);
               
         // check if event returns a string, if so, the event returns the container and not true or false 
-        if (strlen ($contentdataevent) > 10) $contentdatanew = $contentdataevent;
+        if (!empty ($contentdataevent) && strlen ($contentdataevent) > 10) $contentdatanew = $contentdataevent;
         
         // notification
         notifyusers ($site, $location, $page, "onedit", $user);

@@ -107,7 +107,7 @@ if (is_array ($queue_array) && @sizeof ($queue_array) >= 1)
               <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
                 <td id=\"h".$items_row."_0\" class=\"hcmsCol1\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
                   <input id=\"queue_id\" type=\"hidden\" value=\"".$queue_id."\" />
-                  <div ".$hcms_setObjectcontext." ".$openObject." >
+                  <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >
                       <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." align=\"absmiddle\" />&nbsp;
                       <span title=\"".$object_name."\">".$object_name."</span>&nbsp;
                   </div>
@@ -189,6 +189,10 @@ function resizecols()
 
 <body id="hcmsWorkplaceObjectlist" class="hcmsWorkplaceObjectlist" onresize="resizecols();">
 
+<!-- select area --> 
+<div id="selectarea" class="hcmsSelectArea"></div>
+
+<!-- context menu --> 
 <div id="contextLayer" style="position:absolute; width:150px; height:100px; z-index:10; left:20px; top:20px; visibility:hidden;"> 
   <form name="contextmenu_queue" method="post" action="" target="">
     <input type="hidden" name="contextmenustatus" value="" />
@@ -282,6 +286,7 @@ else
 <!-- initalize -->
 <script>
 $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+var selectarea = document.getElementById('selectarea');
 </script>
 
 </body>

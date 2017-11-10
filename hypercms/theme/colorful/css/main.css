@@ -164,6 +164,8 @@ img
 	background: -moz-linear-gradient( center top, #B8D2FC 5%, #EFF6FF 100% );
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#B8D2FC', endColorstr='#EFF6FF');
   background-color: #B8D2FC;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .hcmsWorkplaceWorkflow

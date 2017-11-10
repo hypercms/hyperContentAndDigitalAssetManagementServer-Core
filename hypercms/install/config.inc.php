@@ -666,7 +666,7 @@ $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -f jpg';
 // -an ... disable audio
 // -ar ... audio sampling frequency (default = 44100 Hz)
 // -b:a ... audio bitrate (default = 64k)
-// -c:a ... audio codec (e.g. libmp3lame, libfaac, libvorbis)
+// -c:a ... audio codec (e.g. libmp3lame, libfdk_aac, libvorbis)
 // Video Options:
 // -b:v ... video bitrate in bit/s (default = 200 kb/s)
 // -c:v ... video codec (e.g. libx264)
@@ -687,17 +687,18 @@ $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -f jpg';
 $mgmt_mediapreview['.3g2.3gp.4xm.a64.aac.ac3.act.adf.adts.adx.aea.aiff.alaw.alsa.amr.anm.apc.ape.apr.asf.asf_stream.ass.au.audio.avi.avm2.avs.bethsoftvid.bfi.bin.bink.bit.bmv.c93.caf.cavsvideo.cdg.cdxl.crc.daud.dfa.dirac.dnxhd.dsicin.dts.dv.dv1394.dvd.dxa.dwd.ea.ea_cdata.eac3.f32be.f32le.f4v.f64be.f64le.fbdev.ffm.ffmetadata.film_cpk.filmstrip.flac.flic.flv.framecrc.framemd5.g722.g723_1.g729.gsm.gxf.h261.h263.h264.hls.ico.idcin.idf.iff.ilbc.image2.image2pipe.ingenient.ipmovie.ipod.ismv.iss.iv8.ivf.jack.jacosub.jv.la.latm.lavfi.libcdio.libdc1394.lmlm4.loas.lxf.m4a.m4b.m4p.m4r.m4v.matroska.md5.mgsts.microdvd.mid.mj2.mjpeg.mkv.mlp.mm.mmf.mov.mp2.mp3.mp4.mp4v.mpc.mpc8.mpeg.mpg.mpeg1video.mpeg2video.mpegts.mpegtsraw.mpegvideo.mpjpeg.msnwctcp.mts.mtv.mulaw.mvi.mxf.mxf_d10.mxg.nc.nsv.null.nut.nuv.oga.ogg.ogm.ogv.oma.oss.ots.pac.paf.pmp.psp.psxstr.pva.qcp.r3d.ra.rawvideo.rcv.realtext.rka.rl2.rm.roq.rpl.rso.rtp.rtsp.s16be.s16le.s24be.s24le.s32be.s32le.s8.sami.sap.sbg.sdl.sdp.segment.shn.siff.smjpeg.smk.smush.sol.sox.spdif.srt.subviewer.svcd.swa.swf.thp.tiertexseq.tmv.truehd.tta.tty.txd.u16be.u16le.u24be.u24le.u32be.u32le.u8.vc1.vc1test.vcd.vmd.vob.voc.vox.vqf.w64.wav.wc3movie.webm.webvtt.wma.wmv.wsaud.wsvqa.wtv.wv.x11grab.xa.xbin.xmv.xwma.yop.yuv4mpegpipe'] = "%ffmpeg%";
 
 // If a video or audio file is uploaded hyperCMS will try to generate a thumbnail video/audio file for preview
-$mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 576x432 -f mp4 -c:a libfaac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2"; 
+$mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 576x432 -f mp4 -c:a libfdk_aac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2"; 
 $mgmt_mediaoptions['thumbnail-audio'] = "-f mp3 -c:a libmp3lame -b:a 64k";
 
 // Auto rotate video if a rotation has been detected (true) or leave video in it's original state (false)
+// Keep in mind that most recent FFMPEG version autorotate the video
 $mgmt_mediaoptions['autorotate-video'] = true;
 
 // Define the supported target formats for video/audio editing (please use the variables %videobitrate%, %audiobitrate%, %width%, %height%)
 // Video formats:
 $mgmt_mediaoptions['.flv'] = "-b:v %videobitrate% -s:v %width%x%height% -f flv -c:a libmp3lame -b:a %audiobitrate% -ac 2 -ar 22050";
-$mgmt_mediaoptions['.mp4'] = "-b:v %videobitrate% -s:v %width%x%height% -f mp4 -c:a libfaac -b:a %audiobitrate% -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
-$mgmt_mediaoptions['.mpeg'] = "-b:v %videobitrate% -s:v %width%x%height% -f mpeg -c:v h263 -c:a aac -b:a %audiobitrate% -ac 2 -target ntsc-vcd";
+$mgmt_mediaoptions['.mp4'] = "-b:v %videobitrate% -s:v %width%x%height% -f mp4 -c:a libfdk_aac -b:a %audiobitrate% -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2";
+$mgmt_mediaoptions['.mpeg'] = "-b:v %videobitrate% -s:v %width%x%height% -f mpeg -c:a aac -b:a %audiobitrate% -ac 2";
 $mgmt_mediaoptions['.ogv'] = "-b:v %videobitrate% -s:v %width%x%height% -f ogg -c:a libvorbis -b:a %audiobitrate% -ac 2";
 $mgmt_mediaoptions['.webm'] = "-b:v %videobitrate% -s:v %width%x%height% -f webm -c:a libvorbis -b:a %audiobitrate% -ac 2";
 
@@ -765,8 +766,11 @@ $mgmt_config['smtp_sender']   = "%smtp_sender%";
 
 // ------------------------------------ Import / Export ----------------------------------------
 
-// Define password for Import and Export
+// Define password for Import and Export REST API
 $mgmt_config['passcode'] = "";
+
+// Restore exported media files to the media repository if requested (true) or leave the media file at their curent export location (false)
+$mgmt_config['restore_exported_media'] = true;
 
 // --------------------------------------- App Keys --------------------------------------------
 

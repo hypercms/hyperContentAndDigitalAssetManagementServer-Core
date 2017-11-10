@@ -2186,6 +2186,12 @@ function getmapping ($site)
         $mapping_data = str_replace (array("\$mapping['", "']", "=", "\"", ";"), array("", "", "=>", "", ""), $mapping_data);
       }
       
+      // convert from older version to 7.0.4 (double to single quotes)
+      if (substr_count ($mapping_data, '"') > 1)
+      {
+        $mapping_data = str_replace ('"', "'", $mapping_data);
+      }
+      
       // remove comment tags
       $mapping_data = str_replace (array("/*", "*/"), array("", ""), $mapping_data);  
       
@@ -2200,53 +2206,53 @@ function getmapping ($site)
   // default mapping
   if ($mapping_data == "")
   {
-    return '// Mapping definition: Meta data tag => "hyperCMS tag-ID"
+    return "// Mapping definition: The metadata tag will be assigned to a specific text tag-ID and text-type
 
 // IPTC tags
-iptc:title => "textu:Title"
-iptc:keywords => "textk:Keywords"
-iptc:description => "textu:Description"
-iptc:photographer => "textu:Creator"
-iptc:source => "textu:Copyright"
-iptc:urgency => ""
-iptc:category => ""
-iptc:supp_categories => ""
-iptc:spec_instr => ""
-iptc:creation_date => ""
-iptc:credit_byline_title => ""
-iptc:city => ""
-iptc:state => ""
-iptc:country => ""
-iptc:otr => ""
-iptc:headline => ""
-iptc:source => ""
-iptc:photo_number => ""
-iptc:photo_source => ""
-iptc:charset => ""
+iptc:title => 'textu:Title'
+iptc:keywords => 'textk:Keywords'
+iptc:description => 'textu:Description'
+iptc:photographer => 'textu:Creator'
+iptc:source => 'textu:Copyright'
+iptc:urgency => ''
+iptc:category => ''
+iptc:supp_categories => ''
+iptc:spec_instr => ''
+iptc:creation_date => ''
+iptc:credit_byline_title => ''
+iptc:city => ''
+iptc:state => ''
+iptc:country => ''
+iptc:otr => ''
+iptc:headline => ''
+iptc:source => ''
+iptc:photo_number => ''
+iptc:photo_source => ''
+iptc:charset => ''
 
 // XMP Dublin Core namespace tags
-dc:title => "textu:Title"
-dc:subject => "textk:Keywords"
-dc:description => "textu:Description"
-dc:creator => "textu:Creator"
-dc:rights => "textu:Copyright"
-dc:contributor => ""
-dc:coverage => ""
-dc:date => ""
-dc:format =>""
-dc:identifier => ""
-dc:language => ""
-dc:publisher => ""
-dc:relation => ""
-dc:rights => ""
-dc:source => ""
-dc:type => ""
+dc:title => 'textu:Title'
+dc:subject => 'textk:Keywords'
+dc:description => 'textu:Description'
+dc:creator => 'textu:Creator'
+dc:rights => 'textu:Copyright'
+dc:contributor => ''
+dc:coverage => ''
+dc:date => ''
+dc:format =>''
+dc:identifier => ''
+dc:language => ''
+dc:publisher => ''
+dc:relation => ''
+dc:rights => ''
+dc:source => ''
+dc:type => ''
 
 // XMP Adobe PhotoShop namespace tags
-photoshop:AuthorsPosition => ""
-photoshop:CaptionWriter => ""
-photoshop:Category => ""
-photoshop:City => ""
+photoshop:AuthorsPosition => ''
+photoshop:CaptionWriter => ''
+photoshop:Category => ''
+photoshop:City => ''
 // ColorMode:
 // 0 = Bitmap
 // 1 = Grayscale
@@ -2256,29 +2262,29 @@ photoshop:City => ""
 // 7 = Multichannel
 // 8 = Duotone
 // 9 = Lab
-photoshop:ColorMode => ""
-photoshop:Country => ""
-photoshop:Credit => ""
-photoshop:DateCreated => ""
-photoshop:DocumentAncestors => ""
-photoshop:DocumentAncestorID => ""
-photoshop:Headline => ""
-photoshop:History => ""
-photoshop:ICCProfileName => ""
-photoshop:Instructions => ""
-photoshop:LegacyIPTCDigest => ""
-photoshop:SidecarForExtension => ""
-photoshop:Source => ""
-photoshop:State => ""
-photoshop:SupplementalCategories => ""
-photoshop:TextLayers => ""
-photoshop:TextLayerName => ""
-photoshop:TextLayerText => ""
-photoshop:TransmissionReference => ""
-photoshop:Urgency => ""
+photoshop:ColorMode => ''
+photoshop:Country => ''
+photoshop:Credit => ''
+photoshop:DateCreated => ''
+photoshop:DocumentAncestors => ''
+photoshop:DocumentAncestorID => ''
+photoshop:Headline => ''
+photoshop:History => ''
+photoshop:ICCProfileName => ''
+photoshop:Instructions => ''
+photoshop:LegacyIPTCDigest => ''
+photoshop:SidecarForExtension => ''
+photoshop:Source => ''
+photoshop:State => ''
+photoshop:SupplementalCategories => ''
+photoshop:TextLayers => ''
+photoshop:TextLayerName => ''
+photoshop:TextLayerText => ''
+photoshop:TransmissionReference => ''
+photoshop:Urgency => ''
 
 // XMP Adobe Lightroom namespace tags
-lr:hierarchicalSubject => "automatic"
+lr:hierarchicalSubject => 'automatic'
 
 // EXIF tags
 // EXIF-Sections:
@@ -2291,45 +2297,45 @@ lr:hierarchicalSubject => "automatic"
 // EXIF ... The EXIF section is a sub section of IFD0. It contains more detailed information about an image. Most of these entries are digital camera related.
 
 // exif:SECTION.Tag-Name
-exif:FILE.FileName => ""
-exif:FILE.FileDateTime => ""
-exif:FILE.FileSize => ""
-exif:FILE.FileType => ""
-exif:FILE.MimeType => ""
-exif:FILE.SectionsFound => ""
-exif:COMPUTED.html => ""
-exif:COMPUTED.Height => ""
-exif:COMPUTED.Width => ""
-exif:COMPUTED.IsColor => ""
-exif:COMPUTED.ByteOrderMotorola => ""
-exif:COMPUTED.Thumbnail.FileType => ""
-exif:COMPUTED.Thumbnail.MimeType => ""
-exif:IFD0.DateTime => ""
-exif:IFD0.Artist => ""
-exif:IFD0.Exif_IFD_Pointer => ""
-exif:IFD0.Title => ""
-exif:THUMBNAIL.Compression => ""
-exif:THUMBNAIL.XResolution => ""
-exif:THUMBNAIL.YResolution => ""
-exif:THUMBNAIL.ResolutionUnit => ""
-exif:THUMBNAIL.JPEGInterchangeFormat => ""
-exif:THUMBNAIL.JPEGInterchangeFormatLength => ""
-exif:EXIF.DateTimeOriginal => ""
-exif:EXIF.DateTimeDigitized => ""
+exif:FILE.FileName => ''
+exif:FILE.FileDateTime => ''
+exif:FILE.FileSize => ''
+exif:FILE.FileType => ''
+exif:FILE.MimeType => ''
+exif:FILE.SectionsFound => ''
+exif:COMPUTED.html => ''
+exif:COMPUTED.Height => ''
+exif:COMPUTED.Width => ''
+exif:COMPUTED.IsColor => ''
+exif:COMPUTED.ByteOrderMotorola => ''
+exif:COMPUTED.Thumbnail.FileType => ''
+exif:COMPUTED.Thumbnail.MimeType => ''
+exif:IFD0.DateTime => ''
+exif:IFD0.Artist => ''
+exif:IFD0.Exif_IFD_Pointer => ''
+exif:IFD0.Title => ''
+exif:THUMBNAIL.Compression => ''
+exif:THUMBNAIL.XResolution => ''
+exif:THUMBNAIL.YResolution => ''
+exif:THUMBNAIL.ResolutionUnit => ''
+exif:THUMBNAIL.JPEGInterchangeFormat => ''
+exif:THUMBNAIL.JPEGInterchangeFormatLength => ''
+exif:EXIF.DateTimeOriginal => ''
+exif:EXIF.DateTimeDigitized => ''
 
 // ID3 namespace tags
-id3:title => "textu:Title"
-id3:artist => "textu:Creator"
-id3:album => ""
-id3:year => ""
-id3:comment => "textu:Description"
-id3:track => ""
-id3:genre => ""
-id3:tracknumber => ""
-id3:band => ""
+id3:title => 'textu:Title'
+id3:artist => 'textu:Creator'
+id3:album => ''
+id3:year => ''
+id3:comment => 'textu:Description'
+id3:track => ''
+id3:genre => ''
+id3:tracknumber => ''
+id3:band => ''
 
 // Image Resolution defines Quality [Print, Web]
-hcms:quality => "textl:Quality"';
+hcms:quality => 'textl:Quality'";
   }
 }
 

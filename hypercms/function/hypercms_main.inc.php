@@ -3164,6 +3164,9 @@ function restoremediafile ($site, $mediafile)
   $success = true;
   $restored = false;
   $medialocation = "";
+  
+  // restore files to the media repository if requested
+  if (!isset ($mgmt_config['restore_exported_media'])) $mgmt_config['restore_exported_media'] = true;
 
   if (valid_publicationname ($site) && valid_objectname ($mediafile) && !empty ($mgmt_config['abs_path_media']))
   {  
@@ -3174,13 +3177,19 @@ function restoremediafile ($site, $mediafile)
     $mediaroot = getmedialocation ($site, "dummy.".$mediafile, "abs_path_media").$site."/";
 
     // move media file back to repository
-    if ($mediaroot != $medialocation && is_file ($mediaroot.$mediafile))
+    if ($mediaroot != $medialocation && is_file ($mediaroot.$mediafile) && !empty ($mgmt_config['restore_exported_media']))
     {
+      // rename symbolic link
+      if (is_link ($mediaroot.$mediafile)) rename ($mediaroot.$mediafile, $mediaroot.$mediafile.".tmp");
+      
       // use copy since cross partition move/rename of files is not supported by PHP!
       $copy = copy ($medialocation.$mediafile, $mediaroot.$mediafile);
 
       if (!$copy)
       {
+        // rename/restore the original name of the symbolic link
+        if (is_link ($mediaroot.$mediafile.".tmp")) rename ($mediaroot.$mediafile.".tmp", $mediaroot.$mediafile);
+      
         $errcode = 10602;
         $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|could not restore exported media file '.$mediafile.' to repository';
       
@@ -3189,7 +3198,7 @@ function restoremediafile ($site, $mediafile)
       else
       {
         // remove symbolic link
-        if (is_link ($mediaroot.$mediafile)) deletefile ($mediaroot, $mediafile, 0);
+        if (is_link ($mediaroot.$mediafile.".tmp")) deletefile ($mediaroot, $mediafile.".tmp", 0);
         
         // remove external media file outside repository
         // cross partition move/rename of files is not supported by PHP!
@@ -5664,7 +5673,7 @@ function editpublication ($site_name, $setting, $user="sys")
     // create htaccess and web.config files for DAM usage
     if ($dam_new == "true")
     {
-      if (!is_file ($mgmt_config['abs_path_media'].$site_name."/.htaccess")) savefile ($mgmt_config['abs_path_media'].$site_name."/", ".htaccess", "Deny from all");
+      if (!is_file ($mgmt_config['abs_path_media'].$site_name."/.htaccess")) savefile ($mgmt_config['abs_path_media'].$site_name."/", ".htaccess", "Require all denied");
       if (!is_file ($mgmt_config['abs_path_media'].$site_name."/web.config")) savefile ($mgmt_config['abs_path_media'].$site_name."/", "web.config", '<?xml version="1.0" encoding="utf-8" ?>
 <configuration>  
   <system.webServer>
@@ -16377,7 +16386,7 @@ function deletefavorite ($site="", $location="", $page="", $id="", $user)
 
 // function: rewrite_targetURI ()
 // input: publication name, text ID array (text-ID as key and URL paramaters as value), requested URI as string, exclude path as array (optional), 
-//        rewrite type [none,forward,include] (optional)
+//          rewrite type [none,forward,include] (optional)
 // output: target URI / false on error
 
 function rewrite_targetURI ($site, $text_id, $uri, $exclude_dir_esc="", $rewrite_type="include")

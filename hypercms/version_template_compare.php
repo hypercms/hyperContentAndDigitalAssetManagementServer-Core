@@ -125,6 +125,9 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
     $i++; 
   }
 }
+
+// set character set in header
+if (!empty ($charset)) ini_set ('default_charset', $charset);
 ?>
 <!DOCTYPE html>
 <html>
