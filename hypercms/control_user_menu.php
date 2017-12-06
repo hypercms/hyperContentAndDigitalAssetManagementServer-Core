@@ -345,8 +345,7 @@ function goToURL()
   </div>
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">  
-      <?php if (!$is_mobile) echo $item_name; ?>
-      <select name="group" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)">
+      <select name="group" onChange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" title="<?php echo $item_name; ?>">
         <?php
         // select users by group membership
         if ($temp_site != "*Null*")

@@ -8,6 +8,7 @@ $object_array = array();
 // get downloads stats of user
 $stats_array = rdbms_getmediastat ("", "", "upload", "", "", $user);
 
+// prepare array
 if (is_array ($stats_array) && sizeof ($stats_array) > 0)
 {
   $stats_array = array_reverse ($stats_array);
@@ -22,9 +23,9 @@ if (is_array ($stats_array) && sizeof ($stats_array) > 0)
 
       if (is_array ($result_array))
       {
-        foreach ($result_array as $result)
+        foreach ($result_array as $hash=>$result)
         {
-          if (!empty ($result) && !in_array ($result, $object_array)) $object_array[] = $result;
+          if (!empty ($result['objectpath']) && !in_array ($result['objectpath'], $object_array)) $object_array[$hash] = $result['objectpath'];
           $i++;
         }
       }
@@ -32,13 +33,14 @@ if (is_array ($stats_array) && sizeof ($stats_array) > 0)
   }
 }
 
-  if ($is_mobile) $width = "92%";
-  else $width = "320px";
-  
+// output
 if (is_array ($object_array) && sizeof ($object_array) > 0)
 {
   $object_array = array_unique ($object_array);
 
+  if ($is_mobile) $width = "92%";
+  else $width = "320px";
+  
   echo "
   <div id=\"recent_downloads\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
     <div class=\"hcmsHeadline\" style=\"margin:2px;\">".getescapedtext ($hcms_lang['my-recent-uploads'][$lang])."</div>";

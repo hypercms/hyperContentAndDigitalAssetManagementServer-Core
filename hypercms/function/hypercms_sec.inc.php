@@ -899,6 +899,8 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       update_container_v6118 ();
       update_database_v6139 ();
       update_database_v625 ();
+      $update = update_database_v705 ($mgmt_config['abs_path_comp'], true);
+      if ($update) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.5|updated to version 7.0.5"), "update");
     
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
       $charset = getcharset ("", $userdata); 
@@ -2735,15 +2737,25 @@ function hcms_crypt ($string, $start=0, $length=0)
   
   if ($string != "")
   {
+    $string = trim ($string);
+  
     // crypt only uses the first 8 digits of a string!
-    if (strlen ($string ) > 8)
+    if (strlen ($string) > 8)
     {
+      // remove thumb extension
       if (strpos ($string, ".thumb.") > 0) $string = str_replace (".thumb.", ".", $string);
-      else $string = substr ($string, -8);
+      // use last 8 digits of string
+      if (strlen ($string) > 8) $string = trim (substr ($string, -8));
     }
+
+    // create valid salt (remove free spaces and special characters)
+    $salt = str_replace (' ', '', $string);
+    $salt = preg_replace ('/[^A-Za-z0-9\-]/', '', $salt);
+    $salt = substr ($salt, 0, 2);
+    if (strlen ($salt) < 2) $salt = "sa";
     
     // encoding algorithm
-    $string_encoded = crypt ($string, substr ($string, 0, 2));
+    $string_encoded = crypt ($string, $salt);
     $string_encoded = md5 ($string_encoded);
     
     // extract substring

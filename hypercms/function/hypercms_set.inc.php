@@ -1274,6 +1274,7 @@ function setfilename ($filedata, $tagname, $value)
     }
     else $namestart = 0;
   
+    // set file name in code
     if ($namestart > 0)
     {
       // get file name

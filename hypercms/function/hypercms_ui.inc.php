@@ -2569,7 +2569,7 @@ $(document).ready(function()
       <div style=\"align:center; padding:2px; width:100%;\">
         <input name=\"UploadButton\" class=\"hcmsButtonGreen hcmsButtonSizeHeight\" style=\"width:198px; margin-right:4px; float:left;\" type=\"button\" 
         onClick=\"hcms_openWindow('".$mgmt_config['url_path_cms'].$popup_upload."?uploadmode=multi&site=".url_encode($site)."&cat=comp&location=".url_encode($dir_esc)."', '', 'status=yes,scrollbars=no,resizable=yes', 800, 600);\" value=\"".getescapedtext ($hcms_lang['upload-file'][$lang], $hcms_charset, $lang)."\" />
-        <img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" />
+        <img class=\"hcmsButtonTiny hcmsButtonSizeSquare\" onClick=\"document.location.reload();\" src=\"".getthemelocation()."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang], $hcms_charset, $lang)."\" />
       </div>
       <div style=\"clear:both;\"></div>\n";
     }
@@ -2650,9 +2650,11 @@ $(document).ready(function()
 
       if (is_array ($object_array))
       {
-        foreach ($object_array as $entry)
+        foreach ($object_array as $hash=>$object_item)
         {
-          if ($entry != "")
+          $entry = $object_item['objectpath'];
+          
+          if ($hash != "count" && $entry != "")
           {
             $authorized = false;
             
@@ -2796,16 +2798,16 @@ $(document).ready(function()
               
               if ($compcat == "single")
               {
-                $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+                $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
               }
               elseif ($compcat == "multi")
               {
-                $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+                $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
               }
               elseif ($compcat == "media")
               {
-                if ($callback == "") $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
-                else $result .= "<tr><td width=\"85%\" align=\"left\" nowrap><a href=# onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap><a href=# onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+                if ($callback == "") $result .= "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendMediaInput('".$comp_name."','".$comp_path."'); parent.frames['mainFrame2'].location.href='media_view.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+                else $result .= "<tr><td width=\"85%\" align=\"left\" nowrap><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\" title=\"".$comp_name."\"><img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." />&nbsp;".showshorttext($comp_info['name'], 24)."</a></td><td align=\"left\" nowrap><a href=\"javascript:void(0);\" onClick=\"parent.frames['mainFrame2'].location.href='media_select.php?site=".url_encode($site)."&mediacat=cnt&mediatype=".url_encode($mediatype)."&mediaobject=".url_encode($comp_path)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."';\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
               }
             }
           }
@@ -4474,7 +4476,45 @@ function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
 // output: navigation array / false
 
 // description:
-// Generates an associative array (item => nav-item, sub => array with sub-items)
+// Generates an associative array (item => nav-item, sub => array with sub-items).
+// 
+// Example
+// $navi_config = array();
+// 
+// document root definitions
+// $navi_config['root_path'] = "%abs_page%/";
+// $navi_config['root_url'] = "%url_page%/";
+// 
+// HTML / CSS class defintions
+// $navi_config['attr_ul_top'] = "class=\"nav navbar-nav\"";
+// $navi_config['attr_ul_dropdown'] = "class=\"dropdown-menu\"";
+// $navi_config['attr_li_active'] = "class=\"active\"";
+// $navi_config['attr_li_dropdown'] = "class=\"dropdown\"";
+// $navi_config['attr_href_dropdown'] = "class=\"dropdown-toggle\" data-toggle=\"dropdown\"";
+// $navi_config['tag_li'] = "<li %attr_li%><a href=\"%link%\" %attr_href%>%title%</a>%sub%</li>\n";
+// $navi_config['tag_ul'] = "<ul %attr_ul%>%list%</ul>\n";
+// 
+// Language definitions
+// Session variable name that holds the language setting
+// $navi_config['lang_session'] = "langcode";
+// 2nd key = langcode & value = text_id of textnode
+// $navi_config['lang_text_id']['DE'] = "Titel_DE";
+// $navi_config['lang_text_id']['EN'] = "Titel_EN";
+// 
+// PermaLink definitions
+// 2nd key = langcode & value = text_id of textnode
+// $navi_config['permalink_text_id']['DE'] = "PermaLink_DE";
+// $navi_config['permalink_text_id']['EN'] = "PermaLink_EN";
+// 
+// Hide navigation item (any value or empty) and use sort order (number or empty)
+// $navi_config['hide_text_id'] = "NavigationHide";
+// $navi_config['sort_text_id'] = "NavigationSortOrder";
+// 
+// Use only index file of directory as navigation item, e.g. index.html or index.php (Keep empty if all objects of a folder should be included)
+// $navi_config['index_file'] = "";
+// 
+// $navigation = createnavigation ("%publication%", $navi_config['root_path'], $navi_config['root_url'], "%view%", "%abs_location%/%object%");
+// echo shownavigation ($navigation);
 
 function createnavigation ($site, $docroot, $urlroot, $view="publish", $currentobject="", $recursive=true)
 {
@@ -4519,7 +4559,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
         foreach ($fileitem as $object)
         {
           // PAGE OBJECT -> standard navigation item
-          if (is_file ($docroot.$object) && $object != ".folder")
+          if (is_file ($docroot.$object) && $object != ".folder" && (empty ($navi_config['index_file']) || $object == $navi_config['index_file']))
           {
             $navi = readnavigation ($site, $docroot, $object, $view, "sys");
     

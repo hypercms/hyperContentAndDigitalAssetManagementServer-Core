@@ -50,7 +50,7 @@ $objectdata = loadfile ($location, $object);
 $media = getfilename ($objectdata, "media");
 
 // max digits in file name
-if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
+if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
 
 // get file info
 $file_info = getfileinfo ($site, $location.$object, $cat);

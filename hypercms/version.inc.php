@@ -3,14 +3,14 @@
 Version history of the hyper Content & Digital Asset Management Server
 
 Version 1.0.x
-Release 05/2002 - 10/2002
+Release 11/2001 - 05/2002
 - XML based repository
 - User and role management
 - Basic link management
 - Media database
 
 Version 2.0.x
-Release 12/2002 - 03/2003
+Release 05/2002 - 03/2003
 - Personalization
 - Task management
 - New GUI, includes toolbar
@@ -29,7 +29,7 @@ Release 03/2003 - 06/2003
 - Better link management
 - Un/publish and delete all items in a folder
 - Workflow management
-- New adminisrtation GUI of sites, users and groups
+- New administration GUI of sites, users and groups
 - Cluster operation
 - New repository structure
 - Check in/out of objects
@@ -1434,7 +1434,7 @@ Release 04/2016
 - Bug fix: Function downloadfile did not set correct http-header for content-disposition
 - Changed preview size of media in side bar
 - Moved stopwords and synonyms to data/include directory (which are not influenced by software updates)
-- Implementation of multilanguage taxonomies (defintion in text files)
+- Implementation of multilanguage taxonomies (definition in text files)
 - Implementation of taxonomy tree in explorer
 - Improvements in keyword plugin in order to clean keyword content
 - Improvements in function rdbms_setcontent in order to clean indexed content
@@ -1702,7 +1702,7 @@ Release 07/2016
 - Allow spaces in tag keywords
 - Added read-only attribute for keyword tag
 - Support of geometry for video watermarks in function createmedia in media API
-- Implementation of new function gethierarchy_defintion in get API
+- Implementation of new function gethierarchy_definition in get API
 - Implementation of support for delete of taxonomy and hierarchy configuration files in function deletepublication in main API
 - Implementation of new function gethierarchy_sublevel in get API
 - Implementation of new function rdbms_gethierarchy_sublevel in DB Connect
@@ -1747,7 +1747,7 @@ Release 07/2016
 - Improvements in function create_csv in main API
 - Improvements for objects list on mobile devices
 - Exclude 'send to chat' button on iPad and iPhone
-- Bug fix: Function gethierarchy_defintion did not initialize labels array
+- Bug fix: Function gethierarchy_definition did not initialize labels array
 - Implementation of new view-type 'media_only' in function showmedia in UI API
 - Implementation of new live view for media assets
 - Bug fix: Display of sidebar did not affect the width of the object list columns
@@ -1776,7 +1776,7 @@ Release 07/2016
 - Excluded mp3 from video formats in include/format_ext
 - Implementation of new session variable for objectlist columns
 - Support for array as input in function setsession in set API
-- Integration of objectlist defintion support in function userlogin in security API
+- Integration of objectlist definition support in function userlogin in security API
 - Implementaion of date created for content containers (XML)
 - Implementation of date created support in function createobject in main API
 - Implementation of new function update_container_v6118 in update API
@@ -1845,7 +1845,7 @@ Release 09/2016
 Version 6.1.22
 Release 09/2016
 - Implementation of mobile device screen emulator for preview and live-view of pages
-- Implementation of new main configuration setting for the defintion of mobile devices and their screen size
+- Implementation of new main configuration setting for the definition of mobile devices and their screen size
 - Implementation of a new preview and live-view of pages
 - Renamed JS function openlivew to openobjectview
 - Implementation of view parameter for JS function openobjectview
@@ -2161,7 +2161,7 @@ Release 05/2017
 - Modifications of popup_action regarding load screen and JS
 - Modification of function unzipfiles in media API in order to replace existing objects
 - Modification of function specialchr_encode in main API to avoid double encoding of names
-- Modification of function getfileinfo in get API to support new deleted result parameter
+- Modification of function getfileinfo in Get API to support new deleted result parameter
 - Modifications in explorer, folder_explorer, link_edit_explorer, and rich text editor to support the new return parameter for deleted objects from function getfileinfo
 - Modification of function getcontainername in get API in order to verify container location
 - Modifications in log_list in order to display longer descriptions
@@ -2306,7 +2306,7 @@ Release 09/2017
 - Implementation of scroll-to-top of the navigatior when changing from search to the navigator
 - Design modifications in simple statistics plugin
 - Implementation of Hybridauth library in connector
-- Imlpementation of main configuaration settings for the objects window width and height
+- Implementation of main configuaration settings for the objects window width and height
 - Implementation of new functions windowwidth and windowheight in UI API
 - Implementation of new windowwidth and windowheight feature in the system incl. the use of JS localstorage for the contextmenu
 - Implementation of new window positioning modes in JS function hcms_openWindow in main.js
@@ -2331,7 +2331,7 @@ Release 10/2017
 - Implementation of file/media-type for the assignment of metadata fields to certain media types
 - Implementation of function is_compressed in Main API
 - Modifications in function createdocument in Media API in order to support thumbnails of any document format
-- Modifications in function convertchars inb Main API in order to support automatic detection of the character set if not provided as input
+- Modifications in function convertchars in Main API in order to support automatic detection of the character set if not provided as input
 - Modifications in service savecontent in order to compare old and new character set on lower case basis
 - Modifications in function getvideoinfo in Get API in order to extract video rotation information
 - Modifications in function savemediaplayer_config and readmediaplayer_config in Media API to support video configuration file version 2.5 including the videos rotation
@@ -2381,7 +2381,7 @@ Release 10/2017
 - Bug fix: Function getworkflowitem did not verify the result
 
 Version 7.0.4
-Release 10/2017
+Release 11/2017
 - Implementation of new main configuration parameter $mgmt_config['restore_exported_media'] in order to define the location of exported media files
 - Implementation of restore setting in function restoremediafile in order to restore the media file or keep at in the backup (export location)
 - Modifications in function getmapping in Meta API in order to use single quotes instead of double quotes in the mapping definition
@@ -2436,9 +2436,63 @@ Release 10/2017
 - Bug fix: Function createmedia in Media API did not set proper width and height of cropped images if GD library has been used
 - Bug fix: component_edit_page_single did not remove seperators from single component string
 - Bug fix: Template engine did not remove separators from single component string
-- Bug fix: Mail links opened in Mobile Edition di not disable the search functionality
+- Bug fix: Mail links opened in Mobile Edition did not disable the search functionality
+
+Version 7.0.5
+Release 12/2017
+- Modifications in function hcms_crypt in Security API in order to create a valid salt for encryption
+- Modifications in main config file config.inc.php in install directory
+- Implementation of language mapping for tesseract OCR in include/tesseract_lang.inc.php
+- Implementation of OCR language in function indexcontent in media API based on the language setting of the user
+- Modifications in function avoidfilecollision in order to support a second input parameter to enforce the execution and avoid file collisions
+- Modifications in site_edit_form in order to copy publication configuration file to temp directory and load it from there
+- Modifications in site_edit_form in order to reset all old configuration values
+- Modifications in control_site_menu in order to apply natural case sort for the list of publications
+- Implementation of loading screens for import and export of objects in Connector module
+- Modifications in template engine in order to avoid overwritting CSS settings for the language select box
+- Modifications in template engine in order to set language select box after the document has been loaded (to avoid manipulation by JS frameworks)
+- Modifications in function cratenavigation in UI API in order to support only index files as navigation items
+- Modifications in template engine to remove external styles in WYSIWYG view for all edit icons
+- Implementation of code log for published objects with errors  and new error log entries in function publishobject in Main API
+- Modifications in import in order to verify symbolic links
+- Modifications in template_edit in order to automatically expand editor width 
+- Modifications in function createtempfile in Encryption API in order to avoid database queries for unencrypted files
+- Modifications in search_objectlist and explorer_objectlist in order to verify the objectlist column definitions before executing function getmetadata_container
+- Modifications in function query in DB Connect in order to support milliseconds for the query execution time logging
+- Modifications in function various APIs and in DB Connect in order to support mutiple return values for the search result
+- Modifications in function showcompexplorer in UI API in order to avoid scrolling to top and to support the new search results array
+- Modifications in link_edit_explorer in order to avoid scrolling to top and to support the new search results array
+- Modifications in template engine in order to replace all link tags by onclick events on image icons
+- Modifications in function rewrite_targetURI in Main API in order to support the new search result array
+- Modifications in OpenSearch Connector in order to support the new search result array
+- Implementation of new update function update_database_v705 in Update API
+- Implementation of new function rdbms_setmedianame and rdbms_getobject_info in DB Connect
+- Modifications in createtables.sql in order to add new attribute media to table objects
+- Modifications in function rdbms_createobject in DB Connect in order to support the media name (new input parameter)
+- Modifications in Main API in order to support the new input parameter for function rdbms_createobject
+- Added update function update_database_v705 to function userlogin in Security API
+- Modifications in control_content_menu and control_objectlist_menu in order to support icons for the display of the position
+- Modifications in the max_digital_filename verification in the system
+- Modifications in Mobile Edition in order to display folders in the objectlist views as well
+- Design modifications in Mobile Edition in control_queue_menu and control_user_menu
+- Modifications in Geolocation search due to changes in the Google map API behaviour by Google
+- Implementation of a new information feature for the Geolocation search
+- Modifications in various JS function in contextmenu.js
+- Updates in all language files
+- Modifications in function rdbms_searchcontent in DB Connect incl. modifications in search_objectlist and home boxes in order to support the new result array
+- Modifications in function hcms_crypt in Security API in order to verify the salt length for PHP function crypt
+- Bug fix: The character set of the template source code has not been successfully extracted in template_source
+- Bug fix: Modifications in site_edit_form due to issue with PHP file caching
+- Bug fix: Function publishobject in Main API did not look for proper error code in rendered object
+- Bug fix: List editor did not separate list value and text from a list entry defined in the template
+- Bug fix: Refresh button in function showcompexplorer in UI API used wrong CSS class
+- Bug fix: References to save button images haven been wrong in checkbox editor
+- Bug fix: Template engine did not create proper JS code for tagit call if there has been no keyword list defined
+- Bug fix: Removed parameter ctrlreload from first tab in control_content_menu to enable conotrol reloading when navigating in pages
+- Bug fix:JS function hcms_endSelectArea in contextmenu.js did not verify if the element exists before applying a style
+- Bug fix: JS function hcms_clearSelection in contextmenu.js did not verify if a selectarea html element has been defined (caused focus issue on input fields in MS Edge, IE, and Chrome)
 */
 
 // current version
-$mgmt_config['version'] = "Version 7.0.4";
+$mgmt_config['version'] = "Version 7.0.5";
 ?>

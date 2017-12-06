@@ -261,7 +261,13 @@ elseif ($action == "recipient")
 // search for specific object ID or link ID
 elseif ($object_id != "")
 {
-  $object_array[0] = rdbms_getobject ($object_id);
+  $object_info = rdbms_getobject_info ($object_id);
+  
+  if (is_array ($object_info) && !empty ($object_info['hash']))
+  {
+    $hash = $object_info['hash'];
+    $object_array[$hash] = $object_info;
+  }
 }
 // search for specific container ID
 elseif ($container_id != "")
@@ -362,7 +368,7 @@ elseif ($action == "base_search" || $search_dir != "")
     elseif (empty ($maxhits)) $maxhits = 100;
 
     // start search
-    if ($replace_expression == "") $object_array = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search_format, $date_from, $date_to, $template, $search_textnode, $search_filename, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $maxhits);
+    if ($replace_expression == "") $object_array = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search_format, $date_from, $date_to, $template, $search_textnode, $search_filename, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $maxhits, @array_keys ($objectlistcols_reduced));
     // start search and replace
     elseif ($setlocalpermission['create'] == 1) $object_array = rdbms_replacecontent ($search_dir_esc, $search_format, $date_from, $date_to, $search_expression, $replace_expression, $user);
   }
@@ -379,13 +385,41 @@ $galleryview = Null;
 $listview = Null;
 $items_row = 0;
 
-if (!empty ($object_array) && @sizeof ($object_array) > 0)
+if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array) > 0)
 {
   // the hash can be used for the download and wrapper links
-  foreach ($object_array as $hash => $objectpath)
+  foreach ($object_array as $hash => $object_item)
   {
-    // folder items
-    if (getobject ($objectpath) == ".folder")
+    $container_id = "";
+    $mediafile = "";
+    $file_size = "";
+    $file_created = "";
+    $file_modified = "";
+    $file_owner = "";
+    $usedby = "";
+    $metadata = "";
+    $container_info = array();
+
+    if (!empty ($object_item['objectpath'])) $objectpath = $object_item['objectpath'];
+    else $objectpath = $object_item;
+
+    if (is_array ($object_item))
+    {
+      if (!empty ($object_item['container_id'])) $container_id = $object_item['container_id'];
+      if (!empty ($object_item['media'])) $mediafile = $object_item['media'];
+      if (!empty ($object_item['createdate'])) $file_created = $object_item['createdate'];
+      if (!empty ($object_item['date'])) $file_modified = $object_item['date'];
+      if (!empty ($object_item['user'])) $file_owner = $object_item['user'];
+      if (!empty ($object_item['filesize'])) $file_size = $object_item['filesize'];
+      
+      foreach ($object_item as $text_id=>$content)
+      {
+        if (substr ($text_id, 0, 5) == "text:") $container_info[$text_id] = $content;
+      }
+    }
+
+    // ---------------------------------------------------- folder items ----------------------------------------------------
+    if ($hash != "count" && getobject ($objectpath) == ".folder")
     {
       // check for location path inside folder variable
       if (substr_count ($objectpath, "/") > 0)
@@ -416,39 +450,37 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
           $setlocalpermission = setlocalpermission ($item_site, $ownergroup, $item_cat);
           
           if ($ownergroup != false && $setlocalpermission['root'] == 1 && valid_locationname ($location) && valid_objectname ($folder) && is_dir ($location.$folder))
-          {
-            $metadata = "";
-            $file_size = "";
-            $file_created = "";
-            $file_modified = "";
-            $file_owner = "";
-            $usedby = "";
-              
+          { 
             // read file
-            $objectdata = loadfile ($location.$folder."/", ".folder");
-            
-            if ($objectdata != false)
+            if (empty ($container_id))
             {
-              // get name of content file and load content container
-              $contentfile = getfilename ($objectdata, "content");
-              $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
-                    
-              // read meta data of media file
-              if ($contentfile != false)
+              $objectdata = loadfile ($location.$folder."/", ".folder");
+              
+              if (!empty ($objectdata))
               {
-                $result = getcontainername ($contentfile);
-                
-                if (!empty ($result['user'])) $usedby = $result['user'];     
+                // get name of content file and load content container
+                $contentfile = getfilename ($objectdata, "content");
+                $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
               }
+            }
+            
+            if (!empty ($container_id))
+            {
+              // read meta data of media file
+              $result = getcontainername ($container_id);             
+              if (!empty ($result['user'])) $usedby = $result['user'];
               
               // get metadata of container
-              $container_info = getmetadata_container ($container_id, @array_keys ($objectlistcols_reduced));
-              
-              if (is_array ($container_info))
-              {  
-                if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
-                if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
-                if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
+              if (!is_array ($object_item) && is_array ($objectlistcols_reduced) && sizeof ($objectlistcols_reduced) > 0)
+              {
+                $container_info = getmetadata_container ($container_id, @array_keys ($objectlistcols_reduced));
+                
+                if (!empty ($container_info) && is_array ($container_info))
+                {  
+                  if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
+                  if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+                  if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
+                }
               }
               
               // link for copy & paste of download links
@@ -464,8 +496,8 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
               }
             }
             
-            // fallback for date modified
-            if (empty ($file_size))
+            // fallback for modified date
+            if (empty ($file_modified))
             {
               // get file time
               $file_modified = date ("Y-m-d H:i", @filemtime ($location.$folder));
@@ -576,7 +608,7 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
         }
       }        
     }
-    // object items
+    // --------------------------------------------------------- object items ----------------------------------------------------
     else
     { 
       // check for location path inside folder variable
@@ -607,13 +639,6 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
 
           if ($ownergroup != false && $setlocalpermission['root'] == 1 && valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object))
           {
-            $metadata = "";
-            $file_size = "";
-            $file_created = "";
-            $file_modified = "";
-            $file_owner = "";
-            $usedby = "";
-                    
             // page
             if ($file_info['type'] == "Page") $file_type = getescapedtext ($hcms_lang['object-page'][$lang]);
             // component
@@ -622,35 +647,40 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
             else $file_type = getescapedtext ($hcms_lang['file'][$lang])." (".$file_info['type'].")";
 
             // read file
-            $objectdata = loadfile ($location, $object);
-            
-            if ($objectdata != false)
+            if (empty ($container_id) || (empty ($mediafile)  && (is_supported ($mgmt_imagepreview, $object) || is_supported ($mgmt_mediapreview, $object) || is_supported ($mgmt_docpreview, $object))))
             {
-              // get name of content file and load content container
-              $contentfile = getfilename ($objectdata, "content");
-              $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
-                    
-              // get user of locked container
-              if ($contentfile != false)
+              $objectdata = loadfile ($location, $object);
+
+              if (!empty ($objectdata))
               {
-                $result = getcontainername ($contentfile);
+                // get name of content file and load content container
+                $contentfile = getfilename ($objectdata, "content");
+                $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
                 
-                if (!empty ($result['user'])) $usedby = $result['user'];       
-              } 
+                // get name of media file
+                $mediafile = getfilename ($objectdata, "media");
+              }
+            }
+            
+            if (!empty ($container_id))
+            {
+              // read meta data of media file
+              $result = getcontainername ($container_id);             
+              if (!empty ($result['user'])) $usedby = $result['user'];
               
               // get metadata of container
-              $container_info = getmetadata_container ($container_id, @array_keys ($objectlistcols_reduced));
-    
-              if (is_array ($container_info))
-              { 
-                if (!empty ($container_info['filesize'])) $file_size = number_format ($container_info['filesize'], 0, "", ".");
-                if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
-                if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
-                if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
+              if (!is_array ($object_item) && is_array ($objectlistcols_reduced) && sizeof ($objectlistcols_reduced) > 0)
+              {
+                $container_info = getmetadata_container ($container_id, @array_keys ($objectlistcols_reduced));
+      
+                if (!empty ($container_info) && is_array ($container_info))
+                { 
+                  if (!empty ($container_info['filesize'])) $file_size = number_format ($container_info['filesize'], 0, "", ".");
+                  if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
+                  if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+                  if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
+                }
               }
-
-              // get name of media file
-              $mediafile = getfilename ($objectdata, "media");
   
               if ($mediafile != false)
               {
@@ -663,7 +693,7 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
                   $file_size = round (@filesize ($mediadir.$item_site."/".$mediafile) / 1024);
                   $file_size = number_format ($file_size, 0, "", ".");
                   
-                  $file_modified = date ("Y-m-d H:i", @filemtime ($mediadir.$item_site."/".$mediafile));               
+                  $file_modified = date ("Y-m-d H:i", @filemtime ($mediadir.$item_site."/".$mediafile));
                 }
                 
                 // media file info
@@ -708,7 +738,7 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
                 }
               }
             }
-        
+
             // open on double click
             if ($action != "recyclebin") $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
             else $openObject = "";
@@ -807,10 +837,10 @@ if (!empty ($object_array) && @sizeof ($object_array) > 0)
             {
               // get thumbnail location
               $thumbdir = getmedialocation ($site, $media_info['filename'].".thumb.jpg", "abs_path_media");
-          
+
               // prepare source media file
               preparemediafile ($item_site, $thumbdir.$item_site."/", $media_info['filename'].".thumb.jpg", $user);
-               
+
               // try to create thumbnail if not available
               if ($mgmt_config['recreate_preview'] == true && (!is_file ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg")))
               {

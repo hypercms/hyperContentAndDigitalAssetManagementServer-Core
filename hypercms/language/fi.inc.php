@@ -910,7 +910,6 @@ $hcms_lang['image-search']['fi'] = "Kuvahaku";
 $hcms_lang['object-id-link-id']['fi'] = "Kohde-ID / Link-ID";
 $hcms_lang['container-id']['fi'] = "Astiaan TUNNUS";
 $hcms_lang['geo-location']['fi'] = "Geo sijainti";
-$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['fi'] = "Pidä Shift-näppäintä ja valitse alue käyttäen hiirtä (vedä ja pudota)";
 $hcms_lang['sw-coordinates']['fi'] = "S/W koordinaatit";
 $hcms_lang['ne-coordinates']['fi'] = "N/E koordinaatit";
 $hcms_lang['version']['fi'] = "Versio";

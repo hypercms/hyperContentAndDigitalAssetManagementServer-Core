@@ -909,7 +909,6 @@ $hcms_lang['image-search']['ar'] = "صورة البحث";
 $hcms_lang['object-id-link-id']['ar'] = "تحديد القطع (Object ID الارتباط";
 $hcms_lang['container-id']['ar'] = "معرف حاوية";
 $hcms_lang['geo-location']['ar'] = "الموقع الجغرافي";
-$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['ar'] = "الضغط مع الاستمرار على مفتاح Shift، حدد المجال باستخدام الماوس (انقر و اسحب)";
 $hcms_lang['sw-coordinates']['ar'] = "S/W بتنسيق";
 $hcms_lang['ne-coordinates']['ar'] = "n E بتنسيق";
 $hcms_lang['version']['ar'] = "الإصدار";

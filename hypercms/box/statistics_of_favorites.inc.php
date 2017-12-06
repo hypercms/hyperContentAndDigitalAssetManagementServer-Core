@@ -9,8 +9,11 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess))
   
   if (is_array ($object_array) && sizeof ($object_array) > 0)
   {
-    foreach ($object_array as $item_objectpath)
+    foreach ($object_array as $item_objectinfo)
     {
+      if (!empty ($item_objectinfo['objectpath'])) $item_objectpath = $item_objectinfo['objectpath'];
+      else $item_objectpath = $item_objectinfo;
+      
       if ($item_objectpath != "")
       {
         $item_site = getpublication ($item_objectpath);

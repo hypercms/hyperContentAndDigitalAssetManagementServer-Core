@@ -1621,17 +1621,17 @@ function getmetadata_container ($container_id, $text_id_array)
         
       if ($conditions != "")
       {
-        $sql = 'SELECT text_id, textcontent FROM textnodes WHERE id='.intval($container_id);
+        $sql = 'SELECT text_id, textcontent FROM textnodes WHERE id='.intval($container_id).$conditions;
          
         // query
-        $textnodes = rdbms_externalquery ($sql.$conditions);
+        $textnodes = rdbms_externalquery ($sql);
    
         // text content
         if (is_array ($textnodes) && sizeof ($textnodes) > 0)
         {
           foreach ($textnodes as $textnode)
           {
-            if (is_array ($textnode))
+            if (!empty ($textnode['text_id']))
             {
               $result['text:'.$textnode['text_id']] = $textnode['textcontent'];
             }
@@ -1842,6 +1842,8 @@ function getcontainername ($container)
     else
     {
       $container_id = $container;
+      // add zeros
+      $container_id = sprintf ("%07d", $container_id);
       $container = $container_id.".xml";
     }
     
@@ -3962,7 +3964,10 @@ function getlockedfileinfo ($location, $file)
 // ---------------------------------------- getlockobjects --------------------------------------------
 // function: getlockobjects()
 // input: user name
-// output: object path array / false
+// output: object info array / false
+
+// description:
+// Returns an object info array with of all locked objects of a specific user.
 
 function getlockedobjects ($user)
 {      
@@ -4026,7 +4031,17 @@ function getlockedobjects ($user)
                   // check if file exists
                   if ($page !== false)
                   {
-                    $object_array[] = $location.$page;
+                    $object_hash = rdbms_getobject_hash (convertpath ($site, $location.$page, ""));
+                    $object_info = rdbms_getobject_info ($object_hash);
+                    
+                    if (is_array ($object_info))
+                    {
+                      $object_array[$object_hash] = $object_info;
+                    }
+                    else
+                    {
+                      $object_array[] = $location.$page;
+                    }
                   }
                 }
               }
@@ -4042,7 +4057,6 @@ function getlockedobjects ($user)
         
         if (sizeof ($object_array) > 0)
         {
-          natcasesort ($object_array);
           return $object_array;
         }
         else return false;
@@ -4057,7 +4071,7 @@ function getlockedobjects ($user)
 // --------------------------------------- getfavorites -------------------------------------------
 // function: getfavorites ()
 // input: user name, output [path,id] (optional)
-// output: object path or id array of users favorites / false
+// output: object info or object id array of users favorites / false
 
 function getfavorites ($user, $output="path")
 {
@@ -4092,15 +4106,18 @@ function getfavorites ($user, $output="path")
             {
               if ($object_id != "")
               {
-                $object_path = rdbms_getobject ($object_id);
-                $object_hash = rdbms_getobject_hash ($object_id);
-                if (!empty ($object_path)) $object_path_array[$object_hash] = $object_path;
+                $object_info = rdbms_getobject_info ($object_id);
+                
+                if (!empty ($object_info['objectpath'])) 
+                {
+                  $hash = $object_info['hash'];
+                  $object_path_array[$hash] = $object_info;
+                }
               }
             }
             
             if (sizeof ($object_path_array) > 0)
             {
-              natcasesort ($object_path_array);
               return $object_path_array;
             }
             else return false;

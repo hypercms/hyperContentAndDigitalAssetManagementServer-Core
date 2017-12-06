@@ -910,7 +910,6 @@ $hcms_lang['image-search']['hi'] = "चित्र खोजें";
 $hcms_lang['object-id-link-id']['hi'] = "वस्तु-id/संपर्क-id";
 $hcms_lang['container-id']['hi'] = "कन्टेनर id";
 $hcms_lang['geo-location']['hi'] = "जियो स्थान";
-$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['hi'] = "shift कुंजी को दबाकर रखें और माउस का प्रयोग करने और क्षेत्र का चयन करें पर क्लिक करें (एवं कर्षण)";
 $hcms_lang['sw-coordinates']['hi'] = "निर्देशांक/डब्ल्यू";
 $hcms_lang['ne-coordinates']['hi'] = "n/ई निर्देशांक";
 $hcms_lang['version']['hi'] = "संस्करण";

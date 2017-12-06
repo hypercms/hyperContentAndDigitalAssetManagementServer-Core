@@ -1593,7 +1593,7 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
         if (!empty ($object_info['container_id']) && !empty ($object_info['template']))
         {
           $container_id = $object_info['container_id'];
-          rdbms_createobject ($object_info['container_id'], $objectpath, $object_info['template'], $object_info['content'], $user);
+          rdbms_createobject ($object_info['container_id'], $objectpath, $object_info['template'], "", $object_info['content'], $user);
           
           // get object id
           $object_hash = rdbms_getobject_hash ($objectpath);
@@ -1678,7 +1678,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
         if (!empty ($object_info['container_id']) && !empty ($object_info['template']))
         {
           $container_id = $object_info['container_id'];
-          rdbms_createobject ($object_info['container_id'], $objectpath, $object_info['template'], $object_info['content'], $user);
+          rdbms_createobject ($object_info['container_id'], $objectpath, $object_info['template'], "", $object_info['content'], $user);
           
           // get object id
           $object_hash = rdbms_getobject_hash ($objectpath);
@@ -1767,7 +1767,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
         if (!empty ($object_info['container_id']) && !empty ($object_info['template']))
         {
           $container_id = $object_info['container_id'];
-          rdbms_createobject ($object_info['container_id'], $objectpath, $object_info['template'], $object_info['content'], $user);
+          rdbms_createobject ($object_info['container_id'], $objectpath, $object_info['template'], "", $object_info['content'], $user);
           
           // get object id
           $object_hash = rdbms_getobject_hash ($objectpath);
@@ -2228,6 +2228,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
           {
              // write new reference in object file
             $filedata = loadfile ($location, $page);
+            
             if ($filedata != false) $filedata = setfilename ($filedata, "media", $mediafile_current);
 
             if ($filedata != false)
@@ -2235,6 +2236,13 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
               $result_save = savefile ($location, $page, $filedata);
               // remote client
               remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");
+              
+              // relational DB connectivity
+              if ($mgmt_config['db_connect_rdbms'] != "")
+              {   
+                include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
+                rdbms_setmedianame ($container_id, $mediafile_current);                    
+              }
             }
             else $result_save = false;
 
@@ -3446,17 +3454,17 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
 
 // ---------------------- avoidfilecollision -----------------------------
 // function: avoidfilecollision()
-// input: data string (optional)
+// input: data string (optional), force execution [true,false]
 // output: true / false on error
 
 // description:
 // Appending data to a file ensures that the previous write process is finished (required due to issue when editing encrypted files)
 
-function avoidfilecollision ($data="tempdata")
+function avoidfilecollision ($data="tempdata", $force=false)
 {
   global $mgmt_config, $site;
   
-  if (!valid_publicationname ($site) || (isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true))
+  if (!empty ($force) || !valid_publicationname ($site) || (isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true))
   {
     // save empty temp file initally (to clear previous data)
     savefile ($mgmt_config['abs_path_temp'], "writefile.tmp", "");
@@ -8891,7 +8899,7 @@ function createfolder ($site, $location, $foldernew, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
   
-  if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
   
   $add_onload = "";
   $show = "";
@@ -9037,7 +9045,7 @@ function createfolders ($site, $location, $foldernew, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
-  if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($foldernew) && accessgeneral ($site, $location, $cat) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {        
@@ -9353,7 +9361,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
   
-  if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;;
   
   $add_onload = "";
   $show = "";
@@ -9654,7 +9662,7 @@ function createobject ($site, $location, $page, $template, $user)
 {
   global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
-  if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
   
   $show = "";
   $add_onload = "";
@@ -10047,7 +10055,7 @@ function createobject ($site, $location, $page, $template, $user)
                 // relational DB connectivity
                 if ($mgmt_config['db_connect_rdbms'] != "")
                 {
-                  rdbms_createobject ($container_id, $contentorigin, $templatefile, $contentfile, $user);             
+                  rdbms_createobject ($container_id, $contentorigin, $templatefile, $mediafile, $contentfile, $user);             
                 } 
               
                 $page = $pagefile;
@@ -10342,7 +10350,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
     }
     
     // error if file name is too long
-    if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
+    if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
     
     if (strlen ($global_files['Filedata']['name']) > $mgmt_config['max_digits_filename'])
     {
@@ -10726,6 +10734,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
           {
             // write new reference in object file
             $filedata = loadfile ($location, $page);
+            
             if ($filedata != false) $filedata = setfilename ($filedata, "media", $media_update);
 
             if ($filedata != false)
@@ -10733,6 +10742,13 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
               $result_save = savefile ($location, $page, $filedata);
               // remote client
               remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");
+              
+              // relational DB connectivity
+              if ($mgmt_config['db_connect_rdbms'] != "")
+              {   
+                include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
+                rdbms_setmedianame ($container_id, $media_update);                    
+              }
             }
             else $result_save = false;
 
@@ -11160,7 +11176,14 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
         {
           $savepage = savefile ($location, $page, $filedata);
           // remote client
-          remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");                
+          remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");
+          
+          // relational DB connectivity
+          if ($mgmt_config['db_connect_rdbms'] != "")
+          {   
+            include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
+            rdbms_setmedianame ($container_id, getobject ($mediafile_nameonly).$file_ext_new);                    
+          }          
         }
         else $savepage = false;
 
@@ -12389,7 +12412,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             // relational DB connectivity
             if ($mgmt_config['db_connect_rdbms'] != "")
             {
-              rdbms_createobject ($contentfile_id, convertpath ($site, $location.$page_sec, $cat), $templatefile_self, "", "");                     
+              rdbms_createobject ($contentfile_id, convertpath ($site, $location.$page_sec, $cat), $templatefile_self, $mediafile_self, "", "");                     
             }
                         
             // copy connected object
@@ -12566,7 +12589,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             if ($mgmt_config['db_connect_rdbms'] != "")
             {
               // create new object in DB
-              rdbms_createobject ($contentfile_new_id, convertpath ($site, $location.$page_sec, $cat), $templatefile_self, $contentfile_new, $user);
+              rdbms_createobject ($contentfile_new_id, convertpath ($site, $location.$page_sec, $cat), $templatefile_self, $mediafile_new, $contentfile_new, $user);
               
               // copy content in DB
               rdbms_copycontent ($contentfile_id, $contentfile_new_id, $user);
@@ -12934,7 +12957,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
 {      
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
   
-  if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && !strpos ($pagenew, ".recycle")  && strlen ($pagenew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   { 
@@ -12977,7 +13000,7 @@ function renamefile ($site, $location, $page, $pagenew, $user)
 {      
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
-  if (!is_int ($mgmt_config['max_digits_filename'])) $mgmt_config['max_digits_filename'] = 200;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
   
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && strlen ($pagenew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {    
@@ -13763,17 +13786,27 @@ function publishobject ($site, $location, $page, $user)
                   $pagename = $result['name'];
                   $filetype = $result['objecttype'];
                   
-                  // error occured
-                  if (isset ($result['view']) && strpos ("_".$result['view'], "<!-- hyperCMS:Error -->") > 0)
+                  // error occured if error comments can be found
+                  if (isset ($result['view']) && strpos ("_".$result['view'], "<!-- hyperCMS:Error") > 0)
                   {
+                    // save object file with errors
+                    $error_file = date("Y-m-d-H-i-s").".".$page.".error";
+                    savefile ($mgmt_config['abs_path_temp'], $error_file, $viewstore);
+                    
+                    $errcode = "20201";
+                    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|error in code of object ".$location_esc.$page.", see temp file: ".$error_file; 
+                    
                     $viewstore = false;
                     $release = false;
                     $add_onload = "";
-                    $show = $hcms_lang['an-error-occured-in-building-the-view'][$lang];
+                    $show = $hcms_lang['an-error-occured-in-building-the-view'][$lang]."<br/>Error file: ".$error_file;
                   }
                 }
                 else
                 {
+                  $errcode = "20202";
+                  $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|$errcode|error in code of object ".$location_esc.$page.", no error code available"; 
+                    
                   $viewstore = false;
                   $release = false;
                   $add_onload = "";
@@ -16417,8 +16450,8 @@ function rewrite_targetURI ($site, $text_id, $uri, $exclude_dir_esc="", $rewrite
           
           if ($targetPath != "")
           {
-            $targetFile = str_replace ("%page%/".$site."/", $publ_config['abs_publ_page'], $targetPath);
-            $targetURI = str_replace ("%page%/".$site."/", $publ_config['url_publ_page'], $targetPath);
+            $targetFile = str_replace ("%page%/".$site."/", $publ_config['abs_publ_page'], $targetPath['objectpath']);
+            $targetURI = str_replace ("%page%/".$site."/", $publ_config['url_publ_page'], $targetPath['objectpath']);
 
             // add paramaters
             if ($parameter != "")

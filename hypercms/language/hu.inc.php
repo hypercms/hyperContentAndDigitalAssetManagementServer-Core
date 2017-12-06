@@ -910,7 +910,6 @@ $hcms_lang['image-search']['hu'] = "Képkeresés";
 $hcms_lang['object-id-link-id']['hu'] = "Objektum-ID / kapcsolat-azonosító";
 $hcms_lang['container-id']['hu'] = "Konténer ID";
 $hcms_lang['geo-location']['hu'] = "Földrajzi elhelyezkedése";
-$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['hu'] = "Tartsa lenyomva a Shift billentyűt, és válassza ki a terület-egér (kattintson ide & húzás)";
 $hcms_lang['sw-coordinates']['hu'] = "S/W koordinátái";
 $hcms_lang['ne-coordinates']['hu'] = "N/E koordináták";
 $hcms_lang['version']['hu'] = "VÁLTOZAT";

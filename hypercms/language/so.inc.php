@@ -910,7 +910,6 @@ $hcms_lang['image-search']['so'] = "Muuqaalku raadin";
 $hcms_lang['object-id-link-id']['so'] = "Ku-bari/Xiriiri-bari";
 $hcms_lang['container-id']['so'] = "Saxaarada aqoonsi tusinaaya";
 $hcms_lang['geo-location']['so'] = "Geo hal";
-$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['so'] = "Shift Inay Qabtaan Xil-fure iyo xulo degaanka ku qaadeen jiirka (riix & jiid)";
 $hcms_lang['sw-coordinates']['so'] = "S/W coordinates";
 $hcms_lang['ne-coordinates']['so'] = "N/E coordinates";
 $hcms_lang['version']['so'] = "Noocii Hore";

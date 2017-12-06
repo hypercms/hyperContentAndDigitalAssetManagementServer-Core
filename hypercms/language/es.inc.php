@@ -910,7 +910,6 @@ $hcms_lang['image-search']['es'] = "Búsqueda de la imagen";
 $hcms_lang['object-id-link-id']['es'] = "Object-ID / Link-ID";
 $hcms_lang['container-id']['es'] = "ID del contenedor";
 $hcms_lang['geo-location']['es'] = "Ubicación geográfica";
-$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['es'] = "Mantenga presionada la tecla Mayús y seleccione el área con el ratón (clic y arrastrar)";
 $hcms_lang['sw-coordinates']['es'] = "S/W coordenadas";
 $hcms_lang['ne-coordinates']['es'] = "N/E coordina";
 $hcms_lang['version']['es'] = "Versión";

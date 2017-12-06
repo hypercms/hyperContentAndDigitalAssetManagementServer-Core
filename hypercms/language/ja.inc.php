@@ -910,7 +910,6 @@ $hcms_lang['image-search']['ja'] = "画像検索";
 $hcms_lang['object-id-link-id']['ja'] = "オブジェクトのID/リンク-id";
 $hcms_lang['container-id']['ja'] = "コンテナID";
 $hcms_lang['geo-location']['ja'] = "Geo場所";
-$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['ja'] = "(をクリックしてドラッグ)Shiftキーを押しながらキーを選択し、領域を使用してマウスを移動した";
 $hcms_lang['sw-coordinates']['ja'] = "S/W座標";
 $hcms_lang['ne-coordinates']['ja'] = "N/e座標";
 $hcms_lang['version']['ja'] = "バージョン";

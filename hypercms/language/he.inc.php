@@ -911,7 +911,6 @@ $hcms_lang['image-search']['he'] = "חיפוש תמונה";
 $hcms_lang['object-id-link-id']['he'] = "אובייקט-ID / קישור-ID";
 $hcms_lang['container-id']['he'] = "מיכל ID";
 $hcms_lang['geo-location']['he'] = "הגיאו מיקום";
-$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['he'] = "החזק Shift-מפתח ובחר שטח באמצעות העכבר (לחץ על 'גרור)";
 $hcms_lang['sw-coordinates']['he'] = "S/W קואורדינטות";
 $hcms_lang['ne-coordinates']['he'] = "n/E קואורדינטות";
 $hcms_lang['version']['he'] = "גרסה";

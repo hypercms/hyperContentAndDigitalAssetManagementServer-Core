@@ -1370,100 +1370,86 @@ else
       }
     }
     
+    // Google Maps JavaScript API v3: Map Simple
+    var map;
+    var dragging = false;
+    var rightclick = false;
+    var rect;
+    var pos1, pos2;
+    var latlng1, latlng2;
+    
+    var mapOptions = {
+        zoom: 1,
+        center: new google.maps.LatLng(0, 0),
+        disableDefaultUI: true,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    
     function initMap ()
     {
-      // Google Maps JavaScript API v3: Map Simple
-      var map;
-      var bounds = null;
-      
-      var mapOptions = {
-        zoom: 0,
-        center: new google.maps.LatLng(0, 0),
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-      };
-      
       map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-      // start drag rectangle
-      var shiftPressed = false;
+      
+      rect = new google.maps.Rectangle({
+        map: map,
+        strokeColor: '#359FFC', 
+        fillColor: '#65B3FC',
+        fillOpacity: 0.15,
+        strokeWeight: 0.9,
+        clickable: false
+      });
+      
+      document.getElementById('map').onmousedown = function(e)
+      {
+        // right mouse click
+        if ((e.which && e.which == 3) || (e.button && e.button == 2))
+        {
+          rightclick = true;
+          setTimeout (hcms_hideContextmenu, 50);
+        }
+      }
     
-      $(window).keydown(function (evt)
-      {
-        if (evt.which === 16) shiftPressed = true;
-      }).keyup(function (evt)
-      {
-        if (evt.which === 16) shiftPressed = false;
+      google.maps.event.addListener(map, 'mousedown', function(e) {
+        map.draggable = false;
+        latlng1 = e.latLng;
+        dragging = true;
+        pos1 = e.pixel;
       });
     
-      var mouseDownPos, gribBoundingBox = null, mouseIsDown = 0;
-      var themap = map;
+      google.maps.event.addListener(map, 'mousemove', function(e) {
+        latlng2 = e.latLng;
+        showRect();
+      });
+     
+      google.maps.event.addListener(map, 'mouseup', function(e) {
+        map.draggable = true;
+        dragging = false;
+        rightclick = false;
     
-      google.maps.event.addListener(themap, 'mousemove', function (e)
-      {
-        if (mouseIsDown && shiftPressed)
+        if (rect)
         {
-          // box exists
-          if (gribBoundingBox !== null)
-          {
-            bounds.extend(e.latLng);
-            // if this statement is enabled, you lose mouseUp events           
-            gribBoundingBox.setBounds(bounds);
-          }
-          // create bounding box
-          else
-          {
-            bounds = new google.maps.LatLngBounds();
-            bounds.extend(e.latLng);
-            gribBoundingBox = new google.maps.Rectangle({
-              map: themap,
-              bounds: bounds,
-              fillOpacity: 0.15,
-              strokeWeight: 0.9,
-              clickable: false
-            });
-          }
+          var borderSW = rect.getBounds().getSouthWest();
+          var borderNE = rect.getBounds().getNorthEast();
+    
+          document.forms['searchform_advanced'].elements['geo_border_sw'].value = borderSW;
+          document.forms['searchform_advanced'].elements['geo_border_ne'].value = borderNE;
         }
       });
+    }
     
-      google.maps.event.addListener(themap, 'mousedown', function (e)
+    function showRect ()
+    {
+      if (dragging && rightclick)
       {
-        if (shiftPressed)
+        if (rect === undefined)
         {
-          mouseIsDown = 1;
-          mouseDownPos = e.latLng;
-          themap.setOptions({
-            draggable: false
+          rect = new google.maps.Rectangle({
+              map: map
           });
         }
-      });
-    
-      google.maps.event.addListener(themap, 'mouseup', function (e)
-      {
-        if (mouseIsDown && shiftPressed)
-        {
-          mouseIsDown = 0;
-          
-          // box exists
-          if (gribBoundingBox !== null)
-          {
-            var boundsSelectionArea = new google.maps.LatLngBounds(gribBoundingBox.getBounds().getSouthWest(), gribBoundingBox.getBounds().getNorthEast());                
-            var borderSW = gribBoundingBox.getBounds().getSouthWest();
-            var borderNE = gribBoundingBox.getBounds().getNorthEast();
-            
-            document.forms['searchform_advanced'].elements['geo_border_sw'].value = borderSW;
-            document.forms['searchform_advanced'].elements['geo_border_ne'].value = borderNE;
-            
-            // remove the rectangle
-            gribBoundingBox.setMap(null);
-          }
-          
-          gribBoundingBox = null;
-        }
-    
-        themap.setOptions({
-          draggable: true
-        });
-      });
+        
+        var latLngBounds = new google.maps.LatLngBounds(latlng1, latlng2);
+        rect.setBounds(latLngBounds);
+      }
     }
     
     function activateFulltextSearch ()
@@ -2203,8 +2189,11 @@ else
           <img onClick="activateGeolocationSearch()" align="absmiddle" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="width:31px; height:16px;" align="absmiddle" alt="+/-" title="+/-" />
         </div>
         <div id="mapLayer" style="display:none;">
-          <div style="position:relative; left:190px; top:15px; width:22px; height:22px; z-index:1000;"><img src="<?php echo getthemelocation(); ?>img/info.png" title="<?php echo getescapedtext ($hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag'][$lang]); ?>" class="hcmsButtonSizeSquare" /></div>
-          <div id="map" style="width:222px; height:180px; margin-top:-15px; margin-bottom:3px; border:1px solid grey;" title="<?php echo getescapedtext ($hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag'][$lang]); ?>"></div>
+          <div style="position:relative; left:185px; top:15px; width:22px; height:22px; z-index:1000;">
+            <img src="<?php echo getthemelocation(); ?>img/info.png" title="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" onmouseover="hcms_showInfo('helpmapLayer');" onmouseout="hcms_hideInfo('helpmapLayer');" class="hcmsButtonSizeSquare" style="cursor:pointer;" />
+            <div id="helpmapLayer" style="display:none; position:absolute; top:20px; right:10px;"><img src="<?php echo getthemelocation(); ?>img/info-right-click-drag.png" /></div>
+          </div>
+          <div id="map" style="width:222px; height:180px; margin-top:-15px; margin-bottom:3px; border:1px solid grey;"></div>
           <label for="geo_border_sw"><?php echo getescapedtext ($hcms_lang['sw-coordinates'][$lang]); ?></label><br />
           <input type="text" id="geo_border_sw" name="geo_border_sw" style="width:220px;" maxlength="100" /><br />
           <label for="geo_border_ne"><?php echo getescapedtext ($hcms_lang['ne-coordinates'][$lang]); ?></label><br />

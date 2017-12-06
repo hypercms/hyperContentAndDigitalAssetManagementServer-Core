@@ -910,7 +910,6 @@ $hcms_lang['image-search']['ur'] = "تمثال کی تلاش";
 $hcms_lang['object-id-link-id']['ur'] = "عید کے فحوائےکلام معلومات کے لنک عید";
 $hcms_lang['container-id']['ur'] = "کنٹینر عید";
 $hcms_lang['geo-location']['ur'] = "جیو مقام";
-$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['ur'] = "مٹھیانا اور اہم تبدیلی کے انتخاب کے علاقے چوہی استعمال & جوٹنا) (کے لیے کلک کریں";
 $hcms_lang['sw-coordinates']['ur'] = "coordinates ولد ڈبلیو";
 $hcms_lang['ne-coordinates']['ur'] = "ن کے coordinates ہے.";
 $hcms_lang['version']['ur'] = "ترجمہ";

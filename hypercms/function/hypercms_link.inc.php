@@ -1085,8 +1085,10 @@ function medialinks_to_complinks ($link_array)
 
             if (is_array ($temp_array)) 
             {
-              foreach ($temp_array as $temp_link)
+              foreach ($temp_array as $temp_info)
               {
+                $temp_link = $temp_info['objectpath'];
+                
                 if ($temp_link != "")
                 {
                   $object_array[$link] = $temp_link;

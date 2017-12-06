@@ -806,4 +806,74 @@ function update_database_v625 ()
   }
   else return false;
 }
+
+// ------------------------------------------ update_database_v625 ----------------------------------------------
+// function: update_database_v705()
+// input: path to component directory, alter tabel [true,false]
+// output: updated database, false on error
+
+// description: 
+// Adds attribute 'media' to table objects for support of version 7.0.5
+
+function update_database_v705 ($dir, $db_alter)
+{
+  global $mgmt_config;
+  
+  $logdata = loadlog ("update", "string");
+  
+  if (empty ($logdata) || strpos ($logdata, "|7.0.5|") < 1)
+  { 
+    if (!empty ($db_alter))
+    {
+      // connect to MySQL
+      $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+      
+      // alter table
+      $sql = "ALTER TABLE object ADD media CHAR(255) DEFAULT '' AFTER template;";
+      $errcode = "50075";
+      $result = $db->query ($sql, $errcode, $mgmt_config['today']);
+  
+      // save log
+      savelog ($db->getError ());
+      savelog (@$error);
+      $db->close();
+      
+      $db_alter = false;
+    }
+    
+    $files = scandir ($dir);
+  
+    if (is_array ($files))
+    {
+      foreach ($files as $file)
+      {
+        $path = $dir.$file;
+
+        if (is_file ($path) && $file != ".folder")
+        {
+          $data = loadfile_header ($dir, $file);
+          
+          if (!empty ($data))
+          {
+            $media = getfilename ($data, "media");
+            $content = getfilename ($data, "content");
+            
+            if (!empty ($media) && !empty ($content))
+            {
+              if (strpos ($content, ".xml") > 0) $id = intval (substr ($content, 0, strpos ($content, ".xml")));
+              rdbms_setmedianame ($id, $media);
+            }
+          }
+        }
+        elseif (is_dir ($path) && $file != "." && $file != "..")
+        {
+          update_database_v705 ($path."/", $db_alter);
+        }
+      }
+    }
+
+    return true;
+  }
+  else return false;
+}
 ?>

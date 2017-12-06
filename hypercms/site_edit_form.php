@@ -51,7 +51,7 @@ if (!checkrootpermission ('site') || !checkrootpermission ('siteedit'))
 if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $action == "site_edit" && checktoken ($token, $user))
 {
   $result = editpublication ($site_name, $setting, $user);
-  
+
   $add_onload = $result['add_onload'];
   $show = $result['message'];  
 }
@@ -180,7 +180,7 @@ function submitForm ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onLoad="<?php if ($preview != "yes") echo "switchDAM();"; ?> hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png'); <?php if ($add_onload != "") echo $add_onload; ?>">
+<body class="hcmsWorkplaceGeneric" onload="<?php if ($preview != "yes") echo "switchDAM();"; ?> hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png'); <?php if ($add_onload != "") echo $add_onload; ?>">
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <?php
@@ -211,32 +211,18 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   }
   
   // initalize
-  $mgmt_config[$site_name]['site_admin'] = "";
-  $mgmt_config[$site_name]['url_path_page'] = "";
-  $mgmt_config[$site_name]['abs_path_page'] = "";
-  $mgmt_config[$site_name]['exclude_folders'] = "";
-  $mgmt_config[$site_name]['allow_ip'] = "";
-  $mgmt_config[$site_name]['webdav'] = "";
-  $mgmt_config[$site_name]['linkengine'] = "";
-  $mgmt_config[$site_name]['default_codepage'] = "";
-  $mgmt_config[$site_name]['sendmail'] = "";
-  $mgmt_config[$site_name]['mailserver'] = "";
-  $mgmt_config[$site_name]['remoteclient'] = "";
-  $mgmt_config[$site_name]['specialchr_disable'] = "";
-  $mgmt_config[$site_name]['dam'] = "";
-  $mgmt_config[$site_name]['upload_userinput'] = "";
-  $mgmt_config[$site_name]['upload_pages'] = "";
-  $mgmt_config[$site_name]['storage_limit'] = "";
-  $mgmt_config[$site_name]['storage_type'] = "";
-  $mgmt_config[$site_name]['crypt_content'] = "";
-  $mgmt_config[$site_name]['watermark_image'] = "";
-  $mgmt_config[$site_name]['watermark_video'] = "";
-  
-  // load site config file of management system
+  $mgmt_config[$site_name] = array();
+
+  // load publication config file of management system
   if (valid_publicationname ($site_name) && file_exists ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
   {
-    include ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
-    
+    // copy publication configuration file to temp directory in order to avoid PHP file caching
+    copy ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php", $mgmt_config['abs_path_temp'].$site_name.".conf.php");
+    // load temp file
+    require ($mgmt_config['abs_path_temp'].$site_name.".conf.php");
+    // delete temp file
+    unlink ($mgmt_config['abs_path_temp'].$site_name.".conf.php");
+
     if (empty ($mgmt_config[$site_name]['youtube_token'])) $mgmt_config[$site_name]['youtube_token'] = "";
   }
 ?>
@@ -502,13 +488,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   }
   else
   {
-    $publ_config['url_publ_page'] = "";
-    $publ_config['abs_publ_page'] = "";  
-    $publ_config['url_publ_rep'] = "";
-    $publ_config['abs_publ_rep'] = "";
-    $publ_config['abs_publ_app'] = ""; 
-    $publ_config['http_incl'] = "";
-    $publ_config['publ_os'] = "";
+    $publ_config = array();
   }    
   ?>
     <tr align="left" valign="top"> 

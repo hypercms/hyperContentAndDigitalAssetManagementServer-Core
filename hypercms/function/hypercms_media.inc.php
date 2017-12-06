@@ -30,6 +30,9 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
     
+    // load tesseract language mapping
+    if (empty ($tesseract_langmap) || !is_array ($tesseract_langmapt)) require ($mgmt_config['abs_path_cms']."include/tesseract_lang.inc.php");
+    
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";            
   
@@ -426,9 +429,13 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
             // extract text from image using OCR
             if (is_file ($location_source.$file_source))
             {
+              // use -l lang-id to set the language that should be used for the OCR, by default it is English
+              if (!empty ($lang)) $options = " -l ".$tesseract_lang[$lang];
+              else $options = "";
+            
               // create temp text file from TIFF image (file extension for text file will be added by Tesseract)
-              $cmd = $parser." \"".shellcmd_encode ($location_source.$file_source)."\" \"".shellcmd_encode ($temp_dir.$temp_name)."\"";
-              
+              $cmd = $parser." \"".shellcmd_encode ($location_source.$file_source)."\"".$options." \"".shellcmd_encode ($temp_dir.$temp_name)."\"";
+
               @exec ($cmd);
 
               // on error

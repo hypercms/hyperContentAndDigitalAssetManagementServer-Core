@@ -910,7 +910,6 @@ $hcms_lang['image-search']['ko'] = "이미지 검색";
 $hcms_lang['object-id-link-id']['ko'] = "오브젝트 ID / 링크 ID";
 $hcms_lang['container-id']['ko'] = "컨테이너 ID";
 $hcms_lang['geo-location']['ko'] = "지역별 위치";
-$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['ko'] = "( 클릭 및 드래그) Shift 키와 선택 영역을 사용하여 마우스를 누른 상태";
 $hcms_lang['sw-coordinates']['ko'] = "S/w 좌표";
 $hcms_lang['ne-coordinates']['ko'] = "N/e 좌표";
 $hcms_lang['version']['ko'] = "버전";
