@@ -857,8 +857,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         $mediaview .= "
       </table>";
       }
-      // ---------------------------------------- if document --------------------------------------
-      elseif ($file_info['orig_ext'] != "" && substr_count ($doc_ext.".", $file_info['orig_ext'].".") > 0 && !empty ($mgmt_config['docviewer']))
+      // ---------------------------------------- if document (only document formats that can be converted to PDF)  --------------------------------------
+      elseif ($file_info['orig_ext'] != "" && substr_count ($doc_ext, $file_info['orig_ext'].".") > 0 && !empty ($mgmt_config['docviewer']))
       {
         $mediaview_doc = "";
         $mediaratio = 0;
@@ -948,7 +948,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
              ) && 
              (
                substr_count (".pdf", $file_info['orig_ext']) == 1 || 
-               (is_array ($mgmt_docconvert[$file_info['orig_ext']]) && in_array (".pdf", $mgmt_docconvert[$file_info['orig_ext']]))
+               (!empty ($mgmt_docconvert[$file_info['orig_ext']]) && is_array ($mgmt_docconvert[$file_info['orig_ext']]) && in_array (".pdf", $mgmt_docconvert[$file_info['orig_ext']]))
              )
            )
         {
@@ -1071,13 +1071,16 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
           // create pages if the first page does not exist or is older than the original media file
           if (
-               (!is_file ($thumb_root.$annotation_page) && !is_cloudobject ($thumb_root.$annotation_page)) || 
-               (is_file ($thumb_root.$annotation_page) && filemtime ($thumb_root.$annotation_page) < filemtime ($thumb_root.$mediafile_pdf))
+               !empty ($mediafile_pdf) &&
+               (
+                 (!is_file ($thumb_root.$annotation_page) && !is_cloudobject ($thumb_root.$annotation_page)) || 
+                 (is_file ($thumb_root.$annotation_page) && filemtime ($thumb_root.$annotation_page) < filemtime ($thumb_root.$mediafile_pdf))
+               )
              )
           {
             // get PDF width and height
             $pdf_info = getpdfinfo ($thumb_root.$mediafile_pdf);
-  
+              
             // use default values
             if (empty ($pdf_info['width']) || empty ($pdf_info['height']))
             {
@@ -1085,7 +1088,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $pdf_info['width'] = 623;
               $pdf_info['height'] = 806;
             }
-
+              
             // create pages as images from PDF document
             $mgmt_imageoptions['.jpg.jpeg']['annotation'] = "-s ".round($pdf_info['width'], 0)."x".round($pdf_info['height'], 0)." -f jpg";
             createmedia ($site, $thumb_root, $thumb_root, $mediafile_pdf, 'jpg', 'annotation');
@@ -1094,29 +1097,32 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           // embed annotation script
           if (is_file ($thumb_root.$annotation_page))
           {
-            $page_size = getimagesize ($thumb_root.$annotation_page);
-            
             // count pages 
             for ($page_count = 0; $page_count <= 10000; $page_count++)
             {
               if (!is_file ($thumb_root.$file_info['filename'].".annotation-".$page_count.".jpg") && !is_cloudobject ($thumb_root.$file_info['filename'].".annotation-".$page_count.".jpg")) break;
             }
             
-            $mediaview_doc = "
-  <div style=\"position:absolute; width:".$page_size[0]."px; height:28px; text-align:right;".($page_size[0] < 420 ? "margin-top:-38px;" : "margin-top:-8px;")."\">
+            if ($page_count > 1)
+            {
+              $mediaview_doc = "
+  <div style=\"position:absolute; width:".($width+15)."px; height:28px; text-align:right;".($width < 420 ? "margin-top:-38px;" : "margin-top:-8px;")."\">
     <img src=\"".getthemelocation()."img/button_arrow_left.png\" onclick=\"gotoPage('previous');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" />
-    <select id=\"pagenumber\" onchange=\"gotoPage('none');\" title=\"".getescapedtext ($hcms_lang['page'][$lang], $hcms_charset, $lang)."\">";
+    <select id=\"pagenumber\" onchange=\"gotoPage('none');\" title=\"".getescapedtext ($hcms_lang['page'][$lang], $hcms_charset, $lang)."\" style=\"width:70px;\">";
     
-      for ($i = 0; $i < $page_count; $i++)
-      {
-        $mediaview_doc .= "
-      <option value=\"".$i."\">".($i+1)."</option>";
-      }
+              for ($i = 0; $i < $page_count; $i++)
+              {
+                $mediaview_doc .= "
+        <option value=\"".$i."\">".($i+1)."</option>";
+              }
       
-    $mediaview_doc .= "
+              $mediaview_doc .= "
     </select> / ".$page_count."
     <img src=\"".getthemelocation()."img/button_arrow_right.png\" onclick=\"gotoPage('next');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" />
-  </div>
+  </div>";
+            }
+  
+           $mediaview_doc .= "
   <div style=\"margin-top:30px;\">
     <div id=\"annotation\" style=\"position:relative;\" class=\"".$class."\"></div>
   </div>
@@ -1161,7 +1167,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       document.getElementById('annotationRedo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
       document.getElementById('annotationRedo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
       
-      document.getElementById('annotationHelp').src = '".getthemelocation()."img/button_help.png';
+      document.getElementById('annotationHelp').src = '".getthemelocation()."img/button_info.png';
       document.getElementById('annotationHelp').title = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
       document.getElementById('annotationHelp').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
     }
@@ -1238,7 +1244,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
         if ($viewtype != "media_only") $mediaview .= "<div style=\"padding:5px 0px 8px 0px; width:".$width."px; text-align:center;\" class=\"hcmsHeadlineTiny\">".showshorttext($medianame, 40, false)."<br /><hr /></div>";
       }
-      // ----------------------------------- if image ------------------------------------- 
+      // ----------------------------------- if image (including encapsulated post script and svg files that are treated as multi-page files by function createmedia) ------------------------------------- 
       elseif ($file_info['ext'] != "" && is_image ($file_info['ext']))
       {
         // media size
@@ -1286,23 +1292,21 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             }
 
             // new image size cant exceed the original image size
-            $newsize = mediasize2frame ($width_orig, $height_orig, $width, $height, true);
+            if ($width_orig > 0 && $height_orig > 0)
+            {
+              $newsize = mediasize2frame ($width_orig, $height_orig, $width, $height, true);
             
-            if (is_array ($newsize))
-            {
-              $width = $newsize['width'];
-              $height = $newsize['height'];
-            }
-            // if no media size is available
-            else 
-            {
-              $widht = "";
-              $height = "";
+              if (is_array ($newsize))
+              {
+                $width = $newsize['width'];
+                $height = $newsize['height'];
+              }
             }
 
             // create new image for annotations (only if annotations are enabled and image conversion software and permissions are given)
-            $annotation_file = $file_info['filename'].'.annotation.jpg';
-            
+            if (substr_count ($doc_ext.".eps.eps2.eps3.epsf.epsi.svg", $file_info['orig_ext'].".") > 0) $annotation_file = $file_info['filename'].".annotation-0.jpg";
+            else $annotation_file = $file_info['filename'].'.annotation.jpg';
+
             if (
                  $viewtype == "preview" &&
                  !empty ($mediaratio) && ($thumb_size[0] >= 180 || $thumb_size[1] >= 180) && 
@@ -1471,6 +1475,31 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         // embed annotation script
         if (!empty ($mediaratio) && ($thumb_size[0] >= 180 || $thumb_size[1] >= 180) && !empty ($mgmt_config['annotation']) && is_dir ($mgmt_config['abs_path_cms']."workflow/") && is_file ($thumb_root.$annotation_file) && $viewtype == "preview" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
         {
+          // count pages 
+          for ($page_count = 0; $page_count <= 10000; $page_count++)
+          {
+            if (!is_file ($thumb_root.$file_info['filename'].".annotation-".$page_count.".jpg") && !is_cloudobject ($thumb_root.$file_info['filename'].".annotation-".$page_count.".jpg")) break;
+          }
+          
+          if ($page_count > 1)
+          {
+            $mediaview = "
+  <div style=\"position:absolute; width:".($width+15)."px; height:28px; text-align:right;".($width < 420 ? "margin-top:-38px;" : "margin-top:-8px;")."\">
+    <img src=\"".getthemelocation()."img/button_arrow_left.png\" onclick=\"gotoPage('previous');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" />
+    <select id=\"pagenumber\" onchange=\"gotoPage('none');\" title=\"".getescapedtext ($hcms_lang['page'][$lang], $hcms_charset, $lang)."\" style=\"width:70px;\">";
+    
+            for ($i = 0; $i < $page_count; $i++)
+            {
+              $mediaview .= "
+        <option value=\"".$i."\">".($i+1)."</option>";
+            }
+      
+            $mediaview .= "
+    </select> / ".$page_count."
+    <img src=\"".getthemelocation()."img/button_arrow_right.png\" onclick=\"gotoPage('next');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['forward'][$lang], $hcms_charset, $lang)."\" />
+  </div>";
+          }
+        
           $mediaview .= "
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.js\"></script>
 	<script>
@@ -1513,7 +1542,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       document.getElementById('annotationRedo').title = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
       document.getElementById('annotationRedo').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['redo'][$lang], $hcms_charset, $lang)."');
       
-      document.getElementById('annotationHelp').src = '".getthemelocation()."img/button_help.png';
+      document.getElementById('annotationHelp').src = '".getthemelocation()."img/button_info.png';
       document.getElementById('annotationHelp').title = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
       document.getElementById('annotationHelp').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
     }

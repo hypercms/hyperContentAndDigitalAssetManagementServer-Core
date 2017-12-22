@@ -979,7 +979,91 @@ function array_iunique ($array)
   else return false;
 }
 
+// -------------------------------- in_array_substr --------------------------------
+// function: in_array_substr()
+// input: search expression, array
+// output: true / false
+
+// description:
+// This function is supporting the search of substrings in the array values compared to PHPs in_array function
+
+function in_array_substr ($search, $array)
+{
+  if ($search != "" && is_array ($array) && sizeof ($array) > 0)
+  {
+    foreach ($array as $value)
+    {
+      if (strpos (" ".$value, $search) > 0)  return true;
+    }
+    
+    return false;
+  }
+  else return false;
+}
+
 // ========================================== FILES AND LINKS =======================================
+
+// ---------------------- createfilename -----------------------------
+// function: createfilename()
+// input: path to file or directory, file or directory name
+// output: new filename/false
+
+// description:
+// Create an valid file name without special characters that does not exceed the maximum file name length
+
+function createfilename ($filename)
+{
+  global $mgmt_config, $hcms_lang, $lang;
+
+  if (valid_objectname ($filename))
+  {
+    if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
+    
+    // check if filename includes special characters
+    if (specialchr ($filename, ".-_") == true)
+    {
+      $filename_new = specialchr_encode (trim ($filename), "no");
+    }
+    else
+    {
+      $filename_new = trim ($filename);
+    }
+    
+    // escaped or input file name is too long (11 digits for the hcms identifier)
+    if ((strlen ($filename_new) + 11) > $mgmt_config['max_digits_filename'])
+    {
+      if (substr_count ($filename_new, ".") > 0)
+      {            
+        // get the file extension of the file
+        $file_ext = strrchr ($filename_new, ".");
+        // get file name without extensions
+        $filename_new = strrev (substr (strstr (strrev ($filename_new), "."), 1));
+      }
+      else $file_ext  = "";
+
+      $filename_new = substr ($filename_new, 0, ($mgmt_config['max_digits_filename'] - 11 - strlen ($file_ext)));
+      
+      // remove escaped character at the end of the file name that is not fully presented
+      if (substr ($filename_new, -2, 1) == "~") $filename_new = substr ($filename_new, 0, -2);
+      if (substr ($filename_new, -1, 1) == "~") $filename_new = substr ($filename_new, 0, -1);
+      
+      // escpaed character muste be even for multibyte characters
+      if (substr_count($filename_new, "~") % 2 != 0) $filename_new = substr ($filename_new, 0, strrpos ($filename_new, "~"));
+      
+      $filename_new = $filename_new.$file_ext;
+      
+      $errcode = "00911";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|$errcode|object name '".$filename."' has been truncated to '".specialchr_decode ($filename_new)."'";
+      
+      savelog (@$error);  
+
+      if (strlen ($filename_new) > 0) return $filename_new;
+      else return false;
+    }
+    else return $filename_new;
+  }
+  else return false;
+}
 
 // ---------------------- correctfile -----------------------------
 // function: correctfile()
@@ -1001,7 +1085,7 @@ function correctfile ($abs_path, $filename, $user="")
       $abs_path = deconvertpath ($abs_path, "file", true);
       
       // encode file name if it is not locked (locked file name means it is already encoded)
-      if (strpos ($filename, ".@") < 1) $filename = specialchr_encode ($filename, "no");
+      if (strpos ($filename, ".@") < 1) $filename = createfilename ($filename);
     }
     
     // if given file or directory exists
@@ -1020,7 +1104,7 @@ function correctfile ($abs_path, $filename, $user="")
     {
       $filename = substr ($filename, 0, strrpos ($filename, "."));
       
-      if (@is_file ($abs_path.$filename))
+      if (is_file ($abs_path.$filename))
       {
         return $filename;
       }
@@ -1493,7 +1577,7 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
   $location = deconvertpath ($location, "file"); 
       
   // if object includes special characters
-  if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
+  if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
 
   if (((valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "") || $object_id != "") && (($type == "al" && valid_objectname ($login)) || $type == "dl") && isset ($mgmt_config) && $mgmt_config['db_connect_rdbms'] != "")
   {
@@ -1566,13 +1650,13 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
     $location = deconvertpath ($location, "file");
       
     // if object includes special characters
-    if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
+    if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
     
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
     {
       // if object includes special characters
-      if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
+      if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
       
       if (@is_dir ($location.$object))
       {
@@ -1654,7 +1738,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
     $location = deconvertpath ($location, "file");
       
     // if object includes special characters
-    if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
+    if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
     
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
@@ -1743,7 +1827,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     $location = deconvertpath ($location, "file");
     
     // if object includes special characters
-    if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
+    if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
     
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
@@ -2102,8 +2186,8 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
   // deconvert location
   $location = deconvertpath ($location, "file");
   
-  // if object includes special characters
-  if (specialchr ($page, ".-_~") == true) $page = specialchr_encode ($page, "no");
+  // create valid file name
+  $page = createfilename ($page);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($container_version) && strpos ($container_version, ".v_") > 0)
   {
@@ -3519,7 +3603,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
   $location = deconvertpath ($location, "file");
   
   // if object includes special characters
-  if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
+  if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
 
   if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object))
   {
@@ -8922,21 +9006,15 @@ function createfolder ($site, $location, $foldernew, $user)
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
     
-    // trim folder name
-    $foldernew = trim ($foldernew);
-    
-    // eventsystem
-    if ($eventsystem['oncreatefolder_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
-      oncreatefolder_pre ($site, $cat, $location, $foldernew, $user);   
-    
     // buffer new folder name
     $foldernew_orig = $foldernew; 
     
-    // test if folder name includes special characters
-    if (specialchr ($foldernew, ".-_") == true)
-    {
-      $foldernew = specialchr_encode ($foldernew, "no");
-    }
+    // folder name
+    $foldernew = createfilename ($foldernew);
+    
+    // eventsystem
+    if ($eventsystem['oncreatefolder_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0)) 
+      oncreatefolder_pre ($site, $cat, $location, $foldernew, $user);
     
     // check if folder exists already
     if (@is_dir ($location.$foldernew))
@@ -9361,7 +9439,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
   
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
   
   $add_onload = "";
   $show = "";
@@ -9394,8 +9472,8 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
     $foldernew_orig = $foldernew;  
    
     // test if folder name includes special characters
-    if (specialchr ($folder, ".-_~") == true) $folder = specialchr_encode ($folder, "no");
-    if (specialchr ($foldernew, ".-_") == true) $foldernew = specialchr_encode ($foldernew, "no");
+    if (specialchr ($folder, ".-_~") == true) $folder = createfilename ($folder);
+    if (specialchr ($foldernew, ".-_") == true) $foldernew = createfilename ($foldernew);
 
     // folder doesn't exist
     if (!is_dir ($location.$folder))
@@ -9692,8 +9770,9 @@ function createobject ($site, $location, $page, $template, $user)
     $location = deconvertpath ($location, "file");
     $location_esc = convertpath ($site, $location, $cat); 
     
-    // trim object name
-    $page = trim ($page);
+    // create valid object file name
+    $page_orig = $page;
+    $page = createfilename ($page);
     
     //  check if location exists
     if (!is_dir ($location))
@@ -9704,19 +9783,17 @@ function createobject ($site, $location, $page, $template, $user)
     
     if ($show == "")
     {
-      // check if page name includes special characters
-      if (specialchr ($page, ".-_") == true)
-      {
-        $page_orig = $page;
-        $page = specialchr_encode ($page, "no");  
-      }
       // check if page is a folder
-      elseif ($page == ".folder")
+      if ($page == ".folder")
       {
         // extract folder name
         $page_orig = getobject ($location);
       }
-      else $page_orig = $page;
+      else
+      {
+        $page_orig = $page;
+        $page = createfilename ($page);
+      }
           
       // extract template file name from sent template information
       if (@substr_count ($template, ".php") >= 1) 
@@ -10365,18 +10442,11 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
       return $result;
     }    
     
-    // check if page name includes special characters
-    if (specialchr ($global_files['Filedata']['name'], ".-_") == true)
-    {
-      $file_renamed = specialchr_encode ($global_files['Filedata']['name'], "no");
-    }
-    else
-    {
-      $file_renamed = $global_files['Filedata']['name'];
-    }
+    // create valid file name
+    $filename_new = createfilename ($global_files['Filedata']['name']);
 
     // error if file exists
-    if ($media_update == "" && is_file ($location.$file_renamed))
+    if ($media_update == "" && is_file ($location.$filename_new))
     {      
       $result['header'] = "HTTP/1.1 504 Internal Server Error";
       $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang];
@@ -10415,7 +10485,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
       }
     }
 
-    // Check the md5 Hash with the one in the database
+    // check the md5 Hash with the one in the database
     if (!empty ($checkduplicates))
     {
       $md5_hash = md5_file ($global_files['Filedata']['tmp_name']);
@@ -10763,7 +10833,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
                 // set new page name
                 $page = $pagename = $page_nameonly.$file_ext_new;
                 // define new page
-                $result['object'] = $location_esc.specialchr_encode ($page);
+                $result['object'] = $location_esc.createfilename ($page);
               }
               // on error
               else
@@ -11057,7 +11127,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
             {
               // set folder values
               $createfolder['result'] = true;
-              $createfolder['folder'] = specialchr_encode ($folder_new, "no");
+              $createfolder['folder'] = createfilename ($folder_new);
             }
             
             if ($createfolder['result'] == true)
@@ -11496,9 +11566,9 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $pagenew_orig = $pagenew;
           $page_orig = $page;
 
-          // encode object names
-          if (specialchr ($page, ".-_~") == true) $page = specialchr_encode ($page, "no");    
-          if (specialchr ($pagenew, ".-_") == true) $pagenew = specialchr_encode ($pagenew, "no");
+          // create valid file names
+          $page = createfilename ($page);
+          $pagenew = createfilename ($pagenew);
 
           // if pagenew holds only the name
           if ($action == "page_rename")
@@ -13671,8 +13741,7 @@ function publishobject ($site, $location, $page, $user)
     // convert location
     $location = deconvertpath ($location, "file");
     $location_esc = convertpath ($site, $location, $cat);
-    
-    if (specialchr ($page, ".-_~") == true) $page = specialchr_encode ($page, "no");
+    $page = createfilename ($page);
       
     // check location (only components of given publication are allowed)
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
@@ -14303,7 +14372,7 @@ function unpublishobject ($site, $location, $page, $user)
     $cat = getcategory ($site, $location);    
     $location = deconvertpath ($location, "file");
     $location_esc = convertpath ($site, $location, $cat);
-    if (specialchr ($page, ".-_~") == true) $page = specialchr_encode ($page, "no");
+    $page = createfilename ($page);
     
     // check location (only components of given publication are allowed)
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
@@ -14698,9 +14767,19 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
   // --------------------------empty recycle bin -------------------------------
   if ($action == "emptybin")
   {
-    // reset array of all objects based on recycle bin
-    $objectpath_array = rdbms_getdeletedobjects ($user);
+    $objectpath_array = array();
     
+    // reset array of all objects based on recycle bin
+    $objectinfo_array = rdbms_getdeletedobjects ($user);
+    
+    if (is_array ($objectinfo_array) && sizeof ($objectinfo_array) > 0)
+    {
+      foreach ($objectinfo_array as $hash => $objectinfo)
+      {
+        $objectpath_array[$hash] = $objectinfo['objectpath'];
+      }
+    }
+
     // reset action in order to delete objects in recycle bin
     $action = "delete";
   }
@@ -15842,7 +15921,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
   $location = deconvertpath ($location, "file"); 
       
   // if object includes special characters
-  if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
+  $object = createfilename ($object);
   
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");

@@ -1,11 +1,13 @@
 <?php
 // ---------------------- FAVORITES ---------------------
 
-$objectinfo_array = getfavorites ($user);
+$objectinfo_array = getfavorites ($user, "path");
 
 if (is_array ($objectinfo_array) && sizeof ($objectinfo_array) > 0)
 {
   // prepare array
+  $object_array = array();
+  
   foreach ($objectinfo_array as $hash => $objectinfo)
   {
     if (!empty ($objectinfo['objectpath'])) $object_array[$hash] = $objectinfo['objectpath'];
@@ -16,7 +18,7 @@ if (is_array ($objectinfo_array) && sizeof ($objectinfo_array) > 0)
   {
     if ($is_mobile) $width = "92%";
     else $width = "320px";
-    
+
     echo "
     <div id=\"favorites\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
       <div class=\"hcmsHeadline\" style=\"margin:2px;\">".getescapedtext ($hcms_lang['favorites'][$lang])."</div>";
@@ -25,11 +27,8 @@ if (is_array ($objectinfo_array) && sizeof ($objectinfo_array) > 0)
     reset ($object_array);
     $i = 0;
     
-    foreach ($object_array as $hash => $objectinfo)
+    foreach ($object_array as $hash => $objectpath)
     {
-      if (!empty ($item_objectinfo['objectpath'])) $item_objectpath = $item_objectinfo['objectpath'];
-      else $item_objectpath = "";
-        
       // show only object items
       if (getobject ($objectpath) != ".folder" && $i < 20)
       {

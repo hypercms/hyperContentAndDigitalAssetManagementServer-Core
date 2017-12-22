@@ -1783,20 +1783,20 @@ function getcontainer ($containerid, $type)
 
 // ------------------------------------------ getwallpaper --------------------------------------------
 // function: getwallpaper()
-// input: %
+// input: version number (optional)
 // output: URL of wallpaper image / false
 // requires: config.inc.php
 
 // description:
-// Provides a wallpaper image used for the logon screen.
+// Provides a wallpaper image or video used for the logon and home screen.
 
-function getwallpaper ()
+function getwallpaper ($version="")
 {
   global $mgmt_config;
   
   // get wallpaper name
-  $wallpaper_name = @file_get_contents ("http://cms.hypercms.com/wallpaper/?action=name");
-  
+  $wallpaper_name = @file_get_contents ("http://cms.hypercms.com/wallpaper/?action=name&version=".urlencode($version));
+
   if (!empty ($wallpaper_name))
   {
     // if file does not exist in temp view directory
@@ -4090,9 +4090,11 @@ function getfavorites ($user, $output="path")
       {
         $data = trim ($data, "|");
         $object_id_array = explode ("|", $data);
-        
+
         if (is_array ($object_id_array))
         {
+          $object_id_array = array_unique ($object_id_array);
+          
           if (strtolower ($output) == "id")
           {
             sort ($object_id_array);
@@ -4107,7 +4109,7 @@ function getfavorites ($user, $output="path")
               if ($object_id != "")
               {
                 $object_info = rdbms_getobject_info ($object_id);
-                
+               
                 if (!empty ($object_info['objectpath'])) 
                 {
                   $hash = $object_info['hash'];

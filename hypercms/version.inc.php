@@ -2449,7 +2449,7 @@ Release 12/2017
 - Modifications in site_edit_form in order to reset all old configuration values
 - Modifications in control_site_menu in order to apply natural case sort for the list of publications
 - Implementation of loading screens for import and export of objects in Connector module
-- Modifications in template engine in order to avoid overwritting CSS settings for the language select box
+- Modifications in template engine in order to avoid overwriting CSS settings for the language select box
 - Modifications in template engine in order to set language select box after the document has been loaded (to avoid manipulation by JS frameworks)
 - Modifications in function cratenavigation in UI API in order to support only index files as navigation items
 - Modifications in template engine to remove external styles in WYSIWYG view for all edit icons
@@ -2464,7 +2464,6 @@ Release 12/2017
 - Modifications in link_edit_explorer in order to avoid scrolling to top and to support the new search results array
 - Modifications in template engine in order to replace all link tags by onclick events on image icons
 - Modifications in function rewrite_targetURI in Main API in order to support the new search result array
-- Modifications in OpenSearch Connector in order to support the new search result array
 - Implementation of new update function update_database_v705 in Update API
 - Implementation of new function rdbms_setmedianame and rdbms_getobject_info in DB Connect
 - Modifications in createtables.sql in order to add new attribute media to table objects
@@ -2481,6 +2480,13 @@ Release 12/2017
 - Updates in all language files
 - Modifications in function rdbms_searchcontent in DB Connect incl. modifications in search_objectlist and home boxes in order to support the new result array
 - Modifications in function hcms_crypt in Security API in order to verify the salt length for PHP function crypt
+- Modifications in template engine to reduce the size of the edit buttons/icons in WYSIWYG view from 32 to 20 pixels
+- Changed from help to info icon for annotations
+- Implementation of new function createfilename in Main API in order to create a valid escaped file name
+- Implementation of new function in_array_substr in Main API
+- Design modifications and improvements in the Report Management module (alignment in table cells based on the data type, and the support of quotes for aliases)
+- Support for all postscript file extensions to be treated as multiple page documents by function createmedia in Media API and function showmedia in UI API
+- Implementation of multi-page annotation support for encapsulated postscript and SVG files in function showmedia in UI API
 - Bug fix: The character set of the template source code has not been successfully extracted in template_source
 - Bug fix: Modifications in site_edit_form due to issue with PHP file caching
 - Bug fix: Function publishobject in Main API did not look for proper error code in rendered object
@@ -2491,6 +2497,9 @@ Release 12/2017
 - Bug fix: Removed parameter ctrlreload from first tab in control_content_menu to enable conotrol reloading when navigating in pages
 - Bug fix:JS function hcms_endSelectArea in contextmenu.js did not verify if the element exists before applying a style
 - Bug fix: JS function hcms_clearSelection in contextmenu.js did not verify if a selectarea html element has been defined (caused focus issue on input fields in MS Edge, IE, and Chrome)
+- Bug fix: Function uploadfile in Main API did not verify length of escaped file names and shorten them to the max. file name length value
+- Bug fix: Function showmedia in UI API did set zero heights for annotations images if the original image dimensions can't be retrieved from the file
+- Bug fix: Function showmedia in UI API did not set the correct width of the annotation toolbar
 */
 
 // current version

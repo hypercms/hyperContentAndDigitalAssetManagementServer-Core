@@ -6,6 +6,8 @@ $objectinfo_array = rdbms_searchuser ("", $user);
 if (is_array ($objectinfo_array) && sizeof ($objectinfo_array) > 0)
 {
   // prepare array
+  $object_array = array();
+  
   foreach ($objectinfo_array as $hash => $objectinfo)
   {
     if (!empty ($objectinfo['objectpath'])) $object_array[$hash] = $objectinfo['objectpath'];

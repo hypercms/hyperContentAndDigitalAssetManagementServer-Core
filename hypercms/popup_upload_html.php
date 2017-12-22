@@ -1155,20 +1155,21 @@ function cal_on_autoclose (cal)
 
 <!-- top bar -->
 <?php
-if ($uploadmode == "multi") $title = getescapedtext ($hcms_lang['upload-files-to-location'][$lang]);
+if ($uploadmode == "multi") $title = getescapedtext ($hcms_lang['upload-file'][$lang]);
 else $title = getescapedtext ($hcms_lang['upload-new-file-in'][$lang]);
 
 if ($uploadmode == "multi")
 {
-  $object_name = getlocationname ($site, $location, $cat, "path");
+  $object_name = getlocationname ($site, $location_esc, $cat, "path");
+  $object_name = "&nbsp;<img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".str_replace ("/", " &gt; ", trim ($object_name, "/"));
 }
 else
 {
   $fileinfo = getfileinfo ($site, $object, $cat);
-  $object_name = $fileinfo['name'];
+  $object_name = "&nbsp;<img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" title=\"".getescapedtext ($hcms_lang['object'][$lang])."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;".$fileinfo['name'];
 }
 
-echo showtopbar ($title.": ".$object_name, $lang);
+echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name."</style>", $lang);
 ?>
 
 <div id="content" class="hcmsWorkplaceFrame">

@@ -15,6 +15,8 @@ require ("config.inc.php");
 require ("function/hypercms_api.inc.php");
 // template engine
 require ("function/hypercms_tplengine.inc.php");
+// version info
+require ("version.inc.php");
 
 
 // input parameters
@@ -35,8 +37,9 @@ if ($action == "save")
 }
 
 // wallpaper
-if ($hcms_themename != "mobile" && empty ($mgmt_config['wallpaper'])) $wallpaper = getwallpaper ();
-else $wallpaper = $mgmt_config['wallpaper'];
+if ($hcms_themename != "mobile" && empty ($mgmt_config['wallpaper'])) $wallpaper = getwallpaper ($mgmt_config['version']);
+elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
+else $wallpaper = "";
 ?>
 <!DOCTYPE html>
 <html>
@@ -48,6 +51,35 @@ else $wallpaper = $mgmt_config['wallpaper'];
 <script src="javascript/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
 <script src="javascript/main.js" type="text/javascript"></script>
+
+<style>
+video#videoScreen
+{ 
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -100;
+    -ms-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    background: url('<?php echo getthemelocation(); ?>/img/backgrd_start.png') no-repeat;
+    background-size: cover; 
+}
+
+@media screen and (max-device-width: 800px)
+{
+  #videoScreen
+  {
+    display: none;
+  }
+}
+</style>
+
 <script type="text/javascript">
 // callback for hcms_geolocation
 function hcms_geoposition (position)
@@ -78,10 +110,12 @@ function insertOption (newtext, newvalue)
   if (selectbox.length > 0)
   {  
     var position = -1;
-    
+
     for (i=0; i<selectbox.length; i++)
     {
       if (selectbox.options[i].selected) position = i;
+      // duplicate entry
+      if (selectbox.options[i].value == newvalue) return false;
     }
     
     if (position != -1)
@@ -170,8 +204,14 @@ function submitHomeBoxes ()
 
 function setwallpaper ()
 {
-  <?php if (!empty ($wallpaper)) { ?>
+  <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
   document.body.style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
+  return true;
+  <?php } elseif (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
+  if (html5support())
+  {
+    document.getElementById('videoScreen').src = "<?php echo $wallpaper; ?>";
+  }
   return true;
   <?php } else { ?>
   return false;
@@ -181,6 +221,12 @@ function setwallpaper ()
 </head>
 
 <body class="hcmsStartScreen" onload="<?php if (empty ($_SESSION['hcms_temp_latitude']) || empty ($_SESSION['hcms_temp_longitude'])) echo "hcms_geolocation(); "; ?>setwallpaper();">
+
+<?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
+<video playsinline autoplay muted loop poster="<?php echo getthemelocation(); ?>/img/backgrd_start.png" id="videoScreen">
+  <source src="<?php echo $wallpaper; ?>" type="video/mp4">
+</video>
+<?php } ?>
 
 <div style="width:100%; height:100%; overflow:auto;">
 
@@ -281,6 +327,9 @@ function setwallpaper ()
   <?php 
   if (!empty ($box_array) && is_array ($box_array))
   { 
+    // remove duplicates
+    $box_array = array_unique ($box_array);
+  
     // show boxes
     foreach ($box_array as $box)
     {

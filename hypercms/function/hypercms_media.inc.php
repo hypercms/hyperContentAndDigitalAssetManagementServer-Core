@@ -93,7 +93,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       if (($file_ext == ".pdf" || $file_ext == ".ai") && $mgmt_parser['.pdf'] != "")
       {
         // use of XPDF to parse PDF files.
-        // please note: the executable "pdftotext" must be copied to "bin" directory!
+        // please note: the executable "pdftotext" must be located in the "bin" directory!
         // as pdftotext is compiled for several platforms you have to know which
         // OS you are using for the content management server.
         // known problems: MS IIS causes troubles executing XPDF (unable to fork...), set permissions for cmd.exe  
@@ -1690,7 +1690,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   else $background = "";
 
                   // CASE: document-based formats, encapsulated post script and vector graphics
-                  if ($file_ext == ".pdf" || $file_ext == ".eps" || $file_ext == ".svg")
+                  if (strpos ("_.pdf.eps.eps2.eps3.epsf.epsi.svg", $file_ext) > 0)
                   {
                     if ($type == "thumbnail")
                     {
