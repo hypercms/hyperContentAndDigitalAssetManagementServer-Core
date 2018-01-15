@@ -156,11 +156,9 @@ if ($search_expression != "")
   
   if (is_array ($object_array))
   {
-    foreach ($object_array as $hash=>$object_item)
+    foreach ($object_array as $entry)
     {
-      $entry = $object_item['objectpath'];
-      
-      if ($hash != "count" && $entry != "" && accessgeneral ($site, $entry, "page"))
+      if ($entry != "" && accessgeneral ($site, $entry, "page"))
       {
         $entry_location = getlocation ($entry);
         $entry_object = getobject ($entry);
@@ -251,7 +249,7 @@ if (isset ($entry_file) && sizeof ($entry_file) > 0)
   
       if ($file_info != false && $file_info['published'] == true && $file_info['deleted'] == false)
       {
-        echo "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp; ".showshorttext($file_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
+        echo "<tr><td width=\"85%\" align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp; ".showshorttext($file_info['name'], 24)."</a></td><td align=\"left\" nowrap=\"nowrap\"><a href=# onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" style=\"border:0; width:16px; heigth:16px;\" align=\"absmiddle\" alt=\"OK\" title=\"OK\" /></a></td></tr>\n";
       }
     }
   }

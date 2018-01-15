@@ -171,83 +171,170 @@ function startSearch (form)
   else return false;
 }
 
-// Google Maps JavaScript API v3: Map Simple
-var map;
-var dragging = false;
-var rightclick = false;
-var rect;
-var pos1, pos2;
-var latlng1, latlng2;
-
-var mapOptions = {
-    zoom: 1,
-    center: new google.maps.LatLng(0, 0),
-    disableDefaultUI: true,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
-};
-
-function initMap ()
+$(document).ready(function()
 {
-  map = new google.maps.Map(document.getElementById('map'), mapOptions);
-  
-  rect = new google.maps.Rectangle({
-    map: map,
-    strokeColor: '#359FFC', 
-    fillColor: '#65B3FC',
-    fillOpacity: 0.15,
-    strokeWeight: 0.9,
-    clickable: false
+  // search history
+  <?php
+  $keywords = getsearchhistory ($user);
+  ?>
+  var available_expressions = [<?php if (is_array ($keywords)) echo implode (",\n", $keywords); ?>];
+
+  $("#search_expression").autocomplete({
+    source: available_expressions
   });
   
-  document.getElementById('map').onmousedown = function(e)
+  $("#image_expression").autocomplete({
+    source: available_expressions
+  });
+  
+  // Google Maps JavaScript API v3: Map Simple
+  var map;
+  var markers = {};
+  var bounds = null;
+  
+  // add markers to map
+  /*
+  var name = 'Object name';
+  markers[name] = {};
+  markers[name].id = 1;
+  markers[name].lat = 53.801279;
+  markers[name].lng = -1.548567;
+  markers[name].state = 'Online';
+  markers[name].position = new google.maps.LatLng(0, 0);
+  markers[name].selected = false;
+  */
+
+  var mapOptions = {
+      zoom: 1,
+      center: new google.maps.LatLng(0, 0),
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+  };
+  
+  map = new google.maps.Map(document.getElementById('map'), mapOptions);
+  var infowindow = new google.maps.InfoWindow();
+  
+  // set markers on map
+  if (markers)
   {
-    // right mouse click
-    if ((e.which && e.which == 3) || (e.button && e.button == 2)) rightclick = true;
+    for (var key in markers)
+    {
+      var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(markers[key].lat, markers[key].lng),
+        map: map
+      });
+      
+      markers[key].marker = marker;
+  
+      google.maps.event.addListener(marker, 'click', (function (marker, key)
+      {
+        return function ()
+        {
+          infowindow.setContent(key);
+          infowindow.open(map, marker);
+        }
+      })(marker, key));
+    }
   }
 
-  google.maps.event.addListener(map, 'mousedown', function(e) {
-    map.draggable = false;
-    latlng1 = e.latLng;
-    dragging = true;
-    pos1 = e.pixel;
+  // start drag rectangle to select markers
+  var shiftPressed = false;
+
+  $(window).keydown(function (evt)
+  {
+    if (evt.which === 16) shiftPressed = true;
+  }).keyup(function (evt)
+  {
+    if (evt.which === 16) shiftPressed = false;
   });
 
-  google.maps.event.addListener(map, 'mousemove', function(e) {
-    latlng2 = e.latLng;
-    showRect();
-  });
- 
-  google.maps.event.addListener(map, 'mouseup', function(e) {
-    map.draggable = true;
-    dragging = false;
-    rightclick = false;
+  var mouseDownPos, gribBoundingBox = null,
+    mouseIsDown = 0;
+  var themap = map;
 
-    if (rect)
+  google.maps.event.addListener(themap, 'mousemove', function (e)
+  {
+    if (mouseIsDown && shiftPressed)
     {
-      var borderSW = rect.getBounds().getSouthWest();
-      var borderNE = rect.getBounds().getNorthEast();
-
-      document.forms['searchform_general'].elements['geo_border_sw'].value = borderSW;
-      document.forms['searchform_general'].elements['geo_border_ne'].value = borderNE;
+      // box exists
+      if (gribBoundingBox !== null)
+      {
+        bounds.extend(e.latLng);
+        // if this statement is enabled, you lose mouseUp events           
+        gribBoundingBox.setBounds(bounds);
+      }
+      // create bounding box
+      else
+      {
+        bounds = new google.maps.LatLngBounds();
+        bounds.extend(e.latLng);
+        gribBoundingBox = new google.maps.Rectangle({
+          map: themap,
+          bounds: bounds,
+          fillOpacity: 0.15,
+          strokeWeight: 0.9,
+          clickable: false
+        });
+      }
     }
   });
-}
 
-function showRect ()
-{
-  if (dragging && rightclick)
+  google.maps.event.addListener(themap, 'mousedown', function (e)
   {
-    if (rect === undefined)
+    if (shiftPressed)
     {
-      rect = new google.maps.Rectangle({
-          map: map
+      mouseIsDown = 1;
+      mouseDownPos = e.latLng;
+      themap.setOptions({
+        draggable: false
       });
     }
-    
-    var latLngBounds = new google.maps.LatLngBounds(latlng1, latlng2);
-    rect.setBounds(latLngBounds);
-  }
-}
+  });
+
+  google.maps.event.addListener(themap, 'mouseup', function (e)
+  {
+    if (mouseIsDown && shiftPressed)
+    {
+      mouseIsDown = 0;
+      
+      // box exists
+      if (gribBoundingBox !== null)
+      {
+        var boundsSelectionArea = new google.maps.LatLngBounds(gribBoundingBox.getBounds().getSouthWest(), gribBoundingBox.getBounds().getNorthEast());                
+        var borderSW = gribBoundingBox.getBounds().getSouthWest();
+        var borderNE = gribBoundingBox.getBounds().getNorthEast();
+        
+        document.forms['searchform_general'].elements['geo_border_sw'].value = borderSW;
+        document.forms['searchform_general'].elements['geo_border_ne'].value = borderNE;
+        
+        // looping through markers collection (if set)
+        if (markers)
+        {
+          for (var key in markers)
+          {
+            if (gribBoundingBox.getBounds().contains(markers[key].marker.getPosition())) 
+            {
+              markers[key].marker.setIcon("https://maps.google.com/mapfiles/ms/icons/blue.png")
+            }
+            else
+            {
+              markers[key].marker.setIcon("https://maps.google.com/mapfiles/ms/icons/red.png")
+            }
+          }
+        }
+        
+        // remove the rectangle
+        gribBoundingBox.setMap(null); 
+      }
+      
+      gribBoundingBox = null;
+    }
+
+    themap.setOptions({
+      draggable: true
+    });
+  });
+
+});
 
 var cal_obj = null;
 var cal_format = null;
@@ -286,26 +373,7 @@ function cal_on_change (cal, object_code)
 function cal_on_autoclose (cal)
 {
   cal_obj = null;
-}
-
-$(document).ready(function()
-{
-  // search history
-  <?php
-  $keywords = getsearchhistory ($user);
-  ?>
-  var available_expressions = [<?php if (is_array ($keywords)) echo implode (",\n", $keywords); ?>];
-
-  $("#search_expression").autocomplete({
-    source: available_expressions
-  });
-  
-  $("#image_expression").autocomplete({
-    source: available_expressions
-  });
-
-  initMap();
-});
+} 
 </script>
 
 </head>
@@ -406,11 +474,8 @@ $(document).ready(function()
       <tr align="left" valign="middle">
         <td nowrap="nowrap" colspan="2">
           <?php echo getescapedtext ($hcms_lang['geo-location'][$lang]); ?><br />
-          <div style="position:relative; left:460px; top:15px; width:22px; height:22px; z-index:1000;">
-            <img src="<?php echo getthemelocation(); ?>img/info.png" title="<?php echo getescapedtext ($hcms_lang['help'][$lang]); ?>" onmouseover="hcms_showInfo('helpmapLayer');" onmouseout="hcms_hideInfo('helpmapLayer');" class="hcmsButtonSizeSquare" style="cursor:pointer;" />
-            <div id="helpmapLayer" style="display:none; position:absolute; top:50px; right:140px;"><img src="<?php echo getthemelocation(); ?>img/info-right-click-drag.png" /></div>
-          </div>
-          <div id="map" style="width:500px; height:240px; margin-top:-15px; border:1px solid grey;"></div>         
+          <span class="hcmsHeadlineTiny"><?php echo getescapedtext ($hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag'][$lang]); ?></span>
+          <div id="map" style="width:500px; height:240px; border:1px solid grey; margin-top:4px;"></div>         
         </td>
       </tr>
       <tr align="left" valign="middle">

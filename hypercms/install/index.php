@@ -150,10 +150,10 @@ if ($action == "install" && $mgmt_config['abs_path_cms'] != "" && checktoken ($t
   // create data and repository file structure
   if ($mgmt_config['abs_path_data'] != "" && $mgmt_config['abs_path_rep'] != "" && $publ_config['abs_path_mypublication'] != "")
   {   
-    if (!is_writeable ($mgmt_config['abs_path_cms']."config/")) $show .= "<li>Write permission for config-directory is missing (".$mgmt_config['abs_path_cms']."config/)!</li>\n";
-    if (!is_writeable ($mgmt_config['abs_path_data'])) $show .= "<li>Write permission for data-directory is missing (".$mgmt_config['abs_path_data'].")!</li>\n";
-    if (!is_writeable ($mgmt_config['abs_path_rep'])) $show .= "<li>Write permission for repository-directory is missing (".$mgmt_config['abs_path_rep'].")!</li>\n";
-    if (!is_writeable ($publ_config['abs_path_mypublication'])) $show .= "<li>Write permissions for publication-directory is missing (".$publ_config['abs_path_mypublication'].")!</li>\n";
+    if (!is_writeable ($mgmt_config['abs_path_cms']."config/")) $show .= "<li>Write perission for config-directory is missing (".$mgmt_config['abs_path_cms']."config/)!</li>\n";
+    if (!is_writeable ($mgmt_config['abs_path_data'])) $show .= "<li>Write perission for data-directory is missing (".$mgmt_config['abs_path_data'].")!</li>\n";
+    if (!is_writeable ($mgmt_config['abs_path_rep'])) $show .= "<li>Write perission for repository-directory is missing (".$mgmt_config['abs_path_rep'].")!</li>\n";
+    if (!is_writeable ($publ_config['abs_path_mypublication'])) $show .= "<li>Write perissions for publication-directory is missing (".$publ_config['abs_path_mypublication'].")!</li>\n";
 
     // copy to internal repository
     if ($show == "")

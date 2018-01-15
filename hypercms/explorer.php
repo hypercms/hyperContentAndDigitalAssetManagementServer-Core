@@ -1606,13 +1606,13 @@ else
     {
       // iframe for search result
       var iframe = parent.frames['workplFrame'].frames['mainFrame'];
-      
+
       // search form
       var form = document.forms['searchform_advanced'];
-      
+
       // verify that at least one search tab is open
       var opened = false;
-      
+
       if (document.getElementById('fulltextLayer').style.display != 'none') opened = true;
       else if (document.getElementById('advancedLayer').style.display != 'none') opened = true;
       else if (document.getElementById('keywordsLayer').style.display != 'none') opened = true;
@@ -1621,14 +1621,14 @@ else
       else if (document.getElementById('dateLayer').style.display != 'none') opened = true;
       else if (document.getElementById('idLayer').style.display != 'none') opened = true;
       else if (document.getElementById('recipientLayer').style.display != 'none') opened = true;
-    
+
       if (form && opened)
       {
         if (!iframe)
         {
           parent.frames['workplFrame'].location = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_objectlist.php';
         }
-        
+
         // delete search_dir
         if (document.getElementById('fulltextLayer').style.display != 'none')
         {
@@ -1650,8 +1650,7 @@ else
             if (parts[0] != "") form.elements['search_dir'].value = domain + "/" + parts[0] + "/";
           }
         }
-        
-        
+
         // check if at least one keyword has been checked
         var keywordsLayer = document.getElementById('keywordsLayer');
         var keywordChecked = false;

@@ -50,6 +50,18 @@ else
   $cat = getcategory ($site, $location_ACCESS); 
 }
 
+// for mobile we access folders only via navigator
+if ($is_mobile && substr_count ($location, "/") > 2)
+{
+  // split location to location and folder
+  if ($folder == "" && $page == "")
+  {
+    $page = ".folder";
+    $folder = getobject ($location);
+    $location = getlocation ($location);
+  }
+}
+
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 // load publication configuration
@@ -721,37 +733,35 @@ else
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
-  <table cellpadding="0" cellspacing="0" style="border:0; width:100%; table-layout:fixed;">
+  <table border=0 cellspacing=0 cellpadding=1>
     <tr>
       <?php
-      // location
+      // location name
       if ($cat == "page" || $cat == "comp")
       {
         echo "
-      <td style=\"white-space:nowrap; width:20px;\"><img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;</td>
-      <td class=\"hcmsHeadlineTiny\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".str_replace ("/", " &gt; ", trim ($location_name, "/"))."</td>";
+      <td nowrap=\"nowrap\"><b>".getescapedtext ($hcms_lang['location'][$lang])."</b>&nbsp;</td>
+      <td class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">".str_replace ("/", " &gt; ", trim ($location_name, "/"))."</td>";
       }
       else 
       {
         echo "
-      <td style=\"white-space:nowrap; width:20px;\">&nbsp;</td>
-      <td class=\"hcmsHeadlineTiny\">&nbsp;</td>";    
+      <td nowrap=\"nowrap\">&nbsp;</td>
+      <td class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">&nbsp;</td>";    
       }
       ?>
     </tr>
     <tr>
       <?php
-      // object
-      if (empty ($file_info['icon'])) $file_info['icon'] = "Null_media.gif";
-
+      // object name
       echo "
-      <td style=\"white-space:nowrap; width:20px;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" title=\"".$item."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;</td>
-      <td class=\"hcmsHeadlineTiny\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".$object_name."</td>";
+      <td nowrap=\"nowrap\"><b>".$item."</b>&nbsp;</td>
+      <td class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">".$object_name."</td>";
       ?>
     </tr>
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo str_replace ("/", " &gt; ", trim ($location_name, "/"))." &gt; ".$object_name; ?></span>
+  <span class="hcmsHeadlineTiny" style="display:block;"><?php echo str_replace ("/", " &gt; ", trim ($location_name, "/"))." &gt; ".$object_name; ?></span>
   <?php } ?>
 </div>
 
@@ -822,7 +832,7 @@ else
 
     // Live-View Button
     if ($multiobject_count <= 1 && $from_page != "recyclebin" && 
-        !empty ($file_info['published']) && $page != ".folder" && $page != "" && valid_publicationname ($site) && 
+        $file_info['published'] == true && $page != ".folder" && $page != "" && valid_publicationname ($site) && 
         $setlocalpermission['root'] == 1 && 
         empty ($media) && $cat == "page"
     )
@@ -1016,7 +1026,7 @@ else
     if (@$hcms_linking['type'] != "Object" && $from_page == "" && ($setlocalpermission['root'] == 1 && ($setlocalpermission['rename'] == 1 || $setlocalpermission['folderrename'] == 1)))
     {
       echo "
-      <img onClick=\"if (locklayer == false) submitToWindow('popup_status.php', 'paste', ''); document.getElementById('button_obj_edit').display='none';\" ".
+      <img onClick=\"if (locklayer == false) submitToWindow('popup_status.php', 'paste', ''); document.getElementById('button_obj_edit').click();\" ".
                    "class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_paste\" src=\"".getthemelocation()."img/button_file_paste.png\" alt=\"".getescapedtext ($hcms_lang['paste'][$lang])."\" title=\"".getescapedtext ($hcms_lang['paste'][$lang])."\" />";
     }
     else
@@ -1516,7 +1526,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
     <tr>
       <td valign="middle">
         <?php echo getescapedtext ($hcms_lang['create-folder'][$lang]); ?> 
-        <input type="text" name="foldernew" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:220px;" />
+        <input type="text" name="foldernew" maxlength="<?php if (!is_int ($mgmt_config['max_digits_filename'])) echo $mgmt_config['max_digits_filename']; else echo "200"; ?>" style="width:220px;" />
         <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_folder_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
       </td>
       <td width="16" align="right" valign="top">
@@ -1539,7 +1549,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
       <td valign="middle">
         <?php echo getescapedtext ($hcms_lang['rename-folder'][$lang]); ?>
         <span style="white-space:nowrap;">
-          <input type="text" name="foldernew" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:220px;" value="<?php echo $pagename; ?>" />
+          <input type="text" name="foldernew" maxlength="<?php if (!is_int ($mgmt_config['max_digits_filename'])) echo $mgmt_config['max_digits_filename']; else echo "200"; ?>" style="width:220px;" value="<?php echo $pagename; ?>" />
           <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_folder_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
         </span>
       </td>
@@ -1563,7 +1573,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
       <td valign="middle">
         <?php echo getescapedtext ($hcms_lang['rename'][$lang]);  if ($filetype == "Page" || $filetype == "Component") echo " (".getescapedtext ($hcms_lang['name-without-ext'][$lang]).")"; ?>
         <span style="white-space:nowrap;">
-          <input type="text" name="pagenew" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:220px;" value="<?php echo substr ($pagename, 0, strrpos ($pagename, ".")); ?>" />
+          <input type="text" name="pagenew" maxlength="<?php if (!is_int ($mgmt_config['max_digits_filename'])) echo $mgmt_config['max_digits_filename']; else echo "200"; ?>" style="width:220px;" value="<?php echo substr ($pagename, 0, strrpos ($pagename, ".")); ?>" />
           <img name="Button5" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_page_rename();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button5','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" align="absmiddle" alt="OK" title="OK" />
         </span>
       </td>

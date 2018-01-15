@@ -910,6 +910,7 @@ $hcms_lang['image-search']['tr'] = "Görüntü arama";
 $hcms_lang['object-id-link-id']['tr'] = "Nesne-ID / Link-ID";
 $hcms_lang['container-id']['tr'] = "Konteynır ID";
 $hcms_lang['geo-location']['tr'] = "Coğrafi konum";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['tr'] = "Shift tuşunu basılı tutup-anahtar ve alan seçimi fareyi kullanarak (tıkla ve sürükle)";
 $hcms_lang['sw-coordinates']['tr'] = "S/W koordinatları";
 $hcms_lang['ne-coordinates']['tr'] = "N/E koordinatları";
 $hcms_lang['version']['tr'] = "Sürüm";

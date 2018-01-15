@@ -83,7 +83,9 @@ function deletefiles ($location, $file)
 // output: encoded string / false on error
 
 // description:
-// Unidrectional encryption using crypt, MD5 and urlencode
+// Unidrectional encryption using crc32 and urlencode. Used to create tokens for simple view links in the system.
+// The tokens can be verified by calculating the hash of the media file name and comparing the hash values.
+// Don't use this function to secure any string or to for password hashing.
 
 function hcms_crypt ($string, $start=0, $length=0)
 {
@@ -91,20 +93,15 @@ function hcms_crypt ($string, $start=0, $length=0)
   
   if ($string != "")
   {
-    // crypt only uses the first 8 digits of a string!
-    if (strlen ($string ) > 8)
-    {
-      if (strpos ($string, ".thumb.") > 0) $string = str_replace (".thumb.", ".", $string);
-      else $string = substr ($string, -8);
-    }
-    
+    // set default private key for hashing
+    if (empty ($mgmt_config['crypt_key'])) $mgmt_config['crypt_key'] = "h1y2p3e4r5c6m7s8";
+  
     // encoding algorithm
-    $string_encoded = crypt ($string, substr ($string, 0, 2));
-    $string_encoded = md5 ($string_encoded);
+    $string_encoded = hash_hmac ("crc32", $string, $mgmt_config['crypt_key']);
     
     // extract substring
-    if ($length > 0) $string_encoded = substr ($string_encoded, $start, $length);
-    else $string_encoded = substr ($string_encoded, $start);
+    if ($length != 0) $string_encoded = substr ($string_encoded, $start, $length);
+    elseif ($start != 0) $string_encoded = substr ($string_encoded, $start);
     
     // urlencode string
     $string_encoded = urlencode ($string_encoded);

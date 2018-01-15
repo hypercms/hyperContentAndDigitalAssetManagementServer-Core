@@ -1946,16 +1946,18 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
                   }
 
-                  if ($file_ext == ".gif") $imgsource = @ImageCreateFromGif ($location_source.$file);
-                  elseif ($file_ext == ".jpg" || $file_ext == ".jpeg") $imgsource = @ImageCreateFromJpeg ($location_source.$file);
-                  elseif ($file_ext == ".png") $imgsource = @ImageCreateFromPng ($location_source.$file);
+                  if ($file_ext == ".gif") $imgsource = @imagecreatefromgif ($location_source.$file);
+                  elseif ($file_ext == ".jpg" || $file_ext == ".jpeg") $imgsource = @imagecreatefromjpeg ($location_source.$file);
+                  elseif ($file_ext == ".png") $imgsource = @imagecreatefrompng ($location_source.$file);
                   else return false;
               
                   // crop image
                   if ($crop_mode)
                   {
                     // create new image resource
-                    $imgresized = @ImageCreateTrueColor ($imagewidth, $imageheight);
+                    $imgresized = imagecreatetruecolor ($imagewidth, $imageheight);
+                    @imagealphablending ($imgresized, false);
+                    @imagesavealpha ($imgresized, true);
                     
                     @imagecopyresampled ($imgresized, $imgsource, 0, 0, $offsetX, $offsetY, $imagewidth, $imageheight, $imagewidth, $imageheight);
                   }
@@ -1978,7 +1980,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
                     
                     // create new image resource
-                    $imgresized = @ImageCreateTrueColor ($resizedwidth, $resizedheight);
+                    $imgresized = imagecreatetruecolor  ($resizedwidth, $resizedheight);
+                    @imagealphablending ($imgresized, false);
+                    @imagesavealpha ($imgresized, true);
                   
                     @ImageCopyResized ($imgresized, $imgsource, 0, 0, 0, 0, $resizedwidth, $resizedheight, $imagewidth_orig, $imageheight_orig);
                   }
@@ -3174,7 +3178,8 @@ function rotateimage ($site, $filepath, $angle, $imageformat)
     
         // create new image
         $rotate = imagecreatetruecolor ($dest_x, $dest_y);
-        imagealphablending ($rotate, false);
+        @imagealphablending ($rotate, false);
+        @imagesavealpha ($rotate, true);
     
         switch ($angle)
         {

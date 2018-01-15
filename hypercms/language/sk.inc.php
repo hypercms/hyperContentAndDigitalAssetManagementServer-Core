@@ -910,6 +910,7 @@ $hcms_lang['image-search']['sk'] = "Vyhľadávanie obrázkov";
 $hcms_lang['object-id-link-id']['sk'] = "Objekt-ID / Prepojenie-ID";
 $hcms_lang['container-id']['sk'] = "Container ID";
 $hcms_lang['geo-location']['sk'] = "Geo miesto";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['sk'] = "Podržte stlačený kláves SHIFT a vyberte oblasť pomocou myši (kliknite a potiahnite)";
 $hcms_lang['sw-coordinates']['sk'] = "S/W koordináty";
 $hcms_lang['ne-coordinates']['sk'] = "N/E súradnice";
 $hcms_lang['version']['sk'] = "Verzia";

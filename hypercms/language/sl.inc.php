@@ -910,6 +910,7 @@ $hcms_lang['image-search']['sl'] = "Iskanje slik";
 $hcms_lang['object-id-link-id']['sl'] = "Predmet-ID / Povezava-ID";
 $hcms_lang['container-id']['sl'] = "Container ID";
 $hcms_lang['geo-location']['sl'] = "Geo lokacija";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['sl'] = "Držite tipko shift-tipko in izberite območje s pomočjo miške (kliknite in povlecite)";
 $hcms_lang['sw-coordinates']['sl'] = "S/W koordinate";
 $hcms_lang['ne-coordinates']['sl'] = "N/E koordinate";
 $hcms_lang['version']['sl'] = "Različica";

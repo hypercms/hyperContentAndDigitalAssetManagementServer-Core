@@ -911,6 +911,7 @@ $hcms_lang['image-search']['id'] = "Gambar pencarian";
 $hcms_lang['object-id-link-id']['id'] = "Obyek-ID / Link-ID";
 $hcms_lang['container-id']['id'] = "ID Wadah";
 $hcms_lang['geo-location']['id'] = "Geo lokasi:";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['id'] = "Tahan shift-key dan pilih area menggunakan mouse (klik & seret)";
 $hcms_lang['sw-coordinates']['id'] = "S/W koordinat";
 $hcms_lang['ne-coordinates']['id'] = "N/E koordinat";
 $hcms_lang['version']['id'] = "Versi";

@@ -911,6 +911,7 @@ $hcms_lang['image-search']['el'] = "Αναζήτηση εικόνας";
 $hcms_lang['object-id-link-id']['el'] = "Αντικείμενο-ID / Link-ID";
 $hcms_lang['container-id']['el'] = "Δοχείο ID";
 $hcms_lang['geo-location']['el'] = "Γεωστρατηγική θέση";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['el'] = "Κρατήστε πατημένο το πλήκτρο shift-key και επιλέξτε περιοχή με το ποντίκι (click & drag)";
 $hcms_lang['sw-coordinates']['el'] = "S/W συντεταγμένες";
 $hcms_lang['ne-coordinates']['el'] = "Ν/Ε συντεταγμένες";
 $hcms_lang['version']['el'] = "Έκδοση";

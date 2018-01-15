@@ -236,8 +236,8 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
               if ($inherit_db_record['parent'] != "" && in_array ($inherit_db_record['parent'], $siteaccess))
               {
                 $inherit_db_record['parent'] = trim ($inherit_db_record['parent']);
-                if ($inherit_db_record['parent'] != $site) $item_option_delete[] = $inherit_db_record['parent'];
-                $item_option_edit[] = $inherit_db_record['parent'];
+                if ($inherit_db_record['parent'] != $site) $item_option_delete[] = "<option value=\"site_edit_form.php?site=".url_encode($site)."&preview=yes&site_name=".url_encode($inherit_db_record['parent'])."\">".$inherit_db_record['parent']."</option>\n";
+                $item_option_edit[] = "<option value=\"frameset_site_edit.php?site=".url_encode($site)."&preview=no&site_name=".url_encode($inherit_db_record['parent'])."\">".$inherit_db_record['parent']."</option>\n";
               }              
             }
           }
@@ -249,7 +249,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
             
             foreach ($item_option_delete as $delete_option)
             {
-              echo "<option value=\"site_edit_form.php?site=".url_encode($site)."&preview=yes&site_name=".url_encode($delete_option)."\">".$delete_option."</option>\n";
+              echo $delete_option;
             }
           }
         ?>
@@ -283,7 +283,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
             
             foreach ($item_option_edit as $edit_option)
             {
-              echo "<option value=\"frameset_site_edit.php?site=".url_encode($site)."&preview=no&site_name=".url_encode($edit_option)."\">".$edit_option."</option>\n";
+              echo $edit_option;
             }
           }
           ?>

@@ -910,6 +910,7 @@ $hcms_lang['image-search']['ru'] = "Поиск изображений";
 $hcms_lang['object-id-link-id']['ru'] = "Объект-ID / Link-ID";
 $hcms_lang['container-id']['ru'] = "ID контейнера";
 $hcms_lang['geo-location']['ru'] = "Гео расположение";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['ru'] = "Удерживайте клавишу Shift и выберите зону с помощью мыши (щелкните и перетащите)";
 $hcms_lang['sw-coordinates']['ru'] = "S/W координаты";
 $hcms_lang['ne-coordinates']['ru'] = "N/E координаты";
 $hcms_lang['version']['ru'] = "Версии";

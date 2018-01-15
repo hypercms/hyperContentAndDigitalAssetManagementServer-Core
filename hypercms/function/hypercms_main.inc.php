@@ -4125,7 +4125,12 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
       if ($viewstore == "")
       {
         $temp = loadtemplate ($site, $templatefile);
-        if (!empty ($temp['content'])) $viewstore = $temp['content'];
+        
+        if (!empty ($temp['content']))
+        {
+          $temp = getcontent ($temp['content'], "<content>");
+          if (!empty ($temp[0])) $viewstore = $temp[0];
+        }
       }
     }
     
@@ -7226,7 +7231,8 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
           $hashcode = md5 ($login.":hyperdav:".$password);
           
           // crypt password
-          $password = crypt ($password, substr ($password, 1, 2));
+          // depracted since version 7.0.6: $password = crypt ($password, substr ($password, 1, 2));
+          $password = password_hash ($password, PASSWORD_BCRYPT);
 
           // insert values into xml schema
           $newuser = setcontent ($user_schema_xml, "<user>", "<login>", $login, "", "");
@@ -7373,7 +7379,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           $usersuperadmin = getcontent ($usernode[0], "<admin>");
         }
               
-        if ($login == $user && !empty ($userpasswd[0]) && crypt ($old_password, substr ($old_password, 1, 2)) != $userpasswd[0])
+        if ($login == $user && !empty ($userpasswd[0]) && !password_verify ($old_password, $userpasswd[0]) && crypt ($old_password, substr ($old_password, 1, 2)) != $userpasswd[0])
         {
           //unlock file
           unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
@@ -7415,7 +7421,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           $hashcode = md5 ($login.":hyperdav:".$password);
           
           // crypt password
-          $password = crypt ($password, substr ($password, 1, 2));
+          $password = password_hash ($password, PASSWORD_BCRYPT);
       
           // insert values into xml schema
           $userdata = setcontent ($userdata, "<user>", "<password>", $password, "<login>", $login);         
@@ -13854,7 +13860,7 @@ function publishobject ($site, $location, $page, $user)
                   $application = $result['application'];
                   $pagename = $result['name'];
                   $filetype = $result['objecttype'];
-                  
+
                   // error occured if error comments can be found
                   if (isset ($result['view']) && strpos ("_".$result['view'], "<!-- hyperCMS:Error") > 0)
                   {
@@ -13933,7 +13939,7 @@ function publishobject ($site, $location, $page, $user)
                   
                   // save object file
                   $result_save = savefile ($location, $page_new, $viewstore);
-       
+
                   // remote client
                   remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page_new, "");
                   

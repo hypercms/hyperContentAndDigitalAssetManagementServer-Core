@@ -910,6 +910,7 @@ $hcms_lang['image-search']['sv'] = "Bildsökning";
 $hcms_lang['object-id-link-id']['sv'] = "Objekt-ID/Link-ID";
 $hcms_lang['container-id']['sv'] = "Behållare-ID";
 $hcms_lang['geo-location']['sv'] = "Geo placering";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['sv'] = "Håll ned skift-tangenten och markera området med musen (klicka och dra)";
 $hcms_lang['sw-coordinates']['sv'] = "S/W koordinater";
 $hcms_lang['ne-coordinates']['sv'] = "N/E koordinater";
 $hcms_lang['version']['sv'] = "Version";

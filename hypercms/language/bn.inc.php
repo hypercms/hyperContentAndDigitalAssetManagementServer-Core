@@ -910,6 +910,7 @@ $hcms_lang['image-search']['bn'] = "চিত্র অনুসন্ধান"
 $hcms_lang['object-id-link-id']['bn'] = "অবজেক্ট ঈদ / লিঙ্ক-ঈদ";
 $hcms_lang['container-id']['bn'] = "পাত্র ঈদ";
 $hcms_lang['geo-location']['bn'] = "ভূ অবস্থান";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['bn'] = "অনুষ্ঠানের মূল ও শিফটের-সিলেক্ট করে এলাকার মাউস (পাঠ এরপরও) ক্লিক করুন";
 $hcms_lang['sw-coordinates']['bn'] = "চীনের/w coordinates";
 $hcms_lang['ne-coordinates']['bn'] = "এন/ই coordinates";
 $hcms_lang['version']['bn'] = "সংস্করণ";

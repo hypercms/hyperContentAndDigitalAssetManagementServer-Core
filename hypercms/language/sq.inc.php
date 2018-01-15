@@ -910,6 +910,7 @@ $hcms_lang['image-search']['sq'] = "Imazhi Marketing";
 $hcms_lang['object-id-link-id']['sq'] = "Objektin-ID / Link-ID";
 $hcms_lang['container-id']['sq'] = "Kontejneri ID";
 $hcms_lang['geo-location']['sq'] = "Gjeo lokacion";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['sq'] = "Mbajë zhvendosje-kyç dhe të zgjedhin zonës duke përdorur mouse (kliko & zvarritë)";
 $hcms_lang['sw-coordinates']['sq'] = "S/W koordinon";
 $hcms_lang['ne-coordinates']['sq'] = "N/E koordinon";
 $hcms_lang['version']['sq'] = "Version";

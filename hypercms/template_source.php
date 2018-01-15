@@ -79,10 +79,12 @@ if ($template != "")
 }
 
 // get charset
-$result_charset = getcharset ($site, $contentfield);  
-
-if (isset ($result_charset['charset']) && $result_charset['charset'] != "") $charset = $result_charset['charset'];
-else $charset = $mgmt_config[$site]['default_codepage'];
+if (strpos (strtolower($contentfield), "charset") > 0) 
+{
+  $contenttype = getattribute ($contentfield, "content");
+  $charset = trim (getattribute ($contenttype, "charset"));
+}
+else $charset = trim ($mgmt_config[$site]['default_codepage']);
 
 // set character set in header
 if (!empty ($charset)) ini_set ('default_charset', $charset);

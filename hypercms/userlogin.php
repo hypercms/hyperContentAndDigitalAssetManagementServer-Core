@@ -87,7 +87,7 @@ if ($al != "")
   }
 }
 
-// object access link sice version 6.1.12
+// object access link since version 6.1.12
 if ($oal != "" && !empty ($mgmt_config['db_connect_rdbms']))
 {
   $objectpath_esc = rdbms_getobject ($oal);
@@ -115,7 +115,7 @@ if ($oal != "" && !empty ($mgmt_config['db_connect_rdbms']))
     // publication management config
     if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     
-    // is user is set for accesslinks
+    // if a user is set for general accesslinks
     if (!empty ($mgmt_config[$site]['accesslinkuser']))
     {
       $accesslinkuser = $mgmt_config[$site]['accesslinkuser'];
@@ -153,7 +153,7 @@ if ($hcms_user_token != "")
   $error[] = $mgmt_config['today']."|userlogin.php|warning|$errcode|deprecated user token provided for access (used before version 5.6.1)";
 }
 
-// deprecated since version 5.6.1 but still supported:
+// deprecated since version 5.6.1 (will not work anymore due to the embedded object code in the token):
 // extract object ID and token code (before version 5.5.13)
 if ($hcms_id_token != "")
 {
@@ -444,10 +444,10 @@ if (checkuserip (getuserip ()) == true)
   }
   
   // wallpaper
-  if ($themename != "mobile" && empty ($mgmt_config['wallpaper'])) $wallpaper = getwallpaper ();
+  if ($themename != "mobile" && empty ($mgmt_config['wallpaper'])) $wallpaper = getwallpaper ($mgmt_config['version']);
   elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
   else $wallpaper = "";
-  
+
   // save log
   savelog (@$error);
 }
@@ -475,6 +475,34 @@ else
 <link rel="apple-touch-icon" media="screen and (resolution: 326dpi)" href="<?php echo getthemelocation($themename); ?>img/mobile_icon114.png" />
 <!-- 57 x 57 Nokia icon -->
 <link rel="shortcut icon" href="<?php echo getthemelocation(); ?>img/mobile_icon57.png" />
+
+<style>
+video#videoScreen
+{ 
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -100;
+    -ms-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    background: url('<?php echo getthemelocation($themename); ?>/img/backgrd_start.png') no-repeat;
+    background-size: cover; 
+}
+
+@media screen and (max-device-width: 800px)
+{
+  #videoScreen
+  {
+    display: none;
+  }
+}
+</style>
 
 <script src="javascript/main.js" type="text/javascript"></script>
 <script src="javascript/click.js" type="text/javascript"></script>
@@ -536,8 +564,14 @@ function submitlogin()
 
 function setwallpaper ()
 {
-  <?php if (!empty ($wallpaper)) { ?>
+  <?php if (!empty ($wallpaper) && is_image ($wallpaper)) { ?>
   document.body.style.backgroundImage = "url('<?php echo $wallpaper; ?>')";
+  return true;
+  <?php } elseif (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
+  if (html5support())
+  {
+    document.getElementById('videoScreen').src = "<?php echo $wallpaper; ?>";
+  }
   return true;
   <?php } else { ?>
   return false;
@@ -547,6 +581,12 @@ function setwallpaper ()
 </head>
 
 <body class="hcmsStartScreen" onload="focusform(); is_mobilebrowser(); is_iphone(); html5support(); setwallpaper();">
+
+<?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
+<video playsinline autoplay muted loop poster="<?php echo getthemelocation($themename); ?>/img/backgrd_start.png" id="videoScreen">
+  <source src="<?php echo $wallpaper; ?>" type="video/mp4">
+</video>
+<?php } ?>
 
 <div class="hcmsStartBar">
   <div style="position:absolute; top:15px; left:15px; float:left; text-align:left;"><img src="<?php echo getthemelocation($themename); ?>img/logo.png" style="border:0; height:48px;" alt="hypercms.com" /></div>

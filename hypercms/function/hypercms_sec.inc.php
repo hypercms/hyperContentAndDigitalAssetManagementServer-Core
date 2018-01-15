@@ -839,6 +839,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
   }
   else
   {
+    // old password hash before version 7.0.6 (deprecated)
     $passwd_crypted = crypt ($passwd, substr ($passwd, 1, 2));
   }
 
@@ -992,7 +993,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       }
 
       // check logon
-      if ($hash == $result['userhash'] || ($user == $fileuser && ($filepasswd == $passwd_crypted || $ignore_password)))
+      if ($hash == $result['userhash'] || ($user == $fileuser && (password_verify ($passwd, $filepasswd) || $filepasswd == $passwd_crypted ||$ignore_password)))
       {
         $result['user'] = $fileuser;
         $result['passwd'] = $filepasswd;
@@ -1038,7 +1039,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
                 break;
               }
               // include configuration of site
-              elseif (valid_publicationname ($site_name) && @is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
+              elseif (valid_publicationname ($site_name) && is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
               {
                 @require_once ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
                 
@@ -1283,7 +1284,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       }
     }
   }
-  
+
   if ($auth)
   {
     // check disk key
@@ -2729,7 +2730,9 @@ function shellcmd_encode ($variable)
 // output: encoded string / false on error
 
 // description:
-// Unidrectional encryption using crypt, MD5 and urlencode
+// Unidrectional encryption using crc32 and urlencode. Used to create tokens for simple view links in the system.
+// The tokens can be verified by calculating the hash of the media file name and comparing the hash values.
+// Don't use this function to secure any string or to for password hashing.
 
 function hcms_crypt ($string, $start=0, $length=0)
 {
@@ -2737,30 +2740,15 @@ function hcms_crypt ($string, $start=0, $length=0)
   
   if ($string != "")
   {
-    $string = trim ($string);
+    // set default private key for hashing
+    if (empty ($mgmt_config['crypt_key'])) $mgmt_config['crypt_key'] = "h1y2p3e4r5c6m7s8";
   
-    // crypt only uses the first 8 digits of a string!
-    if (strlen ($string) > 8)
-    {
-      // remove thumb extension
-      if (strpos ($string, ".thumb.") > 0) $string = str_replace (".thumb.", ".", $string);
-      // use last 8 digits of string
-      if (strlen ($string) > 8) $string = trim (substr ($string, -8));
-    }
-
-    // create valid salt (remove free spaces and special characters)
-    $salt = str_replace (' ', '', $string);
-    $salt = preg_replace ('/[^A-Za-z0-9\-]/', '', $salt);
-    $salt = substr ($salt, 0, 2);
-    if (strlen ($salt) < 2) $salt = "sa";
-    
     // encoding algorithm
-    $string_encoded = crypt ($string, $salt);
-    $string_encoded = md5 ($string_encoded);
+    $string_encoded = hash_hmac ("crc32", $string, $mgmt_config['crypt_key']);
     
     // extract substring
-    if ($length > 0) $string_encoded = substr ($string_encoded, $start, $length);
-    else $string_encoded = substr ($string_encoded, $start);
+    if ($length != 0) $string_encoded = substr ($string_encoded, $start, $length);
+    elseif ($start != 0) $string_encoded = substr ($string_encoded, $start);
     
     // urlencode string
     $string_encoded = urlencode ($string_encoded);

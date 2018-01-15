@@ -962,7 +962,7 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
     
   // create view of included template files
   // check if page/code has inclusions
-  if (@substr_count (strtolower ($viewstore), strtolower ($hypertag)) >= 1)
+  if (valid_publicationname ($site) && !empty ($viewstore) && !empty ($hypertag)  && substr_count (strtolower ($viewstore), strtolower ($hypertag)) > 0 && !empty ($view) && !empty ($application))
   {
     // get file name
     $include_file = getattribute ($hypertag, "file");
@@ -979,19 +979,20 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
         {        
           $result = loadtemplate ($site, $include_file); 
           
-          if ($result['result'] == false)
+          if (empty ($result['result']))
           {
             $includedata = "<table style=\"width: 200px; padding: 0px; border: 1px solid #000000; background-color: #FFFFFF;\">\n  <tr>\n    <td>\n<font face=\"Verdana, Arial, Helvetica, sans-serif\" size=1 color=#000000><b>".getescapedtext ($hcms_lang['template'][$lang], $charset, $lang)." '".specialchr_decode (getobject ($include_file))."' ".getescapedtext ($hcms_lang['that-should-be-included-is-missing'][$lang], $charset, $lang)."<br />".getescapedtext ($hcms_lang['please-upload-the-template'][$lang], $charset, $lang)."</b></font></td>\n  </tr>\n</table>\n";
           }
-          else
+          elseif (!empty ($result['content']))
           {
-            $bufferdata = getcontent ($result['content'], "<content>");
-            $includedata = $bufferdata[0];
+            $temp = getcontent ($result['content'], "<content>");
+            $includedata = $temp[0];
           }  
         }
-        // file include (via HTTP)
+        // file include
         elseif (@substr_count (strtolower ($hypertag), "hypercms:fileinclude") == 1)
         {
+          // file include (via HTTP)
           if (substr_count ($include_file, "://") == 1)
           {
             $includedata = @file_get_contents ($include_file);
@@ -1014,10 +1015,10 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
         {
           $result = loadtemplate ($site, $include_file);
            
-          if ($result['result'] != false)
+          if (!empty ($result['content']))
           {
-            $bufferdata = getcontent ($result['content'], "<content>");
-            $includedata = $bufferdata[0];
+            $temp = getcontent ($result['content'], "<content>");
+            if (!empty ($temp[0])) $includedata = $temp[0];
           }
         }
         // php include
@@ -1054,11 +1055,11 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
       }
 
       // ---------------------------------------- build view -----------------------------------------
-      if ($includedata != false)
+      if (!empty ($hypertag))
       {
         // include external data
         $viewstore = str_replace ($hypertag, $includedata, $viewstore);
-        
+
         // recursive inclusions of file includes
         if (@substr_count (strtolower ($includedata), "hypercms:fileinclude") > 0)
         {
@@ -1087,12 +1088,10 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
           }
         }
       }
-      else $viewstore = false;
     }
-    
-    return $viewstore;
   }
-  else return $viewstore;
+  
+  return $viewstore;
 }
 
 // --------------------------------- buildview -------------------------------------------
@@ -1450,7 +1449,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     {
       $templatedata = $result['content'];
       $templatesite = $result['publication'];
-     
+
       $bufferdata = getcontent ($templatedata, "<extension>");
       $templateext = $bufferdata[0];
       
@@ -1474,7 +1473,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
    
     // set viewstore initially
     $viewstore = $templatedata;  
-    
+     
     // get view from template
     $hypertag_array = gethypertag ($viewstore, "objectview", 0);
     
@@ -1720,7 +1719,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         $usedby = ""; 
       }
     }
- 
+
     // define popup message if container is locked by another user
     if ($usedby != "" && $usedby != $user) $bodytag_popup = "alert(hcms_entity_decode('".$hcms_lang['object-is-checked-out'][$lang]."\\r".$hcms_lang['by-user'][$lang]." \'".$usedby."\''));";
     else $bodytag_popup = "";
@@ -1728,7 +1727,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     // ============================================ workflow ================================================
 
     $result_workflow = checkworkflow ($site, $location, $page, $cat, $contentfile, $contentdata, $buildview, $viewstore, $user);
-    
+
     $viewstore = $result_workflow['viewstore'];
     $buildview = $result_workflow['viewname'];
     $wf_id = $result_workflow['wf_id'];
@@ -1781,7 +1780,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       {
         $headstoreview = "";
       }        
-      
+
       // =================================================== session language setting ===================================================
      
       // get all hyperCMS tags
@@ -1886,7 +1885,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           }          
         }
       }          
-        
+
       // =================================================== head content ===================================================
              
       $pagetracking = "";
@@ -6285,7 +6284,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         $viewstore = trim ($viewstore);                     
              
         // ======================================== execute php script code =========================================
-        
+
         $tpl_livelink = "";
         $tpl_linkindex = "";
 
@@ -6537,7 +6536,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   </html>";                     
             }
           }
-         
+
           // ============================ insert buttons after body tag and add body tag preload =================================      
   
           if ($buildview == "cmsview" || $buildview == "inlineview" || ($buildview == "preview" && $ctrlreload == "yes"))
@@ -8316,7 +8315,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       }  
       
       // ====================================== Adding Headers for Video Player ============================================
-      
+
       // for all views except template view
       if ($buildview != "template")
       {

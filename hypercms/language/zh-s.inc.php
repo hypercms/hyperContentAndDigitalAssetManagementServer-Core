@@ -910,6 +910,7 @@ $hcms_lang['image-search']['zh-s'] = "图像搜索";
 $hcms_lang['object-id-link-id']['zh-s'] = "对象ID/链接的ID";
 $hcms_lang['container-id']['zh-s'] = "容器Id";
 $hcms_lang['geo-location']['zh-s'] = "土力工程处位置";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['zh-s'] = "按住Shift键的同时使用鼠标选择区域(单击并拖动)";
 $hcms_lang['sw-coordinates']['zh-s'] = "S/W坐标";
 $hcms_lang['ne-coordinates']['zh-s'] = "N/E坐标";
 $hcms_lang['version']['zh-s'] = "版本";

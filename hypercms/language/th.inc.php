@@ -910,6 +910,7 @@ $hcms_lang['image-search']['th'] = "การค้นหา ภาพ";
 $hcms_lang['object-id-link-id']['th'] = "วัตถุ - ID link - ID";
 $hcms_lang['container-id']['th'] = "ID ภาชนะ บรรจุ";
 $hcms_lang['geo-location']['th'] = "มีที่ตั้งที่ติด geo";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['th'] = "เมาส์ Shift ค้างไว้กดปุ่มและเลือกพื้นที่โดยใช้(คลิกและลาก)";
 $hcms_lang['sw-coordinates']['th'] = "S / W ค่าพิกัด";
 $hcms_lang['ne-coordinates']['th'] = "ค่าพิกัด/ e n";
 $hcms_lang['version']['th'] = "เวอร์ชัน";

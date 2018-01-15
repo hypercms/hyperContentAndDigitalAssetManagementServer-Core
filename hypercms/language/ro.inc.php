@@ -910,6 +910,7 @@ $hcms_lang['image-search']['ro'] = "Căutare imagini";
 $hcms_lang['object-id-link-id']['ro'] = "Obiect-ID / Link-ID";
 $hcms_lang['container-id']['ro'] = "Recipient ID";
 $hcms_lang['geo-location']['ro'] = "Geo locaţie";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['ro'] = "Ţineţi apăsată tasta shift-cheie şi selectaţi zona folosind mouse-ul (click & tragere)";
 $hcms_lang['sw-coordinates']['ro'] = "S/W coordonate";
 $hcms_lang['ne-coordinates']['ro'] = "N/E coordonatele";
 $hcms_lang['version']['ro'] = "Versiune";

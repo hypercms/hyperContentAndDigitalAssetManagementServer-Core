@@ -910,6 +910,7 @@ $hcms_lang['image-search']['ms'] = "Carian Imej";
 $hcms_lang['object-id-link-id']['ms'] = "Objek-ID / Pautan- ID";
 $hcms_lang['container-id']['ms'] = "ID Bekas";
 $hcms_lang['geo-location']['ms'] = "Geo lokasi";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['ms'] = "Pegang shift-kunci dan pilih kawasan menggunakan tetikus (klik & seret)";
 $hcms_lang['sw-coordinates']['ms'] = "S awak W koordinat";
 $hcms_lang['ne-coordinates']['ms'] = "N awak E koordinat";
 $hcms_lang['version']['ms'] = "Versi";

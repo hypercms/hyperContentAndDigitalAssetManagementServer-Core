@@ -912,6 +912,7 @@ $hcms_lang['image-search']['de'] = "Bildersuche";
 $hcms_lang['object-id-link-id']['de'] = "Objekt-ID / Link-ID";
 $hcms_lang['container-id']['de'] = "Container ID";
 $hcms_lang['geo-location']['de'] = "Geolocation";
+$hcms_lang['hold-shift-key-and-select-area-using-mouse-click-drag']['de'] = "Shift-Taste drücken und mit Maus (Klicken & Ziehen) den Bereich wählen";
 $hcms_lang['sw-coordinates']['de'] = "S/W-Koordinaten";
 $hcms_lang['ne-coordinates']['de'] = "N/O-Koordinaten";
 $hcms_lang['version']['de'] = "Version";
