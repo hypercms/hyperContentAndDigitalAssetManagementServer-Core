@@ -1097,6 +1097,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           // embed annotation script
           if (is_file ($thumb_root.$annotation_page))
           {
+            $mediaview_doc = "";
+              
             // count pages 
             for ($page_count = 0; $page_count <= 10000; $page_count++)
             {
@@ -1105,7 +1107,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             
             if ($page_count > 1)
             {
-              $mediaview_doc = "
+              $mediaview_doc .= "
   <div style=\"position:absolute; width:".($width+15)."px; height:28px; text-align:right;".($width < 420 ? "margin-top:-38px;" : "margin-top:-8px;")."\">
     <img src=\"".getthemelocation()."img/button_arrow_left.png\" onclick=\"gotoPage('previous');\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" align=\"absmiddle\" alt=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['back'][$lang], $hcms_charset, $lang)."\" />
     <select id=\"pagenumber\" onchange=\"gotoPage('none');\" title=\"".getescapedtext ($hcms_lang['page'][$lang], $hcms_charset, $lang)."\" style=\"width:70px;\">";
@@ -1127,7 +1129,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     <div id=\"annotation\" style=\"position:relative;\" class=\"".$class."\"></div>
   </div>
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.js\"></script>
-	<script>
+  <script>
     // set annotation buttons
     function setAnnoationButtons ()
     {
@@ -1206,22 +1208,22 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     // annotions download event
     $('#annotationDownload').click(function(event) {
       $('#annotation').annotate('export', {type: 'image/jpeg', quality: 0.2}, function(data){
-      	downloadAnnotations ('annotation.jpg', data);
+        downloadAnnotations ('annotation.jpg', data);
       });
     });
   
-		$(document).ready(function(){
+    $(document).ready(function(){
       // set annotation image file name
       $('#medianame').val('".$annotation_page."');
 
       // create annotation image
-			$('#annotation').annotate({
+      $('#annotation').annotate({
         width: '".$width."',
         height: '".$height."',
-				color: 'red',
-				bootstrap: false,
+        color: 'red',
+        bootstrap: false,
         unselectTool: true,
-				images: ['".createviewlink ($site, $annotation_page, $annotation_page)."']
+        images: ['".createviewlink ($site, $annotation_page, $annotation_page)."']
       });
       
       // set images for buttons
@@ -1233,8 +1235,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           hcms_openWindow (data, 'annotionDownload', '', ".windowwidth ("object").", ".windowheight ("object").");
         });
       });
-		});
-	</script>
+    });
+  </script>
   ";
           }
         }
@@ -1502,7 +1504,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         
           $mediaview .= "
   <script type=\"text/javascript\" src=\"".$mgmt_config['url_path_cms']."javascript/annotate/annotate.js\"></script>
-	<script>
+  <script>
     // set annotation buttons
     function setAnnoationButtons ()
     {
@@ -1547,18 +1549,18 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       document.getElementById('annotationHelp').alt = hcms_entity_decode('".getescapedtext ($hcms_lang['select-a-tool-in-order-to-add-an-annotation'][$lang], $hcms_charset, $lang)."');
     }
     
-		$(document).ready(function(){
+    $(document).ready(function(){
       // set annotation image file name
       $('#medianame').val('".$annotation_file."');
       
       // create annotation image
-			$('#annotation').annotate({
+      $('#annotation').annotate({
         width: '".$width."',
         height: '".$height."',
-				color: 'red',
-				bootstrap: false,
+        color: 'red',
+        bootstrap: false,
         unselectTool: true,
-				images: ['".createviewlink ($site, $annotation_file, $annotation_file)."']
+        images: ['".createviewlink ($site, $annotation_file, $annotation_file)."']
       });
 
       // set images for buttons
@@ -1570,8 +1572,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           hcms_openWindow (data, 'annotionDownload', '', ".windowwidth ("object").", ".windowheight ("object").");
         });
       });
-		});
-	</script>
+    });
+  </script>
   ";
         }
       }
@@ -1760,7 +1762,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
 
         // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
-        if (!is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) <= 1 || $width > 640)
+        if (!is_array ($config['mediafiles']) || sizeof ($config['mediafiles']) < 1 || $width > 640)
         {
           if (strpos ($mediafile_orig, ".config.") == 0 && substr_count (".mp4.ogg.ogv.webm.", $file_info['orig_ext'].".") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
           {

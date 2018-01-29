@@ -2514,10 +2514,18 @@ Release 02/2017
 - Modifications in function getfavorites in Get API to remove duplicate entries
 - Modifications in home screen to disable the selection and display of duplicate home boxes
 - Support of transparent background for images when using the GD library in function createmedia in Media API
+- Modifications in Bengali language file
+- Renamed several text variables in language files and source code
+- Modifications in function showmedia in UI API in order to not include original video files additionally to the sources if the requested video display size is smaller than the width limit of 640 pixels
+- Implementation of preview width configuration for the preview and annotations for images and document, see $mgmt_config['preview_document_width'] and $mgmt_config['window_image_width']
+- Modifications in the template engine in order to support te new config settings
 - Bug fix: Drag button in WYSIWYG interface for components did not use the right size settings in template engine
 - Bug fix:Favorites and recent objects home boxes did not initalize object array
 - Bug fix: Function checkworkflow in Main API did not extract the content node from the template
 - Bug fix: Function viewinclusions in template engine did return an empty code as result if the included code was empty
+- Bug fix: Function setmetadata in Meta API did not use proper variable name for splitting mapping value into text type and text ID
+- Bug fix: The face detection for videos did place the face marker based on the original video size and not the video frame
+- Bug fix: The sendmail adn site_admin publication config parameter has not been verified in explorer_objectlist, search_objectlist, and group_edit_form
 */
 
 // current version

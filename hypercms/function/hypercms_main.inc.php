@@ -5673,7 +5673,7 @@ function createpublication ($site_name, $user="sys")
             inherit_db_close ($user);
         
             $add_onload = "parent.frames['mainFrame'].location='".$mgmt_config['url_path_cms']."empty.php'; ";
-            $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['an-error-occured-in-the-data-manipulation'][$lang]."\n";
+            $show = "<span class=hcmsHeadline>".$hcms_lang['the-publication-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['an-error-occurred-in-the-data-manipulation'][$lang]."\n";
           }
         }
         else
@@ -7021,7 +7021,7 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
     }
     else
     {
-      $show = "<p class=hcmsHeadline>".$hcms_lang['functional-error-occured'][$lang]."</p>\n".$hcms_lang['an-error-occured-in-function-setcontent'][$lang]."\n"; 
+      $show = "<p class=hcmsHeadline>".$hcms_lang['functional-error-occured'][$lang]."</p>\n".$hcms_lang['an-error-occurred-in-function-setcontent'][$lang]."\n"; 
     }
   }
   
@@ -7597,7 +7597,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
         
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['an-error-occured-in-xml-manipulation'][$lang]."</span><br />\n";
+        $show = "<span class=hcmsHeadline>".$hcms_lang['an-error-occurred-in-xml-manipulation'][$lang]."</span><br />\n";
       }
     
       // check if lanuage was changed and register new language
@@ -7729,7 +7729,7 @@ function deleteuser ($site, $login, $user="sys")
         unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
         
         $add_onload = "";
-        $show = "<span class=hcmsHeadline>".$hcms_lang['an-error-occured-in-function-deletecontent'][$lang]."</span><br />\n";    
+        $show = "<span class=hcmsHeadline>".$hcms_lang['an-error-occurred-in-function-deletecontent'][$lang]."</span><br />\n";    
       }
     }
     else
@@ -8123,7 +8123,7 @@ function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $
       unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
       
       $add_onload = "";
-      $show = "<span class=hcmsHeadline>".$hcms_lang['the-group-information-cant-be-accessed'][$lang]."</span><br />\n".$hcms_lang['an-error-occured-in-function-setcontent'][$lang]."\n";
+      $show = "<span class=hcmsHeadline>".$hcms_lang['the-group-information-cant-be-accessed'][$lang]."</span><br />\n".$hcms_lang['an-error-occurred-in-function-setcontent'][$lang]."\n";
     }
   }
   
@@ -11303,7 +11303,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
     // media file could not be created
     else
     {
-      $show = $hcms_lang['an-error-occured-in-the-data-manipulation'][$lang]."\n"; 
+      $show = $hcms_lang['an-error-occurred-in-the-data-manipulation'][$lang]."\n"; 
     }
   }
   
@@ -13874,7 +13874,7 @@ function publishobject ($site, $location, $page, $user)
                     $viewstore = false;
                     $release = false;
                     $add_onload = "";
-                    $show = $hcms_lang['an-error-occured-in-building-the-view'][$lang]."<br/>Error file: ".$error_file;
+                    $show = $hcms_lang['an-error-occurred-in-building-the-view'][$lang]."<br/>Error file: ".$error_file;
                   }
                 }
                 else
@@ -13885,7 +13885,7 @@ function publishobject ($site, $location, $page, $user)
                   $viewstore = false;
                   $release = false;
                   $add_onload = "";
-                  $show = $hcms_lang['an-error-occured-in-building-the-view'][$lang];
+                  $show = $hcms_lang['an-error-occurred-in-building-the-view'][$lang];
                 }
 
                 // eventsystem
@@ -14097,7 +14097,7 @@ function publishobject ($site, $location, $page, $user)
                 {
                   $add_onload = "";
                   $show = "<span class=\"hcmsHeadline\">".$hcms_lang['item-could-not-be-published'][$lang]."</span><br />
-                  ".$hcms_lang['an-error-occured-in-building-the-view'][$lang]."\n";
+                  ".$hcms_lang['an-error-occurred-in-building-the-view'][$lang]."\n";
                 }
               }
               else

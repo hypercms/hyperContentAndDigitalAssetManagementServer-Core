@@ -163,7 +163,7 @@ if (
       {
         if ($location.$file != "" && $file != '.' && $file != '..' && substr ($file, -8) != ".recycle") 
         {
-          if (!$is_mobile && is_dir ($location.$file))
+          if (is_dir ($location.$file))
           {
             $group_array = accesspermission ($site, $location.$file."/", "$cat");
             $setlocalpermission = setlocalpermission ($site, $group_array, "$cat");
@@ -197,7 +197,7 @@ $listview = "";
 $items_row = 0;
   
 // folder entries
-if (!$is_mobile && is_array ($folder_array) && sizeof ($folder_array) > 0)
+if (is_array ($folder_array) && sizeof ($folder_array) > 0)
 {
   natcasesort ($folder_array);
   reset ($folder_array);
@@ -253,17 +253,20 @@ if (!$is_mobile && is_array ($folder_array) && sizeof ($folder_array) > 0)
           }
           
           // get metadata of container
-          $container_info = getmetadata_container ($container_id, array_keys ($objectlistcols[$site][$cat]));
-          
-          if (is_array ($container_info))
-          {  
-            if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
-            if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
-            if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
+          if (is_array ($objectlistcols[$site][$cat]) && sizeof ($objectlistcols[$site][$cat]) > 0)
+          {
+            $container_info = getmetadata_container ($container_id, array_keys ($objectlistcols[$site][$cat]));
+            
+            if (!empty ($container_info) && is_array ($container_info))
+            {  
+              if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
+              if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+              if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
+            }
           }
           
           // link for copy & paste of download links
-          if ($mgmt_config[$site]['sendmail'] && $setlocalpermission['download'] == 1)
+          if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1)
           {
             $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$folder."/.folder\" data-href=\"\">";
             $dlink_end = "</a>";
@@ -455,14 +458,17 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           }
           
           // get metadata of container
-          $container_info = getmetadata_container ($container_id, array_keys ($objectlistcols[$site][$cat]));
-
-          if (is_array ($container_info))
-          { 
-            if (!empty ($container_info['filesize'])) $file_size = number_format ($container_info['filesize'], 0, "", ".");
-            if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
-            if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
-            if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
+          if (is_array ($objectlistcols[$site][$cat]) && sizeof ($objectlistcols[$site][$cat]) > 0)
+          {
+            $container_info = getmetadata_container ($container_id, array_keys ($objectlistcols[$site][$cat]));
+  
+            if (!empty ($container_info) && is_array ($container_info))
+            { 
+              if (!empty ($container_info['filesize'])) $file_size = number_format ($container_info['filesize'], 0, "", ".");
+              if (!empty ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
+              if (!empty ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
+              if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
+            }
           }
                            
           // get media file
@@ -490,7 +496,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             else $metadata = "";
             
             // link for copy & paste of download links
-            if ($mgmt_config[$site]['sendmail'] && $setlocalpermission['download'] == 1)
+            if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1)
             {
               $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$object."\" data-href=\"\">";
               $dlink_end = "</a>";
@@ -513,7 +519,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             $file_size = number_format ($file_size, 0, "", ".");
 
             // link for copy & paste of download links
-            if ($mgmt_config[$site]['sendmail'] && $setlocalpermission['download'] == 1)
+            if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1)
             {
               $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"wrapper\" data-location=\"".$location_esc.$object."\" data-href=\"\">";
               $dlink_end = "</a>";

@@ -7794,7 +7794,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     if ($('#hcms_mediaplayer_asset_html5_api').length > 0) var video = $('#hcms_mediaplayer_asset_html5_api');
     else if ($('#hcms_mediaplayer_asset_flash_api').length > 0) var video = $('#hcms_mediaplayer_asset_flash_api');
     else var video = false;
-
+    
     // detect faces automatically
     if (video)
     {
@@ -8269,9 +8269,21 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         $viewstore .= showsharelinks ($sharelink, $mediafile, $lang, "position:fixed; top:50px; right:12px;");
       }
       
+      // set the default width for different media types
+      // Keep in mind that the video width must match with the rendering setting in the main config
+      if (is_document ($name_orig) && !empty ($mgmt_config['preview_document_width']) && $mgmt_config['preview_document_width'] > 220)
+      {
+         $default_width = $mgmt_config['preview_document_width'];
+       }
+      elseif ((is_image ($name_orig) || is_rawimage ($name_orig))  && !empty ($mgmt_config['preview_image_width']) && $mgmt_config['preview_image_width'] > 220)
+      {
+        $default_width = $mgmt_config['preview_image_width'];
+      }
+      else $default_width = 576;
+      
       // correct media width for mobile devices
-      if ($maxwidth > 0 && 576 > $maxwidth) $mediawidth = $maxwidth;
-      else $mediawidth = 576;
+      if ($maxwidth > 0 && $maxwidth < 576) $mediawidth = $maxwidth;
+      else $mediawidth = $default_width;
 
       // table for form
       $viewstore .= "

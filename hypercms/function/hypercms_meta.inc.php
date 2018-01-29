@@ -3055,7 +3055,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             // get type and text ID
             $text_id = $mapping['hcms:quality'];
             
-            if (strpos ($mapping['hcms:quality'], ":") > 0) list ($type, $text_id) = explode (":", $text_id);
+            if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
             else $type = "textl";
             
             if (!empty ($type)) $type_array[$text_id] = $type;

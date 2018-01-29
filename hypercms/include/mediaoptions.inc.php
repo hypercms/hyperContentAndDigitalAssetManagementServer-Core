@@ -57,7 +57,7 @@ $available_videosizes['l'] = array(
 );
 
 $available_videosizes['xl'] = array(
-	'name'					=> $hcms_lang['high-resoltion-of-1280x720-pixel'][$lang],
+	'name'					=> $hcms_lang['high-resolution-of-1280x720-pixel'][$lang],
 	'checked'				=> false,
 	'individual'		=> false
 );

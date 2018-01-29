@@ -117,7 +117,7 @@ if ($save == "yes" && $persfile != "" && checktoken ($token, $user))
     if ($savefile == false) $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</span><br />\n".getescapedtext ($hcms_lang['you-do-not-have-write-permissions'][$lang]);
     else $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."</span>";
   }
-  else $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</span><br />\n".getescapedtext ($hcms_lang['there-are-unsecure-functions-in-the-code'][$lang]).": <span style=\"color:red;\">".$persdata_check['found']."</span>";
+  else $show = "<span class=hcmsHeadline>".getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang])."</span><br />\n".getescapedtext ($hcms_lang['there-are-insecure-functions-in-the-code'][$lang]).": <span style=\"color:red;\">".$persdata_check['found']."</span>";
 }
 else
 {

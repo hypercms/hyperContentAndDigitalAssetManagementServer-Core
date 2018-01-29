@@ -484,7 +484,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               }
               
               // link for copy & paste of download links
-              if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
+              if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1)
               {
                 $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$folder."/.folder\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
                 $dlink_end = "</a>";
@@ -703,7 +703,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 if (!empty ($mgmt_config['explorer_list_metadata']) && !$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
                 
                 // link for copy & paste of download links
-                if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
+                if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1)
                 {
                   $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-location=\"".$location_esc.$object."\" data-href=\"".$mgmt_config['url_path_cms']."?dl=".$hash."\">";
                   $dlink_end = "</a>";
@@ -726,7 +726,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 $file_modified = date ("Y-m-d H:i", @filemtime ($location.$object));
                 
                 // link for copy & paste of download links
-                if ($mgmt_config[$item_site]['sendmail'] && $setlocalpermission['download'] == 1)
+                if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1)
                 {
                   $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"wrapper\" data-location=\"".$location_esc.$object."\" data-href=\"".$mgmt_config['url_path_cms']."?wl=".$hash."\">";
                   $dlink_end = "</a>";

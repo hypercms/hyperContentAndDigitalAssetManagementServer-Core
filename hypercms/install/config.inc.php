@@ -187,6 +187,10 @@ $mgmt_config['explorer_list_maxitems'] = 500;
 $mgmt_config['window_object_width'] = 800;
 $mgmt_config['window_object_height'] = 1000;
 
+// Preview and annotation width for documents and images in pixel
+$mgmt_config['preview_document_width'] = 695;
+$mgmt_config['preview_image_width'] = 695;
+
 // Should metadata on mouse over be displayed in the explorer object list if the sidebar is not displayed
 $mgmt_config['explorer_list_metadata'] = false;
 
@@ -569,8 +573,8 @@ $mgmt_parser['.doc'] = "%antiword%";
 // Define OCR
 // Define file types that should be indexed by OCR using Tesseract and ImageMagick (can be any kind of image that is supported by ImageMagick).
 // The path to the executable is usually /usr/bin/tesseract
-// Use -l land-id to set the language that should be used for the OCR, by default it is English.
 // You need to install the Tesseract language pack in order to use the language.
+// Install tesseract-ocr-all for all languages, or install seperately, e.g. -deu, -eng, -fra, -ita, -ndl, -por, -spa, -vie.
 $mgmt_parser['.png.tif.tiff'] = "%tesseract%";
 
 // Define Uncompression (Extension: gz)

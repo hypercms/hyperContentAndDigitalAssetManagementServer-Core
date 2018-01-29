@@ -358,7 +358,7 @@ elseif ($preview == "yes")
     </tr>
     <?php } ?>
     <?php
-    if ($diskkey == "server" && $mgmt_config[$site]['site_admin'] == true)
+    if ($diskkey == "server" && !empty ($mgmt_config[$site]['site_admin']))
     {
     ?>
     <tr class="hcmsRowHead1">
@@ -542,11 +542,11 @@ elseif ($preview == "yes")
       <td nowrap="nowrap"><b><img src="<?php echo getthemelocation(); ?>img/folder_comp.png" class="hcmsIconList" align="absmiddle" /> <?php echo getescapedtext ($hcms_lang['grant-asset-management'][$lang]); ?></b></td>
       <td align="center"><input type="checkbox" name="permission[componentglobal]" value="1" <?php if ($componentglobal==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
-    <tr class="<?php if ($mgmt_config[$site]['sendmail']) echo "hcmsRowData1"; ?>"> 
+    <tr class="<?php if (!empty ($mgmt_config[$site]['sendmail'])) echo "hcmsRowData1"; ?>"> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['access-to-folders'][$lang]); ?></td>
       <td align="center"><img onClick="goToAccess('comp');" class="hcmsButtonTiny hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/folder_comp.png" name="go_compaccess" align="absmiddle" alt="<?php echo getescapedtext ($hcms_lang['grantdisable'][$lang]); ?>" <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
     </tr>
-    <?php if ($mgmt_config[$site]['sendmail']) { ?>
+    <?php if (!empty ($mgmt_config[$site]['sendmail'])) { ?>
     <tr> 
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['send-mail-link'][$lang]); ?></td>
       <td align="center"><input type="checkbox" name="permission[compsendlink]" value="1" <?php if ($compsendlink==1) {echo "checked=\"checked\"";} ?> <?php if ($preview=="yes") {echo "disabled=\"disabled\"";} ?> /></td>
