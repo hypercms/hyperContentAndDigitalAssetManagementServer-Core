@@ -1397,4 +1397,6 @@ $hcms_lang['existing-objects-will-be-replaced']['sq'] = "Objektet ekzistuese do 
 $hcms_lang['import-list-comma-delimited']['sq'] = "Importi CSV";
 $hcms_lang['upload-csv-file']['sq'] = "Ngarko dosjen CSV për importimin e meta të dhënave/përmbajtjes për objekte në të njëjtin vend (Jepni 'Name' ose 'ContainerID' si titull dhe identifikues të kolonës)";
 $hcms_lang['link-fields-with']['sq'] = "Lidhni fushat me";
+$hcms_lang['phone']['sq'] = "Telefon";
+$hcms_lang['optical-character-recognition']['sq'] = "Njohja e Karakteristikës Optike";
 ?>

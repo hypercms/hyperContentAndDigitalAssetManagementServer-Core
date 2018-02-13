@@ -72,7 +72,12 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
   }
   else $filesize['filesize'] = loadfile ($mgmt_config['abs_path_temp'], $site.".filesize.dat");
 
-  if ($filesize['filesize'] > ($mgmt_config[$site]['storage_limit'] * 1024))
+  // factor to correct used storage due to annotation files, video previews, and so on
+  if (!empty ($mgmt_config[$publication]['storagefactor'])) $factor = $mgmt_config[$publication]['storagefactor'];
+  elseif  (!empty ($mgmt_config['storagefactor'])) $factor = $mgmt_config['storagefactor'];
+  else $factor = 1.2;
+
+  if (($filesize['filesize'] * $factor) > ($mgmt_config[$site]['storage_limit'] * 1024))
   {
     echo showinfopage ($hcms_lang['storage-limit-exceeded'][$lang], $lang);
     exit;

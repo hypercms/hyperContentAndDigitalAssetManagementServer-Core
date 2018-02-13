@@ -1398,4 +1398,6 @@ $hcms_lang['existing-objects-will-be-replaced']['bg'] = "Съществуващ�
 $hcms_lang['import-list-comma-delimited']['bg'] = "CSV импортиране";
 $hcms_lang['upload-csv-file']['bg'] = "Качете CSV файл за импортиране на метаданни/съдържание за обекти в едно и също място 'Name' или 'ContainerID' (Посочете име на колона и идентификатор)";
 $hcms_lang['link-fields-with']['bg'] = "";
+$hcms_lang['phone']['bg'] = "телефон";
+$hcms_lang['optical-character-recognition']['bg'] = "Оптично разпознаване на символи";
 ?>

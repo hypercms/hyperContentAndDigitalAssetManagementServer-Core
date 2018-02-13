@@ -4,7 +4,7 @@ $hcms_lang_name['ur'] = "Urdu";
 $hcms_lang_shortcut['ur'] = "ur";
 $hcms_lang_codepage['ur'] = "utf-8";
 $hcms_lang_date['ur'] = 'y-m-d H:i:s';
-$hcms_lang_direction['ur'] = "ltr";
+$hcms_lang_direction['ur'] = "rtl";
 
 // Text for hyperCMS
 $hcms_lang['share']['ur'] = "Share";
@@ -622,7 +622,7 @@ $hcms_lang['show-the-design-online-on']['ur'] = "شو کے ڈیزائن پر ا�
 $hcms_lang['set-date-for-the-journey']['ur'] = "تاریخ کا سفر کے لئے قائم";
 $hcms_lang['clean-date-exit']['ur'] = "تاریخ صاف معلومات نکلنےکاراستہ";
 $hcms_lang['meta-information-of-']['ur'] = "اطلاعات کے meta";
-$hcms_lang['no-meta-inforamtion-available']['ur'] = "meta دستیاب نہیں inforamtion";
+$hcms_lang['no-meta-inforamtion-available']['ur'] = "meta دستیاب نہیں information";
 $hcms_lang['assign-meta-information']['ur'] = "اطلاعات ٹھیرانا meta";
 $hcms_lang['select-meta-information']['ur'] = "اطلاعات meta انتخاب";
 $hcms_lang['page-author']['ur'] = "ادارتی صفحہ مصنف";
@@ -767,7 +767,7 @@ $hcms_lang['for-jsp-or-asp-only-http-method-is-supported']['ur'] = "صورتحا
 $hcms_lang['directory-path-of-the-application-for-jsp-asp']['ur'] = "ڈائرکٹری کی درخواست کی راہ (jsp صورتحال میں)";
 $hcms_lang['os-on-publication-server']['ur'] = "اپریٹینگ سسٹم کی اشاعت پر سرور";
 $hcms_lang['remote-client']['ur'] = "دور افتادہ موقل";
-$hcms_lang['for-http-transport-use-urlremoteclientphp-configuration-ini-file-must-be-at-the-same-file-location']['ur'] = "Http کے ٹرانسپورٹ کے استعمال ...url,,,,,remoteclient.php کے روپ میں ini فائل کو اسی مقام پر درج ہے.";
+$hcms_lang['for-http-transport-use-urlremoteclientphp-configuration-ini-file-must-be-at-the-same-file-location']['ur'] = "Http کے ٹرانسپورٹ کے استعمال ...url.../remoteclient.php کے روپ میں ini فائل کو اسی مقام پر درج ہے.";
 $hcms_lang['disable-special-characters-in-object-names']['ur'] = "نااہل خصوصی کرداروں میں نام اعتراض";
 $hcms_lang['you-do-not-have-permissions-to-access-this-feature']['ur'] = "اپ کو permissions تک رسائی نہیں اس چنھ!";
 $hcms_lang['only-dam-functionality']['ur'] = "صرف ڈیم functionality";
@@ -1397,4 +1397,6 @@ $hcms_lang['existing-objects-will-be-replaced']['ur'] = "موجودہ اشیاء
 $hcms_lang['import-list-comma-delimited']['ur'] = "CSV درآمد";
 $hcms_lang['upload-csv-file']['ur'] = "ایک ہی مقام میں اشیاء کے لئے میٹا ڈیٹا / مواد کے درآمد کیلئے CSV فائل اپ لوڈ کریں ('Name' یا 'ContainerID' کو کالم عنوان اور شناختی طور پر فراہم کریں)";
 $hcms_lang['link-fields-with']['ur'] = "شعبوں سے رابطہ کریں";
+$hcms_lang['phone']['ur'] = "فون";
+$hcms_lang['optical-character-recognition']['ur'] = "آپٹیکل کریکٹر ریکگنیشن";
 ?>

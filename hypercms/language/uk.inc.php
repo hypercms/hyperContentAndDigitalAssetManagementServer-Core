@@ -1397,4 +1397,6 @@ $hcms_lang['existing-objects-will-be-replaced']['uk'] = "Існуючі об'є�
 $hcms_lang['import-list-comma-delimited']['uk'] = "Імпорт CSV";
 $hcms_lang['upload-csv-file']['uk'] = "Завантажте файл CSV для імпорту метаданих/вмісту для об'єктів у одному місці (надайте 'Name' або 'ContainerID' як назву та ідентифікатор стовпця)";
 $hcms_lang['link-fields-with']['uk'] = "Пов'язати поля з";
+$hcms_lang['phone']['uk'] = "Телефон";
+$hcms_lang['optical-character-recognition']['uk'] = "Оптичний розпізнавання символів";
 ?>

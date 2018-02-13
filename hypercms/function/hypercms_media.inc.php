@@ -31,7 +31,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
     
     // load tesseract language mapping
-    if (empty ($tesseract_langmap) || !is_array ($tesseract_langmapt)) require ($mgmt_config['abs_path_cms']."include/tesseract_lang.inc.php");
+    if (empty ($tesseract_lang) || !is_array ($tesseract_lang)) require ($mgmt_config['abs_path_cms']."include/tesseract_lang.inc.php");
     
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";            
@@ -429,12 +429,40 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
             // extract text from image using OCR
             if (is_file ($location_source.$file_source))
             {
+              $lang_options_array = array();
+              
               // use -l lang-id to set the language that should be used for the OCR, by default it is English
-              if (!empty ($lang)) $options = " -l ".$tesseract_lang[$lang];
-              else $options = "";
+              if (!empty ($lang)) $lang_options_array[] = $tesseract_lang[$lang];
+              
+              // scan for other languages as well
+              if (!empty ($mgmt_config[$site]['translate']))
+              {
+                $temp_array = explode (",", $mgmt_config[$site]['translate']);
+                
+                // max 3 additional languages for OCR due to performance reasons
+                $i = 1;
+                
+                foreach ($temp_array as $temp)
+                {
+                  // get tesseract language code
+                  if (trim ($temp) != "" && !empty ($tesseract_lang[$temp]))
+                  {
+                    $lang_options_array[] = $tesseract_lang[$temp];
+                    $i++;
+                    if ($i > 3) break;
+                  }
+                }
+              }
+              
+              if (sizeof ($lang_options_array) > 0)
+              {
+                $lang_options_array = array_unique ($lang_options_array);
+                $lang_options = " -l ".implode ("+", $lang_options_array);
+              }
+              else $lang_options = "";
             
               // create temp text file from TIFF image (file extension for text file will be added by Tesseract)
-              $cmd = $parser." \"".shellcmd_encode ($location_source.$file_source)."\"".$options." \"".shellcmd_encode ($temp_dir.$temp_name)."\"";
+              $cmd = $parser." \"".shellcmd_encode ($location_source.$file_source)."\"".$lang_options." \"".shellcmd_encode ($temp_dir.$temp_name)."\"";
 
               @exec ($cmd);
 
@@ -1398,7 +1426,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 // -sepia-tone ... apply -sepia-tone on image, e.g. -sepia-tone 80%
                 // -monochrome ... transform image to black and white
                 // -wm ... watermark in watermark image->positioning->geometry, e.g. image.png->topleft->+30
-              
+
                 // image size (in pixel) definition
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-s ") > 0)
                 {
@@ -1413,14 +1441,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   $imagegeometry = "-geometry ".$imagewidth."x".$imageheight; 
                 }
                 else $imageresize = "";
-                
+
                 // if no size parameters are provided we use the original size for the new image
                 if (empty ($imagewidth) || empty ($imageheight))
                 {
                   $imagewidth = $imagewidth_orig;
                   $imageheight = $imageheight_orig;
                 }
-             
+
                 // image crop
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-c ") > 0) $crop_mode = true;
                 else $crop_mode = false;
@@ -1463,7 +1491,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 {
                   $imagedensity = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-d"));
                   
-                  if ($imagedensity > 1200) $imagedensity = "-density 1200";
+                  if ($imagedensity > 1200) $imagedensity = "-density 2400";
                   elseif ($imagedensity < 72) $imagedensity = "-density 72";
                   else $imagedensity = "-density ".$imagedensity;
                 }
@@ -1689,14 +1717,16 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if ($imageformat == "jpg") $background = "-background white -alpha remove";
                   else $background = "";
 
-                  // CASE: document-based formats, encapsulated post script and vector graphics
-                  if (strpos ("_.pdf.eps.eps2.eps3.epsf.epsi.svg", $file_ext) > 0)
+                  // CASE: document-based formats (if converted to PDF), encapsulated post script (EPS) and vector graphics
+                  if (strpos ("_.pdf".$hcms_ext['vectorimage'], $file_ext) > 0)
                   {
+                    if ($file_ext != ".pdf" && empty ($imagedensity)) $imagedensity = "-density 1800 ";
+                    
                     if ($type == "thumbnail")
                     {
                       $newfile = $file_name.".thumb.jpg";
                       
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."[0]\" ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     elseif ($type == "annotation" && is_dir ($mgmt_config['abs_path_cms']."workflow/"))
                     {
@@ -1722,7 +1752,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       }
                       
                       // render all pages from document as images for annotations
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."\" ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.jpg")."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($location_source.$file)."\" ".$imageresize." ".$background." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.jpg")."\"";
                     }
                     else 
                     {
@@ -1732,7 +1762,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       // use geometry instead of resize for EPS files
                       if ($file_ext == ".eps") $imageresize = $imagegeometry;
   
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -background none ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageresize." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -background none ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageresize." ".$background." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     
                     @exec ($cmd, $buffer, $errorCode);
@@ -3913,7 +3943,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
     // define format if not set
     if ($format == "") $format = "pdf";
     else $format = strtolower ($format);
-    
+
     // if media conversion software is given, conversion supported and destination format is not the source format
     if (is_array ($mgmt_docpreview) && sizeof ($mgmt_docpreview) > 0 && !empty ($mgmt_docconvert[$file_ext]) && is_array ($mgmt_docconvert[$file_ext]) && $format != trim ($file_ext, ".") && in_array (".".$format, $mgmt_docconvert[$file_ext]))
     {
@@ -4013,6 +4043,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
               
               if (empty ($converted) && !empty ($mgmt_docpreview[$docpreview_ext]))
               {
+                // default UNOCONV character set is UTF-8
                 $cmd = $mgmt_docpreview[$docpreview_ext]." ".$mgmt_docoptions[$docoptions_ext]." \"".shellcmd_encode ($location_source.$file)."\"";
                            
                 @exec ($cmd." 2>&1", $error_array, $errorCode);
@@ -4597,7 +4628,7 @@ function inch2px ($inch, $dpi=72)
 
 // ---------------------- mediasize2frame -----------------------------
 // function: mediasize2frame()
-// input: media width, media height, frame width (optional), frame height (optional), keep maximum media size based on original dimensions of media [true,false] (optional)
+// input: media width, media height, frame width (optional), frame height (optional), keep maximum media size based on original dimensions of media without stretching [true,false] (optional)
 // output: width and height as array / false
 
 // description:
@@ -4614,16 +4645,18 @@ function mediasize2frame ($mediawidth, $mediaheight, $framewidth="", $frameheigh
     if ((!empty ($frameratio) && $mediaratio >= $frameratio) || (empty ($frameratio) && $framewidth > 0))
     {
       if ($keepmaxsize && $mediawidth < $framewidth) $mediawidth = $mediawidth;
-      elseif ($mediawidth >= $framewidth) $mediawidth = $framewidth;
-      
-      $mediaheight = round (($mediawidth / $mediaratio), 0); 
+      else $mediawidth = $framewidth;
+
+      $mediaheight = ($mediawidth / $mediaratio);
+      $mediaheight = round ($mediaheight, 1);
     }
     elseif ((!empty ($frameratio) && $mediaratio < $frameratio) || (empty ($frameratio) && $frameheight > 0))
     {
       if ($keepmaxsize && $mediaheight < $frameheight) $mediaheight = $mediaheight;
-      elseif ($mediaheight >= $frameheight) $mediaheight = $frameheight;
-      
-      $mediawidth = round (($mediaheight * $mediaratio), 0);
+      else $mediaheight = $frameheight;
+
+      $mediawidth = ($mediaheight * $mediaratio);
+      $mediawidth = round ($mediawidth, 1);
     }
 
     if ($mediawidth > 0 && $mediaheight > 0) return array ('width'=>$mediawidth, 'height'=>$mediaheight);

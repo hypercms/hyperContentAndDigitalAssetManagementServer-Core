@@ -1397,4 +1397,6 @@ $hcms_lang['existing-objects-will-be-replaced']['sv'] = "Befintliga objekt komme
 $hcms_lang['import-list-comma-delimited']['sv'] = "CSV Import";
 $hcms_lang['upload-csv-file']['sv'] = "Ladda upp CSV-fil för import av metadata/innehåll för objekt på samma plats (Ange 'Name' eller 'ContainerID' som kolumntitel och identifierare)";
 $hcms_lang['link-fields-with']['sv'] = "Länka fälten med";
+$hcms_lang['phone']['sv'] = "Telefon";
+$hcms_lang['optical-character-recognition']['sv'] = "Optisk teckenigenkänning";
 ?>

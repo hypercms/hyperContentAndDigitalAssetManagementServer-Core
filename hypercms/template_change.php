@@ -71,7 +71,11 @@ if (is_array ($load_template))
     $application = $bufferdata[0];
   }
 }
-else $template = "";
+else
+{
+  $template = "";
+  $application = "";
+}
 
 // change template
 if ($intention == "change" && $objectdata != "" && valid_objectname ($template) && ($media == "" || ($media != "" && (strpos ($template, ".meta.tpl") > 0 || strpos ($template, ".comp.tpl") > 0))) && checktoken ($token, $user))
@@ -103,6 +107,7 @@ elseif (strpos ($template, ".meta.tpl") > 0)
 {
   $tpl_name = substr ($template, 0, strpos ($template, ".meta.tpl"));
 }
+else $tpl_name = "";
 
 // create secure token
 $token_new = createtoken ($user);

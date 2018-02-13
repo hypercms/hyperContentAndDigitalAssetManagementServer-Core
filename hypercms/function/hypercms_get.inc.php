@@ -1943,7 +1943,7 @@ function getlocationname ($site, $location, $cat, $source="path")
       $location_abs = $location;
     }
     else return false;
-   
+    
     if (valid_publicationname ($site) && $location_esc != "" && $location_abs != "")
     {
       // get names from name file pointer
@@ -1969,9 +1969,8 @@ function getlocationname ($site, $location, $cat, $source="path")
           // get parent location   
           $location_folder = getlocation ($location_folder);
         }
-        
         if ($cat == "page") $location_name = "/".$site."/".$location_name;
-        elseif ($cat == "comp") $location_name = "/".$location_name;        
+        elseif ($cat == "comp") $location_name = "/".$location_name;    
       }
       // get names from decoding the file path
       else
@@ -1983,7 +1982,7 @@ function getlocationname ($site, $location, $cat, $source="path")
         if ($root_abs != "") $location_name = str_replace ($root_abs, "", $location_esc);
         $location_name = specialchr_decode ($location_name);
       }
-      
+
       if ($location_name != "") return $location_name;
       else return false;
     }
@@ -3333,10 +3332,92 @@ function getfiletype ($file_ext)
   else return false;
 }
 
+// ---------------------- getpreviewwidth -----------------------------
+// function: getpreviewwidth()
+// input: publication name (optional), path to file or file name, original width (optional)
+// output: result array with width and height / false on error
+
+// description:
+// Returns the default preview/annotation width in pixel of a document, image, or video
+
+function getpreviewwidth ($site, $filepath, $width_orig="")
+{
+  global $mgmt_config, $hcms_ext;
+  
+  $default_width = 576;
+  
+  if (valid_locationname ($filepath))
+  {
+    // image
+    if (is_video ($filepath))
+    {
+      if ($site != "" && !empty ($mgmt_config[$site]['preview_video_width']) && $mgmt_config[$site]['preview_video_width'] == "original" && $width_orig > 0)
+      {
+         $default_width = $width_orig;
+      }
+      elseif ($site != "" && !empty ($mgmt_config[$site]['preview_video_width']) && $mgmt_config[$site]['preview_video_width'] > 220)
+      {
+         $default_width = $mgmt_config[$site]['preview_video_width'];
+      }
+      elseif (!empty ($mgmt_config['preview_video_width']) && $mgmt_config['preview_video_width'] == "original" && $width_orig > 0)
+      {
+         $default_width = $width_orig;
+      }
+      elseif (!empty ($mgmt_config['preview_video_width']) && $mgmt_config['preview_video_width'] > 220)
+      {
+         $default_width = $mgmt_config['preview_video_width'];
+      }
+    }
+    // video
+    elseif (is_image ($filepath) || is_rawimage ($filepath))
+    {
+      if ($site != "" && !empty ($mgmt_config[$site]['preview_image_width']) && $mgmt_config[$site]['preview_image_width'] == "original" && $width_orig > 0)
+      {
+         $default_width = $width_orig;
+      }
+      elseif ($site != "" && !empty ($mgmt_config[$site]['preview_image_width']) && $mgmt_config[$site]['preview_image_width'] > 220)
+      {
+        $default_width = $mgmt_config[$site]['preview_image_width'];
+      }
+      elseif (!empty ($mgmt_config['preview_image_width']) && $mgmt_config['preview_image_width'] == "original" && $width_orig > 0)
+      {
+         $default_width = $width_orig;
+      }
+      elseif (!empty ($mgmt_config['preview_image_width']) && $mgmt_config['preview_image_width'] > 220)
+      {
+        $default_width = $mgmt_config['preview_image_width'];
+      }
+    }
+    // document
+    elseif (is_document ($filepath))
+    {
+      if ($site != "" && !empty ($mgmt_config[$site]['preview_document_width']) && $mgmt_config[$site]['preview_document_width'] == "original" && $width_orig > 0)
+      {
+         $default_width = $width_orig;
+      }
+      elseif ($site != "" && !empty ($mgmt_config[$site]['preview_document_width']) && $mgmt_config[$site]['preview_document_width'] > 220)
+      {
+         $default_width = $mgmt_config[$site]['preview_document_width'];
+      }
+      elseif (!empty ($mgmt_config['preview_document_width']) && $mgmt_config['preview_document_width'] == "original" && $width_orig > 0)
+      {
+         $default_width = $width_orig;
+      }
+      elseif (!empty ($mgmt_config['preview_document_width']) && $mgmt_config['preview_document_width'] > 220)
+      {
+         $default_width = $mgmt_config['preview_document_width'];
+      }
+    }
+  }
+
+  if ($default_width > 0) return $default_width;
+  else return 576;
+}
+
 // ---------------------- getpdfinfo -----------------------------
 // function: getpdfinfo()
 // input: path to PDF file, box attribute [BleedBox,CropBox,MediaBox] (optional)
-// output: result array with width and height as keys / false on error
+// output: result array with width and height / false on error
 
 // description:
 // Extracts width and height in pixel of a PDF file based on the MediaBox in the filex content or ImageMagick as fallback
@@ -3789,7 +3870,7 @@ function getmedialocation ($site, $file, $type)
     // include rule from external file (must return a value)   
     if (is_file ($mgmt_config['abs_path_data']."media/getmedialocation.inc.php"))
     {
-      include ($mgmt_config['abs_path_data']."media/getmedialocation.inc.php");
+      require ($mgmt_config['abs_path_data']."media/getmedialocation.inc.php");
     }
     
     // get file name
@@ -3825,7 +3906,7 @@ function getmedialocation ($site, $file, $type)
                 
                 return $targetroot;
               } 
-              // file
+              // directory path
               else
               {
                 return $result;

@@ -1397,4 +1397,6 @@ $hcms_lang['existing-objects-will-be-replaced']['ja'] = "既存のオブジェ�
 $hcms_lang['import-list-comma-delimited']['ja'] = "CSVインポート";
 $hcms_lang['upload-csv-file']['ja'] = "同じ場所にあるオブジェクトのメタデータ/コンテンツをインポートするためのCSVファイルをアップロードする（列のタイトルと識別子として 'Name'または 'ContainerID'を指定）";
 $hcms_lang['link-fields-with']['ja'] = "フィールドをリンクする";
+$hcms_lang['phone']['ja'] = "電話";
+$hcms_lang['optical-character-recognition']['ja'] = "光学式文字認識";
 ?>

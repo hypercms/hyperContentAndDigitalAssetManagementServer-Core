@@ -176,11 +176,13 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
 function correctnames ()
 {
   if (eval (document.forms['media'].elements['mediafile'])) document.forms['media'].elements['mediafile'].name = "<?php echo $art; ?>mediafile[<?php echo $id; ?>]";
+  
   if (eval (document.forms['media'].elements['mediaobject']))
   {
     document.forms['media'].elements['mediaobject_curr'].name = "<?php echo $art; ?>mediaobject_curr[<?php echo $id; ?>]";
     document.forms['media'].elements['mediaobject'].name = "<?php echo $art; ?>mediaobject[<?php echo $id; ?>]";
   }
+  
   if (eval (document.forms['media'].elements['mediaalttext'])) document.forms['media'].elements['mediaalttext'].name = "<?php echo $art; ?>mediaalttext[<?php echo $id; ?>]";
   if (eval (document.forms['media'].elements['mediaalign'])) document.forms['media'].elements['mediaalign'].name = "<?php echo $art; ?>mediaalign[<?php echo $id; ?>]";
   if (eval (document.forms['media'].elements['mediawidth'])) document.forms['media'].elements['mediawidth'].name = "<?php echo $art; ?>mediawidth[<?php echo $id; ?>]";
@@ -297,10 +299,10 @@ function submitMediaType ()
   else return false;
 }
 
-function openBrWindowMedia(winName, features, type)
+function openBrWindowMedia (winName, features, type)
 {
   var url = document.forms['media'].elements['mediaobject'].value;
-  var theURL = "";
+  var url_result = "";
   
   if (url != "")
   {
@@ -309,7 +311,7 @@ function openBrWindowMedia(winName, features, type)
       if (url.indexOf('://') == -1)
       {
         var position1 = url.indexOf("/");
-        theURL = '<?php echo $mgmt_config['url_path_comp']; ?>' + theURL.substring (position1+1, theURL.length);
+        url_result = '<?php echo $mgmt_config['url_path_comp']; ?>' + url.substring (position1+1, url.length);
       }
     }
     else if (type == "cmsview")  
@@ -326,15 +328,15 @@ function openBrWindowMedia(winName, features, type)
         location_site = location_site.substring(0, location_site.indexOf('/'));
         location_site = escape (location_site);
         
-        var page_comp = theURL.substr (position2+1, url.length);
+        var page_comp = url.substr (position2+1, url.length);
         page_comp = escape (page_comp);
         
-        theURL = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_content.php?ctrlreload=yes&cat=comp&site=' + location_site + '&location=' + location_comp + '&page=' + page_comp + '&user=<?php echo $user; ?>';
+        url_result = '<?php echo $mgmt_config['url_path_cms']; ?>frameset_content.php?ctrlreload=yes&cat=comp&site=' + location_site + '&location=' + location_comp + '&page=' + page_comp + '&user=<?php echo $user; ?>';
       }
       else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['this-is-an-external-link'][$lang], $charset, $lang); ?>'));
     }
     
-    if (theURL != "") hcms_openWindow (theURL, winName, features, <?php echo windowwidth ("object"); ?>, <?php echo windowheight ("object"); ?>);
+    if (url_result != "") hcms_openWindow (url_result, winName, features, <?php echo windowwidth ("object"); ?>, <?php echo windowheight ("object"); ?>);
   }
   else alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['no-file-selected'][$lang], $charset, $lang); ?>'));  
 }

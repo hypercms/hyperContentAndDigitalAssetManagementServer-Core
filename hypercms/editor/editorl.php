@@ -121,11 +121,15 @@ if ($contentbot == false)
 // set default value given eventually by tag
 if ($contentbot == "" && $default != "") $contentbot = $default;
 
-// escape special characters
-$list = str_replace (array("\"", "<", ">"), array("&quot;", "&lt;", "&gt;"), $list);  
-
-// get list entries
-$list_array = explode ("|", $list);
+if (!empty ($list))
+{
+  // escape special characters
+  $list = str_replace (array("\"", "<", ">"), array("&quot;", "&lt;", "&gt;"), $list);  
+  
+  // get list entries
+  $list = rtrim ($list, "|");
+  $list_array = explode ("|", $list);
+}
 ?>
 
 <!-- top bar -->
@@ -154,9 +158,26 @@ $list_array = explode ("|", $list);
         <br />
         <select name="<?php echo $tagname."[".$id."]"; ?>">
         <?php
-        foreach ($list_array as $list_entry)
+        if (!empty ($list_array) && is_array ($list_array))
         {
-          echo "<option value=\"".$list_entry."\""; if ($list_entry == $contentbot) echo " selected"; echo ">".$list_entry."</option>\n";
+          foreach ($list_array as $list_entry)
+          {
+            $list_entry = trim ($list_entry);
+            $end_val = strlen ($list_entry)-1;
+            
+            if (($start_val = strpos($list_entry, "{")) > 0 && strpos($list_entry, "}") == $end_val)
+            {
+              $diff_val = $end_val-$start_val-1;
+              $list_value = substr ($list_entry, $start_val+1, $diff_val);
+              $list_text = substr ($list_entry, 0, $start_val);
+            } 
+            else $list_value = $list_text = $list_entry;
+              
+            echo "
+                <option value=\"".$list_value."\""; 
+            if ($list_value == $contentbot) echo " selected"; 
+            echo  ">".$list_text."</option>";
+          }
         }
         ?>
         </select>

@@ -299,7 +299,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
         
         // remove freespaces
         $textcontent = trim ($text[$id]);  
-  
+
         // if microtime is added
         if ($addmicrotime === true) 
         {

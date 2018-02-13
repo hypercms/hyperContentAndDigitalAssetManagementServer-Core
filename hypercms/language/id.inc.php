@@ -1398,4 +1398,6 @@ $hcms_lang['existing-objects-will-be-replaced']['id'] = "Benda yang ada akan dig
 $hcms_lang['import-list-comma-delimited']['id'] = "Impor CSV";
 $hcms_lang['upload-csv-file']['id'] = "Unggah file CSV untuk mengimpor metadata/konten untuk objek di lokasi yang sama (Sediakan 'Name' atau 'ContainerID' sebagai judul dan pengenal kolom)";
 $hcms_lang['link-fields-with']['id'] = "Hubungkan kolom dengan";
+$hcms_lang['phone']['id'] = "Telepon";
+$hcms_lang['optical-character-recognition']['id'] = "Pengenalan Karakter Optik";
 ?>

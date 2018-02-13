@@ -902,6 +902,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
       update_database_v625 ();
       $update = update_database_v705 ($mgmt_config['abs_path_comp'], true);
       if ($update) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.5|updated to version 7.0.5"), "update");
+      update_users_706 ();
     
       // get encoding (before version 5.5 encoding was empty and was saved as ISO 8859-1)
       $charset = getcharset ("", $userdata); 

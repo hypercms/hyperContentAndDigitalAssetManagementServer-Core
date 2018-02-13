@@ -1397,4 +1397,6 @@ $hcms_lang['existing-objects-will-be-replaced']['cz'] = "Stávající objekty bu
 $hcms_lang['import-list-comma-delimited']['cz'] = "Import CSV";
 $hcms_lang['upload-csv-file']['cz'] = "Nahrát soubor CSV pro import metadat/obsahu pro objekty ve stejném umístění (uveďte jako název a identifikátor sloupce 'Name' nebo 'ContainerID')";
 $hcms_lang['link-fields-with']['cz'] = "Propojte pole s";
+$hcms_lang['phone']['cz'] = "Telefon";
+$hcms_lang['optical-character-recognition']['cz'] = "Optické rozpoznávání znaků";
 ?>

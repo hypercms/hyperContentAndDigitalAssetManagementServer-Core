@@ -28,6 +28,7 @@ $realname = getrequest_esc ("realname");
 $language = getrequest_esc ("language");
 $theme = getrequest_esc ("theme", "objectname");
 $email = getrequest_esc ("email");
+$phone = getrequest_esc ("phone");
 $signature = getrequest_esc ("signature");
 $usergroup = getrequest_esc ("usergroup");
 $usersite = getrequest_esc ("usersite");
@@ -94,7 +95,7 @@ if ($action == "user_save" && ($site == "*Null*" || checkpublicationpermission (
     }
 
     // edit user settings
-    $result = edituser ($site, $login, $old_password, $password, $confirm_password, $superadmin, $realname, $language, $theme, $email, $signature, $usergroup, $usersite, $user);
+    $result = edituser ($site, $login, $old_password, $password, $confirm_password, $superadmin, $realname, $language, $theme, $email, $phone, $signature, $usergroup, $usersite, $user);
 
     $show = $result['message'];
   }
@@ -306,7 +307,10 @@ if ($login != "" && $login != false)
 
   $superadminarray = getcontent ($userrecord[0], "<admin>");
   $superadmin = $superadminarray[0];
-    
+
+  $phonearray = getcontent ($userrecord[0], "<phone>");
+  $phone = $phonearray[0];
+  
   $emailarray = getcontent ($userrecord[0], "<email>");
   $email = $emailarray[0];
   
@@ -397,6 +401,12 @@ if ($login != "" && $login != false)
       <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?> </td>
       <td align="right">
         <input type="text" name="email" style="width:200px;" value="<?php echo $email; ?>" />
+      </td>
+    </tr>
+    <tr>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['phone'][$lang]); ?> </td>
+      <td align="right">
+        <input type="text" name="phone" style="width:200px;" value="<?php echo $phone; ?>" />
       </td>
     </tr>
     <tr>

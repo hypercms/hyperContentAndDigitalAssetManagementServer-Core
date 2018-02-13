@@ -1162,8 +1162,8 @@ function rdbms_getmedia ($container_id, $extended=false)
     $container_id = intval ($container_id);  
     
     // get media info
-    if ($extended == true) $sql = 'SELECT med.*, cnt.createdate, cnt.date, cnt.latitude, cnt.longitude, cnt.user FROM media AS med, container AS cnt WHERE med.id=cnt.id AND med.id='.intval($container_id).'';   
-    else $sql = 'SELECT * FROM media WHERE id="'.$container_id.'"';   
+    if ($extended == true) $sql = 'SELECT med.*, cnt.createdate, cnt.date, cnt.latitude, cnt.longitude, cnt.user FROM media AS med RIGHT JOIN container AS cnt ON med.id=cnt.id WHERE cnt.id='.$container_id;   
+    else $sql = 'SELECT * FROM media WHERE id='.$container_id;   
 
     $errcode = "50067";
     $done = $db->query ($sql, $errcode, $mgmt_config['today']);
@@ -1787,20 +1787,69 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     // query file name (transform special characters)
     if (!empty ($expression_filename))
     {
-      $expression_filename = str_replace ("*", "-hcms_A-", $expression_filename); 
-      $expression_filename = str_replace ("?", "-hcms_Q-", $expression_filename); 
-      $expression_filename = specialchr_encode ($expression_filename); 
-      $expression_filename = str_replace ("-hcms_A-", "*", $expression_filename); 
-      $expression_filename = str_replace ("-hcms_Q-", "?", $expression_filename);
-       
-      $expression_filename_conv = $expression_filename;
-      $expression_filename_conv = str_replace ("*", "%", $expression_filename_conv);
-      $expression_filename_conv = str_replace ("?", "_", $expression_filename_conv);      
-      if (substr_count ($expression_filename_conv, "%") == 0) $expression_filename_conv = "%".$expression_filename_conv."%";
+      $temp_array = array();
+      $sql_where['filename'] = "";
       
-      $expression_filename_conv = $db->escape_string ($expression_filename_conv);
-
-      $sql_where['filename'] = 'obj.objectpath LIKE _utf8"'.$expression_filename_conv.'"';
+      if (substr_count ($expression_filename, " AND ") > 0)
+      {
+        $temp_array[' AND '] = explode (" AND ", $expression_filename);
+      }
+      
+      if (substr_count ($expression_filename, " OR ") > 0)
+      {
+        $temp_array[' OR '] = explode (" OR ", $expression_filename);
+      }
+      
+      if (empty ($temp_array[' AND ']) && empty ($temp_array[' OR '])) $temp_array['none'][0] = $expression_filename;
+      
+      foreach ($temp_array as $temp_operator => $temp2_array)
+      {
+        foreach ($temp2_array as $temp_expression)
+        {
+          $temp_expression_2 = "";
+          
+          // escape
+          $temp_expression = str_replace ("*", "-hcms_A-", $temp_expression);
+          $temp_expression = str_replace ("?", "-hcms_Q-", $temp_expression);
+          $temp_expression = str_replace ("\"", "-hcms_DQ-", $temp_expression);
+          
+          // transform
+          $temp_expression = specialchr_encode ($temp_expression);
+          
+          // unescape
+          $temp_expression = str_replace ("-hcms_DQ-", "\"", $temp_expression);
+          $temp_expression = str_replace ("-hcms_A-", "*", $temp_expression);
+          $temp_expression = str_replace ("-hcms_Q-", "?", $temp_expression);
+           
+          $temp_expression = trim ($temp_expression);
+          $temp_expression = str_replace ("*", "%", $temp_expression);
+          $temp_expression = str_replace ("?", "_", $temp_expression);
+          if (substr_count ($temp_expression, "%") == 0) $temp_expression = "%".$temp_expression."%";
+          
+          // no exact expression
+          if (substr_count ($temp_expression, "\"") < 2)
+          {
+            // replace spaces with wildcard
+            if (strpos ($temp_expression, "~20") > 0)
+            {
+              $temp_expression_2 = str_replace ("~20", "%", $temp_expression);
+            }
+          }
+          
+          // remove double quotes
+          $temp_expression = str_replace ("\"", "", $temp_expression);
+          
+          $temp_expression = $db->escape_string ($temp_expression);
+          if (!empty ($temp_expression_2)) $temp_expression_2 = $db->escape_string ($temp_expression_2);
+          
+          // operator
+          if ($temp_operator != "none" && $sql_where['filename'] != "") $sql_where['filename'] .= $temp_operator;
+          
+          // must be case insensitive
+          if (!empty ($temp_expression_2)) $sql_where['filename'] .= '(obj.objectpath LIKE "'.$temp_expression.'" OR obj.objectpath LIKE "'.$temp_expression_2.'")';
+          else $sql_where['filename'] .= 'obj.objectpath LIKE "'.$temp_expression.'"';
+        }
+      }
     }   
     
     // query dates and geo location (add table container)
@@ -1904,8 +1953,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         {
           $taxonomy_ids = array();
 
-          // search in taxonomy
-          if (!empty ($site) && !empty ($mgmt_config[$site]['taxonomy']))
+          // search in taxonomy (if no operator is used)
+          if (strpos ($expression, " AND ") < 1 && strpos ($expression, " OR ") < 1 && !empty ($site) && !empty ($mgmt_config[$site]['taxonomy']))
           {
             // if no exact search for the expression is requested, use taxonomy
             if (empty ($mgmt_config['search_exact']))
@@ -1919,39 +1968,42 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           if (!empty ($taxonomy_ids) && is_array ($taxonomy_ids) && sizeof ($taxonomy_ids) > 0)
           {
             // advanced text-ID based search in taxonomy
-            if ($expression != "" && $key != "" && $key != "0")
+            if ($expression != "")
             {
-              // add taxonomy table
-              if ($i_tx == 1)
+              if ($key != "" && $key != "0")
               {
-                $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
-              }
-              elseif ($i_tx > 1)
-              {
-                $j = $i_tx - 1;
-                $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx'.$i_tx.' ON tx'.$j.'.id=tx'.$i_tx.'.id';
-              }
-
-              $sql_expr_advanced[$i] .= '(tx'.$i_tx.'.text_id="'.$key.'" AND tx'.$i_tx.'.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).'))';
-                
-              $i_tx++;
-            }
-            // general search in taxonomy (only one search expression possible -> break out of loop)
-            elseif ($expression != "")
-            {
-              // add taxonomy table
-              $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
-              
-              $sql_expr_advanced[$i] = 'tx1.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).')';
+                // add taxonomy table
+                if ($i_tx == 1)
+                {
+                  $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
+                }
+                elseif ($i_tx > 1)
+                {
+                  $j = $i_tx - 1;
+                  $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx'.$i_tx.' ON tx'.$j.'.id=tx'.$i_tx.'.id';
+                }
   
-              break;
+                $sql_expr_advanced[$i] .= '(tx'.$i_tx.'.text_id="'.$key.'" AND tx'.$i_tx.'.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).'))';
+                  
+                $i_tx++;
+              }
+              // general search in taxonomy (only one search expression possible -> break out of loop)
+              else
+              {
+                // add taxonomy table
+                $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
+                
+                $sql_expr_advanced[$i] = 'tx1.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).')';
+    
+                break;
+              }
             }
           }
           // search in textnodes table
           else
           {
-            // advanced text-ID based search in textnodes
-            if ((!empty ($mgmt_config['search_exact']) || $expression != "") && $key != "" && $key != "0")
+            // advanced text-ID based search in textnodes (if no operator is used)
+            if (strpos ($expression, " AND ") < 1 && strpos ($expression, " OR ") < 1 && (!empty ($mgmt_config['search_exact']) || $expression != "") && $key != "" && $key != "0")
             {         
               // get synonyms
               if (empty ($mgmt_config['search_exact'])) $synonym_array = getsynonym ($expression, @$lang);
@@ -1973,95 +2025,129 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   $sql_table['textnodes'] .= ' INNER JOIN textnodes AS tn'.$i_tn.' ON tn'.$j.'.id=tn'.$i_tn.'.id';
                 }
 
-                foreach ($synonym_array as $expression)
+                foreach ($synonym_array as $synonym_expression)
                 {
-                  $expression = html_decode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
-                  $expression_esc = html_encode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
+                  $synonym_expression_2 = "";
+                  
+                  $synonym_expression = trim ($synonym_expression);
+                  $synonym_expression = html_decode ($synonym_expression, convert_dbcharset ($mgmt_config['dbcharset']));
                   
                   // transform wild card characters for search
-                  $expression = str_replace ("%", '\%', $expression);
-                  $expression = str_replace ("_", '\_', $expression);          
-                  $expression = str_replace ("*", "%", $expression);
-                  $expression = str_replace ("?", "_", $expression);
+                  $synonym_expression = str_replace ("%", '\%', $synonym_expression);
+                  $synonym_expression = str_replace ("_", '\_', $synonym_expression);          
+                  $synonym_expression = str_replace ("*", "%", $synonym_expression);
+                  $synonym_expression = str_replace ("?", "_", $synonym_expression);
+                  if (substr_count ($synonym_expression, "\"") < 2) $synonym_expression_2 = str_replace (" ", "%", $synonym_expression);
                   
-                  $expression = $db->escape_string ($expression);
+                  // remove double quotes
+                  $synonym_expression = str_replace ("\"", "", $synonym_expression);
                   
+                  $synonym_expression = $db->escape_string ($synonym_expression);
+                  if (!empty ($synonym_expression_2)) $synonym_expression_2 = $db->escape_string ($synonym_expression_2);
+
                   // use OR for synonyms
                   if ($r > 0) $sql_expr_advanced[$i] .= ' OR ';
         
                   // look for exact expression except for keyword
                   if (!empty ($mgmt_config['search_exact']) && $type != "textk")
                   {
-                    $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND LOWER(tn'.$i_tn.'.textcontent)=LOWER("'.$expression.'"))';
+                    $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND LOWER(tn'.$i_tn.'.textcontent)=LOWER("'.$synonym_expression.'"))';
                   }
                   // look for expression in content
                   else
                   {
-                    if ($expression != $expression_esc) $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (tn'.$i_tn.'.textcontent LIKE _utf8"%'.$expression.'%" OR tn'.$i_tn.'.textcontent LIKE _utf8"%'.$expression_esc.'%"))';
-                    else $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND tn'.$i_tn.'.textcontent LIKE _utf8"%'.$expression.'%")';
+                    if (!empty ($synonym_expression_2)) $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (tn'.$i_tn.'.textcontent LIKE _utf8"%'.$synonym_expression.'%" OR tn'.$i_tn.'.textcontent LIKE _utf8"%'.$synonym_expression_2.'%"))';
+                    else $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND tn'.$i_tn.'.textcontent LIKE _utf8"%'.$synonym_expression.'%")';
                   }
-
-                  // add brackets since OR is used
-                  if (!empty ($sql_expr_advanced[$i])) $sql_expr_advanced[$i] = "(".$sql_expr_advanced[$i].")";
  
                   $r++;
                 }
 
                 $i_tn++;
               }
+              
+              // operator
+              if ($temp_operator != "none" && $sql_expr_advanced[$i] != "") $sql_expr_advanced[$i] .= $temp_operator;
             }
             // general search in all textnodes
-            elseif (!empty ($mgmt_config['search_exact']) || $expression != "")
+            elseif (!empty ($mgmt_config['search_exact']) || $temp_expression != "")
             {
-              // get synonyms
-              if (empty ($mgmt_config['search_exact'])) $synonym_array = getsynonym ($expression, @$lang);
-              else $synonym_array = array ($expression);
-
-              $r = 0;
+              $temp_array = array();
               $sql_where_textnodes = "";
-
-              if (is_array ($synonym_array) && sizeof ($synonym_array) > 0)
-              { 
-                // add textnodes table (LEFT JOIN is important!)
-                $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tng ON obj.id=tng.id '.$sql_table['textnodes'];
-                  
-                foreach ($synonym_array as $expression)
-                {
-                  $expression = html_decode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
-                  $expression_esc = html_encode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
-                
-                  // transform wild card characters for search
-                  $expression = str_replace ("%", '\%', $expression);
-                  $expression = str_replace ("_", '\_', $expression);        
-                  $expression = str_replace ("*", "%", $expression);
-                  $expression = str_replace ("?", "_", $expression);
-
-                  $expression = $db->escape_string ($expression);
-                  
-                  // use OR for synonyms
-                  if ($r > 0) $sql_where_textnodes .= ' OR ';
-                  
-                  // look for exact expression
-                  if (!empty ($mgmt_config['search_exact']))
-                  {
-                    $sql_where_textnodes .= 'tng.textcontent="'.$expression.'"';
-                  }
-                  // look for expression in content
-                  else
-                  {
-                    if ($expression != $expression_esc) $sql_where_textnodes .= '(tng.textcontent LIKE _utf8"%'.$expression.'%" OR tng.textcontent LIKE _utf8"%'.$expression_esc.'%")';
-                    else $sql_where_textnodes .= 'tng.textcontent LIKE _utf8"%'.$expression.'%"';
-                  }
-                  
-                  $r++;
-                }
-
-                // add brackets since OR is used
-                if (!empty ($sql_where_textnodes)) $sql_where_textnodes = "(".$sql_where_textnodes.")";
+              
+              if (substr_count ($expression, " AND ") > 0)
+              {
+                $temp_array[' AND '] = explode (" AND ", $expression);
               }
               
-              // only one search expression possible -> break out of loop (disabled in version 6.1.35 to support the combination of a general search and detailed search)
-              // break;
+              if (substr_count ($expression, " OR ") > 0)
+              {
+                $temp_array[' OR '] = explode (" OR ", $expression);
+              }
+              
+              if (empty ($temp_array[' AND ']) && empty ($temp_array[' OR '])) $temp_array['none'][0] = $expression;
+              
+              foreach ($temp_array as $temp_operator => $temp2_array)
+              {
+                foreach ($temp2_array as $temp_expression)
+                {
+                  // get synonyms
+                  if (empty ($mgmt_config['search_exact'])) $synonym_array = getsynonym ($temp_expression, @$lang);
+                  else $synonym_array = array ($temp_expression);
+    
+                  $r = 0;
+    
+                  if (is_array ($synonym_array) && sizeof ($synonym_array) > 0)
+                  {
+                    // add textnodes table (LEFT JOIN is important!)
+                    if (strpos ($sql_table['textnodes'], "LEFT JOIN textnodes AS tng ON") < 1) $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tng ON obj.id=tng.id '.$sql_table['textnodes'];
+                      
+                    foreach ($synonym_array as $synonym_expression)
+                    {
+                      $synonym_expression = html_decode ($synonym_expression, convert_dbcharset ($mgmt_config['dbcharset']));
+                    
+                      // transform wild card characters for search
+                      $synonym_expression = str_replace ("%", '\%', $synonym_expression);
+                      $synonym_expression = str_replace ("_", '\_', $synonym_expression);        
+                      $synonym_expression = str_replace ("*", "%", $synonym_expression);
+                      $synonym_expression = str_replace ("?", "_", $synonym_expression);
+                      if (substr_count ($synonym_expression, "\"") < 2) $synonym_expression_2 = str_replace (" ", "%", $synonym_expression);
+                      
+                      // remove double quotes
+                      $synonym_expression = str_replace ("\"", "", $synonym_expression);
+    
+                      $synonym_expression = $db->escape_string ($synonym_expression);
+                      if (!empty ($synonym_expression_2)) $synonym_expression_2 = $db->escape_string ($synonym_expression_2);
+
+                      // operator
+                      if ($temp_operator != "none" && $sql_where_textnodes != "") $sql_where_textnodes .= $temp_operator;
+                    
+                      // use OR for synonyms
+                      if ($r > 0) $sql_where_textnodes .= ' OR ';
+                      
+                      // look for exact expression
+                      if (!empty ($mgmt_config['search_exact']))
+                      {
+                        $sql_where_textnodes .= 'tng.textcontent="'.$synonym_expression.'"';
+                      }
+                      // look for expression in content
+                      else
+                      {
+                        if (!empty ($synonym_expression_2)) $sql_where_textnodes .= '(tng.textcontent LIKE _utf8"%'.$synonym_expression.'%" OR tng.textcontent LIKE _utf8"%'.$synonym_expression_2.'%")';
+                        else $sql_where_textnodes .= 'tng.textcontent LIKE _utf8"%'.$synonym_expression.'%"';
+                      }
+                      
+                      $r++;
+                    }
+    
+                    // add brackets since OR is used
+                    if (!empty ($sql_where_textnodes)) $sql_where_textnodes = "(".$sql_where_textnodes.")";
+                  }
+                  
+                  // only one search expression possible -> break out of loop (disabled in version 6.1.35 to support the combination of a general search and detailed search)
+                  // break;
+                }
+              }
             }
           }
         }
@@ -2088,7 +2174,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       // add search in object names and create final SQL where statement for search in content and object names
       if (!empty ($sql_where['filename']))
       {
-        $sql_where['textnodes'] = "(".$sql_where_textnodes." OR ".$sql_where['filename'].")";
+        $sql_where['textnodes'] = "(".$sql_where_textnodes." OR (".$sql_where['filename']."))";
         // clear where condition for file name
         unset ($sql_where['filename']);
       }
@@ -2492,7 +2578,6 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
       $expression = $search_expression;
       
       $expression = html_decode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
-      $expression_esc = html_encode ($expression, convert_dbcharset ($mgmt_config['dbcharset']));
 
       // transform wild card characters for search
       $expression = str_replace ("%", '\%', $expression);
@@ -2502,8 +2587,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
 
       $expression = $db->escape_string ($expression);
 
-      if ($expression != $expression_esc) $sql_where['expression'] = '(tn1.textcontent LIKE _utf8"%'.$expression.'%" COLLATE utf8_bin OR tn1.textcontent LIKE _utf8"%'.$expression_esc.'%" COLLATE utf8_bin)';
-      else $sql_where['textnodes'] = 'tn1.textcontent LIKE _utf8"%'.$expression.'%" COLLATE utf8_bin';
+      $sql_where['textnodes'] = 'tn1.textcontent LIKE _utf8"%'.$expression.'%" COLLATE utf8_bin';
     }    
     
     $sql = 'SELECT obj.objectpath, obj.hash, cnt.id, cnt.container, tn1.text_id, tn1.textcontent FROM object AS obj INNER JOIN container AS cnt ON cnt.id=obj.id INNER JOIN textnodes AS tn1 ON tn1.id=cnt.id';
@@ -2606,7 +2690,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
                   if (substr_count ($xml_content[0], $search_expression_esc) > 0 || substr_count ($xml_content[0], $search_expression) > 0)
                   {
                     // replace expression in textcontent
-                    $xml_replace = str_replace ($search_expression, $replace_expression_esc, $xml_content[0]);
+                    $xml_replace = str_replace ($search_expression, $replace_expression, $xml_content[0]);
                     
                     if ($search_expression != $search_expression_esc)
                     {

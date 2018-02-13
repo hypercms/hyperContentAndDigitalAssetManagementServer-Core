@@ -49,19 +49,90 @@ function correctnumber ($number)
 // input: text as string or array, character set (optional)
 // output: cleaned text / false on error
 
+// description:
+// Removes all HTML tags, scripts and other special characters from the content in order to creaet a plain text
+
 function cleancontent ($text, $charset="UTF-8")
 {
   global $mgmt_config;
+  
+  // list of preg* regular expression patterns to search for, used in conjunction with $replace
+  $search = array(
+    "/\r/",                                           // Non-legal carriage return
+    "/[\n\t]+/",                                    // Newlines and tabs
+    '/<head\b[^>]*>.*?<\/head>/i',        // <head>
+    '/<script\b[^>]*>.*?<\/script>/i',      // <script>s -- which strip_tags supposedly has problems with
+    '/<style\b[^>]*>.*?<\/style>/i',        // <style>s -- which strip_tags supposedly has problems with
+    '/<i\b[^>]*>(.*?)<\/i>/i',                 // <i>
+    '/<em\b[^>]*>(.*?)<\/em>/i',           // <em>
+    '/(<ul\b[^>]*>|<\/ul>)/i',                 // <ul> and </ul>
+    '/(<ol\b[^>]*>|<\/ol>)/i',                 // <ol> and </ol>
+    '/(<dl\b[^>]*>|<\/dl>)/i',                 // <dl> and </dl>
+    '/<li\b[^>]*>(.*?)<\/li>/i',                // <li> and </li>
+    '/<dd\b[^>]*>(.*?)<\/dd>/i',            // <dd> and </dd>
+    '/<dt\b[^>]*>(.*?)<\/dt>/i',             // <dt> and </dt>
+    '/<li\b[^>]*>/i',                              // <li>
+    '/<hr\b[^>]*>/i',                             // <hr>
+    '/<div\b[^>]*>/i',                            // <div>
+    '/(<table\b[^>]*>|<\/table>)/i',         // <table> and </table>
+    '/(<tr\b[^>]*>|<\/tr>)/i',                  // <tr> and </tr>
+    '/<td\b[^>]*>(.*?)<\/td>/i',              // <td> and </td>
+    '/<span class="_html2text_ignore">.+?<\/span>/i', // <span class="_html2text_ignore">...</span>
+    '/<(img)\b[^>]*alt=\"([^>"]+)\"[^>]*>/i',   // <img> with alt tag
+  );
+    
+  // list of pattern replacements corresponding to patterns searched
+  $replace = array(
+    '',                              // Non-legal carriage return
+    ' ',                             // Newlines and tabs
+    '',                              // <head>
+    '',                              // <script>s -- which strip_tags supposedly has problems with
+    '',                              // <style>s -- which strip_tags supposedly has problems with
+    '_\\1_',                       // <i>
+    '_\\1_',                       // <em>
+    "\n\n",                        // <ul> and </ul>
+    "\n\n",                        // <ol> and </ol>
+    "\n\n",                        // <dl> and </dl>
+    "\t* \\1\n",                  // <li> and </li>
+    " \\1\n",                      // <dd> and </dd>
+    "\t* \\1",                     // <dt> and </dt>
+    "\n\t* ",                      // <li>
+    "\n-------------------------\n", // <hr>
+    "<div>\n",                    // <div>
+    "\n\n",                         // <table> and </table>
+    "\n",                            // <tr> and </tr>
+    "\t\t\\1\n",                   // <td> and </td>
+    "",                               // <span class="_html2text_ignore">...</span>
+    '[\\2]',                          // <img> with alt tag
+  );
+
+  // list of preg* regular expression patterns to search for, used in conjunction with $entReplace
+  $entSearch = array(
+    '/&#153;/i',                                     // TM symbol in win-1252
+    '/&#151;/i',                                     // m-dash in win-1252
+    '/&(amp|#38);/i',                             // Ampersand: see converter()
+    '/[ ]{2,}/',                                     // Runs of spaces, post-handling
+    );
+
+  // list of pattern replacements corresponding to patterns searched
+  $entReplace = array(
+    '™',         // TM symbol
+    '—',         // m-dash
+    '|+|amp|+|', // Ampersand: see converter()
+    ' ',         // Runs of spaces, post-handling
+  );
   
   if ($text != "" && $charset != "")
   {
     if (!is_array ($text))
     {
+      // clean up tags
+      $text = preg_replace ($search, $replace, $text);
+      $text = strip_tags ($text);
+      $text = preg_replace ($entSearch, $entReplace, $text);
+      
       // decode characters
       $text = html_decode ($text, $charset);
-      
-      // remove tags
-      $text = strip_tags ($text);
   
       // replace characters
       $text = str_replace (array(".....", "....", "...", ".."), ".", $text);
@@ -1153,7 +1224,7 @@ function correctpath ($path, $slash="/")
 // description:
 // This function replaces object pathes of the content management config with %page% and %comp% path variables
 
-function convertpath ($site, $path, $cat)
+function convertpath ($site, $path, $cat="")
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
@@ -1199,7 +1270,7 @@ function convertpath ($site, $path, $cat)
           {
             $path = str_replace ($path_page_url, $root_var_url, $path);
           }
-          else 
+          elseif (substr_count ($path, $path_page_url) > 0)
           {
             $path_page_url = cleandomain ($path_page_url);
             $path = cleandomain ($path);
@@ -1232,7 +1303,7 @@ function convertpath ($site, $path, $cat)
           {
             $path = str_replace ($path_comp_url, $root_var_url, $path);
           }
-          else 
+          elseif (substr_count ($path, $path_comp_url) > 0)
           {
             $path_comp_url = cleandomain ($path_comp_url);
             $path = cleandomain ($path);
@@ -2207,7 +2278,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
       
       // get content container location
       $versiondir = getcontentlocation ($container_id, 'abs_path_content');
-      
+
       // get media file locations
       if ($mediafile != "")
       {
@@ -2235,7 +2306,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
         }
         
         // STEP 2
-        // make the selected older version the actual/latest version
+        // make the selected, older version the actual/latest version
         if (!empty ($createversion))
         {  
           // load working container
@@ -3368,7 +3439,7 @@ function preparemediafile ($site, $medialocation, $mediafile, $user="")
 function deletemediafiles ($site, $mediafile, $delete_original=false)
 {
   global $user, $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext, $hcms_lang, $lang;
-  
+
   if (valid_publicationname ($site) && valid_objectname ($mediafile) && !empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_rep']))
   {
     // define media location in repository
@@ -3396,6 +3467,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
     $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb.jpg";
     // local media file
     deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
+
     // cloud storage
     if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_thumb, $user);
     // remote client
@@ -3413,7 +3485,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
     // documents annotation files (test for 1st page)
     $docfile_annotation = substr ($mediafile, 0, strrpos ($mediafile, ".")).".annotation";
     
-    if (is_document ($mediafile) && (is_file ($medialocation.$site."/".$docfile_annotation."-0.jpg") || is_cloudobject ($medialocation.$site."/".$docfile_annotation."-0.jpg")))
+    if (is_file ($medialocation.$site."/".$docfile_annotation."-0.jpg") || is_cloudobject ($medialocation.$site."/".$docfile_annotation."-0.jpg"))
     { 
       for ($p=0; $p<=10000; $p++)
       {
@@ -4015,7 +4087,7 @@ function loadcontainer ($container, $type="work", $user)
 // ----------------------------------------- savecontainer ---------------------------------------------
 // function: savecontainer()
 // input: container file name or container id (working container will be loaded by default), optional container type [published,work,version], container content, user, 
-//        save container initally [true,false] (optional)
+//          save container initally [true,false] (optional)
 // output: true / false on error
 // requires: config.inc.php to be loaded before
 
@@ -4102,7 +4174,7 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
   $workflow_name = "";
   $workflow_xml = "";
   $wf_id = "";
-  $wf_role = "";
+  $wf_role = 5;
   $wf_token = "";
   
   // do not execute for container versions
@@ -4438,11 +4510,6 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
   
           $wf_role = 0;
         }  
-      }
-      // if there is no workflow attached
-      else 
-      {
-        $wf_role = 5;
       }
       
       // define workflow token
@@ -5064,7 +5131,7 @@ function createinstance ($instance_name, $settings, $user="sys")
       // edit admin user
       if ($show == "")
       {
-        $result = edituser ("*Null*", $username, "", $settings['password'], $settings['confirm_password'], "1", $settings['realname'], $settings['language'], "standard", $settings['email'], "", "", "", $user);
+        $result = edituser ("*Null*", $username, "", $settings['password'], $settings['confirm_password'], "1", $settings['realname'], $settings['language'], "standard", $settings['email'], "", "", "", "", $user);
         if ($result['result'] == false) $show = "<span class=hcmsHeadline>".$result['message']."</span><br />\n";
       }
     }
@@ -5872,6 +5939,10 @@ function editpublication ($site_name, $setting, $user="sys")
     if (array_key_exists('translate', $setting)) $translate_new = $setting['translate'];
     else $translate_new = "";
     
+        // set languages for OCR
+    if (array_key_exists('ocr', $setting)) $ocr_new = $setting['ocr'];
+    else $ocr_new = "";
+    
     // config file of management system
     $site_mgmt_config = "<?php
 // ---------------------------------- content management server ----------------------------------------
@@ -5989,6 +6060,10 @@ function editpublication ($site_name, $setting, $user="sys")
 // Enable translation
 // enabled languages for translation service
 \$mgmt_config['".$site_name."']['translate'] = \"".$translate_new."\";
+
+// Enable OCR languages
+// enabled languages for OCR
+\$mgmt_config['".$site_name."']['ocr'] = \"".$ocr_new."\";
 
 ";
   $site_mgmt_config .= "
@@ -7319,13 +7394,13 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
 // ------------------------------------------- edituser --------------------------------------------
 // function: edituser()
 // input: publication name, login name, new login name, password, confirmed password, super administrator [0,1], real name, language setting [de,en], 
-//        theme name (optional), email, usergroup string [group1|group2], member of site(s) string [site1|site2]], user name
+//        theme name (optional), email, phone, usergroup string [group1|group2], member of site(s) string [site1|site2]], user name
 // output: array
 
 // description:
 // This function edits a user
 
-function edituser ($site, $login, $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="", $language="en", $theme="", $email="", $signature="", $usergroup="", $usersite="", $user="sys")
+function edituser ($site, $login, $old_password="", $password="", $confirm_password="", $superadmin="0", $realname="", $language="en", $theme="", $email="", $phone="", $signature="", $usergroup="", $usersite="", $user="sys")
 {
   global $eventsystem, $login_cat, $group, $mgmt_config, $hcms_lang, $lang;
 
@@ -7366,7 +7441,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
       {
         $userdata = str_replace ("</language>", "</language>\n<theme>".$theme."</theme>", $userdata);
       }         
-            
+ 
       // check if password was changed
       if ($password != "")
       {        
@@ -7378,7 +7453,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           $userpasswd = getcontent ($usernode[0], "<password>");
           $usersuperadmin = getcontent ($usernode[0], "<admin>");
         }
-              
+
         if ($login == $user && !empty ($userpasswd[0]) && !password_verify ($old_password, $userpasswd[0]) && crypt ($old_password, substr ($old_password, 1, 2)) != $userpasswd[0])
         {
           //unlock file
@@ -7430,7 +7505,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           $userdata = setcontent ($userdata, "<user>", "<hashcode>", $hashcode, "<login>", $login);
         }
       }
-      
+
       // check if super admin was changed
       if ($superadmin == "1" || $superadmin == "0")
       {              
@@ -7448,7 +7523,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         // insert values into xml schema
         $userdata = setcontent ($userdata, "<user>", "<realname>", "<![CDATA[".$realname."]]>", "<login>", $login);
       }
-    
+
       // check if lanuage was changed
       if (valid_objectname ($language) && $show == "")
       {
@@ -7459,7 +7534,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         // insert values into xml schema
         $userdata = setcontent ($userdata, "<user>", "<language>", $language, "<login>", $login);
       }
-      
+
       // check if theme was changed
       if (valid_objectname ($theme) && $show == "")
       {
@@ -7470,7 +7545,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         // insert values into xml schema
         $userdata = setcontent ($userdata, "<user>", "<theme>", $theme, "<login>", $login);
       }      
-  
+
       // check if email was changed
       if (isset ($email) && $show == "")
       {
@@ -7479,8 +7554,18 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
               
         // insert values into xml schema
         $userdata = setcontent ($userdata, "<user>", "<email>", "<![CDATA[".$email."]]>", "<login>", $login);
+      }
+
+      // check if phone was changed
+      if (isset ($phone) && $show == "")
+      {
+        // escape special characters
+        $phone = strip_tags ($phone);
+              
+        // insert values into xml schema
+        $userdata = setcontent ($userdata, "<user>", "<phone>", "<![CDATA[".$phone."]]>", "<login>", $login);
       }  
-      
+
       // check if email was changed
       if (isset ($signature) && $show == "")
       {
@@ -7490,7 +7575,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
         // insert values into xml schema
         $userdata = setcontent ($userdata, "<user>", "<signature>", "<![CDATA[".$signature."]]>", "<login>", $login);
       }      
-    
+
       // check if usergroup was changed
       if (isset ($usergroup) && valid_objectname ($usergroup) && $show == "")
       {
@@ -7560,7 +7645,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
           $userdata = updatecontent ($userdata, $user_node, $user_node_new);
         }
       }   
-      
+
       // save user xml file
       if ($userdata != false && $show == "")
       {
@@ -9037,10 +9122,20 @@ function createfolder ($site, $location, $foldernew, $user)
       if ($test != false)
       {    
         // remote client
-        remoteclient ("save", "abs_path_".$cat, $site, $location, "", $foldernew, ""); 
+        remoteclient ("save", "abs_path_".$cat, $site, $location, "", $foldernew, "");
+        
+        // define template
+        $template =  "default.meta.tpl";
+        
+        $folderinfo = getobjectinfo ($site, $location, ".folder", "sys");
+        
+        if (!empty ($folderinfo['template']))
+        {
+          $template = $folderinfo['template'];
+        }
               
         // create folder object
-        $folderfile = createobject ($site, $location.$foldernew, ".folder", "default.meta.tpl", $user);       
+        $folderfile = createobject ($site, $location.$foldernew, ".folder", $template, $user);       
         
         if ($folderfile['result'] != false)
         {
@@ -9736,7 +9831,7 @@ function correctcontainername ($container_id)
 
 // ---------------------------------------- createobject --------------------------------------------
 // function: createobject()
-// input: publication name, location, object, template
+// input: publication name, location, object, template name
 // output: result array
 
 // description:
@@ -9812,7 +9907,7 @@ function createobject ($site, $location, $page, $template, $user)
         
         // if multimedia file
         if ($template_cat == "meta" && $page != ".folder") $mediatype = true;
-        else $mediatype = false;  
+        else $mediatype = false;
       }
       elseif (@substr_count ($template, ".tpl") >= 1) 
       {
@@ -9824,12 +9919,13 @@ function createobject ($site, $location, $page, $template, $user)
         
         // if multimedia file
         if ($template_cat == "meta" && $page != ".folder") $mediatype = true;
-        else $mediatype = false;         
+        else $mediatype = false;
       }
       else 
       {
         $cat = getcategory ($site, $location);
         $templatefile = $template.".".$cat.".tpl";
+        $mediatype = false;
       }
      
       // eventsystem
@@ -10901,7 +10997,8 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
 // output: result array
 
 // description:
-// This function creates an asset (multimedia object) by reading a given source file. The file name must not match the temp file patterns defined in include/tempfilepatterns.inc.php and .recycle for recycled files
+// This function creates an asset (multimedia object) by reading a given source file. The file name must not match the temp file patterns defined in include/tempfilepatterns.inc.php and .recycle for recycled files.
+// The metadata template is based on the template of the folder the objects resides in.
 
 function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0)
 {
@@ -10939,8 +11036,18 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
         else $file = str_replace (".recycle", "recycle", $file);
       } 
     
+      // define template
+      $template =  "default.meta.tpl";
+      
+      $folderinfo = getobjectinfo ($site, $location, ".folder", "sys");
+      
+      if (!empty ($folderinfo['template']))
+      {
+        $template = $folderinfo['template'];
+      }
+      
       // create new multimedia object
-      $result = createobject ($site, $location, $file, "default.meta.tpl", $user);
+      $result = createobject ($site, $location, $file, $template, $user);
 
       // copy file
       if ($result['result'] == true && !empty ($result['mediafile']) && !empty ($result['container_id']) && !empty ($result['container_content']))
@@ -13726,7 +13833,7 @@ function publishobject ($site, $location, $page, $user)
   $template = "";
   $application = "";
   $result_save = false;
-  
+
   // set default language
   if ($lang == "") $lang = "en";
 
@@ -13890,24 +13997,24 @@ function publishobject ($site, $location, $page, $user)
 
                 // eventsystem
                 if ($eventsystem['onpublishobject_pre'] == 1 && (!isset ($eventsystem['hide']) || $eventsystem['hide'] == 0))
-                  onpublishobject_pre ($site, $cat, $location, $page, $contentfile, $contentdata, $templatefile, $templatedata, $viewstore, $user);
+                  onpublishobject_pre ($site, $cat, $location, $page, @$contentfile, @$contentdata, @$templatefile, @$templatedata, @$viewstore, $user);
 
                 // -------------------------------- publish page -------------------------------
                 // if user has the workflow permission to publish or no workflow is attached
                 // for media files the object file will not be touched (application might be empty or "media") or the media generator is used
                 if ($show == "" && $release >= 3 && $application != "" && $application != "media" && ($viewstore != "" || $application == "generator"))
-                {                  
+                {        
                   // get the file extension of the object file
-                  $file_info = getfileinfo ($site, $page, $cat);
+                  $file_info = getfileinfo ($site, $location.$page, $cat);
   
                   // define new object file name
                   $page_new = $file_info['filename'].".".$templateext;
-  
+
                   // rename object file if offline (unpublished)
                   if ($file_info['published'] == false)
                   {
                     $test = rename ($location.$page, $location.$page_new);
-                    
+
                     // remote client
                     remoteclient ("rename", "abs_path_".$cat, $site, $location, "", $page, $page_new);
                     

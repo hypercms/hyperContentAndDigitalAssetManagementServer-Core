@@ -94,8 +94,10 @@ if (is_array ($queue_array) && @sizeof ($queue_array) >= 1)
 
         // open on double click
         $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$queue_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
+        
         // onclick for marking objects
-        $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlQueueMenu();\"";
+        $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlQueueMenu();\"";
+        
         // set context
         $hcms_setObjectcontext = "style=\"display:block;\" onMouseOver=\"hcms_setQueuecontext('".$site."', '".$cat."', '".$location_esc."', '".$object."', '".$object_name."', '".$file_info['type']."', '".$queueuser."', '".$queue_id."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 

@@ -1398,4 +1398,6 @@ $hcms_lang['existing-objects-will-be-replaced']['fr'] = "Les objets existants se
 $hcms_lang['import-list-comma-delimited']['fr'] = "Importation CSV";
 $hcms_lang['upload-csv-file']['fr'] = "Télécharger le fichier CSV pour l'importation de métadonnées/contenu pour les objets situés dans le même emplacement (Fournissez 'Name' ou 'ContainerID' comme titre et identificateur de colonne)";
 $hcms_lang['link-fields-with']['fr'] = "Lier les champs avec";
+$hcms_lang['phone']['fr'] = "Téléphone";
+$hcms_lang['optical-character-recognition']['fr'] = "Reconnaissance optique de caractères";
 ?>

@@ -51,7 +51,7 @@ if (!checkrootpermission ('site') || !checkrootpermission ('siteedit'))
 if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $action == "site_edit" && checktoken ($token, $user))
 {
   $result = editpublication ($site_name, $setting, $user);
-  
+
   $add_onload = $result['add_onload'];
   $show = $result['message'];  
 }
@@ -96,91 +96,105 @@ function switchDAM ()
   }
 }
 
-function moveBoxEntry(fbox, tbox)
+function moveBoxEntry(box1, box2, max)
 {
-  var arrFbox = new Array();
-  var arrTbox = new Array();
+  var arrbox1 = new Array();
+  var arrbox2 = new Array();
   var arrLookup = new Array();
   var i;
-
-  for (i = 0; i < tbox.options.length; i++)
+  
+  for (i = 0; i < box2.options.length; i++)
   {
-    arrLookup[tbox.options[i].text] = tbox.options[i].value;
-    arrTbox[i] = tbox.options[i].text;
+    arrLookup[box2.options[i].text] = box2.options[i].value;
+    arrbox2[i] = box2.options[i].text;
   }
 
   var fLength = 0;
-  var tLength = arrTbox.length;
+  var tLength = arrbox2.length;
 
-  for(i = 0; i < fbox.options.length; i++)
+  for(i = 0; i < box1.options.length; i++)
   {
-    arrLookup[fbox.options[i].text] = fbox.options[i].value;
-    if (fbox.options[i].selected && fbox.options[i].value != '')
+    arrLookup[box1.options[i].text] = box1.options[i].value;
+    if (box1.options[i].selected && box1.options[i].value != '')
     {
-      arrTbox[tLength] = fbox.options[i].text;
+      arrbox2[tLength] = box1.options[i].text;
       tLength++;
     }
     else
     {
-      arrFbox[fLength] = fbox.options[i].text;
+      arrbox1[fLength] = box1.options[i].text;
       fLength++;
     }
   }
-
-  arrFbox.sort();
-  arrTbox.sort();
-  fbox.length = 0;
-  tbox.length = 0;
-  var c;
-
-  for(c = 0; c < arrFbox.length; c++)
+     
+  if (arrbox2.length > max)
   {
-    var no = new Option();
-    no.value = arrLookup[arrFbox[c]];
-    no.text = arrFbox[c];
-    fbox[c] = no;
+    alert ('<?php echo $hcms_lang['selected-languages'][$lang]; ?> <= 3');
+    return false;
   }
 
-  for(c = 0; c < arrTbox.length; c++)
+  arrbox1.sort();
+  arrbox2.sort();
+  box1.length = 0;
+  box2.length = 0;
+  var c;
+
+  for(c = 0; c < arrbox1.length; c++)
   {
     var no = new Option();
-    no.value = arrLookup[arrTbox[c]];
-    no.text = arrTbox[c];
-    tbox[c] = no;
+    no.value = arrLookup[arrbox1[c]];
+    no.text = arrbox1[c];
+    box1[c] = no;
+  }
+
+  for(c = 0; c < arrbox2.length; c++)
+  {
+    if (c < max)
+    {
+      var no = new Option();
+      no.value = arrLookup[arrbox2[c]];
+      no.text = arrbox2[c];
+      box2[c] = no;
+    }
   }
 }
 
 function submitLanguage (selectname, targetname)
 {
-  var content = '' ;
-  var select = document.forms['siteform'].elements[selectname];
-  var target = document.forms['siteform'].elements[targetname];
-
-  if (select.options.length > 0)
+  if (document.forms['siteform'].elements[selectname] && document.forms['siteform'].elements[targetname])
   {
-    for (var i=0; i<select.options.length; i++)
+    var content = '' ;
+    var select = document.forms['siteform'].elements[selectname];
+    var target = document.forms['siteform'].elements[targetname];
+  
+    if (select.options.length > 0)
     {
-      content = content + select.options[i].value + ',' ;
+      for (var i=0; i<select.options.length; i++)
+      {
+        content = content + select.options[i].value + ',' ;
+      }
     }
+    else
+    {
+      content = '';
+    }
+  
+    target.value = content;  
+    return true;
   }
-  else
-  {
-    content = '';
-  }
-
-  target.value = content;  
-  return true;
+  else return false;
 }
 
 function submitForm ()
 {
   submitLanguage ('list2', 'setting[translate]');
+  submitLanguage ('ocr2', 'setting[ocr]');
   document.forms['siteform'].submit();
 }
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onLoad="<?php if ($preview != "yes") echo "switchDAM();"; ?> hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png'); <?php if ($add_onload != "") echo $add_onload; ?>">
+<body class="hcmsWorkplaceGeneric" onload="<?php if ($preview != "yes") echo "switchDAM();"; ?> hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png'); <?php if ($add_onload != "") echo $add_onload; ?>">
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <?php
@@ -211,32 +225,18 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   }
   
   // initalize
-  $mgmt_config[$site_name]['site_admin'] = "";
-  $mgmt_config[$site_name]['url_path_page'] = "";
-  $mgmt_config[$site_name]['abs_path_page'] = "";
-  $mgmt_config[$site_name]['exclude_folders'] = "";
-  $mgmt_config[$site_name]['allow_ip'] = "";
-  $mgmt_config[$site_name]['webdav'] = "";
-  $mgmt_config[$site_name]['linkengine'] = "";
-  $mgmt_config[$site_name]['default_codepage'] = "";
-  $mgmt_config[$site_name]['sendmail'] = "";
-  $mgmt_config[$site_name]['mailserver'] = "";
-  $mgmt_config[$site_name]['remoteclient'] = "";
-  $mgmt_config[$site_name]['specialchr_disable'] = "";
-  $mgmt_config[$site_name]['dam'] = "";
-  $mgmt_config[$site_name]['upload_userinput'] = "";
-  $mgmt_config[$site_name]['upload_pages'] = "";
-  $mgmt_config[$site_name]['storage_limit'] = "";
-  $mgmt_config[$site_name]['storage_type'] = "";
-  $mgmt_config[$site_name]['crypt_content'] = "";
-  $mgmt_config[$site_name]['watermark_image'] = "";
-  $mgmt_config[$site_name]['watermark_video'] = "";
-  
-  // load site config file of management system
+  $mgmt_config[$site_name] = array();
+
+  // load publication config file of management system
   if (valid_publicationname ($site_name) && file_exists ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
   {
-    include ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
-    
+    // copy publication configuration file to temp directory in order to avoid PHP file caching
+    copy ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php", $mgmt_config['abs_path_temp'].$site_name.".conf.php");
+    // load temp file
+    require ($mgmt_config['abs_path_temp'].$site_name.".conf.php");
+    // delete temp file
+    unlink ($mgmt_config['abs_path_temp'].$site_name.".conf.php");
+
     if (empty ($mgmt_config[$site_name]['youtube_token'])) $mgmt_config[$site_name]['youtube_token'] = "";
   }
 ?>
@@ -251,7 +251,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   <input type="hidden" name="setting[youtube_token]" value="<?php echo $mgmt_config[$site_name]['youtube_token']; ?>" />
   <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>">
   
-  <table border="0" cellspacing="0" cellpadding="3" width="590px">
+  <table border="0" cellspacing="0" cellpadding="3" width="590">
     <tr align="left" valign="top"> 
       <td nowrap colspan=2><p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['configuration-of-publication'][$lang]); ?> <?php echo $site_name; ?></p></td>
     </tr>    
@@ -433,30 +433,31 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     
     <?php if (is_dir ($mgmt_config['abs_path_cms']."connector/")) { ?>
     <tr align="left" valign="top"> 
-      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['enable-languages-for-translation'][$lang]); ?> </td>
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['enable-languages-for-translation'][$lang]); ?></td>
       <td nowrap="nowrap">
         <input type="hidden" name="setting[translate]" value="">
         <table cellpadding=0 cellspacing=0 border=0>
           <tr>
             <td>
               <?php echo getescapedtext ($hcms_lang['available-languages'][$lang]); ?><br />
-              <select multiple size="10" name="list1" style="width:150px;">
+              <select multiple size="6" name="list1" style="width:150px;">
               <?php
               // get languages
               $langcode_array = getlanguageoptions();
+              $list2_array = array();
       
               if ($langcode_array != false)
               {
                 foreach ($langcode_array as $code => $lang_short)
                 {
-                  if (empty ($mgmt_config[$site_name]['translate']) || substr_count ($mgmt_config[$site_name]['translate'], $code) == 0)
+                  if (!empty ($mgmt_config[$site_name]['translate']) && substr_count (",".$mgmt_config[$site_name]['translate'].",", ",".$code.",") > 0)
                   {
-                    echo "
+                    $list2_array[] = "
                         <option value=\"".$code."\">".$lang_short."</option>";
                   }
                   else
                   {
-                    $list2_array[] = "
+                    echo "
                         <option value=\"".$code."\">".$lang_short."</option>";
                   }
                 }
@@ -466,18 +467,18 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
             </td>
             <td align="center" valign="middle">
               <br />
-              <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['list2'],this.form.elements['list1'])" value="&lt;&lt;" />
-              <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['list1'],this.form.elements['list2'])" value="&gt;&gt;" />
+              <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['list1'], this.form.elements['list2'], 1000)" value="&gt;&gt;" />
+              <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['list2'], this.form.elements['list1'], 1000)" value="&lt;&lt;" />
             </td>
             <td>
               <?php echo getescapedtext ($hcms_lang['selected-languages'][$lang]); ?><br />
-              <select multiple size="10" name="list2" style="width:150px;">
+              <select multiple size="6" name="list2" style="width:150px;">
               <?php
               if (!empty ($list2_array) && sizeof ($list2_array) > 0)
               {
-                foreach ($list2_array as $list2)
+                foreach ($list2_array as $temp)
                 {
-                  echo $list2;
+                  echo $temp;
                 }
               }
               ?>
@@ -487,6 +488,64 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
         </table>
       </td>
     </tr>
+    <?php if (is_supported ($mgmt_parser, "test.png")) { ?>
+    <tr align="left" valign="top"> 
+      <td nowrap="nowrap"><?php echo getescapedtext ($hcms_lang['optical-character-recognition'][$lang]); ?> (OCR)</td>
+      <td nowrap="nowrap">
+        <input type="hidden" name="setting[ocr]" value="">
+        <table cellpadding=0 cellspacing=0 border=0>
+          <tr>
+            <td>
+              <?php echo getescapedtext ($hcms_lang['available-languages'][$lang]); ?><br />
+              <select multiple size="4" name="ocr1" style="width:150px;">
+              <?php
+              // get languages
+              $langcode_array = getlanguageoptions();
+              $ocr2_array = array();
+      
+              if ($langcode_array != false)
+              {
+                foreach ($langcode_array as $code => $lang_short)
+                {
+                  if (!empty ($mgmt_config[$site_name]['ocr']) && substr_count (",".$mgmt_config[$site_name]['ocr'].",", ",".$code.",") > 0)
+                  {
+                    $ocr2_array[] = "
+                        <option value=\"".$code."\">".$lang_short."</option>";
+                  }
+                  else
+                  {
+                    echo "
+                        <option value=\"".$code."\">".$lang_short."</option>";
+                  }
+                }
+              }
+              ?>
+              </select>
+            </td>
+            <td align="center" valign="middle">
+              <br />
+              <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['ocr1'], this.form.elements['ocr2'], 3)" value="&gt;&gt;" />
+              <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['ocr2'], this.form.elements['ocr1'], 1000)" value="&lt;&lt;" />
+            </td>
+            <td>
+              <?php echo getescapedtext ($hcms_lang['selected-languages'][$lang]); ?><br />
+              <select multiple size="4" name="ocr2" style="width:150px;">
+              <?php
+              if (!empty ($ocr2_array) && sizeof ($ocr2_array) > 0)
+              {
+                foreach ($ocr2_array as $temp)
+                {
+                  echo $temp;
+                }
+              }
+              ?>
+              </select>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <?php } ?>
     <?php } ?>
     <tr align="left" valign="top"> 
       <td nowrap="nowrap" colspan=2>&nbsp;</td>
@@ -502,13 +561,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   }
   else
   {
-    $publ_config['url_publ_page'] = "";
-    $publ_config['abs_publ_page'] = "";  
-    $publ_config['url_publ_rep'] = "";
-    $publ_config['abs_publ_rep'] = "";
-    $publ_config['abs_publ_app'] = ""; 
-    $publ_config['http_incl'] = "";
-    $publ_config['publ_os'] = "";
+    $publ_config = array();
   }    
   ?>
     <tr align="left" valign="top"> 

@@ -249,7 +249,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   }
   
   // include config
-  @include_once ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
+  if (valid_publicationname ($site_name)) include_once ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
 ?>
 
 <p class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['inheritance-setting-of-publication'][$lang]); ?> <?php echo $site_name; ?></p>

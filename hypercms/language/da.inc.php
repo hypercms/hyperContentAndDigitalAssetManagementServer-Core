@@ -1397,4 +1397,6 @@ $hcms_lang['existing-objects-will-be-replaced']['da'] = "Eksisterende genstande 
 $hcms_lang['import-list-comma-delimited']['da'] = "CSV Import";
 $hcms_lang['upload-csv-file']['da'] = "Upload CSV-fil til import af metadata/indhold for objekter på samme sted (Angiv 'Name' eller 'ContainerID' som kolonneoverskrift og identifikator)";
 $hcms_lang['link-fields-with']['da'] = "Link felterne med";
+$hcms_lang['phone']['da'] = "Telefon";
+$hcms_lang['optical-character-recognition']['da'] = "Optisk karaktergenkendelse";
 ?>

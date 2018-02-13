@@ -1396,4 +1396,6 @@ $hcms_lang['existing-objects-will-be-replaced']['sl'] = "Obstoječi objekti se n
 $hcms_lang['import-list-comma-delimited']['sl'] = "CSV uvoz";
 $hcms_lang['upload-csv-file']['sl'] = "Naloži datoteko CSV za uvoz metapodatkov / vsebine za predmete na isti lokaciji (v naslovu in identifikacijski oznaki stolpca navedite »Name« ali »ContainerID«)";
 $hcms_lang['link-fields-with']['sl'] = "Povežite polja z";
+$hcms_lang['phone']['sl'] = "Telefon";
+$hcms_lang['optical-character-recognition']['sl'] = "Optično prepoznavanje znakov";
 ?>

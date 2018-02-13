@@ -1396,4 +1396,6 @@ $hcms_lang['existing-objects-will-be-replaced']['ar'] = "سيتم استبدال
 $hcms_lang['import-list-comma-delimited']['ar'] = "استيراد كسف";
 $hcms_lang['upload-csv-file']['ar'] = "تحميل ملف كسف لاستيراد بيانات وصفية / محتوى للكائنات في نفس الموقع (قدم 'Name' أو 'ContainerID' كعنوان عمود ومعرف)";
 $hcms_lang['link-fields-with']['ar'] = "اربط الحقول ب";
+$hcms_lang['phone']['ar'] = "هاتف";
+$hcms_lang['optical-character-recognition']['ar'] = "التعرف الضوئي على الحروف";
 ?>

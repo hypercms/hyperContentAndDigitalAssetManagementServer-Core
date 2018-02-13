@@ -1397,4 +1397,6 @@ $hcms_lang['existing-objects-will-be-replaced']['tr'] = "Mevcut nesneler değiş
 $hcms_lang['import-list-comma-delimited']['tr'] = "CSV İçe Aktarma";
 $hcms_lang['upload-csv-file']['tr'] = "Aynı konumdaki nesneler için meta veriler/içerik içe aktarmak için CSV dosyası yükle (Sütun başlığı ve tanımlayıcı olarak 'Name' veya 'ContainerID' sağlayın)";
 $hcms_lang['link-fields-with']['tr'] = "Ile alanları bağla";
+$hcms_lang['phone']['tr'] = "Telefon";
+$hcms_lang['optical-character-recognition']['tr'] = "Optik karakter tanıma";
 ?>

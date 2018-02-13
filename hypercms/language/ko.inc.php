@@ -1397,4 +1397,6 @@ $hcms_lang['existing-objects-will-be-replaced']['ko'] = "기존 오브젝트가 
 $hcms_lang['import-list-comma-delimited']['ko'] = "CSV 가져 오기";
 $hcms_lang['upload-csv-file']['ko'] = "같은 위치에있는 객체에 대한 메타 데이터/콘텐츠 가져 오기 용 CSV 파일 업로드 (열 제목 및 식별자로 'Name'또는 'ContainerID'제공)";
 $hcms_lang['link-fields-with']['ko'] = "필드를";
+$hcms_lang['phone']['ko'] = "전화";
+$hcms_lang['optical-character-recognition']['ko'] = "광학 문자 인식";
 ?>

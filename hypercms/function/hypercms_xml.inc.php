@@ -189,10 +189,7 @@ function getcontent ($xmldata, $starttagname)
     return false;
   }
 
-  if (isset ($result_set))
-  {
-    return $result_set;
-  }
+  if (isset ($result_set)) return $result_set;
   else return false;
 }
 
@@ -289,10 +286,7 @@ function geticontent ($xmldata, $starttagname)
     return false;
   }
 
-  if (isset ($result_set))
-  {
-    return $result_set;
-  }
+  if (isset ($result_set)) return $result_set;
   else return false;
 }
 
@@ -360,10 +354,7 @@ function getxmlcontent ($xmldata, $starttagname)
     return false;
   }
 
-  if (isset ($result_set))
-  {
-    return $result_set;
-  }
+  if (isset ($result_set)) return $result_set;
   else return false;
 }
 
@@ -436,10 +427,7 @@ function getxmlicontent ($xmldata, $starttagname)
     return false;
   }
 
-  if (isset ($result_set))
-  {
-    return $result_set;
-  }
+  if (isset ($result_set)) return $result_set;
   else return false;
 }
 
@@ -597,10 +585,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     $result_set = getcontent ($xmldata, $starttagname);
   }
 
-  if (isset ($result_set))
-  {
-    return $result_set;
-  }
+  if (isset ($result_set)) return $result_set;
   else return false;
 }
 
@@ -763,10 +748,7 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     $result_set = geticontent ($xmldata, $starttagname);
   }
 
-  if (isset ($result_set))
-  {
-    return $result_set;
-  }
+  if (isset ($result_set)) return $result_set;
   else return false;
 }
 
@@ -926,10 +908,7 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     $result_set = getxmlcontent ($xmldata, $starttagname);
   }
 
-  if (isset ($result_set))
-  {
-    return $result_set;
-  }
+  if (isset ($result_set)) return $result_set;
   else return false;
 }
 
@@ -1094,10 +1073,7 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     $result_set = getxmlicontent ($xmldata, $starttagname);
   }
 
-  if (isset ($result_set))
-  {
-    return $result_set;
-  }
+  if (isset ($result_set)) return $result_set;
   else return false;
 }
 
@@ -1137,7 +1113,7 @@ function deletecontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   }
 
   // delete childs 
-  if ($record_array != false && sizeof ($record_array) >= 1)
+  if ($record_array != false && sizeof ($record_array) > 0)
   {
     foreach ($record_array as $record)
     {      
@@ -1148,15 +1124,8 @@ function deletecontent ($xmldata, $starttagname, $startcondtag, $condvalue)
       $xmldata = str_replace ($record."\r", "", $xmldata);    // MacOS
     }
   }
-  else
-  {
-    return false;
-  }  
 
-  if ($xmldata != false)
-  {
-    return $xmldata;
-  }
+  if ($xmldata != false) return $xmldata;
   else return false;
 }
 
@@ -1209,15 +1178,8 @@ function deleteicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
       $xmldata = str_replace ($record."\r", "", $xmldata);    // MacOS
     }
   }
-  else
-  {
-    return false;
-  }  
 
-  if ($xmldata != false)
-  {
-    return $xmldata;
-  }
+  if ($xmldata != false) return $xmldata;
   else return false;
 }
 
@@ -1519,16 +1481,20 @@ function updatecontent ($xmldata, $xmlnode, $xmlnodenew)
 function insertcontent ($xmldata, $insertxmldata, $starttagname)
 {
   // if variables contain no content
-  if (!valid_tagname ($starttagname) || $xmldata == "" || $insertxmldata == "" || !is_string ($xmldata) || !is_string ($insertxmldata))
+  if (!valid_tagname ($starttagname) || $xmldata == "" || !is_string ($xmldata))
   {
     return false;
   }
-  
+  elseif ($insertxmldata == "" || !is_string ($insertxmldata))
+  {
+    return $xmldata;
+  }
+
   // add < and > for tag name
-  if (@substr_count ($starttagname, "<") == 0 && @substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
+  if (substr_count ($starttagname, "<") == 0 && substr_count ($starttagname, ">") == 0) $starttagname = "<".trim ($starttagname).">";
 
   // define endtag
-  if (@substr_count ($starttagname, " ") >= 1) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ")).">";
+  if (substr_count ($starttagname, " ") > 0) $endtagname = "</".substr ($starttagname, 1, strpos ($starttagname, " ")).">";
   else $endtagname = "</".substr ($starttagname, 1);
 
   if ($starttagname != "" && strpos ($xmldata, $endtagname) > 0)

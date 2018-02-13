@@ -37,9 +37,15 @@ if ($action == "save")
 }
 
 // wallpaper
-if ($hcms_themename != "mobile" && empty ($mgmt_config['wallpaper'])) $wallpaper = getwallpaper ($mgmt_config['version']);
-elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
-else $wallpaper = "";
+$wallpaper = "";
+
+if ($hcms_themename != "mobile")
+{
+  if (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.jpg");
+  elseif (is_file ($mgmt_config['abs_path_cms']."theme/".$hcms_themename."/img/wallpaper.png")) $wallpaper = cleandomain ($mgmt_config['url_path_cms']."theme/".$hcms_themename."/img/wallpaper.png");
+  elseif (!empty ($mgmt_config['wallpaper'])) $wallpaper = $mgmt_config['wallpaper'];
+  else $wallpaper = getwallpaper ($mgmt_config['version']);
+}
 ?>
 <!DOCTYPE html>
 <html>

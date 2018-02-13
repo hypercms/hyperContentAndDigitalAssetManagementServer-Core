@@ -79,12 +79,10 @@ if ($template != "")
 }
 
 // get charset
-if (strpos (strtolower($contentfield), "charset") > 0) 
-{
-  $contenttype = getattribute ($contentfield, "content");
-  $charset = trim (getattribute ($contenttype, "charset"));
-}
-else $charset = trim ($mgmt_config[$site]['default_codepage']);
+$result_charset = getcharset ($site, $contentfield);  
+
+if (isset ($result_charset['charset']) && $result_charset['charset'] != "") $charset = $result_charset['charset'];
+else $charset = $mgmt_config[$site]['default_codepage'];
 
 // set character set in header
 if (!empty ($charset)) ini_set ('default_charset', $charset);
@@ -101,11 +99,11 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
 <body class="hcmsWorkplaceGeneric">
 <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
-  <table>
-    <tr><td class="hcmsHeadline"><?php echo $pagecomp; ?> </td><td><input name="extension" type="text" value="<?php echo $templatename; ?>" style="width:220px;" disabled="disabled" /></td></tr>
+  <table width="100%">
+    <tr><td class="hcmsHeadline" width="220" nowrap><?php echo $pagecomp; ?> </td><td><input name="extension" type="text" value="<?php echo $templatename; ?>" style="width:220px;" disabled="disabled" /></td></tr>
     <?php if ($cat == "page" || $cat == "comp") { ?>
-    <tr><td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['file-extension-without-dot'][$lang]); ?> </td><td><input name="extension" type="text" value="<?php echo $extension; ?>" style="width:50" disabled="disabled" /></td></tr>
-    <tr><td class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['application'][$lang]); ?> </td><td>
+    <tr><td class="hcmsHeadline" nowrap><?php echo getescapedtext ($hcms_lang['file-extension-without-dot'][$lang]); ?> </td><td><input name="extension" type="text" value="<?php echo $extension; ?>" style="width:50" disabled="disabled" /></td></tr>
+    <tr><td class="hcmsHeadline" nowrap><?php echo getescapedtext ($hcms_lang['application'][$lang]); ?> </td><td>
     <select name="application" disabled>
       <option value="asp"<?php if ($application == "asp") echo "selected=\"selected\""; ?>>Active Server Pages (ASP)</option>
       <option value="xml"<?php if ($application == "xml") echo "selected=\"selected\""; ?>>Extensible Markup Language (XML) or Text</option>
@@ -118,7 +116,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
     <?php } ?>
     <tr>
       <td colspan=2>
-        <textarea name="contentfield" style="width:720px; height:600px;" wrap="VIRTUAL"><?php echo $contentfield; ?></textarea>
+        <textarea name="contentfield" style="width:98%; height:700px; margin-bottom:10px;" wrap="VIRTUAL"><?php echo $contentfield; ?></textarea>
       </td>
     </tr>
   </table>

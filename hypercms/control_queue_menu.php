@@ -269,8 +269,7 @@ function jumpTo (target)
   </div>
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;"> 
-      <?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?> 
-      <select name="site" onChange="jumpTo('parent.frames[\'mainFrame\']')">
+      <select name="site" onChange="jumpTo('parent.frames[\'mainFrame\']')" style="<?php if ($is_mobile) echo "40%"; else echo "220px"; ?>" title="<?php  echo getescapedtext ($hcms_lang['publication'][$lang]); ?> ">
         <option value=""><?php echo getescapedtext ($hcms_lang['all-publications'][$lang]); ?></option>
         <?php
           // select publication

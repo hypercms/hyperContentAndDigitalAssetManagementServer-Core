@@ -1397,4 +1397,6 @@ $hcms_lang['existing-objects-will-be-replaced']['so'] = "Waxyaabaha hadda jira w
 $hcms_lang['import-list-comma-delimited']['so'] = "Canshuurta CSV";
 $hcms_lang['upload-csv-file']['so'] = "Keenee faylka CSV ee soo dejinta metadata/nuxurka shayada isla goobta (Bixin 'Name' ama 'ContainerID' oo ah astaanta column iyo aqoonsiga)";
 $hcms_lang['link-fields-with']['so'] = "La xiriir beeraha";
+$hcms_lang['phone']['so'] = "Telefoonka";
+$hcms_lang['optical-character-recognition']['so'] = "Aqoonsiga Aqoonsiga Jilidda";
 ?>

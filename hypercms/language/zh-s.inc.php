@@ -605,7 +605,7 @@ $hcms_lang['for-videoplayer']['zh-s'] = "videoplayer。";
 $hcms_lang['options']['zh-s'] = "选项";
 $hcms_lang['audio-montage']['zh-s'] = "音频剪辑";
 $hcms_lang['audio-quality']['zh-s'] = "音频质量";
-$hcms_lang['use-options-to-edit-the-video']['zh-s'] = "使用“选项”以编辑视频。 单个视频格式可下载已。 使用´嵌入视频´按钮可播放和嵌入视频的 ´Videoplayer´。";
+$hcms_lang['use-options-to-edit-the-video']['zh-s'] = "使用“选项”以编辑视频。 单个视频格式可下载已。 使用´嵌入视频´按钮可播放和嵌入视频的 ´Videoplayer´";
 $hcms_lang['adjust']['zh-s'] = "调整";
 $hcms_lang['gamma']['zh-s'] = "伽马";
 $hcms_lang['brightness']['zh-s'] = "亮度";
@@ -1398,4 +1398,6 @@ $hcms_lang['existing-objects-will-be-replaced']['zh-s'] = "现有对象将被替
 $hcms_lang['import-list-comma-delimited']['zh-s'] = "CSV导入";
 $hcms_lang['upload-csv-file']['zh-s'] = "上传用于导入相同位置的对象的元数据/内容的CSV文件（提供'Name'或'ContainerID'作为列标题和标识符）";
 $hcms_lang['link-fields-with']['zh-s'] = "链接字段";
+$hcms_lang['phone']['zh-s'] = "电话";
+$hcms_lang['optical-character-recognition']['zh-s'] = "光学字符识别";
 ?>

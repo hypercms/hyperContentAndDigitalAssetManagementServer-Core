@@ -349,8 +349,6 @@ img
 
 .hcmsIconOff
 {
-  width: 22px;
-  height: 22px;
   border: 0;
   filter: gray() alpha(opacity=30);
   -moz-opacity: 0.3;

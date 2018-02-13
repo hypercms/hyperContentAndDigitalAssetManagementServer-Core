@@ -6,6 +6,7 @@
 <userdate></userdate>
 <realname></realname>
 <email></email>
+<phone></phone>
 <signature></signature>
 <language></language>
 <theme>standard</theme>

@@ -151,11 +151,20 @@ function createquerypattern ($query)
   else return false;
 }
 
-// ------------------------ searchindex ------------------------
+// ------------------------ searchindex (old version) ------------------------
 // input: query as string, start position as string, exclude url as string, language as string, charset as string, query attributes as array
 // output: echo of search result and true/false
 
 function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF-8", $query_attribute=null)
+{
+  return searchinindex ($query, $start, $exclude_url, "", "html", $lang, $charset, $query_attribute);
+}
+
+// ------------------------ searchinindex (new version) ------------------------
+// input: query as string, start position as string, exclude url as string, include url as string, result-type [html,array], language as string, charset as string, query attributes as array
+// output: echo of search result and true/false
+
+function searchinindex ($query, $start, $exclude_url="", $include_url="", $result_type="html", $lang="en", $charset="UTF-8", $query_attribute=null)
 {
   global $config, $text, $start, $end, $max, $query;
   
@@ -215,11 +224,11 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
             }
           }
 
-          if (!empty ($query_check) && ($exclude_url == "" || (is_string ($exclude_url) && substr_count ($url, $exclude_url) == 0)))
+          if (!empty ($query_check) && ($exclude_url == "" || (is_string ($exclude_url) && substr_count ($url, $exclude_url) == 0)) && ($include_url == "" || (is_string ($include_url) && substr_count ($url, $include_url) > 0)))
           {
             if (strlen ($content) > 0 && strlen ($content) < 90000)
             {
-              $hits = preg_match_all ($hquery, $content, $matches, PREG_OFFSET_CAPTURE);
+              $hits = preg_match_all ($hquery, $url." ".$content, $matches, PREG_OFFSET_CAPTURE);
             }
             // split content into pieces
             elseif (strlen ($content) > 0)
@@ -230,7 +239,7 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
 
               while (strlen ($slice) > 1)
               {
-                if (strlen ($content) > (($slice_count+1)*90000)) $slice = @substr ($content, ($slice_count*90000), @strpos ($content, " ", (($slice_count+1)*90000)));
+                if (strlen ($content) > (($slice_count+1)*90000)) $slice = @substr ($url." ".$content, ($slice_count*90000), @strpos ($content, " ", (($slice_count+1)*90000)));
                 else $slice = @substr ($content, ($slice_count*90000));
                 
                 $hits_new = preg_match_all ($hquery, $slice, $slice_matches, PREG_OFFSET_CAPTURE);
@@ -290,8 +299,11 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
      
         if ($end > $max) $end = $max;
         
-        echo "<div class='".$config['css_div']."'>\n";
-        echo "<span class='".$config['css_headline']."'>".insertvars ($text[1][$lang])."</span><br /><br />\n";
+        if ($result_type == "html")
+        {
+          echo "<div class='".$config['css_div']."'>\n";
+          echo "<span class='".$config['css_headline']."'>".insertvars ($text[1][$lang])."</span><br /><br />\n";
+        }
         
         for ($i=1; $i<=$end; $i++)
         {
@@ -318,21 +330,24 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
             }
             else $linktarget = "";
       
-            echo "<span title='Hits'><strong>".$i.".</strong></span>&nbsp;".$icon."&nbsp;<span title='Title'><a href='".$result['url'][$id]."' class='".$config['css_title']."' ".$linktarget.">".$title."</a></span> <span title='Hits'>[".$result['hits'][$id]." ".$text[0][$lang]."]</span><br />\n";
-            if ($config['showdescription'] == true) echo "<span title='Description'>".$result['description'][$id]."</span><br />\n";
-            if ($config['showextract'] == true) echo "<span title='Extract'>".$result['extract'][$id]."</span><br />\n";
-            if ($config['showurl'] == true) echo "<span title='URL' class='".$config['css_url']."' title='".$result['url'][$id]."'>".$url_short."</span>&nbsp;-&nbsp;".$result['date'][$id]."<br />\n";
-            echo "<br />\n";
+            if ($result_type == "html")
+            {
+              echo "<span title='Hits'><strong>".$i.".</strong></span>&nbsp;".$icon."&nbsp;<span title='Title'><a href='".$result['url'][$id]."' class='".$config['css_title']."' ".$linktarget.">".$title."</a></span> <span title='Hits'>[".$result['hits'][$id]." ".$text[0][$lang]."]</span><br />\n";
+              if ($config['showdescription'] == true) echo "<span title='Description'>".$result['description'][$id]."</span><br />\n";
+              if ($config['showextract'] == true) echo "<span title='Extract'>".$result['extract'][$id]."</span><br />\n";
+              if ($config['showurl'] == true) echo "<span title='URL' class='".$config['css_url']."' title='".$result['url'][$id]."'>".$url_short."</span>&nbsp;-&nbsp;".$result['date'][$id]."<br />\n";
+              echo "<br />\n";
+            }
           }
           
           next ($result['hits']);
         }
         
-        echo "<br />\n";
+        if ($result_type == "html") echo "<br />\n";
     
         if ($resultpages > 1)
         {
-          echo "<span align='center'>".$text[2][$lang].": ";
+          if ($result_type == "html") echo "<span align='center'>".$text[2][$lang].": ";
 
          $exclude_url = htmlspecialchars ($exclude_url, ENT_QUOTES | ENT_HTML401, $charset);
          $charset = htmlspecialchars ($charset, ENT_QUOTES | ENT_HTML401, $charset);
@@ -342,32 +357,36 @@ function searchindex ($query, $start, $exclude_url="", $lang="en", $charset="UTF
             $startpos = ($config['results'] * $i) + 1 - $config['results'];
             $startpos = htmlspecialchars ($startpos, ENT_QUOTES | ENT_HTML401, $charset);
    
-            if ($i != $currentpage) echo "<a href='".$_SERVER['PHP_SELF']."?query=".$query."&start=".$startpos."&language=".$lang."&exclude_url=".$exclude_url."&charset=".$charset."'>".$i."</a>&nbsp;";
-            else echo "<strong>".$i."</strong>&nbsp;";
+            if ($i != $currentpage) $footer = "<a href='".$_SERVER['PHP_SELF']."?query=".$query."&start=".$startpos."&language=".$lang."&exclude_url=".$exclude_url."&include_url=".$include_url."&charset=".$charset."'>".$i."</a>&nbsp;";
+            else $footer = "<strong>".$i."</strong>&nbsp;";
+
+            if ($result_type == "html") echo $footer;
+            else $result['footer'] = $footer;
           }
         } 
 
-        echo "</div>\n";   
+        if ($result_type == "html") echo "</div>\n";
     
-        return true;
+        if ($result_type == "html") return true;
+        else return $result;
       }
       else
       {
-        echo "<span class='".$config['css_headline']."'>".insertvars ($text[3][$lang])."</span><br />\n";
+        if ($result_type == "html") echo "<span class='".$config['css_headline']."'>".insertvars ($text[3][$lang])."</span><br />\n";
 
         return true;      
       } 
     }
     else
     {
-      echo "<span class='".$config['css_headline']."'>".$text[4][$lang]."</span><br />\n";
+      if ($result_type == "html") echo "<span class='".$config['css_headline']."'>".$text[4][$lang]."</span><br />\n";
   
       return false;
     }
   }
   else
   {
-    echo "<span class='".$config['css_headline']."'>".$text[5][$lang]."</span><br />\n";
+    if ($result_type == "html") echo "<span class='".$config['css_headline']."'>".$text[5][$lang]."</span><br />\n";
 
     return false;
   }

@@ -12,7 +12,7 @@
 // ------------------------------------------ update_usergroups_v564 ----------------------------------------------
 // function: update_usergroups_v564()
 // input: publication name, user group data (XML)
-// output: updated user group data (XML), false on error
+// output: true / false
 
 // description:
 // Update to version 5.6.4 (group names will be replaced by object-IDs)
@@ -58,7 +58,6 @@ function update_usergroups_v564 ($site, $data)
       }
     }
       
-    // return container
     if ($datanew != "") return savefile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php", $datanew);
     else return false;      
   }
@@ -68,10 +67,10 @@ function update_usergroups_v564 ($site, $data)
 // ------------------------------------------ update_tasks ----------------------------------------------
 // function: update_tasks_v584()
 // input: %
-// output: updated tasks data (from XML to RDBMS), false on error
+// output: true / false
 
 // description:
-// Update of tasks to version 5.8.4
+// Update of tasks to version 5.8.4 (from XML to RDBMS)
 
 function update_tasks_v584 ()
 {
@@ -166,6 +165,7 @@ function update_tasks_v584 ()
       
       // save log              
       savelog (@$error);
+      return true;
     }
   }
   else return true;
@@ -174,7 +174,7 @@ function update_tasks_v584 ()
 // ------------------------------------------ update_database_v586 ----------------------------------------------
 // function: update_database_v586()
 // input: %
-// output: updated database, false on error
+// output: true / false
 
 // description:
 // Update of database to version 5.8.6
@@ -293,7 +293,7 @@ function update_database_v586 ()
 // ------------------------------------------ update_database_v601 ----------------------------------------------
 // function: update_database_v601()
 // input: %
-// output: updated database, false on error
+// output: true / false
 
 // description: 
 // Update of database to version 6.0.1
@@ -358,7 +358,7 @@ function update_database_v601 ()
 // ------------------------------------------ update_database_v614 ----------------------------------------------
 // function: update_database_v614()
 // input: %
-// output: updated database, false on error
+// output: true / false
 
 // description: 
 // Update of database to version 6.1.4
@@ -402,7 +402,7 @@ function update_database_v614 ()
 // ------------------------------------------ update_database_v6113 ----------------------------------------------
 // function: update_database_v6113()
 // input: %
-// output: updated database, false on error
+// output: true / false
 
 // description: 
 // Update of database to version 6.1.13
@@ -561,7 +561,7 @@ function update_database_v6113 ()
 // ------------------------------------------ update_database_v6115 ----------------------------------------------
 // function: update_database_v6115()
 // input: %
-// output: updated database, false on error
+// output: true / false
 
 // description: 
 // Update of database to version 6.1.15. Clean and HTML decode all content.
@@ -611,7 +611,7 @@ function update_database_v6115 ()
 // ------------------------------------------ update_container_v6118 ----------------------------------------------
 // function: update_container_v6118()
 // input: %
-// output: updated database, false on error
+// output: true / false
 
 // description: 
 // Update of containers to version 6.1.18 (add date created to containers).
@@ -726,7 +726,7 @@ function update_container_v6118 ()
 // ------------------------------------------ update_database_v6139 ----------------------------------------------
 // function: update_database_v6139()
 // input: %
-// output: updated database, false on error
+// output: true / false
 
 // description: 
 // Update of index on table recipients to version 6.1.39 (add new indexes).
@@ -744,17 +744,17 @@ function update_database_v6139 ()
     
     // create new index
     $sql = 'CREATE INDEX date ON recipient(object_id, date);';
-    $errcode = "50073";
+    $errcode = "50081";
     $result = $db->query ($sql, $errcode, $mgmt_config['today']);
     
     // create new index
     $sql = 'CREATE INDEX from_user ON recipient(object_id, from_user);';
-    $errcode = "50073";
+    $errcode = "50082";
     $result = $db->query ($sql, $errcode, $mgmt_config['today']);
     
     // create new index
     $sql = 'CREATE INDEX to_user ON recipient(object_id, to_user(200));';
-    $errcode = "50073";
+    $errcode = "50083";
     $result = $db->query ($sql, $errcode, $mgmt_config['today']);
     
     // save log
@@ -771,7 +771,7 @@ function update_database_v6139 ()
 // ------------------------------------------ update_database_v625 ----------------------------------------------
 // function: update_database_v625()
 // input: %
-// output: updated database, false on error
+// output: true / false
 
 // description: 
 // Adds attribute 'deleteuser' and 'deletedate' to table objects for support of version 6.2.5.
@@ -789,11 +789,11 @@ function update_database_v625 ()
     
     // alter table
     $sql = "ALTER TABLE object ADD deleteuser CHAR(60) DEFAULT '' AFTER template;";
-    $errcode = "50073";
+    $errcode = "50091";
     $result = $db->query ($sql, $errcode, $mgmt_config['today']);
     
     $sql = "ALTER TABLE object ADD deletedate DATE AFTER deleteuser;";
-    $errcode = "50074";
+    $errcode = "50092";
     $result = $db->query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
@@ -810,7 +810,7 @@ function update_database_v625 ()
 // ------------------------------------------ update_database_v625 ----------------------------------------------
 // function: update_database_v705()
 // input: path to component directory, alter tabel [true,false]
-// output: updated database, false on error
+// output: true / false
 
 // description: 
 // Adds attribute 'media' to table objects for support of version 7.0.5
@@ -873,6 +873,45 @@ function update_database_v705 ($dir, $db_alter)
     }
 
     return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ update_users_706 ----------------------------------------------
+// function: update_users_706()
+// input: %
+// output: true / false
+
+// description:
+// Update to version 7.0.6 (add phone node to users)
+
+function update_users_706 ()
+{
+  global $mgmt_config;
+
+  $logdata = loadlog ("update", "string");
+  
+  if (empty ($logdata) || strpos ($logdata, "|7.0.6|") < 1)
+  {
+    $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+    
+    if (!empty ($userdata))
+    {
+      $datanew = str_replace ("</email>", "</email>\n<phone></phone>", $userdata);
+    }
+
+    if (!empty ($datanew))
+    {
+      $savefile = savefile ($mgmt_config['abs_path_data']."user/", "user.xml.php", $datanew);
+      
+      // update log
+      if ($savefile == true) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.6|updated to version 7.0.6"), "update");
+      // sys log
+      else savelog (array($mgmt_config['today']."|hypercms_update.inc.php|error|10100|update to version 7.0.6 failed"));
+      
+      return $savefile;
+    }
+    else return false;
   }
   else return false;
 }

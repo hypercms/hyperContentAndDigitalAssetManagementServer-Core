@@ -156,7 +156,11 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['autoconvert-images-to-the-given-icc-profile-'][$lang]); ?></td>
       <td class="hcmsRowData1">iccprofile='...'</td>
-    </tr>  
+    </tr>
+    <tr align="left" valign="top"> 
+      <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['preview-window'][$lang]); ?> (textu)</td>
+      <td class="hcmsRowData1">preview='url'</td>
+    </tr>
     
     <!-- media links -->
     <tr align="left" valign="top"> 
@@ -230,7 +234,7 @@ echo showtopmenubar ($hcms_lang['help'][$lang], $menu_array, $lang);
     <tr align="left" valign="top"> 
       <td class="hcmsRowHead2"> <?php echo getescapedtext ($hcms_lang['autoconvert-images-to-the-given-icc-profile-'][$lang]); ?></td>
       <td class="hcmsRowData1">iccprofile='...'</td>
-    </tr>  
+    </tr>
     
     <!-- page links -->
     <tr align="left" valign="top"> 

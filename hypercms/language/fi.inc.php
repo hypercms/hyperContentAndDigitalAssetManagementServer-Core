@@ -1397,4 +1397,6 @@ $hcms_lang['existing-objects-will-be-replaced']['fi'] = "Objekteihin korvataan!"
 $hcms_lang['import-list-comma-delimited']['fi'] = "CSV-tuonti";
 $hcms_lang['upload-csv-file']['fi'] = "Lähetä CSV-tiedosto metatiedon/sisällön tuonnille samassa paikassa olevien kohteiden kanssa (Anna nimi 'Name' tai 'ContainerID' nimellä sarakkeen nimi ja tunniste)";
 $hcms_lang['link-fields-with']['fi'] = "Linkitä kentät kentällä";
+$hcms_lang['phone']['fi'] = "Puhelin";
+$hcms_lang['optical-character-recognition']['fi'] = "Optinen hahmon tunnistus";
 ?>

@@ -1021,7 +1021,7 @@ else
               $point->addSubPoint($subpoint);
             }
             
-            if (checkglobalpermission ($site, 'tpl') && empty ($mgmt_config[$site]['dam']))
+            if (checkglobalpermission ($site, 'tpl'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['component-templates'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=comp", 'template_comp.png');
               $subpoint->setOnClick('changeSelection(this)');
@@ -1030,7 +1030,7 @@ else
               $point->addSubPoint($subpoint);
             }
             
-            if (checkglobalpermission ($site, 'tpl') && empty ($mgmt_config[$site]['dam']))
+            if (checkglobalpermission ($site, 'tpl'))
             {
               $subpoint = new hcms_menupoint($hcms_lang['template-includes'][$lang], "frameset_template.php?site=".url_encode($site)."&cat=inc", 'template_inc.png');
               $subpoint->setOnClick('changeSelection(this)');

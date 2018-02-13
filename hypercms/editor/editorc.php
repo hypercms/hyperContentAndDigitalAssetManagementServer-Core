@@ -120,7 +120,7 @@ if ($contentbot == "")
 }
 
 // set default value given eventually by tag
-if ($contentbot == "" && $default != "") $contentbot = $default;
+if (!isset ($contentbot) && $default != "") $contentbot = $default;
 
 if ($value == $contentbot) $checked = " checked";
 else $checked = "";
@@ -150,10 +150,11 @@ if ($label == "") $label = $id;
     <table border="0" cellspacing="2">
       <tr>
         <td>
-        <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorc_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
-        <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorc_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" />
+        <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorc_so');" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
+        <img name="Button_sc" src="<?php echo getthemelocation(); ?>img/button_saveclose.png" class="hcmsButton hcmsButtonSizeSquare" onClick="setsavetype('editorc_sc');" alt="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save-and-close'][$lang], $charset, $lang); ?>" />
         <br />
-        <input type="checkbox" name="<?php echo $tagname."[".$id."]"; ?>" value="<?php echo $value; ?>"<?php echo $checked; ?>> <?php echo $value; ?>
+        <input type="hidden" name="<?php echo $tagname."[".$id."]"; ?>" id="dummy" value="" />
+        <label><input type="checkbox" name="<?php echo $tagname."[".$id."]"; ?>" onclick="if (this.ckecked) document.getElementById('dummy').disabled=true;" value="<?php echo $value; ?>"<?php echo $checked; ?> /> <?php echo $value; ?></label>
         </td>
       </tr>
     </table>

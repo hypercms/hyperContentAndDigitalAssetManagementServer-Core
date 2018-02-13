@@ -5,16 +5,31 @@ var scrollX = 0;
 var scrollY = 0;
 var allow_tr_submit = true;
 
+// select area
+var selectarea = null;
+var x1 = 0;
+var y1 = 0;
+var x2 = 0;
+var y2 = 0;
+var x3 = 0;
+var y3 = 0;
+var x4 = 0;
+var y4 = 0;
+
 // remove selection marks of browser
 function hcms_clearSelection()
 {
-  if (window.getSelection)
+  // only used if a selectarea element exists (otherwise focus on input fields will be lost)
+  if (selectarea)
   {
-    window.getSelection().removeAllRanges();
-  }
-  else if (document.selection)
-  {
-    document.selection.empty();
+    if (window.getSelection)
+    {
+      window.getSelection().removeAllRanges();
+    }
+    else if (document.selection)
+    {
+      document.selection.empty();
+    }
   }
 }
 
@@ -757,6 +772,20 @@ function hcms_endsWith (str, suffix)
 function hcms_selectObject (row_id, event)
 {
   var contextmenu_form = false;
+  
+  // extract number from td ID
+  if (row_id != ''
+  )
+  {
+    // for tr and td in list view
+    row_id = row_id.replace ('g', '');
+    row_id = row_id.replace ('h', '');
+    row_id = row_id.replace ('_0', '');
+    
+    // for td in gallery view
+    row_id = row_id.replace ('t', '');
+  }
+  else return false;
 
   if (document.forms['contextmenu_object'])
   {
@@ -1022,11 +1051,11 @@ function hcms_rightClick(e)
   if (activatelinks == false)
   {
     // right mouse click
-    if (e.which == 2 || e.which == 3) 
+    if (e.which && (e.which == 2 || e.which == 3)) 
     {
       hcms_showContextmenu();
     }
-    else if (e.button == 2 || e.button == 3) 
+    else if (e.button && (e.button == 2 || e.button == 3)) 
     {
       hcms_showContextmenu();
     }
@@ -1230,17 +1259,6 @@ function hcms_activateLinks(e)
   }
 }
 
-// select area
-var selectarea = null;
-var x1 = 0;
-var y1 = 0;
-var x2 = 0;
-var y2 = 0;
-var x3 = 0;
-var y3 = 0;
-var x4 = 0;
-var y4 = 0;
-
 function hcms_startSelectArea(e)
 {
   if (!e) var e = window.event;
@@ -1316,15 +1334,18 @@ function hcms_endSelectArea()
 
     if (objects && objects.length > 0)
     {
+      var div_id, row_id, pos, x, y;
+        
       for (var i = 0; i < objects.length; i++)
       {
-        var row_id = objects[i].id;
-        var pos = objects[i].getBoundingClientRect();
-        var x = pos.left;
-        var y = pos.top;
+        div_id = objects[i].id;
+        pos = objects[i].getBoundingClientRect();
+        x = pos.left;
+        y = pos.top;
   
-        if (row_id != "" && x >= (x3-x_diff) && y >= (y3-y_diff) && x <= (x4-x_diff) && y <= (y4-y_diff))
+        if (div_id != "" && x >= (x3-x_diff) && y >= (y3-y_diff) && x <= (x4-x_diff) && y <= (y4-y_diff))
         {
+          row_id = objects[i].parentElement.id;
           hcms_selectObject (row_id, 'selectarea');
           selected = true;
         }
@@ -1351,7 +1372,7 @@ function hcms_endSelectArea()
   y4 = 0;
   
   // hide select area
-  selectarea.style.display = 'none';
+  if (selectarea) selectarea.style.display = 'none';
 
   if (selected) return true;
   else return false;

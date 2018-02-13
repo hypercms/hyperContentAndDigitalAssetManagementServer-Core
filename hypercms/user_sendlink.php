@@ -226,7 +226,7 @@ if ($intention == "sendmail" && checktoken ($token, $user))
           }
           
           $usergroup = "|".$user_group."|";
-          $result = edituser ($site, $login, "", "", "", "", implode(", ", $realnames), $language, "", implode(", ", $email_to), "", $usergroup, "", $user);
+          $result = edituser ($site, $login, "", "", "", "", implode(", ", $realnames), $language, "", implode(", ", $email_to), "", "", $usergroup, "", $user);
         }
         else
         {

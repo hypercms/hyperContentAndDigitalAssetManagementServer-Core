@@ -27,7 +27,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // check permissions
-if (!checkglobalpermission ($site, 'template') || !checkglobalpermission ($site, 'tpl') || !valid_publicationname ($site) || ($mgmt_config[$site]['dam'] == true && $cat != "meta")) killsession ($user);
+if (!checkglobalpermission ($site, 'template') || !checkglobalpermission ($site, 'tpl') || !valid_publicationname ($site) || (!empty ($mgmt_config[$site]['dam']) && $cat != "meta" && $cat != "inc" && $cat != "comp")) killsession ($user);
 
 // check session of user
 checkusersession ($user);

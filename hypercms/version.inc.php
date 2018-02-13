@@ -2518,14 +2518,89 @@ Release 02/2017
 - Renamed several text variables in language files and source code
 - Modifications in function showmedia in UI API in order to not include original video files additionally to the sources if the requested video display size is smaller than the width limit of 640 pixels
 - Implementation of preview width configuration for the preview and annotations for images and document, see $mgmt_config['preview_document_width'] and $mgmt_config['window_image_width']
-- Modifications in the template engine in order to support te new config settings
-- Bug fix: Drag button in WYSIWYG interface for components did not use the right size settings in template engine
-- Bug fix:Favorites and recent objects home boxes did not initalize object array
+- Modifications in the template engine in function showmedia in UI API in order to support te new config settings
+- Implementation of multiple standard OCR languages to scan images for besides the language setting of the user
+- Modifications in function indexcontent in Media API in order to support multiple OCR languages
+- Modifications in site_edit_form in order to support multiple OCR languages
+- Modifications in function editpublication in Main API in order to support OCR language settings
+- Modifications in function showmedia in UI API in order to use only the provided image width as limit for the rendered image size
+- Modifications in function showmedia in UI API in order to set a image quality of 98%
+- Modifications of the standard image quality settings in the main config
+- Implementation of scaling of the face/object markers on images and videos in the template engine in case the image or video size has been changed
+- Implementation of phone number field as new user parameter
+- Implementation of new function update_users_706 in Update API in order to add new XML node "phone" to the users
+- Modfications in user_edit_form, function edituser in Main API, and all functions calls in order to support the new phone parameter
+- Modfications in user XML schemas in order to support the new phone parameter
+- Updates of all language files to support the new text parameters
+- Implementation of Google Authenticator library in Connector Module
+- Implementation of new function getpreviewwidth in Get API
+- Implementation of new main config parameter for the correction of the used storage due to annotation images, preview videos, file versions, thumbnails
+- Implementation of new home box "free storage per publication" in order to display the used, free, and total storage of each publication
+- Implementation of correction factor for used storage in popup_upload_html and popup_upload_swf
+- Implementation of zoom feature for annotation images
+- Modifications in the template engine and annotation.js in order to support the zoom feature
+- Modifications in function createfolder and createmediaobject in order to use the template of the folder the object resides in
+- Modifications in the template engine in order to replace template variables for all views, including form views
+- Modifications in home and userlogin in order to support wllpaper.jpg or wallpaper.png image files as theme wallpapers
+- Modifications in Export Connector Module in order to include annotation images for the export of the media files using symbolic links
+- Implementation of a new location name search feature for the definition of an objects geo location in template engine
+- Modifications in template engine to support the display of the geoloaction in WYSIWYG-views and preview
+- Design modifications in template_source, group_edit_form, and report management
+- Implementation of new function searchinindex in external search engine library (replaces old function searchindex that is still supported)
+- The new function searchinindex in external search engine library  support include_url and search result array as well as the html output
+- Modifications in default multimedia template
+- Design modifications in black design theme
+- Implementation of new preview attribute for text nodes in template engine in order to enable previews windows in form views
+- Impementation of template includes and component templates for the DAM configuration of the system
+- Modifications in the group_edit_form in order to provide access to the permissions for publishing components and to the template media permissions
+- Modifications in the template engine in order to load default template if the assigned template does not exist
+- Modifications in function cleancontent in Main API in order to remove script and other html tags and their content
+- Modifications in the template engine in order to enbale the sys user to execute function buildview for a DAM configuration
+- Update of the Template Designer Guide
+- Design modifications in page_multiedit
+- Implementation of labels in the template engine and checkbox editor for the checkbox tags
+- Modifications in function rdbms_searchcontent in DB Connect in order to look for any expression in file names or content if the order of the epxressions is the same (spaces between expressions must be used)
+- Implementation of support for AND / OR logical operator in search expressions in function rdbms_searchcontent in DB Connect
+- Modifications in template engine in order to initalize face markers after saving the asset
+- Implementation of annotion/marker toolbar for vidoes
+- Modifications in face/object markers for images and videos in order to display the input field on create
+- Implementation of textareas instead of input fields for the markers
+- Implementations and modifications in template engine and annotion.js in order to highlight selected annotation tool in toolbar 
+- Modifications in function showmedia in UI API in order to force browser to load annotation images after they have been saved
+- Modifications in function deletemediafiles in Main API
+- Implementation of JQuery UI tooltips in template engine
+- Included update log in installation directory to avoid update process after installation and first login
+- Removed support for HTML encoded characters in search expression in function rdbms_searchcontent in DB Connect (only decoded characters are used in textnodes)
+- Modifications in function deletecontent in XML API in order to return the XML result if no node has been deleted
+- Modifications in function insertcontent in XML API in order to return the XML result if no node has been added
+- Modifications in function createmedia in Media API for optimized support for SVG graphics 
+- Added vector image file extensions to format_ext.inc.php
+- Bug fix: Drag button in WYSIWYG interface for components did not use the the proper size in the template engine
+- Bug fix: Favorites and recent objects home boxes did not initalize object array
 - Bug fix: Function checkworkflow in Main API did not extract the content node from the template
 - Bug fix: Function viewinclusions in template engine did return an empty code as result if the included code was empty
 - Bug fix: Function setmetadata in Meta API did not use proper variable name for splitting mapping value into text type and text ID
 - Bug fix: The face detection for videos did place the face marker based on the original video size and not the video frame
 - Bug fix: The sendmail adn site_admin publication config parameter has not been verified in explorer_objectlist, search_objectlist, and group_edit_form
+- Bug fix: Function showmedia in UI API did not reset document view for annotations if the document had only one page
+- Bug fix: Function showmedia in UI API did not disable face/object marking for all other views except preview
+- Bug fix: The temlpate editor did not use a width for the content identificiation field
+- Bug fix: Class hcmsIconOff in navigator.css of flat designtheme did use a size and caused display issues
+- Bug fix: The temlpate engine did use an undeclared variable in a JS function
+- Bug fix: Function rdbms_getmedia in DB connect did not convert the container ID to an integer provide the geolocation for non-multimedia objects
+- Bug fix: control_content_menu did not verify if the published key exists 
+- Bug fix: Some variables have not been initalized in template_change if no template has been assigned to an object
+- Bug fix: Function checkworkflow in Main API did not return the standard workflow role if no workflow has been assigned to an object
+- Bug fix: The template engine and checkbox editor did not evalute the saved value of checkboxes properly
+- Bug fix: JS function openBrWindowMedia in media _edit_page did not access proper URL variables
+- Bug fix: The contextmenu did not mark the proper objects if a sort has been applied on any column other the name (changes in contextmenu.js, explorer_objectlist, search_objectlist, queue_objectlist)
+- Bug fix: Function rdbms_searchcontent in DB Connect did search for case sensitive object names
+- Bug fix: Function convertpath did remove the domain name from any URL without verification if the domain is managed by the system
+- Bug fix: JS function collectFaces in template engine did not remove the last face marker
+- Bug fix: JS function createFaceOnImage in temlpate engine did not set borders for markers based on the annotation drawing area
+- Bug fix: Annotion click event has not been fired in annotate.js when activating an annotation tool
+- Bug fix: Function rdbms_searchcontent in DB Connect did not remove double quotes in search expression (used for exact search)
+- Bug fix: JS function openBrWindowLink in template engine did not create a proper object reference for the link input field
 */
 
 // current version

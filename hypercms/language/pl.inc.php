@@ -1397,4 +1397,6 @@ $hcms_lang['existing-objects-will-be-replaced']['pl'] = "Istniejące obiekty zos
 $hcms_lang['import-list-comma-delimited']['pl'] = "Import CSV";
 $hcms_lang['upload-csv-file']['pl'] = "Prześlij plik CSV w celu zaimportowania metadanych/treści dla obiektów znajdujących się w tej samej lokalizacji (podaj nazwę 'Name' lub 'ContainerID' jako tytuł i identyfikator kolumny)";
 $hcms_lang['link-fields-with']['pl'] = "Połącz pola z";
+$hcms_lang['phone']['pl'] = "Telefon";
+$hcms_lang['optical-character-recognition']['pl'] = "Optyczne rozpoznawanie znaków";
 ?>

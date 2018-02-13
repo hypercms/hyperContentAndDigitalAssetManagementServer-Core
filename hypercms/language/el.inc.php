@@ -1399,4 +1399,6 @@ $hcms_lang['existing-objects-will-be-replaced']['el'] = "Τα υπάρχοντα
 $hcms_lang['import-list-comma-delimited']['el'] = "Εισαγωγή CSV";
 $hcms_lang['upload-csv-file']['el'] = "Μεταφόρτωση αρχείου CSV για την εισαγωγή μεταδεδομένων/περιεχομένου για αντικείμενα στην ίδια τοποθεσία (Παρέχετε το όνομα 'Name' ή 'ContainerID' ως τίτλο και αναγνωριστικό στήλης)";
 $hcms_lang['link-fields-with']['el'] = "Συνδέστε τα πεδία με";
+$hcms_lang['phone']['el'] = "Τηλέφωνο";
+$hcms_lang['optical-character-recognition']['el'] = "Οπτική αναγνώριση χαρακτήρων";
 ?>

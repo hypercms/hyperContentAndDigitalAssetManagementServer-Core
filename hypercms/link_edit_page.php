@@ -240,7 +240,7 @@ function geturl (type)
 
 function openBrWindowLink (winName, features, type)
 {
-  if (eval (document.forms['link'].elements['link_name']) && eval (document.forms['link'].elements['linkhref']) && document.forms['link'].elements['link_name'].value != "")
+  if (document.forms['link'].elements['link_name'] && document.forms['link'].elements['linkhref'] && document.forms['link'].elements['link_name'].value != "")
   {
     var theURL = geturl (type);
 

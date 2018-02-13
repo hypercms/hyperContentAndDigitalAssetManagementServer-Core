@@ -2080,8 +2080,8 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
     </div>
     
     
-    <!-- message -->
-    <div style="width:100%; height:32px;">&nbsp;</div>
+    <!-- message or gallery -->
+    <div style="width:100%; margin:42px 4px 4px 4px;">
     <?php
     if ($error != "")
     {
@@ -2092,6 +2092,7 @@ if (!empty ($charset)) ini_set ('default_charset', $charset);
       // show media preview if available
       if ($mediapreview != "") echo $mediapreview."<div style=\"clear:both;\"></div>\n";
     ?>
+    </div>
 
     <form id="reloadform" style="display:none" method="POST" action="<?php echo $mgmt_config['url_path_cms']; ?>page_multiedit.php">
       <?php

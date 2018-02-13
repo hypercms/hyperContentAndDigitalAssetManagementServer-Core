@@ -602,7 +602,7 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
   </table>
   <br />
   
-  <table border="0" cellspacing="0" cellpadding="0" style="border: 1px solid #000000; width:820px;">
+  <table border="0" cellspacing="0" cellpadding="0" style="border: 1px solid #000000; width:100%; height:100%;">
   <?php
   if ($cat == "page" || $cat == "comp" || $cat == "meta" || $cat == "inc")
   {
@@ -621,14 +621,14 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
               </td>
             </tr>\n";            
     echo "<tr>
-              <td nowrap=\"nowrap\">".getescapedtext ($hcms_lang['content-identification-name'][$lang], $charset, $lang)." </td>
+              <td width=\"248\" nowrap=\"nowrap\">".getescapedtext ($hcms_lang['content-identification-name'][$lang], $charset, $lang)." </td>
               <td nowrap=\"nowrap\">
                 <input type=\"text\" name=\"tagid\" style=\"width:200px;\" />
                 <input type=\"button\" class=\"hcmsButtonBlue\" name=\"tag_clean\" value=\"".getescapedtext ($hcms_lang['reset'][$lang], $charset, $lang)."\" onClick=\"document.forms['template_edit'].elements['tagid'].value = '';\" />".$checkbox_metainfo."
               </td>
             </tr>\n";
     echo "<tr>
-              <td wnowrap=\"nowrap\">".getescapedtext ($hcms_lang['hide-content'][$lang], $charset, $lang)." </td>
+              <td width=\"248\" wnowrap=\"nowrap\">".getescapedtext ($hcms_lang['hide-content'][$lang], $charset, $lang)." </td>
               <td nowrap=\"nowrap\">
                 <input type=\"checkbox\" name=\"onpublish\" value=\"hidden\" />&nbsp;".getescapedtext ($hcms_lang['on-publish'][$lang], $charset, $lang)."&nbsp;
                 <input type=\"checkbox\" name=\"onedit\" value=\"hidden\" />&nbsp;".getescapedtext ($hcms_lang['on-edit'][$lang], $charset, $lang)."
@@ -641,7 +641,7 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
   ?>
     <tr>
       <td>
-        <div class="hcmsToolbar" style="width:816px;">
+        <div class="hcmsToolbar" style="width:100%">
         
           <div class="hcmsToolbarBlock">
             <img onClick="savetemplate('');" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" name="save" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
@@ -749,8 +749,8 @@ echo showmessage ($show, 650, 70, $lang, "position:fixed; left:15px; top:100px;"
       </td>
     </tr>
     <tr>
-      <td>
-        <textarea name="contentfield" style="width:810px; height:400px;"><?php echo $contentfield; ?></textarea>
+      <td align="center">
+        <textarea name="contentfield" style="width:98%; height:700px; margin-bottom:10px;"><?php echo $contentfield; ?></textarea>
       </td>
     </tr>
   </table>

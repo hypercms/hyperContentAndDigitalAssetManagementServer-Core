@@ -1397,4 +1397,6 @@ $hcms_lang['existing-objects-will-be-replaced']['en'] = "Existing objects will b
 $hcms_lang['import-list-comma-delimited']['en'] = "CSV Import";
 $hcms_lang['upload-csv-file']['en'] = "Upload CSV file for the import of metadata/content for objects in the same location (Provide 'Name' or 'ContainerID' as column title and identifier)";
 $hcms_lang['link-fields-with']['en'] = "Link the fields with";
+$hcms_lang['phone']['en'] = "Phone";
+$hcms_lang['optical-character-recognition']['en'] = "Optical Character Recognition";
 ?>

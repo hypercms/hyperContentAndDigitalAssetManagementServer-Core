@@ -510,11 +510,14 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             // refresh sidebar
             if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
             else $sidebarclick = "";
+            
             // onclick for marking objects
-            $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
+            $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
+            
             // open folder
             if ($action != "recyclebin") $openFolder = "onDblClick=\"parent.location='frameset_objectlist.php?site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc.$folder)."/&token=".$token."';\" ";
             else $openFolder = "";
+            
             // set context
             $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '.folder', '".$folder_name."', 'Folder', '', '".$folder."', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
@@ -528,7 +531,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".$file_modified." \r\n".$metadata;             
 
             $listview .= "
-                         <tr id=g".$items_row." ".$selectclick." style=\"cursor:pointer\" align=\"left\">
+                         <tr id=g".$items_row." style=\"cursor:pointer\" align=\"left\" ".$selectclick.">
                            <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                              <input type=\"hidden\" value=\"".$location_esc.$folder."\">
                              <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" style=\"display:block; padding-left:5px; padding-right:5px;\">
@@ -594,8 +597,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                          </tr>";
         
             $galleryview .= "
-                            <td id=t".$items_row." style=\"width:".$cell_width."; text-align:center; vertical-align:bottom;\">
-                              <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$selectclick." ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer; display:block;\">".
+                            <td id=t".$items_row." style=\"width:".$cell_width."; text-align:center; vertical-align:bottom;\" ".$selectclick.">
+                              <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" style=\"cursor:pointer; display:block;\">".
                                 $dlink_start."
                                   <div id=\"w".$items_row."\" class=\"hcmsThumbnailWidth".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" style=\"border:0;\" /></div>
                                   ".showshorttext($folder_name, 18, true)."
@@ -742,11 +745,14 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             // open on double click
             if ($action != "recyclebin") $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
             else $openObject = "";
+            
             // refresh sidebar
             if (!$is_mobile) $sidebarclick = "if (sidebar) hcms_loadSidebar();";
             else $sidebarclick = "";
+            
             // onclick for marking objects
-            $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
+            $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu(); ".$sidebarclick."\" ";
+            
             // set context
             $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '".$object."', '".$object_name."', '".$file_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
@@ -939,8 +945,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             }
 
             $galleryview .= "
-                            <td id=\"t".$items_row."\" style=\"width:".$cell_width."; text-align:center; vertical-align:bottom;\">
-                              <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$selectclick." ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"cursor:pointer; display:block; text-align:center;\">".
+                            <td id=\"t".$items_row."\" style=\"width:".$cell_width."; text-align:center; vertical-align:bottom;\" ".$selectclick.">
+                              <div id=\"".$items_row."\" class=\"hcmsObjectGalleryMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" style=\"cursor:pointer; display:block; text-align:center;\">".
                                 $dlink_start."
                                   ".$thumbnail."
                                   ".showshorttext($object_name, 18, true)."

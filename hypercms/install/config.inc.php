@@ -184,12 +184,13 @@ $mgmt_config['explorerview'] = "detail";
 $mgmt_config['explorer_list_maxitems'] = 500;
 
 // Window size for objects in pixel
-$mgmt_config['window_object_width'] = 800;
+$mgmt_config['window_object_width'] = 1280;
 $mgmt_config['window_object_height'] = 1000;
 
-// Preview and annotation width for documents and images in pixel
+// Preview and annotation width for documents, images, and videos in pixel or use "original" for original image width
 $mgmt_config['preview_document_width'] = 695;
-$mgmt_config['preview_image_width'] = 695;
+$mgmt_config['preview_image_width'] = 1024;
+$mgmt_config['preview_video_width'] = 576;
 
 // Should metadata on mouse over be displayed in the explorer object list if the sidebar is not displayed
 $mgmt_config['explorer_list_metadata'] = false;
@@ -542,6 +543,11 @@ $mgmt_config['instances'] = "%instances%";
 // Enable writing of session data for third party load balancers in order to enable session synchronization
 $mgmt_config['writesessiondata'] = false;
 
+// Factor to correct the used storage space due to the fact that the system only tracks the uploaded original file size
+// and does not include annotation images, video previews and versions, file versions of the same asset, thumbnails, and temporary files.
+// Correction factors per publication can be defined as well by $mgmt_config['publicationname']['storagefactor'] = 1.5;
+$mgmt_config['storagefactor'] = 1.15;
+
 // ------------------------------------ Executable Linking -------------------------------------
 
 // hyperCMS uses third party PlugIns to parse, convert or uncompress files. The Windows binaries can
@@ -575,7 +581,7 @@ $mgmt_parser['.doc'] = "%antiword%";
 // The path to the executable is usually /usr/bin/tesseract
 // You need to install the Tesseract language pack in order to use the language.
 // Install tesseract-ocr-all for all languages, or install seperately, e.g. -deu, -eng, -fra, -ita, -ndl, -por, -spa, -vie.
-$mgmt_parser['.png.tif.tiff'] = "%tesseract%";
+$mgmt_parser['.ai.aai.act.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.txt.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%tesseract%";
 
 // Define Uncompression (Extension: gz)
 // To uncompress files you have to define the path to the UNZIP executable.
@@ -647,10 +653,10 @@ $mgmt_docconvert['.odp'] = array('.pdf', '.ppt');
 
 // Define image preview using ImageMagick and GhostScript (thumbnail generation)
 // The path to the executable is usually /usr/bin/convert
-$mgmt_imagepreview['.ai.aai.act.art.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.txt.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
+$mgmt_imagepreview['.ai.aai.act.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.txt.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
 
 // If an image file is uploaded hyperCMS will try to generate a thumbnail file for preview:
-$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 220x220 -f jpg";
+$mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 220x220 -q 95 -f jpg";
 
 // Define the supported target formats for image editing:
 $mgmt_imageoptions['.jpg.jpeg']['original'] = "-f jpg";
@@ -658,9 +664,9 @@ $mgmt_imageoptions['.gif']['original'] = "-f gif";
 $mgmt_imageoptions['.png']['original'] = "-f png";
 
 // Define additional download formats besides the original image:
-$mgmt_imageoptions['.jpg.jpeg']['1920x1080px'] = '-s 1920x1080 -f jpg';
-$mgmt_imageoptions['.jpg.jpeg']['1024x768px'] = '-s 1024x768 -f jpg';
-$mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -f jpg';
+$mgmt_imageoptions['.jpg.jpeg']['1920x1080px'] = '-s 1920x1080 -q 95 -f jpg';
+$mgmt_imageoptions['.jpg.jpeg']['1024x768px'] = '-s 1024x768 -q 95 -f jpg';
+$mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -q 95 -f jpg';
 
 // Define media preview using FFMPEG (Audio/Video formats)
 // If a video or audio file is uploaded, hyperCMS will try to generate a smaler streaming video file for preview.

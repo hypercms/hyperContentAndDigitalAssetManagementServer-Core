@@ -412,35 +412,37 @@ else
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
-  <table border=0 cellspacing=0 cellpadding=1>
+  <table cellpadding="0" cellspacing="0" style="border:0; width:100%; table-layout:fixed;">
     <tr>
       <?php
       // location
       if ($cat == "page" || $cat == "comp")
       {
         echo "
-      <td nowrap=\"nowrap\"><b>".getescapedtext ($hcms_lang['location'][$lang])."</b>&nbsp;</td>
-      <td class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">".str_replace ("/", " &gt; ", trim ($location_name, "/"))."</td>\n";
+      <td style=\"white-space:nowrap; width:20px;\"><img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;</td>
+      <td class=\"hcmsHeadlineTiny\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".str_replace ("/", " &gt; ", trim ($location_name, "/"))."</td>";
       }
       else 
       {
         echo "
-      <td nowrap=\"nowrap\"><b>".getescapedtext ($hcms_lang['location'][$lang])."</b>&nbsp;</td>
-      <td class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">".$pagecomp."</td>\n";    
+      <td style=\"white-space:nowrap; width:20px;\"><img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;</td>
+      <td class=\"hcmsHeadlineTiny\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".$pagecomp."</td>\n";    
       }
       ?>
     </tr>
     <tr>
       <?php
       // object
+      if (empty ($file_info['icon'])) $file_info['icon'] = "Null_media.gif";
+
       echo "
-      <td nowrap=\"nowrap\"><b>".$item."</b>&nbsp;</td>
-      <td class=\"hcmsHeadlineTiny\" nowrap=\"nowrap\">".$object_name."</td>\n";
+      <td style=\"white-space:nowrap; width:20px;\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" title=\"".$item."\" align=\"absmiddle\" class=\"hcmsIconList\" />&nbsp;</td>
+      <td class=\"hcmsHeadlineTiny\" style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".$object_name."</td>";
       ?>
     </tr>
   </table>
   <?php } else { ?>
-  <span class="hcmsHeadlineTiny" style="display:block;"><?php echo str_replace ("/", " &gt; ", trim ($location_name, "/"))." &gt; ".$object_name; ?></span>
+  <span class="hcmsHeadlineTiny" style="width:100%; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo str_replace ("/", " &gt; ", trim ($location_name, "/"))." &gt; ".$object_name; ?></span>
   <?php } ?>
 </div>
 
@@ -457,7 +459,7 @@ else
     else echo "<img src=\"".getthemelocation()."img/button_file_preview.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
 
     // Live-View Button
-    if ($file_info['published'] == true && $page != "" && $page != ".folder" && $setlocalpermission['root'] == 1 && $cat == "page" && empty ($media))
+    if (!empty ($file_info['published']) && $page != "" && $page != ".folder" && $setlocalpermission['root'] == 1 && $cat == "page" && empty ($media))
     {
       echo "<img onClick=\"openobjectview('".url_encode($location_esc)."', '".url_encode($page)."', 'liveview');\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_liveview\" src=\"".getthemelocation()."img/button_file_liveview.png\" alt=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" />\n";
     }
@@ -793,7 +795,7 @@ echo showmessage ($show, 650, 60, $lang, "position:fixed; left:15px; top:15px; "
         ?> 
       </td>
       <td style="white-space:nowrap">
-        <input type="text" name="page" maxlength="<?php if (!is_int ($mgmt_config['max_digits_filename'])) echo $mgmt_config['max_digits_filename']; else echo "200"; ?>" style="width:220px;" />
+        <input type="text" name="page" maxlength="<?php if (!empty ($mgmt_config['max_digits_filename']) && intval ($mgmt_config['max_digits_filename']) > 0) echo intval ($mgmt_config['max_digits_filename']); else echo "200"; ?>" style="width:220px;" />
       </td>
     </tr>
     <tr>
@@ -835,7 +837,7 @@ if ($page != "")
   echo "
     <div id=\"tabLayer\" class=\"hcmsTabContainer\" style=\"position:absolute; z-index:10; visibility:visible; left:0px; top:77px; white-space:nowrap;\">
         <div id=\"tab1\" class=\"hcmsTabActive\">
-          <a href=\"page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&ctrlreload=no\" target=\"objFrame\" onClick=\"hcms_ElementbyIdStyle('tab1','hcmsTabActive'); hcms_ElementbyIdStyle('tab2','hcmsTabPassive'); hcms_ElementbyIdStyle('tab3','hcmsTabPassive'); hcms_ElementbyIdStyle('tab4','hcmsTabPassive');\" title=\"".$pagecomp."\">".$pagecomp."</a>
+          <a href=\"page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\" target=\"objFrame\" onClick=\"hcms_ElementbyIdStyle('tab1','hcmsTabActive'); hcms_ElementbyIdStyle('tab2','hcmsTabPassive'); hcms_ElementbyIdStyle('tab3','hcmsTabPassive'); hcms_ElementbyIdStyle('tab4','hcmsTabPassive');\" title=\"".$pagecomp."\">".$pagecomp."</a>
         </div>
         <div id=\"tab2\" class=\"hcmsTabPassive\">";
           if (($usedby == "" || $usedby == $user) && ($wf_role >= 4 || $wf_role == 2) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) 

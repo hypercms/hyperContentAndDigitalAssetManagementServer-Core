@@ -674,6 +674,9 @@ function hcms_jumpMenuGo (selName, targ, restore)
 
 function hcms_showInfo (id, sec)
 {
+  // default value
+  sec = typeof sec !== 'undefined' ? sec : 0;
+  
   // uses display
   var info = document.getElementById(id);
   

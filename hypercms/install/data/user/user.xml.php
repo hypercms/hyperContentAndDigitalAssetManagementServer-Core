@@ -8,13 +8,10 @@
 <userdate></userdate>
 <realname>Super User</realname>
 <email></email>
+<phone></phone>
 <signature></signature>
 <language>en</language>
 <theme>standard</theme>
-<memberof>
-<publication></publication>
-<usergroup></usergroup>
-</memberof>
 </user>
 <user>
 <login>hcms_download</login>
@@ -22,8 +19,9 @@
 <hashcode>c2330417222067356dcf23186eccc28f</hashcode>
 <admin>0</admin>
 <userdate></userdate>
-<realname><![CDATA[Download User]]></realname>
+<realname>Download User</realname>
 <email></email>
+<phone></phone>
 <signature></signature>
 <language>en</language>
 <theme>standard</theme>

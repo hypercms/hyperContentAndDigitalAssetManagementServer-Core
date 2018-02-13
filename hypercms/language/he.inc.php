@@ -1398,4 +1398,6 @@ $hcms_lang['existing-objects-will-be-replaced']['he'] = "אובייקטים קי
 $hcms_lang['import-list-comma-delimited']['he'] = "ייבוא CSV";
 $hcms_lang['upload-csv-file']['he'] = "העלה קובץ CSV לייבוא מטא נתונים / תוכן עבור אובייקטים באותו מיקום (ציין 'Name' או 'ContainerID' ככותרת ומזהה של עמודה)";
 $hcms_lang['link-fields-with']['he'] = "קשר את השדות עם";
+$hcms_lang['phone']['he'] = "טלפון";
+$hcms_lang['optical-character-recognition']['he'] = "זיהוי תווים אופטי";
 ?>
