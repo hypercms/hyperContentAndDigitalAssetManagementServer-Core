@@ -1491,7 +1491,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                 {
                   $imagedensity = intval (getoption ($mgmt_imageoptions[$imageoptions_ext][$type], "-d"));
                   
-                  if ($imagedensity > 1200) $imagedensity = "-density 2400";
+                  if ($imagedensity > 2400) $imagedensity = "-density 2400";
                   elseif ($imagedensity < 72) $imagedensity = "-density 72";
                   else $imagedensity = "-density ".$imagedensity;
                 }
@@ -1720,7 +1720,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // CASE: document-based formats (if converted to PDF), encapsulated post script (EPS) and vector graphics
                   if (strpos ("_.pdf".$hcms_ext['vectorimage'], $file_ext) > 0)
                   {
-                    if ($file_ext != ".pdf" && empty ($imagedensity)) $imagedensity = "-density 1800 ";
+                    if ($file_ext == ".svg" && empty ($imagedensity)) $imagedensity = "-density 1800 ";
+                    elseif ($file_ext != ".pdf")  $imagedensity = "-density 144 ";
                     
                     if ($type == "thumbnail")
                     {

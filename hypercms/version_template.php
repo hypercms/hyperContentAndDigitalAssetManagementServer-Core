@@ -141,6 +141,16 @@ function compare_submit ()
     return false; 
   }
 }
+
+function toggledelete (source)
+{
+  var checkboxes = document.getElementsByClassName('delete');
+  
+  for (var i=0; i<checkboxes.length; i++)
+  {
+    checkboxes[i].checked = source.checked;
+  }
+}
 </script>
 </head>
 
@@ -160,7 +170,7 @@ function compare_submit ()
      <td width="60%" nowrap="nowrap" class="hcmsHeadline"><?php echo $pagecomp; ?></td>
      <td nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['compare'][$lang]); ?></td>
      <td nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['current'][$lang]); ?></td>
-     <td nowrap="nowrap" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></td>
+     <td nowrap="nowrap" class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggledelete(this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></label></td>
     </tr>
     <?php
     // change to version
@@ -227,7 +237,7 @@ function compare_submit ()
           <td nowrap=\"nowrap\"><a href=# onClick=\"hcms_openWindow('template_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&template=".url_encode($file_v)."', 'preview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" align=\"absmiddle\" />&nbsp; ".$tpl_name."</a> <a href=# onClick=\"hcms_openWindow('template_source.php?site=".url_encode($site)."&template=".url_encode($file_v)."', '', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").")\"><font size=\"-2\">(Source Code)</font></a></td>
           <td align=\"middle\" valign=\"middle\"><input type=\"checkbox\" name=\"dummy\" value=\"".$file_v."\" onclick=\"if (compare_select('".$file_v."')) this.checked=true; else this.checked=false;\" /></td>
           <td align=\"middle\" valign=\"middle\"><input type=\"radio\" name=\"actual\" value=\"".$file_v."\" /></td>
-          <td align=\"middle\" valign=\"middle\"><input type=\"checkbox\" name=\"delete[]\" value=\"".$file_v."\" /></td>
+          <td align=\"middle\" valign=\"middle\"><input type=\"checkbox\" name=\"delete[]\" value=\"".$file_v."\" class=\"delete\" /></td>
         </tr>";
 
         $i++;

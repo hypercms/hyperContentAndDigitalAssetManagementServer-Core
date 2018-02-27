@@ -323,7 +323,7 @@ img
   float: left;
 }
 
-.hcmsButton:hover
+.hcmsButton:hover, .hcmsButtonActive
 {
   padding: 1px;
   margin: 0;
@@ -728,10 +728,6 @@ html, body
   height: 100%;
   padding: 0;
   margin: 0;
-}
-
-html, body
-{  
   font-family: Verdana, Arial, Helvetica, sans-serif; 
   font-size: 12px; 
   font-weight: normal; 

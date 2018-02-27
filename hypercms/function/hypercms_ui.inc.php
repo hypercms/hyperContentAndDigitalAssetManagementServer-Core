@@ -619,7 +619,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
 function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $height="", $class="hcmsImageItem")
 {
   // $mgmt_imageoptions is used for image rendering (in case the format requires the rename of the object file extension)	 
-  global $site, $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docpreview, $mgmt_docconvert, $hcms_charset, $hcms_lang_codepage, $hcms_lang, $lang,
+  global $site, $mgmt_config, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imagepreview, $mgmt_docpreview, $mgmt_docconvert, $mgmt_maxsizepreview, $hcms_charset, $hcms_lang_codepage, $hcms_lang, $lang,
          $site, $location, $cat, $page, $user, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $setlocalpermission, $mgmt_imageoptions, $is_mobile, $is_iphone;
 
   // Path to PDF.JS
@@ -690,7 +690,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
     {
       $media_root = $thumb_root = $mgmt_config['abs_path_tplmedia'].$site."/";
       
-      // get file size
+      // get file size in kB
       $mediafilesize = round (@filesize ($media_root.$mediafile) / 1024, 0);
       
       // get modified date
@@ -999,8 +999,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $doc_link = cleandomain (createviewlink ($site, $mediafile_thumb, $medianame_thumb, true));
               $mediaview_doc = "<iframe src=\"".$pdfjs_path.urlencode($doc_link)."\" ".$style." id=\"".$id."\" style=\"border:none;\"></iframe><br />\n";
             }
-            // thumb pdf does not exsist but can be created
-            elseif ($thumb_pdf_exists == false && is_supported ($mgmt_docpreview, $file_info['orig_ext']))
+            // thumb pdf does not exist but can be created
+            elseif ($thumb_pdf_exists == false && is_supported ($mgmt_docpreview, $file_info['orig_ext']) && (empty ($mgmt_maxsizepreview[$file_info['orig_ext']]) || ($mediafilesize/1024) <= $mgmt_maxsizepreview[$file_info['orig_ext']]))
             {
               // try to remove outdated pdf thumbnail file
               if (is_file ($thumb_root.$mediafile_thumb))
@@ -1775,7 +1775,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.flv");
         }
         // no media config file is available, try to create video thumbnail file
-        elseif (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig))
+        elseif ((is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)) && (empty ($mgmt_maxsizepreview[$file_info['orig_ext']]) || ($mediafilesize/1024) <= $mgmt_maxsizepreview[$file_info['orig_ext']]))
         {
           // create thumbnail video of original file
           $create_media = createmedia ($site, $thumb_root, $thumb_root, $mediafile_orig, "", "origthumb");

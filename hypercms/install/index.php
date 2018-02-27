@@ -955,10 +955,10 @@ Otherwise just provide the information below and install the most powerful Conte
       <td colspan="2" nowrap="nowrap">You can create additional Publications any time after successful installation.</td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap"><input name="setup_publication" value="cms" type="radio" <?php if (empty ($setup_publication) || $setup_publication == "cms") echo "checked=\"checked\""; ?> /> as a Content Management Solution (Manage content of a website)</td>
+      <td colspan="2" nowrap="nowrap"><label><input name="setup_publication" value="cms" type="radio" <?php if (empty ($setup_publication) || $setup_publication == "cms") echo "checked=\"checked\""; ?> /> as a Content Management Solution (Manage content of a website)</label></td>
     </tr>
     <tr>
-      <td colspan="2" nowrap="nowrap"><input name="setup_publication" value="dam" type="radio" <?php if ($setup_publication == "dam") echo "checked=\"checked\""; ?> /> as a Digital Asset Management Solution (Manage and share multimedia files)</td>
+      <td colspan="2" nowrap="nowrap"><label><input name="setup_publication" value="dam" type="radio" <?php if ($setup_publication == "dam") echo "checked=\"checked\""; ?> /> as a Digital Asset Management Solution (Manage and share multimedia files)</label></td>
     </tr>
     <tr>
       <td colspan="2" nowrap="nowrap">&nbsp;</td>

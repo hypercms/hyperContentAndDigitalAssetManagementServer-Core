@@ -2439,7 +2439,7 @@ Release 11/2017
 - Bug fix: Mail links opened in Mobile Edition did not disable the search functionality
 
 Version 7.0.5
-Release 01/2018
+Release 02/2018
 - Modifications in function hcms_crypt in Security API in order to create a valid salt for encryption
 - Modifications in main config file config.inc.php in install directory
 - Implementation of language mapping for tesseract OCR in include/tesseract_lang.inc.php
@@ -2505,7 +2505,7 @@ Release 01/2018
 - Bug fix: Function showmedia in UI API did not set the correct width of the annotation toolbar
 
 Version 7.0.6
-Release 02/2017
+Release 03/2017
 - Implementation of video background wallpapers for the logon and home screen
 - Modifications in function getwallpaper in Get API in order to support video wallpapers based on the version number
 - Design modifications in popup_upload_html and popup_upload_swf
@@ -2569,12 +2569,23 @@ Release 02/2017
 - Modifications in function showmedia in UI API in order to force browser to load annotation images after they have been saved
 - Modifications in function deletemediafiles in Main API
 - Implementation of JQuery UI tooltips in template engine
-- Included update log in installation directory to avoid update process after installation and first login
 - Removed support for HTML encoded characters in search expression in function rdbms_searchcontent in DB Connect (only decoded characters are used in textnodes)
 - Modifications in function deletecontent in XML API in order to return the XML result if no node has been deleted
 - Modifications in function insertcontent in XML API in order to return the XML result if no node has been added
 - Modifications in function createmedia in Media API for optimized support for SVG graphics 
 - Added vector image file extensions to format_ext.inc.php
+- Implementation of mark/unmark-all feature for delete column of template and content versions
+- Implementation of sandbox attribute for preview and live view in frameset_content and frameset_objectlist
+- Implementation of mark/unmark-all feature for the task management
+- Modifications in task management in order to support and display tasks without a user
+- Modifications in GUI of installation script
+- Modifications in search_form in order to support scrolling in the form
+- Modifications in function showmedia in UI API in order to skip fileswhich does not meet the file size max. limits for the preview process
+- Design modifications in task management
+- Design modifications in plugin management
+- Improvements in main CSS of standard design theme
+- Modifications in Export module in Connector in order to support detailed error messages and error color coding
+- Implementation of a new Home screen box for the latest uploads including the download/access links for the objects
 - Bug fix: Drag button in WYSIWYG interface for components did not use the the proper size in the template engine
 - Bug fix: Favorites and recent objects home boxes did not initalize object array
 - Bug fix: Function checkworkflow in Main API did not extract the content node from the template
@@ -2601,6 +2612,7 @@ Release 02/2017
 - Bug fix: Annotion click event has not been fired in annotate.js when activating an annotation tool
 - Bug fix: Function rdbms_searchcontent in DB Connect did not remove double quotes in search expression (used for exact search)
 - Bug fix: JS function openBrWindowLink in template engine did not create a proper object reference for the link input field
+- Bug fix: Function createmedia in Media API set a high image density for all vector based images, this has now been limited to SVG graphics due to issues with ImageMagick
 */
 
 // current version

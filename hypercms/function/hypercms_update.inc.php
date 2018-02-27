@@ -895,21 +895,22 @@ function update_users_706 ()
   {
     $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
     
-    if (!empty ($userdata))
+    if (!empty ($userdata) && strpos ($userdata, "</phone>") < 1)
     {
       $datanew = str_replace ("</email>", "</email>\n<phone></phone>", $userdata);
-    }
 
-    if (!empty ($datanew))
-    {
-      $savefile = savefile ($mgmt_config['abs_path_data']."user/", "user.xml.php", $datanew);
+      if (!empty ($datanew))
+      {
+        $savefile = savefile ($mgmt_config['abs_path_data']."user/", "user.xml.php", $datanew);
       
-      // update log
-      if ($savefile == true) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.6|updated to version 7.0.6"), "update");
-      // sys log
-      else savelog (array($mgmt_config['today']."|hypercms_update.inc.php|error|10100|update to version 7.0.6 failed"));
+        // update log
+        if ($savefile == true) savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.6|updated to version 7.0.6"), "update");
+        // sys log
+        else savelog (array($mgmt_config['today']."|hypercms_update.inc.php|error|10100|update to version 7.0.6 failed"));
       
-      return $savefile;
+        return $savefile;
+      }
+      else return false;
     }
     else return false;
   }

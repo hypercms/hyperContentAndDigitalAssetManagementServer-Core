@@ -28,7 +28,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // ------------------------------ permission section --------------------------------
 
 // force cat for DAM usage and check requested template
-if ($mgmt_config[$site]['dam'] == true)
+if (!empty ($mgmt_config[$site]['dam']))
 {
   if (substr_count ($template, ".meta.tpl") == 0 && substr_count ($template, ".comp.tpl") == 0) killsession ($user);
 }
