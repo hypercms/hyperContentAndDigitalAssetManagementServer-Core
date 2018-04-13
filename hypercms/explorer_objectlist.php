@@ -1174,9 +1174,14 @@ else
 
 <!-- initalize -->
 <script>
+// set view
 toggleview (explorerview);
+// resize columns
 $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+// select area
 var selectarea = document.getElementById('selectarea');
+// load screen
+if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='none';
 </script>
 
 </body>

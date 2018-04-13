@@ -11,7 +11,7 @@
 
 // --------------------------------------- importmetadata -------------------------------------------
 // function: importmetadata ()
-// input: publication name, location, path to CSV file, user name, type array or string [u,f,l,c,d,k] (optional), delimiter (optional), enclosure (optional), character set (optional)
+// input: publication name [string], location [string], path to CSV file [string], user name [string], type array or string [u,f,l,c,d,k] (optional), delimiter [string] (optional), enclosure [string] (optional), character set [string] (optional)
 // output: true / false
 
 // description:
@@ -469,7 +469,7 @@ function createtaxonomy ($recreate=false)
 
 // --------------------------------------- splitkeywords -------------------------------------------
 // function: splitkeywords ()
-// input: comma seperated keywords string, character set (optional)
+// input: comma seperated keywords [string], character set [string] (optional)
 // output: keywords as array / false on error
 
 // description:
@@ -509,7 +509,7 @@ function splitkeywords ($keywords, $charset="UTF-8")
 
 // ---------------------- copymetadata -----------------------------
 // function: copymetadata()
-// input: path to source file, path to destination file
+// input: path to source file [string], path to destination file [string]
 // output: true / false
 
 // description:
@@ -598,7 +598,7 @@ function copymetadata ($file_source, $file_dest)
 
 // ------------------------- extractmetadata -----------------------------
 // function: extractmetadata()
-// input: path to image file
+// input: path to image file [string]
 // output: result array / false on error
 
 // description:
@@ -702,7 +702,7 @@ function extractmetadata ($file)
 
 // ------------------------- xmlobject2array -----------------------------
 // function: xmlobject2array()
-// input: XML as object, namespace as array (optional)
+// input: XML [object], namespace [array] (optional)
 // output: result array / false
 
 // description:
@@ -779,7 +779,7 @@ function xmlobject2array ($obj, $namespace="")
 
 // ------------------------- id3_getdata -----------------------------
 // function: id3_getdata()
-// input: path to audio file
+// input: path to audio file [string]
 // output: result array / false on error
 
 // description:
@@ -894,7 +894,7 @@ function id3_getdata ($file)
 
 // ------------------------- id3_writefile -----------------------------
 // function: id3_writefile()
-// input: abs. path to audio file, ID3 tag array, keep existing ID3 data of file [true,false] (optional), move tempoarary file from unecrypted to encrypted [true,false] (optional)
+// input: abs. path to audio file [string], ID3 tag [array], keep existing ID3 data of file [true,false] (optional), move tempoarary file from unecrypted to encrypted [true,false] (optional)
 // output: true / false on error
 
 // description:
@@ -1038,7 +1038,7 @@ function id3_writefile ($file, $id3, $keep_data=true, $movetempfile=true)
 
 // ------------------------- id3_create -----------------------------
 // function: id3_create()
-// input: publication name, text array (from content container)
+// input: publication name [string], text from content container [array]
 // output: ID3 tag array / false on error
 
 // description:
@@ -1087,7 +1087,7 @@ function id3_create ($site, $text)
 
 // ------------------------- xmp_getdata -----------------------------
 // function: xmp_getdata()
-// input: path to image file
+// input: path to image file [string]
 // output: result array / false on error
 
 function xmp_getdata ($file)
@@ -1153,7 +1153,7 @@ function xmp_getdata ($file)
 
 // ------------------------- xmp_writefile -----------------------------
 // function: xmp_writefile()
-// input: abs. path to image file, XMP tag array, keep existing XMP data of file [true,false] (optional), move tempoarary file from unecrypted to encrypted [true,false] (optional)
+// input: abs. path to image file [string], XMP tag [array], keep existing XMP data of file [true,false] (optional), move tempoarary file from unecrypted to encrypted [true,false] (optional)
 // output: true / false on error
 
 // description:
@@ -1268,7 +1268,7 @@ function xmp_writefile ($file, $xmp, $keep_data=true, $movetempfile=true)
 
 // ------------------------- xmp_create -----------------------------
 // function: xmp_create()
-// input: publication name, text array (from content container)
+// input: publication name [string], text from content container [array]
 // output: XMP tag array / false on error
 
 // description:
@@ -1317,7 +1317,7 @@ function xmp_create ($site, $text)
 
 // ------------------------- geo2decimal -----------------------------
 // function: geo2decimal()
-// input: geo location in degree, minutes, seconds, hemisphere [N,O,S,W]
+// input: geo location in degree [integer], minutes [integer], seconds [integer], hemisphere [N,O,S,W]
 // output: decimal result / false
 
 function geo2decimal ($deg, $min, $sec, $hemi) 
@@ -1328,7 +1328,7 @@ function geo2decimal ($deg, $min, $sec, $hemi)
 
 // ------------------------- exif_getdata -----------------------------
 // function: exif_getdata()
-// input: path to image file
+// input: path to image file [string]
 // output: result array / false
 
 function exif_getdata ($file)
@@ -1594,7 +1594,7 @@ function exif_getdata ($file)
 
 // ------------------------- iptc_getdata -----------------------------
 // function: iptc_getdata()
-// input: path to image file
+// input: path to image file [string]
 // output: result array / false
 
 function iptc_getdata ($file)
@@ -1683,8 +1683,8 @@ function iptc_getdata ($file)
 
 // ------------------------- iptc_getcharset -----------------------------
 // function: iptc_getcharset()
-// input: iptc tag that holds character set information 
-// output: charset as string / false on error
+// input: iptc tag that holds character set information [string]
+// output: character set as string / false on error
 
 // description:
 // Copied from MediaWiki!
@@ -1815,7 +1815,7 @@ function iptc_getcharset ($tag)
 
 // ------------------------- iptc_maketag -----------------------------
 // function: iptc_maketag()
-// input: type of tag (e.g. 2), code of tag (e.g. 025), value of tag
+// input: type of tag (e.g. 2) [integer], code of tag (e.g. 025) [string], value of tag [string]
 // output: binary IPTC tag / false on error
 
 // description:
@@ -1849,7 +1849,7 @@ function iptc_maketag ($record=2, $tag, $value)
 
 // ------------------------- iptc_writefile -----------------------------
 // function: iptc_writefile()
-// input: abs. path to image file, IPTC tag array, keep existing IPTC data of file [true,false] (optional), move tempoarary file from unecrypted to encrypted [true,false] (optional)
+// input: abs. path to image file [string], IPTC tag [array], keep existing IPTC data of file [true,false] (optional), move tempoarary file from unecrypted to encrypted [true,false] (optional)
 // output: true / false on error
 
 // description:
@@ -2015,7 +2015,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
 
 // ------------------------- iptc_create -----------------------------
 // function: iptc_create()
-// input: publication name, text array (from content container)
+// input: publication name [string], text from content container [array]
 // output: IPTC tag array / false on error
 
 // description:
@@ -2095,7 +2095,7 @@ function iptc_create ($site, $text)
    
 // ------------------------- createmapping -----------------------------
 // function: createmapping()
-// input: publication name, mapping definition
+// input: publication name [string], mapping definition [string]
 // output: true / false on error
 
 // description:
@@ -2159,7 +2159,7 @@ function createmapping ($site, $mapping)
 
 // ------------------------- getmapping -----------------------------
 // function: getmapping()
-// input: publication name
+// input: publication name [string]
 // output: mapping code for display / false
 
 // description:
@@ -2208,7 +2208,7 @@ function getmapping ($site)
   {
     return "// Mapping definition: The metadata tag will be assigned to a specific text tag-ID and text-type
 
-// IPTC tags
+// IPTC tags (JPG, TIFF, PNG, MIFF, PS, PDF, PSD, XCF and DNG image files)
 iptc:title => 'textu:Title'
 iptc:keywords => 'textk:Keywords'
 iptc:description => 'textu:Description'
@@ -2230,7 +2230,7 @@ iptc:photo_number => ''
 iptc:photo_source => ''
 iptc:charset => ''
 
-// XMP Dublin Core namespace tags
+// XMP Dublin Core namespace tags (JPG, JP2, TIFF, GIF, EPS, PDF, PSD, IND, INX, PNG, DJVU, SVG, PGF, MIFF, XCF, CRW, DNG and proprietary TIFF-based RAW images, as well as MOV, AVI, ASF, WMV, FLV, SWF and MP4 videos, and WMA audio files)
 dc:title => 'textu:Title'
 dc:subject => 'textk:Keywords'
 dc:description => 'textu:Description'
@@ -2286,7 +2286,7 @@ photoshop:Urgency => ''
 // XMP Adobe Lightroom namespace tags
 lr:hierarchicalSubject => 'automatic'
 
-// EXIF tags
+// EXIF tags (JPG, TIFF, PNG, JP2, PGF, MIFF, HDP, PSP, XCF, TIFF-based RAW images, and even AVI and MOV video files)
 // EXIF-Sections:
 // FILE ...	FileName, FileSize, FileDateTime, SectionsFound
 // COMPUTED ... html, Width, Height, IsColor, and more if available. Height and Width are computed the same way getimagesize() does so their values must not be part of any header returned. Also, html is a height/width text string to be used inside normal HTML.
@@ -2323,7 +2323,37 @@ exif:THUMBNAIL.JPEGInterchangeFormatLength => ''
 exif:EXIF.DateTimeOriginal => ''
 exif:EXIF.DateTimeDigitized => ''
 
-// ID3 namespace tags
+// QuickTime namespace tags (MOV and MP4 video files)
+quicktime:Duration => ''
+quicktime:ContentDistributor => ''
+quicktime:Producer => 'textu:Creator'
+quicktime:Director => ''
+quicktime:Publisher => ''
+quicktime:Genre => ''
+quicktime:Year => ''
+
+// ASF namespace tags (WMA audio, WMV and DIVX video files)
+asf:Duration => ''
+asf:ContentDistributor => ''
+asf:Producer => 'textu:Creator'
+asf:Director => ''
+asf:Publisher => ''
+asf:Author => ''
+asf:Genre => ''
+asf:Year => ''
+asf:Language => ''
+
+// RIFF namespace tags (AVI video and WAV audio files)
+riff:Software => ''
+riff:Keywords => ''
+riff:Comment => ''
+riff:Subject => ''
+riff:Source => ''
+riff:Artist => 'textu:Creator'
+riff:Year => ''
+riff:Language => ''
+
+// ID3 namespace tags (MP3, MPEG, AIFF, OGG, FLAC, APE, MPC and RealAudio files)
 id3:title => 'textu:Title'
 id3:artist => 'textu:Creator'
 id3:album => ''
@@ -2335,14 +2365,18 @@ id3:tracknumber => ''
 id3:band => ''
 
 // Image Resolution defines Quality [Print, Web]
-hcms:quality => 'textl:Quality'";
+hcms:quality => 'textl:Quality'
+
+// Google Video Intelligence (requires a Google Cloud Account)
+google:description => 'textu:Description'
+google:keywords => 'textk:Keywords'";
   }
 }
 
 // ------------------------- setmetadata -----------------------------
 // function: setmetadata()
-// input: publication name, location path (optional), object name (optional), media file name (optional), mapping array [meta data tag name -> text-id] (optional), 
-//        container content as XML string (optional), user name, save content container [true,false] (optional)
+// input: publication name [string], location path [string] (optional), object name [string] (optional), media file name [string] (optional), mapping [array:metadata-tag-name => text-id] (optional), 
+//        container content as XML [string] (optional), user name [string], save content container [true,false] (optional)
 // output: container content as XML string / false
 
 // description:
@@ -2357,158 +2391,18 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
 
   // IPTC-tag and xml-tag name from multimedia file is mapped with text-id of the content container.
   // text-ids need to be defined in the meta data defintion. 
-  if ((!is_array ($mapping) || sizeof ($mapping) == 0) && !empty ($mgmt_config['abs_path_data']))
+  if (valid_publicationname ($site) && (!is_array ($mapping) || sizeof ($mapping) == 0) && !empty ($mgmt_config['abs_path_data']))
   {
+    if (!is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
+    {
+      $mapping_data = getmapping ($site);
+      createmapping ($site, $mapping_data);
+    }
+  
     // try to load mapping configuration file of publication
-    if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
+    if (is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
     {
       include ($mgmt_config['abs_path_data']."config/".$site.".media.map.php");
-    }
-    // define mapping if undefined
-    else
-    {
-      $mapping = array();
-      
-      // IPTC tags
-      $mapping['iptc:charset'] = "";
-      $mapping['iptc:object_type'] = "";
-      $mapping['iptc:title'] = "textu:Title";
-      $mapping['iptc:edit_status'] = "";
-      $mapping['iptc:urgency'] = "";
-      $mapping['iptc:category'] = "";
-      $mapping['iptc:supplemental_categories'] = "";
-      $mapping['iptc:keywords'] = "textk:Keywords";
-      $mapping['iptc:photographer'] = "textu:Creator";
-      $mapping['iptc:source'] = "";  
-      $mapping['iptc:expiriation_date'] = "";
-      $mapping['iptc:expiriation_time'] = "";
-      $mapping['iptc:special_instructions'] = "";
-      $mapping['iptc:creation_date'] = "";
-      $mapping['iptc:creation_time'] = "";
-      $mapping['iptc:digital_creation_date'] = "";
-      $mapping['iptc:digital_creation_time'] = "";
-      $mapping['iptc:photographer'] = "textu:Creator";
-      $mapping['iptc:photographer_title'] = "";
-      $mapping['iptc:city'] = "";
-      $mapping['iptc:state'] = "";
-      $mapping['iptc:country'] = "";
-      $mapping['iptc:otr'] = "";
-      $mapping['iptc:headline'] = "";
-      $mapping['iptc:credit'] = "";
-      $mapping['iptc:source'] = "textu:Copyright";
-      $mapping['iptc:copyright'] = "";
-      $mapping['iptc:contact'] = "";
-      $mapping['iptc:description'] = "textu:Description";
-      $mapping['iptc:description_author'] = "";
-      $mapping['iptc:image_type'] = "";
-      $mapping['iptc:image_orientation'] = "";
-      $mapping['iptc:language'] = "";
-
-      // XMP -> Dublin Core namespace tags
-      $mapping['dc:title'] = "textu:Title";
-      $mapping['dc:subject'] = "textk:Keywords";
-      $mapping['dc:description'] = "textu:Description";
-      $mapping['dc:creator'] = "textu:Creator";
-      $mapping['dc:rights'] = "textu:Copyright";
-      $mapping['dc:contributor'] = "";
-      $mapping['dc:coverage'] = "";
-      $mapping['dc:date'] = "";
-      $mapping['dc:format'] = "";
-      $mapping['dc:identifier'] = "";
-      $mapping['dc:language'] = "";
-      $mapping['dc:publisher'] = "";
-      $mapping['dc:relation'] = "";
-      $mapping['dc:source'] = "";
-      $mapping['dc:type'] = "";
-
-      // XMP -> Adobe PhotoShop namespace tags
-      $mapping['photoshop:Source'] = "";
-      $mapping['photoshop:Credit'] = "";
-      $mapping['photoshop:DateCreated'] = "";
-      $mapping['photoshop:AuthorsPosition'] = "";
-      $mapping['photoshop:CaptionWriter'] = "";
-      $mapping['photoshop:Category'] = "";
-      $mapping['photoshop:SupplementalCategories'] = "";
-      $mapping['photoshop:City'] = "";
-      $mapping['photoshop:State'] = "";
-      $mapping['photoshop:Country'] = "";
-      $mapping['photoshop:DocumentAncestors'] = "";
-      $mapping['photoshop:DocumentAncestorID'] = "";
-      $mapping['photoshop:Headline'] = "";
-      $mapping['photoshop:Instructions'] = "";
-      $mapping['photoshop:History'] = "";
-      $mapping['photoshop:Urgency'] = "";
-      // ColorMode:
-      // 0 = Bitmap
-      // 1 = Grayscale
-      // 2 = Indexed
-      // 3 = RGB
-      // 4 = CMYK
-      // 7 = Multichannel
-      // 8 = Duotone
-      // 9 = Lab	
-      $mapping['photoshop:ColorMode'] = "";
-      $mapping['photoshop:ICCProfileName'] = "";
-      $mapping['photoshop:LegacyIPTCDigest'] = "";
-      $mapping['photoshop:SidecarForExtension'] = "";
-      $mapping['photoshop:TextLayers'] = "";
-      $mapping['photoshop:TextLayerName'] = "";
-      $mapping['photoshop:TextLayerText'] = "";
-      $mapping['photoshop:TransmissionReference'] = "";
-      
-      // XMP -> Adobe Lightroom namespace tags
-      // Insert into a specific ID (provide name of ID) or create IDs dynamically (auto)
-      $mapping['lr:hierarchicalSubject'] = "automatic";
-      
-      // EXIF tags
-      // EXIF-Sections:
-      // FILE ...	FileName, FileSize, FileDateTime, SectionsFound
-      // COMPUTED ... html, Width, Height, IsColor, and more if available. Height and Width are computed the same way getimagesize() does so their values must not be part of any header returned. Also, html is a height/width text string to be used inside normal HTML.
-      // ANY_TAG ...	Any information that has a Tag e.g. IFD0, EXIF, ...
-      // IFD0 ... All tagged data of IFD0. In normal imagefiles this contains image size and so forth.
-      // THUMBNAIL ...	A file is supposed to contain a thumbnail if it has a second IFD. All tagged information about the embedded thumbnail is stored in this section.
-      // COMMENT ...	Comment headers of JPEG images.
-      // EXIF ... The EXIF section is a sub section of IFD0. It contains more detailed information about an image. Most of these entries are digital camera related.
-      // exif:SECTION.Tag-Name
-      $mapping['exif:FILE.FileName'] = "";
-      $mapping['exif:FILE.FileDateTime'] = "";
-      $mapping['exif:FILE.FileSize'] = "";
-      $mapping['exif:FILE.FileType'] = "";
-      $mapping['exif:FILE.MimeType'] = "";
-      $mapping['exif:FILE.SectionsFound'] = "";
-      $mapping['exif:COMPUTED.html'] = "";
-      $mapping['exif:COMPUTED.Height'] = "";
-      $mapping['exif:COMPUTED.Width'] = "";
-      $mapping['exif:COMPUTED.IsColor'] = "";
-      $mapping['exif:COMPUTED.ByteOrderMotorola'] = "";
-      $mapping['exif:COMPUTED.Thumbnail.FileType'] = "";
-      $mapping['exif:COMPUTED.Thumbnail.MimeType'] = "";
-      $mapping['exif:IFD0.DateTime'] = "";
-      $mapping['exif:IFD0.Artist'] = "";
-      $mapping['exif:IFD0.Exif_IFD_Pointer'] = "";
-      $mapping['exif:IFD0.Title'] = "";
-      $mapping['exif:THUMBNAIL.Compression'] = "";
-      $mapping['exif:THUMBNAIL.XResolution'] = "";
-      $mapping['exif:THUMBNAIL.YResolution'] = "";
-      $mapping['exif:THUMBNAIL.ResolutionUnit'] = "";
-      $mapping['exif:THUMBNAIL.JPEGInterchangeFormat'] = "";
-      $mapping['exif:THUMBNAIL.JPEGInterchangeFormatLength'] = "";
-      $mapping['exif:EXIF.DateTimeOriginal'] = "";
-      $mapping['exif:EXIF.DateTimeDigitized'] = "";
-      
-      // ID3 -> ID3 namespace tags
-      $mapping['id3:title'] = "textu:Title";
-      $mapping['id3:artist'] = "textu:Creator";
-      $mapping['id3:album'] = "";
-      $mapping['id3:year'] = "";
-      $mapping['id3:comment'] = "textu:Description";
-      $mapping['id3:track'] = "";
-      $mapping['id3:genre'] = "";
-      $mapping['id3:tracknumber'] = "";
-      $mapping['id3:band'] = "";
-      
-      // Image Resolution defines Quality [Print, Web]
-      $mapping['hcms:quality'] = "textl:Quality";
     }
   }
 
@@ -2576,6 +2470,224 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
           $mediafile = $temp['file'];
         }
         
+        // ------------------- use Google Video Intelligence Cloud Service -------------------
+        if (is_video ($mediafile))
+        {
+          $google_data = GSanalyzevideo ($medialocation.$mediafile);
+          
+          if (!empty ($google_data) && is_array ($google_data))
+          {
+            // source charset
+            $charset_source = "UTF-8";
+            
+            // thumbnail file is always in repository
+            $thumb_root = getmedialocation ($site, "dummy.".$mediafile, "abs_path_media").$site."/";
+            $file_info = getfileinfo ($site, $mediafile, "comp");
+            $config = readmediaplayer_config ($thumb_root, $file_info['filename'].".config.orig");
+            
+            if (empty ($config['width'])) $config['width'] = 576;
+            if (empty ($config['height'])) $config['height'] = 324;
+            
+            $faces_array = array();
+            $google_data_collect = array();
+
+            foreach ($google_data as $temp_array)
+            {
+              if (is_array ($temp_array))
+              {
+                // convert string for container
+                if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
+                {
+                  $temp_array['keywords'] = convertchars ($temp_array['keywords'], $charset_source, $charset_dest);
+                }
+                elseif ($charset_dest == "UTF-8")
+                {
+                  // encode to UTF-8
+                  if (!is_utf8 ($temp_str)) $temp_array['keywords'] = utf8_encode ($temp_array['keywords']);
+                }
+                
+                $temp_array['description'] = strip_tags ($temp_array['description']);
+                $temp_array['keywords'] = strip_tags ($temp_array['keywords']);
+
+                // JSON substring
+                $faces_array[] = "{\"videowidth\":".$config['width'].", \"videoheight\":".$config['height'].", \"".$temp_array['starttime'].", \"x\":10, \"y\":10, \"width\":".(intval ($config['width']) - 20).", \"height\":".(intval ($config['height']) - 80).", \"name\":\"".$temp_array['keywords']."\"}";
+                
+                // collect data
+                if (!empty ($google_data_collect['description'])) $google_data_collect['description'] .= ", ".$temp_array['description'];
+                else $google_data_collect['description'] = $temp_array['description'];
+                
+                if (!empty ($google_data_collect['keywords'])) $google_data_collect['keywords'] .= ",".$temp_array['keywords'];
+                else $google_data_collect['keywords'] = $temp_array['keywords'];
+              }
+            }
+            
+            // save JSON string to container
+            if (sizeof ($faces_array) > 0)
+            {
+              $text_id = "Faces-JSON";
+              $faces_json = "[".implode (", ", $$faces_array)."]";
+              
+              // textnodes search index in database
+              $text_array[$text_id] = $faces;
+                                              
+              $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$faces_json."]]>", "<text_id>", $text_id);
+        
+              if ($containerdata_new == false)
+              {
+                $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$faces_json."]]>", "<text_id>", $text_id);
+                $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+              }
+  
+              if ($containerdata_new != false) $containerdata = $containerdata_new;
+              else return false;
+            }
+  
+            // inject meta data based on mapping
+            reset ($mapping);
+            
+            foreach ($mapping as $key => $text_id)
+            {
+              // only for tags
+              if (strpos ("_".$key, "google:") > 0 && $text_id != "")
+              {          
+                // get tag name
+                list ($namespace, $key) = explode (":", $key);              
+                $key = trim ($key);
+
+                // get type and text ID
+                if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
+                elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
+                else $type = "textu";
+                
+                if (!empty ($type)) $type_array[$text_id] = $type;
+                
+                // get data
+                if (!empty ($google_data_collect[$key])) $temp_str = $google_data_collect[$key];
+                else $temp_str = "";
+
+                if ($temp_str != "")
+                {                
+                  // clean keywords
+                  if ($type == "textk")
+                  {
+                    $keywords = splitkeywords ($temp_str, $charset_dest);
+                    
+                    if (is_array ($keywords)) $temp_str = implode (",", $keywords);
+                    else $temp_str = "";
+                  }
+                  
+                  // textnodes search index in database
+                  $text_array[$text_id] = $temp_str;
+                                                  
+                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
+            
+                  if ($containerdata_new == false)
+                  {
+                    $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                  }
+  
+                  if ($containerdata_new != false) $containerdata = $containerdata_new;
+                  else return false;
+                }
+              }
+            }
+          }
+        }
+        
+        // ------------------- extract metadata using EXIFTOOL -------------------
+        // Can be used for all metadata formats supported by EXIFTOOL
+        // New tags need to be defined in function getmapping
+        $exiftool_data = extractmetadata ($medialocation.$mediafile);
+
+        // inject meta data based on mapping
+        if (!empty ($exiftool_data) && is_array ($exiftool_data))
+        {
+          // source charset
+          $charset_source = "UTF-8";
+          
+          $exiftool_data = array_change_key_case ($exiftool_data, CASE_LOWER);
+        
+          reset ($mapping);
+          
+          foreach ($mapping as $key => $text_id)
+          {
+            // only for tags
+            if (strpos ($key, ":") > 0 && $text_id != "")
+            {          
+              // get tag name
+              list ($namespace, $key) = explode (":", $key);              
+              $namespace = strtolower ($namespace);
+              $key = trim ($key);
+              
+              // verify if namespace exists in extracted metadata (compare small caps)
+              if (!empty ($exiftool_data[$namespace]))
+              {
+                // get array for name space
+                $temp_data = $exiftool_data[$namespace];
+                
+                // add space between words, e.g. ContentDistributor tag 
+                $temp_array = preg_split ('/(?=[A-Z])/', $key);
+                if (is_array ($temp_array) && sizeof ($temp_array) > 1) $key = trim (implode (" ", $temp_array));
+                
+                // get type and text ID
+                if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
+                elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
+                else $type = "textu";
+                
+                if (!empty ($type)) $type_array[$text_id] = $type;
+                
+                // get data
+                if (!empty ($temp_data[$key])) $temp_str = $temp_data[$key];
+                else $temp_str = "";
+
+                if ($temp_str != "")
+                {                
+                  // clean keywords
+                  if ($type == "textk")
+                  {
+                    $keywords = splitkeywords ($temp_str, $charset_dest);
+                    
+                    if (is_array ($keywords)) $temp_str = implode (",", $keywords);
+                    else $temp_str = "";
+                  }
+                  
+                  // remove tags
+                  $temp_str = strip_tags ($temp_str);
+  
+                  // convert string for container
+                  if ($charset_source != "" && $charset_dest != "" && $charset_source != $charset_dest)
+                  {
+                    $temp_str = convertchars ($temp_str, $charset_source, $charset_dest);
+                  }
+                  elseif ($charset_dest == "UTF-8")
+                  {
+                    // encode to UTF-8
+                    if (!is_utf8 ($temp_str)) $temp_str = utf8_encode ($temp_str);
+                  }
+  
+                  // textnodes search index in database
+                  $text_array[$text_id] = $temp_str;
+                                                  
+                  $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
+            
+                  if ($containerdata_new == false)
+                  {
+                    $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$temp_str."]]>", "<text_id>", $text_id);
+                    $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id);
+                  }
+  
+                  if ($containerdata_new != false) $containerdata = $containerdata_new;
+                  else return false;
+                }
+              }
+            }
+          }
+        }
+        
         // ------------------- ID3 -------------------
    
         // get ID3 data from file
@@ -2593,7 +2705,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
           foreach ($mapping as $key => $text_id)
           {
             // only for ID3 tags (audio files)
-            if (substr_count ($key, "id3:") == 1 && $text_id != "")
+            if (strpos ("_".$key, "id3:") > 0 && $text_id != "")
             {          
               // get ID3 tag name
               if (strpos ($key, ":") > 0) list ($namespace, $key) = explode (":", $key);
@@ -2683,7 +2795,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
           foreach ($mapping as $key => $text_id)
           {
             // only for EXIF tags
-            if (substr_count ($key, "exif:") > 0 && $text_id != "")
+            if (strpos ("_".$key, "exif:") > 0 && $text_id != "")
             {           
               if ($exif_info[$key] != "")
               {
@@ -2948,7 +3060,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
             foreach ($mapping as $key => $text_id)
             {
               // only for IPTC tags
-              if (substr_count ($key, "iptc:") > 0 && $text_id != "")
+              if (strpos ("_".$key, "iptc:") > 0 && $text_id != "")
               {           
                 if ($iptc_info[$key] != "")
                 {

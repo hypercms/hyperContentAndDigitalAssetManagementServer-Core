@@ -122,6 +122,8 @@ function submitForm ()
 {
   if (document.forms['searchform_general'])
   {
+    //if (parent.frames['workplFrame'].document.getElementById('hcmsLoadScreen')) parent.frames['workplFrame'].document.getElementById('hcmsLoadScreen').style.display='inline';
+    
     var form = document.forms['searchform_general'];  
     if (form.elements['search_expression'].value.trim() != '') form.submit();
   }

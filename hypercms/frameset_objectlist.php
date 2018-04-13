@@ -40,7 +40,7 @@ checkusersession ($user, false);
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css" />
 <script type="text/javascript" src="javascript/main.js"></script>
-<script>
+<script type="text/javascript">
 function openobjectview (location, object, view)
 {
   var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
@@ -58,7 +58,10 @@ function closeobjectview ()
 </script>
 </head>
 
-<body>
+<body class="hcmsWorkplaceObjectlist" >
+
+<!-- load screen --> 
+<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
 
 <!-- preview/live-view --> 
 <div id="objectviewLayer" class="hcmsWorkplaceExplorer" style="display:none; overflow:hidden; position:fixed; margin:0; padding:0; left:0; top:0; right:0; bottom:0; z-index:8;">

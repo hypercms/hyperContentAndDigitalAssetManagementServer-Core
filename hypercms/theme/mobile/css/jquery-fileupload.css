@@ -82,6 +82,11 @@
   display: inline-block;
 }
 
+.row {
+  display: block;
+  line-height: 20px;
+}
+
 div.button {
   margin-top: 10px;
   margin-left: 4px;

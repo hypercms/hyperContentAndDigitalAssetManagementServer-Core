@@ -2541,7 +2541,7 @@ Release 03/2017
 - Modifications in the template engine and annotation.js in order to support the zoom feature
 - Modifications in function createfolder and createmediaobject in order to use the template of the folder the object resides in
 - Modifications in the template engine in order to replace template variables for all views, including form views
-- Modifications in home and userlogin in order to support wllpaper.jpg or wallpaper.png image files as theme wallpapers
+- Modifications in home and userlogin in order to support wallpaper.jpg or wallpaper.png image files as theme wallpapers
 - Modifications in Export Connector Module in order to include annotation images for the export of the media files using symbolic links
 - Implementation of a new location name search feature for the definition of an objects geo location in template engine
 - Modifications in template engine to support the display of the geoloaction in WYSIWYG-views and preview
@@ -2585,7 +2585,6 @@ Release 03/2017
 - Design modifications in plugin management
 - Improvements in main CSS of standard design theme
 - Modifications in Export module in Connector in order to support detailed error messages and error color coding
-- Implementation of a new Home screen box for the latest uploads including the download/access links for the objects
 - Bug fix: Drag button in WYSIWYG interface for components did not use the the proper size in the template engine
 - Bug fix: Favorites and recent objects home boxes did not initalize object array
 - Bug fix: Function checkworkflow in Main API did not extract the content node from the template
@@ -2613,8 +2612,53 @@ Release 03/2017
 - Bug fix: Function rdbms_searchcontent in DB Connect did not remove double quotes in search expression (used for exact search)
 - Bug fix: JS function openBrWindowLink in template engine did not create a proper object reference for the link input field
 - Bug fix: Function createmedia in Media API set a high image density for all vector based images, this has now been limited to SVG graphics due to issues with ImageMagick
+
+Version 7.0.7
+Release 04/2017
+- Implementation of a new Home screen box for the latest uploads including the download/access links for the objects
+- Implementation of compress feature for the HTML5 file upload (only HTML5 file upload, Flash-Plugin based file upload will not receive the new feature)
+- Modifications in CSS of the file upload for all design themes
+- Modifications in jile upload to support the compression of files after the last file has been uploaded
+- Modifications in upload service in order to support the new input parameter
+- Modifications in function uploadfile in Main API in order to support the collection and compression of uploaded files
+- Design modifications in popup_ftp
+- Modifications in function setsession in Set API
+- Design modifications in template engine
+- Design modifications in site_edit_inheritance
+- Modifications in function createpublication in order to verify if permission session exists
+- Modifications in installation routine in order to verify the software version file exists
+- Modifications in installation settings in order to deactivate the language translation plugin by default
+- Modifications in Function indexcontent in Media API in order to use existing image if conversion to TIFF format is not available
+- Modifications in function search_objectlist in order to verify if permission array entry exists
+- Modifications in template engine in order to avoid unassigned variables
+- Modifications in function getobjectcontainer in Get API  in order to support an new input parameter type to define if the working or published container should be loaded
+- Modifications in function getobjectcontainer in Get API  in order to verify the provided object name using function valid_objectname
+- Modifications in template engine in order to enable manipulation of content by a template script for views "publish", "cmsview", and "inlineview"
+- Added variable types to the description of the input paramaters of all function for all system APIs
+- Update of the Programers Guide
+- Implementation of new replace attribute for hyperCMS text tags in template engine in order to search and replace content
+- Update of the Template Designers  Guide
+- Implementation of logon logging in function userlogin in Security API
+- Implementation of loading screen for the search
+- Modifications in function rewrite_targetURI in Main API in order to disable search history log entries
+- Modifications in function rdbms_searchcontent in DB Connect in order to enable search history log entries if not set
+- Modifications in function createmedia and createdocument in Media API in order to set file size in kB to 1 if less than 1 kB
+- Modifications in function createmedia in Media API in order to extract image width and height from file source as attribute values (used for SVG)
+- Design modifications in colorful design theme
+- Implementation of support for video metadata formats QuickTime (by Apple, mostly used for MOV and MP4), RIFF (Resource Interchange File Format), ASF (for WMA, WMV, DIVX) in function getmapping and setmetadata in Meta API
+- Modifications in media_mapping in order to exclude siongle quotes for metadata tag names
+- Minor changes in all language files
+- Implementation of the latest Google Cloud API for PHP in Connector
+- Updates in all functions of the Google Cloud Connector
+- Implementation of Google video intelligence service in Connector and function setmetadata in Meta API
+- Added support for Google JSON key file to main configuration
+- Removed Google Translater API in Connector
+- Bug fix: popup_ftp did not assign CSS class to file icons 
+- Bug fix: popup_ftp did not perform a proper FTP logout
+- Bug fix: Function indexcontent in Media API did not assign an error variable when creating the TIF file for OCR
+- Bug fix: Undefined variable temp_operator in DB Connect
 */
 
 // current version
-$mgmt_config['version'] = "Version 7.0.6";
+$mgmt_config['version'] = "Version 7.0.7";
 ?>

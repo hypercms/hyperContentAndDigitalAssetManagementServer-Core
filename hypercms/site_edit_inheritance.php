@@ -271,7 +271,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
           <tr>
             <td>
               ".getescapedtext ($hcms_lang['publications'][$lang]).":<br /><br />
-              <select multiple size=\"10\" name=\"list1\" style=\"width:220px;\" "; if ($preview == "yes") echo "disabled=\"disabled\""; echo ">\n";
+              <select multiple name=\"list1\" style=\"width:220px; height:180px;\" "; if ($preview == "yes") echo "disabled=\"disabled\""; echo ">\n";
 
               if (!isset ($inherit_db) || $inherit_db == false) $inherit_db = inherit_db_read ($user);
       
@@ -304,7 +304,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
             </td>
             <td>
               ".getescapedtext ($hcms_lang['assigned-publications'][$lang]).":<br /><br />
-              <select multiple size=\"10\" name=\"list2\" style=\"width:220px;\" "; if ($preview == "yes") echo "disabled=\"disabled\""; echo ">\n";
+              <select multiple name=\"list2\" style=\"width:220px; height:180px;\" "; if ($preview == "yes") echo "disabled=\"disabled\""; echo ">\n";
 
               if (sizeof ($list2_array) >= 1)
               {

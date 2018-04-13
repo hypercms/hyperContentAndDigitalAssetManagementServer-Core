@@ -11,7 +11,7 @@
 
 // ---------------------- encryptfile -----------------------------
 // function: encryptfile()
-// input: path to file [string], file name [string], key (optional)
+// input: path to file [string], file name [string], key [string] (optional)
 // output: false
 
 
@@ -22,7 +22,7 @@ function encryptfile ($location, $file, $key="")
 
 // ---------------------- decryptfile -----------------------------
 // function: decryptfile()
-// input: path to file [string], file name [string], key (optional)
+// input: path to file [string], file name [string], key [string] (optional)
 // output: false
 
 function decryptfile ($location, $file, $key="")
@@ -32,7 +32,7 @@ function decryptfile ($location, $file, $key="")
 
 // ---------------------- createtempfile -----------------------------
 // function: createtempfile()
-// input: path to file [string], file name [string], key (optional)
+// input: path to file [string], file name [string], key [string] (optional)
 // output: input as result array
 
 function createtempfile ($location, $file, $key="")
@@ -52,8 +52,8 @@ function createtempfile ($location, $file, $key="")
 
 // ---------------------- movetempfile -----------------------------
 // function: movetempfile()
-// input: path to file [string], file name [string], delete temp file [true/false] (optional), 
-//        force encryption of file [true/false] (optional), key (optional)
+// input: path to file [string], file name [string], delete temp file [true,false] (optional), 
+//        force encryption of file [true,false] (optional), key [string] (optional)
 // output: input as result array
 
 function movetempfile ($location, $file, $delete=false, $force_encrypt=false, $key="")

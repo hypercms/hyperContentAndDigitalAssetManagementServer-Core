@@ -11,7 +11,7 @@
 
 // ----------------------------------------- link_db_restore ---------------------------------------------
 // function: link_db_restore()
-// input: publication name (optional)
+// input: publication name [string] (optional)
 // output: true / false on error
 // requires: hypercms_api.inc.php, config.inc.php
 
@@ -188,7 +188,7 @@ function link_db_restore ($site="")
 
 // ----------------------------------------- link_db_load ---------------------------------------------
 // function: link_db_load()
-// input: publication name, user name
+// input: publication name [string], user name [string]
 // output: link database [2 dim. array] or true / false on error
 // requires: hypercms_api.inc.php, config.inc.php
 
@@ -243,7 +243,7 @@ function link_db_load ($site, $user)
 
 // ----------------------------------------- link_db_read ---------------------------------------------
 // function: link_db_read()
-// input: site 
+// input: publication name [string]
 // output: link database [2 dim. array] or true / false on error
 // requires: hypercms_api.inc.php, config.inc.php
 
@@ -308,7 +308,7 @@ function link_db_read ($site)
 
 // ---------------------------------------- link_db_close --------------------------------------------
 // function: link_db_close()
-// input: publication name, user name
+// input: publication name [string], user name [string]
 // output: true/false
 // requires: hypercms_api.inc.php
 
@@ -329,7 +329,7 @@ function link_db_close ($site, $user)
 
 // ---------------------------------------- link_db_save --------------------------------------------
 // function: link_db_save()
-// input: link database array, site, user 
+// input: link database [array], publication name [string], user name [string]
 // output: true/false on error
 // requires: hypercms_api.inc.php, config.inc.php
 
@@ -389,9 +389,9 @@ function link_db_save ($site, $link_db, $user)
 
 // ---------------------------------------- link_db_update --------------------------------------------
 // function: link_db_update()
-// input: publication name, link database [2 dim. array], attribute ['object', 'link'], content container [optional] [string], 
-//        link category [optional] ['comp', 'page'], current link [optional, must be URL, abs. or rel. path], 
-//        new link [optional, must be URL, abs. or rel. path], update option [all, unique]
+// input: publication name [string], link database [2 dim. array], attribute [object,link], content container [string] (optional), 
+//        link category [comp,page] (optional), current link [must be URL, abs. or rel. path] (optional), 
+//        new link [must be URL, abs. or rel. path] (optional), update option [all,unique]
 // output: link database [2 dim. array] or true / false on error
 // requires: hypercms_api.inc.php, config.inc.php
 
@@ -402,7 +402,7 @@ function link_db_save ($site, $link_db, $user)
 // link_new = "": delete current link in use (just one linkm matching given category!)
 // link_curr & link_new are not empty: update current link with the new one
 
-function link_db_update ($site, $link_db, $attribute, $contentfile, $cat, $link_curr, $link_new, $option)
+function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", $link_curr="", $link_new="", $option)
 {
   global $mgmt_config;
   
@@ -604,7 +604,7 @@ function link_db_update ($site, $link_db, $attribute, $contentfile, $cat, $link_
 
 // ---------------------------------------- link_db_insert --------------------------------------------
 // function: link_db_insert()
-// input: publication name, link database [2 dim. array], content container, link category ['comp, page'], object [optional] 
+// input: publication name [string], link database [2 dim. array], content container name [string], link category [comp,page], object name (optional)
 // output: link database [2 dim. array] or true / false
 // requires: hypercms_api.inc.php, config.inc.php
 
@@ -612,7 +612,7 @@ function link_db_update ($site, $link_db, $attribute, $contentfile, $cat, $link_
 // This function inserts a new record in the link management database
 // optionally the created object can be also inserted
 
-function link_db_insert ($site, $link_db, $contentfile, $cat, $object)
+function link_db_insert ($site, $link_db, $contentfile, $cat, $object="")
 {
   global $mgmt_config;
 
@@ -657,7 +657,7 @@ function link_db_insert ($site, $link_db, $contentfile, $cat, $object)
 
 // ---------------------------------------- link_db_delete --------------------------------------------
 // function: link_db_delete()
-// input: link database [2 dim. array], content container 
+// input: link database [2 dim. array], content container name [string] 
 // output: link database [2 dim. array] or true / false on error
 // requires: hypercms_api.inc.php, config.inc.php
 
@@ -684,7 +684,7 @@ function link_db_delete ($site, $link_db, $contentfile)
 
 // ---------------------------------------- link_db_getobject --------------------------------------------
 // function: link_db_getobject()
-// input: link database attribut (references to objects seperated by |)
+// input: link database attribut (references to objects seperated by |) [string]
 // output: objects [array] / false on error 
 
 // description:
@@ -715,7 +715,7 @@ function link_db_getobject ($multiobject)
 
 // ---------------------------------------- link_update --------------------------------------------
 // function: link_update()
-// input: publication name, container name, old link (converted), new link (converted)
+// input: publication name [string], container name [string], old link (converted) [string], new link (converted) [string]
 // output: true/false 
 
 // description:
@@ -825,7 +825,7 @@ function link_update ($site, $container, $link_old, $link_new)
 
 // ---------------------------------------- getlinkedobject --------------------------------------------
 // function: getlinkedobject()
-// input: publication, location, object (name and extension), category [page, comp][optional]
+// input: publication name [string], location [string], object (name and extension) [string], category [page,comp] (optional)
 // output: objects which link to the given object [array] or true / false
 
 // description:
@@ -927,7 +927,7 @@ function getlinkedobject ($site, $location, $page, $cat)
 
 // ---------------------------------------- getconnectedobject --------------------------------------------
 // function: getconnectedobject()
-// input: container name, container type [work,published,version] (optional)
+// input: container name [string], container type [work,published,version] (optional)
 // output: connected objects[array] 
 
 // description:
@@ -999,7 +999,7 @@ function getconnectedobject ($container, $type="work")
 
 // ---------------------------------------- extractlinks --------------------------------------------
 // function: extractlinks()
-// input: text content as string, link identifiert ("href" for hyperreferences, "src" for image references or embed references (flash), "value" for paramter (flash))
+// input: text content [string], link identifiert ["href" for hyperreferences,"src" for image references or embed references (flash),"value" for paramter (flash)]
 // output: object links [array] / false on error
 
 // description:
@@ -1051,7 +1051,7 @@ function extractlinks ($textcontent, $identifier)
 
 // ---------------------------------------- medialink_to_complink --------------------------------------------
 // function: medialink_to_complink()
-// input: media link reference array (to media repository)
+// input: media link reference (to media repository) [array]
 // output: object links [array] / false on error
 
 // description:
@@ -1135,7 +1135,7 @@ function medialinks_to_complinks ($link_array)
 
 // ---------------------------------------- medialink_to_complink --------------------------------------------
 // function: medialink_to_complink()
-// input: media link reference array (to media repository)
+// input: media link reference (to media repository) [array]
 // output: media file links [array] / false on error
 
 // description:

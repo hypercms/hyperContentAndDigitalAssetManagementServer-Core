@@ -25,7 +25,7 @@ function plugin_getdefaultconf ()
 
 // --------------------------------------- plugin_readmenu -------------------------------------------
 // function: plugin_readmenu()
-// input: plugin xml as string, plugin directory 
+// input: plugin xml [string], plugin directory [string]
 // output: menu point array used by navigator
 
 // description:
@@ -132,7 +132,7 @@ function plugin_readmenu ($xml, $pluginFolder)
 
 // --------------------------------------- plugin_parse -------------------------------------------
 // function: plugin_parse()
-// input: mgmt_plugin as array (optional)
+// input: mgmt_plugin [array] (optional)
 // output: mgmt_plugin as array
 
 // description:
@@ -270,7 +270,7 @@ function plugin_parse ($oldData=array())
 
 // --------------------------------------- plugin_generatedefinition -------------------------------------------
 // function: plugin_generatedefinition()
-// input: name of array holding the plugin definitions, configuration array containing the values and keys
+// input: name of array holding the plugin definitions [string], configuration containing the values and keys [array]
 // output: plugin array / false on error
 
 // description:
@@ -313,7 +313,7 @@ function plugin_generatedefinition ($arrayName, $array)
 
 // --------------------------------------- plugin_saveconfig -------------------------------------------
 // function: plugin_saveconfig()
-// input: configuration as array
+// input: configuration [array]
 // output: true / false on error
 
 // description:
@@ -335,7 +335,7 @@ function plugin_saveconfig ($configuration)
 
 // --------------------------------------- plugin_generatelink -------------------------------------------
 // function: plugin_generatelink()
-// input: plugin name, plugin page (relative reference to the plugins main page), control (relative reference to the plugins control page), additional GET parameters
+// input: plugin name [string], plugin page (relative reference to the plugins main page) [string], control (relative reference to the plugins control page) [string], additional GET parameters [string]
 // output: plugin link
 
 // description:

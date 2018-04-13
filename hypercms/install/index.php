@@ -677,7 +677,7 @@ $(document).ready(function(){
 </script>
 
 <!-- top bar -->
-<?php echo showtopbar ("Installation of ".$mgmt_config['version'], "en"); ?>
+<?php if (!empty ($mgmt_config['version'])) echo showtopbar ("Installation of ".$mgmt_config['version'], "en"); else echo "Version information is missing"; ?>
 
 <!-- content area -->
 <div id="content" style="width:480px; margin:0 auto;">

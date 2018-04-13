@@ -11,7 +11,7 @@
 
 // ------------------------- setsession -----------------------------
 // function: setsession()
-// input: temporary hyperCMS variable name or array, value as string or array (optional), write session data for load balancer [true,false] (optional) 
+// input: temporary hyperCMS variable name  [string or array], value [string or array] (optional), write session data for load balancer [true,false] (optional) 
 // output: true / false on error
 
 function setsession ($variable, $content="", $write=false)
@@ -51,7 +51,7 @@ function setsession ($variable, $content="", $write=false)
 
 // ----------------------------------------- settaxonomy ------------------------------------------
 // function: settaxonomy()
-// input: publication name, container ID, 2-digit language code (optional)
+// input: publication name [string], container ID [string], 2-digit language code [string] (optional)
 // output: result array / false on error
 
 // description:
@@ -169,7 +169,7 @@ function settaxonomy ($site, $container_id, $langcode="")
 
 // ------------------------------------------ article ----------------------------------------------
 // function: setarticle()
-// input: publication name, container (XML), container name, article title array, article status array, article beginn date array, article end date array, user array or string, user name
+// input: publication name [string], container (XML) [string], container name [string], article title [array], article status [array], article beginn date [array], article end date [array], user [array or string], user name [string]
 // output: updated content container (XML), false on error
 
 // description:
@@ -239,8 +239,8 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle, $artstatus, $
 
 // -------------------------------------------- settext -----------------------------------------------
 // function: settext()
-// input: publication name, container (XML), container name, text array, type array or string [u,f,l,c,d,k], article array or string [yes,no], 
-//        text user array or string, user name, character set of text content, add microtime to ID [true,false] used for comments
+// input: publication name [string], container (XML) [string], container name [string], text [array], type [array or string] [u,f,l,c,d,k], article [array or string] [yes,no], 
+//        text user [array or string], user name [string], character set of text content [string], add microtime to ID used for comments [true,false]
 // output: updated content container (XML), false on error
 
 // description:
@@ -607,7 +607,7 @@ function settext ($site, $contentdata, $contentfile, $text, $type, $art, $textus
 
 // -------------------------------------------- setmedia -----------------------------------------------
 // function: setmedia()
-// input: publication name, container (XML), container name, media arrays (some are optional), article array or string [yes,no], content user array or string, user name, chracter set of text content
+// input: publication name [string], container (XML) [string], container name [string], media arrays (some are optional) [array], article [array or string] [yes,no], content user [array or string], user name [string], character set of text content [string]
 // output: updated content container (XML), false on error
 
 // description:
@@ -796,7 +796,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile, $mediaobject_c
 
 // -------------------------------------------- setpagelink -----------------------------------------------
 // function: setpagelink()
-// input: publication name, container (XML), container name, current link array, new link array, link target array, link text array, article array or string [yes,no], content user array or string, user name, chracter set of text content
+// input: publication name [string], container (XML) [string], container name [string], current link [array], new link [array], link target [array], link text [array], article [array or string] [yes,no], content user [array or string], user name [string], character set of text content [string]
 // output: updated content container (XML), false on error
 
 // description:
@@ -968,7 +968,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref_curr, $linkhr
 
 // -------------------------------------------- setcomplink -----------------------------------------------
 // function: setcomplink()
-// input: publication name, container (XML), container name, component arrays (some are optional), article array or string [yes,no], content user array or string, user name
+// input: publication name [string], container (XML) [string], container name [string], component (some are optional) [array], article [array or string] [yes,no], content user [array or string], user name [string]
 // output: updated content container (XML), false on error
 
 // description:
@@ -1144,7 +1144,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component_curr, $compo
 
 // ------------------------------------------- sethead -------------------------------------------
 // function: sethead()
-// input: publication name, container (XML), container name, content array, user name, chracter set of text content
+// input: publication name [string], container (XML) [string], container name [string], content [array], user name [string], character set of text content [string]
 // output: updated content container (XML), false on error
 
 // description:
@@ -1237,7 +1237,7 @@ function sethead ($site, $contentdata, $contentfile, $headcontent, $user, $chars
 // ------------------------------------- setfilename ------------------------------------------
 
 // function: setfilename()
-// input: file content, hyperCMS tag name in page or component [content, template, media, name], new value 
+// input: file content [string], hyperCMS tag name in page or component [content,template,media,name], new value [string]
 // output: filedata/false on error
 
 // description:
@@ -1304,7 +1304,7 @@ function setfilename ($filedata, $tagname, $value)
 
 // --------------------------------------- setboxes -------------------------------------------
 // function: setboxes ()
-// input: home box names as array or string, user name
+// input: home box names [array or string], user name [string]
 // output: true / false
 
 function setboxes ($name_array, $user)

@@ -11,7 +11,7 @@
 
 // ------------------------------------------ update_usergroups_v564 ----------------------------------------------
 // function: update_usergroups_v564()
-// input: publication name, user group data (XML)
+// input: publication name [string], user group data (XML) [string]
 // output: true / false
 
 // description:
@@ -809,7 +809,7 @@ function update_database_v625 ()
 
 // ------------------------------------------ update_database_v625 ----------------------------------------------
 // function: update_database_v705()
-// input: path to component directory, alter tabel [true,false]
+// input: path to component directory [string], alter table [true,false]
 // output: true / false
 
 // description: 

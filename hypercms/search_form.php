@@ -84,6 +84,9 @@ function checkForm(select)
     return false;
   }
   
+  // load screen
+  if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline';
+  
   select.submit();
 }
 
@@ -152,6 +155,9 @@ function startSearch (form)
         }
       }
     }
+    
+    // load screen
+    if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline';
     
     // submit form
     document.forms['searchform_'+form].submit();

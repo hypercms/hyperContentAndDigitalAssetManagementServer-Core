@@ -287,7 +287,9 @@ else
 
 <!-- initalize -->
 <script>
+// resize columns
 $("#objectlist_head").colResizable({liveDrag:true, onDrag: resizecols});
+// select area
 var selectarea = document.getElementById('selectarea');
 </script>
 

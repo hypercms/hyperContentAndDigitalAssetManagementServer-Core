@@ -17,9 +17,9 @@ class hcmsPDF extends TCPDF
 {
   // ----------------------------------------- placeImage ---------------------------------------------
   // function: placeImage()
-  // input: internal hcmsPDF/TCPDF object, x-ccordinate (optional), y-coordinate (optional), width (optional), height (optional), image/file type (optional), URL or identifier returned by AddLink (optional), 
+  // input: internal hcmsPDF/TCPDF [object], x-ccordinate [integer] (optional), y-coordinate [integer] (optional), width (optional), height (optional), image/file type [string] (optional), URL or identifier returned by AddLink [string] (optional), 
   //        alignment of the pointer next to image insertion relative to image height [T,M,B,N] (optional), align the image on the current line [L,C,R] (optional), 
-  //        resize (reduce) the image to fit $w and $h [true,false] (optional), DPI (optional), border (optional), specifies whether to position the bounding box (true) or the complete canvas (false) at location (x,y) (optional),
+  //        resize (reduce) the image to fit $w and $h [true,false] (optional), DPI [integer] (optional), border [integer] (optional), specifies whether to position the bounding box (true) or the complete canvas (false) at location (x,y) [string] (optional),
   //        if true remove values outside the bounding box (optional), 
   //        scale image dimensions proportionally to fit within the ($w, $h) box. $fitbox can be true or a 2 characters string indicating the image alignment inside the box. The first character indicate the horizontal alignment (L = left, C = center, R = right) the second character indicate the vertical algnment (T = top, M = middle, B = bottom),
   //        if true the image is resized to not exceed page dimensions (optional)
@@ -55,7 +55,7 @@ class hcmsPDF extends TCPDF
   
   // ----------------------------------------- drawCropbox ---------------------------------------------
   // function: drawCropbox()
-  // input: internal hcmsPDF/TCPDF object, slug, cropmark [true,false] (optional), crop-mark [true,false] (optional), registration-mark [true,false] (optional), color-registration-bar [true,false] (optional)
+  // input: internal hcmsPDF/TCPDF [object], slug [integer], cropmark [true,false] (optional), crop-mark [true,false] (optional), registration-mark [true,false] (optional), color-registration-bar [true,false] (optional)
   // output: hcmsPDF/TCPDF object
   
   // description:

@@ -11,7 +11,7 @@
 
 // ----------------------------------------- ftp_userlogon ---------------------------------------------
 // function: ftp_userlogon()
-// input: FTP servername or IP, user name, password, SSL [true,false] (optional)
+// input: FTP servername or IP [string], user name [string], password [string], SSL [true,false] (optional)
 // output: true / false on error
 
 // description:
@@ -60,7 +60,7 @@ function ftp_userlogon ($server, $user, $passwd, $ssl=false)
 
 // ----------------------------------------- ftp_userlogout ---------------------------------------------
 // function: ftp_userlogout()
-// input: FTP connection
+// input: FTP connection [resource]
 // output: true / false on error
 
 // description:
@@ -80,7 +80,7 @@ function ftp_userlogout ($conn_id)
 
 // ----------------------------------------- ftp_getfile ---------------------------------------------
 // function: ftp_getfile()
-// input: FTP connection, path to file on FTP server, passive mode [true,false] (optional)
+// input: FTP connection [resource], path to file on FTP server [string], passive mode [true,false] (optional)
 // output: true / false on error
 
 // description:
@@ -113,7 +113,7 @@ function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
 
 // ----------------------------------------- ftp_putfile ---------------------------------------------
 // function: ftp_putfile()
-// input: FTP connection, path to local file, path to file on FTP server, passive mode [true,false] (optional)
+// input: FTP connection [resource], path to local file [string], path to file on FTP server [string], passive mode [true,false] (optional)
 // output: true / false on error
 
 // description:
@@ -150,7 +150,7 @@ function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
 
 // ----------------------------------------- ftp_filelist ---------------------------------------------
 // function: ftp_filelist()
-// input: FTP connection, path to remote directory (optional), passive mode [true,false] (optional)
+// input: FTP connection [resource], path to remote directory [string] (optional), passive mode [true,false] (optional)
 // output: result array / false on error
 
 // description:
@@ -201,7 +201,7 @@ function ftp_filelist ($conn_id, $path=".", $passive=true)
 
 // ----------------------------------------- createsharelink_facebook ---------------------------------------------
 // function: createsharelink_facebook()
-// input: URL to share
+// input: URL to share [string]
 // output: Share URL / false on error
 
 function createsharelink_facebook ($site, $url)
@@ -217,7 +217,7 @@ function createsharelink_facebook ($site, $url)
 
 // ----------------------------------------- createsharelink_twitter ---------------------------------------------
 // function: createsharelink_twitter()
-// input: URL to share, message to share
+// input: URL to share [string], message to share [string]
 // output: Share URL / false on error
 
 function createsharelink_twitter ($site, $url, $text)
@@ -233,7 +233,7 @@ function createsharelink_twitter ($site, $url, $text)
 
 // ----------------------------------------- createsharelink_googleplus ---------------------------------------------
 // function: createsharelink_googleplus()
-// input: URL to share
+// input: URL to share [string]
 // output: Share URL / false on error
 
 function createsharelink_googleplus ($site, $url)
@@ -249,7 +249,7 @@ function createsharelink_googleplus ($site, $url)
 
 // ----------------------------------------- createsharelink_linkedin ---------------------------------------------
 // function: createsharelink_linkedin()
-// input: URL to share, title, summary (optional), source (optional)
+// input: URL to share [string], title [string], summary [string] (optional), source [string] (optional)
 // output: Share URL / false on error
 
 function createsharelink_linkedin ($site, $url, $title, $summary, $source)
@@ -265,7 +265,7 @@ function createsharelink_linkedin ($site, $url, $title, $summary, $source)
 
 // ----------------------------------------- createsharelink_pinterest ---------------------------------------------
 // function: createsharelink_pinterest()
-// input: image URL to share, title, description (optional)
+// input: image URL to share [string], title [string], description [string] (optional)
 // output: Share URL / false on error
 
 function createsharelink_pinterest ($site, $image_url, $title, $description)

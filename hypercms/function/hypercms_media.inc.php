@@ -11,7 +11,7 @@
 
 // ---------------------------------------- indexcontent --------------------------------------------
 // function: indexcontent()
-// input: publication name, path to multimedia file, multimedia file name (file to be indexed), container name or ID (optional), container XML-content (optional), user name
+// input: publication name [string], path to multimedia file [string], multimedia file name (file to be indexed) [string], container name or ID [string] (optional), container XML-content [string] (optional), user name [string]
 // output: true / false
 
 // description:
@@ -387,6 +387,10 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         {
           if (substr_count (strtolower ($ext_parser).".", $file_ext.".") > 0)
           {
+            // image is already of TIFF format or conversion to TIFF format not available
+            $location_source = $location;
+            $file_source = $file;
+          
             // temporary directory for extracting file
             $temp_name = uniqid ("index");
             $temp_dir = $mgmt_config['abs_path_temp'];
@@ -394,6 +398,8 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
             // convert image to TIFF since Tesseract has best results with TIFF images
             if (($file_ext != ".tif" && $file_ext != ".tiff" && $file_ext != ".png") && !empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
             {
+              $cmd = "";
+              
               // find image converter
               foreach ($mgmt_imagepreview as $ext_image=>$converter)
               {
@@ -404,30 +410,27 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
                 }
               }
               
-              @exec ($cmd, $error_array);
+              if (!empty ($cmd))
+              {
+                @exec ($cmd, $buffer, $errorCode);
               
-              // on error
-              if ($errorCode || !is_file ($temp_dir.$temp_name.".tif"))
-              {
-                $errcode = "20531";
-                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of imagemagick (code:$errorCode, command:$cmd) failed in indexcontent for file: ".$file;
+                // on error
+                if ($errorCode || !is_file ($temp_dir.$temp_name.".tif"))
+                {
+                  $errcode = "20531";
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of imagemagick (code:".$errorCode.", command:".$cmd.") failed in indexcontent for file: ".$file;
+                }
+                // on success
+                else
+                {
+                  $location_source = $temp_dir;
+                  $file_source = $temp_name.".tif";
+                }
               }
-              // on success
-              else
-              {
-                $location_source = $temp_dir;
-                $file_source = $temp_name.".tif";
-              }
-            }
-            // image is already of TIFF format
-            else
-            {
-              $location_source = $location;
-              $file_source = $file;
             }
 
             // extract text from image using OCR
-            if (is_file ($location_source.$file_source))
+            if (!empty ($file_source) && is_file ($location_source.$file_source))
             {
               $lang_options_array = array();
               
@@ -470,7 +473,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
               if (!is_file ($temp_dir.$temp_name.".txt"))
               {
                 $errcode = "20532";
-                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|$errcode|exec of tesseract (command:$cmd) failed in indexcontent for file: ".$file;
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of tesseract (command:".$cmd.") failed in indexcontent for file: ".$file;
               }
               // on success
               else
@@ -495,7 +498,8 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       if ($file_ext != "" && substr_count (strtolower ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video']).".", $file_ext.".") > 0)
       {
         // function setmetadata provides metadata in the content container without saving the container
-        $container_content_temp = setmetadata ($site, "", "", $file, "", $container_content, $user, false);        
+        $container_content_temp = setmetadata ($site, "", "", $file, "", $container_content, $user, false);
+           
         if (!empty ($container_content_temp)) $container_content = $container_content_temp;
       } 
 
@@ -604,7 +608,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
 // ---------------------------------------- unindexcontent --------------------------------------------
 // function: unindexcontent()
-// input: publication name, file location, file name, multimedia file to index, container name or ID, container XML-content, user name
+// input: publication name [string], file location [string], file name [string], multimedia file to index [string], container name or ID [string], container XML-content [string], user name [string]
 // output: true / false
 
 // description:
@@ -680,7 +684,7 @@ function unindexcontent ($site, $location, $file, $container, $container_content
 // ------------------------------------------ reindexcontent --------------------------------------------- 
 
 // function: reindexcontent()
-// input: publication name, container IDs as array (optional)
+// input: publication name [string], container IDs [array] (optional)
 // output: true / false
 
 // description:
@@ -759,7 +763,7 @@ function reindexcontent ($site, $container_id_array="")
 
 // ---------------------- base64_to_file -----------------------------
 // function: createthumbnail_indesign()
-// input: base64 encoded string, path to destination dir, file name
+// input: base64 encoded [string], path to destination dir [string], file name [string]
 // output: new file name / false on error
 
 // description:
@@ -792,7 +796,7 @@ function base64_to_file ($base64_string, $location, $file)
 
 // ---------------------- createthumbnail_indesign -----------------------------
 // function: createthumbnail_indesign()
-// input: publication, path to source dir, path to destination dir, file name
+// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string]
 // output: new file name / false on error (saves only thumbnail media file in destination location, only jpeg format is supported as output)
 
 // description:
@@ -950,7 +954,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
 
 // ---------------------- createthumbnail_video -----------------------------
 // function: createthumbnail_video()
-// input: publication, path to source dir, path to destination dir, file name, frame of video in the seconds or hh:mm:ss[.xxx], autorotate [true,false] (optional)
+// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], frame of video in seconds or hh:mm:ss[.xxx], autorotate [true,false] (optional)
 // output: new file name / false on error (saves only thumbnail media file in destination location, only jpeg format is supported as output)
 
 // description:
@@ -1076,8 +1080,8 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
 
 // ---------------------- createmedia -----------------------------
 // function: createmedia()
-// input: publication, path to source dir, path to destination dir, file name, 
-//        format (file extension w/o dot) (optional), 
+// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], 
+//        format (file extension w/o dot) [string] (optional), 
 //        type of image/video/audio file [thumbnail(for thumbnails of images),origthumb(thumbnail made from original video/audio),original(to overwrite original video/audio file),any other string present in $mgmt_imageoptions/$mgmt_mediaoptions] (optional),
 //        force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
 // output: new file name / false on error
@@ -1150,6 +1154,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
     // get file size of media file in kB
     $filesize_orig = round (@filesize ($location_source.$file) / 1024, 0);
+    if ($filesize_orig < 1) $filesize_orig = 1;
 
     // convert RAW image to equivalent JPEG image if not already converted
     if (is_rawimage ($file_ext))
@@ -1231,7 +1236,20 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       $imagewidth_orig = $imagesize_orig[0];
       $imageheight_orig = $imagesize_orig[1];
     }
-    else
+    // try to read from file source
+    elseif (is_file ($location_source.$file))
+    {
+      $temp = loadfile_header ($location_source, $file);
+      
+      if ($temp != "")
+      {
+        $imagewidth_orig = getattribute ($temp, "width", true);
+        $imageheight_orig = getattribute ($temp, "height", true);
+      }
+    }
+    
+    // reset values if not available
+    if (empty ($imagewidth_orig) || empty ($imageheight_orig))
     {
       $imagewidth_orig = 0;
       $imageheight_orig = 0;    
@@ -2891,7 +2909,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
 // ---------------------- convertmedia -----------------------------
 // function: convertmedia()
-// input: publication name, path to source dir, path to destination dir, file name, target format (file extension w/o dot) of destination file, media configuration to be used (optional),
+// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string], target format (file extension w/o dot) of destination file [string], media configuration to be used [string] (optional),
 //        force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
 // output: new file name / false on error
 
@@ -2942,10 +2960,10 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
 
 // ---------------------- convertimage -----------------------------
 // function: convertimage()
-// input: publication name, path to source image file, path to destination dir, format (file extension w/o dot) of destination file (optional), 
+// input: publication name [string], path to source image file [string], path to destination dir [string], format (file extension w/o dot) of destination file [string] (optional), 
 //        colorspace of new image [CMY,CMYK,Gray,HCL,HCLp,HSB,HSI,HSL,HSV,HWB,Lab,LCHab,LCHuv,LMS,Log,Luv,OHTA,Rec601YCbCr,Rec709YCbCr,RGB,scRGB,sRGB,Transparent,XYZ,YCbCr,YCC,YDbDr,YIQ,YPbPr,YUV] (optional), 
-//        width in pixel/mm/inch (optional), height in pixel/mm/inch (optional), slug in pixel/mm/inch (optional), units for width, height and slug [px,mm,inch] (optional),
-//        dpi (optional), image quality (1 to 100)    
+//        width in pixel/mm/inch [integer] (optional), height in pixel/mm/inch [integer] (optional), slug in pixel/mm/inch [integer] (optional), units for width [string], height and slug [px,mm,inch] (optional),
+//        dpi [integer] (optional), image quality [1 to 100]    
 // output: new file name / false on error
 
 // description:
@@ -3153,7 +3171,7 @@ function convertimage ($site, $file_source, $location_dest, $format="jpg", $colo
 
 // ---------------------- rotateimage -----------------------------
 // function: rotateimage()
-// input: publication, path to source media file, rotation angle, destination image format [jpg,png,gif]
+// input: publication name [string], path to source media file [string], rotation angle [integer], destination image format [jpg,png,gif]
 // output: new image file name / false on error
 
 // description:
@@ -3283,7 +3301,7 @@ function rotateimage ($site, $filepath, $angle, $imageformat)
 
 // ---------------------- getimagecolors -----------------------------
 // function: getimagecolors()
-// input: publication, media file name
+// input: publication name [string], media file name [string]
 // output: result array / false on error
 
 // description:
@@ -3424,7 +3442,7 @@ function getimagecolors ($site, $file)
 
 // ---------------------- getimagecolorkey -----------------------------
 // function: getimagecolorkey()
-// input: image resource
+// input: image resource [resource]
 // output: color key of image / false on error
 
 // description:
@@ -3535,7 +3553,7 @@ function getimagecolorkey ($image)
 
 // ---------------------- hex2rgb -----------------------------
 // function: hex2rgb()
-// input: image color as hex-code
+// input: image color as hex-code [string]
 // output: RGB-color as array / false on error
 
 function hex2rgb ($hex)
@@ -3565,7 +3583,7 @@ function hex2rgb ($hex)
 
 // ---------------------- rgb2hex -----------------------------
 // function: rgb2hex()
-// input: image color in RGB
+// input: image color in RGB [string]
 // output: hex-color as string / false on error
 
 function rgb2hex ($red, $green, $blue)
@@ -3586,7 +3604,7 @@ function rgb2hex ($red, $green, $blue)
 
 // ------------------------- readmediaplayer_config -----------------------------
 // function: readmediaplayer_config()
-// input: path to media config file, config file name 
+// input: path to media config file [string], config file name [string]
 // output: config array / false on error
 
 function readmediaplayer_config ($location, $configfile)
@@ -3817,8 +3835,8 @@ function readmediaplayer_config ($location, $configfile)
 
 // ------------------------- savemediaplayer_config -----------------------------
 // function: savemediaplayer_config()
-// input: path to media config file, media config file name, media file name array or string, width in px (optional), height in px (optional), rotation in degree (optional), file size in kB (optional), 
-//        duration in hh:mmm:ss (optional), video bitrate in kb/s (optional), audio bitrate in kb/s (optional), audio frequenzy in Hz (optional), audio channels [mono, stereo] (optional), video codec name (optional), audio codec name (optional)
+// input: path to media config file [string], media config file name [string], media file name [array or string], width in px [integer] (optional), height in px [integer] (optional), rotation in degree [integer] (optional), file size in kB [integer] (optional), 
+//        duration [hh:mmm:ss] (optional), video bitrate in kb/s [string] (optional), audio bitrate in kb/s [string] (optional), audio frequenzy in Hz [string] (optional), audio channels [mono,stereo] (optional), video codec name [string] (optional), audio codec name [string] (optional)
 // output: true / false on error
 
 function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320, $height=240, $rotation="", $filesize="", $duration="", $videobitrate="", $audiobitrate="", $audiofrequenzy="", $audiochannels="", $video_codec="", $audio_codec="")
@@ -3907,7 +3925,7 @@ function savemediaplayer_config ($location, $configfile, $mediafiles, $width=320
 
 // ---------------------- createdocument -----------------------------
 // function: createdocument()
-// input: publication, path to source location, path to destination location, file name, destination file format (extension w/o dot),
+// input: publication name [string], path to source location [string], path to destination location [string], file name [string], destination file format (extension w/o dot) [string],
 //        force the file to be not encrypted even if the content of the publication must be encrypted [true,false] (optional)
 // output: new file name / false on error
 
@@ -3967,6 +3985,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
       
       // get file size of media file in kB
       $filesize_orig = round (@filesize ($location_source.$file) / 1024, 0);
+      if ($filesize_orig < 1) $filesize_orig = 1;
 
       // check max file size in MB for certain file extensions and skip rendering
       if (!empty ($mgmt_maxsizepreview) && is_array ($mgmt_maxsizepreview))
@@ -4133,7 +4152,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
 
 // ---------------------- unzipfile -----------------------------
 // function: unzipfile()
-// input: publication, path to source zip file, path to destination location, category [page,comp], name of file for extraction, user
+// input: publication name [string], path to source zip file [string], path to destination location [string], category [page,comp], name of file for extraction [string], user name [string]
 // output: result array with all object paths / false
 
 // description:
@@ -4277,7 +4296,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
 
 // ---------------------- clonefolder -----------------------------
 // function: clonefolder()
-// input: publication name, source location, destination location, user name, activity that need to be set for daily stats [download] (optional)
+// input: publication name [string], source location [string], destination location [string], user name [string], activity that need to be set for daily stats [download] (optional)
 // output: true/false
 
 // description:
@@ -4352,8 +4371,8 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
 
 // ---------------------- zipfiles -----------------------------
 // function: zipfiles()
-// input: publication, array with path to source zip files, destination location (if this is null then the $location where the zip-file resists will be used), 
-//        name of ZIP-file, user name, activity that need to be set for daily stats [download] (optional)
+// input: publication name [string], array with path to source zip files [array], destination location (if this is null then the $location where the zip-file resists will be used) [string], 
+//        name of ZIP-file [string], user name [string], activity that need to be set for daily stats [download] (optional)
 // output: true/false
 
 // description:
@@ -4561,7 +4580,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename, $us
 
 // ---------------------- px2mm -----------------------------
 // function: px2mm()
-// input: pixel, dpi (optional)
+// input: pixel [integer], dpi [integer] (optional)
 // output: mm / false
 
 // description:
@@ -4578,7 +4597,7 @@ function px2mm ($pixel, $dpi=72)
 
 // ---------------------- mm2px -----------------------------
 // function: px2mm()
-// input: pixel, dpi (optional)
+// input: pixel [integer], dpi [integer] (optional)
 // output: pixel / false
 
 // description:
@@ -4595,7 +4614,7 @@ function mm2px ($mm, $dpi=72)
 
 // ---------------------- px2inch -----------------------------
 // function: px2inch()
-// input: pixel, dpi (optional)
+// input: pixel [integer], dpi [integer] (optional)
 // output: inch / false
 
 // description:
@@ -4612,7 +4631,7 @@ function px2inch ($pixel, $dpi=72)
 
 // ---------------------- inch2px -----------------------------
 // function: inch2px()
-// input: pixel, dpi (optional)
+// input: pixel [integer], dpi [integer] (optional)
 // output: pixel / false
 
 // description:
@@ -4629,7 +4648,7 @@ function inch2px ($inch, $dpi=72)
 
 // ---------------------- mediasize2frame -----------------------------
 // function: mediasize2frame()
-// input: media width, media height, frame width (optional), frame height (optional), keep maximum media size based on original dimensions of media without stretching [true,false] (optional)
+// input: media width [integer], media height [integer], frame width [integer] (optional), frame height [integer] (optional), keep maximum media size based on original dimensions of media without stretching [true,false] (optional)
 // output: width and height as array / false
 
 // description:
@@ -4668,7 +4687,7 @@ function mediasize2frame ($mediawidth, $mediaheight, $framewidth="", $frameheigh
 
 // ---------------------- vtt2array -----------------------------
 // function: vtt2array()
-// input: VTT string
+// input: video text track [string]
 // output: array / false
 
 // description:

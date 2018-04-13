@@ -1619,8 +1619,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
   // user will be provided as global for search expression logging
   global $mgmt_config, $lang, $user;
   
-  // enable search log by default
-  $mgmt_config['search_log'] = true;
+  // enable search log by default if not set
+  if (!isset ($mgmt_config['search_log'])) $mgmt_config['search_log'] = true;
 
   // set object_type if the search is image or video related
   if (!is_array ($object_type) && (!empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype)))
@@ -2067,7 +2067,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
               }
               
               // operator
-              if ($temp_operator != "none" && $sql_expr_advanced[$i] != "") $sql_expr_advanced[$i] .= $temp_operator;
+              if (!empty ($temp_operator) && $temp_operator != "none" && $sql_expr_advanced[$i] != "") $sql_expr_advanced[$i] .= $temp_operator;
             }
             // general search in all textnodes
             elseif (!empty ($mgmt_config['search_exact']) || $temp_expression != "")

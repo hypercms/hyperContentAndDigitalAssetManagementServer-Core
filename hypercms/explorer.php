@@ -1350,6 +1350,9 @@ else
         return false;
       }
       
+      // load screen
+      if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline';
+      
       select.submit();
     }
     
@@ -1710,6 +1713,9 @@ else
         // if iframe is loaded
         if (iframe && iframe.location != "")
         {
+          // load screen
+          if (parent.frames['workplFrame'].document.getElementById('hcmsLoadScreen')) parent.frames['workplFrame'].document.getElementById('hcmsLoadScreen').style.display='inline';
+        
           // submit form
           form.submit();
           

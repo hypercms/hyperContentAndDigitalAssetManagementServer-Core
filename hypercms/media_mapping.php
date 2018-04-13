@@ -89,7 +89,7 @@ if (valid_publicationname ($site) && $save == "yes" && checktoken ($token, $user
         {
           if (substr_count ($line, $metatag) == 1 && substr_count ($line, "=>") == 1)
           {
-            $mapping_array[$key] = "'".$metatag."' => '".$value."'";
+            $mapping_array[$key] = $metatag." => '".$value."'";
           }
           else $mapping_array[$key] = $line;
         }

@@ -11,7 +11,7 @@
 
 // --------------------------------------- windowwidth -------------------------------------------
 // function: windowwidth ()
-// input: type [object] (optional)
+// input: type [string] (optional)
 // output: window width in pixels
 
 // description:
@@ -27,7 +27,7 @@ function windowwidth ($type="object")
 
 // --------------------------------------- windowheight -------------------------------------------
 // function: windowheight ()
-// input: type [object] (optional)
+// input: type [string] (optional)
 // output: window height in pixels
 
 // description:
@@ -139,7 +139,7 @@ function setfilter ($filter_set)
 
 // --------------------------------------- objectfilter -------------------------------------------
 // function: objectfilter ()
-// input: file name
+// input: file name [string]
 // output: true / false
 
 // description:
@@ -185,8 +185,8 @@ function objectfilter ($file)
 
 // --------------------------------------- showshorttext -------------------------------------------
 // function: showshorttext ()
-// input: text as string, max. length of text (minus length starting from the end) (optional),
-//        line break instead of cut [true,false] only if length is positive (optional), character set for encoding (optional)
+// input: text [string], max. length of text (minus length starting from the end) [integer] (optional),
+//        line break instead of cut [true,false] only if length is positive (optional), character set for encoding [string] (optional)
 // output: shortened text if possible, or orignal text
 
 // description:
@@ -225,7 +225,7 @@ function showshorttext ($text, $length=0, $linebreak=false, $charset="UTF-8")
 
 // --------------------------------------- showtopbar -------------------------------------------
 // function: showtopbar ()
-// input: message, language code (optional), close button link (optional), link target (optional), individual button (optional), ID of div-layer (optional)
+// input: message [string], language code [string] (optional), close button link [string] (optional), link target [string] (optional), individual button [string] (optional), ID of div-layer [string] (optional)
 // output: top bar box / false on error
 
 // description:
@@ -268,7 +268,7 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $indiv
 
 // --------------------------------------- showtopmenubar -------------------------------------------
 // function: showtopmenubar ()
-// input: message, menu as array [key=name, value=properties/events], language code (optional), close button link (optional), link target (optional), ID of div-layer (optional)
+// input: message [string], menu [array:name => properties/events], language code [string] (optional), close button link [string] (optional), link target [string] (optional), ID of div-layer [string] (optional)
 // output: top bar box / false on error
 
 // description:
@@ -315,7 +315,7 @@ function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_
 
 // --------------------------------------- showmessage -------------------------------------------
 // function: showmessage ()
-// input: message, width in pixel (optional), height in pixel (optional), language code (optional), additional style definitions  of div-layer (optional), ID of div-layer (optional)
+// input: message [string], width in pixel [integer] (optional), height in pixel [integer] (optional), language code [string] (optional), additional style definitions of div-layer [string] (optional), ID of div-layer [string] (optional)
 // output: message box / false on error
 
 // description:
@@ -356,7 +356,7 @@ function showmessage ($show, $width="580px", $height="70px", $lang="en", $style=
 
 // --------------------------------------- showinfopage -------------------------------------------
 // function: showinfopage ()
-// input: message, language code (optional), on load JS events (optional)
+// input: message [string], language code [string] (optional), on load JS events [string] (optional)
 // output: message on html info page / false on error
 
 // description:
@@ -388,7 +388,7 @@ function showinfopage ($show, $lang="en", $onload="")
 
 // --------------------------------------- showinfobox -------------------------------------------
 // function: showinfobox ()
-// input: message, language code (optional), additional style definitions  of div-layer (optional), ID of div-layer (optional)
+// input: message [string], language code [string] (optional), additional style definitions of div-layer [string] (optional), ID of div-layer [string] (optional)
 // output: message in div layer / false on error
 
 // description:
@@ -427,7 +427,7 @@ function showinfobox ($show, $lang="en", $style="", $id="hcms_infoboxLayer")
 
 // --------------------------------------- showsharelinks -------------------------------------------
 // function: showsharelinks ()
-// input: link to share, media file name, language code (optional), additional style definitions of div-layer (optional), ID of div-layer (optional)
+// input: link to share [string], media file name [string], language code [string] (optional), additional style definitions of div-layer [string] (optional), ID of div-layer [string] (optional)
 // output: message in div layer / false on error
 
 // description:
@@ -471,7 +471,7 @@ function showsharelinks ($link, $mediafile, $lang="en", $style="", $id="hcms_sha
 
 // --------------------------------------- showmetadata -------------------------------------------
 // function: showmetadata ()
-// input: meta data as array, hierarchy level, CSS-class with background-color for headlines (optional)
+// input: metadata [array], 2 digits language code [string], CSS-class with background-color for headlines [string] (optional)
 // output: result as HTML unordered list / false on error
 
 function showmetadata ($data, $lang="en", $class_headline="hcmsRowData2")
@@ -525,7 +525,7 @@ function showmetadata ($data, $lang="en", $class_headline="hcmsRowData2")
 
 // --------------------------------------- showobject -----------------------------------------------
 // function: showobject ()
-// input: publication name, location, object name, category [page,comp] (optional), object name (optional)
+// input: publication name [string], location [string], object name [string], category [page,comp] (optional), object name [string] (optional)
 // output: html presentation / false
 
 function showobject ($site, $location, $page, $cat="", $name="")
@@ -609,8 +609,8 @@ function showobject ($site, $location, $page, $cat="", $name="")
 
 // --------------------------------------- showmedia -----------------------------------------------
 // function: showmedia ()
-// input: mediafile (publication/filename), name of mediafile for display, view type [template,media_only,preview,preview_download,preview_no_rendering], ID of the HTML media tag,
-//        width in px (optional), height in px (optional), CSS class (optional)
+// input: mediafile (publication/filename) [string], name of mediafile for display [string], view type [template,media_only,preview,preview_download,preview_no_rendering], ID of the HTML media tag [string],
+//        width in px [integer] (optional), height in px [integer] (optional), CSS class [string] (optional)
 // output: html presentation of any media asset / false
 
 // description:
@@ -2463,10 +2463,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
 // --------------------------------------- showcompexplorer -------------------------------------------
 // function: showcompexplorer ()
-// input: publication name, current explorer location, object location (optional), object name (optional), 
-//        component category [single,multi,media] (optional), search expression (optional), search format [object,document,image,video,audio] (optional), 
+// input: publication name [string], current explorer location [string], object location [string] (optional), object name [string] (optional), 
+//        component category [single,multi,media] (optional), search expression [string] (optional), search format [object,document,image,video,audio] (optional), 
 //        media-type [audio,video,text,flash,image,compressed,binary] (optional), 
-//        callback of CKEditor (optional), saclingfactor for images (optional)
+//        callback of CKEditor [string] (optional), saclingfactor for images [integer] (optional)
 // output: explorer with search / false on error
 
 // description:
@@ -2912,7 +2912,7 @@ $(document).ready(function()
 
 // --------------------------------------- showeditor -------------------------------------------
 // function: showeditor ()
-// input: publication name, hypertag name, hypertag id, content, width, height of the editor, toolbar set, language, dpi for scaling images
+// input: publication name [string], hypertag name [string], hypertag id [string], content [string], width of the editor [integer], height of the editor [integer], toolbar set [string], 2 digit language code [string], dpi for scaling images [integer]
 // output: rich text editor code / false on error
 
 // description:
@@ -2969,7 +2969,7 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
 
 // --------------------------------------- showinlineeditor_head -------------------------------------------
 // function: showinlineeditor_head ()
-// input: language
+// input: 2 digit language code [string]
 // output: rich text editor code for html head section / false on error
 
 // description:
@@ -3147,8 +3147,8 @@ function showinlinedatepicker_head ()
 
 // --------------------------------------- showinlineeditor -------------------------------------------
 // function: showinlineeditor ()
-// input: publication name, hypertag, hypertag id, content, width, height of the editor, toolbar set, language, 
-//        content-type, category[page,comp], converted location, object name, container name, DB-connect file name, security token
+// input: publication name [string], hypertag [string], hypertag id [string], content [string], width of the editor [integer], height of the editor [integer], toolbar set [string], 2 digit language code [string], 
+//        content-type [string], category [page,comp], converted location [string], object name [string], container name [string], DB-connect file name [string], security token [string]
 // output: rich text editor code / false on error
 
 // description:
@@ -3730,19 +3730,19 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 // ------------------------- showvideoplayer -----------------------------
 // function: showvideoplayer()
 // input:
-// videoArray (Array) containing the different html sources,
-// width (Integer) Width of the video in pixel,
-// height (Integer) Height of the video in pixel,
-// logo_url (String) Link to the logo which is displayed before you click on play (If the value is null the default logo will be used),
-// id (String) The ID of the video (will be generated when empty),
-// title (String) The title for this video,
-// autoplay (Boolean) Should the video be played on load (true), default is false,
-// enableFullScreen (Boolean) Is it possible to view the video in fullScreen (true),
-// play loop (optional) [true,false],
-// muted/no sound (optional) [true,false],
-// player controls (optional) [true,false],
-// use video in iframe (optional) [true,false],
-// reload video sources to prevent the browser cache to show the same video even if it has been changed [true,false] (optional),
+// video array containing the different html sources [array],
+// width of the video in pixel [integer],
+// height of the video in pixel [integer],
+// link to the logo which is displayed before you click on play (If the value is null the default logo will be used) [string],
+// ID of the video (will be generated when empty) [string],
+// title for this video [string],
+// autoplay video on load (true), default is false [true,false],
+// view the video in full screen [true,false],
+// play loop [true,false] (optional),
+// muted/no sound [true,false] (optional),
+// player controls [true,false] (optional),
+// use video in iframe [true,false] (optional),
+// reload video sources to prevent the browser cache to show the same video even if it has been changed [true,false] (optional)
 
 // output: HTML code of the video player / false on error
 
@@ -3948,7 +3948,7 @@ function showvideoplayer ($site, $video_array, $width=320, $height=240, $logo_ur
 
 // ------------------------- showvideoplayer_head -----------------------------
 // function: showvideoplayer_head()
-// input: secure hyperreferences by adding 'hypercms_', is it possible to view the video in fullScreen [true,false]
+// input: secure hyperreferences by adding 'hypercms_' [true,false] (optional), is it possible to view the video in fullScreen [true,false] (optional)
 // output: head for video player / false on error
 
 function showvideoplayer_head ($secureHref=true, $fullscreen=true)
@@ -3992,7 +3992,7 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true)
 
 // ------------------------- showaudioplayer -----------------------------
 // function: showaudioplayer()
-// input: publication name, audio files as array (Array), ID of the tag (optional),
+// input: publication name [string], audio files [array], ID of the tag [string] (optional),
 //        autoplay (optional) [true,false], play loop (optional) [true,false], player controls (optional) [true,false]
 // output: code of the HTML5 player / false
 
@@ -4130,7 +4130,7 @@ function showaudioplayer ($site, $audioArray, $width=320, $height=320, $logo_url
 
 // ------------------------- showaudioplayer_head -----------------------------
 // function: showaudioplayer_head()
-// input: secure hyperreferences by adding 'hypercms_'
+// input: secure hyperreferences by adding 'hypercms_' [true,false] (optional)
 // output: head for audio player
 
 function showaudioplayer_head ($secureHref=true)
@@ -4148,7 +4148,7 @@ function showaudioplayer_head ($secureHref=true)
 
 // ------------------------- debug_getbacktracestring -----------------------------
 // function: debug_getbacktracestring()
-// input: separator for arguments, separator for a Row on screen/file, functionnames to be ignored
+// input: separator for arguments [string], separator for a row on screen/file [string], functionnames to be ignored [array]
 // output: debug message
 
 // description:
@@ -4218,7 +4218,7 @@ function debug_getbacktracestring ($valueSeparator, $rowSeparator, $ignoreFuncti
 
 // ------------------------- showAPIdocs -----------------------------
 // function: showAPIdocs()
-// input: path to API file, return result as HTML or array [html,array] (optional)
+// input: path to API file [string], return result as HTML or array [html,array] (optional)
 // output: HTML output of documentation / false on error
 
 // description:
@@ -4427,7 +4427,7 @@ function showAPIdocs ($file, $return="html")
 
 // ------------------------- readnavigation -----------------------------
 // function: readnavigation()
-// input: publication name, location, object name, view [see view parameters of function buildview], user name
+// input: publication name [string], location [string], object name [string], view name (see view parameters of function buildview) [string], user name [string]
 // output: navigation item array / false
 
 // description:
@@ -4559,7 +4559,7 @@ function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
 
 // ------------------------- createnavigation -----------------------------
 // function: createnavigation()
-// input: publication name, document root for navigation, URL root for navigation, view [see view parameters of function buildview], path to current object (optional), recursive [true,false] (optional)
+// input: publication name [string], document root for navigation [string], URL root for navigation [string], view name (see view parameters of function buildview) [string], path to current object [string] (optional), recursive [true,false] (optional)
 // output: navigation array / false
 
 // description:
@@ -4725,7 +4725,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
 
 // ------------------------- shownavigation -----------------------------
 // function: shownavigation()
-// input: navigation array (created by function readnavigation), level as integer (optional)
+// input: navigation (created by function readnavigation) [array], level [integer] (optional)
 // output: navigation HTML presentation / false
 
 // description:
@@ -4811,7 +4811,7 @@ function shownavigation ($navigation, $level=1)
 
 // ------------------------- showselect -----------------------------
 // function: showselect()
-// input: values array (array-key = value, array-value = text), use values of array as option value and text [true,false] (optional), selected value (optional), attributes of select tags like name or id or events (optional)
+// input: values array (array-key = value, array-value = text) [array], use values of array as option value and text [true,false] (optional), selected value [string] (optional), attributes of select tags like name or id or events [string] (optional)
 // output: HTML select box presentation / false
 
 function showselect ($value_array, $only_text=false, $selected_value="", $id="", $attributes="")
@@ -4853,7 +4853,7 @@ function showselect ($value_array, $only_text=false, $selected_value="", $id="",
 
 // ------------------------- showtranslator -----------------------------
 // function: showtranslator()
-// input: publication name, editor/text-tag ID, unformatted or formatted texttag-type [u,f], character set (optional), language code (optional), style of div tag (optional)
+// input: publication name [string], editor/text-tag ID [string], unformatted or formatted texttag-type [u,f], character set [string] (optional), 2 digit language code [string] (optional), style of div tag [string] (optional)
 // output: HTML translator box presentation / false
 
 function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style="")
@@ -4914,7 +4914,7 @@ function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style
 
 // ------------------------- showmapping -----------------------------
 // function: showmapping()
-// input: publication name, language code (optional)
+// input: publication name [string], 2 digit language code [string] (optional)
 // output: table with form fields for display / false
 
 // description:

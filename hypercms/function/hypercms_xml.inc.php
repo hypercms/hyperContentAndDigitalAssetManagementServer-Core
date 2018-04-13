@@ -17,7 +17,7 @@
 // ------------------------------------ valid_tagname ----------------------------------------------
 
 // function: valid_tagname()
-// input: tag name
+// input: tag name [string]
 // output: true / false on error
 
 // description:
@@ -40,7 +40,7 @@ function valid_tagname ($tagname)
 // ------------------------------------ setxmlparameter ----------------------------------------------
 
 // function: setxmlparameter()
-// input: XML content container, paramater name, paramater value
+// input: XML content container [string], paramater name [string], paramater value [string]
 // output: XML content container / false on error
 
 // description:
@@ -105,7 +105,7 @@ function setxmlparameter ($xmldata, $parameter, $value)
 // ------------------------------------ getcontent ----------------------------------------------
 
 // function: getcontent()
-// input: XML content container, tag name
+// input: XML content container [string], tag name [string]
 // output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
@@ -196,7 +196,7 @@ function getcontent ($xmldata, $starttagname)
 // ------------------------------------ geticontent ----------------------------------------------
 
 // function: geticontent()
-// input: XML content container, tag name
+// input: XML content container [string], tag name [string]
 // output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
@@ -294,7 +294,7 @@ function geticontent ($xmldata, $starttagname)
 // ------------------------------------ getxmlcontent ----------------------------------------------
 
 // function: getxmlcontent()
-// input: XML content container, tag name
+// input: XML content container [string], tag name [string]
 // output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
@@ -361,7 +361,7 @@ function getxmlcontent ($xmldata, $starttagname)
 // ------------------------------------ getxmlicontent ----------------------------------------------
 
 // function: getxmlicontent()
-// input: XML content container, tag name
+// input: XML content container [string], tag name [string]
 // output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
@@ -435,7 +435,7 @@ function getxmlicontent ($xmldata, $starttagname)
 // ------------------------------------ selectcontent -------------------------------------
 
 // function: selectcontent()
-// input: XML content container, tag name of requested XML node, tag holding the conditional value inside the given starttagname, conditional value
+// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagname [string], conditional value [string]
 // output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
@@ -592,7 +592,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // ------------------------------------ selecticontent -------------------------------------
 
 // function: selecticontent()
-// input: XML content container, tag name of requested XML node, tag holding the conditional value inside the given starttagname, conditional value
+// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagname [string], conditional value [string]
 // output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
@@ -756,7 +756,7 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // ------------------------------------ selectxmlcontent -------------------------------------
 
 // function: selectxmlcontent()
-// input: XML content container, tag name of requested XML node, tag holding the conditional value inside the given starttagname, conditional value
+// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagnamev, conditional value [string]
 // output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
@@ -915,7 +915,7 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // ------------------------------------ selectxmlicontent -------------------------------------
 
 // function: selectxmlicontent()
-// input: XML content container, tag name of requested XML node, tag holding the conditional value inside the given starttagname, conditional value
+// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagname [string], conditional value [string]
 // output: result array with the content of the requested XML node (tag) / false on error
 
 // description:
@@ -1080,7 +1080,7 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // ------------------------------- deletecontent -------------------------------------------
 
 // function: deletecontent()
-// input: XML content container, tag name of requested XML node, tag holding the conditional value inside the given starttagname, conditional value
+// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagname [string], conditional value [string]
 // output: XML content container / false on error
 
 // description:
@@ -1132,7 +1132,7 @@ function deletecontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // ------------------------------- deleteicontent -------------------------------------------
 
 // function: deleteicontent()
-// input: XML content container, tag name of requested XML node, tag holding the conditional value inside the given starttagname, conditional value
+// input: XML content container [string], tag name of requested XML node [string], tag holding the conditional value inside the given starttagname [string], conditional value [string]
 // output: XML content container / false on error
 
 // description:
@@ -1187,7 +1187,7 @@ function deleteicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
 // --------------------------------- setcontent --------------------------------------------
 
 // function: setcontent()
-// input: XML content container, parent tag name, tag name of XML node for the new content, new XML node to be inserted, tag holding the conditional value inside the given starttagname, conditional value
+// input: XML content container [string], parent tag name [string], tag name of XML node for the new content [string], new XML node to be inserted, tag holding the conditional value inside the given starttagname [string], conditional value [string]
 // output: XML content container / false on error
 
 // description:
@@ -1271,7 +1271,7 @@ function setcontent ($xmldata, $startparenttagname, $starttagname, $contentnew, 
 // --------------------------------- seticontent --------------------------------------------
 
 // function: seticontent()
-// input: XML content container, parent tag name, tag name of XML node for the new content, new XML node to be inserted, tag holding the conditional value inside the given starttagname, conditional value
+// input: XML content container [string], parent tag name [string], tag name of XML node for the new content [string], new XML node to be inserted [string], tag holding the conditional value inside the given starttagname [string], conditional value [string]
 // output: XML content container / false on error
 
 // description:
@@ -1361,7 +1361,7 @@ function seticontent ($xmldata, $startparenttagname, $starttagname, $contentnew,
 // --------------------------------- setcontent_fast --------------------------------------------
 
 // function: setcontent_fast()
-// input: XML content container, parent tag name, tag name of XML node for the new content, new XML node to be inserted, tag holding the conditional value inside the given starttagname, conditional value
+// input: XML content container [string], parent tag name [string], tag name of XML node for the new content [string], new XML node to be inserted, tag holding the conditional value inside the given starttagname [string], conditional value [string]
 // output: XML content container / false on error
 
 // description:
@@ -1440,7 +1440,7 @@ function setcontent_fast ($xmldata, $startparenttagname, $starttagname, $content
 // --------------------------------------- updatecontent -----------------------------------------
 
 // function: updatecontent()
-// input: XML content container, XML node to be replaced, new XML node
+// input: XML content container [string], XML node to be replaced [string], new XML node [string]
 // output: XML content container / false on error
 
 // description:
@@ -1463,7 +1463,7 @@ function updatecontent ($xmldata, $xmlnode, $xmlnodenew)
 // --------------------------------------- insertcontent -----------------------------------------
 
 // function: insertcontent()
-// input: XML content container, XML node to be inserted in starttagname, tag name of the parent XML node
+// input: XML content container [string], XML node to be inserted in starttagname [string], tag name of the parent XML node [string]
 // output: XML content container / false on error
 
 // description:
@@ -1516,7 +1516,7 @@ function insertcontent ($xmldata, $insertxmldata, $starttagname)
 // --------------------------------------- inserticontent -----------------------------------------
 
 // function: inserticontent()
-// input: XML content container, XML node to be inserted in starttagname, tag name of the parent XML node
+// input: XML content container [string], XML node to be inserted in starttagname [string], tag name of the parent XML node [string]
 // output: XML content container / false on error
 
 // description:
@@ -1571,7 +1571,7 @@ function inserticontent ($xmldata, $insertxmldata, $starttagname)
 // ------------------------------------ addcontent ---------------------------------------
 
 // function: addcontent()
-// input: XML content container, xml node to be inserted, grandparent tag name, tag holding the conditional value inside the given starttagname, conditional value, parent tag name, tag name of XML node for the new content, new XML node to be inserted
+// input: XML content container [string], xml node to be inserted [string], grandparent tag name [string], tag holding the conditional value inside the given starttagname [string], conditional value [string], parent tag name [string], tag name of XML node for the new content [string], new XML node to be inserted [string]
 // output: XML content container / false on error
 
 // description:
@@ -1664,7 +1664,7 @@ function addcontent ($xmldata, $sub_xmldata, $startgrandtagname, $startcondtag, 
 // ------------------------------------ addicontent ---------------------------------------
 
 // function: addicontent()
-// input: XML content container, xml node to be inserted, grandparent tag name, tag holding the conditional value inside the given starttagname, conditional value, parent tag name, tag name of XML node for the new content, new XML node to be inserted
+// input: XML content container [string], xml node to be inserted [string], grandparent tag name [string], tag holding the conditional value inside the given starttagname [string], conditional value [string], parent tag name [string], tag name of XML node for the new content [string], new XML node to be inserted [string]
 // output: XML content container / false on error
 
 // description:

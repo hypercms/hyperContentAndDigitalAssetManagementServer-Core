@@ -86,7 +86,7 @@ if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, '
     
     if ($result_save['result'] == true && $preview == "yes")
     {
-      $add_onload = " hcms_openWindow('template_view.php?site=".url_encode($site)."&cat=".$cat."&template=".url_encode($template)."', 'preview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").");";
+      $add_onload = " hcms_openWindow('".$mgmt_config['url_path_cms']."template_view.php?site=".url_encode($site)."&cat=".$cat."&template=".url_encode($template)."', 'preview', 'scrollbars=yes,resizable=yes', ".windowwidth("object").", ".windowheight("object").");";
     }
     else $add_onload = "";
   }

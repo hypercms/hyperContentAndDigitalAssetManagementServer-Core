@@ -14,7 +14,7 @@
 // ------------------------------------- correctnumber ------------------------------------------
 
 // function: correctnumber ()
-// input: formated number
+// input: formated number  [string]
 // output: correct mathematical number / false on error
 
 function correctnumber ($number)
@@ -46,11 +46,11 @@ function correctnumber ($number)
 // ------------------------------------- cleancontent ------------------------------------------
 
 // function: cleancontent ()
-// input: text as string or array, character set (optional)
+// input: text [string or array], character set [string] (optional)
 // output: cleaned text / false on error
 
 // description:
-// Removes all HTML tags, scripts and other special characters from the content in order to creaet a plain text
+// Removes all HTML tags, scripts and other special characters from the content in order to create a plain text
 
 function cleancontent ($text, $charset="UTF-8")
 {
@@ -158,7 +158,7 @@ function cleancontent ($text, $charset="UTF-8")
 // ------------------------------------- remove_utf8_bom ------------------------------------------
 
 // function: remove_utf8_bom ()
-// input: text as string
+// input: text  [string]
 // output: cleaned text / false on error
 
 // description:
@@ -180,7 +180,7 @@ function remove_utf8_bom ($text)
 // ------------------------------------- convertchars ------------------------------------------
 
 // function: convertchars ()
-// input: expression as string or array, input character set (optional), output character set (optional)
+// input: expression [string or array], input character set [string] (optional), output character set [string] (optional)
 // output: converted expression / original expression on error
 
 function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
@@ -237,7 +237,7 @@ function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
 
 // ------------------------- specialchr -----------------------------
 // function: specialchr()
-// input: expression, list of characters to be excluded from search (optional) 
+// input: expression [string], list of characters to be excluded from search [string] (optional) 
 // output: true/false
 
 // description:
@@ -256,7 +256,7 @@ function specialchr ($expression, $accept="")
 
 // ------------------------- specialchr_encode -----------------------------
 // function: specialchr_encode()
-// input: expression, remove all special characters [yes,no]
+// input: expression [string], remove all special characters [yes,no]
 // output: expression without special characters (for file names)
 
 // description:
@@ -312,7 +312,7 @@ function specialchr_encode ($expression, $remove="no")
 
 // ------------------------- specialchr_decode -----------------------------
 // function: specialchr_decode()
-// input: expression  
+// input: expression [string]
 // output: expression with special characters (for file names) / false
 
 // description:
@@ -340,7 +340,7 @@ function specialchr_decode ($expression)
 
 // ------------------------- object_exists -----------------------------
 // function: object_exists()
-// input: path to an object
+// input: path to an object [string]
 // output: true / false
 
 // description:
@@ -385,7 +385,7 @@ function object_exists ($path)
         
 // ------------------------- is_utf8 -----------------------------
 // function: is_utf8()
-// input: expression  
+// input: expression [string]
 // output: if string is utf-8 encoded true / false otherwise
 
 // description:
@@ -417,7 +417,7 @@ function is_utf8 ($str)
 
 // ------------------------- is_latin1 -----------------------------
 // function: is_latin1()
-// input: expression  
+// input: expression [string]
 // output: if string is latin 1 encoded true / false otherwise
 
 // description:
@@ -454,7 +454,7 @@ function makestring ($array)
 
 // -------------------------------- splitstring --------------------------------
 // function: splitstring()
-// input: string with ";" or "," as seperator
+// input: string with ";" or "," as seperator [string]
 // output: array with string splitted into array / false on error
 
 function splitstring ($string)
@@ -493,7 +493,7 @@ function splitstring ($string)
 
 // ------------------------- is_emptyfolder -----------------------------
 // function: is_emptyfolder()
-// input: path to folder
+// input: path to folder [string]
 // output: true / false
 
 // description:
@@ -525,7 +525,7 @@ function is_emptyfolder ($dir)
 
 // -------------------------------- is_supported --------------------------------
 // function: is_supported()
-// input: preview array holding the supported file extensions as key and references to executables as value, file name or file extension
+// input: preview array holding the supported file extensions as key and references to executables as value [array], file name or file extension [string]
 // output: true / false
 
 // description:
@@ -551,7 +551,7 @@ function is_supported ($preview_array, $file)
 
 // -------------------------------- is_cloudstorage --------------------------------
 // function: is_cloudstorage()
-// input: publication name (optional)
+// input: publication name [string] (optional)
 // output: true / false
 
 // description:
@@ -597,7 +597,7 @@ function is_cloudstorage ($site="")
 
 // ---------------------- is_cloudobject -----------------------------
 // function: is_cloudobject()
-// input: path to media file or media file name
+// input: path to media file or media file name [string]
 // output: true / false
 
 // description:
@@ -629,7 +629,7 @@ function is_cloudobject ($file)
 
 // -------------------------------- is_date --------------------------------
 // function: is_date()
-// input: date as string, date format (optional)
+// input: date [string], date format [string] (optional)
 // output: true / false
 
 // description:
@@ -764,7 +764,7 @@ function is_encryptedfile ($location, $file)
 
 // -------------------------------- is_document --------------------------------
 // function: is_document()
-// input: file name or file extension
+// input: file name or file extension [string]
 // output: true / false
 
 // description:
@@ -791,7 +791,7 @@ function is_document ($file)
 
 // -------------------------------- is_image --------------------------------
 // function: is_image()
-// input: file name or file extension
+// input: file name or file extension [string]
 // output: true / false
 
 // description:
@@ -818,7 +818,7 @@ function is_image ($file)
 
 // -------------------------------- is_rawimage --------------------------------
 // function: is_rawimage()
-// input: file name or file extension
+// input: file name or file extension [string]
 // output: true / false
 
 // description:
@@ -845,7 +845,7 @@ function is_rawimage ($file)
 
 // -------------------------------- is_aiimage --------------------------------
 // function: is_aiimage()
-// input: file name or file extension
+// input: file name or file extension [string]
 // output: true / false
 
 // description:
@@ -867,7 +867,7 @@ function is_aiimage ($file)
 
 // -------------------------------- is_video --------------------------------
 // function: is_video()
-// input: file name or file extension
+// input: file name or file extension [string]
 // output: true / false
 
 // description:
@@ -894,7 +894,7 @@ function is_video ($file)
 
 // -------------------------------- is_audio --------------------------------
 // function: is_audio()
-// input: file name or file extension
+// input: file name or file extension [string]
 // output: true / false
 
 // description:
@@ -921,7 +921,7 @@ function is_audio ($file)
 
 // -------------------------------- is_compressed --------------------------------
 // function: is_compresseddocument()
-// input: file name or file extension
+// input: file name or file extension [string]
 // output: true / false
 
 // description:
@@ -1001,7 +1001,7 @@ function is_iOS ()
 
 // -------------------------------- copyrecursive --------------------------------
 // function: copyrecursive()
-// input: source directory, destination directory
+// input: source directory [string], destination directory [string]
 // output: true/false
 
 // description:
@@ -1035,7 +1035,7 @@ function copyrecursive ($src, $dst)
 
 // -------------------------------- array_iunique --------------------------------
 // function: array_iunique()
-// input: array
+// input: array [array]
 // output: unique array / false
 
 // description:
@@ -1052,7 +1052,7 @@ function array_iunique ($array)
 
 // -------------------------------- in_array_substr --------------------------------
 // function: in_array_substr()
-// input: search expression, array
+// input: search expression [string], array [array]
 // output: true / false
 
 // description:
@@ -1076,7 +1076,7 @@ function in_array_substr ($search, $array)
 
 // ---------------------- createfilename -----------------------------
 // function: createfilename()
-// input: path to file or directory, file or directory name
+// input: path to file or directory [string], file or directory name [string]
 // output: new filename/false
 
 // description:
@@ -1138,7 +1138,7 @@ function createfilename ($filename)
 
 // ---------------------- correctfile -----------------------------
 // function: correctfile()
-// input: path to file or directory, file or directory name, user name
+// input: path to file or directory [string], file or directory name [string], user name [string]
 // output: correct filename/false
 
 function correctfile ($abs_path, $filename, $user="")
@@ -1195,7 +1195,7 @@ function correctfile ($abs_path, $filename, $user="")
 
 // ---------------------------------- correctpath -------------------------------------------
 // function: correctpath()
-// input: path to folder, directory seperator (optional)
+// input: path to folder [string], directory seperator [string] (optional)
 // output: correct path/false
 
 function correctpath ($path, $slash="/")
@@ -1218,7 +1218,7 @@ function correctpath ($path, $slash="/")
 
 // ---------------------------------- convertpath -------------------------------------------
 // function: convertpath()
-// input: publication, content management path to folder or object, object category ['page, comp']
+// input: publication name [string], content management path to folder or object [string], object category [page,comp]
 // output: converted path or URL / false on error
 
 // description:
@@ -1323,7 +1323,7 @@ function convertpath ($site, $path, $cat="")
 
 // ---------------------------------- convertlink -------------------------------------------
 // function: convertlink()
-// input: publication, publication management path to folder or object, object category ['page, comp']
+// input: publication name [string], publication management path to folder or object [string], object category [page,comp]
 // output: converted path or URL / false on error
 
 // description:
@@ -1422,7 +1422,7 @@ function convertlink ($site, $path, $cat)
 
 // ---------------------------------- deconvertpath -------------------------------------------
 // function: deconvertpath ()
-// input: string including path to folder or object, convert to file system path or URL [file, url] (optional), transform special characters using specialchr_encode [true,false] (optional)
+// input: string including path to folder or object [string], convert to file system path or URL [file,url] (optional), transform special characters using specialchr_encode [true,false] (optional)
 // output: deconverted path/false
 
 // description:
@@ -1537,7 +1537,7 @@ function deconvertpath ($objectpath, $type="file", $specialchr_transform=true)
 
 // ---------------------------------- deconvertlink -------------------------------------------
 // function: deconvertlink ()
-// input: path to folder or object, convert to file system path or URL [file, url]
+// input: path to folder or object [string], convert to file system path or URL [file,url]
 // output: converted absolute link without host/false
 
 // description:
@@ -1606,7 +1606,7 @@ function deconvertlink ($path, $type="url")
 
 // ---------------------- createviewlink -----------------------------
 // function: createviewlink()
-// input: publication, media file name, media name (optional), force reload [true,false] (optional), link type [wrapper,download] (optional)
+// input: publication name [string], media file name [string], media name [string] (optional), force reload [true,false] (optional), link type [wrapper,download] (optional)
 // output: URL for download of the multimedia file / false on error
 
 // description:
@@ -1637,7 +1637,7 @@ function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type
 
 // ---------------------- createaccesslink -----------------------------
 // function: createaccesslink()
-// input: publication, location (optional), object (optional), category [page,comp] (optional), object-ID (optional), user login, link type [al,dl] (optional), token lifetime in seconds (optional), formats (optional)
+// input: publication name [string], location [string] (optional), object [string] (optional), category [page,comp] (optional), object-ID [string] (optional), user login name [string], link type [al,dl] (optional), token lifetime in seconds [integer] (optional), formats [string] (optional)
 // output: URL for access to given object / false on error
 
 function createaccesslink ($site, $location="", $object="", $cat="", $object_id="", $login, $type="al", $lifetime=0, $formats="")
@@ -1706,7 +1706,7 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
 
 // ---------------------- createobjectaccesslink -----------------------------
 // function: createobjectaccesslink()
-// input: publication (optional), location (optional), object (optional), category [page,comp] (optional), object ID (optional), container-ID (optional)
+// input: publication name [string] (optional), location [string] (optional), object [string] (optional), category [page,comp] (optional), object ID [string] (optional), container-ID [string] (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
 function createobjectaccesslink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="")
@@ -1791,7 +1791,7 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
 
 // ---------------------- createwrapperlink -----------------------------
 // function: createwrapperlink()
-// input: publication (optional), location (optional), object (optional), category [page,comp] (optional), object ID (optional), container-ID (optional)
+// input: publication name [string] (optional), location [string] (optional), object [string] (optional), category [page,comp] (optional), object ID [string] (optional), container-ID [string] (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
 // description:
@@ -1880,7 +1880,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
 
 // ---------------------- createdownloadlink -----------------------------
 // function: createdownloadlink()
-// input: publication name (optional), location (optional), object (optional), category [page,comp] (optional), object ID (optional), container-ID (optional)
+// input: publication name [string] (optional), location [string] (optional), object [string] (optional), category [page,comp] (optional), object ID [string] (optional), container-ID [string] (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
 // description:
@@ -1971,7 +1971,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
 
 // --------------------------------------- createmultidownloadlink -------------------------------------------
 // function: createmultidownloadlink ()
-// input: publication name, multiobject string (optional), media file name (optional), location (optional), presentation name (optional), user name, conversion type (format, e.g: jpg), media configuration used for conversion (e.g.: 1024x768px), link type [wrapper,download] (optional)
+// input: publication name [string], multiobject string [string] (optional), media file name [string] (optional), location [string] (optional), presentation name [string] (optional), user name [string], conversion type (format, e.g: jpg) [string], media configuration used for conversion (e.g.: 1024x768px) [string], link type [wrapper,download] (optional)
 // output: download link / false on error
 
 // description:
@@ -2074,7 +2074,7 @@ function createmultidownloadlink ($site, $multiobject="", $media="", $location="
 
 // ---------------------- cleandomain -----------------------------
 // function: cleandomain()
-// input: string to clean from http(s)://domain
+// input: string to clean from http(s)://domain [string]
 // output: cleanded string / false on error
 
 // description:
@@ -2121,7 +2121,7 @@ function fileversion ($file)
 
 // -------------------------------------- createversion -------------------------------------------
 // function: createversion()
-// input: publication name, media file name or container name, user name (optional)
+// input: publication name [string], media file name or container name [string], user name [string] (optional)
 // output: true / false
 
 // description:
@@ -2234,7 +2234,7 @@ function createversion ($site, $file, $user="sys")
 
 // -------------------------------------- rollbackversion -------------------------------------------
 // function: rollbackversion()
-// input: publication name, location, object name, container version name, user name (optional)
+// input: publication name [string], location [string], object name [string], container version name [string], user name [string] (optional)
 // output: result_array
 
 // description:
@@ -2449,7 +2449,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
 
 // -------------------------------------- deleteversion -------------------------------------------
 // function: deleteversion()
-// input: publication name, location, object name, container version name, user name (optional)
+// input: publication name [string], location [string], object name [string], container version name [string], user name [string] (optional)
 // output: true / false
 
 // description:
@@ -2514,7 +2514,7 @@ function deleteversion ($site, $container_version, $user="sys")
 
 // --------------------------------------- deleteversions -------------------------------------------
 // function: deleteversions()
-// input: type [content,template] or valid path in filesystem, report [yes,no], user name (optional)
+// input: type [content,template] or valid path in filesystem, report [yes,no], user name [string] (optional)
 // output: true [report=no] or report [report=yes], false on error
 
 // description:
@@ -2590,7 +2590,7 @@ function deleteversions ($type, $report, $user="sys")
 
 // ------------------------------------------- loadfile_header -------------------------------------------
 // function: loadfile_header()
-// input: path to file, file name 
+// input: path to file [string], file name [string]
 // output: file content
 
 // description:
@@ -2646,7 +2646,7 @@ function loadfile_header ($abs_path, $filename)
 
 // ------------------------------------------- loadfile_fast -------------------------------------------
 // function: loadfile_fast()
-// input: path to file, file name 
+// input: path to file [string], file name [string]
 // output: file content
 
 // description:
@@ -2694,7 +2694,7 @@ function loadfile_fast ($abs_path, $filename)
 
 // ------------------------------------------- loadfile -------------------------------------------
 // function: loadfile()
-// input: path to file, file name 
+// input: path to file [string], file name [string]
 // output: file content
 
 // description:
@@ -2773,7 +2773,7 @@ function loadfile ($abs_path, $filename)
 
 // ---------------------------------------- loadlockfile ---------------------------------------------
 // function: loadlockfile()
-// input: user, path to file, file name, force unlock of file after x seconds [integer]
+// input: user name [string], path to file [string], file name [string], force unlock of file after x seconds [integer]
 // output: file content
 
 // description:
@@ -2916,7 +2916,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
 
 // --------------------------------------- savefile ------------------------------------------------
 // function: savefile()
-// input: path to file, file name, file content 
+// input: path to file [string], file name [string], file content [string]
 // output: true/false
 
 // description:
@@ -2960,7 +2960,7 @@ function savefile ($abs_path, $filename, $filedata)
 
 // ------------------------------------ savelockfile --------------------------------------------
 // function: savelockfile()
-// input: user, path to file, file name, file content 
+// input: user name [string], path to file [string], file name [string], file content [string]
 // output: true/false
 
 // description:
@@ -3022,7 +3022,7 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
 
 // -------------------------------------- appendfile -----------------------------------------
 // function: appendfile()
-// input: path to file, file name, file content 
+// input: path to file [string], file name [string], file content [string]
 // output: true/false
 
 // description: 
@@ -3103,7 +3103,7 @@ function appendfile ($abs_path, $filename, $filedata)
 
 // ------------------------------------------- lockfile --------------------------------------------
 // function: lockfile()
-// input: user, path to file, file name
+// input: user name [string], path to file [string], file name [string]
 // output: true/false
 
 // description:
@@ -3145,7 +3145,7 @@ function lockfile ($user, $abs_path, $filename)
 
 // ------------------------------------------ unlockfile -------------------------------------------
 // function: unlockfile()
-// input: user, path to file, file name
+// input: user name [string], path to file [string], file name [string]
 // output: true/false
 
 // description:
@@ -3187,7 +3187,7 @@ function unlockfile ($user, $abs_path, $filename)
 
 // ------------------------------------------ deletefile --------------------------------------------
 // function: deletefile()
-// input: path to file, file or directory name, delete all files in directory recursively including symbolic links [true,false] 
+// input: path to file [string], file or directory name [string], delete all files in directory recursively including symbolic links [true,false] 
 // output: true/false
 
 // description:
@@ -3314,7 +3314,7 @@ function deletefile ($abs_path, $filename, $recursive=false)
 
 // ------------------------------------------ restoremediafile --------------------------------------------
 // function: restoremediafile()
-// input: publication name, media file name
+// input: publication name [string], media file name [string]
 // output: result array
 
 // description:
@@ -3391,7 +3391,7 @@ function restoremediafile ($site, $mediafile)
 
 // ------------------------------------------ preparemediafile --------------------------------------------
 // function: preparemediafile()
-// input: publication name, media file location, media file name, user name (optional)
+// input: publication name [string], media file location [string], media file name [string], user name [string] (optional)
 // output: result array / false on error
 
 // description:
@@ -3430,7 +3430,7 @@ function preparemediafile ($site, $medialocation, $mediafile, $user="")
     
 // ------------------------------------------ deletemediafiles --------------------------------------------
 // function: deletemediafiles()
-// input: publication name, mediafile name, delete original media file [true,false] (optional)
+// input: publication name [string], mediafile name [string], delete original media file [true,false] (optional)
 // output: true/false
 
 // description:
@@ -3610,7 +3610,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false)
 
 // ---------------------- avoidfilecollision -----------------------------
 // function: avoidfilecollision()
-// input: data string (optional), force execution [true,false]
+// input: data string [string] (optional), force execution [true,false]
 // output: true / false on error
 
 // description:
@@ -3634,7 +3634,7 @@ function avoidfilecollision ($data="tempdata", $force=false)
 
 // -------------------------------------- substr_in_array -------------------------------------------
 // function: substr_in_array()
-// input: search-string, array
+// input: search-string [string], array [array]
 // output: array with found values / false
 
 // description:
@@ -3662,7 +3662,7 @@ function substr_in_array ($search, $array)
 
 // -------------------------------------- downloadobject -------------------------------------------
 // function: downloadobject()
-// input: location, object name, content container, language (optional), user name (optional)
+// input: location [string], object name [string], content container [string], language [string] (optional), user name [string] (optional)
 // output: stream of file content / false on error
 
 // description:
@@ -3724,7 +3724,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
 
 // -------------------------------------- downloadfile -------------------------------------------
 // function: downloadfile()
-// input: path to file [string], file name to show for download via http, force file wrapper or download or no file headers for WebDAV [download,wrapper,noheader], user name (optional)
+// input: path to file [string], file name to show for download via http [string], force file wrapper or download or no file headers for WebDAV [download,wrapper,noheader], user name [string] (optional)
 // output: stream of file content / false on error
 
 // description:
@@ -3951,7 +3951,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
 
 // ----------------------------------------- loadcontainer ---------------------------------------------
 // function: loadcontainer()
-// input: container file name or container id (working container will be loaded by default), optional container type [published, work, version], user name
+// input: container file name or container id (working container will be loaded by default) [string], optional container type [published,work,version], user name [string]
 // output: XML content of container / false on error
 
 // description:
@@ -4086,7 +4086,7 @@ function loadcontainer ($container, $type="work", $user)
 
 // ----------------------------------------- savecontainer ---------------------------------------------
 // function: savecontainer()
-// input: container file name or container id (working container will be loaded by default), optional container type [published,work,version], container content, user, 
+// input: container file name or container id (working container will be loaded by default) [string], container type [published,work,version] (optional), container content [string], user name [string], 
 //          save container initally [true,false] (optional)
 // output: true / false on error
 // requires: config.inc.php to be loaded before
@@ -4561,7 +4561,7 @@ function checkworkflow ($site, $location, $page, $cat="", $contentfile="", $cont
 
 // ----------------------------------------- inherit_db_load ---------------------------------------------
 // function: inherit_db_load()
-// input: nothing
+// input: %
 // output: inheritance database [2 dim. array]/false
 // requires: hypercms_api.inc.php, config.inc.php
 
@@ -4625,7 +4625,7 @@ function inherit_db_load ($user)
 
 // ----------------------------------------- inherit_db_read ---------------------------------------------
 // function: inherit_db_read()
-// input: nothing
+// input: %
 // output: inheritance database [2 dim. array]/false
 // requires: hypercms_api.inc.php, config.inc.php
 
@@ -4698,7 +4698,7 @@ function inherit_db_close ($user)
 
 // ---------------------------------------- inherit_db_save --------------------------------------------
 // function: inherit_db_save()
-// input: inherit database array 
+// input: inherit database [array]
 // output: true/false
 // requires: hypercms_api.inc.php, config.inc.php
 
@@ -4792,7 +4792,7 @@ function inherit_db_getchild ($inherit_db, $parent)
 
 // ---------------------------------------- inherit_db_setparent --------------------------------------------
 // function: inherit_db_setparent()
-// input: inherit database [2 dim. array], child [string], parents [Array], 
+// input: inherit database [2 dim. array], child [string], parents [array]
 // output: inherit database [2 dim. array]
 
 // description:
@@ -4823,7 +4823,7 @@ function inherit_db_setparent ($inherit_db, $child, $parent_array)
 
 // ---------------------------------------- inherit_db_insertparent --------------------------------------------
 // function: inherit_db_insertparent()
-// input: inherit database [2 dim. array], parent [string], childs [Array], 
+// input: inherit database [2 dim. array], parent [string], childs [array]
 // output: inherit database [2 dim. array]
   
 function inherit_db_insertparent ($inherit_db, $parent, $child_array)
@@ -4877,7 +4877,7 @@ function inherit_db_deleteparent ($inherit_db, $parent)
 
 // ------------------------- createinstance -----------------------------
 // function: createinstance()
-// input: instance name, settings array, user name  
+// input: instance name [string], settings array [array], user name [string]
 // output: result array
 
 // description:
@@ -5162,7 +5162,7 @@ function createinstance ($instance_name, $settings, $user="sys")
 
 // ------------------------- editinstance -----------------------------
 // function: editinstance()
-// input: instance name, content as string, user name  
+// input: instance name [string], content [string], user name [string]
 // output: result array
 
 // description:
@@ -5232,7 +5232,7 @@ function editinstance ($instance_name, $content, $user="sys")
 
 // ------------------------- deleteinstance -----------------------------
 // function: deleteinstance()
-// input: instance name, settings array, user name  
+// input: instance name [string], settings [array], user name [string]
 // output: result array
 
 // description:
@@ -5381,7 +5381,7 @@ function deleteinstance ($instance_name, $user="sys")
 
 // ------------------------- createpublication -----------------------------
 // function: createpublication()
-// input: publication name, user name  
+// input: publication name [string], user name [string]
 // output: result array
 
 // description:
@@ -5689,20 +5689,20 @@ function createpublication ($site_name, $user="sys")
                 if ($usergroupnode != false)
                 {
                   $userpermission = getcontent ($usergroupnode[0], "<permission>");
-                              
+
                   $permission_str[$site_name]['Administrator'] = $userpermission[0];
                   $globalpermission_new = globalpermission ($site_name, $permission_str);
                   $localpermission_new = localpermission ($site_name, $permission_str);
                   
                   if ($globalpermission_new != false)
                   {
-                    if (is_array ($_SESSION['hcms_globalpermission'])) $_SESSION['hcms_globalpermission'] = array_merge ($_SESSION['hcms_globalpermission'], $globalpermission_new);
+                    if (!empty ($_SESSION['hcms_globalpermission']) && is_array ($_SESSION['hcms_globalpermission'])) $_SESSION['hcms_globalpermission'] = array_merge ($_SESSION['hcms_globalpermission'], $globalpermission_new);
                     else $_SESSION['hcms_globalpermission'] = $globalpermission_new;
                   } 
                   
                   if ($localpermission_new != false)
                   {
-                    if (is_array ($_SESSION['hcms_localpermission'])) $_SESSION['hcms_localpermission'] = array_merge ($_SESSION['hcms_localpermission'], $localpermission_new);
+                    if (!empty ($_SESSION['hcms_localpermission']) && is_array ($_SESSION['hcms_localpermission'])) $_SESSION['hcms_localpermission'] = array_merge ($_SESSION['hcms_localpermission'], $localpermission_new);
                     else $_SESSION['hcms_localpermission'] = $localpermission_new;
                   }
                 }
@@ -5773,7 +5773,7 @@ function createpublication ($site_name, $user="sys")
 
 // ------------------------- editpublication -----------------------------
 // function: editpublication()
-// input: publication name, publication settings array, user name  
+// input: publication name [string], publication settings [array], user name [string]
 // output: result array
 
 // description:
@@ -6325,7 +6325,7 @@ allow_ip = ".$allow_ip_new;
 
 // ------------------------- editpublicationsetting -----------------------------
 // function: editpublicationsetting()
-// input: publication name, publication settings name (see publication config file for details), value, user name  
+// input: publication name [string], publication settings name (see publication config file for details) [string], value [string], user name [string]  
 // output: true/false
 
 // description:
@@ -6411,7 +6411,7 @@ function editpublicationsetting ($site_name, $setting, $value, $user="sys")
 
 // ------------------------- deletepublication -----------------------------
 // function: deletepublication()
-// input: publication name, user name  
+// input: publication name [string], user name [string]
 // output: result array
 
 // description:
@@ -6699,7 +6699,7 @@ function deletepublication ($site_name, $user="sys")
 
 // ----------------------------------------- createpersonalization ---------------------------------------------
 // function: createpersonalization()
-// input: publication name, personalization profile or tracking name, category [profile,tracking]
+// input: publication name [string], personalization profile or tracking name [string], category [profile,tracking]
 // output: result array
 // requires: config.inc.php to be loaded before
 
@@ -6772,7 +6772,7 @@ function createpersonalization ($site, $pers_name, $cat)
 
 // ----------------------------------------- deletepersonalization ---------------------------------------------
 // function: deletepersonalization()
-// input: publication name, personalization profile or tracking name, category [profile,tracking]
+// input: publication name [string], personalization profile or tracking name [string], category [profile,tracking]
 // output: result array
 // requires: config.inc.php to be loaded before
 
@@ -6863,7 +6863,7 @@ function deletepersonalization ($site, $pers_name, $cat)
 
 // ----------------------------------------- createtemplate ---------------------------------------------
 // function: createtemplate()
-// input: publication name, template name, category [page,comp,meta,inc]
+// input: publication name [string], template name [string], category [page,comp,meta,inc]
 // output: result array
 // requires: config.inc.php to be loaded before
 
@@ -6954,7 +6954,7 @@ function createtemplate ($site, $template, $cat)
 
 // ----------------------------------------- loadtemplate ---------------------------------------------
 // function: loadtemplate()
-// input: publication name, template file name
+// input: publication name [string], template file name [string]
 // output: array (template content [XML string], publication, result[true/false]) / false on error
 // requires: config.inc.php to be loaded before
 
@@ -7020,7 +7020,7 @@ function loadtemplate ($site, $template)
 
 // ----------------------------------------- edittemplate ---------------------------------------------
 // function: edittemplate()
-// input: publication name, template file name, category [page,comp,meta,inc], template content (optional), template extension (optional), temlate application (optional)
+// input: publication name [string], template file name [string], category [page,comp,meta,inc], template content [string] (optional), template extension [string] (optional), temlate application [string] (optional)
 // output: result array
 // requires: config.inc.php to be loaded before
 
@@ -7111,7 +7111,7 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
 
 // ----------------------------------------- deletetemplate ---------------------------------------------
 // function: deletetemplate()
-// input: publication name, template file name, category [page,comp,meta,inc]
+// input: publication name [string], template file name [string], category [page,comp,meta,inc]
 // output: result array
 // requires: config.inc.php to be loaded before
 
@@ -7196,7 +7196,7 @@ function deletetemplate ($site, $template, $cat)
 
 // ---------------------------------------- createuser --------------------------------------------
 // function: createuser()
-// input: publication name (optional), login name, password, confirmed password, user name
+// input: publication name [string] (optional), user login name [string], password [string], confirmed password [string], user name [string]
 // output: array
 
 // description:
@@ -7393,7 +7393,7 @@ function createuser ($site, $login, $password, $confirm_password, $user="sys")
 
 // ------------------------------------------- edituser --------------------------------------------
 // function: edituser()
-// input: publication name, login name, new login name, password, confirmed password, super administrator [0,1], real name, language setting [de,en], 
+// input: publication name [string], user login name [string], new login name [string], password [string], confirmed password [string], super administrator [0,1], real name [string], language setting [en,de,...], 
 //        theme name (optional), email, phone, usergroup string [group1|group2], member of site(s) string [site1|site2]], user name
 // output: array
 
@@ -7722,7 +7722,7 @@ function edituser ($site, $login, $old_password="", $password="", $confirm_passw
 
 // ---------------------------------------- deleteuser --------------------------------------------
 // function: deleteuser()
-// input: publication where the user should be removed [*Null*] for all publications, login name, user name
+// input: publication where the user should be removed [*Null*] for all publications [string], user login name [string], user name [string]
 // output: array
 
 // description:
@@ -7848,7 +7848,7 @@ function deleteuser ($site, $login, $user="sys")
 
 // ---------------------------------------- creategroup --------------------------------------------
 // function: creategroup()
-// input: publication anem, group name, user name
+// input: publication name [string], group name [string], user name [string]
 // output: array
 
 // description:
@@ -7970,7 +7970,7 @@ function creategroup ($site, $group_name, $user="sys")
 
 // ---------------------------------------- editgroup --------------------------------------------
 // function: editgroup()
-// input: publication name, group name, page folder access array, component folder access array, permissions array, user name
+// input: publication name [string], group name [string], page folder access array [array], component folder access array [array], permissions [array], user name [string]
 // output: array
 
 // description:
@@ -8225,7 +8225,7 @@ function editgroup ($site, $group_name, $pageaccess, $compaccess, $permission, $
 
 // ---------------------------------------- deletegroup --------------------------------------------
 // function: deletegroup()
-// input: publication name, group name, user name
+// input: publication name [string], group name [string], user name [string]
 // output: array
 
 // description:
@@ -8362,7 +8362,7 @@ function deletegroup ($site, $group_name, $user)
 
 // ---------------------------------------- renamegroupfolder --------------------------------------------
 // function: renamegroupfolder()
-// input: publication name, cat[page,comp], old location, new location, user
+// input: publication name [string], category [page,comp], old location [string], new location [string], user name [string]
 // output: true / false on error
 
 // description:
@@ -8406,7 +8406,7 @@ function renamegroupfolder ($site, $cat, $folder_curr, $folder_new, $user)
 
 // ---------------------------------------- deletegroupfolder --------------------------------------------
 // function: deletegroupfolder()
-// input: publication name, cat[page,comp], path to the folder, user
+// input: publication name [string], category [page,comp], path to the folder [string], user name [string]
 // output: true / false on error
 
 // description:
@@ -8454,7 +8454,7 @@ function deletegroupfolder ($site, $cat, $folderpath, $user)
 
 // ---------------------------------------- renameworkflowfolder --------------------------------------------
 // function: renameworkflowfolder()
-// input: publication name, cat[page,comp], old location, new location, user
+// input: publication name [string], category [page,comp], old location [string], new location [string], user name [string]
 // output: true / false on error
 
 // description:
@@ -8495,7 +8495,7 @@ function renameworkflowfolder ($site, $cat, $folder_curr, $folder_new, $user)
 
 // ---------------------------------------- deleteworkflowfolder --------------------------------------------
 // function: deleteworkflowfolder()
-// input: publication name, cat[page,comp], location of folder, user
+// input: publication name [string], category [page,comp], location of folder [string], user name [string]
 // output: true / false on error
 
 // description:
@@ -8549,7 +8549,7 @@ function deleteworkflowfolder ($site, $cat, $folderpath, $user)
 
 // ------------------------- createmediacat -----------------------------
 // function: createmediacat()
-// input: publication, media category name  
+// input: publication name [string], media category name [string]
 // output: Array with onload JS-code and message
 
 // description:
@@ -8652,7 +8652,7 @@ function createmediacat ($site, $mediacat_name)
 
 // ------------------------- renamemediacat -----------------------------
 // function: renamemediacat()
-// input: publication, old media category name, new media category name
+// input: publication name [string], old media category name [string], new media category name [string]
 // output: Array with onload JS-code and message
 
 // description:
@@ -8747,7 +8747,7 @@ function renamemediacat ($site, $mediacat_name_curr, $mediacat_name)
 
 // ------------------------- deletemediacat -----------------------------
 // function: deletemediacat()
-// input: publication, media category name  
+// input: publication name [string], media category name [string]
 // output: Array with onload JS-code and message
 
 // description:
@@ -8841,7 +8841,7 @@ function deletemediacat ($site, $mediacat_name)
 
 // ------------------------- uploadtomediacat -----------------------------
 // function: uploadtomediacat()
-// input: publication, media category name, PHP FILES array
+// input: publication name [string], media category name [string], PHP FILES array [array]
 // output: Array with onload JS-code and message
 
 // description:
@@ -8963,7 +8963,7 @@ function uploadtomediacat ($site, $mediacat_name, $global_files)
 
 // ------------------------- deletefrommediacat -----------------------------
 // function: deletefrommediacat()
-// input: publication, media file name
+// input: publication name [string], media file name [string]
 // output: Array with onload JS-code and message
 
 // description:
@@ -9064,7 +9064,7 @@ function deletefrommediacat ($site, $mediafile)
 
 // ---------------------------------------- createfolder --------------------------------------------
 // function: createfolder()
-// input: publication name, location, folder name, user name
+// input: publication name [string], location [string], folder name [string], user name [string]
 // output: result array
 
 // description:
@@ -9214,7 +9214,7 @@ function createfolder ($site, $location, $foldernew, $user)
 
 // ---------------------------------------- createfolders --------------------------------------------
 // function: createfolders()
-// input: publication name, location, folder name, user name
+// input: publication name [string], location [string], folder name [string], user name [string]
 // output: array
 
 // description:
@@ -9256,7 +9256,7 @@ function createfolders ($site, $location, $foldernew, $user)
 
 // ---------------------------------------- collectfolders --------------------------------------------
 // function: collectfolders ()
-// input: publication name, location, folder name
+// input: publication name [string], location [string], folder name [string]
 // output: result array / false
 
 // description:
@@ -9299,7 +9299,7 @@ function collectfolders ($site, $location, $folder)
 
 // ---------------------------------------- copyfolders --------------------------------------------
 // function: copyfolders ()
-// input: publication name, location (source), new location (destination), folder name, user name
+// input: publication name [string], location (source) [string], new location (destination) [string], folder name [string], user name [string]
 // output: result array equal to createfolder
 
 // description:
@@ -9402,7 +9402,7 @@ function copyfolders ($site, $location, $locationnew, $folder, $user)
 
 // ---------------------------------------- deletefolder --------------------------------------------
 // function: deletefolder()
-// input: publication name, location, folder name, user name
+// input: publication name [string], location [string], folder name [string], user name [string]
 // output: array
 
 // description:
@@ -9530,7 +9530,7 @@ function deletefolder ($site, $location, $folder, $user)
 
 // ---------------------------------------- renamefolder --------------------------------------------
 // function: renamefolder()
-// input: publication name, location, folder name, new folder name, user name
+// input: publication name [string], location [string], folder name [string], new folder name [string], user name [string]
 // output: array
 
 // description:
@@ -9804,7 +9804,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
 
 // ---------------------------------------- correctcontainername --------------------------------------------
 // function: correctcontainername()
-// input: container ID
+// input: container ID [string]
 // output: corrected name / false on error
 
 // description:
@@ -9831,7 +9831,7 @@ function correctcontainername ($container_id)
 
 // ---------------------------------------- createobject --------------------------------------------
 // function: createobject()
-// input: publication name, location, object, template name
+// input: publication name [string], location [string], object name [string], template name [string]
 // output: result array
 
 // description:
@@ -10308,18 +10308,18 @@ function createobject ($site, $location, $page, $template, $user)
 
 // ---------------------------------------- uploadfile --------------------------------------------
 // function: uploadfile()
-// input: publication name, destination location, category [page/comp], uploaded file (array as defined by PHP autoglobale $_FILES), unzip [1/0], object name (only for media file update of existing object), 
-//        create only a new thumbnail [1/0], imageresize [percentage, null], imagepercentage (%-value as integer), user name, check for duplicates [true,false], versioning of file [true,false]
+// input: publication name [string], destination location [string], category [page,comp], uploaded file (array as defined by PHP autoglobale $_FILES) [array], unzip/zip [%,unzip,zip], object name (only for media file update of existing object) [string], 
+//        create only a new thumbnail [1,0] (optional), imageresize [percentage,null] (optional), imagepercentage [%-value as integer]  (optional), user name [string] (optional), check for duplicates [true,false] (optional), versioning of file [true,false] (optional), name of zip file [string] (optional), number of files to be compressed [integer] (optional)
 // output: result array
 // requires: config.inc.php, $pageaccess, $compaccess, $hiddenfolder, $localpermission
  
 // description:
-// This function manages all file uploads, like unzip files, create media objects and resize images.
+// This function manages all file uploads, like unzip files, zip a collection of files, create media objects and resize images.
 // The container name will be extracted from the media file name for updating an existing multimedia file.
 
-function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, $createthumbnail=0, $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $versioning=false)
+function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="", $createthumbnail=0, $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $versioning=false, $zipfilename="", $zipfilecount=0)
 {
-  global $mgmt_config, $mgmt_uncompress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_parser, $eventsystem,
+  global $mgmt_config, $mgmt_uncompress, $mgmt_compress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_parser, $eventsystem,
          $pageaccess, $compaccess, $hiddenfolder, $localpermission, $hcms_lang, $lang;
 
   if (session_id() != "") $session_id = session_id();
@@ -10618,7 +10618,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
     }
     
     // check if file can be uncompressed
-    if ($unzip == 1 && is_array ($mgmt_uncompress))
+    if ($unzip == "unzip" && is_array ($mgmt_uncompress))
     {
       $check_unzip = false;
 
@@ -10651,6 +10651,111 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
       elseif (is_array ($result_unzip))
       {
         $result['object'] = implode ("|", $result_unzip);
+      }
+    }
+    // collect multimedia files for compression
+    elseif ($unzip == "zip" && is_array ($mgmt_compress) && sizeof ($mgmt_compress) > 0)
+    {
+      // temporary directory for collecting files
+      $temp_dir = $mgmt_config['abs_path_temp']."zip_".$session_id."/";
+
+      // create temporary directory for extraction
+      if (!is_dir ($temp_dir)) $test = @mkdir ($temp_dir, $mgmt_config['fspermission']);
+      else $test = true;
+
+      // copy files to temporary directory
+      if ($test == true)
+      {
+        if ($is_remote_file)
+        {
+          $result_upload = @rename ($global_files['Filedata']['tmp_name'], $temp_dir.$global_files['Filedata']['name']);
+          
+          if (!$result_upload)
+          {
+            $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
+          }
+        }
+        else
+        {
+          $result_upload = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $temp_dir.$global_files['Filedata']['name']);
+          
+          if (!$result_upload)
+          {
+            $show = "<span class=hcmsHeadline>".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
+          }
+        }
+      }
+
+      // collect multimedia files for compression
+      if ($zipfilecount > 0)
+      {
+        // temporary directory for collecting files
+        $temp_dir = $mgmt_config['abs_path_temp']."zip_".$session_id."/";
+        
+        if (is_dir ($temp_dir) && !is_emptyfolder ($temp_dir))
+        {
+          // count files (excluding . and ..)
+          $filescount = count (scandir ($temp_dir)) - 2;
+
+          // ZIP files
+          if ($filescount >= $zipfilecount)
+          {
+            // ZIP file name
+            if ($zipfilename != "") $zipfilename = createfilename ($zipfilename).".zip";
+            else $zipfilename = getobject ($location).".zip";
+          
+            // Windows
+            if ($mgmt_config['os_cms'] == "WIN")
+            { 
+              $cmd = "cd \"".shellcmd_encode ($location)."\" & ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($temp_dir.$zipfilename)."\" ".shellcmd_encode ($temp_dir);  
+              $cmd = str_replace ("/", "\\", $cmd);
+            }
+            // UNIX
+            else $cmd = "cd \"".shellcmd_encode ($temp_dir)."\" ; ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($temp_dir.$zipfilename)."\" *";
+            
+            // compress files to ZIP format
+            @exec ($cmd, $error_array);
+            
+            // errors during compressions of files
+            if (is_array ($error_array) && substr_count (implode ("<br />", $error_array), "error") > 0)
+            {
+              $error_message = implode ("<br />", $error_array);
+              $error_message = str_replace ($mgmt_config['abs_path_temp'], "/", $error_message);
+          
+              $errcode = "10645";
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|zipfiles failed for ".$filename.": ".$error_message;
+              
+              // save log
+              savelog (@$error);                
+            }
+            // create multimedia object
+            else
+            {
+              $result_createobject = createmediaobject ($site, $location, $zipfilename, $temp_dir.$zipfilename, $user);
+    
+              // on success, add location
+              if ($result_createobject['result'] == true)
+              {
+                $show = $hcms_lang['the-object-was-created-successfully'][$lang];
+                $result_createobject['object'] = $location_esc.$result_createobject['object'];
+              }
+              // on error
+              else
+              {
+                $errcode = 20509;
+                $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$zipfilename."' could not be created by createmediaobject (".strip_tags ($result_createobject['message']).")";
+                  
+                // write log
+                savelog (@$error);
+      
+                $show = $result_createobject['message'];
+              }
+            }
+          
+            // remove temp files
+            deletefile ($mgmt_config['abs_path_temp'], "zip_".$session_id, 1);
+          }
+        }
       }
     }
     // standard multimedia file upload in pages
@@ -10692,7 +10797,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
         else
         {
           $errcode = 20511;
-          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$global_files['Filedata']['name']."' could not be created by createmediaobject (".$result_createobject['message'].")";
+          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile() -> the file '".$global_files['Filedata']['name']."' could not be created by createmediaobject (".strip_tags ($result_createobject['message']).")";
             
           // write log
           savelog (@$error);
@@ -10993,7 +11098,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip=0, 
 
 // ---------------------------------------- createmediaobject --------------------------------------------
 // function: createmediaobject()
-// input: publication name, destination location, file name, path to source multimedia file (uploaded file in temp directory), user name, resize original image (100%) by percentage (optional)
+// input: publication name [string], destination location [string], file name [string], path to source multimedia file (uploaded file in temp directory) [string], user name [string], resize original image (100%) by percentage [integer] (optional)
 // output: result array
 
 // description:
@@ -11178,7 +11283,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 
 // ---------------------------------------- createmediaobjects --------------------------------------------
 // function: createmediaobjects()
-// input: publication name, source location, destination location, user name
+// input: publication name [string], source location [string], destination location [string], user name [string]
 // output: result array with all objects created / false
 
 // description:
@@ -11291,7 +11396,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 
 // ---------------------- editmediaobject -----------------------------
 // function: editmediaobject()
-// input: publication, locationr, object name, format (file extension w/o dot) (optional), 
+// input: publication name [string], location [string], object name [string], format (file extension w/o dot) [string] (optional), 
 //        type of image/video/audio file [thumbnail,origthumb(thumbail made from original video/audio),original,any other string present in $mgmt_imageoptions] (optional)
 // output: result array / false on error (saves original or thumbnail media file of an object, for thumbnail only jpeg format is supported as output), user name
 
@@ -11432,8 +11537,8 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
 
 // ---------------------------------------- manipulateobject --------------------------------------------
 // function: manipulateobject()
-// input: publication name, location, object name, new object name (exkl. extension except for action "file_rename"), user, 
-//        action [page_delete, page_rename, file_rename, page_paste, page_unpublish], clipboard items as array (optional)
+// input: publication name [string], location [string], object name [string], new object name (exkl. extension except for action "file_rename") [string], user name [string], 
+//        action [page_delete, page_rename, file_rename, page_paste, page_unpublish], clipboard items [array] (optional)
 // output: array
 
 // description:
@@ -12953,7 +13058,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
 // ---------------------------------------- deletemarkobject --------------------------------------------
 // function: deletemarkobject()
-// input: publication name, location, object, user name
+// input: publication name [string], location [string], object name [string], user name [string]
 // output: result array
 
 // description:
@@ -13029,7 +13134,7 @@ function deletemarkobject ($site, $location, $page, $user)
 
 // ---------------------------------------- deleteunmarkobject --------------------------------------------
 // function: deleteunmarkobject()
-// input: publication name, location, object, user name
+// input: publication name [string], location [string], object name [string], user name [string]
 // output: result array
 
 // description:
@@ -13091,7 +13196,7 @@ function deleteunmarkobject ($site, $location, $page, $user)
 
 // ---------------------------------------- deleteobject --------------------------------------------
 // function: deleteobject()
-// input: publication name, location, object, user name
+// input: publication name [string], location [string], object name [string], user name [string]
 // output: result array
 
 // description:
@@ -13130,7 +13235,7 @@ function deleteobject ($site, $location, $page, $user)
 
 // ---------------------------------------- renameobject --------------------------------------------
 // function: renameobject()
-// input: publication name, location, object, new object name exkl. file extension, user
+// input: publication name [string], location [string], object name [string], new object name exkl. file extension [string], user name [string]
 // output: array
 
 // description:
@@ -13171,7 +13276,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
 
 // ---------------------------------------- renamefile --------------------------------------------
 // function: renamefile()
-// input: publication name, location, object, new object including file extension, user name
+// input: publication name [string], location [string], object name [string], new object including file extension [string], user name [string]
 // output: array
 
 // description:
@@ -13211,7 +13316,7 @@ function renamefile ($site, $location, $page, $pagenew, $user)
 
 // ---------------------------------------- cutobject --------------------------------------------
 // function: cutobject()
-// input: publication name[string], location[string], object[string], user[string], 
+// input: publication name [string], location [string], object name [string], user name [string], 
 //        add to existing clipboard entries [true,false] (optional), save clipboard in session [true,false] (optional)
 // output: array
 
@@ -13308,7 +13413,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
 
 // ---------------------------------------- copyobject --------------------------------------------
 // function: copyobject()
-// input: publication name[string], location[string], object[string], user[string], 
+// input: publication name [string], location [string], object name [string], user name [string], 
 //        add to existing clipboard entries [true,false] (optional), save clipboard in session [true,false] (optional)
 // output: array
 
@@ -13410,7 +13515,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
 
 // ---------------------------------------- copyconnectedobject --------------------------------------------
 // function: copyconnectedobject()
-// input: publication name[string], location[string], object[string], user[string], 
+// input: publication name [string], location [string], object name [string], user name [string], 
 //        add to existing clipboard entries [true,false] (optional), save clipboard in session [true,false] (optional)
 // output: array
 
@@ -13512,7 +13617,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
 
 // ---------------------------------------- pasteobject --------------------------------------------
 // function: pasteobject()
-// input: publication name[string], location[string], user[string], clipboard entries as array (optional)
+// input: publication name [string], location [string], user name [string], clipboard entries [array] (optional)
 // output: array
 
 // description:
@@ -13549,7 +13654,7 @@ function pasteobject ($site, $location, $user, $clipboard_array=array())
 
 // ---------------------------------------- lockobject --------------------------------------------
 // function: lockobject()
-// input: publication name, location, object, user
+// input: publication name [string], location [string], object name [string], user name [string]
 // output: array
 
 // description:
@@ -13683,7 +13788,7 @@ function lockobject ($site, $location, $page, $user)
 
 // ---------------------------------------- unlockobject --------------------------------------------
 // function: unlockobject()
-// input: publication name, location, object, user
+// input: publication name [string], location [string], object name [string], user name [string]
 // output: array
 
 // description:
@@ -13811,7 +13916,7 @@ if (parent.frames['mainFrame']) parent.frames['mainFrame'].location.reload();";
 
 // ---------------------------------------- publishobject --------------------------------------------
 // function: publishobject()
-// input: publication name, location, object (full name incl. extension)
+// input: publication name [string], location [string], object name (full name incl. extension) [string]
 // output: array
 
 // description:
@@ -14378,7 +14483,7 @@ function publishobject ($site, $location, $page, $user)
 
 // ------------------------------------- publishlinkedobject -----------------------------------------
 // function: publishlinkedobject()
-// input: publication name, location, object, user name
+// input: publication name [string], location [string], object name [string], user name [string]
 // output: array
 
 // description:
@@ -14464,7 +14569,7 @@ function publishlinkedobject ($site, $location, $page, $user)
 
 // ---------------------------------------- unpublishobject --------------------------------------------
 // function: unpublishobject()
-// input: publication name, location, object
+// input: publication name [string], location [string], object name [string], user name [string]
 // output: array
 
 // description:
@@ -14681,7 +14786,7 @@ function unpublishobject ($site, $location, $page, $user)
 
 // ------------------------------------------- processqueueobjects -------------------------------------------
 // function: processobjects()
-// input: action [publish,unpublish,delete], publication name, location, object name, only published objects [pub,all], user name
+// input: action [publish,unpublish,delete], publication name [string], location [string], object name [string], only published objects [pub,all], user name [string]
 // output: true/false on error
 
 // description:
@@ -14786,7 +14891,7 @@ function processobjects ($action, $site, $location, $file, $published_only="0", 
 
 // ------------------------------------------ collectobjects --------------------------------------------
 // function: collectobjects()
-// input: root ID, publication name, category [page,comp], location, collect only published objects [0,1] 
+// input: root ID [string], publication name [string], category [page,comp], location [string], collect only published objects [0,1] 
 // output: result array / false
 
 // description:
@@ -14852,9 +14957,9 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only="0")
   
 // ------------------------------------------ manipulateallobjects --------------------------------------------
 // function: manipulateallobjects()
-// input: action [publish, unpublish, deletemark, deleteunmark/restore, emptypin, delete, paste], objectpath (array),  
-//        method (only for paste action) [copy, linkcopy, cut], force [start, stop, continue], 
-//        collect only published objects [0,1], user name, temporary collection file name (optional), max. number of items processed per second (optional)
+// input: action [publish, unpublish, deletemark, deleteunmark/restore, emptypin, delete, paste], objectpath [array],  
+//        method (only for paste action) [copy,linkcopy,cut], force [start,stop,continue], 
+//        collect only published objects [0,1], user name [string], temporary collection file name [string] (optional), max. number of items processed per second [integer] (optional)
 // output: true/false
 
 // description:
@@ -15399,7 +15504,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
 
 // ---------------------- remoteclient -----------------------------
 // function: remoteclient()
-// input: action [save, copy, delete, rename, get], root [abs_path_link, abs_path_media, abs_path_comp, abs_path_page, abs_path_rep], publication, location, locationnew, page, pagenew
+// input: action [save,copy,delete,rename,get], root [abs_path_link,abs_path_media,abs_path_comp,abs_path_page,abs_path_rep], publication name [string], location [string], new location [string], object name [string], new object name [string]
 // output: http answer [string] or false
 
 // description:
@@ -15499,7 +15604,7 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
 
 // ---------------------- HTTP_Post -----------------------------
 // function: HTTP_Post()
-// input: URL[string], $data[array] (raw data), content-type [application/x-www-form-urlencoded, multipart/form-data], character set [string]
+// input: URL [string], data (raw data) [array], content-type [application/x-www-form-urlencoded,multipart/form-data], character set [string]
 // output: http response [string] / false on error
 
 // description:
@@ -15626,7 +15731,7 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
 
 // ---------------------- HTTP_Get -----------------------------
 // function: HTTP_Get()
-// input: URL[string], $data[array] (raw data) (optional), content-type[string excl. charset] (optional), character set[string] (optional)
+// input: URL [string],  data (raw data) [array] (optional), content-type [string excl. charset] (optional), character set [string] (optional)
 // output: http response [string] / false on error
 
 // description:
@@ -15692,7 +15797,7 @@ function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencod
 
 // ---------------------- HTTP_Proxy -----------------------------
 // function: HTTP_Proxy()
-// input: URL[string], enable post of files [true,false] (optional)
+// input: URL [string], enable post of files [true,false] (optional)
 // output: http response [string] / false on error
 // requires: PHP CURL
 
@@ -15876,7 +15981,7 @@ function loadbalancer ($type)
 
 // --------------------------------------- savelog -------------------------------------------
 // function: savelog()
-// input: error messages array, name of log file without extension (optional)
+// input: error messages [array], name of log file without extension [string] (optional)
 // output: true / false on error
 
 // description:
@@ -15916,7 +16021,7 @@ function savelog ($error, $logfile="event")
 
 // --------------------------------------- savelog -------------------------------------------
 // function: savelog()
-// input: name of log file without extension (optional), return_type [string,array] (optional)
+// input: name of log file without extension [string] (optional), return type [string,array] (optional)
 // output: true / false on error
 
 // description: 
@@ -15945,7 +16050,7 @@ function loadlog ($logfile="event", $return_type="array")
 
 // --------------------------------------- deletelog -------------------------------------------
 // function: deletelog()
-// input: logname (optional)
+// input: log name [string] (optional)
 // output: result array
 
 // description:
@@ -15993,7 +16098,7 @@ function deletelog ($logname="")
 
 // ---------------------- debuglog -----------------------------
 // function: debuglog()
-// input: code to write to debug file
+// input: code to write to debug file [string]
 // output: true / false
 
 // description:
@@ -16018,7 +16123,7 @@ function debuglog ($code)
 
 // --------------------------------------- notifyusers -------------------------------------------
 // function: notifyusers()
-// input: publication name, location, object name, event name [oncreate,onedit,onmove,ondelete], user name
+// input: publication name [string], location [string], object name [string], event name [oncreate,onedit,onmove,ondelete], user name [string]
 // output: true / false on error
 
 // description:
@@ -16174,7 +16279,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
 
 // --------------------------------------- sendlicensenotification -------------------------------------------
 // function: sendlicensenotification()
-// input: publication name, category [page,comp], folder path, text ID for text field, search from date (YYYY-MM-DD), search till date (YYYY-MM-DD), user name string or array (optional), 
+// input: publication name [string], category [page,comp], folder path [string], text ID for text field [string], search from date [YYYY-MM-DD], search till date [YYYY-MM-DD], user name [string or array] (optional), 
 //        date format (optional), 
 // output: true / false on error
 
@@ -16417,7 +16522,7 @@ function licensenotification ()
 
 // --------------------------------------- html_diff -------------------------------------------
 // function: html_diff ()
-// input: old text, new text, maximum words to compare
+// input: old text [string], new text [string], maximum words to compare [integer]
 // output: result text showing deleted and inserted words/differences / false on error
 
 // description:
@@ -16497,7 +16602,7 @@ function html_diff ($old, $new)
 
 // --------------------------------------- createfavorite -------------------------------------------
 // function: createfavorite ()
-// input: publication name (optional), location (optional), object name (optional), identifier (object ID, object hash) (optional), user name
+// input: publication name [string] (optional), location [string] (optional), object name [string] (optional), identifier (object ID, object hash) [string] (optional), user name [string]
 // output: true / false
 
 function createfavorite ($site="", $location="", $page="", $id="", $user)
@@ -16554,7 +16659,7 @@ function createfavorite ($site="", $location="", $page="", $id="", $user)
 
 // --------------------------------------- deletefavorite -------------------------------------------
 // function: deletefavorite ()
-// input: publication name (optional), location (optional), object name (optional), identifier (object ID, object hash) (optional), user name
+// input: publication name [string] (optional), location [string] (optional), object name [string] (optional), identifier (object ID, object hash) [string] (optional), user name [string]
 // output: true / false
 
 function deletefavorite ($site="", $location="", $page="", $id="", $user)
@@ -16610,7 +16715,7 @@ function deletefavorite ($site="", $location="", $page="", $id="", $user)
 // ------------------------------------- rewrite_targetURI ------------------------------------------
 
 // function: rewrite_targetURI ()
-// input: publication name, text ID array (text-ID as key and URL paramaters as value), requested URI as string, exclude path as array (optional), 
+// input: publication name [string], text ID array (text-ID as key and URL paramaters as value) [string], requested URI [string], exclude path [array] (optional), 
 //          rewrite type [none,forward,include] (optional)
 // output: target URI / false on error
 
@@ -16631,6 +16736,9 @@ function rewrite_targetURI ($site, $text_id, $uri, $exclude_dir_esc="", $rewrite
       {
         $search_textnode = array();
         $search_textnode[$id] = $uri;
+        
+        // disable search history log
+        $mgmt_config['search_log'] = false;
         
         // search for objectpath for the provided permanenent link (only first valid result will be used, disable search log)
         $object_array = rdbms_searchcontent ("%page%/".$site."/", $exclude_dir_esc, "", "", "", "", $search_textnode, "", "", "", "", "", "", "", "", 1, false, false);
@@ -16692,7 +16800,7 @@ function rewrite_targetURI ($site, $text_id, $uri, $exclude_dir_esc="", $rewrite
 // ------------------------------------- rewrite_homepage ------------------------------------------
 
 // function: rewrite_homepage ()
-// input: publication name, rewrite type [none,forward] (optional)
+// input: publication name [string], rewrite type [none,forward] (optional)
 // output: target URI / false on error
 
 // description:
@@ -16728,7 +16836,7 @@ function rewrite_homepage ($site, $rewrite_type="forward")
 // ------------------------------------- create_csv ------------------------------------------
 
 // function: create_csv ()
-// input: associative data array, file name (optonal), file path for saving the CSV file (optional), delimiter (optional), enclosure (optional), character set (optional)
+// input: associative data [array], file name [string] (optonal), file path for saving the CSV file [string] (optional), delimiter [string] (optional), enclosure [string] (optional), character set [string] (optional)
 // output: true / false on error
 
 // description:
@@ -16780,7 +16888,7 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
 
 // ---------------------------------------------- sendmessage ----------------------------------------------
 // function: sendmessage()
-// input: from_user name, to_user name, title, message, object ID or object path (optional)
+// input: from user name [string], to user name [string], title [string], message [string], object ID or object path [string] (optional)
 // output: true/false
 // requires: config.inc.php
 

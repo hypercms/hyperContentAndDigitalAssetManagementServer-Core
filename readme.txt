@@ -4,7 +4,7 @@ Copyright (c) by hyper CMS Content Management Solutions GmbH
 You should have received a copy of the License along with hyperCMS.
 
 
-The following technical prerequisites must be fullfilled before installing hyper Content & Digital Asset Managment Server: 
+The following technical prerequisites must be fulfilled before installing the hyper Content & Digital Asset Management Server: 
 
 On server-side:
 - Operating System: Linux, UNIX-Derivates, MS Windows
@@ -34,7 +34,7 @@ Installation:
 
 
 Manuals:
-All hyperCMS manuals can be found in hypercms/help.
+All manuals can be found in hypercms/help.
 
 
 Screencasts:

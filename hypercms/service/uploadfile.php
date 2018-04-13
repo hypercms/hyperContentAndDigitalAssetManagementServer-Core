@@ -18,6 +18,8 @@ require ("../function/hypercms_api.inc.php");
 // input parameters
 $location = getrequest ("location", "locationname");
 $unzip = getrequest ("unzip");
+$zipname = getrequest ("zipname");
+$zipcount = getrequest ("zipcount");
 $media_update = getrequest ("media_update");
 $createthumbnail = getrequest ("createthumbnail");
 $contentfile = getrequest ("contentfile", "objectname");
@@ -80,7 +82,7 @@ if ($token != "" && checktoken ($token, $user))
     $file['Filedata']['tmp_name'] = $mgmt_config['abs_path_temp'].$proxy_file['link'];
     $file['Filedata']['name'] = $proxy_file['name'];
     
-    $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning);
+    $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning, $zipname, $zipcount);
   }
   // from Dropbox
   elseif ($dropbox_file)
@@ -88,7 +90,7 @@ if ($token != "" && checktoken ($token, $user))
     $file['Filedata']['tmp_name'] = $dropbox_file['link'];
     $file['Filedata']['name'] = $dropbox_file['name'];
     
-    $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning);
+    $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning, $zipname, $zipcount);
   }
   // from FTP server
   elseif ($ftp_file)
@@ -96,12 +98,12 @@ if ($token != "" && checktoken ($token, $user))
     $file['Filedata']['tmp_name'] = $ftp_file['link'];
     $file['Filedata']['name'] = $ftp_file['name'];
     
-    $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning);
+    $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning, $zipname, $zipcount);
   }
   // from local file system of user
   else
   {
-    $result = uploadfile ($site, $location, $cat, $_FILES, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning);
+    $result = uploadfile ($site, $location, $cat, $_FILES, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $versioning, $zipname, $zipcount);
   }
 
   // make new entry in queue to delete object

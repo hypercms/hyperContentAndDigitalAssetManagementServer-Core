@@ -1096,9 +1096,9 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
 
 // --------------------------------- buildview -------------------------------------------
 // function: buildview()
-// input: publication name, location, object, user, view parameter (optional), reload workplace control frame and add html & body tags if missing [yes,no] (optional), 
-//        template name (optional), container name (optional), 
-//        force category to use different location path [page,comp] (optional), execute_code [true/false] (optional)
+// input: publication name [string], location [string], object name [string], user name [string], view parameter [string] (optional), reload workplace control frame and add html & body tags if missing [yes,no] (optional), 
+//        template name [string] (optional), container name [string] (optional), 
+//        force category to use different location path [page,comp] (optional), execute_code [true,false] (optional)
 // output: result array with view of the content / false on error
 // 
 // requires:
@@ -2635,6 +2635,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       $add_submittext = "";
       $prefix = "";
       $suffix = "";
+      $replace = "";
       
       foreach ($searchtag_array as $searchtag)
       {
@@ -2755,7 +2756,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               if ($readonly != false) $disabled = " disabled=\"disabled\"";
               else $disabled = "";
             }
-    
+
             // get group access
             $groupaccess = getattribute ($hypertag, "groups");
             $groupaccess = checkgroupaccess ($groupaccess, $ownergroup);
@@ -3799,7 +3800,29 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               // prefix and suffix if the content is not empty
               $prefix = getattribute ($hypertag, "prefix", false);
               $suffix = getattribute ($hypertag, "suffix", false);
-                  
+              
+              // get replace attribute
+              $replaces = getattribute ($hypertag, "replace");
+
+              if ($contentbot != "" && $replaces != "")
+              {
+                // function getattribute escapes < and >
+                $replaces = str_replace (array("&quot;", "&#039;", "&lt;", "&gt;"), array("\"", "'", "<", ">"), $replaces);
+                $temp_array = explode ("|", $replaces);
+                
+                if (is_array ($temp_array))
+                {
+                  foreach ($temp_array as $temp)
+                  {
+                    if ($temp != "" && strpos ($temp, "=>") > 0)
+                    {
+                      list ($search, $replace) = explode ("=>", $temp);
+                      $contentbot = str_replace ($search, $replace, $contentbot);
+                    }
+                  }
+                }
+              }
+  
               // include time management code for article
               if ($buildview == "publish" && $searchtag == "arttext")
               {
@@ -5595,7 +5618,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       
                       if ($buildview == "cmsview" || $buildview == "inlineview")
                       {
-                        $taglink = "<div><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr=".url_encode($contentbot)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" />".$compeditlink."</div>\n";
+                        $taglink = "<div style=\"all:unset;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr=".url_encode($contentbot)."&component=".url_encode($contentbot)."&condition=".url_encode($condbot)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" />".$compeditlink."</div>\n";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -5681,7 +5704,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link for editor
                       if ($buildview == "cmsview" || $buildview == 'inlineview')
                       {
-                        $taglink = "<div><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".$db_connect."&id=".$id."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr[".$id."]=".url_encode($contentbot)."&component[".$id."]=".url_encode($contentbot)."&condition[".$id."]=".url_encode($condbot)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" />".$arttaglink[$artid]."</div>\n";
+                        $taglink = "<div style=\"all:unset;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".$mgmt_config['url_path_cms']."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".$db_connect."&id=".$id."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component_curr[".$id."]=".url_encode($contentbot)."&component[".$id."]=".url_encode($contentbot)."&condition[".$id."]=".url_encode($condbot)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" />".$arttaglink[$artid]."</div>\n";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {                     
@@ -5887,7 +5910,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link for editor
                       if ($buildview == "cmsview" || $buildview == "inlineview")
                       {
-                        $taglink = "<div><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','send');\" src=\"".getthemelocation()."img/edit_compmulti.png\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; cursor:pointer; z-index:9999999;\" />".$arttaglink[$artid]."</div>";
+                        $taglink = "<div style=\"all:unset;\"><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','send');\" src=\"".getthemelocation()."img/edit_compmulti.png\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; cursor:pointer; z-index:9999999;\" />".$arttaglink[$artid]."</div>";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -6178,7 +6201,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         {
                           if (($buildview == "cmsview" || $buildview == "inlineview") && $onedit != "hidden" && $icon != "hidden") 
                           {
-                            $taglink = "<div><img onClick=\"hcms_openWindowComp('', 'scrollbars=yes,resizable=yes,status=yes', '".str_replace ("%comp%", "", $component_link)."');\"  src=\"".getthemelocation()."img/edit_edit.png\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','delete');\" src=\"".getthemelocation()."img/edit_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','moveup');\"  src=\"".getthemelocation()."img/edit_moveup.png\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','movedown');\" src=\"".getthemelocation()."img/edit_movedown.png\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" /></div>\n";
+                            $taglink = "<div style=\"all:unset;\"><img onClick=\"hcms_openWindowComp('', 'scrollbars=yes,resizable=yes,status=yes', '".str_replace ("%comp%", "", $component_link)."');\"  src=\"".getthemelocation()."img/edit_edit.png\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','delete');\" src=\"".getthemelocation()."img/edit_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','moveup');\"  src=\"".getthemelocation()."img/edit_moveup.png\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" /><img onClick=\"hcms_changeitem('".$hypertagname."','".$id."','".$condbot."','".$i."','movedown');\" src=\"".getthemelocation()."img/edit_movedown.png\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; cursor:pointer; z-index:9999999;\" /></div>\n";
   
                             $scriptarray .= "item['".$id."'][".$i."] = '".$component_link."';\n";
                             $i++;
@@ -6648,9 +6671,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           }
         }
         
-        // if nor errror occured
+        // if no error occured
         if (strpos ("_".$viewstore, "<!-- hyperCMS:ErrorCodeBegin -->") < 1)
         {
+          // reload content container in case it has been manipulated by the template script
+          if ($container_collection != "live" && ($buildview == "publish" || $buildview == "cmsview" || $buildview == "inlineview"))
+          {
+            $contentdata = loadcontainer ($contentfile, "work", $user);
+          }
+        
           // ======================================== define CSS for components =========================================
           $line_css = "";
           
@@ -6714,9 +6743,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // scriptcode
             $scriptcode = "<script src=\"".$mgmt_config['url_path_cms']."javascript/main.js\" type=\"text/javascript\"></script>
     <script type=\"text/javascript\">
-    ".$bodytag_controlreload."
-    ".$bodytag_popup."
-    ".$bodytag_selectlang."
+    ".@$bodytag_controlreload."
+    ".@$bodytag_popup."
+    ".@$bodytag_selectlang."
     </script>\n";
               
             // get body-tag
@@ -8709,7 +8738,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
 // --------------------------------- buildsearchform -------------------------------------------
 // function: buildsearchform()
-// input: publication name (optional for report), template name (optional), or report name (optional), group access as array (optional), CSS display value for label tag (optional)
+// input: publication name [string] (optional for report), template name [string] (optional), or report name [string] (optional), group access [array] (optional), CSS display value for label tag [string] (optional)
 // output: form view / false on error
 
 function buildsearchform ($site="", $template="", $report="", $ownergroup="", $css_display="inline-block")
@@ -8993,8 +9022,8 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 
 // --------------------------------- buildbarchart -------------------------------------------
 // function: buildbarchart()
-// input: name/id of paper, width of paper in pixel, height of paper in pixel, top space in pixel, left space in pixel, x-axis values as array, y1-axis values as array, y2-axis values as array (optional), y3-axis values as array (optional),
-//        paper CSS style, 1st bar chart CSS style, 2nd bar chart CSS style, 3rd bar chart CSS style, show y-value in bar [true,false]
+// input: name/id of paper [string], width of paper in pixel [integer], height of paper in pixel [integer], top space in pixel [integer], left space in pixel [integer], x-axis values [array], y1-axis values [array], y2-axis values [array] (optional), y3-axis values [array] (optional),
+//        paper CSS style [string], 1st bar chart CSS style [string], 2nd bar chart CSS style [string], 3rd bar chart CSS style [string], show y-value in bar [true,false]
 // output: bar chart view / false on error
 
 // help function to find max value of 2-dimensional array

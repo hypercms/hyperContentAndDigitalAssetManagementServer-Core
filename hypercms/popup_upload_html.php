@@ -121,102 +121,6 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
 // memory for uploaded objects
 var editobjects = [];
 
-// Reloads all needed frames
-function frameReload (objectpath, timeout)
-{
-  // reload main frame (upload by control objectlist)
-  if (opener && opener.parent.frames['mainFrame'])
-  {
-    opener.parent.frames['mainFrame'].location.reload();
-  }
-  
-  // reload explorer frame (upload by component explorer)
-  if (opener && opener.parent.frames['navFrame2'])
-  {
-    opener.parent.frames['navFrame2'].location.reload();
-  }
-  // reload object frame (upload by control content)
-  else if (parent.frames['objFrame'])
-  {
-    if (objectpath == "")
-    {
-      parent.frames['objFrame'].location.reload();
-    }
-    else
-    {
-      // get location and object
-      var index = objectpath.lastIndexOf("/") + 1;
-      var location = objectpath.substring(0, index);
-      var newpage = objectpath.substr(index);
-
-      parent.frames['objFrame'].location='page_view.php?ctrlreload=yes&location=' +  location + '&page=' + newpage;
-    }
-    
-    setTimeout('parent.closeobjectview()', timeout);
-  }
-}
-
-function openEditWindow (objectpath)
-{
-  // add objectpath to array
-  editobjects.push(objectpath);
-  
-  var window = document.getElementById('editwindow');
-  var iframe = document.getElementById('editiframe');
-
-  // open edit window for first object
-  if (window.style.display == 'none')
-  {
-    // get location and object
-    var index = objectpath.lastIndexOf("/") + 1;
-    var location = objectpath.substring(0, index);
-    var newpage = objectpath.substr(index);
-    
-    iframe.src='page_view.php?rlreload=yes&location=' + location + '&page=' + newpage;
-    window.style.display='inline';
-    
-    // remove first array element
-    editobjects.shift();
-  }
-}
-
-function nextEditWindow ()
-{
-  var window = document.getElementById('editwindow');
-  var iframe = document.getElementById('editiframe');
-    
-  if (editobjects.length > 0)
-  {
-    // get and remove first array element
-    var objectpath = editobjects.shift();
-
-    // get location and object
-    var index = objectpath.lastIndexOf("/") + 1;
-    var location = objectpath.substring(0, index);
-    var newpage = objectpath.substr(index);
-
-    // load next object
-    iframe.src='page_view.php?ctrlreload=yes&location=' + location + '&page=' + newpage;
-    
-    if (window.style.display == 'none')
-    {
-      window.style.display='inline';
-    }
-  }
-  else
-  {
-    window.style.display='none';
-    iframe.src='';
-  }
-}
-
-// if user closes window while still in edit mode
-window.onbeforeunload = function() {
-  if (document.getElementById('editwindow') && document.getElementById('editwindow').style.display != "none")
-  {
-    return "<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>";
-  }
-}
   
 // when document is ready
 $(document).ready(function ()
@@ -225,6 +129,8 @@ $(document).ready(function ()
   var filecount = 0;
   // Selected files count
   var selectcount = 0;
+  // Files in queue count
+  var queuecount = 0;
   // Time until an item is removed from the queue
   // After it is successfully transmitted
   // In Miliseconds
@@ -235,9 +141,11 @@ $(document).ready(function ()
   // Number of Items which can be in the queue at the same time
   // negative value or NaN values mean unlimited
   var hcms_maxItemInQueue = <?php echo $maximumQueueItems; ?>;
-  //parameter indicating unzip
+  // parameter indicating unzip and zip
   var unzip = "";
-  //parameter indicating resize
+  var zipname = "";
+  var zipcount = 0;
+  // parameter indicating resize
   var resize = "";
   // percentage of resize
   var percent = 100;
@@ -273,7 +181,7 @@ $(document).ready(function ()
   
   // Builds the buttons needed for each element
   function buildButtons (data)
-  {
+  {      
     // Build the Submit Button
     var submit = $('<div>&nbsp;</div>');
     submit.hide()
@@ -324,7 +232,7 @@ $(document).ready(function ()
     
     // apply the correct css for this div
     data.context.removeClass('file_normal')
-    if(success)
+    if (success)
       data.context.addClass('file_success');
     else
       data.context.addClass('file_error');
@@ -344,7 +252,7 @@ $(document).ready(function ()
                 .append(buttons);
   }
     
-  // Function that make the div contain file informations
+  // Function that makes the div contain file information
   function buildFileUpload (data)
   {
     var div = data.context;
@@ -416,23 +324,41 @@ $(document).ready(function ()
       var maxItems = hcms_maxItemInQueue;
       
       // Check if we reached the maximum number of items in the queue
-      if(maxItems && !isNaN(maxItems) && maxItems > 0 && selectcount >= maxItems) {
+      if (maxItems && !isNaN(maxItems) && maxItems > 0 && selectcount >= maxItems)
+      {
         return false;
       }
       
       buildFileUpload(data);
       
       $('#selectedFiles').append(data.context);
-      selectcount++;
+      queuecount = selectcount++;
     }
   })
   
-  // upload file
-  .bind('fileuploadsend', function(e, data) {        
-    buildFileUpload(data);
+  // callback on submit of each file
+  .bind('fileuploadsubmit', function (e, data) {
+
+    // set file count for zip file
+    if (unzip == "zip") 
+    {
+      document.getElementById('zipcount').value = selectcount;
+      
+      // serialize form inputs
+      var formData = $('form').serializeArray();
+    }
   })
   
-  // file upload is finished
+  // callback on file upload
+  .bind('fileuploadsend', function(e, data) {
+
+    buildFileUpload(data);
+    
+    // Update queue counter
+    queuecount--;
+  })
+  
+  // file upload is finished (for each file)
   .bind('fileuploaddone', function(e, data) {
     
     var file = "";
@@ -472,8 +398,8 @@ $(document).ready(function ()
     // Update the total count of uploaded files
     filecount++;
     $('#status').text(filecount);
-    
-    frameReload(file, hcms_waitTillClose);
+
+    if (queuecount <= 0) frameReload(file, hcms_waitTillClose);
     
     // Remove the div after 10 seconds
     setTimeout( function() {
@@ -512,7 +438,7 @@ $(document).ready(function ()
   
   //-------------------------- DROPBOX --------------------------
   
-  //build buttons for dropbox elements
+  // build buttons for dropbox elements
   function buildDropboxButtons (data)
   {
     // need ajax var for aborting process
@@ -527,8 +453,11 @@ $(document).ready(function ()
       {
         if (ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT) return;
         
-        //start progress
+        // start progress
         buildDropboxFileUpload (data);
+ 
+        // Update queue count
+        queuecount--;
         
         ajax = 	$.ajax({
           type: "POST",
@@ -541,6 +470,8 @@ $(document).ready(function ()
             "imageresize": resize, 
             "imagepercentage": percent, 
             "unzip": unzip,
+            "zipname": zipname,
+            "zipcount": selectcount,
             "checkduplicates": checkduplicates,
             "versioning": versioning,
             "deletedate": deletedate,
@@ -564,7 +495,7 @@ $(document).ready(function ()
             filecount++;
             $('#status').text(filecount);
             
-            frameReload(file, hcms_waitTillClose);
+            if (queuecount <= 0) frameReload(file, hcms_waitTillClose);
             
             // Remove the div after 10 seconds
             setTimeout( function()
@@ -602,6 +533,7 @@ $(document).ready(function ()
             {
               data.context.remove();
               selectcount--;
+              queuecount--;
             }
           });
           
@@ -632,7 +564,7 @@ $(document).ready(function ()
     var buttons = buildDropboxButtons( data );
     
     // Build message field
-    msg = $('<div></div>');
+    msg = $('<div style="font-size:11px;"></div>');
     msg.html(hcms_entity_decode(text))
        .addClass('inline file_message');
        
@@ -722,6 +654,7 @@ $(document).ready(function ()
         
         $('#selectedFiles').append(data.context);
         selectcount++;
+        queuecount = selectcount;
       }
     },
     //fetch direct links
@@ -729,11 +662,6 @@ $(document).ready(function ()
     //enable multi select
     multiselect: <?php if ($uploadmode == "multi") echo "true"; else echo "false"; ?>
   };
-  
-  // btnDropboxChoose click event to trigger choosing
-  $('#btnDropboxChoose').click(function() {
-      Dropbox.choose(dropboxOptions);
-  });
   
   // Function that makes the div contain a message instead of file informations
   function buildDropboxFileMessage (data, text, success)
@@ -753,7 +681,7 @@ $(document).ready(function ()
     var buttons = buildDropboxButtons( data );
     
     // Build message field
-    msg = $('<div></div>');
+    msg = $('<div style="font-size:11px;"></div>');
     msg.html(hcms_entity_decode(text))
        .addClass('inline file_message');
        
@@ -763,7 +691,7 @@ $(document).ready(function ()
                 .append(buttons);
   }
  
-  // Function that make the div contain file informations
+  // Function that makes the div contain file information
   function buildDropboxFileUpload (data)
   {
     var div = data.context;
@@ -816,6 +744,9 @@ $(document).ready(function ()
         //start progress
         buildFTPFileUpload (data);
         
+        // Update queue count
+        queuecount--;
+  
         ajax = 	$.ajax({
           type: "POST",
           url: "<?php echo $mgmt_config['url_path_cms']?>service/uploadfile.php",
@@ -827,6 +758,8 @@ $(document).ready(function ()
             "imageresize": resize, 
             "imagepercentage": percent, 
             "unzip": unzip,
+            "zipname": zipname,
+            "zipcount": selectcount,
             "checkduplicates": checkduplicates,
             "versioning": versioning,
             "deletedate": deletedate,
@@ -846,11 +779,14 @@ $(document).ready(function ()
                   
             buildFTPFileMessage (data, text, true);
             
+            // Update queue count
+            queuecount--; 
+            
             // Update the total count of uploaded files
             filecount++;
             $('#status').text(filecount);
-            
-            frameReload(file, hcms_waitTillClose);
+
+            if (queuecount <= 0) frameReload(file, hcms_waitTillClose);
             
             // Remove the div after 10 seconds
             setTimeout( function()
@@ -888,6 +824,7 @@ $(document).ready(function ()
             {
               data.context.remove();
               selectcount--;
+              queuecount--;
             }
           });
           
@@ -918,7 +855,7 @@ $(document).ready(function ()
     var buttons = buildFTPButtons( data );
     
     // Build message field
-    msg = $('<div></div>');
+    msg = $('<div style="font-size:11px;"></div>');
     msg.html(hcms_entity_decode(text))
        .addClass('inline file_message');
        
@@ -969,10 +906,11 @@ $(document).ready(function ()
       
       $('#selectedFiles').append(data.context);
       selectcount++;
+      queuecount = selectcount;
     }
   }
 
-  // Function that makes the div contain a message instead of file informations
+  // Function that makes the div contain a message instead of file information
   function buildFTPFileMessage (data, text, success)
   {
     // Empty the div before
@@ -990,7 +928,7 @@ $(document).ready(function ()
     var buttons = buildFTPButtons( data );
     
     // Build message field
-    msg = $('<div></div>');
+    msg = $('<div style="font-size:11px;"></div>');
     msg.html(hcms_entity_decode(text))
        .addClass('inline file_message');
        
@@ -1041,6 +979,13 @@ $(document).ready(function ()
     // check if unzip is checked
     if ($('#unzip').prop('checked')) unzip = $('#unzip').val();
     
+    // check if zip is checked
+    if ($('#zip').prop('checked'))
+    {
+      unzip = $('#zip').val();
+      zipname = $('#zipname').val();
+    }
+    
     // check if resize is checked and validate percentage	
     percent = parseInt($('#imagepercentage').val(), 10);
     
@@ -1088,6 +1033,11 @@ $(document).ready(function ()
     $('#selectedFiles').find('.file_submit').click();
   });
   
+  // btnDropboxChoose click event to trigger choosing
+  $('#btnDropboxChoose').click(function() {
+      Dropbox.choose(dropboxOptions);
+  });
+  
   // Cancel
   $('#btnCancel').click(function()
   {
@@ -1105,11 +1055,110 @@ $(document).ready(function ()
   {
     $('#deletedate').prop('disabled', !($(this).prop('checked')));
   });
+  
+  //-------------------------- GENERAL --------------------------
+  
+  // Reloads all needed frames
+  function frameReload (objectpath, timeout)
+  {
+    // reload main frame (upload by control objectlist)
+    if (opener && opener.parent.frames['mainFrame'])
+    {
+      opener.parent.frames['mainFrame'].location.reload();
+    }
+    
+    // reload explorer frame (upload by component explorer)
+    if (opener && opener.parent.frames['navFrame2'])
+    {
+      opener.parent.frames['navFrame2'].location.reload();
+    }
+    // reload object frame (upload by control content)
+    else if (parent.frames['objFrame'])
+    {
+      if (objectpath == "")
+      {
+        parent.frames['objFrame'].location.reload();
+      }
+      else
+      {
+        // get location and object
+        var index = objectpath.lastIndexOf("/") + 1;
+        var location = objectpath.substring(0, index);
+        var newpage = objectpath.substr(index);
+  
+        parent.frames['objFrame'].location='page_view.php?ctrlreload=yes&location=' +  location + '&page=' + newpage;
+      }
+      
+      setTimeout('parent.closeobjectview()', timeout);
+    }
+  }
+  
+  function openEditWindow (objectpath)
+  {
+    // add objectpath to array
+    editobjects.push(objectpath);
+    
+    var window = document.getElementById('editwindow');
+    var iframe = document.getElementById('editiframe');
+  
+    // open edit window for first object
+    if (window.style.display == 'none')
+    {
+      // get location and object
+      var index = objectpath.lastIndexOf("/") + 1;
+      var location = objectpath.substring(0, index);
+      var newpage = objectpath.substr(index);
+      
+      iframe.src='page_view.php?rlreload=yes&location=' + location + '&page=' + newpage;
+      window.style.display='inline';
+      
+      // remove first array element
+      editobjects.shift();
+    }
+  }
+  
+  function nextEditWindow ()
+  {
+    var window = document.getElementById('editwindow');
+    var iframe = document.getElementById('editiframe');
+      
+    if (editobjects.length > 0)
+    {
+      // get and remove first array element
+      var objectpath = editobjects.shift();
+  
+      // get location and object
+      var index = objectpath.lastIndexOf("/") + 1;
+      var location = objectpath.substring(0, index);
+      var newpage = objectpath.substr(index);
+  
+      // load next object
+      iframe.src='page_view.php?ctrlreload=yes&location=' + location + '&page=' + newpage;
+      
+      if (window.style.display == 'none')
+      {
+        window.style.display='inline';
+      }
+    }
+    else
+    {
+      window.style.display='none';
+      iframe.src='';
+    }
+  }
+  
+  // if user closes window while still in edit mode
+  window.onbeforeunload = function() {
+    if (document.getElementById('editwindow') && document.getElementById('editwindow').style.display != "none")
+    {
+      return "<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>";
+    }
+  }
 });
 
 </script>
 
-<link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css">
+<link rel="stylesheet" type="text/css" href="javascript/rich_calendar/rich_calendar.css" />
 <script type="text/javascript" src="javascript/rich_calendar/rich_calendar.js"></script>
 <script type="text/javascript" src="javascript/rich_calendar/rc_lang_en.js"></script>
 <script type="text/javascript" src="javascript/rich_calendar/rc_lang_de.js"></script>
@@ -1153,6 +1202,31 @@ function cal_on_autoclose (cal)
 {
   cal_obj = null;
 }
+
+// enable/disable checkboxes and buttons
+function switchzip ()
+{
+  if (document.getElementById("zip").checked)
+  {
+    document.getElementById("unzip").checked = false;
+    document.getElementById("unzip").disabled = true;
+    document.getElementById("zipname").disabled = false;
+    document.getElementById("imageresize").checked = false;
+    document.getElementById("imageresize").disabled = true;
+    document.getElementById("checkduplicates").checked = false;
+    document.getElementById("checkduplicates").disabled = true;
+  }
+  else
+  {
+    document.getElementById("unzip").checked = false;
+    document.getElementById("unzip").disabled = false;
+    document.getElementById("zipname").disabled = true;
+    document.getElementById("imageresize").checked = false;
+    document.getElementById("imageresize").disabled = false;
+    document.getElementById("checkduplicates").checked = false;
+    document.getElementById("checkduplicates").disabled = false;
+  }
+}
 </script>
 </head>
 
@@ -1187,6 +1261,7 @@ echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name
     <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
     <input type="hidden" name="user" value="<?php echo $user; ?>" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
+    <input type="hidden" name="zipcount" id="zipcount" value="" />
     
     <div id="selectedFiles"></div>
     
@@ -1194,50 +1269,50 @@ echo showtopbar ($title."<br/><span style=\"font-weight:normal;\">".$object_name
     
     <div>
       <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
-      <div class="inline">
-        <label><input type="checkbox" name="unzip" id="unzip" value="1" /> <?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?> (<?php echo getescapedtext ($hcms_lang['existing-objects-will-be-replaced'][$lang]); ?>)</label>
+      <div class="row">
+        <label><input type="checkbox" name="unzip" id="unzip" value="unzip" /> <?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?> (<?php echo getescapedtext ($hcms_lang['existing-objects-will-be-replaced'][$lang]); ?>)</label>
       </div>
-      <br />
-      <?php } elseif ($cat == "comp" && $uploadmode == "single") { ?>
-        <?php if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) { ?>
+      <?php } ?> 
+      <?php if ($uploadmode == "multi" && is_array ($mgmt_compress) && sizeof ($mgmt_compress) > 0) { ?>
       <div class="inline">
+        <label><input type="checkbox" name="unzip" id="zip" onclick="switchzip()" value="zip" /> <?php echo getescapedtext ($hcms_lang['compress-files'][$lang]); ?></label> <input name="zipname" id="zipname" type="text" placeholder="<?php echo getescapedtext ($hcms_lang['file-name'][$lang]); ?>" size="20" maxlength="120" value="" disabled="disabled" />
+      </div>
+      <?php } ?> 
+      <?php if ($cat == "comp" && $uploadmode == "single") { ?>
+        <?php if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) { ?>
+      <div class="row">
         <label><input type="checkbox" name="versioning" id="versioning" value="1" /> <?php echo getescapedtext ($hcms_lang['keep-existing-file-as-old-version'][$lang]); ?></label>
       </div>
         <?php } ?> 
-      <br /> 
-      <div class="inline">
+      <div class="row">
         <label><input type="checkbox" name="createthumbnail" id="createthumbnail" value="1" /> <?php echo getescapedtext ($hcms_lang['thumbnail-image-jpeg-file'][$lang]); ?></label>
       </div>
-      <br />
-      <?php } 
-      if ($cat == "comp" && $uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) { ?>
-      <div class="inline">
+      <?php } ?>
+      <?php if ($cat == "comp" && $uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) { ?>
+      <div class="row">
         <label><input type="checkbox" name="imageresize" id="imageresize" value="percentage" /> <?php echo getescapedtext ($hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]); ?></label> <input name="imagepercentage" id="imagepercentage" type="text" size="3" maxlength="3" value="100" disabled="disabled" /> %
       </div>
-      <br />
       <?php } ?>
       <?php if ($cat == "comp") { ?>
-      <div class="inline">
+      <div class="row">
         <label><input type="checkbox" name="checkduplicates" id="checkduplicates" value="1" <?php if ($mgmt_config['check_duplicates']) echo 'checked="checked"'; ?> /> <?php echo getescapedtext ($hcms_lang['check-for-duplicates'][$lang]); ?></label>
       </div>
-      <br />
       <?php } ?>
       <?php if ($cat == "comp" && $uploadmode == "multi") { ?>
-      <div class="inline">
+      <div class="row">
         <label><input type="checkbox" name="deleteobject" id="deleteobject" value="1" /> <?php echo getescapedtext ($hcms_lang['remove-uploaded-files-on'][$lang]); ?></label>
         <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
         <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" /><img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this);" align="absmiddle" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
       </div>
-      <br />
       <?php } ?>
       <div style="margin:10px 0px 10px 0px;">
         <img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsButtonSizeSquare" align="absmiddle" />
         <?php echo getescapedtext ($hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]); ?>
       </div>
       <div style="margin:0px 0px 10px 0px;">
-        <div for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen" ><span id="txtSelectFile" class="inline"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></span><input id="inputSelectFile" type="file" name="Filedata" <?php if ($uploadmode == "multi") echo "multiple"; ?>/></div>
+        <div for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></span><input id="inputSelectFile" type="file" name="Filedata" <?php if ($uploadmode == "multi") echo "multiple"; ?>/></div>
         <?php if (!empty ($mgmt_config['dropbox_appkey']) && !empty ($mgmt_config['publicdownload'])) { ?>
-        <div id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile" class="inline"><?php echo getescapedtext ($hcms_lang['dropbox'][$lang]); ?></span></div>
+        <div id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['dropbox'][$lang]); ?></span></div>
         <?php } ?>
         <?php if (!empty ($mgmt_config['ftp_download'])) { ?>
         <div id="btnFTP" class="button hcmsButtonGreen" onclick="hcms_openWindow('popup_ftp.php?site=<?php echo url_encode($site); ?>&multi=<?php if ($uploadmode == "multi") echo "true"; else echo "false"; ?>', 'ftp', 'scrollbars=yes,resizable=yes', 600, 400);"><?php echo getescapedtext ($hcms_lang['ftp'][$lang]); ?></div>

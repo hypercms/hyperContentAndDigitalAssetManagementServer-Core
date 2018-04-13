@@ -325,7 +325,7 @@ elseif ($action == "base_search" || $search_dir != "")
           foreach ($path_array as $path)
           {
             // check access permission
-            if ($localpermission[$site_name][$group_name]['page']) $search_dir_esc[] = convertpath ($site_name, $path, "page");
+            if (!empty ($localpermission[$site_name][$group_name]['page'])) $search_dir_esc[] = convertpath ($site_name, $path, "page");
             else $exclude_dir_esc[] = convertpath ($site_name, $path, "page");
           }
         }
@@ -343,7 +343,7 @@ elseif ($action == "base_search" || $search_dir != "")
           foreach ($path_array as $path)
           {
             // check access permission
-            if ($localpermission[$site_name][$group_name]['component']) $search_dir_esc[] = convertpath ($site_name, $path, "comp");
+            if (!empty ($localpermission[$site_name][$group_name]['component'])) $search_dir_esc[] = convertpath ($site_name, $path, "comp");
             else $exclude_dir_esc[] = convertpath ($site_name, $path, "comp");
           }
         }
@@ -1303,9 +1303,14 @@ if ($galleryview != "")
 
 <!-- initalize -->
 <script>
+// set view
 toggleview (explorerview);
+// resize columns
 $("#objectlist_head").colResizable({liveDrag:true, onDrag:resizecols});
+// select area
 var selectarea = document.getElementById('selectarea');
+// load screen
+if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='none';
 </script>
 
 </body>

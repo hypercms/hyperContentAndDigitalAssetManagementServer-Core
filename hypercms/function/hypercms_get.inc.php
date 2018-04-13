@@ -83,7 +83,7 @@ function getserverload ()
 
 // ------------------------- getconfigvalue -----------------------------
 // function: getconfigvalue()
-// input: settings array, value/substring in array key (optional)
+// input: settings [array], value/substring in array key [string] (optional)
 // output: value of setting
 
 // description:
@@ -108,7 +108,7 @@ function getconfigvalue ($config, $in_key="")
  
 // ------------------------- getsession -----------------------------
 // function: getsession()
-// input: session variable name, default session value (optional)
+// input: session variable name [string], default session value [string] (optional)
 // output: session value
 
 function getsession ($variable, $default="")
@@ -127,7 +127,7 @@ function getsession ($variable, $default="")
 
 // ------------------------- getrequest -----------------------------
 // function: getrequest()
-// input: request variable name, must be of certain type [numeric,array,publicationname,locationname,objectname,url,bool] (optional), default value (optional)
+// input: request variable name [string], must be of certain type [numeric,array,publicationname,locationname,objectname,url,bool] (optional), default value [string] (optional)
 // output: request value
 
 // description:
@@ -168,7 +168,7 @@ function getrequest ($variable, $force_type=false, $default="")
 
 // ------------------------- getrequest_esc -----------------------------
 // function: getrequest_esc()
-// input: request variable name, must be of certain type [numeric,array,publicationname,locationname,objectname] (optional), default value (optional), 
+// input: request variable name [string], must be of certain type [numeric,array,publicationname,locationname,objectname] (optional), default value [string] (optional), 
 //        remove characters to avoid JS injection [true,false] (optional)
 // output: request value
 
@@ -206,7 +206,7 @@ function getuserip ()
 
 // ----------------------------------------- getobjectlistcells ------------------------------------------
 // function: getobjectlistcells()
-// input: width of viewport or window in pixels, is mobile device [0,1] (optional)
+// input: width of viewport or window in pixels [integer], is mobile device [0,1] (optional)
 // output: number of table cells/rows for the gallery view of object lists
 
 function getobjectlistcells ($viewportwidth, $is_mobile=0)
@@ -271,7 +271,7 @@ function getlanguageoptions ()
 
 // ----------------------------------------- getlanguagefile ------------------------------------------
 // function: getlanguagefile()
-// input: language code (optional)
+// input: language code [string] (optional)
 // output: language file name
 
 function getlanguagefile ($lang="en")
@@ -288,7 +288,7 @@ function getlanguagefile ($lang="en")
 
 // ----------------------------------------- getcodepage ------------------------------------------
 // function: getcodepage()
-// input: language code (optional)
+// input: language code [string] (optional)
 // output: code page (character set)
 
 function getcodepage ($lang="en")
@@ -312,7 +312,7 @@ function getcodepage ($lang="en")
 
 // ----------------------------------------- getcalendarlang ------------------------------------------
 // function: getcalendarlang()
-// input: language code (optional)
+// input: language code [string] (optional)
 // output: supported language code for calendar
 
 function getcalendarlang ($lang="en")
@@ -334,7 +334,7 @@ function getcalendarlang ($lang="en")
 
 // ----------------------------------------- getescapedtext ------------------------------------------
 // function: getescapedtext()
-// input: text as string, character set of text, 2-digit language code
+// input: text [string], character set of text [string], 2-digit language code [string]
 // output: HTML escaped text
 
 // description:
@@ -362,7 +362,7 @@ function getescapedtext ($text, $charset="", $lang="")
 
 // ----------------------------------------- getsearchhistory ------------------------------------------
 // function: getsearchhistory()
-// input: user name (optional)
+// input: user name [string] (optional)
 // output: array holding all expressions (in single quotes) of the search history of a user / false on error
 
 function getsearchhistory ($user="")
@@ -400,7 +400,7 @@ function getsearchhistory ($user="")
 
 // ----------------------------------------- getsynonym ------------------------------------------
 // function: getescapedtext()
-// input: word as string, 2-digit language code (optional)
+// input: word [string], 2-digit language code [string] (optional)
 // output: array holding all synonyms including the provided word / false on error
 
 // description:
@@ -469,7 +469,7 @@ function getsynonym ($text, $lang="")
 
 // ----------------------------------------- gettaxonomy_sublevel ------------------------------------------
 // function: gettaxonomy_sublevel()
-// input: publication name, language code (optional), taxonomy parent ID (optional)
+// input: publication name [string], language code [string] (optional), taxonomy parent ID [string] (optional)
 // output: array holding all keywords of the next taxonomy level / false on error
 
 // description:
@@ -513,9 +513,9 @@ function gettaxonomy_sublevel ($site, $lang="en", $tax_id="0")
 
 // ----------------------------------------- gettaxonomy_childs ------------------------------------------
 // function: gettaxonomy_childs()
-// input: publication name (optional), language code (optional), 
-//        taxonomy ID or expression or taxonomy path in the form %taxonomy%/publication-name or 'default'/language-code/taxonomy-ID/taxonomy-child-levels as string, 
-//        taxonomy child levels as integer (optional), only return taxonomy IDs without language and keyword information [true,false] (optional)
+// input: publication name [string] (optional), language code [string] (optional), 
+//        taxonomy ID or expression or taxonomy path in the form %taxonomy%/publication-name or 'default'/language-code/taxonomy-ID/taxonomy-child-levels [string], 
+//        taxonomy child levels [integer] (optional), only return taxonomy IDs without language and keyword information [true,false] (optional)
 // output: array holding all taxonomy IDs / false on error
 
 // description:
@@ -652,7 +652,7 @@ function gettaxonomy_childs ($site="", $lang="", $expression, $childlevels=1, $i
 
 // ----------------------------------------- gethierarchy_defintion ------------------------------------------
 // function: gethierarchy_defintion()
-// input: publication name, hierarchy name (optional) 
+// input: publication name [string], hierarchy name [string] (optional) 
 // output: hierarchy array in form of array[name][level][text-id][language] = label / false on error
 
 // description:
@@ -751,7 +751,7 @@ function gethierarchy_defintion ($site, $selectname="")
 
 // ----------------------------------------- gethierarchy_sublevel ------------------------------------------
 // function: gethierarchy_sublevel()
-// input: hierarchy URL in form  of %hierarchy%/publication-name/hierarchy-name/hierarchy-level-of-last-element/text-ID-1=value-1/text-ID-2=value-2/text-ID-3
+// input: hierarchy URL in form  of %hierarchy%/publication-name/hierarchy-name/hierarchy-level-of-last-element/text-ID-1=value-1/text-ID-2=value-2/text-ID-3 [string]
 // output: array holding all hierarchy URLs as key and text content or label as value / false on error
 
 // description:
@@ -860,7 +860,7 @@ function gethierarchy_sublevel ($hierarchy_url)
 
 // --------------------------------------- getkeywords -------------------------------------------
 // function: getkeywords ()
-// input: publication name (optional) 
+// input: publication name [string] (optional) 
 // output: keywords as array / false on error
 
 // description:
@@ -875,7 +875,7 @@ function getkeywords ($site="")
 
 // --------------------------------------- getmetakeywords -------------------------------------------
 // function: getmetakeywords ()
-// input: text as string, language to be used for stop word list [de,en,...] (optional), character set (optional) 
+// input: text [string], language to be used for stop word list [de,en,...] (optional), character set [string] (optional) 
 // output: keywords as array /false on error
 
 // description:
@@ -940,7 +940,7 @@ function getmetakeywords ($text, $language="en", $charset="UTF-8")
 
 // --------------------------------------- getmetadescription -------------------------------------------
 // function: getmetadescription ()
-// input: text as string
+// input: text [string]
 // output: cleanded description of provided text /false on error
 
 // description:
@@ -976,9 +976,9 @@ function getmetadescription ($text, $charset="UTF-8")
 
 // --------------------------------------- getgooglesitemap -------------------------------------------
 // function: getgooglesitemap ()
-// input: publication anme, directory path, URL to directory, GET parameters to use for new versions of the URL as array (optional), permanent links text-ID to use for location as array (optional), 
+// input: publication name [string], directory path [string], URL to directory [string], GET parameters to use for new versions of the URL as array (optional), permanent links text-ID to use for location [array] (optional), 
 //        frequency of google scrawler [never,weekly,daily] (optional), priority [1 or less] (optional), 
-//        ignore file names as array (optional), allowed file types as array (optional), include frequenzy tag [true,false] (optional), include priority tag [true,false] (optional)
+//        ignore file names [array] (optional), allowed file types [array] (optional), include frequenzy tag [true,false] (optional), include priority tag [true,false] (optional)
 // output: xml sitemap / false on error
 
 // description:
@@ -1160,7 +1160,7 @@ function getgooglesitemap ($site, $dir, $url, $getpara=array(), $permalink=array
 
 // ---------------------- getlistelements -----------------------------
 // function: getlistelements()
-// input: content of file attribute of list of keyword tag, seperator of list elements as string (optional)
+// input: content attribute value of list or keyword tag, seperator of list elements [string] (optional)
 // output: string with list/keyword elements sperated by commas / false
 
 function getlistelements ($list_sourcefile)
@@ -1241,8 +1241,8 @@ function getlistelements ($list_sourcefile)
 
 // ---------------------- getmetadata -----------------------------
 // function: getmetadata()
-// input: location, object (both optional if container is given), container name/ID or container content (optional), 
-//         seperator of meta data fields [any string,array] (optional), publication name/template name to extract label names (optional)
+// input: location [string], object name (both optional if container is given) [string], container name/ID or container content [string] (optional), 
+//         seperator of meta data fields [any string,array] (optional), publication name/template name to extract label names [string] (optional)
 // output: string with all metadata from given object based on container / false
 
 function getmetadata ($location, $object, $container="", $seperator="\n", $template="")
@@ -1438,7 +1438,7 @@ function getmetadata ($location, $object, $container="", $seperator="\n", $templ
 
 // ---------------------- getmetadata_multiobjects -----------------------------
 // function: getmetadata_multiobjects()
-// input: converted path of multiple objects as array, user name
+// input: converted path of multiple objects [array], user name [string]
 // output: assoziatve array with all text content and meta data / false
 
 // description:
@@ -1544,7 +1544,7 @@ function getmetadata_multiobjects ($multiobject_array, $user)
 
 // ---------------------- getmetadata_container -----------------------------
 // function: getmetadata_container()
-// input: container ID, array of text IDs
+// input: container ID [string], array of text IDs [array]
 // output: assoziatve array with all text content and meta data / false
 
 // description:
@@ -1705,14 +1705,14 @@ function getmetadata_container ($container_id, $text_id_array)
 
 // ---------------------------------------- getobjectcontainer ----------------------------------------
 // function: getobjectcontainer()
-// input: publication [string], location [string], object [string], user [string]
+// input: publication name [string], location [string], object name [string], user name [string], container type [work,published] (optional)
 // output: Content Container [XML]/false
 // requires: config.inc.php
 
 // description:
 // Loads the content container of a given object (page, component, folder)
 
-function getobjectcontainer ($site, $location, $object, $user)
+function getobjectcontainer ($site, $location, $object, $user, $type="work")
 {
   global $mgmt_config;
 
@@ -1729,7 +1729,7 @@ function getobjectcontainer ($site, $location, $object, $user)
     $object = specialchr_encode ($object, "no");
   }
 
-  if (valid_publicationname ($site) && valid_locationname ($location) && $object != "" && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($user) && ($type == "work" || $type == "published"))
   {
     // add slash if not present at the end of the location string
     if (substr ($location, -1) != "/") $location = $location."/";
@@ -1756,7 +1756,7 @@ function getobjectcontainer ($site, $location, $object, $user)
     {
       $container_id = substr ($container, 0, strpos ($container, ".xml"));
 
-      $data = loadcontainer ($container, "work", $user);
+      $data = loadcontainer ($container, $type, $user);
       
       if ($data != false && $data != "") return $data;
       else return false;
@@ -1767,7 +1767,7 @@ function getobjectcontainer ($site, $location, $object, $user)
 
 // ------------------------------------------ getcontainer --------------------------------------------
 // function: getcontainer()
-// input: container name or container ID, container type [published, work]
+// input: container name or container ID [string], container type [published,work]
 // output: Contant Container [XML]/false
 // requires: config.inc.php
 
@@ -1783,7 +1783,7 @@ function getcontainer ($containerid, $type)
 
 // ------------------------------------------ getwallpaper --------------------------------------------
 // function: getwallpaper()
-// input: version number (optional)
+// input: version number [string] (optional)
 // output: URL of wallpaper image / false
 // requires: config.inc.php
 
@@ -1821,7 +1821,7 @@ function getwallpaper ($version="")
 
 // --------------------------------------- getcontainername -------------------------------------------
 // function: getcontainername()
-// input: container name (e.g. 0000112.xml.wrk) or container ID
+// input: container name (e.g. 0000112.xml.wrk) or container ID [string]
 // output: Array with file name of the working content container (locked or unlocked!) and username if locked
 // requires: config.inc.php to be loaded
 
@@ -1907,7 +1907,7 @@ function getcontainername ($container)
 // ------------------------------------- getlocationname ------------------------------------------
 
 // function: getlocationname()
-// input: publication name, location path (as absolute path or converted path), category [page,comp], source for name [path,name]
+// input: publication name [string], location path (as absolute path or converted path) [string], category [page,comp], source for name [path,name]
 // output: location with readable names instead of file names / false on error
 
 function getlocationname ($site, $location, $cat, $source="path")
@@ -1993,7 +1993,7 @@ function getlocationname ($site, $location, $cat, $source="path")
 
 // --------------------------------------- getthemelocation -------------------------------------------
 // function: getthemelocation ()
-// input: theme name (optional)
+// input: theme name [string] (optional)
 // output: path to theme / false
 
 // description:
@@ -2032,7 +2032,7 @@ function getthemelocation ($theme="")
 
 // ---------------------- getcategory -----------------------------
 // function: getcategory()
-// input: publication name (optional), location path
+// input: publication name [string] (optional), location path [string]
 // output: category ['page, comp'] / false on error
 // requires: config.inc.php
 
@@ -2110,7 +2110,7 @@ function getcategory ($site="", $location)
 
 // ---------------------- getpublication -----------------------------
 // function: getpublication()
-// input: converted location path
+// input: converted location path [string]
 // output: publication name
 
 // description:
@@ -2152,7 +2152,7 @@ function getpublication ($path)
 
 // ------------------------- getlocation ---------------------------------
 // function: getlocation()
-// input: location path
+// input: location path [string]
 // output: location (without object or folder)
 
 // description:
@@ -2182,7 +2182,7 @@ function getlocation ($path)
 
 // ------------------------- getobject ---------------------------------
 // function: getobject()
-// input: location path
+// input: location path [string]
 // output: object or folder name
 
 // description:
@@ -2223,7 +2223,7 @@ function getobject ($path)
 
 // ---------------------- getmediacontainername -----------------------------
 // function: getmediacontainername()
-// input: file name
+// input: file name [string]
 // output: container name / false on error
 
 // description:
@@ -2249,7 +2249,7 @@ function getmediacontainername ($file)
 
 // ---------------------- getmediacontainerid -----------------------------
 // function: getmediacontainernid()
-// input: media file name
+// input: media file name [string]
 // output: container ID / false on error
 
 // description:
@@ -2275,7 +2275,7 @@ function getmediacontainerid ($file)
 
 // ---------------------- getmediafileversion -----------------------------
 // function: getmediafileversion()
-// input: container name or container ID
+// input: container name or container ID [string]
 // output: media file name / false on error
 
 // description:
@@ -2367,7 +2367,7 @@ function getmediafileversion ($container)
 
 // ---------------------- getobjectid -----------------------------
 // function: getobjectid()
-// input: converted object path or pathes separated by |
+// input: converted object path or pathes separated by | [string]
 // output: object ID
 
 // description:
@@ -2447,7 +2447,7 @@ function getobjectid ($objectlink)
 
 // ---------------------- getobjectlink -----------------------------
 // function: getobjectlink()
-// input: converted object ID or IDs separated by |
+// input: converted object ID or IDs separated by | [string]
 // output: converted object link
 
 // description:
@@ -2509,7 +2509,7 @@ function getobjectlink ($objectid)
 
 // ---------------------- getcontainerversions -----------------------------
 // function: getcontainerversions()
-// input: container ID or container name
+// input: container ID or container name [string]
 // output: array of all versions (array[version-extension] = file-name) / false
 
 function getcontainerversions ($container)
@@ -2560,7 +2560,7 @@ function getcontainerversions ($container)
 
 // ---------------------- getlocaltemplates -----------------------------
 // function: getlocaltemplates()
-// input: publication name, template category [page,comp,meta,inc] (optional)
+// input: publication name [string], template category [page,comp,meta,inc] (optional)
 // output: array with all template names / false
 
 // description:
@@ -2620,7 +2620,7 @@ function getlocaltemplates ($site, $cat="")
 
 // ----------------------------------------- gettemplates ---------------------------------------------
 // function: gettemplates()
-// input: publication name, object category [all,page,comp,meta] (optional)
+// input: publication name [string], object category [all,page,comp,meta] (optional)
 // output: template file name list as array / false on error
 // requires: config.inc.php to be loaded before
 
@@ -2693,7 +2693,7 @@ function gettemplates ($site, $cat="all")
             
 // ---------------------- gettemplateversions -----------------------------
 // function: gettemplateversions()
-// input: publication name, template name
+// input: publication name [string], template name [string]
 // output: array of all versions (array['YYYY-MM-DD HH:MM:SS'] = file-name) / false
 
 function gettemplateversions ($site, $template)
@@ -2740,7 +2740,7 @@ function gettemplateversions ($site, $template)
 
 // ---------------------- getfileinfo -----------------------------
 // function: getfileinfo()
-// input: publication name (optional), file name incl. extension, category [page,comp] (optional)
+// input: publication name [string] (optional), file name incl. extension [string], category [page,comp] (optional)
 // output: array/false
 
 // description:
@@ -3030,7 +3030,7 @@ function getfileinfo ($site, $file, $cat="comp")
 
 // ---------------------------------------------- getobjectinfo ----------------------------------------------
 // function: getobjectinfo()
-// input: publication name, location, object name, user name (optional), container version (optional)
+// input: publication name [string], location [string], object name [string], user name [string] (optional), container version [string] (optional)
 // output: result array / false on error
 // requires: config.inc.php
 
@@ -3190,7 +3190,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
 
 // ---------------------- getfilesize -----------------------------
 // function: getfilesize()
-// input: converted path to file or directory
+// input: converted path to file or directory [string]
 // output: result array with file size in kB and file count / false on error
 
 // description:
@@ -3262,7 +3262,7 @@ function getfilesize ($file)
 
 // ---------------------- getmimetype -----------------------------
 // function: getmimetype()
-// input: file name incl. extension  
+// input: file name incl. extension [string] 
 // output: mime_type
 
 // description:
@@ -3296,7 +3296,7 @@ function getmimetype ($file)
 
 // ---------------------- getfiletype -----------------------------
 // function: getfiletype()
-// input: file extension or file name
+// input: file extension or file name [string]
 // output: file type to be saved in database based on file extension
 
 function getfiletype ($file_ext)
@@ -3334,7 +3334,7 @@ function getfiletype ($file_ext)
 
 // ---------------------- getpreviewwidth -----------------------------
 // function: getpreviewwidth()
-// input: publication name (optional), path to file or file name, original width (optional)
+// input: publication name [string] (optional), path to file or file name [string], original width [string] (optional)
 // output: result array with width and height / false on error
 
 // description:
@@ -3416,7 +3416,7 @@ function getpreviewwidth ($site, $filepath, $width_orig="")
 
 // ---------------------- getpdfinfo -----------------------------
 // function: getpdfinfo()
-// input: path to PDF file, box attribute [BleedBox,CropBox,MediaBox] (optional)
+// input: path to PDF file [string], box attribute [BleedBox,CropBox,MediaBox] (optional)
 // output: result array with width and height / false on error
 
 // description:
@@ -3488,7 +3488,7 @@ function getpdfinfo ($filepath, $box="MediaBox")
 
 // ---------------------- getvideoinfo -----------------------------
 // function: getvideoinfo()
-// input: path to video file
+// input: path to video file [string]
 // output: video file information as result array / false on error
 
 // description:
@@ -3813,7 +3813,7 @@ function getbrowserinfo ()
 
 // ---------------------- getcontentlocation -----------------------------
 // function: getcontentlocation()
-// input: container id, type [url_path_content, abs_path_content]
+// input: container id [string], type [url_path_content,abs_path_content]
 // output: location of the container file / false on error
 
 // description:
@@ -3853,7 +3853,7 @@ function getcontentlocation ($container_id, $type="abs_path_content")
 
 // ---------------------- getmedialocation -----------------------------
 // function: getmedialocation()
-// input: publication name, multimedia file name (including hcm-ID), type [url_path_media, abs_path_media, url_publ_media, abs_publ_media]
+// input: publication name [string], multimedia file name (including hcm-ID) [string], type [url_path_media,abs_path_media,url_publ_media,abs_publ_media]
 // output: location of the multimedia file / false on error
 
 // description:
@@ -3996,7 +3996,7 @@ function getmedialocation ($site, $file, $type)
 
 // ---------------------- getlockedfileinfo -----------------------------
 // function: getlockedfileinfo()
-// input: location to file, file name
+// input: location to file [string], file name [string]
 // output: Array holding file name incl. lock extension and user name / false on error
 
 // description:
@@ -4044,7 +4044,7 @@ function getlockedfileinfo ($location, $file)
 
 // ---------------------------------------- getlockobjects --------------------------------------------
 // function: getlockobjects()
-// input: user name
+// input: user name [string]
 // output: object info array / false
 
 // description:
@@ -4151,7 +4151,7 @@ function getlockedobjects ($user)
 
 // --------------------------------------- getfavorites -------------------------------------------
 // function: getfavorites ()
-// input: user name, output [path,id] (optional)
+// input: user name [string], output [path,id] (optional)
 // output: object info or object id array of users favorites / false
 
 function getfavorites ($user, $output="path")
@@ -4219,7 +4219,7 @@ function getfavorites ($user, $output="path")
 
 // --------------------------------------- getboxes -------------------------------------------
 // function: getboxes ()
-// input: user name
+// input: user name [string]
 // output: selected home box names of user as array / false
 
 function getboxes ($user)
@@ -4372,7 +4372,7 @@ function getimagelib ()
 
 // ------------------------------------------ getfilename ---------------------------------------
 // function: getfilename()
-// input: file content, hyperCMS tag name in page or component 
+// input: file content [string], hyperCMS tag name in page or component  [string]
 // output: file name
 
 // description:
@@ -4480,7 +4480,7 @@ function gethypertag ($filedata, $tagname, $offset=0)
 
 // ------------------------- gethypertagname ---------------------------
 // function: gethypertagname()
-// input: full hyperCMS tag
+// input: full hyperCMS tag [string]
 // output: full hyperCMS tag name/false on error
 
 // description:
@@ -4510,7 +4510,7 @@ function gethypertagname ($tagdata)
 
 // ------------------------ gethtmltag ------------------------------
 // function: gethtmltag()
-// input: file content, full hyperCMS tag (or other identifier)
+// input: file content [string], full hyperCMS tag (or other identifier) [string]
 // output: full html tag/false on error
 
 // description:
@@ -4634,7 +4634,7 @@ function gethtmltag ($filedata, $tag)
 
 // ------------------------ gethtmltags ------------------------------
 // function: gethtmltags()
-// input: file content, full hyperCMS tag or other identifier in html tag
+// input: file content [string], full hyperCMS tag or other identifier in html tag [string]
 // output: string from html tag start to end tag/false on error
 
 // description:
@@ -4763,7 +4763,7 @@ function gethtmltags ($filedata, $tag)
 
 // ------------------------- getattribute --------------------------------
 // function: getattribute()
-// input: string including attributes, attribute name, secure attribute value reg. XSS (optional)
+// input: string including attributes [string], attribute name [string], secure attribute value reg. XSS [true,false] (optional)
 // output: attribute value/false on error
 
 // description:
@@ -4906,7 +4906,7 @@ function getattribute ($string, $attribute, $secure=true)
 
 // ----------------------------- getoption --------------------------------
 // function: getoption()
-// input: string including options, option name
+// input: string including options [string], option name [string]
 // output: option value / false on error
 
 // description:
@@ -4937,7 +4937,7 @@ function getoption ($string, $option)
                       
 // ------------------------------ getcharset ----------------------------------
 // function: getcharset()
-// input: publication, data from template or content container [string]
+// input: publication name [string], data from template or content container [string]
 // output: array with content-type and charset / false on error
 // requires: config.inc.php
 
@@ -5114,7 +5114,7 @@ function getcharset ($site, $data)
 
 // ------------------------------ getartid ----------------------------------
 // function: getartid()
-// input: string including id
+// input: string including id [string]
 // output: article id/false on error
 
 // description:
@@ -5140,7 +5140,7 @@ function getartid ($id)
 
 // ------------------------------ getelementid ----------------------------------
 // function: getelementid()
-// input: string including id
+// input: string including id [string]
 // output: element id/false on error
 
 // description:
@@ -5166,7 +5166,7 @@ function getelementid ($id)
 
 // ------------------------------ getfirstkey ----------------------------------
 // function: getfirstkey()
-// input: array
+// input: array [array]
 // output: array key of first element in array if $value is not empty / false on error
 
 function getfirstkey ($array)
@@ -5185,7 +5185,7 @@ function getfirstkey ($array)
 
 // ------------------------------ getdirectoryfiles ----------------------------------
 // function: getdirectoryfiles()
-// input: path to directory, pattern as string (optional)
+// input: path to directory [string], pattern as string [string] (optional)
 // output: sorted array of all files matching the pattern / false on error
 
 function getdirectoryfiles ($dir, $pattern="")
@@ -5314,7 +5314,7 @@ function getuserinformation ()
 
 // -------------------------------------- getworkflowitem ----------------------------------------
 // function: getworkflowitem()
-// input: publication name [string], location name [string], object name [string], workflow file name [string], workflow [XML-string], user name [string]
+// input: publication name [string], location [string], object name [string], workflow file name [string], workflow [XML-string], user name [string]
 // output: workflow item [XML-string]
 // requires: config.inc.php, editcontent
 

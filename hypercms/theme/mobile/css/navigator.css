@@ -117,7 +117,7 @@
   float: left;
 }
 
-.hcmsButton:hover
+.hcmsButton:hover, .hcmsButtonActive
 {
   padding: 1px;
   margin: 0;

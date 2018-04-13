@@ -11,7 +11,7 @@
 
 // ---------------------- rootpermission -----------------------------
 // function: rootpermission()
-// input: publication name, publication admin, permission string from group 
+// input: publication name [string], publication admin [true,false], permission string from group [string]
 // output: global permission array/false
 
 // description:
@@ -92,7 +92,7 @@ function rootpermission ($site_name, $site_admin, $permission_str)
     
 // ---------------------- globalpermission -----------------------------
 // function: globalpermission()
-// input: publication, permission string from group 
+// input: publication name [string], permission string from group [string]
 // output: global permission array/false
 
 // description:
@@ -227,7 +227,7 @@ function globalpermission ($site_name, $permission_str)
 
 // ---------------------- localpermission -----------------------------
 // function: localpermission()
-// input: publication, permission string from group 
+// input: publication name [string], permission string from group [string]
 // output: local permission array/false
 
 // description:
@@ -283,7 +283,7 @@ function localpermission ($site_name, $permission_str)
 
 // ---------------------------------- accessgeneral -------------------------------------------
 // function: accessgeneral()
-// input: publication, location (path to folder), object category ['page, comp']
+// input: publication name [string], location (path to folder) [string], object category [page,comp]
 // output: true/false
 
 // description:
@@ -372,7 +372,7 @@ function accessgeneral ($site, $location, $cat)
 
 // ---------------------------------- accesspermission -------------------------------------------
 // function: accesspermission()
-// input: location (path to folder), object category ['page, comp']
+// input: location (path to folder) [string], object category [page,comp]
 // output: group with access permissions as array / false on error
 // requires: accessgeneral
 
@@ -513,7 +513,7 @@ function accesspermission ($site, $location, $cat)
 
 // ---------------------- setlocalpermission -----------------------------
 // function: setlocalpermission()
-// input: publication, group name array, object category [page,comp]
+// input: publication name [string], group name [array], object category [page,comp]
 // output: local permission array / false on error
 
 // description:
@@ -585,7 +585,7 @@ function setlocalpermission ($site, $group_array, $cat)
 
 // ------------------------- checkpublicationpermission -----------------------------
 // function: checkpublicationpermission()
-// input: publication name, strictly limited to siteaccess only without inheritance [true/false] (optional)
+// input: publication name [string], strictly limited to siteaccess only without inheritance [true,false] (optional)
 // output: "direct" for direct access via group permission / "inherited" for access through inheritance / false
 
 // description:
@@ -651,7 +651,7 @@ function checkadminpermission ()
 
 // ---------------------- checkrootpermission -----------------------------
 // function: checkrootpermission()
-// input: permission name
+// input: permission name [string]
 // output: true/false
 
 // description:
@@ -679,7 +679,7 @@ function checkrootpermission ($name)
 
 // ---------------------- checkglobalpermission -----------------------------
 // function: checkglobalpermission()
-// input: publication name, permission name
+// input: publication name [string], permission name [string]
 // output: true/false
 
 // description:
@@ -707,7 +707,7 @@ function checkglobalpermission ($site, $name)
 
 // ---------------------- checklocalpermission -----------------------------
 // function: checklocalpermission()
-// input: publication name, user group name, permission name
+// input: publication name [string], user group name [string], permission name [string]
 // output: true/false
 
 // description:
@@ -737,8 +737,8 @@ function checklocalpermission ($site, $group, $name)
 
 // --------------------------------------- userlogin -------------------------------------------
 // function: userlogin()
-// input: username, password, hash code of user, object reference for hcms linking (object ID), object code for hcms linking (crypted object ID), 
-//        ignore passwordcheck needed for WebDAV or access link [true/false], lock IP after 10 failed attempts to login [true/false]
+// input: user name [string], password [string], hash code of user [string], object reference for hcms linking (object ID) [string], object code for hcms linking (crypted object ID) [string], 
+//        ignore passwordcheck needed for WebDAV or access link [true,false], lock IP after 10 failed attempts to login [true,false]
 // output: result array
 // requires: config.inc.php to be loaded before
 
@@ -1485,8 +1485,22 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
   // message
   if (!$result['message'])
   {
-    if (isset ($result['auth']) && $result['auth'] == true) $result['message'] = $hcms_lang['login-correct'][$lang];
+    if (!empty ($result['auth'])) $result['message'] = $hcms_lang['login-correct'][$lang];
     else $result['message'] = $hcms_lang['login-incorrect'][$lang];
+  }
+  
+  // log
+  if (!empty ($result['auth']))
+  {
+    // information
+    $errcode = "00102";
+    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|user '".$user."' with client IP ".$client_ip." is logged in";
+  }
+  else
+  {
+    // information
+    $errcode = "00103";
+    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|user '".$user."' with client IP ".$client_ip." failed to login";
   }
   
   // calculate checksum of permissions
@@ -1509,7 +1523,7 @@ function userlogin ($user, $passwd, $hash="", $objref="", $objcode="", $ignore_p
 
 // ---------------------- registerinstance -----------------------------
 // function: registerinstance()
-// input: instance name, load main config of instance [true/false] (optional)
+// input: instance name [string], load main config of instance [true,false] (optional)
 // output: true/false
 // requires: hypercms_api.inc.php
 
@@ -1534,7 +1548,7 @@ function registerinstance ($instance, $load_config=true)
 
 // ---------------------- createchecksum -----------------------------
 // function: createchecksum()
-// input: array or empty
+// input: array or empty [array]
 // output: MD5 checksum
 // requires: hypercms_api.inc.php
 
@@ -1566,7 +1580,7 @@ function createchecksum ($permissions="")
 
 // ---------------------- writesession -----------------------------
 // function: writesession()
-// input: user name, password, checksum
+// input: user name [string], password [string], checksum [string]
 // output: true / false on error
 // requires: hypercms_api.inc.php
 
@@ -1670,7 +1684,7 @@ function writesessiondata ()
 
 // ------------------------- createsession -----------------------------
 // function: createsession()
-// input: user name (optional)
+// input: %
 // output: true
 
 // description:
@@ -1740,7 +1754,7 @@ function createsession ()
 
 // ---------------------- killsession -----------------------------
 // function: killsession()
-// input: user name  for hyperCMS session (optional), destroy php session [true,false] (optional)
+// input: user name for hyperCMS session [string] (optional), destroy php session [true,false] (optional)
 // output: true
 // requires: hypercms_api.inc.php
 
@@ -1804,11 +1818,11 @@ function killsession ($user="", $destroy_php=true)
 
 // ---------------------- checkdiskkey -----------------------------
 // function: checkdiskkey()
-// input: user count (optional), publication names (use | as seperator) (optional)
-// output: true/false
+// input: users XML [string] (optional), publication names (use | as seperator) [string] (optional)
+// output: true / false
 
 // description:
-// Checks the disc key of the installation
+// Checks the disc key of the installation.
 
 function checkdiskkey ($users="", $site="")
 {
@@ -1877,7 +1891,7 @@ function checkdiskkey ($users="", $site="")
 
 // ---------------------------------------- checkpassword --------------------------------------------
 // function: checkpassword()
-// input: password a string
+// input: password [string]
 // output: true if passed / error message as string
 
 // description:
@@ -1917,7 +1931,7 @@ function checkpassword ($password)
 
 // --------------------------------------- loguserip -------------------------------------------
 // function: loguserip()
-// input: client IP address, user logon name (optional)
+// input: client IP address [string], user logon name [string] (optional)
 // output: true / false on error
 
 function loguserip ($client_ip, $user="sys") 
@@ -1949,15 +1963,15 @@ function loguserip ($client_ip, $user="sys")
 
 // --------------------------------------- checkuserip -------------------------------------------
 // function: checkuserip()
-// input: client IP address, user logon name (optional), timeout in minutes (optional)
+// input: client IP address [string], user logon name [string] (optional), timeout in minutes [integer] (optional)
 // output: true if IP is not locked / false if IP is locked or on error
 
-function checkuserip ($client_ip, $user="", $timeout="") 
+function checkuserip ($client_ip, $user="", $timeout=0) 
 {
   global $mgmt_config;
   
   // set default logon timeout
-  if ($timeout == "") $timeout = $mgmt_config['logon_timeout'];
+  if (empty ($timeout)) $timeout = $mgmt_config['logon_timeout'];
   
   if ($client_ip != "" && $timeout > 0)
   {  
@@ -2000,7 +2014,7 @@ function checkuserip ($client_ip, $user="", $timeout="")
 
 // --------------------------------------- checkuserrequests -------------------------------------------
 // function: checkuserrequests()
-// input: user name (optional)
+// input: user name [string] (optional)
 // output: true / false if a certain amount of reguests per minute is exceeded
 
 // description:
@@ -2056,7 +2070,7 @@ function checkuserrequests ($user="sys")
 
 // ------------------------- checkusersession -----------------------------
 // function: checkusersession()
-// input: user name (optional), include CSRF detection [true,false]
+// input: user name [string] (optional), include CSRF detection [true,false]
 // output: true / html-output followed by termination
 // requires config.inc.php
 
@@ -2103,7 +2117,7 @@ function checkusersession ($user="sys", $CSRF_detection=true)
 
 // ------------------------- allowuserip  -----------------------------
 // function: allowuserip ()
-// input: publication name
+// input: publication name [string]
 // output: true / false
 // requires config.inc.php
 
@@ -2150,7 +2164,7 @@ function allowuserip ($site)
 
 // ------------------------- valid_objectname -----------------------------
 // function: valid_objectname()
-// input: variable (string or array)
+// input: variable [string or array]
 // output: true / false
 
 // description:
@@ -2190,7 +2204,7 @@ function valid_objectname ($variable)
 
 // ------------------------- valid_locationname -----------------------------
 // function: valid_locationname()
-// input: variable (string or array)
+// input: variable [string or array]
 // output: true / false
 
 // description:
@@ -2233,7 +2247,7 @@ function valid_locationname ($variable)
 
 // ------------------------- valid_publicationname -----------------------------
 // function: valid_publicationname()
-// input: variable (string or array)
+// input: variable [string or array]
 // output: true / false
 
 // description:
@@ -2273,7 +2287,7 @@ function valid_publicationname ($variable)
 
 // ------------------------- html_encode -----------------------------
 // function: html_encode()
-// input: variable as string or array, conversion of all special characters based on given character set or to ASCII (optional), 
+// input: variable [string or array], conversion of all special characters based on given character set or to ASCII [string] (optional), 
 //        remove characters to avoid JS injection [true,false] (optional)
 // output: html encoded value as array or string / false on error
 
@@ -2377,7 +2391,7 @@ function html_encode ($expression, $encoding="", $js_protection=false)
 
 // ------------------------- html_decode -----------------------------
 // function: html_decode()
-// input: epxression as string or array, conversion of all special characters based on character set (optional)
+// input: epxression [string or array], conversion of all special characters based on character set [string] (optional)
 // output: html decoded value as array or string / false on error
 
 // description:
@@ -2416,7 +2430,7 @@ function html_decode ($expression, $encoding="")
 
 // ------------------------- scriptcode_encode -----------------------------
 // function: scriptcode_encode()
-// input: content as string  
+// input: content [string] 
 // output: escaped content as string / false on error
 
 // description:
@@ -2444,7 +2458,7 @@ function scriptcode_encode ($content)
 
 // ------------------------- scriptcode_extract -----------------------------
 // function: scriptcode_extract()
-// input: content as string, identifier of script begin, and end 
+// input: content [string], identifier of script begin [string], identifier of script end [string]
 // output: script code as array / false on error or if noting was found
 
 // description:
@@ -2500,7 +2514,7 @@ function scriptcode_extract ($content, $identifier_start="<?", $identifier_end="
 
 // ------------------------- scriptcode_clean_functions -----------------------------
 // function: scriptcode_clean_functions()
-// input: content as string, cleaning level type from none = 0 to strong = 3 (no cleaning = 0, basic set of disabled functions = 1, 1 + file access functions = 2, 2 + include functions = 3) (optional), application [PHP,ASP,JSP] (optional)
+// input: content [string], cleaning level type: no cleaning = 0; basic set of disabled functions = 1; 1 + file access functions = 2; 2 + include functions = 3 [0,1,2,3] (optional), application [PHP,ASP,JSP] (optional)
 // output: result array / false on error
 
 // description:
@@ -2584,7 +2598,7 @@ function scriptcode_clean_functions ($content, $type=3, $application="PHP")
 
 // ------------------------- sql_clean_functions -----------------------------
 // function: sql_clean_functions()
-// input: SQL statement as string
+// input: SQL statement [string]
 // output: result array / false on error
 
 // description:
@@ -2643,7 +2657,7 @@ function sql_clean_functions ($content)
 
 // ------------------------- url_encode -----------------------------
 // function: url_encode()
-// input: variable as string or array
+// input: variable [string or array]
 // output: urlencoded value as array or string / false on error
 
 // description:
@@ -2671,7 +2685,7 @@ function url_encode ($variable)
 
 // ------------------------- url_decode -----------------------------
 // function: url_decode()
-// input: variable as string or array
+// input: variable [string or array]
 // output: urldecoded value as array or string / false on error
 
 // description:
@@ -2699,7 +2713,7 @@ function url_decode ($variable)
 
 // ------------------------- shellcmd_encode -----------------------------
 // function: shellcmd_encode()
-// input: variable as string or array
+// input: variable [string or array]
 // output: encoded value as array or string / false on error
 
 // description:
@@ -2727,7 +2741,7 @@ function shellcmd_encode ($variable)
 
 // ---------------------- hcms_crypt -----------------------------
 // function: hcms_crypt()
-// input: string to encode, start position, length for string extraction
+// input: string to encode [string], start position [integer], length for string extraction [integer]
 // output: encoded string / false on error
 
 // description:
@@ -2762,7 +2776,7 @@ function hcms_crypt ($string, $start=0, $length=0)
 
 // ---------------------- hcms_encrypt -----------------------------
 // function: hcms_encrypt()
-// input: string to encode, key of length 16 or 24 or 32 (optional), crypt strength level [weak,standard,strong] (optional), 
+// input: string to encode [string], key of length 16 or 24 or 32 [string] (optional), crypt strength level [weak,standard,strong] (optional), 
 //        encoding [base64,url,none] (optional)
 // output: encoded string / false on error
 
@@ -2883,7 +2897,7 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
 
 // ---------------------- hcms_decrypt -----------------------------
 // function: hcms_decrypt()
-// input: hash-string to decode, key of length 16 or 24 or 32 (optional), crypt strength level [weak,standard,strong] (optional), 
+// input: hash-string to decode [string], key of length 16 or 24 or 32 [string] (optional), crypt strength level [weak,standard,strong] (optional), 
 //        encoding [base64,url,none] (optional)
 // output: decoded string / false on error
 
@@ -2985,7 +2999,7 @@ function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
 
 // ---------------------- createtimetoken -----------------------------
 // function: createtimetoken()
-// input: token lifetime in seconds (optional), secret value (optional)
+// input: token lifetime in seconds [integer] (optional), secret value [integer] (optional)
 // output: token / false on error
 
 function createtimetoken ($lifetime=0, $secret=4)
@@ -3010,7 +3024,7 @@ function createtimetoken ($lifetime=0, $secret=4)
 
 // ---------------------- checktimetoken -----------------------------
 // function: checktimetoken()
-// input: token, secret value (optional)
+// input: token [string], secret value [integer] (optional)
 // output: true / false
 
 function checktimetoken ($token, $secret=4)
@@ -3035,7 +3049,7 @@ function checktimetoken ($token, $secret=4)
 
 // ---------------------- createtoken -----------------------------
 // function: createtoken()
-// input: user name (optional), token lifetime in seconds (optional), secret value (optional)
+// input: user name [string] (optional), token lifetime in seconds [integer] (optional), secret value [integer] (optional)
 // output: token / false on error
 
 function createtoken ($user="sys", $lifetime=0, $secret=4)
@@ -3067,7 +3081,7 @@ function createtoken ($user="sys", $lifetime=0, $secret=4)
 
 // ---------------------- checktoken -----------------------------
 // function: checktoken()
-// input: token, user name (optional), secret value (optional)
+// input: token [string], user name [string] (optional), secret value [integer] (optional)
 // output: true / false
 
 function checktoken ($token, $user="sys", $secret=4)
@@ -3093,7 +3107,7 @@ function checktoken ($token, $user="sys", $secret=4)
 
 // ---------------------- createuniquetoken -----------------------------
 // function: createuniquetoken()
-// input: token length (optional)
+// input: token length [integer] (optional)
 // output: token as string / false
 
 function createuniquetoken ($length=16)
@@ -3118,7 +3132,7 @@ function createuniquetoken ($length=16)
 
 // ---------------------- rand_secure -----------------------------
 // function: rand_secure()
-// input: min and max value as integer (optional)
+// input: min and max value [integer] (optional)
 // output: secure random number / false
 
 function rand_secure ($min=1000, $max=999999999999)
